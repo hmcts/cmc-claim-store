@@ -30,7 +30,7 @@ public class OrganisationMapper {
             .ifPresent(address -> applicantPartyDetail.correspondenceAddress(addressMapper.to(address)));
         organisation.getRepresentative()
             .ifPresent(representative -> representativeMapper.to(representative, builder));
-        organisation.getMobilePhone().ifPresent(telephoneNo -> applicantPartyDetail.telephoneNumber(
+        organisation.getPhone().ifPresent(telephoneNo -> applicantPartyDetail.telephoneNumber(
             telephoneMapper.to(telephoneNo)));
         organisation.getContactPerson().ifPresent(applicantPartyDetail::contactPerson);
         organisation.getCompaniesHouseNumber().ifPresent(applicantPartyDetail::companiesHouseNumber);
@@ -49,7 +49,7 @@ public class OrganisationMapper {
             .name(applicant.getPartyName())
             .address(addressMapper.from(partyDetail.getPrimaryAddress()))
             .correspondenceAddress(addressMapper.from(partyDetail.getCorrespondenceAddress()))
-            .mobilePhone(telephoneMapper.from(partyDetail.getTelephoneNumber()))
+            .phone(telephoneMapper.from(partyDetail.getTelephoneNumber()))
             .representative(representativeMapper.from(applicant))
             .contactPerson(partyDetail.getContactPerson())
             .companiesHouseNumber(partyDetail.getCompaniesHouseNumber())

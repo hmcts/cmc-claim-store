@@ -30,6 +30,7 @@ import java.util.Map;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INITIATE_CLAIM_PAYMENT_CITIZEN;
 import static uk.gov.hmcts.cmc.domain.models.ChannelType.CITIZEN;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
+import static uk.gov.hmcts.cmc.domain.utils.MonetaryConversions.poundsToPennies;
 
 @Service
 @Conditional(FeesAndPaymentsConfiguration.class)
@@ -83,17 +84,22 @@ public class InitiatePaymentCallbackHandler extends CallbackHandler {
 
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
 
+        logger.info("Initiating payment for callback of type {}, claim with external id {}",
+            callbackParams.getType(),
+            claim.getExternalId());
+
         LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
         LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
 
         Claim updatedClaim = claim.toBuilder()
             .ccdCaseId(caseDetails.getId())
             .issuedOn(issuedOn)
+            .serviceDate(issuedOn.plusDays(5))
             .responseDeadline(responseDeadline)
             .channel(CITIZEN)
             .build();
 
-        logger.info("Creating payment in pay hub for case {}",
+        logger.info("Creating payment for claim with external id {}",
             updatedClaim.getExternalId());
 
         Payment payment = paymentsService.createPayment(
@@ -104,6 +110,7 @@ public class InitiatePaymentCallbackHandler extends CallbackHandler {
         Claim claimAfterPayment = updatedClaim.toBuilder()
             .claimData(updatedClaim.getClaimData().toBuilder()
                 .payment(payment)
+                .feeAmountInPennies(poundsToPennies(payment.getAmount()))
                 .build())
             .build();
 

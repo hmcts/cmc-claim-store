@@ -50,7 +50,7 @@ public class CallbackHandlerFactoryTest {
     private UserService userService;
 
     @Rule
-    public ExpectedException expectedException = ExpectedException.none();
+    public final ExpectedException expectedException = ExpectedException.none();
 
     private CallbackHandlerFactory callbackHandlerFactory;
 

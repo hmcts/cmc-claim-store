@@ -15,9 +15,9 @@ import static java.util.Objects.requireNonNull;
 @Component
 public class WorkingDayIndicator {
 
-    private PublicHolidaysCollection publicHolidaysCollection;
+    private final PublicHolidaysCollection publicHolidaysCollection;
 
-    private NonWorkingDaysCollection nonWorkingDaysCollection;
+    private final NonWorkingDaysCollection nonWorkingDaysCollection;
 
     public WorkingDayIndicator(
         PublicHolidaysCollection publicHolidaysApiClient,
@@ -53,5 +53,11 @@ public class WorkingDayIndicator {
         requireNonNull(date);
 
         return isWorkingDay(date) ? date : getNextWorkingDay(date.plusDays(1));
+    }
+
+    public LocalDate getPreviousWorkingDay(LocalDate date) {
+        requireNonNull(date);
+
+        return isWorkingDay(date) ? date : getPreviousWorkingDay(date.minusDays(1));
     }
 }

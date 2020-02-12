@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Payment;
+import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -29,7 +30,6 @@ import java.util.Map;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
-import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.INITIATED;
 import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
@@ -77,12 +77,16 @@ public class ResumePaymentCallbackHandler extends CallbackHandler {
         return ROLES;
     }
 
-    private CallbackResponse resumePayment(CallbackParams callbackParams)  {
+    private CallbackResponse resumePayment(CallbackParams callbackParams) {
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         String authorisation = callbackParams.getParams()
             .get(CallbackParams.Params.BEARER_TOKEN).toString();
 
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
+
+        logger.info("Resuming payment for callback of type {}, claim with external id {}",
+            callbackParams.getType(),
+            claim.getExternalId());
 
         Claim claimAfterPayment = withPayment(authorisation, claim);
 
@@ -95,7 +99,11 @@ public class ResumePaymentCallbackHandler extends CallbackHandler {
     private Claim withPayment(String authorisation, Claim claim) {
         Payment originalPayment = paymentsService.retrievePayment(authorisation, claim);
 
-        if (originalPayment.getStatus().equals(INITIATED) || originalPayment.getStatus().equals(SUCCESS)) {
+        logger.info("Retrieved payment from pay hub with status {}, claim with external id {}",
+            originalPayment.getStatus().toString(),
+            claim.getExternalId());
+
+        if (originalPayment.getStatus().equals(SUCCESS)) {
             return claim.toBuilder()
                 .claimData(claim.getClaimData().toBuilder()
                     .payment(originalPayment)
@@ -108,10 +116,11 @@ public class ResumePaymentCallbackHandler extends CallbackHandler {
 
         Claim updatedClaim = claim.toBuilder()
             .issuedOn(issuedOn)
+            .serviceDate(issuedOn.plusDays(5))
             .responseDeadline(responseDeadline)
             .build();
 
-        logger.info("Creating payment in pay hub for case {}",
+        logger.info("Creating payment for claim with external id {}",
             updatedClaim.getExternalId());
 
         Payment newPayment = paymentsService.createPayment(
@@ -122,6 +131,7 @@ public class ResumePaymentCallbackHandler extends CallbackHandler {
         return updatedClaim.toBuilder()
             .claimData(updatedClaim.getClaimData().toBuilder()
                 .payment(newPayment)
+                .feeAmountInPennies(MonetaryConversions.poundsToPennies(newPayment.getAmount()))
                 .build())
             .build();
 

@@ -14,7 +14,7 @@ public class ClaimantContentProviderTest {
 
     private final Individual claimant = SampleParty.builder().individual();
 
-    private ClaimantContentProvider provider = new ClaimantContentProvider(
+    private final ClaimantContentProvider provider = new ClaimantContentProvider(
         new PersonContentProvider()
     );
 
@@ -63,10 +63,10 @@ public class ClaimantContentProviderTest {
     }
 
     @Test
-    public void shouldProvideMobileNumber() {
+    public void shouldProvidePhoneNumber() {
         ClaimantContent content = provider.createContent(claimant, EMAIL);
 
-        assertThat(content.getMobileNumber()).isNotNull();
+        assertThat(content.getPhoneNumber()).isNotNull();
     }
 
 }

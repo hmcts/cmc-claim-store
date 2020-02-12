@@ -76,8 +76,10 @@ public class CreateLegalRepClaimCallbackHandler extends CallbackHandler {
 
     @LogExecutionTime
     private CallbackResponse createLegalRepClaim(CallbackParams callbackParams) {
-        logger.info("Creating legal rep case for callback of type {}", callbackParams.getType());
         Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
+        logger.info("Creating legal rep case for callback of type {}, claim with external id {}",
+            callbackParams.getType(),
+            claim.getExternalId());
 
         LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
         LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
@@ -86,6 +88,7 @@ public class CreateLegalRepClaimCallbackHandler extends CallbackHandler {
         Claim updatedClaim = claim.toBuilder()
             .referenceNumber(referenceNumber)
             .issuedOn(issuedOn)
+            .serviceDate(issuedOn.plusDays(5))
             .responseDeadline(responseDeadline)
             .channel(LEGAL_REP)
             .build();

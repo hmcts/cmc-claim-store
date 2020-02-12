@@ -15,9 +15,15 @@ public enum ClaimDocumentType {
     DEFENDANT_PIN_LETTER,
     CLAIMANT_DIRECTIONS_QUESTIONNAIRE("claimantHearingRequirement"),
     REVIEW_ORDER,
-    COVER_SHEET;
+    MEDIATION_AGREEMENT,
+    COVER_SHEET,
+    PAPER_RESPONSE_FULL_ADMIT,
+    PAPER_RESPONSE_PART_ADMIT,
+    PAPER_RESPONSE_STATES_PAID,
+    PAPER_RESPONSE_MORE_TIME,
+    PAPER_RESPONSE_DISPUTES_ALL;
 
-    private List<String> values;
+    private final List<String> values;
 
     ClaimDocumentType(String... values) {
         this.values = Arrays.asList(values);

@@ -1,26 +1,36 @@
 package uk.gov.hmcts.cmc.claimstore.events.claimantresponse;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
+import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimantRejectOrgPaymentPlanStaffNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimantRejectionStaffNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.StatesPaidStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
-import static org.mockito.ArgumentMatchers.eq;
+import java.time.LocalDateTime;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
+import static org.mockito.Mockito.verifyNoInteractions;
 
-@RunWith(MockitoJUnitRunner.class)
-public class ClaimantResponseStaffNotificationHandlerTest {
+@ExtendWith(MockitoExtension.class)
+class ClaimantResponseStaffNotificationHandlerTest {
 
-    private ClaimantResponseStaffNotificationHandler handler;
+    private static final LocalDateTime NOW_IN_LOCAL_ZONE = LocalDateTimeFactory.nowInLocalZone();
+    private static final String AUTHORISATION = "Bearer authorisation";
 
     @Mock
     private StatesPaidStaffNotificationService statesPaidStaffNotificationService;
@@ -28,67 +38,145 @@ public class ClaimantResponseStaffNotificationHandlerTest {
     @Mock
     private ClaimantRejectionStaffNotificationService claimantRejectionStaffNotificationService;
 
-    private final String authorisation = "Bearer authorisation";
+    @Mock
+    private ClaimantRejectOrgPaymentPlanStaffNotificationService rejectOrgPaymentPlanStaffNotificationService;
 
-    @Before
-    public void setUp() {
+    @Mock
+    private CCJStaffNotificationHandler ccjStaffNotificationHandler;
+
+    private ClaimantResponseStaffNotificationHandler handler;
+
+    @BeforeEach
+    void setUp() {
         handler = new ClaimantResponseStaffNotificationHandler(
             statesPaidStaffNotificationService,
-            claimantRejectionStaffNotificationService
+            claimantRejectionStaffNotificationService,
+            rejectOrgPaymentPlanStaffNotificationService,
+            ccjStaffNotificationHandler
         );
     }
 
-    @Test
-    public void notifyStaffClaimantResponseStatesPaidSubmittedFor() {
-        ClaimantResponseEvent event = new ClaimantResponseEvent(
-            SampleClaim.getClaimFullDefenceStatesPaidWithAcceptation(), authorisation);
-        handler.onClaimantResponse(event);
+    @Nested
+    @DisplayName("Intend to proceed responses")
+    class IntendToProceed {
+        @Test
+        void shouldNotifyStaffWhenClaimantIntendsToProceed() {
+            Claim claim = Claim.builder()
+                .claimantRespondedAt(NOW_IN_LOCAL_ZONE)
+                .claimantResponse(
+                    SampleClaimantResponse.ClaimantResponseRejection.builder()
+                        .buildRejectionWithDirectionsQuestionnaire()
+                )
+                .build();
+            ClaimantResponseEvent event = new ClaimantResponseEvent(claim, AUTHORISATION);
 
-        verify(statesPaidStaffNotificationService, once())
-            .notifyStaffClaimantResponseStatesPaidSubmittedFor(eq(event.getClaim()));
+            handler.notifyStaffWithClaimantsIntentionToProceed(event);
+
+            verify(claimantRejectionStaffNotificationService)
+                .notifyStaffWithClaimantsIntentionToProceed(event.getClaim());
+        }
+
+        @Test
+        void shouldNotNotifyStaffWhenNotAnIntentToProceedResponse() {
+            Claim claim = Claim.builder()
+                .claimantRespondedAt(NOW_IN_LOCAL_ZONE)
+                .claimantResponse(SampleClaimantResponse.validDefaultAcceptation())
+                .build();
+            ClaimantResponseEvent event = new ClaimantResponseEvent(claim, AUTHORISATION);
+
+            handler.notifyStaffWithClaimantsIntentionToProceed(event);
+
+            verifyNoInteractions(claimantRejectionStaffNotificationService);
+        }
     }
 
-    @Test
-    public void notifyStaffClaimantResponseRejectedPartAdmission() {
-        ClaimantResponseEvent event = new ClaimantResponseEvent(
-            SampleClaim.getWithClaimantResponseRejectionForPartAdmissionAndMediation(), authorisation
-        );
-        handler.onClaimantResponse(event);
+    @Nested
+    @DisplayName("Other claimant responses")
+    class OtherResponses {
+        @Test
+        void notifyStaffClaimantResponseStatesPaidSubmittedFor() {
+            ClaimantResponseEvent event = new ClaimantResponseEvent(
+                SampleClaim.getClaimFullDefenceStatesPaidWithAcceptation(), AUTHORISATION);
+            handler.onClaimantResponse(event);
 
-        verify(claimantRejectionStaffNotificationService, once())
-            .notifyStaffClaimantRejectPartAdmission(eq(event.getClaim()));
-    }
+            verify(statesPaidStaffNotificationService)
+                .notifyStaffClaimantResponseStatesPaidSubmittedFor(event.getClaim());
+        }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void throwExceptionWhenResponseNotPresent() {
-        ClaimantResponseEvent event = new ClaimantResponseEvent(SampleClaim.builder().build(), authorisation);
-        handler.onClaimantResponse(event);
+        @Test
+        void notifyStaffClaimantResponseRejectedPartAdmission() {
+            ClaimantResponseEvent event = new ClaimantResponseEvent(
+                SampleClaim.getWithClaimantResponseRejectionForPartAdmissionAndMediation(), AUTHORISATION
+            );
+            handler.onClaimantResponse(event);
 
-        verifyZeroInteractions(statesPaidStaffNotificationService, claimantRejectionStaffNotificationService);
-    }
+            verify(claimantRejectionStaffNotificationService)
+                .notifyStaffClaimantRejectPartAdmission(event.getClaim());
+        }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionWhenClaimantResponseNotPresent() {
-        ClaimantResponseEvent event = new ClaimantResponseEvent(SampleClaim.builder().build(), authorisation);
+        @Test
+        void throwExceptionWhenResponseNotPresent() {
+            ClaimantResponseEvent event = new ClaimantResponseEvent(SampleClaim.builder().build(), AUTHORISATION);
 
-        handler.notifyStaffWithClaimantsIntentionToProceed(event);
+            assertThrows(IllegalArgumentException.class,
+                () -> handler.onClaimantResponse(event));
 
-        verifyZeroInteractions(statesPaidStaffNotificationService, claimantRejectionStaffNotificationService);
-    }
+            verifyNoInteractions(statesPaidStaffNotificationService, claimantRejectionStaffNotificationService);
+        }
 
-    public void shouldNotifyStaffWhenClaimantIntendsToProceed() {
-        Claim claim = Claim.builder()
-            .claimantRespondedAt(LocalDateTimeFactory.nowInLocalZone())
-            .claimantResponse(
-                SampleClaimantResponse.ClaimantResponseRejection.builder()
-                    .buildRejectionWithDirectionsQuestionnaire()
-            )
-            .build();
-        ClaimantResponseEvent event = new ClaimantResponseEvent(claim, authorisation);
+        @Test
+        void shouldThrowExceptionWhenClaimantResponseNotPresent() {
+            ClaimantResponseEvent event = new ClaimantResponseEvent(SampleClaim.builder().build(), AUTHORISATION);
 
-        handler.notifyStaffWithClaimantsIntentionToProceed(event);
+            assertThrows(IllegalArgumentException.class,
+                () -> handler.notifyStaffWithClaimantsIntentionToProceed(event));
 
-        verify(claimantRejectionStaffNotificationService, once())
-            .notifyStaffClaimantRejectPartAdmission(eq(event.getClaim()));
+            verifyNoInteractions(statesPaidStaffNotificationService, claimantRejectionStaffNotificationService);
+        }
+
+        @Test
+        void shouldNotifyStaffOfReferToJudgeForBusiness() {
+            Claim claim = Claim.builder()
+                .respondedAt(NOW_IN_LOCAL_ZONE)
+                .response(SampleResponse.FullAdmission.builder()
+                    .withDefendantDetails(SampleParty.builder().company())
+                    .build()
+                )
+                .claimantRespondedAt(NOW_IN_LOCAL_ZONE)
+                .claimantResponse(SampleClaimantResponse.ClaimantResponseAcceptation.builder()
+                        .buildAcceptationReferToJudgeWithCourtDetermination())
+                .build();
+            ClaimantResponseEvent event = new ClaimantResponseEvent(claim, AUTHORISATION);
+
+            handler.onClaimantResponse(event);
+
+            assertAll(
+                () -> verify(rejectOrgPaymentPlanStaffNotificationService)
+                    .notifyStaffClaimantRejectOrganisationPaymentPlan(claim),
+                () -> verifyNoInteractions(ccjStaffNotificationHandler)
+            );
+        }
+
+        @Test
+        void shouldNotifyStaffOfReferToJudgeForIndividual() {
+            Claim claim = Claim.builder()
+                .respondedAt(NOW_IN_LOCAL_ZONE)
+                .response(SampleResponse.FullAdmission.builder()
+                    .withDefendantDetails(SampleParty.builder().soleTrader())
+                    .build()
+                )
+                .claimantRespondedAt(NOW_IN_LOCAL_ZONE)
+                .claimantResponse(SampleClaimantResponse.ClaimantResponseAcceptation.builder()
+                    .buildAcceptationReferToJudgeWithCourtDetermination())
+                .build();
+            ClaimantResponseEvent event = new ClaimantResponseEvent(claim, AUTHORISATION);
+
+            handler.onClaimantResponse(event);
+
+            assertAll(
+                () -> verify(ccjStaffNotificationHandler).onInterlocutoryJudgmentEvent(any()),
+                () -> verifyNoInteractions(rejectOrgPaymentPlanStaffNotificationService)
+            );
+        }
     }
 }

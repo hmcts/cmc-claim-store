@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.domain.models.amount;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes(
     {
         @JsonSubTypes.Type(value = AmountBreakDown.class, name = "breakdown"),

@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
 import org.junit.Test;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -13,7 +13,7 @@ public class DependantTest {
     public static Dependant.DependantBuilder newSampleOfDependantBuilder() {
         return Dependant.builder()
                 .numberOfMaintainedChildren(1)
-                .children(Arrays.asList(ChildTest.newSampleOfChildBuilder().build()))
+                .children(Collections.singletonList(ChildTest.newSampleOfChildBuilder().build()))
                 .otherDependants(OtherDependantsTest.newSampleOfOtherDependantsBuilder().build());
     }
 
@@ -45,7 +45,7 @@ public class DependantTest {
                 .ageGroupType(UNDER_11)
                 .build();
         Dependant dependant = Dependant.builder()
-                .children(Arrays.asList(invalidChild))
+                .children(Collections.singletonList(invalidChild))
                 .build();
         //when
         Set<String> errors = validate(dependant);

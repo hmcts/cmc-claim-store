@@ -262,56 +262,58 @@
   <tbody>
 
   {% if hearingContent.supportRequired is not empty %}
-    <tr>
-      <td>
-        <div>
-          Support required for a hearing
-        </div>
-      </td>
-      <td>
-        <div>
-          {% for support in hearingContent.supportRequired %}
-          {{ support }}<br/>
-          {% endfor %}
-        </div>
-      </td>
-    </tr>
+  <tr>
+    <td>
+      <div>
+        Support required for a hearing
+      </div>
+    </td>
+    <td>
+      <div>
+        {% for support in hearingContent.supportRequired %}
+        {{ support }}<br/>
+        {% endfor %}
+      </div>
+    </td>
+  </tr>
   {% endif %}
 
   {% if hearingContent.hearingLocation is not empty %}
-    <tr>
-      <td><b>Hearing location</b></td>
-    </tr>
-    <tr>
-      <td>
-        Preferred hearing centre
-      </td>
-      <td>
-        <div>{{ hearingContent.hearingLocation }}</div>
-      </td>
-    </tr>
+  <tr>
+    <td><b>Hearing location</b></td>
+  </tr>
+  <tr>
+    <td>
+      Preferred hearing centre
+    </td>
+    <td>
+      <div>{{ hearingContent.hearingLocation }}</div>
+    </td>
+  </tr>
   {% endif %}
 
 
   {% if hearingContent.locationReason is not empty %}
-    <tr>
-      <td>
-        <div>
-          Briefly explain your reasons
-        </div>
-      </td>
-      <td>
-        <div>
-          {{ hearingContent.locationReason }}
-        </div>
-      </td>
-    </tr>
+  <tr>
+    <td>
+      <div>
+        Briefly explain your reasons
+      </div>
+    </td>
+    <td>
+      <div>
+        {{ hearingContent.locationReason }}
+      </div>
+    </td>
+  </tr>
   {% endif %}
 
+  {% if hearingContent.expertRequired equals "Yes" %}
+    <tr>
+      <td><b>Expert evidence</b></td>
+    </tr>
+
     {% if hearingContent.hasExpertReport equals "Yes" %}
-      <tr>
-        <td><b>Expert evidence</b></td>
-      </tr>
       <tr>
         <td>
           Have you already got a report written by an expert?
@@ -338,34 +340,30 @@
       </tr>
       {% endfor %}
     {% else %}
-      {% if hearingContent.expertExamineNeeded is defined %}
       <tr>
-        <td><b>Expert evidence</b></td>
+        <td>
+          Have you already got a report written by an expert?
+        </td>
+        <td>
+          <div>
+            {{ hearingContent.hasExpertReport }}
+          </div>
+        </td>
       </tr>
-      {% if hearingContent.courtPermissionForExpertReport is not empty %}
-        <tr>
-          <td>
-            Have you already got a report written by an expert?
-          </td>
-          <td>
-            <div>
-              {{ hearingContent.hasExpertReport }}
-            </div>
-          </td>
-        </tr>
 
-        <tr>
-          <td>
-            <div>
-              Do you want the court's permission to hire an expert?
-            </div>
-          </td>
-          <td>
-            <div>
-              {{ hearingContent.courtPermissionForExpertReport | capitalize }}
-            </div>
-          </td>
-        </tr>
+      {% if hearingContent.courtPermissionForExpertReport is not empty %}
+      <tr>
+        <td>
+          <div>
+            Do you want the court's permission to hire an expert?
+          </div>
+        </td>
+        <td>
+          <div>
+            {{ hearingContent.courtPermissionForExpertReport | capitalize }}
+          </div>
+        </td>
+      </tr>
       {% endif %}
 
       {% if hearingContent.expertExamineNeeded is not empty %}
@@ -381,9 +379,8 @@
             </div>
           </td>
         </tr>
-      {% endif %}
 
-      {% if hearingContent.whatToExamine is not empty %}
+        {% if hearingContent.whatToExamine is not empty %}
         <tr>
           <td>
             <div>
@@ -396,9 +393,9 @@
             </div>
           </td>
         </tr>
-      {% endif %}
+        {% endif %}
 
-      {% if hearingContent.reasonWhyExpertAdvice is not empty %}
+        {% if hearingContent.reasonWhyExpertAdvice is not empty %}
         <tr>
           <td>
             <div>
@@ -411,9 +408,11 @@
             </div>
           </td>
         </tr>
+        {% endif %}
       {% endif %}
     {% endif %}
   {% endif %}
+
 
   <tr>
     <td><b>Witnesses</b></td>

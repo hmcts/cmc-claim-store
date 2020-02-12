@@ -24,7 +24,7 @@ public class PhoneNumberConstraintValidator implements ConstraintValidator<Phone
 
     private String normalize(String value) {
         return value
-            .replaceAll("\\(|\\)| |-|\\+", "")
+            .replaceAll("[() \\-+]", "")
             .replaceAll("^(00)?44", "")
             .replaceAll("^0", "")
             .replaceAll("[^0-9]", "");

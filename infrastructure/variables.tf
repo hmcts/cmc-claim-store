@@ -19,15 +19,15 @@ variable "idam_api_url" {
 }
 
 variable "frontend_url" {
-  default = "https://cmc-citizen-frontend-saat.service.core-compute-saat.internal"
+  default = "https://cmc-citizen-frontend-aat.service.core-compute-aat.internal"
 }
 
 variable "respond_to_claim_url" {
-  default = "https://cmc-citizen-frontend-saat.service.core-compute-saat.internal/first-contact/start"
+  default = "https://cmc-citizen-frontend-aat.service.core-compute-aat.internal/first-contact/start"
 }
 
 variable "database-name" {
-  default = "claimstore"
+  default = "cmc"
 }
 
 variable "mail-host" {
@@ -88,18 +88,14 @@ variable "save_claim_state_enabled" {
   default = "false"
 }
 
-variable "async_event_operations_enabled" {
-  default = "false"
-}
-
-variable "directions_questionnaire_enabled" {
-  default = "false"
-}
-
 variable milo_csv_schedule  {
   default = "-"
 }
 
 variable "common_tags" {
   type = "map"
+}
+
+variable claim_stayed_schedule  {
+  default = ""
 }
