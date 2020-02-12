@@ -15,14 +15,14 @@ import java.util.Objects;
 public class MediationSuccessfulRule {
     public static final String STAFF_UPLOAD_MEDIATION_AGREEMENT =
         "Upload Mediation Agreement";
-    public static final String STAFF_UPLOAD_TYPE_MEDIATION_AGREEMENT =
-            "You need to upload a document of type Mediation agreement";
     public static final String STAFF_UPLOAD_PDF_MEDIATION_AGREEMENT =
             "Mediation agreement needs to be of type PDF";
 
     public List<String> validateMediationAgreementUploadedByCaseworker(CCDCase ccdCase) {
         Objects.requireNonNull(ccdCase, "CCD case object can not be null");
         List<CCDCollectionElement<CCDClaimDocument>> staffDocuments = ccdCase.getStaffUploadedDocuments();
+        boolean mediationAgreement = false;
+        boolean isPDF = false;
 
         List<String> validationErrors = new ArrayList<>();
 
@@ -32,30 +32,20 @@ public class MediationSuccessfulRule {
         } else {
             for (CCDCollectionElement<CCDClaimDocument> document : staffDocuments) {
                 if ((document.getValue().getDocumentType() == CCDClaimDocumentType.MEDIATION_AGREEMENT)
-                        && (FilenameUtils.getExtension(document.getValue().getDocumentLink().getDocumentFileName())
-                        .contains("pdf"))
                 ) {
-                    validationErrors.clear();
-                    return validationErrors;
-                }
-                if ((document.getValue().getDocumentType() == CCDClaimDocumentType.MEDIATION_AGREEMENT)
-                        && !(FilenameUtils.getExtension(document.getValue().getDocumentLink().getDocumentFileName())
-                        .contains("pdf"))
-                ) {
-                    if (!validationErrors.contains(STAFF_UPLOAD_PDF_MEDIATION_AGREEMENT)) {
-                        validationErrors.add(STAFF_UPLOAD_PDF_MEDIATION_AGREEMENT);
+                    mediationAgreement = true;
+                    if ((FilenameUtils.getExtension(document.getValue().getDocumentLink().getDocumentFileName())
+                            .contains("pdf"))
+                    ) {
+                        isPDF = true;
                     }
                 }
-                if ((document.getValue().getDocumentType() != CCDClaimDocumentType.MEDIATION_AGREEMENT)
-                ) {
-                    if (!validationErrors.contains(STAFF_UPLOAD_TYPE_MEDIATION_AGREEMENT)) {
-                        validationErrors.add(STAFF_UPLOAD_TYPE_MEDIATION_AGREEMENT);
-                    }
-                } else {
-                    if (validationErrors.contains(STAFF_UPLOAD_TYPE_MEDIATION_AGREEMENT)) {
-                        validationErrors.remove(STAFF_UPLOAD_TYPE_MEDIATION_AGREEMENT);
-                    }
-                }
+            }
+            if (mediationAgreement && !isPDF) {
+                validationErrors.add(STAFF_UPLOAD_PDF_MEDIATION_AGREEMENT);
+            }
+            if (!mediationAgreement) {
+                validationErrors.add(STAFF_UPLOAD_MEDIATION_AGREEMENT);
             }
         }
         return validationErrors;
