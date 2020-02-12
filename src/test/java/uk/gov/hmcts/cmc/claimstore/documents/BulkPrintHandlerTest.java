@@ -63,7 +63,7 @@ public class BulkPrintHandlerTest {
         Document legalOrder = new Document("legalOrder", new HashMap<>());
 
         DirectionsOrderReadyToPrintEvent printEvent
-            = new DirectionsOrderReadyToPrintEvent(claim, coverSheet, legalOrder);
+            = new DirectionsOrderReadyToPrintEvent(claim, coverSheet, legalOrder, AUTHORISATION);
 
         //when
         bulkPrintHandler.print(printEvent);
@@ -77,7 +77,8 @@ public class BulkPrintHandlerTest {
                     claim.getReferenceNumber() + "-directions-order-cover-sheet"),
                 new PrintablePdf(
                     legalOrder,
-                    claim.getReferenceNumber() + "-directions-order")
-            ));
+                    claim.getReferenceNumber() + "-directions-order")),
+            AUTHORISATION
+        );
     }
 }

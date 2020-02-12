@@ -9,6 +9,8 @@ import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.amount.TotalAmountCalculator;
 import uk.gov.hmcts.cmc.domain.constraints.DateNotInTheFuture;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintCollection;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintLetterType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
@@ -78,7 +80,7 @@ public class Claim {
     private final YesNoOption paperResponse;
     private final LocalDateTime dateReferredForDirections;
     private final String preferredDQCourt;
-    private final String bulkPrintLetterId;
+    private final BulkPrintCollection bulkPrintCollection;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -125,7 +127,7 @@ public class Claim {
         YesNoOption paperResponse,
         LocalDateTime dateReferredForDirections,
         String preferredDQCourt,
-        String bulkPrintLetterId
+        BulkPrintCollection bulkPrintCollection
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -169,7 +171,7 @@ public class Claim {
         this.paperResponse = paperResponse;
         this.dateReferredForDirections = dateReferredForDirections;
         this.preferredDQCourt = preferredDQCourt;
-        this.bulkPrintLetterId = bulkPrintLetterId;
+        this.bulkPrintCollection = bulkPrintCollection;
     }
 
     public Optional<Response> getResponse() {
@@ -281,8 +283,8 @@ public class Claim {
         return Optional.ofNullable(preferredDQCourt);
     }
 
-    public Optional<String> getBulkPrintLetterId() {
-        return Optional.ofNullable(bulkPrintLetterId);
+    public Optional<BulkPrintCollection> getBulkPrintCollection() {
+        return Optional.of(bulkPrintCollection);
     }
 
     @Override

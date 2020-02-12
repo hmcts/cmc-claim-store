@@ -169,8 +169,9 @@ public class BulkPrintServiceTest {
         //when
         bulkPrintService.printPdf(CLAIM, ImmutableList.of(
             new PrintableTemplate(coversheetForClaimant, "filename"),
-            new PrintableTemplate(legalOrderDocument, "filename")
-        ));
+            new PrintableTemplate(legalOrderDocument, "filename")),
+            AUTHORISATION
+        );
 
         verify(sendLetterApi).sendLetter(eq(AUTH_VALUE), any(LetterWithPdfsRequest.class));
     }

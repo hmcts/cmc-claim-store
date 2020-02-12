@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd;
 
+import com.sun.tools.javac.util.List;
 import feign.FeignException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -31,6 +32,9 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintCollection;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintLetterType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
@@ -45,6 +49,7 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
@@ -1129,7 +1134,7 @@ public class CoreCaseDataService {
 
     public Claim saveBulkPrintLetterIdToClaim(
         String authorisation,
-        String bulkPrintLetterId,
+        BulkPrintCollection bulkPrintCollection,
         CaseEvent caseEvent,
         Long caseId
     ) {
@@ -1146,7 +1151,7 @@ public class CoreCaseDataService {
             );
 
             Claim updatedClaim = toClaimBuilder(startEventResponse)
-                .bulkPrintLetterId(bulkPrintLetterId)
+                .bulkPrintCollection(bulkPrintCollection)
                 .build();
 
             CaseDataContent caseDataContent = caseDataContent(startEventResponse, updatedClaim);

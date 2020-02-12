@@ -87,7 +87,8 @@ public class LegalOrderServiceTest {
             new DirectionsOrderReadyToPrintEvent(
                 claim,
                 coverSheetForClaimant,
-                legalOrder));
+                legalOrder,
+                BEARER_TOKEN));
 
         Document coverSheetForDefendant = new Document(
             "coverSheet",
@@ -96,7 +97,8 @@ public class LegalOrderServiceTest {
             new DirectionsOrderReadyToPrintEvent(
                 claim,
                 coverSheetForDefendant,
-                legalOrder));
+                legalOrder,
+                BEARER_TOKEN));
     }
 
     @Test(expected = Exception.class)

@@ -15,6 +15,9 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.livesupport.BulkPrintNotificationService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintCollection;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintLetterType;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.reform.sendletter.api.Document;
@@ -55,6 +58,7 @@ public class BulkPrintService implements PrintService {
     private final BulkPrintNotificationService bulkPrintNotificationService;
     private final PDFServiceClient pdfServiceClient;
     private final ClaimService claimService;
+    private final BulkPrintCollection bulkPrintCollection;
 
     @Autowired
     public BulkPrintService(
@@ -63,7 +67,8 @@ public class BulkPrintService implements PrintService {
         BulkPrintNotificationService bulkPrintNotificationService,
         AppInsights appInsights,
         PDFServiceClient pdfServiceClient,
-        ClaimService claimService
+        ClaimService claimService,
+        BulkPrintCollection bulkPrintCollection
     ) {
         this.sendLetterApi = sendLetterApi;
         this.authTokenGenerator = authTokenGenerator;
@@ -71,6 +76,7 @@ public class BulkPrintService implements PrintService {
         this.bulkPrintNotificationService = bulkPrintNotificationService;
         this.pdfServiceClient = pdfServiceClient;
         this.claimService = claimService;
+        this.bulkPrintCollection = bulkPrintCollection;
     }
 
     @LogExecutionTime
@@ -95,9 +101,16 @@ public class BulkPrintService implements PrintService {
             )
         );
 
+        bulkPrintCollection.addBulkPrintDetails(
+            BulkPrintDetails.builder()
+                .bulkPrintLetterId(sendLetterResponse.letterId.toString())
+                .bulkPrintLetterType(BulkPrintLetterType.CLAIM_ISSUED)
+                .build()
+        );
+
         claimService.saveBulkPrintLetterId(
             authorisation,
-            sendLetterResponse.letterId.toString(),
+            bulkPrintCollection,
             CaseEvent.UPDATE_BULK_PRINT_LETTER_ID,
             claim
         );
@@ -148,9 +161,16 @@ public class BulkPrintService implements PrintService {
             )
         );
 
+        bulkPrintCollection.addBulkPrintDetails(
+            BulkPrintDetails.builder()
+                .bulkPrintLetterId(sendLetterResponse.letterId.toString())
+                .bulkPrintLetterType(BulkPrintLetterType.ORDER_ISSUED)
+                .build()
+        );
+
         claimService.saveBulkPrintLetterId(
             authorisation,
-            sendLetterResponse.letterId.toString(),
+            bulkPrintCollection,
             CaseEvent.UPDATE_BULK_PRINT_LETTER_ID,
             claim
         );

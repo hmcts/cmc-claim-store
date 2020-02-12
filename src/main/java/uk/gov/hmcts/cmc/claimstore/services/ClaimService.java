@@ -30,6 +30,7 @@ import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintCollection;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
@@ -396,13 +397,13 @@ public class ClaimService {
 
     public Claim saveBulkPrintLetterId(
         String authorisation,
-        String bulkPrintLetterId,
+        BulkPrintCollection bulkPrintCollection,
         CaseEvent caseEvent,
         Claim claim
     ) {
         return caseRepository.updateBulkPrintLetterIdToClaim(
             authorisation,
-            bulkPrintLetterId,
+            bulkPrintCollection,
             caseEvent,
             claim
         );

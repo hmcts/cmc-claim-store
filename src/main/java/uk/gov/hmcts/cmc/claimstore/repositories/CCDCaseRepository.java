@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintCollection;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
@@ -244,13 +245,13 @@ public class CCDCaseRepository implements CaseRepository {
     @Override
     public Claim updateBulkPrintLetterIdToClaim(
         String authorisation,
-        String bulkPrintLetterId,
+        BulkPrintCollection bulkPrintCollection,
         CaseEvent caseEvent,
         Claim claim
     ) {
         return coreCaseDataService.saveBulkPrintLetterIdToClaim(
             authorisation,
-            bulkPrintLetterId,
+            bulkPrintCollection,
             caseEvent,
             claim.getId()
         );
