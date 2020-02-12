@@ -214,7 +214,7 @@ dependencies {
 
   compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '10.3.0'
 
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
 
   testCompile project(':domain-sample-data')
@@ -240,7 +240,7 @@ dependencies {
 
   testCompile group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
   testCompile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: '2.4.0'
-  testCompile group: 'net.jodah', name: 'failsafe', version: '2.3.1'
+  testCompile group: 'net.jodah', name: 'failsafe', version: '2.3.3'
 
 }
 
