@@ -4,8 +4,9 @@ import com.google.common.collect.ImmutableMap;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InjectMocks;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
@@ -23,10 +24,10 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ResetRpaCallbackHandlerTest {
     private static final String AUTHORISATION = "Bearer: aaa";
     private static final String EXTERNAL_ID = "external id";
@@ -44,9 +45,6 @@ public class ResetRpaCallbackHandlerTest {
     private static final String INVALID = "INVALID";
     private CallbackRequest callbackRequest;
 
-    @InjectMocks
-    private ResetRpaCallbackHandler resetRpaCallbackHandler;
-
     @Mock
     private CaseMapper caseMapper;
 
@@ -56,14 +54,12 @@ public class ResetRpaCallbackHandlerTest {
     @Mock
     private RoboticsNotificationService roboticsNotificationService;
 
+    private ResetRpaCallbackHandler resetRpaCallbackHandler;
+
     @Before
     public void setup() {
-        caseMapper = mock(CaseMapper.class);
-        caseDetailsConverter = mock(CaseDetailsConverter.class);
-        roboticsNotificationService = mock(RoboticsNotificationService.class);
         resetRpaCallbackHandler = new ResetRpaCallbackHandler(caseDetailsConverter,
             caseMapper, roboticsNotificationService);
-
         when(caseMapper.to(any(Claim.class))).thenReturn(getCcdCase());
         when(caseDetailsConverter.convertToMap(any(CCDCase.class))).thenReturn(getCcdCaseMap());
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(getClaim());
@@ -81,7 +77,6 @@ public class ResetRpaCallbackHandlerTest {
 
     @Test
     public void shouldResetRpaWhenValidMoreTimeEventSent() {
-        when(roboticsNotificationService.rpaClaimNotification(anyString())).thenReturn(REFERENCE);
         callbackRequest = getCallbackRequest(MORE_TIME);
         AboutToStartOrSubmitCallbackResponse response
             = (AboutToStartOrSubmitCallbackResponse) resetRpaCallbackHandler.handle(getCallbackParams(callbackRequest));
@@ -91,7 +86,6 @@ public class ResetRpaCallbackHandlerTest {
 
     @Test
     public void shouldResetRpaWhenValidCcjEventSent() {
-        when(roboticsNotificationService.rpaClaimNotification(anyString())).thenReturn(REFERENCE);
         callbackRequest = getCallbackRequest(CCJ);
         AboutToStartOrSubmitCallbackResponse response
             = (AboutToStartOrSubmitCallbackResponse) resetRpaCallbackHandler.handle(getCallbackParams(callbackRequest));
@@ -101,7 +95,6 @@ public class ResetRpaCallbackHandlerTest {
 
     @Test
     public void shouldResetRpaWhenValidDefendantResponseEventSent() {
-        when(roboticsNotificationService.rpaClaimNotification(anyString())).thenReturn(REFERENCE);
         callbackRequest = getCallbackRequest(DEFENDANT_RESPONSE);
         AboutToStartOrSubmitCallbackResponse response
             = (AboutToStartOrSubmitCallbackResponse) resetRpaCallbackHandler.handle(getCallbackParams(callbackRequest));
@@ -111,7 +104,6 @@ public class ResetRpaCallbackHandlerTest {
 
     @Test
     public void shouldResetRpaWhenValidPaidInFullEventSent() {
-        when(roboticsNotificationService.rpaClaimNotification(anyString())).thenReturn(REFERENCE);
         callbackRequest = getCallbackRequest(PAID_IN_FULL);
         AboutToStartOrSubmitCallbackResponse response
             = (AboutToStartOrSubmitCallbackResponse) resetRpaCallbackHandler.handle(getCallbackParams(callbackRequest));
@@ -121,7 +113,6 @@ public class ResetRpaCallbackHandlerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowBadRequestExceptionWhenInvalidEventSent() {
-        when(roboticsNotificationService.rpaClaimNotification(anyString())).thenReturn(REFERENCE);
         callbackRequest = getCallbackRequest(INVALID);
         resetRpaCallbackHandler.handle(getCallbackParams(callbackRequest));
     }

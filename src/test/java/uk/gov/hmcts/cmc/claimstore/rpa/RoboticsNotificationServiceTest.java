@@ -2,8 +2,9 @@ package uk.gov.hmcts.cmc.claimstore.rpa;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InjectMocks;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsExceptionLogger;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentGenerator;
@@ -33,14 +34,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class RoboticsNotificationServiceTest {
 
-    @InjectMocks
     RoboticsNotificationServiceImpl roboticsNotificationService;
     @Mock
     private UserService userService;
@@ -74,15 +74,6 @@ public class RoboticsNotificationServiceTest {
 
     @Before
     public void setup() {
-        userService = mock(UserService.class);
-        claimService = mock(ClaimService.class);
-        moreTimeRequestedNotificationService = mock(MoreTimeRequestedNotificationService.class);
-        ccjNotificationService = mock(RequestForJudgementNotificationService.class);
-        responseDeadlineCalculator = mock(ResponseDeadlineCalculator.class);
-        appInsightsExceptionLogger = mock(AppInsightsExceptionLogger.class);
-        documentGenerator = mock(DocumentGenerator.class);
-        defenceResponseNotificationService = mock(DefenceResponseNotificationService.class);
-        paidInFullNotificationService = mock(PaidInFullNotificationService.class);
         roboticsNotificationService = new RoboticsNotificationServiceImpl(claimService,
             userService, moreTimeRequestedNotificationService, defenceResponseNotificationService,
             ccjNotificationService, paidInFullNotificationService,
@@ -136,8 +127,6 @@ public class RoboticsNotificationServiceTest {
                 .withReferenceNumber(REFERENCE_NUMBER)
                 .withMoneyReceivedOn(LocalDate.now())
                 .build()));
-        doNothing()
-            .when(ccjNotificationService).notifyRobotics(any(CountyCourtJudgmentEvent.class));
         String response = roboticsNotificationService.rpaPIFNotifications(REFERENCE_NUMBER);
         assertThat(response, is(RPA_STATE_SUCCEEDED));
         verify(paidInFullNotificationService, times(1))
@@ -204,8 +193,6 @@ public class RoboticsNotificationServiceTest {
         when(claimService.getClaimByReference(anyString(), anyString()))
             .thenReturn(Optional.of(SampleClaim.builder()
                 .withReferenceNumber(REFERENCE_NUMBER).build()));
-        doNothing()
-            .when(ccjNotificationService).notifyRobotics(any(CountyCourtJudgmentEvent.class));
         roboticsNotificationService.rpaCCJNotifications(REFERENCE_NUMBER);
     }
 
@@ -213,8 +200,6 @@ public class RoboticsNotificationServiceTest {
     public void shouldThrowExceptionWhenNoClaimForReferenceFound() {
         when(claimService.getClaimByReference(anyString(), anyString()))
             .thenReturn(Optional.of(SampleClaim.builder().build()));
-        doNothing()
-            .when(ccjNotificationService).notifyRobotics(any(CountyCourtJudgmentEvent.class));
         roboticsNotificationService.rpaCCJNotifications(REFERENCE_NUMBER);
     }
 }
