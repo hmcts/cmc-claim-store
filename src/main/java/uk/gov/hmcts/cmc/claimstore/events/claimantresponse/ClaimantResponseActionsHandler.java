@@ -16,6 +16,8 @@ import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isOptedForMediation;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper.isOptedForMediation;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.REJECTION;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isFullDefenceDispute;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseFullDefenceStatesPaid;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseStatesPaid;
 
 @Component
@@ -75,9 +77,10 @@ public class ClaimantResponseActionsHandler {
 
     private boolean hasClaimantSettledForFullDefense(Claim claim) {
         ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
-        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+        Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
         return claimantResponse.getType() == ClaimantResponseType.ACCEPTATION
-            && response.getResponseType() == ResponseType.FULL_DEFENCE;
+            && response.getResponseType() == ResponseType.FULL_DEFENCE
+            && (isResponseFullDefenceStatesPaid(response) || isFullDefenceDispute(response));
     }
 
     @EventListener
