@@ -284,7 +284,7 @@ public class Claim {
     }
 
     public Optional<BulkPrintCollection> getBulkPrintCollection() {
-        return Optional.of(bulkPrintCollection);
+        return Optional.ofNullable(bulkPrintCollection);
     }
 
     @Override

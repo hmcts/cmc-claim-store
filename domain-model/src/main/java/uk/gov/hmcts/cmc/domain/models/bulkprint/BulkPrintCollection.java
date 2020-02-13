@@ -1,8 +1,5 @@
 package uk.gov.hmcts.cmc.domain.models.bulkprint;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
