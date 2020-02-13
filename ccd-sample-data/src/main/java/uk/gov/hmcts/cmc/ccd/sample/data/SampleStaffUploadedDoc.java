@@ -83,7 +83,6 @@ class SampleStaffUploadedDoc {
                             .documentType(CCDClaimDocumentType.MEDIATION_AGREEMENT).build())
                     .build());
 
-
     static final List<CCDCollectionElement<CCDClaimDocument>> StaffDocPDFMediationSecond = Arrays.asList(
             CCDCollectionElement.<CCDClaimDocument>builder()
                     .id("2323-2342-34-2-352")
@@ -131,7 +130,6 @@ class SampleStaffUploadedDoc {
                             )
                             .documentType(CCDClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT).build())
                     .build());
-
 
     static final List<CCDCollectionElement<CCDScannedDocument>> scannedDocsPaperResponse = Collections.singletonList(
         CCDCollectionElement.<CCDScannedDocument>builder()
