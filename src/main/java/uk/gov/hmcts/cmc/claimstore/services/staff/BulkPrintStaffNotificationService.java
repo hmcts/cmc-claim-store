@@ -1,8 +1,8 @@
-package uk.gov.hmcts.cmc.claimstore.services.livesupport;
+package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.claimstore.config.properties.emails.LiveSupportEmailProperties;
+import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.Printable;
 import uk.gov.hmcts.cmc.claimstore.documents.content.bulkprint.BulkPrintEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
@@ -20,20 +20,19 @@ import java.util.stream.Collectors;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service
-public class BulkPrintNotificationService {
+public class BulkPrintStaffNotificationService {
 
     private final EmailService emailService;
-    private final LiveSupportEmailProperties emailProperties;
+    private final StaffEmailProperties emailProperties;
     private final BulkPrintEmailContentProvider emailContentProvider;
     private final PDFServiceClient pdfServiceClient;
 
     @Autowired
-    public BulkPrintNotificationService(
+    public BulkPrintStaffNotificationService(
         EmailService emailService,
-        LiveSupportEmailProperties emailProperties,
+        StaffEmailProperties emailProperties,
         BulkPrintEmailContentProvider emailContentProvider,
-        PDFServiceClient pdfServiceClient
-    ) {
+        PDFServiceClient pdfServiceClient) {
         this.emailService = emailService;
         this.emailProperties = emailProperties;
         this.emailContentProvider = emailContentProvider;
