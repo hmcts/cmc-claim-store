@@ -630,8 +630,7 @@ public class SampleData {
             .expertReportPermissionPartyAskedByClaimant(YES)
             .expertReportPermissionPartyAskedByDefendant(YES)
             .grantExpertReportPermission(YES)
-            .expertReportInstruction(ImmutableList.of(CCDCollectionElement.<String>builder()
-                .value(SUBMIT_MORE_DOCS_INSTRUCTION).build()))
+            .expertReportInstruction(SUBMIT_MORE_DOCS_INSTRUCTION)
             .build();
     }
 

@@ -155,8 +155,7 @@ public class DocAssemblyTemplateBodyMapperTest {
             .expertReportPermissionPartyAskedByClaimant(true)
             .expertReportPermissionPartyAskedByDefendant(true)
             .grantExpertReportPermission(true)
-            .expertReportInstruction(ImmutableList.of(CCDCollectionElement.<String>builder()
-                .value(SUBMIT_MORE_DOCS_INSTRUCTION).build()));
+            .expertReportInstruction(SUBMIT_MORE_DOCS_INSTRUCTION);
 
         //when
         when(clock.instant()).thenReturn(LocalDate.parse("2019-04-24")
@@ -239,8 +238,7 @@ public class DocAssemblyTemplateBodyMapperTest {
             .expertReportPermissionPartyAskedByClaimant(true)
             .expertReportPermissionPartyAskedByDefendant(true)
             .grantExpertReportPermission(true)
-            .expertReportInstruction(ImmutableList.of(CCDCollectionElement.<String>builder()
-                .value(SUBMIT_MORE_DOCS_INSTRUCTION).build()))
+            .expertReportInstruction(SUBMIT_MORE_DOCS_INSTRUCTION)
             .build();
 
         assertThat(requestBody).isEqualTo(expectedBody);

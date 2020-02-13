@@ -9,7 +9,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
@@ -18,8 +17,6 @@ import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.function.Consumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
@@ -58,20 +55,10 @@ public class DirectionOrderMapperTest {
         assertEnumNames(directionOrder.getExpertReportPermissionAskedByDefendant(),
             ccdCase.getExpertReportPermissionPartyAskedByDefendant());
 
-        directionOrder.getExpertReportInstruction()
-            .forEach(assertInstructions(ccdCase.getExpertReportInstruction()));
     }
 
     private void assertEnumNames(YesNoOption input, CCDYesNoOption expected) {
         assertThat(input.name()).isEqualTo(expected.name());
-    }
-
-    private Consumer<String> assertInstructions(List<CCDCollectionElement<String>> expertReportInstruction) {
-        return instruction -> assertThat(expertReportInstruction
-            .stream()
-            .map(CCDCollectionElement::getValue)
-            .anyMatch(value -> value.equals(instruction))
-        ).isTrue();
     }
 
     @Test

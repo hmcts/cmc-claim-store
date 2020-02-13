@@ -121,8 +121,7 @@ public class CCDCase {
     private CCDYesNoOption expertReportPermissionPartyAskedByDefendant;
     private CCDYesNoOption grantExpertReportPermission;
 
-    @Builder.Default
-    private List<CCDCollectionElement<String>> expertReportInstruction = Collections.emptyList();
+    private String expertReportInstruction;
 
     private CCDDirectionOrder directionOrder;
     private CCDReviewOrder reviewOrder;

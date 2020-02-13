@@ -56,6 +56,5 @@ public class CCDOrderGenerationData {
     private CCDYesNoOption expertReportPermissionPartyAskedByDefendant;
     private CCDYesNoOption grantExpertReportPermission;
 
-    @Builder.Default
-    private List<CCDCollectionElement<String>> expertReportInstruction = Collections.emptyList();
+    private String expertReportInstruction;
 }

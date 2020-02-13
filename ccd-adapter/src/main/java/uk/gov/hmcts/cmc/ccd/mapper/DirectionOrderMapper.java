@@ -70,8 +70,7 @@ public class DirectionOrderMapper {
             .extraDocUploadList(ccdCase.getExtraDocUploadList().stream()
                 .map(CCDCollectionElement::getValue)
                 .collect(Collectors.toList()))
-            .expertReportInstruction(ccdCase.getExpertReportInstruction()
-                .stream().map(CCDCollectionElement::getValue).collect(Collectors.toList()))
+            .expertReportInstruction(ccdCase.getExpertReportInstruction())
             .build();
 
         addUploadDocumentDirection(ccdCase, directionOrder);

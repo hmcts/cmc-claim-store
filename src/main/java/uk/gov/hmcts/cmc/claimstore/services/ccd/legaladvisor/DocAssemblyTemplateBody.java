@@ -83,5 +83,5 @@ public class DocAssemblyTemplateBody implements FormPayload {
     private boolean expertReportPermissionPartyAskedByClaimant;
     private boolean expertReportPermissionPartyAskedByDefendant;
     private boolean grantExpertReportPermission;
-    private List<CCDCollectionElement<String>> expertReportInstruction;
+    private String expertReportInstruction;
 }

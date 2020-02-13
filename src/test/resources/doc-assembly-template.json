@@ -89,10 +89,5 @@
   "expertReportPermissionPartyAskedByClaimant": true,
   "expertReportPermissionPartyAskedByDefendant": true,
   "grantExpertReportPermission": true,
-  "expertReportInstruction": [
-    {
-      "id": null,
-      "value": "submit more docs"
-    }
-  ],
+  "expertReportInstruction": "submit more docs"
 }

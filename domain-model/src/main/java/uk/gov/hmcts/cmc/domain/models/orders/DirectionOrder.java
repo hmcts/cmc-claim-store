@@ -29,7 +29,7 @@ public class DirectionOrder {
     private YesNoOption grantExpertReportPermission;
     private YesNoOption expertReportPermissionAskedByClaimant;
     private YesNoOption expertReportPermissionAskedByDefendant;
-    private List<String> expertReportInstruction;
+    private String expertReportInstruction;
     private LocalDateTime createdOn;
 
     public void addDirection(Direction direction) {
