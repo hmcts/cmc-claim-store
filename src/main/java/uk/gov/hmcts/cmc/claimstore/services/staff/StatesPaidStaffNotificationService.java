@@ -63,8 +63,10 @@ public class StatesPaidStaffNotificationService {
     public static Map<String, Object> wrapInMap(Claim claim) {
 
         Map<String, Object> map = new HashMap<>();
-        Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
-        ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalArgumentException::new);
+        Response response = claim.getResponse()
+            .orElseThrow(() -> new IllegalArgumentException("Missing response"));
+        ClaimantResponse claimantResponse = claim.getClaimantResponse()
+            .orElseThrow(() -> new IllegalArgumentException("Missing claimant response"));
 
         map.put("claim", claim);
         map.put("response", response);

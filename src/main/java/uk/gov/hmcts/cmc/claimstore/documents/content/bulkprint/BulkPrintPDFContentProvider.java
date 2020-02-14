@@ -27,8 +27,11 @@ public class BulkPrintPDFContentProvider {
     public Map<String, Object> createContent(Claim claim) {
         requireNonNull(claim);
 
-        Offer acceptedOffer = claim.getSettlement().orElseThrow(IllegalArgumentException::new)
-            .getLastStatementOfType(StatementType.OFFER).getOffer().orElseThrow(IllegalArgumentException::new);
+        Offer acceptedOffer = claim.getSettlement()
+            .orElseThrow(() -> new IllegalArgumentException("Missing settlement"))
+            .getLastStatementOfType(StatementType.OFFER)
+            .getOffer()
+            .orElseThrow(() -> new IllegalArgumentException("Missing offer"));
         Map<String, Object> content = new HashMap<>();
         content.put("settlementReachedAt", formatDateTime(claim.getSettlementReachedAt()));
         content.put("acceptedOffer", acceptedOffer.getContent());
@@ -36,7 +39,9 @@ public class BulkPrintPDFContentProvider {
         content.put("claim", claim);
         content.put("claimant", claim.getClaimData().getClaimant());
         content.put("defendant", partyDetailsContentProvider.createContent(
-            claim.getResponse().orElseThrow(IllegalStateException::new).getDefendant(),
+            claim.getResponse()
+                .orElseThrow(() -> new IllegalStateException("Missing response"))
+                .getDefendant(),
             claim.getDefendantEmail()
         ));
         return content;

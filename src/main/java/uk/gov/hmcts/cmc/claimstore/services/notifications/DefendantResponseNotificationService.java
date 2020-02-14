@@ -85,7 +85,8 @@ public class DefendantResponseNotificationService {
         Claim claim,
         String reference
     ) {
-        Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
+        Response response = claim.getResponse()
+            .orElseThrow(() -> new IllegalArgumentException("Missing response"));
         Map<String, String> parameters = aggregateParams(claim, response);
 
         String emailTemplate = getClaimantEmailTemplate(claim, response);

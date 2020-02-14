@@ -50,10 +50,14 @@ public class FullDefenceStaffEmailContentProviderTest {
     public void shouldUseRequiredFieldsInTheBody() {
         Claim claim = SampleClaim.getWithDefaultResponse();
         EmailContent content = service.createContent(wrapInMap(claim, DEFENDANT_EMAIL));
+        String expectedPhone = claim.getResponse()
+            .orElseThrow(() -> new IllegalStateException("Missing response"))
+            .getDefendant()
+            .getPhone()
+            .orElseThrow(() -> new IllegalStateException("Missing defendant phone"));
         assertThat(content.getBody())
             .contains("Email: " + DEFENDANT_EMAIL)
-            .contains("Phone number: " + claim.getResponse().orElseThrow(IllegalStateException::new).getDefendant()
-                .getPhone().orElseThrow(IllegalStateException::new));
+            .contains("Phone number: " + expectedPhone);
     }
 
     @Test

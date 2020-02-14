@@ -74,10 +74,12 @@ public class DirectionsQuestionnaireUtils {
         }
 
         if (isDefendantBusiness(claim.getClaimData().getDefendant())) {
-            ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
+            ClaimantResponse claimantResponse = claim.getClaimantResponse()
+                .orElseThrow(() -> new IllegalStateException("Missing claimant response"));
             return getClaimantHearingCourt(claimantResponse);
         } else {
-            Response defendantResponse = claim.getResponse().orElseThrow(IllegalStateException::new);
+            Response defendantResponse = claim.getResponse()
+                .orElseThrow(() -> new IllegalStateException("Missing response"));
             return getDefendantHearingCourt(defendantResponse);
         }
     }
@@ -87,12 +89,12 @@ public class DirectionsQuestionnaireUtils {
             return ((FullDefenceResponse) defendantResponse).getDirectionsQuestionnaire()
                 .flatMap(DirectionsQuestionnaire::getHearingLocation)
                 .map(HearingLocation::getCourtName)
-                .orElseThrow(IllegalStateException::new);
+                .orElseThrow(() -> new IllegalStateException("Missing DQ hearing location"));
         } else if (defendantResponse.getResponseType() == PART_ADMISSION) {
             return ((PartAdmissionResponse) defendantResponse).getDirectionsQuestionnaire()
                 .flatMap(DirectionsQuestionnaire::getHearingLocation)
                 .map(HearingLocation::getCourtName)
-                .orElseThrow(IllegalStateException::new);
+                .orElseThrow(() -> new IllegalStateException("Missing DQ hearing location"));
         } else {
             throw new IllegalStateException("No preferred court as defendant response is full admission");
         }
@@ -103,7 +105,7 @@ public class DirectionsQuestionnaireUtils {
             return ((ResponseRejection) claimantResponse).getDirectionsQuestionnaire()
                 .flatMap(DirectionsQuestionnaire::getHearingLocation)
                 .map(HearingLocation::getCourtName)
-                .orElseThrow(IllegalStateException::new);
+                .orElseThrow(() -> new IllegalStateException("Missing DQ hearing location"));
         } else {
             throw new IllegalStateException("No preferred court as claimant response is not rejection.");
         }

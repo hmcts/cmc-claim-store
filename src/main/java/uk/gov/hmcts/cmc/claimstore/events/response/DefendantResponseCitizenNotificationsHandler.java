@@ -35,7 +35,9 @@ public class DefendantResponseCitizenNotificationsHandler {
     }
 
     private boolean isAdmissionResponse(Claim claim) {
-        ResponseType responseType = claim.getResponse().orElseThrow(IllegalArgumentException::new).getResponseType();
+        ResponseType responseType = claim.getResponse()
+            .orElseThrow(() -> new IllegalArgumentException("Missing response"))
+            .getResponseType();
         return responseType == ResponseType.FULL_ADMISSION || responseType == ResponseType.PART_ADMISSION;
     }
 

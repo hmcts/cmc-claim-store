@@ -188,7 +188,8 @@ public class ClaimService {
 
         Claim createdClaim = caseRepository.initiatePayment(user, claim);
 
-        Payment payment = createdClaim.getClaimData().getPayment().orElseThrow(IllegalStateException::new);
+        Payment payment = createdClaim.getClaimData().getPayment()
+            .orElseThrow(() -> new IllegalStateException("Missing payment"));
         return CreatePaymentResponse.builder()
             .nextUrl(payment.getNextUrl())
             .build();
@@ -204,7 +205,8 @@ public class ClaimService {
 
         Claim resumedClaim = caseRepository.saveCaseEventIOC(user, claim, RESUME_CLAIM_PAYMENT_CITIZEN);
 
-        Payment payment = resumedClaim.getClaimData().getPayment().orElseThrow(IllegalStateException::new);
+        Payment payment = resumedClaim.getClaimData().getPayment()
+            .orElseThrow(() -> new IllegalStateException("Missing payment"));
 
         return CreatePaymentResponse.builder()
             .nextUrl(

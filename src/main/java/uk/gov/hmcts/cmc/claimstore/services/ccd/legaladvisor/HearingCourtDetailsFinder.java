@@ -19,6 +19,6 @@ public class HearingCourtDetailsFinder {
             .stream()
             .findFirst()
             .map(hearingCourtMapper::from)
-            .orElseThrow(IllegalArgumentException::new);
+            .orElseThrow(() -> new IllegalArgumentException("No court found for " + courtType.name() + " court type"));
     }
 }

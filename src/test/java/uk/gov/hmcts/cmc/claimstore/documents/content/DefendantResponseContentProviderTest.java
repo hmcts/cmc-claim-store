@@ -89,11 +89,14 @@ public class DefendantResponseContentProviderTest {
     public void shouldProvideResponseDefence() {
         Map<String, Object> content = provider.createContent(claim);
 
+        List<String> expected = ((FullDefenceResponse) claim.getResponse()
+            .orElseThrow(() -> new AssertionError("Missing response")))
+            .getDefence()
+            .map(ImmutableList::of)
+            .map(immutableList -> (List<String>) immutableList)
+            .orElseGet(Collections::emptyList);
         assertThat(content)
-            .containsEntry("responseDefence",
-                ((FullDefenceResponse) claim.getResponse().orElseThrow(IllegalStateException::new))
-                    .getDefence().map(ImmutableList::of).map(List.class::cast).orElseGet(Collections::emptyList)
-            );
+            .containsEntry("responseDefence", expected);
     }
 
     @Test

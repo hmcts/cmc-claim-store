@@ -61,7 +61,8 @@ public class PaymentsService {
         logger.info("Retrieving payment amount for claim with external id {}",
             claim.getExternalId());
 
-        Payment claimPayment = claim.getClaimData().getPayment().orElseThrow(IllegalStateException::new);
+        Payment claimPayment = claim.getClaimData().getPayment()
+            .orElseThrow(() -> new IllegalStateException("Missing payment"));
 
         return from(paymentsClient.retrievePayment(authorisation, claimPayment.getReference()),
             claimPayment.getNextUrl()
@@ -76,7 +77,8 @@ public class PaymentsService {
         logger.info("Calculating interest amount for claim with external id {}",
             claim.getExternalId());
 
-        BigDecimal amount = claim.getTotalClaimAmount().orElseThrow(IllegalStateException::new);
+        BigDecimal amount = claim.getTotalClaimAmount()
+            .orElseThrow(() -> new IllegalStateException("Missing total claim amount"));
         BigDecimal interest = claim.getTotalInterest().orElse(BigDecimal.ZERO);
 
         BigDecimal amountPlusInterest = amount.add(interest);

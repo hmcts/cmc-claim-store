@@ -57,7 +57,9 @@ public class DefendantResponseStaffNotificationService {
         Claim claim,
         String defendantEmail
     ) {
-        ResponseType responseType = claim.getResponse().orElseThrow(IllegalArgumentException::new).getResponseType();
+        ResponseType responseType = claim.getResponse()
+            .orElseThrow(() -> new IllegalArgumentException("Missing response"))
+            .getResponseType();
         EmailContent emailContent;
 
         emailContent = isFullAdmission(responseType) || isPartAdmission(responseType)
@@ -89,7 +91,8 @@ public class DefendantResponseStaffNotificationService {
     ) {
         Map<String, Object> map = new HashMap<>();
 
-        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+        Response response = claim.getResponse()
+            .orElseThrow(() -> new IllegalStateException("Missing response"));
         map.put("claim", claim);
         map.put("response", response);
         map.put("defendantEmail", defendantEmail);

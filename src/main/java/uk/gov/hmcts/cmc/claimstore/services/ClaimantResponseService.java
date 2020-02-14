@@ -86,7 +86,7 @@ public class ClaimantResponseService {
         Claim claim = claimService.getClaimByExternalId(externalId, authorization);
         claimantResponseRule.assertCanBeRequested(claim, claimantId);
 
-        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+        Response response = claim.getResponse().orElseThrow(() -> new IllegalStateException("Missing response"));
         if (claim.getState().equals(ClaimState.STAYED) && ResponseUtils.isAdmissionResponse(response)) {
             claim = caseRepository.saveCaseEvent(authorization, claim, LIFT_STAY);
         }

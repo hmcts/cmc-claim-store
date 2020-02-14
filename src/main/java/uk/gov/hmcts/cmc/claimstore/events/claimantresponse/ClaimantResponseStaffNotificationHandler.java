@@ -43,11 +43,13 @@ public class ClaimantResponseStaffNotificationHandler {
     @EventListener
     public void onClaimantResponse(ClaimantResponseEvent event) {
         Claim claim = event.getClaim();
-        Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
+        Response response = claim.getResponse()
+            .orElseThrow(() -> new IllegalArgumentException("Missing response"));
         if (isResponseFullDefenceStatesPaid(response)) {
             this.statesPaidStaffNotificationService.notifyStaffClaimantResponseStatesPaidSubmittedFor(claim);
         }
-        ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalArgumentException::new);
+        ClaimantResponse claimantResponse = claim.getClaimantResponse()
+            .orElseThrow(() -> new IllegalArgumentException("Missing claimant response"));
         if (isPartAdmission(response) && claimantResponse.getType() == ClaimantResponseType.REJECTION) {
             claimantRejectionStaffNotificationService.notifyStaffClaimantRejectPartAdmission(claim);
         }
@@ -63,7 +65,7 @@ public class ClaimantResponseStaffNotificationHandler {
     @EventListener
     public void notifyStaffWithClaimantsIntentionToProceed(ClaimantResponseEvent event) {
         ClaimantResponse claimantResponse = event.getClaim().getClaimantResponse()
-            .orElseThrow(IllegalArgumentException::new);
+            .orElseThrow(() -> new IllegalArgumentException("Missing claimant response"));
 
         if (isIntentToProceed(claimantResponse)) {
             claimantRejectionStaffNotificationService.notifyStaffWithClaimantsIntentionToProceed(event.getClaim());

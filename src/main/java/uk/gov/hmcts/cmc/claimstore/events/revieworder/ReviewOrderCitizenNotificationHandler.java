@@ -29,7 +29,8 @@ public class ReviewOrderCitizenNotificationHandler {
 
     @EventListener
     public void onReviewOrderEvent(ReviewOrderEvent event) {
-        ReviewOrder reviewOrder = event.getClaim().getReviewOrder().orElseThrow(IllegalArgumentException::new);
+        ReviewOrder reviewOrder = event.getClaim().getReviewOrder()
+            .orElseThrow(() -> new IllegalArgumentException("Missing review order"));
         if (null == reviewOrder.getRequestedBy()) {
             throw new IllegalArgumentException("RequestedBy can't be null");
         }

@@ -19,6 +19,7 @@ import java.util.Map;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDateTime;
+import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.CCJ;
 
 @Component
 public class ClaimantResponseContentProvider {
@@ -54,11 +55,13 @@ public class ClaimantResponseContentProvider {
             content.put("claimantSubmittedDate", formatDate(respondedAt));
         });
 
-        ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
+        ClaimantResponse claimantResponse = claim.getClaimantResponse()
+            .orElseThrow(() -> new IllegalStateException("Missing claimant response"));
         content.put("amountPaid", claimantResponse.getAmountPaid());
         content.put("responseDashboardUrl", notificationsProperties.getFrontendBaseUrl());
 
-        Response defendantResponse = claim.getResponse().orElseThrow(IllegalStateException::new);
+        Response defendantResponse = claim.getResponse()
+            .orElseThrow(() -> new IllegalStateException("Missing response"));
         content.put("defendant", partyDetailsContentProvider.createContent(
             claim.getClaimData().getDefendant(),
             defendantResponse.getDefendant(),
@@ -109,16 +112,10 @@ public class ClaimantResponseContentProvider {
         Map<String, Object> content,
         ResponseAcceptation responseAcceptation
     ) {
-        switch (responseAcceptation.getFormaliseOption().orElseThrow(IllegalArgumentException::new)) {
-            case CCJ:
-                content.put("ccj", claim.getCountyCourtJudgment());
-                break;
-            case SETTLEMENT:
-            case REFER_TO_JUDGE:
-                //No Action
-                break;
-            default:
-                throw new MappingException("Invalid formalization type " + responseAcceptation.getFormaliseOption());
+        FormaliseOption formalisationOption = responseAcceptation.getFormaliseOption()
+            .orElseThrow(() -> new IllegalArgumentException("Missing formalisation option"));
+        if (formalisationOption == CCJ) {
+            content.put("ccj", claim.getCountyCourtJudgment());
         }
     }
 }

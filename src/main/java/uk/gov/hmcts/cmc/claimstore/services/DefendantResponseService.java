@@ -115,7 +115,7 @@ public class DefendantResponseService {
                 }
 
                 paymentOption = ((PartAdmissionResponse) response).getPaymentIntention()
-                    .orElseThrow(IllegalStateException::new)
+                    .orElseThrow(() -> new IllegalStateException("Missing payment intention"))
                     .getPaymentOption();
                 switch (paymentOption) {
                     case IMMEDIATELY:

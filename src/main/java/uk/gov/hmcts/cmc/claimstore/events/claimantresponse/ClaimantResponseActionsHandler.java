@@ -54,30 +54,38 @@ public class ClaimantResponseActionsHandler {
     }
 
     private boolean hasIntentionToProceedAndIsOnlineDq(Claim claim) {
-        ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
+        ClaimantResponse claimantResponse = claim.getClaimantResponse()
+            .orElseThrow(() -> new IllegalStateException("Missing claimant response"));
 
         return ClaimantResponseHelper.isIntentToProceed(claimantResponse)
             && FeaturesUtils.isOnlineDQ(claim);
     }
 
     private boolean hasIntentionToProceedAndIsPaperDq(Claim claim) {
-        ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
+        ClaimantResponse claimantResponse = claim.getClaimantResponse()
+            .orElseThrow(() -> new IllegalStateException("Missing claimant response"));
 
         return claimantResponse.getType() == REJECTION
             && !FeaturesUtils.isOnlineDQ(claim);
     }
 
     private boolean isFreeMediationConfirmed(Claim claim) {
-        ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
-        Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
+        ClaimantResponse claimantResponse = claim.getClaimantResponse()
+            .orElseThrow(() -> new IllegalStateException("Missing claimant response"));
+        Response response = claim.getResponse()
+            .orElseThrow(() -> new IllegalArgumentException("Missing response"));
+
         return claimantResponse.getType() == ClaimantResponseType.REJECTION
             && isOptedForMediation(claimantResponse)
             && isOptedForMediation(response);
     }
 
     private boolean hasClaimantSettledForFullDefense(Claim claim) {
-        ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
-        Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
+        ClaimantResponse claimantResponse = claim.getClaimantResponse()
+            .orElseThrow(() -> new IllegalStateException("Missing claimant response"));
+        Response response = claim.getResponse()
+            .orElseThrow(() -> new IllegalArgumentException("Missing response"));
+
         return claimantResponse.getType() == ClaimantResponseType.ACCEPTATION
             && response.getResponseType() == ResponseType.FULL_DEFENCE
             && (isResponseFullDefenceStatesPaid(response) || isFullDefenceDispute(response));
@@ -95,8 +103,11 @@ public class ClaimantResponseActionsHandler {
     }
 
     private boolean isRejectedStatesPaidOrPartAdmission(Claim claim) {
-        ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
-        Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
+        ClaimantResponse claimantResponse = claim.getClaimantResponse()
+            .orElseThrow(() -> new IllegalStateException("Missing claimant response"));
+        Response response = claim.getResponse()
+            .orElseThrow(() -> new IllegalArgumentException("Missing response"));
+
         return claimantResponse.getType() == ClaimantResponseType.REJECTION
             && (isResponseStatesPaid(response) || response.getResponseType() == ResponseType.PART_ADMISSION);
     }

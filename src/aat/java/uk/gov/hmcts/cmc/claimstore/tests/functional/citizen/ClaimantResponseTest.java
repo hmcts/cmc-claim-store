@@ -56,7 +56,7 @@ public class ClaimantResponseTest extends BaseTest {
 
         assertThat(claimWithClaimantResponse.getClaimantRespondedAt()).isNotEmpty();
         ResponseAcceptation claimantResponse = (ResponseAcceptation) claimWithClaimantResponse.getClaimantResponse()
-            .orElseThrow(AssertionError::new);
+            .orElseThrow(() -> new AssertionError("Missing claimant response"));
 
         assertThat(claimantResponse.getAmountPaid().orElse(ZERO)).isEqualByComparingTo(TEN);
     }
@@ -79,10 +79,10 @@ public class ClaimantResponseTest extends BaseTest {
     private void assertClaimantResponseFormaliseAsCCJ(Claim claimWithClaimantResponse) {
         assertThat(claimWithClaimantResponse.getClaimantRespondedAt()).isNotEmpty();
         ResponseAcceptation claimantResponse = (ResponseAcceptation) claimWithClaimantResponse.getClaimantResponse()
-            .orElseThrow(AssertionError::new);
+            .orElseThrow(() -> new AssertionError("Missing claimant response"));
 
-        assertThat(claimantResponse.getAmountPaid().orElse(ZERO)).isEqualByComparingTo(TEN);
-        assertThat(claimantResponse.getFormaliseOption().orElseThrow(AssertionError::new)).isEqualTo(CCJ);
+        assertThat(claimantResponse.getAmountPaid()).contains(TEN);
+        assertThat(claimantResponse.getFormaliseOption()).contains(CCJ);
         CountyCourtJudgment countyCourtJudgment = claimWithClaimantResponse.getCountyCourtJudgment();
         assertThat(countyCourtJudgment).isNotNull();
         assertThat(countyCourtJudgment.getPaymentOption()).isEqualTo(PaymentOption.BY_SPECIFIED_DATE);
@@ -146,10 +146,10 @@ public class ClaimantResponseTest extends BaseTest {
     private void assertClaimantResponseFormaliseAsSettlement(Claim claimWithClaimantResponse) {
         assertThat(claimWithClaimantResponse.getClaimantRespondedAt()).isNotEmpty();
         ResponseAcceptation claimantResponse = (ResponseAcceptation) claimWithClaimantResponse.getClaimantResponse()
-            .orElseThrow(AssertionError::new);
+            .orElseThrow(() -> new AssertionError("Missing claimant response"));
 
-        assertThat(claimantResponse.getAmountPaid().orElse(ZERO)).isEqualByComparingTo(TEN);
-        assertThat(claimantResponse.getFormaliseOption().orElseThrow(AssertionError::new)).isEqualTo(SETTLEMENT);
+        assertThat(claimantResponse.getAmountPaid()).contains(TEN);
+        assertThat(claimantResponse.getFormaliseOption()).contains(SETTLEMENT);
         assertThat(claimWithClaimantResponse.getCountyCourtJudgment()).isNull();
         assertThat(claimWithClaimantResponse.getSettlement()).isNotEmpty();
     }
@@ -169,10 +169,10 @@ public class ClaimantResponseTest extends BaseTest {
         assertThat(claimWithClaimantResponse.getClaimantRespondedAt()).isNotEmpty();
 
         ResponseRejection claimantResponse = (ResponseRejection) claimWithClaimantResponse.getClaimantResponse()
-            .orElseThrow(AssertionError::new);
+            .orElseThrow(() -> new AssertionError("Missing claimant response"));
 
         assertThat(claimantResponse.getFreeMediation()).isNotEmpty();
-        assertThat(claimantResponse.getAmountPaid().orElse(ZERO)).isEqualByComparingTo(TEN);
+        assertThat(claimantResponse.getAmountPaid()).contains(TEN);
     }
 
     private Claim createClaimWithResponse(Claim createdCase, User defendant) {

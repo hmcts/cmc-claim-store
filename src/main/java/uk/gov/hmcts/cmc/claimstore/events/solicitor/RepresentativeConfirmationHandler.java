@@ -34,7 +34,8 @@ public class RepresentativeConfirmationHandler {
             null,
             getEmailTemplates().getRepresentativeClaimIssued(),
             "representative-issue-notification-" + claim.getReferenceNumber(),
-            event.getRepresentativeName().orElseThrow(IllegalArgumentException::new));
+            event.getRepresentativeName()
+                .orElseThrow(() -> new IllegalArgumentException("Missing representative")));
     }
 
     private EmailTemplates getEmailTemplates() {

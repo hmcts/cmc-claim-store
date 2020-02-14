@@ -49,7 +49,8 @@ public class DefendantResponseContentProvider {
 
     public Map<String, Object> createContent(Claim claim) {
         requireNonNull(claim);
-        Response defendantResponse = claim.getResponse().orElseThrow(IllegalStateException::new);
+        Response defendantResponse = claim.getResponse()
+            .orElseThrow(() -> new IllegalStateException("Missing response"));
 
         Map<String, Object> content = new HashMap<>();
         Optional<StatementOfTruth> optionalStatementOfTruth = defendantResponse.getStatementOfTruth();

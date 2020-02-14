@@ -96,8 +96,10 @@ public class ClaimantRejectionStaffNotificationService {
 
     public static Map<String, Object> wrapInMap(Claim claim) {
         Map<String, Object> map = new HashMap<>();
-        Response defendantResponse = claim.getResponse().orElseThrow(IllegalStateException::new);
-        ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
+        Response defendantResponse = claim.getResponse()
+            .orElseThrow(() -> new IllegalStateException("Missing response"));
+        ClaimantResponse claimantResponse = claim.getClaimantResponse()
+            .orElseThrow(() -> new IllegalStateException("Missing claimant response"));
 
         map.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
         map.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());

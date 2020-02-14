@@ -46,11 +46,11 @@ public class PaymentIntentionContentProvider {
                 return paymentAmount
                     + ", no later than "
                     + formatDate(Optional.ofNullable(paymentDate)
-                    .orElseThrow(IllegalStateException::new));
+                    .orElseThrow(() -> new IllegalStateException("Missing payment date")));
             default:
-                return Optional.ofNullable(repaymentPlan).isPresent()
-                    ? formatDate(repaymentPlan.getCompletionDate())
-                    : paymentOption.getDescription();
+                return repaymentPlan == null
+                    ? paymentOption.getDescription()
+                    : formatDate(repaymentPlan.getCompletionDate());
         }
     }
 }
