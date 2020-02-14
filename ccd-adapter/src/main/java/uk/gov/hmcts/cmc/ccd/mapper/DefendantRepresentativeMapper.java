@@ -12,7 +12,7 @@ public class DefendantRepresentativeMapper
     implements BuilderMapper<CCDRespondent, Representative, CCDRespondent.CCDRespondentBuilder> {
 
     private final AddressMapper addressMapper;
-    private DefendantContactDetailsMapper defendantContactDetailsMapper;
+    private final DefendantContactDetailsMapper defendantContactDetailsMapper;
 
     @Autowired
     public DefendantRepresentativeMapper(

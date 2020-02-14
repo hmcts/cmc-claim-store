@@ -40,7 +40,7 @@ public class PartyUtilsTest {
     @Test(expected = NotificationException.class)
     public void getTypeThrowsWhenPartyTypeUnknown() {
         PartyUtils.getType(new Party(UUID.randomUUID().toString(), null, null,
-            null, null, null) {
+            null, null, null, null) {
         });
     }
 
@@ -140,6 +140,7 @@ public class PartyUtilsTest {
 
     @Test
     public void shouldReturnFalseForPartyIsNull() {
+        //noinspection ConstantConditions
         assertThat(PartyUtils.isCompanyOrOrganisation(null)).isFalse();
     }
 

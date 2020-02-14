@@ -15,7 +15,7 @@ public class ValidExpenseConstraintValidatorTest {
     @Mock
     private ConstraintValidatorContext validatorContext;
 
-    private ValidEmploymentConstraintValidator validator = new ValidEmploymentConstraintValidator();
+    private final ValidEmploymentConstraintValidator validator = new ValidEmploymentConstraintValidator();
 
     @Test
     public void shouldBeValidWhenNull() {

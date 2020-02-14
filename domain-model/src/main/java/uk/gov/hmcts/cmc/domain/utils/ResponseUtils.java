@@ -7,9 +7,10 @@ import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
-import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.util.function.Predicate;
+
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
 public class ResponseUtils {
 
@@ -72,15 +73,20 @@ public class ResponseUtils {
     }
 
     public static boolean isFullDefenceAndNoMediation(Response response) {
-        return isFullDefence(response) && isNoMediation(response);
+        return isFullDefence(response) && !hasDefendantOptedForMediation(response);
+    }
+
+    public static boolean isFullDefenceDispute(Response response) {
+        return isFullDefence(response) && ((FullDefenceResponse) response)
+            .getDefenceType().equals(DefenceType.DISPUTE);
     }
 
     public static boolean isFullDefence(Response response) {
         return response.getResponseType().equals(ResponseType.FULL_DEFENCE);
     }
 
-    public static boolean isNoMediation(Response response) {
-        return response.getFreeMediation().filter(Predicate.isEqual(YesNoOption.NO)).isPresent();
+    public static boolean hasDefendantOptedForMediation(Response response) {
+        return response.getFreeMediation().filter(Predicate.isEqual(YES)).isPresent();
     }
 }
 

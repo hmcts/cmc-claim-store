@@ -23,8 +23,15 @@ public class DirectionOrder {
     private String preferredDQCourt;
     private String preferredCourtObjectingReason;
     private PilotCourt hearingCourt;
+    private String hearingCourtName;
     private Address hearingCourtAddress;
     private HearingDurationType estimatedHearingDuration;
+    private YesNoOption expertReportPermissionGivenToClaimant;
+    private YesNoOption expertReportPermissionGivenToDefendant;
+    private YesNoOption expertReportPermissionAskedByClaimant;
+    private YesNoOption expertReportPermissionAskedByDefendant;
+    private List<String> expertReportInstructionsForClaimant;
+    private List<String> expertReportInstructionsForDefendant;
     private LocalDateTime createdOn;
 
     public void addDirection(Direction direction) {

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.tests.idam;
 
+import com.google.common.collect.ImmutableList;
 import feign.FeignException;
 import feign.Response;
 import net.jodah.failsafe.Failsafe;
@@ -23,7 +24,7 @@ import uk.gov.hmcts.cmc.claimstore.tests.AATConfiguration;
 import uk.gov.hmcts.cmc.claimstore.tests.exception.ForbiddenException;
 import uk.gov.hmcts.cmc.claimstore.tests.helpers.TestData;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
 import static uk.gov.hmcts.cmc.claimstore.services.UserService.AUTHORIZATION_CODE;
@@ -114,7 +115,7 @@ public class IdamTestService {
 
     private void upliftUser(String email, String password, TokenExchangeResponse exchangeResponse) {
         Response response = idamInternalApi.upliftUser(
-            UriUtils.encode(email, Charset.forName("UTF-8")),
+            UriUtils.encode(email, StandardCharsets.UTF_8),
             password,
             exchangeResponse.getAccessToken(),
             oauth2.getClientId(),
@@ -158,7 +159,7 @@ public class IdamTestService {
     private CreateUserRequest createCitizenRequest(String username, String password) {
         return new CreateUserRequest(
             username,
-            new UserGroup("citizens"),
+            ImmutableList.of(new UserRole("citizen")),
             password
         );
     }
@@ -166,7 +167,9 @@ public class IdamTestService {
     private CreateUserRequest createSolicitorRequest(String username, String password) {
         return new CreateUserRequest(
             username,
-            new UserGroup("cmc-solicitor"),
+            ImmutableList.of(new UserRole("solicitor"),
+                new UserRole("caseworker-cmc-solicitor"),
+                new UserRole("caseworker-cmc")),
             password
         );
     }

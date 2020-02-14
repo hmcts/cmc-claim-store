@@ -3,10 +3,11 @@ package uk.gov.hmcts.cmc.claimstore.events.claim;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.operations.ClaimantOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.operations.NotifyStaffOperationService;
@@ -18,19 +19,18 @@ import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
-import static java.util.function.Predicate.isEqual;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 
 @Async("threadPoolTaskExecutor")
 @Service
-@ConditionalOnProperty(prefix = "feature_toggles", name = "async_event_operations_enabled", havingValue = "true")
 public class PostClaimOrchestrationHandler {
     private static final Logger logger = LoggerFactory.getLogger(PostClaimOrchestrationHandler.class);
 
     private final DocumentOrchestrationService documentOrchestrationService;
     private final ClaimService claimService;
+    private final AppInsights appInsights;
 
     private final PDFBasedOperation<Claim, String, PDF, Claim> uploadSealedClaimOperation;
     private final PDFBasedOperation<Claim, String, PDF, Claim> uploadClaimIssueReceiptOperation;
@@ -49,10 +49,12 @@ public class PostClaimOrchestrationHandler {
         ClaimantOperationService claimantOperationService,
         RpaOperationService rpaOperationService,
         NotifyStaffOperationService notifyStaffOperationService,
-        ClaimService claimService
+        ClaimService claimService,
+        AppInsights appInsights
     ) {
         this.documentOrchestrationService = documentOrchestrationService;
         this.claimService = claimService;
+        this.appInsights = appInsights;
 
         generatePinOperation = (claim, event) ->
             claim.getClaimSubmissionOperationIndicators().isPinOperationSuccess()
@@ -101,7 +103,7 @@ public class PostClaimOrchestrationHandler {
             Claim claim = event.getClaim();
             String authorisation = event.getAuthorisation();
 
-            Function<Claim, Claim> doPinOperation = c -> generatePinOperation.perform(c, event);
+            UnaryOperator<Claim> doPinOperation = c -> generatePinOperation.perform(c, event);
 
             PDF sealedClaimPdf = documentOrchestrationService.getSealedClaimPdf(claim);
             PDF claimIssueReceiptPdf = documentOrchestrationService.getClaimIssueReceiptPdf(claim);
@@ -113,12 +115,16 @@ public class PostClaimOrchestrationHandler {
                 .andThen(c -> notifyClaimantOperation.perform(c, event))
                 .apply(claim);
 
-            updatedClaim.getState()
-                .filter(isEqual(ClaimState.CREATE))
-                .ifPresent(state -> claimService.updateClaimState(authorisation, updatedClaim, ClaimState.OPEN));
-
+            if (updatedClaim.getState() == ClaimState.CREATE) {
+                claimService.updateClaimState(authorisation, updatedClaim, ClaimState.OPEN);
+                appInsights.trackEvent(
+                    AppInsightsEvent.CLAIM_ISSUED_CITIZEN,
+                    AppInsights.REFERENCE_NUMBER,
+                    updatedClaim.getReferenceNumber()
+                );
+            }
         } catch (Exception e) {
-            logger.error("Failed operation processing for event ()", event, e);
+            logger.error("Failed operation processing for event {}", event, e);
         }
     }
 
@@ -132,7 +138,7 @@ public class PostClaimOrchestrationHandler {
             GeneratedDocuments generatedDocuments = documentOrchestrationService.getSealedClaimForRepresentative(claim);
             PDF sealedClaim = generatedDocuments.getSealedClaim();
 
-            Function<Claim, Claim> doUploadSealedClaim =
+            UnaryOperator<Claim> doUploadSealedClaim =
                 c -> uploadSealedClaimOperation.perform(c, authorisation, sealedClaim);
 
             Claim updatedClaim = doUploadSealedClaim
@@ -141,12 +147,16 @@ public class PostClaimOrchestrationHandler {
                 .andThen(c -> notifyRepresentativeOperation.perform(c, event))
                 .apply(claim);
 
-            updatedClaim.getState()
-                .filter(isEqual(ClaimState.CREATE))
-                .ifPresent(state -> claimService.updateClaimState(authorisation, updatedClaim, ClaimState.OPEN));
-
+            if (updatedClaim.getState() == ClaimState.CREATE) {
+                claimService.updateClaimState(authorisation, updatedClaim, ClaimState.OPEN);
+                appInsights.trackEvent(
+                    AppInsightsEvent.CLAIM_ISSUED_LEGAL,
+                    AppInsights.REFERENCE_NUMBER,
+                    updatedClaim.getReferenceNumber()
+                );
+            }
         } catch (Exception e) {
-            logger.error("Failed operation processing for event ()", event, e);
+            logger.error("Failed operation processing for event {}", event, e);
         }
     }
 }

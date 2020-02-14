@@ -34,6 +34,7 @@ public class SoleTrader extends Party implements TitledParty, SplitNamedParty {
         String name,
         Address address,
         Address correspondenceAddress,
+        String phone,
         String mobilePhone,
         Representative representative,
         String title,
@@ -41,7 +42,7 @@ public class SoleTrader extends Party implements TitledParty, SplitNamedParty {
         String lastName,
         String businessName
     ) {
-        super(id, name, address, correspondenceAddress, mobilePhone, representative);
+        super(id, name, address, correspondenceAddress, phone, mobilePhone, representative);
         this.title = title;
         this.firstName = firstName;
         this.lastName = lastName;

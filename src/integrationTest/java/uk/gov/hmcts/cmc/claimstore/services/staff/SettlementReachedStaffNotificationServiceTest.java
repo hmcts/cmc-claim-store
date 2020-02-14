@@ -5,7 +5,8 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
-import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
@@ -15,8 +16,8 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
+import uk.gov.hmcts.cmc.email.EmailService;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,20 +26,22 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class SettlementReachedStaffNotificationServiceTest extends MockSpringTest {
+public class SettlementReachedStaffNotificationServiceTest extends BaseMockSpringTest {
 
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
 
     @Autowired
     private SettlementReachedStaffNotificationService service;
+    @Autowired
+    private StaffEmailProperties emailProperties;
 
     @Captor
     private ArgumentCaptor<String> senderArgument;
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;
 
-    @Autowired
-    private StaffEmailProperties emailProperties;
+    @MockBean
+    protected EmailService emailService;
 
     private Claim claim;
 
@@ -87,7 +90,7 @@ public class SettlementReachedStaffNotificationServiceTest extends MockSpringTes
     }
 
     @Test
-    public void shouldSendEmailWithExpectedPDFAttachments() throws IOException {
+    public void shouldSendEmailWithExpectedPDFAttachments() {
         service.notifySettlementReached(claim);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());

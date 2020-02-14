@@ -20,11 +20,11 @@ public class DefendantAdmissionStaffEmailContentProviderTest {
 
     private static final String DEFENDANT_EMAIL = "defendant@mail.com";
 
-    private TemplateService templateService = new TemplateService(
+    private final TemplateService templateService = new TemplateService(
         new PebbleConfiguration().pebbleEngine()
     );
 
-    private StaffEmailTemplates templates = new StaffEmailTemplates();
+    private final StaffEmailTemplates templates = new StaffEmailTemplates();
 
     private DefendantAdmissionStaffEmailContentProvider service;
 

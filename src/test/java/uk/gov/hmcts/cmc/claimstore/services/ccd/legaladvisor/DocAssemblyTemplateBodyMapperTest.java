@@ -14,7 +14,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Address;
@@ -47,6 +46,7 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 @RunWith(MockitoJUnitRunner.class)
 public class DocAssemblyTemplateBodyMapperTest {
 
+    public static final String SUBMIT_MORE_DOCS_INSTRUCTION = "submit more docs";
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Mock
@@ -78,7 +78,7 @@ public class DocAssemblyTemplateBodyMapperTest {
                 .town("Birmingham").build()).build()));
 
         ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
-        ccdCase.setDirectionOrderData(SampleData.getCCDOrderGenerationData());
+        ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
         ccdCase.setRespondents(
             ImmutableList.of(
                 CCDCollectionElement.<CCDRespondent>builder()
@@ -151,7 +151,15 @@ public class DocAssemblyTemplateBodyMapperTest {
                                 .value("second document")
                                 .build()))
                     .build()
-            ));
+            ))
+            .expertReportPermissionPartyAskedByClaimant(true)
+            .expertReportPermissionPartyAskedByDefendant(true)
+            .expertReportPermissionPartyGivenToClaimant(true)
+            .expertReportPermissionPartyGivenToDefendant(true)
+            .expertReportInstructionClaimant(ImmutableList.of(CCDCollectionElement.<String>builder()
+                .value(SUBMIT_MORE_DOCS_INSTRUCTION).build()))
+            .expertReportInstructionDefendant(ImmutableList.of(CCDCollectionElement.<String>builder()
+                .value(SUBMIT_MORE_DOCS_INSTRUCTION).build()));
 
         //when
         when(clock.instant()).thenReturn(LocalDate.parse("2019-04-24")
@@ -162,11 +170,7 @@ public class DocAssemblyTemplateBodyMapperTest {
 
     @Test
     public void shouldMapAddressFromCourtFinder() {
-        CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData().toBuilder()
-            .hearingCourt(BIRMINGHAM)
-            .build();
-
-        ccdCase.setDirectionOrderData(ccdOrderGenerationData);
+        ccdCase = SampleData.addCCDOrderGenerationData(ccdCase).toBuilder().hearingCourt(BIRMINGHAM).build();
         DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
             ccdCase,
             userDetails
@@ -234,7 +238,16 @@ public class DocAssemblyTemplateBodyMapperTest {
                                 .value("second document")
                                 .build()))
                     .build()
-            )).build();
+            ))
+            .expertReportPermissionPartyAskedByClaimant(true)
+            .expertReportPermissionPartyAskedByDefendant(true)
+            .expertReportPermissionPartyGivenToClaimant(true)
+            .expertReportPermissionPartyGivenToDefendant(true)
+            .expertReportInstructionClaimant(ImmutableList.of(CCDCollectionElement.<String>builder()
+                .value(SUBMIT_MORE_DOCS_INSTRUCTION).build()))
+            .expertReportInstructionDefendant(ImmutableList.of(CCDCollectionElement.<String>builder()
+                .value(SUBMIT_MORE_DOCS_INSTRUCTION).build()))
+            .build();
 
         assertThat(requestBody).isEqualTo(expectedBody);
         verify(courtFinderApi).findMoneyClaimCourtByPostcode(anyString());
@@ -269,11 +282,10 @@ public class DocAssemblyTemplateBodyMapperTest {
 
     @Test
     public void shouldMapTemplateBodyWhenOtherDirectionIsNull() {
-        CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData().toBuilder()
+        ccdCase = SampleData.addCCDOrderGenerationData(ccdCase).toBuilder()
             .otherDirections(ImmutableList.of(CCDCollectionElement.<CCDOrderDirection>builder().value(null).build()))
             .build();
 
-        ccdCase.setDirectionOrderData(ccdOrderGenerationData);
         DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
             ccdCase,
             userDetails

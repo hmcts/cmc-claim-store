@@ -33,7 +33,7 @@
       "postcode": "DF1 3LJ"
     },
     "dateOfBirth": "1968-01-02",
-    "mobilePhone": "07873727165",
+    "phone": "07873727165",
     "email": "test@example.com"
   },
   "timeline": {
@@ -92,6 +92,8 @@
         "unavailableDate": "2050-01-01"
       }
     ],
+    "expertRequired": "yes",
+    "permissionForExpert": "yes",
     "expertRequest": {
       "expertEvidenceToExamine": "Evidence to examine",
       "reasonForExpertAdvice": "A valid reason"

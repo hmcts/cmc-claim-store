@@ -22,6 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.CLAIM;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.LETTER_HOLDER_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
@@ -30,7 +31,7 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
 public class ClaimControllerTest {
 
     private static final String AUTHORISATION = "Bearer: aaa";
-    private static final List<String> FEATURES = singletonList("admissions");
+    private static final List<String> FEATURES = singletonList(ADMISSIONS.getValue());
 
     private ClaimController claimController;
 
@@ -117,16 +118,14 @@ public class ClaimControllerTest {
     @Test
     public void shouldInitiatePaymentForCitizen() {
         //given
-        String submitterId = "234";
         ClaimData input = SampleClaimData.validDefaults();
 
         CreatePaymentResponse response = CreatePaymentResponse.builder().build();
-        when(claimService.initiatePayment(AUTHORISATION, submitterId, input))
+        when(claimService.initiatePayment(AUTHORISATION, input))
             .thenReturn(response);
 
         //when
-        CreatePaymentResponse output = claimController.initiatePayment(
-            input, submitterId, AUTHORISATION);
+        CreatePaymentResponse output = claimController.initiatePayment(input, AUTHORISATION);
 
         //then
         assertThat(output).isEqualTo(response);
@@ -143,6 +142,21 @@ public class ClaimControllerTest {
 
         //when
         CreatePaymentResponse output = claimController.resumePayment(claimData, AUTHORISATION);
+
+        //then
+        assertThat(output).isEqualTo(expectedResponse);
+    }
+
+    @Test
+    public void shouldCreateClaimForCitizen() {
+        //given
+        ClaimData claimData = SampleClaimData.builder().build();
+        Claim expectedResponse = Claim.builder().claimData(claimData).build();
+        when(claimService.createCitizenClaim(AUTHORISATION, claimData, FEATURES))
+            .thenReturn(expectedResponse);
+
+        //when
+        Claim output = claimController.createClaim(claimData, AUTHORISATION, FEATURES);
 
         //then
         assertThat(output).isEqualTo(expectedResponse);

@@ -114,10 +114,11 @@ public class InitiatePaymentCallbackHandlerTest {
         assertThat(toBeSaved.getId()).isEqualTo(CASE_ID);
         assertThat(toBeSaved.getCcdCaseId()).isEqualTo(CASE_ID);
         assertThat(toBeSaved.getIssuedOn()).isEqualTo(date);
+        assertThat(toBeSaved.getServiceDate()).isEqualTo(date.plusDays(5));
         assertThat(toBeSaved.getResponseDeadline()).isEqualTo(date);
         assertThat(toBeSaved.getChannel()).isEqualTo(Optional.of(CITIZEN));
 
-        Payment payment = toBeSaved.getClaimData().getPayment();
+        Payment payment = toBeSaved.getClaimData().getPayment().orElse(null);
         assertThat(payment).isEqualTo(expectedPayment);
     }
 

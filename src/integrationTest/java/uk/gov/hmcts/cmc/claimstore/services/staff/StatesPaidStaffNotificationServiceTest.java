@@ -6,12 +6,14 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
-import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
+import uk.gov.hmcts.cmc.email.EmailService;
 
 import java.io.IOException;
 
@@ -23,7 +25,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
 
-public class StatesPaidStaffNotificationServiceTest extends MockSpringTest {
+public class StatesPaidStaffNotificationServiceTest extends BaseMockSpringTest {
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
     private Claim claimWithFullDefenceResponse;
 
@@ -37,6 +39,9 @@ public class StatesPaidStaffNotificationServiceTest extends MockSpringTest {
 
     @Autowired
     private StatesPaidStaffNotificationService service;
+
+    @MockBean
+    protected EmailService emailService;
 
     @Before
     public void beforeEachTest() {

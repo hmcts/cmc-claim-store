@@ -26,7 +26,7 @@ public class ValidPartAdmissionConstraintValidatorTest {
     @Mock
     private ConstraintValidatorContext validatorContext;
 
-    private ValidPartAdmissionConstraintValidator validator = new ValidPartAdmissionConstraintValidator();
+    private final ValidPartAdmissionConstraintValidator validator = new ValidPartAdmissionConstraintValidator();
 
     @Before
     public void setUp() {

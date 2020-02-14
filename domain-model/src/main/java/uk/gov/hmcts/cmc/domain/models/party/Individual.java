@@ -11,14 +11,14 @@ import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 
-import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.Optional;
+import javax.validation.constraints.Size;
 
 @PartySplitName
 @JsonIgnoreProperties(ignoreUnknown = true)
 @EqualsAndHashCode(callSuper = true)
-public class Individual extends Party implements TitledParty, SplitNamedParty{
+public class Individual extends Party implements TitledParty, SplitNamedParty {
 
     @JsonUnwrapped
     @AgeRangeValidator
@@ -41,11 +41,12 @@ public class Individual extends Party implements TitledParty, SplitNamedParty{
         String lastName,
         Address address,
         Address correspondenceAddress,
+        String phone,
         String mobilePhone,
         Representative representative,
         LocalDate dateOfBirth
     ) {
-        super(id, name, address, correspondenceAddress, mobilePhone, representative);
+        super(id, name, address, correspondenceAddress, phone, mobilePhone, representative);
         this.dateOfBirth = dateOfBirth;
         this.title = title;
         this.firstName = firstName;
@@ -59,7 +60,7 @@ public class Individual extends Party implements TitledParty, SplitNamedParty{
     @Override
     public String getName() {
         if (StringUtils.isNotBlank(firstName) && StringUtils.isNotBlank(lastName)) {
-           return PartyUtils.fullNameFrom(title, firstName, lastName);
+            return PartyUtils.fullNameFrom(title, firstName, lastName);
         }
         return super.getName();
     }

@@ -2,7 +2,6 @@
 package uk.gov.hmcts.cmc.domain.constraints;
 
 import org.apache.commons.lang3.StringUtils;
-import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.party.SplitNamedParty;
 

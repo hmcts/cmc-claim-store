@@ -18,9 +18,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class SealedClaimDataContentProviderTest {
 
-    private Claim claim = SampleClaim.getDefault();
+    private final Claim claim = SampleClaim.getDefault();
 
-    private ClaimContentProvider provider = new ClaimContentProvider(
+    private final ClaimContentProvider provider = new ClaimContentProvider(
         new ClaimantContentProvider(
             new PersonContentProvider()
         ),
@@ -51,7 +51,7 @@ public class SealedClaimDataContentProviderTest {
         PersonContent defendantContent = (PersonContent)content.get("defendant");
 
         assertThat(content).containsKey("defendant");
-        Assert.assertEquals("0776655443322", defendantContent.getMobileNumber());
+        Assert.assertEquals("0776655443322", defendantContent.getPhoneNumber());
     }
 
     @Test

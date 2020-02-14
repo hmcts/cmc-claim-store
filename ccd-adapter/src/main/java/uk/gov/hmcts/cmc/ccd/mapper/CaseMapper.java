@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDChannelType;
+import uk.gov.hmcts.cmc.ccd.util.MapperUtil;
 import uk.gov.hmcts.cmc.domain.models.ChannelType;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
@@ -16,6 +17,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.mapper.ClaimSubmissionOperationIndicatorMapper.mapClaimSubmissionOperationIndicatorsToCCD;
 import static uk.gov.hmcts.cmc.ccd.mapper.ClaimSubmissionOperationIndicatorMapper.mapFromCCDClaimSubmissionOperationIndicators;
+import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.getMediationOutcome;
 import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.toCaseName;
 
 @Component
@@ -58,6 +60,9 @@ public class CaseMapper {
             .map(CCDChannelType::valueOf)
             .ifPresent(builder::channel);
 
+        claim.getDateReferredForDirections().ifPresent(builder::dateReferredForDirections);
+        claim.getPreferredDQCourt().ifPresent(builder::preferredDQCourt);
+
         return builder
             .id(claim.getId())
             .externalId(claim.getExternalId())
@@ -75,6 +80,7 @@ public class CaseMapper {
             .caseName(toCaseName.apply(claim))
             .claimSubmissionOperationIndicators(
                 mapClaimSubmissionOperationIndicatorsToCCD.apply(claim.getClaimSubmissionOperationIndicators()))
+            .intentionToProceedDeadline(claim.getIntentionToProceedDeadline())
             .build();
     }
 
@@ -83,6 +89,7 @@ public class CaseMapper {
         claimMapper.from(ccdCase, builder);
 
         claimDocumentCollectionMapper.from(ccdCase, builder);
+        directionOrderMapper.from(ccdCase, builder);
 
         builder
             .id(ccdCase.getId())
@@ -97,8 +104,11 @@ public class CaseMapper {
             .state(ClaimState.fromValue(ccdCase.getState()))
             .claimSubmissionOperationIndicators(
                 mapFromCCDClaimSubmissionOperationIndicators.apply(ccdCase.getClaimSubmissionOperationIndicators()))
-            .directionOrder(directionOrderMapper.from(ccdCase.getDirectionOrder(), ccdCase.getDirectionOrderData()))
-            .reviewOrder(reviewOrderMapper.from(ccdCase.getReviewOrder()));
+            .intentionToProceedDeadline(ccdCase.getIntentionToProceedDeadline())
+            .reviewOrder(reviewOrderMapper.from(ccdCase.getReviewOrder()))
+            .dateReferredForDirections(ccdCase.getDateReferredForDirections())
+            .paperResponse(MapperUtil.hasPaperResponse.apply(ccdCase))
+            .mediationOutcome(getMediationOutcome(ccdCase));
 
         if (ccdCase.getFeatures() != null) {
             builder.features(Arrays.asList(ccdCase.getFeatures().split(",")));

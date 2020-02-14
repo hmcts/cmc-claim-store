@@ -10,7 +10,7 @@ public enum CallbackType {
     SUBMITTED("submitted"),
     MID("mid");
 
-    private String value;
+    private final String value;
 
     CallbackType(String value) {
         this.value = value;

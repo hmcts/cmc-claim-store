@@ -38,18 +38,20 @@ public class LegalOrderCoverSheetContentProviderTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaimForClaimant() {
+        //noinspection ConstantConditions
         provider.createContentForClaimant(null);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaimForDefendant() {
+        //noinspection ConstantConditions
         provider.createContentForDefendant(null);
     }
 
     @Test
     public void shouldProvideClaimantData() {
         Map<String, Object> content = provider.createContentForClaimant(claim);
-        assertThat(content).containsEntry("partyFullName", "John Rambo");
+        assertThat(content).containsEntry("partyFullName", "Dr. John Rambo");
         assertThat(content).containsEntry("partyAddress", claim.getClaimData().getClaimant().getAddress());
         assertThat(content).containsEntry("claimReferenceNumber", claim.getReferenceNumber());
         assertThat(content).containsEntry("hmctsEmail", STAFF_NOTIFICATIONS_RECIPIENT);

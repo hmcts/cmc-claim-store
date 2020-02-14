@@ -18,6 +18,8 @@ public class SampleCCDPaymentIntention {
             .instalmentAmount("1000")
             .paymentSchedule(CCDPaymentSchedule.EVERY_MONTH)
             .paymentOption(CCDPaymentOption.INSTALMENTS)
+            .completionDate(LocalDate.now().plusMonths(3))
+            .paymentLength("3 months")
             .build();
     }
 }

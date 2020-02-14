@@ -5,6 +5,8 @@
       "id": "acd82549-d279-4adc-b38c-d195dd0db0d6",
       "type": "individual",
       "title": "Dr.",
+      "firstName": "John",
+      "lastName": "Rambo",
       "name": "John Rambo",
       "address": {
         "line1": "52",
@@ -21,7 +23,7 @@
         "postcode": "DF1 3LJ"
       },
       "dateOfBirth": "1968-01-02",
-      "mobilePhone": "07873727165"
+      "phone": "07873727165"
     }
   ],
   "amount": {

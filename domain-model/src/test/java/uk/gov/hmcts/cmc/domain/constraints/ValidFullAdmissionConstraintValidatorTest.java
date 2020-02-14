@@ -25,7 +25,7 @@ public class ValidFullAdmissionConstraintValidatorTest {
     @Mock
     private ConstraintValidatorContext validatorContext;
 
-    private ValidFullAdmissionConstraintValidator validator = new ValidFullAdmissionConstraintValidator();
+    private final ValidFullAdmissionConstraintValidator validator = new ValidFullAdmissionConstraintValidator();
 
     @Before
     public void setUp() {
