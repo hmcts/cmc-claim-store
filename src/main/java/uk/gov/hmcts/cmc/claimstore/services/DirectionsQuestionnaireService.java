@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.Pilot;
 import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
@@ -47,15 +48,13 @@ public class DirectionsQuestionnaireService {
             return Optional.empty();
         }
 
-        if (!pilotCourtService.isPilotCourt(getPreferredCourt(claim))) {
-            return Optional.of(WAITING_TRANSFER);
-        }
+        String preferredCourt = getPreferredCourt(claim);
 
-        if (isLegalAdvisorPilot(claim)) {
+        if (isLegalAdvisorPilot(claim) && pilotCourtService.isPilotCourt(preferredCourt, Pilot.LA)) {
             return Optional.of(ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS);
         }
 
-        if (isJudgePilot(claim)) {
+        if (isJudgePilot(claim)  && pilotCourtService.isPilotCourt(preferredCourt, Pilot.JDDO)) {
             return Optional.of(ASSIGNING_FOR_JUDGE_DIRECTIONS);
         }
 
@@ -63,15 +62,14 @@ public class DirectionsQuestionnaireService {
     }
 
     public String getDirectionsCaseState(Claim claim) {
-        if (!pilotCourtService.isPilotCourt(getPreferredCourt(claim))) {
-            return READY_FOR_TRANSFER.getValue();
-        }
 
-        if (isLegalAdvisorPilot(claim)) {
+        String preferredCourt = getPreferredCourt(claim);
+
+        if (isLegalAdvisorPilot(claim) && pilotCourtService.isPilotCourt(preferredCourt, Pilot.LA)) {
             return READY_FOR_LEGAL_ADVISOR_DIRECTIONS.getValue();
         }
 
-        if (isJudgePilot(claim)) {
+        if (isJudgePilot(claim) && pilotCourtService.isPilotCourt(preferredCourt, Pilot.JDDO)) {
             return READY_FOR_JUDGE_DIRECTIONS.getValue();
         }
 

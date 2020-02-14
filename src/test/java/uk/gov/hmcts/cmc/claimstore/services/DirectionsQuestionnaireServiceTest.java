@@ -24,6 +24,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_JUDGE_DIRECTIONS;
@@ -45,17 +46,21 @@ public class DirectionsQuestionnaireServiceTest {
     private static final String NON_PILOT_COURT_NAME = "Non pilot court name";
     private static final String PILOT_COURT_NAME = "birmingham";
 
-    private static final ResponseRejection CLAIMANT_REJECTION_PILOT = ResponseRejection.builder()
-        .freeMediation(NO)
-        .directionsQuestionnaire(
-            DirectionsQuestionnaire.builder()
-                .hearingLocation(HearingLocation.builder()
-                    .courtName(PILOT_COURT_NAME)
-                    .build()
+    private static final ResponseRejection CLAIMANT_REJECTION_PILOT;
+
+    static {
+        CLAIMANT_REJECTION_PILOT = ResponseRejection.builder()
+                .freeMediation(NO)
+                .directionsQuestionnaire(
+                    DirectionsQuestionnaire.builder()
+                        .hearingLocation(HearingLocation.builder()
+                            .courtName(PILOT_COURT_NAME)
+                            .build()
+                        )
+                        .build()
                 )
-                .build()
-        )
-        .build();
+                .build();
+    }
 
     private static final ResponseRejection CLAIMANT_REJECTION_NON_PILOT = ResponseRejection.builder()
         .freeMediation(NO)
@@ -124,8 +129,7 @@ public class DirectionsQuestionnaireServiceTest {
 
     @Before
     public void setUp() {
-        when(pilotCourtService.isPilotCourt(eq(NON_PILOT_COURT_NAME))).thenReturn(false);
-        when(pilotCourtService.isPilotCourt(eq(PILOT_COURT_NAME))).thenReturn(true);
+        when(pilotCourtService.isPilotCourt(eq(PILOT_COURT_NAME), any())).thenReturn(true);
         directionsQuestionnaireService = new DirectionsQuestionnaireService(pilotCourtService);
     }
 

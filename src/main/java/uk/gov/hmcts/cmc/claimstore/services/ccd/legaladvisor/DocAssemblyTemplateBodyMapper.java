@@ -39,7 +39,7 @@ public class DocAssemblyTemplateBodyMapper {
 
     public DocAssemblyTemplateBody from(CCDCase ccdCase, UserDetails userDetails) {
         HearingCourt hearingCourt = Optional.ofNullable(ccdCase.getHearingCourt())
-            .map(pilotCourtService::getHearingCourt)
+            .map(pilotCourtService::getPilotHearingCourt)
             .orElseGet(() -> HearingCourt.builder().build());
 
         LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
