@@ -54,7 +54,7 @@ public class MapperUtilTest {
 
         String caseName = toCaseName.apply(claimWithMultiClaimant);
         assertNotNull(caseName);
-        assertThat(caseName, is("Brexiter + others Vs Mrs. Theresa May"));
+        assertThat(caseName, is("Dr. John Rambo + others Vs Mrs. Theresa May"));
 
     }
 
@@ -80,7 +80,7 @@ public class MapperUtilTest {
 
         String caseName = toCaseName.apply(claimWithMultiDefendant);
         assertNotNull(caseName);
-        assertThat(caseName, is("Brexiter Vs Mrs. Theresa May + others"));
+        assertThat(caseName, is("Dr. John Rambo Vs Mrs. Theresa May + others"));
 
     }
 
@@ -103,7 +103,7 @@ public class MapperUtilTest {
 
         String caseName = toCaseName.apply(claimWithClaimantSoleTrader);
         assertNotNull(caseName);
-        assertThat(caseName, is("Georgina Hammersmith T/A EuroStar Vs Mr. Boris Johnson"));
+        assertThat(caseName, is("Dr. John Rambo T/A EuroStar Vs Mr. Boris Johnson"));
 
     }
 
@@ -127,7 +127,7 @@ public class MapperUtilTest {
 
         String caseName = toCaseName.apply(claimWithDefendantSoleTrader);
         assertNotNull(caseName);
-        assertThat(caseName, is("Boi May Vs Mr. Boris Johnson T/A Uberflip"));
+        assertThat(caseName, is("Mrs. John Rambo Vs Mr. Boris Johnson T/A Uberflip"));
 
     }
 
@@ -151,7 +151,7 @@ public class MapperUtilTest {
 
         String caseName = toCaseName.apply(claimWithBothAsSoleTrader);
         assertNotNull(caseName);
-        assertThat(caseName, is("Georgina Hammersmith T/A EuroStar Vs Mr. Boris Johnson T/A Haberdashery"));
+        assertThat(caseName, is("Dr. John Rambo T/A EuroStar Vs Mr. Boris Johnson T/A Haberdashery"));
 
     }
 
@@ -172,7 +172,7 @@ public class MapperUtilTest {
 
         String caseName = MapperUtil.toCaseName.apply(claimWithResponse);
         assertNotNull(caseName);
-        assertThat(caseName, is("Versace T/A Versace Vs French Connection UK"));
+        assertThat(caseName, is("Dr. John Rambo T/A Versace Vs Dr. John Rambo"));
     }
 
     @Test

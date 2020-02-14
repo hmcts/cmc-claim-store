@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.documents.content;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.documents.content.models.PartyDetailsContent;
 import uk.gov.hmcts.cmc.domain.models.Address;
-import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
+import uk.gov.hmcts.cmc.domain.models.otherparty.IndividualDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAddress;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
@@ -21,7 +21,7 @@ public class PartyDetailsContentProviderTest {
 
     private final PartyDetailsContentProvider provider = new PartyDetailsContentProvider();
 
-    private final TheirDetails defendant = SampleTheirDetails.builder().withPhone("0999")
+    private final IndividualDetails defendant = SampleTheirDetails.builder().withPhone("0999")
         .individualDetails();
 
     private final Address correspondenceAddress = SampleAddress.builder()
@@ -32,6 +32,9 @@ public class PartyDetailsContentProviderTest {
     private Individual notAmendedDetails() {
         return SampleParty.builder()
             .withName(defendant.getName())
+            .withFirstName(defendant.getFirstName())
+            .withLastName(defendant.getLastName())
+            .withTitle(defendant.getTitle().orElseThrow(IllegalArgumentException::new))
             .withAddress(defendant.getAddress())
             .withCorrespondenceAddress(correspondenceAddress)
             .withDateOfBirth(

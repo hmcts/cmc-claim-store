@@ -15,6 +15,8 @@ import java.util.List;
 public class SampleParty {
 
     private String name = "John Rambo";
+    private String firstName = "John";
+    private String lastName = "Rambo";
     private String businessName = "Trading as name";
     private String contactPerson = "Steven Seagal";
     private Address address = SampleAddress.builder().build();
@@ -32,6 +34,16 @@ public class SampleParty {
 
     public SampleParty withName(String name) {
         this.name = name;
+        return this;
+    }
+
+    public SampleParty withFirstName(String firstName) {
+        this.firstName = firstName;
+        return this;
+    }
+
+    public SampleParty withLastName(String lastName) {
+        this.lastName = lastName;
         return this;
     }
 
@@ -86,21 +98,21 @@ public class SampleParty {
     }
 
     public Party party() {
-        return new Individual(collectionId, name, address, correspondenceAddress, phone, null,
-            representative, dateOfBirth);
+        return new Individual(collectionId, name, title, firstName, lastName, address, correspondenceAddress, phone,
+            null, representative, dateOfBirth);
     }
 
     public Individual individual() {
-        return new Individual(collectionId, name, address, correspondenceAddress, phone, null,
-            representative, dateOfBirth);
+        return new Individual(collectionId, name, title, firstName, lastName, address, correspondenceAddress, phone,
+            null, representative, dateOfBirth);
     }
 
     public List<Party> individualDetails(int count) {
         List<Party> individualDetailsList = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             individualDetailsList.add(
-                new Individual(collectionId, name, address, correspondenceAddress, phone, null,
-                    representative, dateOfBirth)
+                new Individual(collectionId, name, title, firstName, lastName, address, correspondenceAddress, phone,
+                    null, representative, dateOfBirth)
             );
         }
         return individualDetailsList;
@@ -108,7 +120,7 @@ public class SampleParty {
 
     public SoleTrader soleTrader() {
         return new SoleTrader(collectionId, name, address, correspondenceAddress, phone, null,
-            representative, title, businessName);
+            representative, title, firstName, lastName, businessName);
     }
 
     public Company company() {

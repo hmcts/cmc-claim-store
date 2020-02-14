@@ -15,8 +15,6 @@ import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.party.NamedParty;
-import uk.gov.hmcts.cmc.domain.models.party.TitledParty;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -104,7 +102,7 @@ public class ClaimIssuedNotificationService {
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
 
         if (!claim.getClaimData().isClaimantRepresented()) {
-            parameters.put(CLAIMANT_NAME, getNameWithTitle(claim.getClaimData().getClaimant()));
+            parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
             parameters.put(CLAIMANT_TYPE, PartyUtils.getType(claim.getClaimData().getClaimant()));
             parameters.put(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName());
         } else {
@@ -121,14 +119,4 @@ public class ClaimIssuedNotificationService {
         Optional.ofNullable(pin).ifPresent(p -> parameters.put(PIN, p));
         return parameters.build();
     }
-
-    private String getNameWithTitle(NamedParty party) {
-        StringBuilder title = new StringBuilder();
-        if (party instanceof TitledParty) {
-            ((TitledParty) party).getTitle().ifPresent(t -> title.append(t).append(" "));
-        }
-
-        return title.append(party.getName()).toString();
-    }
-
 }

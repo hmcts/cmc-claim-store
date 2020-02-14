@@ -16,6 +16,8 @@
     "type": "individual",
     "title": "Dr.",
     "name": "John Rambo",
+    "firstName": "John",
+    "lastName": "Rambo",
     "address": {
       "line1": "52",
       "line2": "Down Street",

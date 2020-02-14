@@ -51,7 +51,7 @@ public class LegalOrderCoverSheetContentProviderTest {
     @Test
     public void shouldProvideClaimantData() {
         Map<String, Object> content = provider.createContentForClaimant(claim);
-        assertThat(content).containsEntry("partyFullName", "John Rambo");
+        assertThat(content).containsEntry("partyFullName", "Dr. John Rambo");
         assertThat(content).containsEntry("partyAddress", claim.getClaimData().getClaimant().getAddress());
         assertThat(content).containsEntry("claimReferenceNumber", claim.getReferenceNumber());
         assertThat(content).containsEntry("hmctsEmail", STAFF_NOTIFICATIONS_RECIPIENT);

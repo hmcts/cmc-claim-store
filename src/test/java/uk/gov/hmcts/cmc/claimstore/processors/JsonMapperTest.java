@@ -162,10 +162,16 @@ public class JsonMapperTest {
                     .withDateOfBirth(null)
                     .withName(null)
                     .individualDetails())
+            .withClaimant(
+                SampleParty.builder()
+                .withRepresentative(SampleRepresentative.builder().build())
+                .withName(null)
+                .individual())
             .withTimeline(null)
             .withPayment(null)
             .withEvidence(null)
             .build();
+
         assertThat(output).isEqualTo(expected);
     }
 

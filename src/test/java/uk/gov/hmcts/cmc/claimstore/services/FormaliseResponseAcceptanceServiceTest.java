@@ -557,7 +557,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .getOffer()
             .orElseThrow(IllegalStateException::new);
 
-        assertThat(offer.getContent()).startsWith("John Rambo will pay £81.90");
+        assertThat(offer.getContent()).startsWith("Dr. John Rambo will pay £81.90");
 
         PaymentIntention paymentIntentionWithinOffer = offer
             .getPaymentIntention()
