@@ -67,7 +67,8 @@ public class MapperUtil {
 
     public static MediationOutcome getMediationOutcome(CCDCase ccdCase) {
 
-        CCDRespondent defendant = ccdCase.getRespondents()
+        List<CCDCollectionElement<CCDRespondent>> respondents = ccdCase.getRespondents();
+        CCDRespondent defendant = respondents
             .stream().findFirst().map(CCDCollectionElement::getValue).orElseThrow(IllegalStateException::new);
 
         if (Optional.ofNullable(defendant.getMediationFailedReason()).isPresent()) {

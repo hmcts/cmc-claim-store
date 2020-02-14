@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.domain.models.party.Party;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -119,7 +120,7 @@ public class ClaimMapper {
             .collect(Collectors.toList());
         claimBuilder.claimData(
             new ClaimData(
-                UUID.fromString(ccdCase.getExternalId()),
+                UUID.fromString(Optional.ofNullable(ccdCase.getExternalId()).orElse(UUID.randomUUID().toString())),
                 claimants,
                 getDefendants(ccdCase, claimBuilder),
                 paymentMapper.from(ccdCase),

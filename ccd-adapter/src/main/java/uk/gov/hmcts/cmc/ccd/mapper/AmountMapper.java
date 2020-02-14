@@ -41,7 +41,7 @@ public class AmountMapper implements BuilderMapper<CCDCase, Amount, CCDCase.CCDC
     @Override
     public Amount from(CCDCase ccdCase) {
 
-        switch (ccdCase.getAmountType()) {
+            switch (ccdCase.getAmountType()) {
             case RANGE:
                 return amountRangeMapper.from(ccdCase);
             case NOT_KNOWN:
