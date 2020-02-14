@@ -68,6 +68,9 @@ public class OrderPostProcessor {
 
         CCDCase updatedCase = ccdCase.toBuilder()
             .caseDocuments(updateCaseDocumentsWithOrder(ccdCase, draftOrderDoc))
+            //CCD cannot currently handle storing values from dynamic lists, is getting re-implemented in RDM-6651
+            //Once CCD is fixed we can remove setting the hearing court to null
+            .hearingCourt(null)
             .directionOrder(CCDDirectionOrder.builder()
                 .createdOn(nowInUTC())
                 .hearingCourtName(hearingCourt.getName())
