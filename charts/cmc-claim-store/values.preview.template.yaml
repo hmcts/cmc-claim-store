@@ -28,6 +28,8 @@ postgresql:
 java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
+  readinessDelay: 90
+  livenessDelay: 90
   environment:
     LOG_LEVEL: DEBUG
     IDAM_S2S_AUTH_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
@@ -54,8 +56,8 @@ cmc-citizen-frontend:
     memoryRequests: 512Mi
     memoryLimits: 1024Mi
     releaseNameOverride: ${SERVICE_NAME}-nodejs
-    readinessDelay: 90  # claim-store will start much slower
-    livenessDelay: 90  # claim-store will start much slower
+    readinessDelay: 120  # claim-store will start much slower
+    livenessDelay: 120  # claim-store will start much slower
     registerAdditionalDns:
       enabled: true
       primaryIngressHost: ${SERVICE_FQDN}
