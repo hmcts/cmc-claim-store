@@ -658,7 +658,7 @@ public class CoreCaseDataServiceTest {
             anyBoolean(),
             any()
         ))
-            .thenThrow(new FeignException.UnprocessableEntity("Status 422 from CCD", null));
+            .thenThrow(new FeignException.UnprocessableEntity("Status 422 from CCD", null, null));
 
         Claim returnedClaim = service.saveCaseEventIOC(USER, providedClaim, CREATE_CITIZEN_CLAIM);
 
