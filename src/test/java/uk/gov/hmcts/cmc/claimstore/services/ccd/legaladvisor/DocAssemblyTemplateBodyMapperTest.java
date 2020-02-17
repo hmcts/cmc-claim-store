@@ -154,6 +154,8 @@ public class DocAssemblyTemplateBodyMapperTest {
             ))
             .expertReportPermissionPartyAskedByClaimant(true)
             .expertReportPermissionPartyAskedByDefendant(true)
+            .expertReportInstructionClaimant(Collections.emptyList())
+            .expertReportInstructionDefendant(Collections.emptyList())
             .grantExpertReportPermission(true)
             .expertReportInstruction(SUBMIT_MORE_DOCS_INSTRUCTION);
 
@@ -237,6 +239,8 @@ public class DocAssemblyTemplateBodyMapperTest {
             ))
             .expertReportPermissionPartyAskedByClaimant(true)
             .expertReportPermissionPartyAskedByDefendant(true)
+            .expertReportInstructionClaimant(Collections.emptyList())
+            .expertReportInstructionDefendant(Collections.emptyList())
             .grantExpertReportPermission(true)
             .expertReportInstruction(SUBMIT_MORE_DOCS_INSTRUCTION)
             .build();

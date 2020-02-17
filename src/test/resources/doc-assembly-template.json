@@ -88,6 +88,10 @@
   "paperDetermination": false,
   "expertReportPermissionPartyAskedByClaimant": true,
   "expertReportPermissionPartyAskedByDefendant": true,
+  "expertReportInstructionClaimant" : [],
+  "expertReportInstructionDefendant" : [],
+  "expertReportPermissionPartyGivenToClaimant" : false,
+  "expertReportPermissionPartyGivenToDefendant" : false,
   "grantExpertReportPermission": true,
   "expertReportInstruction": "submit more docs"
 }
