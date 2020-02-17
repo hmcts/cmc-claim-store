@@ -25,6 +25,7 @@ import uk.gov.hmcts.cmc.domain.models.ChannelType;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
@@ -119,7 +120,9 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
                 .payment(payment)
                 .build())
             .referenceNumber(referenceNumberRepository.getReferenceNumberForCitizen())
+            .createdAt(LocalDateTimeFactory.nowInUTC())
             .issuedOn(issuedOn)
+            .serviceDate(issuedOn.plusDays(5))
             .responseDeadline(responseDeadlineCalculator.calculateResponseDeadline(issuedOn))
             .build();
 

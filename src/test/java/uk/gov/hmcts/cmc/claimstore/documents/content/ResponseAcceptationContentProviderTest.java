@@ -17,9 +17,10 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIn
 
 public class ResponseAcceptationContentProviderTest {
 
-    private PaymentIntentionContentProvider paymentIntentionContentProvider = new PaymentIntentionContentProvider();
+    private final PaymentIntentionContentProvider paymentIntentionContentProvider =
+        new PaymentIntentionContentProvider();
 
-    private ResponseAcceptation responseAcceptation = ResponseAcceptation.builder()
+    private final ResponseAcceptation responseAcceptation = ResponseAcceptation.builder()
         .courtDetermination(CourtDetermination.builder()
             .courtDecision(bySetDate())
             .courtPaymentIntention(PaymentIntention.builder()
@@ -31,7 +32,7 @@ public class ResponseAcceptationContentProviderTest {
             .build())
         .build();
 
-    private ResponseAcceptationContentProvider contentProvider =
+    private final ResponseAcceptationContentProvider contentProvider =
         new ResponseAcceptationContentProvider(paymentIntentionContentProvider);
 
     @Test

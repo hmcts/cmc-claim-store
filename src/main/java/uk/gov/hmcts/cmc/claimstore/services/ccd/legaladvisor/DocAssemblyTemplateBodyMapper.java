@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -21,7 +22,7 @@ public class DocAssemblyTemplateBodyMapper {
 
     public static final long DIRECTION_DEADLINE_NO_OF_DAYS = 19L;
     public static final long CHANGE_ORDER_DEADLINE_NO_OF_DAYS = 12L;
-    private Clock clock;
+    private final Clock clock;
     private final HearingCourtDetailsFinder hearingCourtDetailsFinder;
     private final WorkingDayIndicator workingDayIndicator;
 
@@ -68,9 +69,7 @@ public class DocAssemblyTemplateBodyMapper {
             .docUploadForParty(ccdCase.getDocUploadForParty())
             .extraDocUploadList(ccdCase.getExtraDocUploadList())
             .eyewitnessUploadForParty(ccdCase.getEyewitnessUploadForParty())
-            .paperDetermination(ccdCase.getPaperDetermination() != null
-                ? ccdCase.getPaperDetermination().toBoolean()
-                : null)
+            .paperDetermination(Objects.equals(ccdCase.getPaperDetermination(), CCDYesNoOption.YES))
             .hearingCourtName(hearingCourt.getName())
             .hearingCourtAddress(hearingCourt.getAddress())
             .estimatedHearingDuration(ccdCase.getEstimatedHearingDuration())

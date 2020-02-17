@@ -6,7 +6,7 @@ public enum DirectionType {
     OTHER("Other direction"),
     EXPERT_REPORT_PERMISSION("Permission for expert report");
 
-    private String value;
+    private final String value;
 
     DirectionType(String value) {
         this.value = value;

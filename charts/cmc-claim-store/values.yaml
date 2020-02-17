@@ -1,3 +1,10 @@
+cmc-citizen-frontend:
+  enabled: false
+postgresql:
+  enabled: false
+ccd:
+  enabled: false
+
 java:
   image: hmctspublic.azurecr.io/cmc/claim-store:latest
   applicationPort: 4400
@@ -24,8 +31,6 @@ java:
     SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: true
     SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST: mta.reform.hmcts.net
     CLAIM_STORE_TEST_SUPPORT_ENABLED: true
-    CLAIM_STORE_DB_NAME: claimstore
-    CLAIM_STORE_DB_PORT: 5432
     CMC_DB_NAME: cmc
     CMC_DB_PORT: 5432
     FEATURE_TOGGLES_SAVE_CLAIM_STATE_ENABLED: true

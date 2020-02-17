@@ -30,7 +30,7 @@ public class CountyCourtJudgmentSerializationTest {
             .paymentOption(PaymentOption.INSTALMENTS)
             .paidAmount(BigDecimal.ZERO)
             .repaymentPlan(SampleRepaymentPlan.builder().build())
-            .statementOfTruth(new StatementOfTruth(defendant.getContactPerson().get(), "Director"))
+            .statementOfTruth(new StatementOfTruth(defendant.getContactPerson().orElse(null), "Director"))
             .build();
 
         //when

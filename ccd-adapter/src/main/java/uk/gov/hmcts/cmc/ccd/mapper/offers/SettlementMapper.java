@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Component
 public class SettlementMapper {
 
-    private PartyStatementMapper partyStatementMapper;
+    private final PartyStatementMapper partyStatementMapper;
 
     @Autowired
     public SettlementMapper(PartyStatementMapper partyStatementMapper) {

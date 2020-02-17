@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -18,11 +17,11 @@ public class StatementOfMeansTest {
                 .residence(ResidenceTest.newSampleOfResidenceBuilder().build())
                 .dependant(DependantTest.newSampleOfDependantBuilder().build())
                 .employment(Employment.builder().unemployment(Unemployment.builder().retired(true).build()).build())
-                .bankAccounts(Arrays.asList(BankAccountTest.newSampleOfBankAccountBuilder().build()))
-                .debts(Arrays.asList(DebtTest.newSampleOfDebtBuilder().build()))
-                .incomes(Arrays.asList(IncomeTest.newSampleOfIncomeBuilder().build()))
-                .expenses(Arrays.asList(ExpenseTest.newSampleOfExpenseBuilder().build()))
-                .courtOrders(Arrays.asList(CourtOrderTest.newSampleOfCourtOrderBuilder().build()))
+                .bankAccounts(Collections.singletonList(BankAccountTest.newSampleOfBankAccountBuilder().build()))
+                .debts(Collections.singletonList(DebtTest.newSampleOfDebtBuilder().build()))
+                .incomes(Collections.singletonList(IncomeTest.newSampleOfIncomeBuilder().build()))
+                .expenses(Collections.singletonList(ExpenseTest.newSampleOfExpenseBuilder().build()))
+                .courtOrders(Collections.singletonList(CourtOrderTest.newSampleOfCourtOrderBuilder().build()))
                 .disability(DisabilityStatus.NO)
                 .reason("Reason");
     }
@@ -84,7 +83,7 @@ public class StatementOfMeansTest {
                 .ageGroupType(UNDER_11)
                 .build();
         Dependant invalidDependant = Dependant.builder()
-                .children(Arrays.asList(invalidChild))
+                .children(Collections.singletonList(invalidChild))
                 .build();
         StatementOfMeans statementOfMeans = newSampleOfStatementOfMeansBuilder()
                 .dependant(invalidDependant)
@@ -119,7 +118,7 @@ public class StatementOfMeansTest {
     public void shouldBeValidForEmptyBankAccount() {
         //given
         StatementOfMeans statementOfMeans = newSampleOfStatementOfMeansBuilder()
-                .bankAccounts(Collections.EMPTY_LIST)
+                .bankAccounts(Collections.emptyList())
                 .build();
         //when
         Set<String> errors = validate(statementOfMeans);
@@ -133,7 +132,7 @@ public class StatementOfMeansTest {
         //given
         BankAccount invalidBankAccount = BankAccount.builder().build();
         StatementOfMeans statementOfMeans = newSampleOfStatementOfMeansBuilder()
-                .bankAccounts(Arrays.asList(invalidBankAccount))
+                .bankAccounts(Collections.singletonList(invalidBankAccount))
                 .build();
         //when
         Set<String> errors = validate(statementOfMeans);
@@ -165,7 +164,7 @@ public class StatementOfMeansTest {
         //given
         Debt invalidDebt = Debt.builder().build();
         StatementOfMeans statementOfMeans = newSampleOfStatementOfMeansBuilder()
-                .debts(Arrays.asList(invalidDebt))
+                .debts(Collections.singletonList(invalidDebt))
                 .build();
         //when
         Set<String> errors = validate(statementOfMeans);
@@ -198,7 +197,7 @@ public class StatementOfMeansTest {
         //given
         Income invalidIncome = Income.builder().build();
         StatementOfMeans statementOfMeans = newSampleOfStatementOfMeansBuilder()
-                .incomes(Arrays.asList(invalidIncome))
+                .incomes(Collections.singletonList(invalidIncome))
                 .build();
         //when
         Set<String> errors = validate(statementOfMeans);
@@ -231,7 +230,7 @@ public class StatementOfMeansTest {
         //given
         Expense invalidExpense = Expense.builder().build();
         StatementOfMeans statementOfMeans = newSampleOfStatementOfMeansBuilder()
-                .expenses(Arrays.asList(invalidExpense))
+                .expenses(Collections.singletonList(invalidExpense))
                 .build();
         //when
         Set<String> errors = validate(statementOfMeans);
@@ -264,7 +263,7 @@ public class StatementOfMeansTest {
         //given
         CourtOrder invalidCourtOrder = CourtOrder.builder().build();
         StatementOfMeans statementOfMeans = newSampleOfStatementOfMeansBuilder()
-                .courtOrders(Arrays.asList(invalidCourtOrder))
+                .courtOrders(Collections.singletonList(invalidCourtOrder))
                 .build();
         //when
         Set<String> errors = validate(statementOfMeans);

@@ -6,6 +6,7 @@ tags:
   postgresql-pod: false  # stop any subcharts starting their own postgres instance
 
 postgresql:
+  enabled: true
   image:
     tag: '11.3.0'
   resources:
@@ -13,7 +14,6 @@ postgresql:
       cpu: 25m
   initdbScripts:
     init.sql: |-
-      CREATE DATABASE claimstore WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
       CREATE DATABASE cmc WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
       CREATE DATABASE features WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
       CREATE DATABASE "data-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
@@ -37,18 +37,16 @@ java:
     DOCUMENT_MANAGEMENT_URL: http://dm-store-aat.service.core-compute-aat.internal
     PAY_URL: http://payment-api-aat.service.core-compute-aat.internal
     FEES_URL: http://fees-register-api-aat.service.core-compute-aat.internal
-    DOC_ASSEMBLY_URL: false
+    DOC_ASSEMBLY_URL: http://dg-docassembly-aat.service.core-compute-aat.internal
     FRONTEND_BASE_URL: https://www-${SERVICE_FQDN}
     RESPOND_TO_CLAIM_URL: https://www-${SERVICE_FQDN}/first-contact/start
-    CLAIM_STORE_DB_HOST: ${SERVICE_NAME}-postgres
-    CLAIM_STORE_DB_USERNAME: hmcts
-    CLAIM_STORE_DB_PASSWORD: hmcts
     CMC_DB_HOST: ${SERVICE_NAME}-postgres
     CMC_DB_USERNAME: hmcts
     CMC_DB_PASSWORD: hmcts
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-data-store-api
 
 cmc-citizen-frontend:
+  enabled: true
   nodejs:
     image: hmctspublic.azurecr.io/cmc/citizen-frontend:latest  # master
     ingressIP: ${INGRESS_IP}
@@ -72,7 +70,6 @@ cmc-citizen-frontend:
       PAY_URL: http://payment-api-aat.service.core-compute-aat.internal
       FEES_URL: http://fees-register-api-aat.service.core-compute-aat.internal
       DRAFT_STORE_URL: http://draft-store-service-aat.service.core-compute-aat.internal
-      DOC_ASSEMBLY_URL: http://http://dg-docassembly-aat.service.core-compute-aat.interna
   rpe-feature-toggle-api:
     java:
       releaseNameOverride: ${SERVICE_NAME}-ftr-tgl-api

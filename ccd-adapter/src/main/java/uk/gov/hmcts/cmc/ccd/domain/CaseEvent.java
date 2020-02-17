@@ -66,9 +66,10 @@ public enum CaseEvent {
     CREATE_CITIZEN_CLAIM("CreateCitizenClaim"),
     REVIEWED_PAPER_RESPONSE("ReviewedPaperResponse"),
     MEDIATION_FAILED("FailedMediation"),
-    MEDIATION_SUCCESSFUL("SuccessfulMediation");
+    MEDIATION_SUCCESSFUL("SuccessfulMediation"),
+    RESET_PIN("ResetPin");
 
-    private String value;
+    private final String value;
 
     CaseEvent(String value) {
         this.value = value;
