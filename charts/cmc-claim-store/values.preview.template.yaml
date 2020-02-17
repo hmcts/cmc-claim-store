@@ -29,6 +29,7 @@ java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   livenessFailureThreshold: 6
+  livenessDelay: 75
   environment:
     LOG_LEVEL: DEBUG
     IDAM_S2S_AUTH_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
