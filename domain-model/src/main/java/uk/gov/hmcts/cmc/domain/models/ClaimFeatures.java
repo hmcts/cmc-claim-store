@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.domain.models;
 import java.util.Arrays;
 
 public enum ClaimFeatures {
-    ADMISSIONS("admissions"),
     DQ_FLAG("directionsQuestionnaire"),
     LA_PILOT_FLAG("LAPilotEligible"),
     JUDGE_PILOT_FLAG("judgePilotEligible"),

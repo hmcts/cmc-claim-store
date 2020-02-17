@@ -52,6 +52,7 @@ import java.util.UUID;
 
 import static java.lang.String.format;
 import static java.time.LocalDate.now;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.Optional.empty;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -66,7 +67,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESET_CLAIM_SUBMISSION_OPERA
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NUMBER_OF_RECONSIDERATION;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
-import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.DQ_FLAG;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.CLAIM_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_ID;
@@ -200,7 +201,7 @@ public class ClaimServiceTest {
 
         //when
         Claim createdClaim = claimService
-            .saveClaim(USER_ID, claimData, AUTHORISATION, singletonList(ADMISSIONS.getValue()));
+            .saveClaim(USER_ID, claimData, AUTHORISATION, singletonList(DQ_FLAG.getValue()));
 
         //verify
         ClaimData outputClaimData = claim.getClaimData();
@@ -580,7 +581,7 @@ public class ClaimServiceTest {
         Claim createdClaim = claimService.createCitizenClaim(
             AUTHORISATION,
             VALID_APP,
-            singletonList(ADMISSIONS.getValue()));
+            emptyList());
 
         assertThat(createdClaim).isEqualTo(claim);
     }

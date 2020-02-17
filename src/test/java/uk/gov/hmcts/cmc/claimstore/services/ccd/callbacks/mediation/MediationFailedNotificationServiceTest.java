@@ -72,7 +72,7 @@ public class MediationFailedNotificationServiceTest {
         Claim claim = SampleClaim.builder()
             .withResponse(SampleResponse.FullDefence.validDefaults())
             .withClaimantResponse(SampleClaimantResponse.validRejectionWithDirectionsQuestionnaire())
-            .build().toBuilder().features(Arrays.asList("admissions", "directionsQuestionnaire")).build();
+            .build().toBuilder().features(Arrays.asList("directionsQuestionnaire")).build();
 
         mediationFailedNotificationService.notifyParties(claim);
 
