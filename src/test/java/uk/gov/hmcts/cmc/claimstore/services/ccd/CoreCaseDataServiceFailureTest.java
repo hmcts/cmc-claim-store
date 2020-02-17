@@ -90,6 +90,8 @@ public class CoreCaseDataServiceFailureTest {
     private CaseDetailsConverter caseDetailsConverter;
     @Mock
     private IntentionToProceedDeadlineCalculator intentionToProceedDeadlineCalculator;
+    @Mock
+    private feign.Request request;
 
     private CoreCaseDataService service;
 
@@ -179,7 +181,7 @@ public class CoreCaseDataServiceFailureTest {
             any(CaseDataContent.class),
             eq(solicitorUser.isRepresented())
         ))
-            .thenThrow(new FeignException.Conflict("Status 409 while creating the case", null, null));
+            .thenThrow(new FeignException.Conflict("Status 409 while creating the case", request, null));
 
         service.createRepresentedClaim(solicitorUser, providedClaim);
     }
@@ -616,7 +618,7 @@ public class CoreCaseDataServiceFailureTest {
 
         ClaimSubmissionOperationIndicators operationIndicators = ClaimSubmissionOperationIndicators.builder().build();
         Claim claim = SampleClaim.getDefault();
-        
+
         service.saveClaimSubmissionOperationIndicators(claim.getId(), operationIndicators, AUTHORISATION,
             PIN_GENERATION_OPERATIONS);
     }
