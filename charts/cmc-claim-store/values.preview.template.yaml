@@ -41,15 +41,15 @@ java:
     PAY_URL: http://payment-api-aat.service.core-compute-aat.internal
     FEES_URL: http://fees-register-api-aat.service.core-compute-aat.internal
     DOC_ASSEMBLY_URL: http://dg-docassembly-aat.service.core-compute-aat.internal
-    FRONTEND_BASE_URL: https://www-${SERVICE_FQDN}
-    RESPOND_TO_CLAIM_URL: https://www-${SERVICE_FQDN}/first-contact/start
+    FRONTEND_BASE_URL: https://cmc-citizen-frontend-aat.service.core-compute-aat.internal
+    RESPOND_TO_CLAIM_URL: https://cmc-citizen-frontend-aat.service.core-compute-aat.internal/first-contact/start
     CMC_DB_HOST: ${SERVICE_NAME}-postgres
     CMC_DB_USERNAME: hmcts
     CMC_DB_PASSWORD: hmcts
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-data-store-api
 
 cmc-citizen-frontend:
-  enabled: true
+  enabled: false
   nodejs:
     image: hmctspublic.azurecr.io/cmc/citizen-frontend:latest  # master
     ingressIP: ${INGRESS_IP}
