@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -61,17 +62,20 @@ public class OrderCreator {
     private final CaseDetailsConverter caseDetailsConverter;
     private final DocAssemblyService docAssemblyService;
     private final GenerateOrderRule generateOrderRule;
+    private final boolean jddoEnabled;
 
     public OrderCreator(
         LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator,
         CaseDetailsConverter caseDetailsConverter,
         DocAssemblyService docAssemblyService,
-        GenerateOrderRule generateOrderRule
+        GenerateOrderRule generateOrderRule,
+        @Value("${feature_toggles.jddo:false}") boolean jddoEnabled
     ) {
         this.legalOrderGenerationDeadlinesCalculator = legalOrderGenerationDeadlinesCalculator;
         this.caseDetailsConverter = caseDetailsConverter;
         this.docAssemblyService = docAssemblyService;
         this.generateOrderRule = generateOrderRule;
+        this.jddoEnabled = jddoEnabled;
     }
 
     public CallbackResponse prepopulateOrder(CallbackParams callbackParams) {
@@ -91,7 +95,10 @@ public class OrderCreator {
         data.put(DOC_UPLOAD_FOR_PARTY, BOTH.name());
         data.put(EYEWITNESS_UPLOAD_FOR_PARTY, BOTH.name());
         data.put(PAPER_DETERMINATION, NO.name());
-        data.put(GRANT_EXPERT_REPORT_PERMISSION, NO);
+
+        if (jddoEnabled) {
+            data.put(GRANT_EXPERT_REPORT_PERMISSION, NO);
+        }
 
         return AboutToStartOrSubmitCallbackResponse
             .builder()

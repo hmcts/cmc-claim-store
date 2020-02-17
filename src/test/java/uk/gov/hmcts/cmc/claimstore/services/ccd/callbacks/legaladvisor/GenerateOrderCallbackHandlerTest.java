@@ -79,8 +79,9 @@ public class GenerateOrderCallbackHandlerTest {
 
     @Before
     public void setUp() {
+        boolean jddoEnabled = true;
         OrderCreator orderCreator = new OrderCreator(legalOrderGenerationDeadlinesCalculator, caseDetailsConverter,
-            docAssemblyService, new GenerateOrderRule());
+            docAssemblyService, new GenerateOrderRule(jddoEnabled), jddoEnabled);
 
         generateOrderCallbackHandler = new GenerateOrderCallbackHandler(orderCreator,
             caseDetailsConverter, appInsights);

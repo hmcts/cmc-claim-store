@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
@@ -89,6 +90,11 @@ public class DocAssemblyTemplateBodyMapper {
             .expertReportPermissionPartyAskedByDefendant(ccdCase
                 .getExpertReportPermissionPartyAskedByDefendant() == YES)
             .grantExpertReportPermission(ccdCase.getGrantExpertReportPermission() == YES)
+            .expertReportInstructionClaimant(ccdCase.getExpertReportInstructionClaimant())
+            .expertReportInstructionDefendant(ccdCase.getExpertReportInstructionDefendant())
+            .expertReportPermissionPartyGivenToClaimant(ccdCase.getExpertReportPermissionPartyGivenToClaimant() == YES)
+            .expertReportPermissionPartyGivenToDefendant(
+                ccdCase.getExpertReportPermissionPartyGivenToDefendant() == YES)
             .build();
     }
 }

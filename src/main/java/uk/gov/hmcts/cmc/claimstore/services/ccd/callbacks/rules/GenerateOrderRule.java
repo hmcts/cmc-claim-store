@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.rules;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
@@ -11,6 +12,12 @@ import java.util.Optional;
 
 @Component
 public class GenerateOrderRule {
+    private final boolean jddoEnabled;
+
+    public GenerateOrderRule(@Value("${feature_toggles.jddo:false}") boolean jddoEnabled) {
+        this.jddoEnabled = jddoEnabled;
+    }
+
     public static final String CLAIMANT_REQUESTED_FOR_EXPORT_REPORT =
         "Enter if you  grant permission for expert to the claimant";
 
@@ -22,16 +29,30 @@ public class GenerateOrderRule {
 
         List<String> validationErrors = new ArrayList<>();
 
-        if (isPresentAndIsYes(ccdCase.getExpertReportPermissionPartyAskedByClaimant())
-            && !isPresent(ccdCase.getGrantExpertReportPermission())
-        ) {
-            validationErrors.add(CLAIMANT_REQUESTED_FOR_EXPORT_REPORT);
-        }
+        if (jddoEnabled) {
+            if (isPresentAndIsYes(ccdCase.getExpertReportPermissionPartyAskedByClaimant())
+                && !isPresent(ccdCase.getGrantExpertReportPermission())
+            ) {
+                validationErrors.add(CLAIMANT_REQUESTED_FOR_EXPORT_REPORT);
+            }
 
-        if (isPresentAndIsYes(ccdCase.getExpertReportPermissionPartyAskedByDefendant())
-            && !isPresent(ccdCase.getGrantExpertReportPermission())
-        ) {
-            validationErrors.add(DEFENDANT_REQUESTED_FOR_EXPORT_REPORT);
+            if (isPresentAndIsYes(ccdCase.getExpertReportPermissionPartyAskedByDefendant())
+                && !isPresent(ccdCase.getGrantExpertReportPermission())
+            ) {
+                validationErrors.add(DEFENDANT_REQUESTED_FOR_EXPORT_REPORT);
+            }
+        } else {
+            if (isPresentAndIsYes(ccdCase.getExpertReportPermissionPartyAskedByClaimant())
+                && !isPresent(ccdCase.getExpertReportPermissionPartyGivenToClaimant())
+            ) {
+                validationErrors.add(CLAIMANT_REQUESTED_FOR_EXPORT_REPORT);
+            }
+
+            if (isPresentAndIsYes(ccdCase.getExpertReportPermissionPartyAskedByDefendant())
+                && !isPresent(ccdCase.getExpertReportPermissionPartyGivenToDefendant())
+            ) {
+                validationErrors.add(DEFENDANT_REQUESTED_FOR_EXPORT_REPORT);
+            }
         }
         return validationErrors;
     }
