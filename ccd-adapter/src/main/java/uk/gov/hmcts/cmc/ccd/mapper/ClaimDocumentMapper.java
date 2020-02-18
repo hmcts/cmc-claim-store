@@ -24,6 +24,7 @@ public class ClaimDocumentMapper {
             .authoredDatetime(claimDocument.getAuthoredDatetime())
             .createdDatetime(claimDocument.getCreatedDatetime())
             .createdBy(claimDocument.getCreatedBy())
+            .receivedDatetime(claimDocument.getReceivedDateTime())
             .size(claimDocument.getSize());
 
         return CCDCollectionElement.<CCDClaimDocument>builder()
@@ -47,6 +48,7 @@ public class ClaimDocumentMapper {
             .authoredDatetime(ccdClaimDocument.getAuthoredDatetime())
             .createdDatetime(ccdClaimDocument.getCreatedDatetime())
             .createdBy(ccdClaimDocument.getCreatedBy())
+            .receivedDateTime(ccdClaimDocument.getReceivedDatetime())
             .size(ccdClaimDocument.getSize());
 
         if (ccdClaimDocument.getDocumentLink() != null) {
