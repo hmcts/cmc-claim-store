@@ -39,20 +39,25 @@ public class DirectionsQuestionnaireUtils {
     public static Optional<CaseEvent> prepareCaseEvent(ResponseRejection responseRejection, Claim claim) {
         if (isOptedForMediation(responseRejection)) {
             return Optional.of(REFERRED_TO_MEDIATION);
-        } else if (isOnlineDQ(claim)) {
-            if (isPilotCourt(getPreferredCourt(claim))) {
-                if (isLegalAdvisorPilot(claim)) {
-                    return Optional.of(ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS);
-                }
-                if (isJudgePilot(claim)) {
-                    return Optional.of(ASSIGNING_FOR_JUDGE_DIRECTIONS);
-                }
-            }
+        }
 
-            return Optional.of(WAITING_TRANSFER);
-        } else {
+        if (!isOnlineDQ(claim)) {
             return Optional.empty();
         }
+
+        if (!isPilotCourt(getPreferredCourt(claim))) {
+            return Optional.of(WAITING_TRANSFER);
+        }
+
+        if (isLegalAdvisorPilot(claim)) {
+            return Optional.of(ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS);
+        }
+
+        if (isJudgePilot(claim)) {
+            return Optional.of(ASSIGNING_FOR_JUDGE_DIRECTIONS);
+        }
+
+        return Optional.empty();
     }
 
     public static String getDirectionsCaseState(Claim claim) {
