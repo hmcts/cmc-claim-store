@@ -100,6 +100,7 @@ public class SampleData {
             .submitterId("123")
             .previousServiceCaseReference("ref no")
             .externalId(UUID.randomUUID().toString())
+            .features("")
             .amountType(BREAK_DOWN)
             .housingDisrepairCostOfRepairDamages(MORE_THAN_THOUSAND_POUNDS.name())
             .housingDisrepairOtherDamages(THOUSAND_POUNDS_OR_LESS.name())
