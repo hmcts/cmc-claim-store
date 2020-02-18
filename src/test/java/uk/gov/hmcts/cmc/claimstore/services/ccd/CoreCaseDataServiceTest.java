@@ -102,6 +102,8 @@ public class CoreCaseDataServiceTest {
     private CaseDetailsConverter caseDetailsConverter;
     @Mock
     private IntentionToProceedDeadlineCalculator intentionToProceedDeadlineCalculator;
+    @Mock
+    private feign.Request request;
 
     private CoreCaseDataService service;
 
@@ -658,7 +660,7 @@ public class CoreCaseDataServiceTest {
             anyBoolean(),
             any()
         ))
-            .thenThrow(new FeignException.UnprocessableEntity("Status 422 from CCD", null));
+            .thenThrow(new FeignException.UnprocessableEntity("Status 422 from CCD", request, null));
 
         Claim returnedClaim = service.saveCaseEventIOC(USER, providedClaim, CREATE_CITIZEN_CLAIM);
 
