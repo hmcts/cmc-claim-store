@@ -211,11 +211,16 @@ module "claim-store-api" {
     // feature toggles
     CLAIM_STORE_TEST_SUPPORT_ENABLED = "${var.env == "prod" ? "false" : "true"}"
     FEATURE_TOGGLES_SAVE_CLAIM_STATE_ENABLED = "${var.save_claim_state_enabled}"
+    FEATURE_TOGGLES_JDDO = "${var.jddo_enabled}"
     //thread pool configs
     ASYNC_MAX_THREADPOOL_SIZE = 50
 
     ROOT_APPENDER = "CMC"
 
     DOCUMENT_MANAGEMENT_USERROLES = "caseworker-cmc,citizen"
+
+    DOC_ASSEMBLY_TEMPLATEID = "${var.la_directions_order_template_id}"
+    DOC_ASSEMBLY_JUDGETEMPLATEID = "${var.judge_order_template_id}"
+
   }
 }

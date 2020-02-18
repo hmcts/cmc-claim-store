@@ -9,3 +9,6 @@ doc_assembly_api_url = "http://dg-docassembly-demo.service.core-compute-demo.int
 claim_stayed_schedule = "0 0 16 ? * MON-FRI *"
 fees_url = "http://fees-register-api-demo.service.core-compute-demo.internal"
 payments_url = "http://fees-register-api-demo.service.core-compute-demo.internal"
+jddo_enabled = "true"
+la_directions_order_template_id = "CV-CMC-GOR-ENG-0004-1.docx"
+judge_order_template_id = "CV-CMC-GOR-ENG-00219-1.docx"
