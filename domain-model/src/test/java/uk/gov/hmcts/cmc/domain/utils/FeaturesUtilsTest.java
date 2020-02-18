@@ -8,8 +8,8 @@ import java.util.Collections;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.DQ_FLAG;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.LA_PILOT_FLAG;
 
 public class FeaturesUtilsTest {
 
@@ -25,9 +25,9 @@ public class FeaturesUtilsTest {
     }
 
     @Test
-    public void shouldReturnFalseWhereClaimFeaturesDoesNotHasDirectionQuestionnaire() {
+    public void shouldReturnFalseWhereClaimFeaturesDoesNotHaveDirectionQuestionnaire() {
         assertFalse(FeaturesUtils
-            .isOnlineDQ(SampleClaim.builder().withFeatures(ImmutableList.of(ADMISSIONS.getValue())).build())
+            .isOnlineDQ(SampleClaim.builder().withFeatures(ImmutableList.of(LA_PILOT_FLAG.getValue())).build())
         );
     }
 
