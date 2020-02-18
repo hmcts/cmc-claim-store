@@ -1,8 +1,13 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor;
 
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingCourtType;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
+
+import java.util.Optional;
+
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingCourtType.OTHER;
 
 @Component
 public class HearingCourtDetailsFinder {
@@ -14,7 +19,18 @@ public class HearingCourtDetailsFinder {
         this.hearingCourtMapper = hearingCourtMapper;
     }
 
-    public HearingCourt findHearingCourtAddress(CCDHearingCourtType courtType) {
+    public HearingCourt getHearingCourt(CCDCase ccdCase) {
+        return Optional.ofNullable(ccdCase.getHearingCourt())
+            .filter(c -> c != OTHER)
+            .map(this::mapHearingCourt)
+            .orElseGet(() ->
+                HearingCourt.builder()
+                .name(ccdCase.getHearingCourtName())
+                .address(ccdCase.getHearingCourtAddress())
+                .build());
+    }
+
+    private HearingCourt mapHearingCourt(CCDHearingCourtType courtType) {
         return courtFinderApi.findMoneyClaimCourtByPostcode(courtType.getPostcode())
             .stream()
             .findFirst()
