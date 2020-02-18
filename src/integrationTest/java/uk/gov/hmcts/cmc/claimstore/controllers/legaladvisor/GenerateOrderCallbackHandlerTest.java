@@ -97,9 +97,9 @@ public class GenerateOrderCallbackHandlerTest extends BaseMockSpringTest {
 
         assertThat(responseData).hasSize(9);
         assertThat(LocalDate.parse(responseData.get("docUploadDeadline").toString()))
-            .isAfterOrEqualTo(LocalDate.now().plusDays(42));
+            .isAfterOrEqualTo(LocalDate.now().plusDays(33));
         assertThat(LocalDate.parse(responseData.get("eyewitnessUploadDeadline").toString()))
-            .isAfterOrEqualTo(LocalDate.now().plusDays(42));
+            .isAfterOrEqualTo(LocalDate.now().plusDays(33));
         assertThat(responseData).flatExtracting("directionList")
             .containsExactlyInAnyOrder("DOCUMENTS", "EYEWITNESS");
         assertThat(responseData.get("docUploadForParty")).isEqualTo("BOTH");
