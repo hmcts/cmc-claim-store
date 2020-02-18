@@ -1,9 +1,21 @@
-cmc-citizen-frontend:
-  enabled: false
 postgresql:
   enabled: false
 ccd:
   enabled: false
+
+global:
+  devMode: true
+  idamApiUrl: ""
+  s2sAuthUrl: ""
+  cmcFrontendUrl: ""
+  pdfServiceUrl: ""
+  paymentUrl: ""
+  feesUrl: ""
+  sendLetterUrl: ""
+  documentManagementUrl: ""
+  dgAssemblyUrl: ""
+  ccdCaseDataApiUrl: ""
+  postgresqlHost: ""
 
 java:
   image: hmctspublic.azurecr.io/cmc/claim-store:latest
@@ -31,11 +43,16 @@ java:
     SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: true
     SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST: mta.reform.hmcts.net
     CLAIM_STORE_TEST_SUPPORT_ENABLED: true
+    CMC_DB_USERNAME: hmcts
+    CMC_DB_PASSWORD: hmcts
     CMC_DB_NAME: cmc
     CMC_DB_PORT: 5432
+    CLAIM_STORE_DB_USERNAME: hmcts
+    CLAIM_STORE_DB_PASSWORD: hmcts
+    CLAIM_STORE_DB_NAME: claimstore
+    CLAIM_STORE_DB_PORT: 5432
     FEATURE_TOGGLES_SAVE_CLAIM_STATE_ENABLED: true
-    FRONTEND_BASE_URL: https://FRONTEND_BASE_URL
-    RESPOND_TO_CLAIM_URL: https://RESPOND_TO_CLAIM_URL/first-contact/start
+    FEATURE_TOGGLES_DIRECTIONS_QUESTIONNAIRE_ENABLED: true
     STAFF_NOTIFICATIONS_RECIPIENT: civilmoneyclaims+staff-int-tests@gmail.com
     LIVE_SUPPORT_RECIPIENT: civilmoneyclaims+live-support-int-tests@gmail.com
     LIVE_SUPPORT_SENDER: noreply@reform.hmcts.net
@@ -50,5 +67,14 @@ java:
     MILO_CSV_SCHEDULE: '-'
     MILO_CSV_SENDER: noreply@reform.hmcts.net
     CLAIM_STAYED_SCHEDULE: ''
-    PAY_URL: false
-    FEES_URL: false
+    FRONTEND_BASE_URL: '{{ .Values.global.cmcFrontendUrl }}'
+    RESPOND_TO_CLAIM_URL: https://{{ tpl .Values.global.cmcFrontendUrl $}}/first-contact/start
+    CORE_CASE_DATA_API_URL: '{{ .Values.global.ccdCaseDataApiUrl }}'
+    IDAM_API_URL: '{{ .Values.global.idamApiUrl }}'
+    IDAM_S2S_AUTH_URL: '{{ .Values.global.s2sAuthUrl }}'
+    PDF_SERVICE_URL: '{{ .Values.global.pdfServiceUrl }}'
+    SEND_LETTER_URL: '{{ .Values.global.sendLetterUrl }}'
+    DOCUMENT_MANAGEMENT_URL: '{{ .Values.global.documentManagementUrl }}'
+    DOC_ASSEMBLY_URL: '{{ .Values.global.dgAssemblyUrl }}'
+    PAY_URL: '{{ .Values.global.paymentUrl }}'
+    FEES_URL: '{{ .Values.global.feesUrl }}'
