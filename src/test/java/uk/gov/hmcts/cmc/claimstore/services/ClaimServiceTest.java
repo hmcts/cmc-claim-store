@@ -67,7 +67,6 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESET_CLAIM_SUBMISSION_OPERA
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NUMBER_OF_RECONSIDERATION;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
-import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.DQ_FLAG;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.CLAIM_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_ID;
@@ -201,7 +200,7 @@ public class ClaimServiceTest {
 
         //when
         Claim createdClaim = claimService
-            .saveClaim(USER_ID, claimData, AUTHORISATION, singletonList(DQ_FLAG.getValue()));
+            .saveClaim(USER_ID, claimData, AUTHORISATION, emptyList());
 
         //verify
         ClaimData outputClaimData = claim.getClaimData();
