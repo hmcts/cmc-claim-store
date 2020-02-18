@@ -60,7 +60,6 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
-import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
 import java.time.LocalDateTime;
@@ -69,7 +68,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static java.lang.String.format;
-import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isReferredToJudge;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.REJECTION;
 
@@ -255,7 +253,7 @@ public class SupportController {
         }
     }
 
-    @PostMapping(value = "/sendMediation", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/sendMediation", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Generate and Send Mediation Report for Telephone Mediation Service")
     public void sendMediation(
             @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation,
@@ -359,9 +357,7 @@ public class SupportController {
         ClaimantResponse claimantResponse = claim.getClaimantResponse()
                 .orElseThrow(IllegalArgumentException::new);
         Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
-        if (!isSettlementAgreement(claim, claimantResponse) && (!isReferredToJudge(claimantResponse)
-                || (isReferredToJudge(claimantResponse) && PartyUtils.isCompanyOrOrganisation(response.getDefendant())))
-        ) {
+        if (!isSettlementAgreement(claim, claimantResponse)) {
             claimantResponseStaffNotificationHandler.onClaimantResponse(
                 new ClaimantResponseEvent(claim, authorization)
             );
