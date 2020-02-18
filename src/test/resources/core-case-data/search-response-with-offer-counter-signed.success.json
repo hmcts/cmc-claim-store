@@ -154,7 +154,6 @@
     "respondedAt": "2018-01-17T11:45:55.944",
     "settlementReachedAt": "2018-05-17T12:55:58.505",
     "submitterEmail": "me@server.net",
-    "features": "admissions",
     "claimSubmissionOperationIndicators": {"rpa": "YES", "bulkPrint": "YES", "sealedClaimUpload": "YES", "staffNotification": "YES", "claimantNotification": "YES", "defendantNotification": "YES", "claimIssueReceiptUpload": "YES"}
   }
 }

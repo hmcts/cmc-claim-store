@@ -179,12 +179,6 @@
   "responseDeadline": "2018-12-19",
   "moreTimeRequested": false,
   "submitterEmail": "claimant@mail.com",
-  "features": [
-    {
-      "id": "",
-      "value": "admissions"
-    }
-  ],
   "reDetermination": {
     "explanation": "I feel defendant can pay",
     "partyType": "CLAIMANT"
