@@ -154,12 +154,10 @@ public class DocAssemblyTemplateBodyMapperTest {
             ))
             .expertReportPermissionPartyAskedByClaimant(true)
             .expertReportPermissionPartyAskedByDefendant(true)
-            .expertReportPermissionPartyGivenToClaimant(true)
-            .expertReportPermissionPartyGivenToDefendant(true)
-            .expertReportInstructionClaimant(ImmutableList.of(CCDCollectionElement.<String>builder()
-                .value(SUBMIT_MORE_DOCS_INSTRUCTION).build()))
-            .expertReportInstructionDefendant(ImmutableList.of(CCDCollectionElement.<String>builder()
-                .value(SUBMIT_MORE_DOCS_INSTRUCTION).build()));
+            .expertReportInstructionClaimant(Collections.emptyList())
+            .expertReportInstructionDefendant(Collections.emptyList())
+            .grantExpertReportPermission(true)
+            .expertReportInstruction(SUBMIT_MORE_DOCS_INSTRUCTION);
 
         //when
         when(clock.instant()).thenReturn(LocalDate.parse("2019-04-24")
@@ -239,14 +237,16 @@ public class DocAssemblyTemplateBodyMapperTest {
                                 .build()))
                     .build()
             ))
+                .directionDeadline(workingDayIndicator.getNextWorkingDay(
+                        LocalDate.parse("2019-04-24").plusDays(19)))
+                .changeOrderDeadline(workingDayIndicator.getNextWorkingDay(
+                        LocalDate.parse("2019-04-24").plusDays(12)))
             .expertReportPermissionPartyAskedByClaimant(true)
             .expertReportPermissionPartyAskedByDefendant(true)
-            .expertReportPermissionPartyGivenToClaimant(true)
-            .expertReportPermissionPartyGivenToDefendant(true)
-            .expertReportInstructionClaimant(ImmutableList.of(CCDCollectionElement.<String>builder()
-                .value(SUBMIT_MORE_DOCS_INSTRUCTION).build()))
-            .expertReportInstructionDefendant(ImmutableList.of(CCDCollectionElement.<String>builder()
-                .value(SUBMIT_MORE_DOCS_INSTRUCTION).build()))
+            .expertReportInstructionClaimant(Collections.emptyList())
+            .expertReportInstructionDefendant(Collections.emptyList())
+            .grantExpertReportPermission(true)
+            .expertReportInstruction(SUBMIT_MORE_DOCS_INSTRUCTION)
             .build();
 
         assertThat(requestBody).isEqualTo(expectedBody);

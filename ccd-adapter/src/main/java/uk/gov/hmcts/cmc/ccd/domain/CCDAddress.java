@@ -20,4 +20,6 @@ public class CCDAddress {
     private String postCode;
     @JsonProperty("Country")
     private String country;
+    @JsonProperty("County")
+    private String county;
 }
