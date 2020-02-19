@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;

@@ -26,7 +26,6 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.rules.GenerateOrderRule;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
