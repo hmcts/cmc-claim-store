@@ -79,9 +79,14 @@ public class DocAssemblyTemplateBody implements FormPayload {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate directionDeadline;
+    private LocalDate changeOrderDeadline;
 
     private boolean expertReportPermissionPartyAskedByClaimant;
     private boolean expertReportPermissionPartyAskedByDefendant;
+    private boolean grantExpertReportPermission;
+    private String expertReportInstruction;
+
+    //TODO - Remove once CCD 1.5.9 released
     private boolean expertReportPermissionPartyGivenToClaimant;
     private boolean expertReportPermissionPartyGivenToDefendant;
     private List<CCDCollectionElement<String>> expertReportInstructionClaimant;

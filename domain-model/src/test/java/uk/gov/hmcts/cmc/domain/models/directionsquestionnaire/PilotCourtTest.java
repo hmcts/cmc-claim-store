@@ -12,9 +12,11 @@ public class PilotCourtTest {
 
     @Test
     public void shouldReturnTrueForPilotCourt() {
-        Arrays.stream(PilotCourt.values()).forEach(
-            court -> assertTrue(PilotCourt.isPilotCourt(court.getName() + randomAlphabetic(15)))
-        );
+        Arrays.stream(PilotCourt.values())
+            .filter(pilotCourt -> pilotCourt != PilotCourt.OTHER)
+            .forEach(
+                court -> assertTrue(PilotCourt.isPilotCourt(court.getName() + randomAlphabetic(15)))
+            );
     }
 
     @Test
