@@ -14,7 +14,6 @@ import uk.gov.hmcts.cmc.claimstore.documents.PrintService;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintableTemplate;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
-import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimIssuedStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
@@ -57,8 +56,6 @@ public class PinOrchestrationServiceTest {
     @Mock
     private PrintService bulkPrintService;
     @Mock
-    private ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService;
-    @Mock
     private ClaimIssuedNotificationService claimIssuedNotificationService;
     @Mock
     private NotificationsProperties notificationsProperties;
@@ -84,7 +81,6 @@ public class PinOrchestrationServiceTest {
     public void before() {
         pinOrchestrationService = new PinOrchestrationService(
             bulkPrintService,
-            claimIssuedStaffNotificationService,
             claimIssuedNotificationService,
             notificationsProperties,
             eventsStatusService,
@@ -116,9 +112,6 @@ public class PinOrchestrationServiceTest {
                     sealedClaimLetterDocument,
                     CLAIM.getReferenceNumber() + "-claim-form")
             )));
-
-        verify(claimIssuedStaffNotificationService)
-            .notifyStaffOfClaimIssue(eq(CLAIM), eq(ImmutableList.of(sealedClaim, defendantPinLetter)));
 
         verify(claimIssuedNotificationService).sendMail(
             eq(CLAIM),
@@ -156,27 +149,6 @@ public class PinOrchestrationServiceTest {
             //then
             verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM.getId()),
                 eq(ClaimSubmissionOperationIndicators.builder().build()), eq(CaseEvent.PIN_GENERATION_OPERATIONS));
-        }
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void updatePinOperationStatusWhenClaimIssueNotificationFails() {
-        //given
-        given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION)))
-            .willReturn(generatedDocuments);
-        doThrow(new RuntimeException("claim issue notification failed"))
-            .when(claimIssuedStaffNotificationService).notifyStaffOfClaimIssue(any(), any());
-        //when
-        try {
-            pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
-        } finally {
-            //then
-            ClaimSubmissionOperationIndicators operationIndicators = ClaimSubmissionOperationIndicators.builder()
-                .bulkPrint(YesNoOption.YES)
-                .build();
-
-            verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM.getId()),
-                eq(operationIndicators), eq(CaseEvent.PIN_GENERATION_OPERATIONS));
         }
     }
 

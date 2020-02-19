@@ -7,7 +7,6 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.Notifications
 import uk.gov.hmcts.cmc.claimstore.documents.PrintService;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintableTemplate;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
-import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimIssuedStaffNotificationService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
@@ -24,18 +23,15 @@ public class PinOrchestrationService {
     private final DocumentOrchestrationService documentOrchestrationService;
     private final ClaimCreationEventsStatusService eventsStatusService;
     private final PrintService bulkPrintService;
-    private final ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService;
 
     public PinOrchestrationService(
         PrintService bulkPrintService,
-        ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService,
         ClaimIssuedNotificationService claimIssuedNotificationService,
         NotificationsProperties notificationsProperties,
         ClaimCreationEventsStatusService eventsStatusService,
         DocumentOrchestrationService documentOrchestrationService
     ) {
         this.bulkPrintService = bulkPrintService;
-        this.claimIssuedStaffNotificationService = claimIssuedStaffNotificationService;
         this.claimIssuedNotificationService = claimIssuedNotificationService;
         this.notificationsProperties = notificationsProperties;
         this.eventsStatusService = eventsStatusService;
@@ -65,11 +61,6 @@ public class PinOrchestrationService {
                         buildSealedClaimFileBaseName(claim.getReferenceNumber())))
             );
             updatedOperationIndicator.bulkPrint(YesNoOption.YES);
-
-            claimIssuedStaffNotificationService.notifyStaffOfClaimIssue(
-                updatedClaim,
-                ImmutableList.of(documents.getSealedClaim(), documents.getDefendantPinLetter())
-            );
             updatedOperationIndicator.staffNotification(YesNoOption.YES);
 
             notifyDefendant(updatedClaim, submitterName, documents);
