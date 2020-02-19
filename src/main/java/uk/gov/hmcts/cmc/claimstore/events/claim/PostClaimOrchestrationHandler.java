@@ -78,7 +78,7 @@ public class PostClaimOrchestrationHandler {
 
         notifyStaffOperation = (claim, authorisation, sealedClaim) ->
             claim.getClaimSubmissionOperationIndicators().getStaffNotification() == NO
-                ? notifyStaffOperationService.notify(claim, authorisation, sealedClaim)
+                ? notifyStaffOperationService.notify(claim, authorisation)
                 : claim;
 
         notifyClaimantOperation = (claim, event) ->

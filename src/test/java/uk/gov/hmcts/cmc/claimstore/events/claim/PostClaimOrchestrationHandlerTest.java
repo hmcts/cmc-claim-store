@@ -116,7 +116,7 @@ public class PostClaimOrchestrationHandlerTest {
         given(pinOrchestrationService.process(eq(CLAIM), anyString(), anyString())).willReturn(CLAIM);
         given(claimantOperationService.notifyCitizen(eq(CLAIM), any(), eq(AUTHORISATION))).willReturn(CLAIM);
         given(rpaOperationService.notify(eq(CLAIM), eq(AUTHORISATION), any())).willReturn(CLAIM);
-        given(notifyStaffOperationService.notify(eq(CLAIM), eq(AUTHORISATION), any())).willReturn(CLAIM);
+        given(notifyStaffOperationService.notify(eq(CLAIM), eq(AUTHORISATION))).willReturn(CLAIM);
         given(uploadOperationService.uploadDocument(eq(CLAIM), eq(AUTHORISATION), any())).willReturn(CLAIM);
     }
 
@@ -483,7 +483,7 @@ public class PostClaimOrchestrationHandlerTest {
             .confirmRepresentative(eq(CLAIM), eq(SUBMITTER_NAME), anyString(), eq(AUTHORISATION));
 
         verify(rpaOperationService).notify(eq(CLAIM), eq(AUTHORISATION), any());
-        verify(notifyStaffOperationService).notify(eq(CLAIM), eq(AUTHORISATION), any());
+        verify(notifyStaffOperationService).notify(eq(CLAIM), eq(AUTHORISATION));
         verify(uploadOperationService).uploadDocument(eq(CLAIM), eq(AUTHORISATION), any());
         verify(claimService, never()).updateClaimState(eq(AUTHORISATION), any(Claim.class), eq(ClaimState.OPEN));
 
@@ -508,7 +508,7 @@ public class PostClaimOrchestrationHandlerTest {
             .confirmRepresentative(eq(CLAIM), eq(SUBMITTER_NAME), anyString(), eq(AUTHORISATION));
 
         verify(rpaOperationService).notify(eq(CLAIM), eq(AUTHORISATION), any());
-        verify(notifyStaffOperationService).notify(eq(CLAIM), eq(AUTHORISATION), any());
+        verify(notifyStaffOperationService).notify(eq(CLAIM), eq(AUTHORISATION));
         verify(uploadOperationService).uploadDocument(eq(CLAIM), eq(AUTHORISATION), any());
         verify(claimService).updateClaimState(eq(AUTHORISATION), any(Claim.class), eq(ClaimState.OPEN));
     }
