@@ -13,8 +13,6 @@ global:
   sendLetterUrl: "http://rpe-send-letter-service-aat.service.core-compute-aat.internal"
   documentManagementUrl: "http://dm-store-aat.service.core-compute-aat.internal"
   dgAssemblyUrl: "http://dg-docassembly-aat.service.core-compute-aat.internal"
-  ccdCaseDataApiUrl: ""
-  postgresqlHost: ""
 
 postgresql:
   enabled: true
@@ -60,3 +58,26 @@ ccd:
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP}
 
+  ccd-definition-store-api:
+    java:
+      image: hmctspublic.azurecr.io/ccd/definition-store-api:latest
+
+  ccd-data-store-api:
+    java:
+      image: hmctspublic.azurecr.io/ccd/data-store-api:latest
+
+  ccd-definition-importer:
+    image: hmctspublic.azurecr.io/cmc/ccd-definition-importer:1.5.9
+    environment:
+      CCD_DEF_CLAIM_STORE_BASE_URL: http://${SERVICE_NAME}-java
+    definitionFilename: cmc-ccd.xlsx
+      userRoles:
+        - citizen
+        - caseworker-cmc
+        - caseworker-cmc-solicitor
+        - caseworker-cmc-systemupdate
+        - letter-holder
+        - caseworker-autotest1
+        - caseworker-cmc-anonymouscitizen
+        - caseworker-cmc-judge
+        - caseworker-cmc-legaladvisor
