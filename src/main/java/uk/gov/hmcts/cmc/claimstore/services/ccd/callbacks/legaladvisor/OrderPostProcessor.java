@@ -68,9 +68,6 @@ public class OrderPostProcessor {
 
         CCDCase updatedCase = ccdCase.toBuilder()
             .caseDocuments(updateCaseDocumentsWithOrder(ccdCase, draftOrderDoc))
-            //CCD cannot currently handle storing values from dynamic lists, is getting re-implemented in RDM-6651
-            //Once CCD is fixed we can remove setting the hearing court to null
-            .hearingCourt(null)
             .directionOrder(CCDDirectionOrder.builder()
                 .createdOn(nowInUTC())
                 .hearingCourtName(hearingCourt.getName())
@@ -80,7 +77,25 @@ public class OrderPostProcessor {
 
         return AboutToStartOrSubmitCallbackResponse
             .builder()
-            .data(caseDetailsConverter.convertToMap(updatedCase))
+            .data(caseDetailsConverter.convertToMap(cleanUpDynamicList(updatedCase)))
+            .build();
+    }
+
+    public CallbackResponse cleanUpDynamicListCallback(CallbackParams callbackParams) {
+        CallbackRequest callbackRequest = callbackParams.getRequest();
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
+
+        return AboutToStartOrSubmitCallbackResponse
+            .builder()
+            .data(caseDetailsConverter.convertToMap(cleanUpDynamicList(ccdCase)))
+            .build();
+    }
+
+    private CCDCase cleanUpDynamicList(CCDCase ccdCase) {
+        return ccdCase.toBuilder()
+            //CCD cannot currently handle storing values from dynamic lists, is getting re-implemented in RDM-6651
+            //Once CCD is fixed we can remove setting the hearing court to null
+            .hearingCourt(null)
             .build();
     }
 

@@ -71,6 +71,8 @@ public class GenerateOrderCallbackHandlerTest {
     private AppInsights appInsights;
     @Mock
     private DirectionsQuestionnaireService directionsQuestionnaireService;
+    @Mock
+    private OrderPostProcessor orderPostProcessor;
 
     @Mock
     private PilotCourtService pilotCourtService;
@@ -86,7 +88,7 @@ public class GenerateOrderCallbackHandlerTest {
             docAssemblyService, new GenerateOrderRule(jddoEnabled), jddoEnabled, directionsQuestionnaireService,
             pilotCourtService);
 
-        generateOrderCallbackHandler = new GenerateOrderCallbackHandler(orderCreator,
+        generateOrderCallbackHandler = new GenerateOrderCallbackHandler(orderCreator, orderPostProcessor,
             caseDetailsConverter, appInsights);
 
         ReflectionTestUtils.setField(generateOrderCallbackHandler, "templateId", "testTemplateId");
