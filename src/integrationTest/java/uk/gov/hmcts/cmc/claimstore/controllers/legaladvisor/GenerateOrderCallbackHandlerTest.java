@@ -78,7 +78,7 @@ public class GenerateOrderCallbackHandlerTest extends BaseMockSpringTest {
                     .town("Clerkenwell").build())
                 .build()
             ));
-        given(pilotCourtService.getPilotHearingCourts(any()))
+        given(pilotCourtService.getPilotHearingCourts(any(), any()))
             .willReturn(ImmutableSet.of(HearingCourt.builder()
                 .name("Clerkenwell Court")
                 .address(CCDAddress.builder()
