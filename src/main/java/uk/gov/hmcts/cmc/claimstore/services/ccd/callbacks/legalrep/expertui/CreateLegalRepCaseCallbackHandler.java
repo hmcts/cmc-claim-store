@@ -65,7 +65,7 @@ public class CreateLegalRepCaseCallbackHandler extends CallbackHandler {
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
-        return ImmutableMap.of(CallbackType.ABOUT_TO_SUBMIT, this::createLegalRepClaim);
+        return ImmutableMap.of(CallbackType.SUBMITTED, this::createLegalRepClaim);
     }
 
     @Override

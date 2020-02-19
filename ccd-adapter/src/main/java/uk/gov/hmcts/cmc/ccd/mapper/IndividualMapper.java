@@ -39,6 +39,8 @@ public class IndividualMapper {
 
         Optional.ofNullable(individual.getDateOfBirth()).ifPresent(applicantPartyDetail::dateOfBirth);
         applicantPartyDetail.primaryAddress(addressMapper.to(individual.getAddress()));
+        applicantPartyDetail.firstName(individual.getFirstName());
+        applicantPartyDetail.lastName(individual.getLastName());
 
         builder
             .partyName(individual.getName())
@@ -51,6 +53,8 @@ public class IndividualMapper {
         return Individual.builder()
             .id(individual.getId())
             .name(applicant.getPartyName())
+            .firstName(partyDetails.getFirstName())
+            .lastName(partyDetails.getLastName())
             .address(addressMapper.from(partyDetails.getPrimaryAddress()))
             .correspondenceAddress(addressMapper.from(partyDetails.getCorrespondenceAddress()))
             .phone(telephoneMapper.from(partyDetails.getTelephoneNumber()))

@@ -63,7 +63,7 @@ public class CaseDetailsConverter {
         addAmountType(data, tempData);
         addExternalId(data, tempData);
         addClaimSubmissionIndicators(data, tempData);
-                return extractCCDCase(tempData);
+        return extractCCDCase(tempData);
     }
 
     private void addClaimSubmissionIndicators(Map<String, Object> data, Map<String, Object> tempData) {
