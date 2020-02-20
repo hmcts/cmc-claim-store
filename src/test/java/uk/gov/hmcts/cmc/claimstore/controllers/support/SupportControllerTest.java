@@ -17,10 +17,8 @@ import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseStaff
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
 import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullStaffNotificationHandler;
-import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimCreatedEvent;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
@@ -91,9 +89,6 @@ class SupportControllerTest {
     private MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler;
 
     @Mock
-    private DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler;
-
-    @Mock
     private CCJStaffNotificationHandler ccjStaffNotificationHandler;
 
     @Mock
@@ -128,7 +123,6 @@ class SupportControllerTest {
             userService,
             documentGenerator,
             moreTimeRequestedStaffNotificationHandler,
-            defendantResponseStaffNotificationHandler,
             ccjStaffNotificationHandler,
             agreementCountersignedStaffNotificationHandler,
             claimantResponseStaffNotificationHandler,
@@ -187,7 +181,7 @@ class SupportControllerTest {
                     .build();
 
                 controller = new SupportController(claimService, userService, documentGenerator,
-                    moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
+                    moreTimeRequestedStaffNotificationHandler,
                     ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
                     claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
                     postClaimOrchestrationHandler, mediationReportService, new ClaimSubmissionOperationIndicatorRule(),
@@ -327,17 +321,6 @@ class SupportControllerTest {
             }
 
             @Test
-            void shouldThrowExceptionIfDefendantResponseSubmittedWhenNoDefendantResponse() {
-
-                when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE))
-                    .thenReturn(Optional.of(SampleClaim.withNoResponse()));
-
-                assertThrows(ConflictException.class,
-                    () -> controller.resendStaffNotifications(CLAIM_REFERENCE, RESPONSE_SUBMITTED),
-                    "Claim " + CLAIM_REFERENCE + " does not have associated response");
-            }
-
-            @Test
             void shouldThrowServerExceptionWhenDefendantResponseReceiptUploadFailed() {
                 Claim claim = SampleClaim.getCitizenClaim();
                 when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
@@ -430,7 +413,7 @@ class SupportControllerTest {
                     .build();
 
                 controller = new SupportController(claimService, userService, documentGenerator,
-                    moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
+                    moreTimeRequestedStaffNotificationHandler,
                     ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
                     claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
                     postClaimOrchestrationHandler, mediationReportService, new ClaimSubmissionOperationIndicatorRule(),
@@ -464,6 +447,17 @@ class SupportControllerTest {
                     () -> controller.resendStaffNotifications(CLAIM_REFERENCE, "paid-in-full"));
 
                 verify(paidInFullStaffNotificationHandler, never()).onPaidInFullEvent(any(PaidInFullEvent.class));
+            }
+
+            @Test
+            void shouldNotSendStaffEmailAndThrowExceptionWhenDefendantResponseSubmitted() {
+
+                when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE))
+                    .thenReturn(Optional.of(SampleClaim.withNoResponse()));
+
+                assertThrows(NotFoundException.class,
+                    () -> controller.resendStaffNotifications(CLAIM_REFERENCE, RESPONSE_SUBMITTED),
+                    "Event response is not supported");
             }
         }
 
