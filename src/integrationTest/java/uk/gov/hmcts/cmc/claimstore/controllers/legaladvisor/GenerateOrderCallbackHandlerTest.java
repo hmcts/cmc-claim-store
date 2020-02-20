@@ -110,7 +110,7 @@ public class GenerateOrderCallbackHandlerTest extends BaseMockSpringTest {
             AboutToStartOrSubmitCallbackResponse.class
         ).getData();
 
-        assertThat(responseData).hasSize(10);
+        assertThat(responseData).hasSize(9);
         assertThat(LocalDate.parse(responseData.get("docUploadDeadline").toString()))
             .isAfterOrEqualTo(LocalDate.now().plusDays(33));
         assertThat(LocalDate.parse(responseData.get("eyewitnessUploadDeadline").toString()))
@@ -125,7 +125,6 @@ public class GenerateOrderCallbackHandlerTest extends BaseMockSpringTest {
         assertThat(responseData.get("preferredCourtObjectingParty")).isNull();
         assertThat(responseData.get("preferredCourtObjectingReason")).isNull();
         assertThat(responseData.get("otherDirectionHeaders")).isNull();
-        assertThat(responseData.get("hearingCourt")).isNotNull();
     }
 
     @SuppressWarnings("unchecked")
