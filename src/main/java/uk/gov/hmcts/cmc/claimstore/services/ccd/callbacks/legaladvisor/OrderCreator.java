@@ -5,21 +5,26 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDResponseSubjectType;
+import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireService;
 import uk.gov.hmcts.cmc.claimstore.services.LegalOrderGenerationDeadlinesCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.rules.GenerateOrderRule;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
+import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.Pilot;
+import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
-import uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
@@ -27,10 +32,13 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
@@ -55,22 +63,36 @@ public class OrderCreator {
     private static final String PREFERRED_DQ_COURT = "preferredDQCourt";
     private static final String EXPERT_PERMISSION_BY_CLAIMANT = "expertReportPermissionPartyAskedByClaimant";
     private static final String EXPERT_PERMISSION_BY_DEFENDANT = "expertReportPermissionPartyAskedByDefendant";
+    private static final String HEARING_COURT = "hearingCourt";
+    private static final String DYNAMIC_LIST_CODE = "code";
+    private static final String DYNAMIC_LIST_LABEL = "label";
+    private static final String DYNAMIC_LIST_ITEMS = "list_items";
+    private static final String GRANT_EXPERT_REPORT_PERMISSION = "grantExpertReportPermission";
 
     private final LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator;
     private final CaseDetailsConverter caseDetailsConverter;
     private final DocAssemblyService docAssemblyService;
     private final GenerateOrderRule generateOrderRule;
+    private final boolean jddoEnabled;
+    private final DirectionsQuestionnaireService directionsQuestionnaireService;
+    private final PilotCourtService pilotCourtService;
 
     public OrderCreator(
         LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator,
         CaseDetailsConverter caseDetailsConverter,
         DocAssemblyService docAssemblyService,
-        GenerateOrderRule generateOrderRule
+        GenerateOrderRule generateOrderRule,
+        @Value("${feature_toggles.jddo:false}") boolean jddoEnabled,
+        DirectionsQuestionnaireService directionsQuestionnaireService,
+        PilotCourtService pilotCourtService
     ) {
         this.legalOrderGenerationDeadlinesCalculator = legalOrderGenerationDeadlinesCalculator;
         this.caseDetailsConverter = caseDetailsConverter;
         this.docAssemblyService = docAssemblyService;
         this.generateOrderRule = generateOrderRule;
+        this.jddoEnabled = jddoEnabled;
+        this.directionsQuestionnaireService = directionsQuestionnaireService;
+        this.pilotCourtService = pilotCourtService;
     }
 
     public CallbackResponse prepopulateOrder(CallbackParams callbackParams) {
@@ -90,6 +112,10 @@ public class OrderCreator {
         data.put(DOC_UPLOAD_FOR_PARTY, BOTH.name());
         data.put(EYEWITNESS_UPLOAD_FOR_PARTY, BOTH.name());
         data.put(PAPER_DETERMINATION, NO.name());
+        if (jddoEnabled) {
+            data.put(HEARING_COURT, buildCourtsList(getPilot(callbackParams), claim.getCreatedAt()));
+            data.put(GRANT_EXPERT_REPORT_PERMISSION, NO);
+        }
 
         return AboutToStartOrSubmitCallbackResponse
             .builder()
@@ -124,7 +150,7 @@ public class OrderCreator {
         CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
 
         CCDResponseRejection claimantResponse = Optional.ofNullable(respondent.getClaimantResponse())
-            .map(r -> (CCDResponseRejection) r)
+            .map(CCDResponseRejection.class::cast)
             .orElseThrow(() -> new IllegalStateException("Claimant Response not present"));
 
         CCDDirectionsQuestionnaire claimantDQ = claimantResponse.getDirectionsQuestionnaire();
@@ -138,8 +164,8 @@ public class OrderCreator {
             newRequestedCourt = claimantDQ.getHearingLocation();
             preferredCourtObjectingParty = CCDResponseSubjectType.RES_CLAIMANT.getValue();
             preferredCourtObjectingReason = claimantDQ.getExceptionalCircumstancesReason();
-        } else if (defendantDQ != null && StringUtils.isNotBlank(
-            defendantDQ.getExceptionalCircumstancesReason())) {
+
+        } else if (defendantDQ != null && StringUtils.isNotBlank(defendantDQ.getExceptionalCircumstancesReason())) {
             newRequestedCourt = defendantDQ.getHearingLocation();
             preferredCourtObjectingParty = CCDResponseSubjectType.RES_DEFENDANT.getValue();
             preferredCourtObjectingReason = defendantDQ.getExceptionalCircumstancesReason();
@@ -148,7 +174,7 @@ public class OrderCreator {
         data.put(NEW_REQUESTED_COURT, newRequestedCourt);
         data.put(PREFERRED_COURT_OBJECTING_PARTY, preferredCourtObjectingParty);
         data.put(PREFERRED_COURT_OBJECTING_REASON, preferredCourtObjectingReason);
-        data.put(PREFERRED_DQ_COURT, DirectionsQuestionnaireUtils.getPreferredCourt(claim));
+        data.put(PREFERRED_DQ_COURT, directionsQuestionnaireService.getPreferredCourt(claim));
 
         if (Optional.ofNullable(claimantDQ).isPresent()) {
             data.put(EXPERT_PERMISSION_BY_CLAIMANT, hasRequestedExpertPermission(claimantDQ));
@@ -177,5 +203,35 @@ public class OrderCreator {
         return directionsQuestionnaire.getPermissionForExpert() != null
             && directionsQuestionnaire.getPermissionForExpert().toBoolean()
             && StringUtils.isNotBlank(directionsQuestionnaire.getExpertEvidenceToExamine());
+    }
+
+    private Map<String, List<Map<String, String>>> buildCourtsList(Pilot pilot, LocalDateTime claimCreatedDate) {
+        List<Map<String, String>> listItems = pilotCourtService.getPilotHearingCourts(pilot, claimCreatedDate).stream()
+            .sorted(Comparator.comparing(HearingCourt::getName))
+            .map(hearingCourt -> {
+                String id =  pilotCourtService.getPilotCourtId(hearingCourt);
+                return ImmutableMap.of(DYNAMIC_LIST_CODE, id, DYNAMIC_LIST_LABEL, hearingCourt.getName());
+            })
+            .collect(Collectors.toList());
+
+        if (pilot == Pilot.JDDO) {
+            listItems.add(ImmutableMap.of(DYNAMIC_LIST_CODE, "OTHER", DYNAMIC_LIST_LABEL, "Other Court"));
+        }
+
+        return ImmutableMap.of(DYNAMIC_LIST_ITEMS, listItems);
+    }
+
+    private Pilot getPilot(CallbackParams callbackParams) {
+        CaseEvent caseEvent = CaseEvent.fromValue(callbackParams.getRequest().getEventId());
+        switch (caseEvent) {
+            case GENERATE_ORDER:
+                return Pilot.LA;
+            case ACTION_REVIEW_COMMENTS:
+                return Pilot.LA;
+            case DRAW_JUDGES_ORDER:
+                return Pilot.JDDO;
+            default:
+                throw new IllegalArgumentException("No pilot defined for event: " + caseEvent);
+        }
     }
 }

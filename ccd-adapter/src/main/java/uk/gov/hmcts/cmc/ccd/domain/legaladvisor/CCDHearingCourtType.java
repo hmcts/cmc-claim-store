@@ -9,7 +9,8 @@ public enum CCDHearingCourtType {
     EDMONTON("N182TN"),
     MANCHESTER("M609DJ"),
     BIRMINGHAM("B11AA"),
-    CLERKENWELL("EC1V3RE");
+    CLERKENWELL("EC1V3RE"),
+    OTHER("");
 
     private String postcode;
 

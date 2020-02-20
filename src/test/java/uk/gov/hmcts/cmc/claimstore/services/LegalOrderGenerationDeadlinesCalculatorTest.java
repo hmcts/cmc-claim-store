@@ -16,7 +16,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DayAssert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LegalOrderGenerationDeadlinesCalculatorTest {
-    private static final int DAYS_FOR_RESPONSE = 42;
+    private static final int DAYS_FOR_RESPONSE = 33;
     private static final LocalDate TODAY = LocalDate.of(2019, 1, 2);
 
     private LegalOrderGenerationDeadlinesCalculator calculator;

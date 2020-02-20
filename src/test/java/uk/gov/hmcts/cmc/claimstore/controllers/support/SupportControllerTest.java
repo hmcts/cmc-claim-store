@@ -53,6 +53,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -190,7 +191,7 @@ class SupportControllerTest {
             .notifyStaffWithClaimantsIntentionToProceed(new ClaimantResponseEvent(sampleClaim, AUTHORISATION));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowForIntentToProceedIfClaimantResponseIsNotRejection() {
         sampleClaim = SampleClaim.builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
@@ -208,17 +209,18 @@ class SupportControllerTest {
 
         when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE))).thenReturn(Optional.of(sampleClaim));
 
-        controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "intent-to-proceed");
+        assertThrows(IllegalArgumentException.class,
+            () -> controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "intent-to-proceed"));
     }
 
     @Test
     public void shouldThrowExceptionIfDefendantResponseSubmittedWhenNoDefendantResponse() {
-        exceptionRule.expect(ConflictException.class);
-        exceptionRule.expectMessage("Claim " + CLAIM_REFERENCE + " does not have associated response");
-
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE))
             .thenReturn(Optional.of(SampleClaim.withNoResponse()));
-        controller.resendStaffNotifications(CLAIM_REFERENCE, RESPONSE_SUBMITTED);
+
+        ConflictException exception = assertThrows(ConflictException.class,
+            () -> controller.resendStaffNotifications(CLAIM_REFERENCE, RESPONSE_SUBMITTED));
+        assertThat(exception).hasMessage("Claim " + CLAIM_REFERENCE + " does not have associated response");
     }
 
     @Test
@@ -277,11 +279,11 @@ class SupportControllerTest {
 
     @Test
     public void shouldThrowExceptionWhenClaimHasNoClaimantResponse() {
-        exceptionRule.expect(IllegalArgumentException.class);
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(
             Optional.of(SampleClaim.builder().withClaimantResponse(null).build()));
 
-        controller.resendStaffNotifications(CLAIM_REFERENCE, "claimant-response");
+        assertThrows(IllegalArgumentException.class,
+            () -> controller.resendStaffNotifications(CLAIM_REFERENCE, "claimant-response"));
     }
 
     @Test
@@ -294,10 +296,10 @@ class SupportControllerTest {
 
     @Test
     public void shouldThrowExceptionWhenClaimHasNoMoneyReceivedOnDate() {
-        exceptionRule.expect(IllegalArgumentException.class);
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(
             Optional.of(SampleClaim.builder().withMoneyReceivedOn(null).build()));
-        controller.resendStaffNotifications(CLAIM_REFERENCE, "paid-in-full");
+        assertThrows(IllegalArgumentException.class,
+            () -> controller.resendStaffNotifications(CLAIM_REFERENCE, "paid-in-full"));
         verify(paidInFullStaffNotificationHandler, never()).onPaidInFullEvent(any(PaidInFullEvent.class));
     }
 
@@ -321,10 +323,10 @@ class SupportControllerTest {
 
     @Test
     public void shouldThrowServerExceptionWhenSealedClaimUploadFailed() {
-        exceptionRule.expect(ServerErrorException.class);
         Claim claim = SampleClaim.getCitizenClaim();
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
-        controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SEALED_CLAIM);
+        assertThrows(ServerErrorException.class,
+            () -> controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SEALED_CLAIM));
     }
 
     @Test
@@ -347,10 +349,10 @@ class SupportControllerTest {
 
     @Test
     public void shouldThrowServerExceptionWhenClaimIssueReceiptUploadFailed() {
-        exceptionRule.expect(ServerErrorException.class);
         Claim claim = SampleClaim.getCitizenClaim();
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
-        controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, CLAIM_ISSUE_RECEIPT);
+        assertThrows(ServerErrorException.class,
+            () -> controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, CLAIM_ISSUE_RECEIPT));
     }
 
     @Test
@@ -374,10 +376,10 @@ class SupportControllerTest {
 
     @Test
     public void shouldThrowServerExceptionWhenDefendantResponseReceiptUploadFailed() {
-        exceptionRule.expect(ServerErrorException.class);
         Claim claim = SampleClaim.getCitizenClaim();
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
-        controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, DEFENDANT_RESPONSE_RECEIPT);
+        assertThrows(ServerErrorException.class,
+            () -> controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, DEFENDANT_RESPONSE_RECEIPT));
     }
 
     @Test
@@ -400,18 +402,19 @@ class SupportControllerTest {
 
     @Test
     public void shouldThrowServerExceptionWhenSettlementAgreementUploadFailed() {
-        exceptionRule.expect(ServerErrorException.class);
         Claim claim = SampleClaim.getCitizenClaim();
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
-        controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SETTLEMENT_AGREEMENT);
+        assertThrows(ServerErrorException.class,
+            () -> controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SETTLEMENT_AGREEMENT));
     }
 
     @Test
     public void shouldThrowNotFoundExceptionWhenClaimIsNotFound() {
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.empty());
-        exceptionRule.expect(NotFoundException.class);
-        exceptionRule.expectMessage("Claim " + CLAIM_REFERENCE + " does not exist");
-        controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SEALED_CLAIM);
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SEALED_CLAIM));
+        assertThat(exception)
+            .hasMessage("Claim " + CLAIM_REFERENCE + " does not exist");
     }
 
     @Test
@@ -434,10 +437,10 @@ class SupportControllerTest {
 
     @Test
     public void shouldSendAppInsightIfMediationReportFails() {
-        LocalDate mediationSearchDate = LocalDate.of(2019, 07, 07);
+        LocalDate mediationSearchDate = LocalDate.of(2019, 7, 7);
         doNothing().when(mediationReportService).sendMediationReport(eq(AUTHORISATION), any());
         controller.sendMediation(AUTHORISATION, new MediationRequest(mediationSearchDate, "Holly@cow.com"));
-        verify(mediationReportService, times(1))
+        verify(mediationReportService)
             .sendMediationReport(eq(AUTHORISATION), eq(mediationSearchDate));
     }
 
@@ -478,13 +481,11 @@ class SupportControllerTest {
             .build();
         when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE)))
             .thenReturn(Optional.of(claim));
-        exceptionRule.expect(BadRequestException.class);
-        exceptionRule.expectMessage("Invalid input. The following indicator(s)[claimantNotification, "
+        BadRequestException exception = assertThrows(BadRequestException.class,
+            () -> controller.resetOperation(CLAIM_REFERENCE, claimSubmissionOperationIndicators, AUTHORISATION));
+        assertThat(exception).hasMessage("Invalid input. The following indicator(s)[claimantNotification, "
             + "defendantNotification, bulkPrint, rpa, staffNotification, sealedClaimUpload, claimIssueReceiptUpload] "
             + "cannot be set to Yes");
-        controller.resetOperation(CLAIM_REFERENCE,
-            claimSubmissionOperationIndicators,
-            AUTHORISATION);
     }
 
     @Test
@@ -511,12 +512,14 @@ class SupportControllerTest {
 
     @Test
     public void shouldThrowBadRequestExceptionWhenResetClaimSubmissionIndicator() {
-        exceptionRule.expect(BadRequestException.class);
-        exceptionRule.expectMessage("Authorisation is required");
-        controller.resetOperation(CLAIM_REFERENCE,
-            ClaimSubmissionOperationIndicators
-                .builder().build(),
-            "");
+        BadRequestException exception = assertThrows(BadRequestException.class,
+            () -> controller.resetOperation(
+                CLAIM_REFERENCE,
+                ClaimSubmissionOperationIndicators.builder().build(),
+                ""
+            ));
+        assertThat(exception)
+            .hasMessage("Authorisation is required");
     }
 
     @Test
