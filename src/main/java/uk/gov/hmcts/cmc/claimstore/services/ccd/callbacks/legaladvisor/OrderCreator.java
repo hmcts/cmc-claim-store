@@ -238,10 +238,10 @@ public class OrderCreator {
     }
 
     private boolean hasExpertsAtCaseLevel(CallbackParams callbackParams) {
-        return callbackParams.getVersion() == CallbackVersion.V_2;
+        return getPilot(callbackParams) != Pilot.LA || callbackParams.getVersion() == CallbackVersion.V_2;
     }
 
     private boolean hasDynamicCourts(CallbackParams callbackParams) {
-        return callbackParams.getVersion() == CallbackVersion.V_2;
+        return getPilot(callbackParams) != Pilot.LA || callbackParams.getVersion() == CallbackVersion.V_2;
     }
 }
