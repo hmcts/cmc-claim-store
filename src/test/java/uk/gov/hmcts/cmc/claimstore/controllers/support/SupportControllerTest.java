@@ -14,7 +14,6 @@ import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentGenerator;
 import uk.gov.hmcts.cmc.claimstore.events.claim.PostClaimOrchestrationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseStaffNotificationHandler;
-import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
 import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseStaffNotificationHandler;
@@ -97,9 +96,6 @@ class SupportControllerTest {
     private CCJStaffNotificationHandler ccjStaffNotificationHandler;
 
     @Mock
-    private AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler;
-
-    @Mock
     private ClaimantResponseStaffNotificationHandler claimantResponseStaffNotificationHandler;
 
     @Mock
@@ -130,7 +126,6 @@ class SupportControllerTest {
             moreTimeRequestedStaffNotificationHandler,
             defendantResponseStaffNotificationHandler,
             ccjStaffNotificationHandler,
-            agreementCountersignedStaffNotificationHandler,
             claimantResponseStaffNotificationHandler,
             paidInFullStaffNotificationHandler,
             documentsService,
@@ -188,7 +183,7 @@ class SupportControllerTest {
 
                 controller = new SupportController(claimService, userService, documentGenerator,
                     moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
-                    ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
+                    ccjStaffNotificationHandler,
                     claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
                     postClaimOrchestrationHandler, mediationReportService, new ClaimSubmissionOperationIndicatorRule(),
                     intentionToProceedService
@@ -431,7 +426,7 @@ class SupportControllerTest {
 
                 controller = new SupportController(claimService, userService, documentGenerator,
                     moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
-                    ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
+                    ccjStaffNotificationHandler,
                     claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
                     postClaimOrchestrationHandler, mediationReportService, new ClaimSubmissionOperationIndicatorRule(),
                     intentionToProceedService
@@ -453,6 +448,15 @@ class SupportControllerTest {
 
                 assertThrows(IllegalArgumentException.class,
                     () -> controller.resendStaffNotifications(CLAIM_REFERENCE, "claimant-response"));
+            }
+
+            @Test
+            void shouldNotSendStaffNotificationAndThrowExceptionWhenSettlementAgreed() {
+                when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(
+                    Optional.of(SampleClaim.builder().withClaimantResponse(null).build()));
+
+                assertThrows(NotFoundException.class,
+                    () -> controller.resendStaffNotifications(CLAIM_REFERENCE, "settlement"));
             }
 
             @Test

@@ -30,7 +30,6 @@ import uk.gov.hmcts.cmc.claimstore.events.claim.PostClaimOrchestrationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedEvent;
-import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
 import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
@@ -90,7 +89,6 @@ public class SupportController {
     private final MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler;
     private final DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler;
     private final CCJStaffNotificationHandler ccjStaffNotificationHandler;
-    private final AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler;
     private final ClaimantResponseStaffNotificationHandler claimantResponseStaffNotificationHandler;
     private final PaidInFullStaffNotificationHandler paidInFullStaffNotificationHandler;
     private final DocumentsService documentsService;
@@ -107,7 +105,6 @@ public class SupportController {
             MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler,
             DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler,
             CCJStaffNotificationHandler ccjStaffNotificationHandler,
-            AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler,
             ClaimantResponseStaffNotificationHandler claimantResponseStaffNotificationHandler,
             PaidInFullStaffNotificationHandler paidInFullStaffNotificationHandler,
             DocumentsService documentsService,
@@ -122,7 +119,6 @@ public class SupportController {
         this.moreTimeRequestedStaffNotificationHandler = moreTimeRequestedStaffNotificationHandler;
         this.defendantResponseStaffNotificationHandler = defendantResponseStaffNotificationHandler;
         this.ccjStaffNotificationHandler = ccjStaffNotificationHandler;
-        this.agreementCountersignedStaffNotificationHandler = agreementCountersignedStaffNotificationHandler;
         this.claimantResponseStaffNotificationHandler = claimantResponseStaffNotificationHandler;
         this.paidInFullStaffNotificationHandler = paidInFullStaffNotificationHandler;
         this.documentsService = documentsService;
@@ -156,9 +152,6 @@ public class SupportController {
                 break;
             case "ccj":
                 resendStaffNotificationCCJRequestSubmitted(claim, authorisation);
-                break;
-            case "settlement":
-                resendStaffNotificationOnAgreementCountersigned(claim, authorisation);
                 break;
             case "claimant-response":
                 resendStaffNotificationClaimantResponse(claim, authorisation);
@@ -349,14 +342,6 @@ public class SupportController {
         }
         DefendantResponseEvent event = new DefendantResponseEvent(claim, authorization);
         defendantResponseStaffNotificationHandler.onDefendantResponseSubmitted(event);
-    }
-
-    private void resendStaffNotificationOnAgreementCountersigned(Claim claim, String authorisation) {
-        if (claim.getSettlementReachedAt() == null) {
-            throw new ConflictException(CLAIM + claim.getReferenceNumber() + " does not have a settlement");
-        }
-        AgreementCountersignedEvent event = new AgreementCountersignedEvent(claim, null, authorisation);
-        agreementCountersignedStaffNotificationHandler.onAgreementCountersigned(event);
     }
 
     private void resendStaffNotificationClaimantResponse(Claim claim, String authorization) {
