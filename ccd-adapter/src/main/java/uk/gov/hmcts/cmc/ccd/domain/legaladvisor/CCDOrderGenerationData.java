@@ -46,7 +46,7 @@ public class CCDOrderGenerationData {
 
     private String preferredCourtObjectingReason;
 
-    private CCDHearingCourtType hearingCourt;
+    private String hearingCourt;
 
     private CCDHearingDurationType estimatedHearingDuration;
 
