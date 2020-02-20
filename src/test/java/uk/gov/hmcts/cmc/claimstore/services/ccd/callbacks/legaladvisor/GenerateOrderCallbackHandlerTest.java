@@ -19,12 +19,13 @@ import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDExpertReport;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
-import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireService;
 import uk.gov.hmcts.cmc.claimstore.services.LegalOrderGenerationDeadlinesCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.rules.GenerateOrderRule;
+import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
@@ -58,12 +59,7 @@ public class GenerateOrderCallbackHandlerTest {
     private static final String BEARER_TOKEN = "Bearer let me in";
     private static final LocalDate DEADLINE = LocalDate.parse("2018-11-16");
     private static final String DOC_URL = "http://success.test";
-    private static final UserDetails JUDGE = new UserDetails(
-        "1",
-        "email",
-        "Judge",
-        "McJudge",
-        Collections.emptyList());
+    private static final String DEFENDANT_PREFERRED_COURT = "Defendant Preferred Court";
 
     @Mock
     private LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator;
@@ -73,16 +69,26 @@ public class GenerateOrderCallbackHandlerTest {
     private DocAssemblyService docAssemblyService;
     @Mock
     private AppInsights appInsights;
+    @Mock
+    private DirectionsQuestionnaireService directionsQuestionnaireService;
+    @Mock
+    private OrderPostProcessor orderPostProcessor;
+
+    @Mock
+    private PilotCourtService pilotCourtService;
+
     private CallbackRequest callbackRequest;
     private GenerateOrderCallbackHandler generateOrderCallbackHandler;
     private CCDCase ccdCase;
 
     @Before
     public void setUp() {
+        boolean jddoEnabled = true;
         OrderCreator orderCreator = new OrderCreator(legalOrderGenerationDeadlinesCalculator, caseDetailsConverter,
-            docAssemblyService, new GenerateOrderRule());
+            docAssemblyService, new GenerateOrderRule(jddoEnabled), jddoEnabled, directionsQuestionnaireService,
+            pilotCourtService);
 
-        generateOrderCallbackHandler = new GenerateOrderCallbackHandler(orderCreator,
+        generateOrderCallbackHandler = new GenerateOrderCallbackHandler(orderCreator, orderPostProcessor,
             caseDetailsConverter, appInsights);
 
         ReflectionTestUtils.setField(generateOrderCallbackHandler, "templateId", "testTemplateId");
@@ -95,7 +101,7 @@ public class GenerateOrderCallbackHandlerTest {
                         .directionsQuestionnaire(DirectionsQuestionnaire.builder()
                             .hearingLocation(
                                 HearingLocation.builder()
-                                    .courtName("Defendant Preferred Court")
+                                    .courtName(DEFENDANT_PREFERRED_COURT)
                                     .build()
                             )
                             .build()).build()
@@ -103,6 +109,7 @@ public class GenerateOrderCallbackHandlerTest {
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
         when(legalOrderGenerationDeadlinesCalculator.calculateOrderGenerationDeadlines()).thenReturn(DEADLINE);
+        when(directionsQuestionnaireService.getPreferredCourt(eq(claim))).thenReturn(DEFENDANT_PREFERRED_COURT);
 
         callbackRequest = CallbackRequest
             .builder()
@@ -157,12 +164,13 @@ public class GenerateOrderCallbackHandlerTest {
             entry("eyewitnessUploadDeadline", DEADLINE),
             entry("eyewitnessUploadForParty", "BOTH"),
             entry("paperDetermination", "NO"),
-            entry("preferredDQCourt", "Defendant Preferred Court"),
+            entry("preferredDQCourt", DEFENDANT_PREFERRED_COURT),
             entry("newRequestedCourt", null),
             entry("preferredCourtObjectingParty", null),
             entry("preferredCourtObjectingReason", null),
             entry("expertReportPermissionPartyAskedByClaimant", YES),
-            entry("expertReportPermissionPartyAskedByDefendant", YES)
+            entry("expertReportPermissionPartyAskedByDefendant", YES),
+            entry("grantExpertReportPermission", NO)
         );
     }
 
@@ -206,12 +214,13 @@ public class GenerateOrderCallbackHandlerTest {
             entry("eyewitnessUploadDeadline", DEADLINE),
             entry("eyewitnessUploadForParty", "BOTH"),
             entry("paperDetermination", "NO"),
-            entry("preferredDQCourt", "Defendant Preferred Court"),
+            entry("preferredDQCourt", DEFENDANT_PREFERRED_COURT),
             entry("newRequestedCourt", null),
             entry("preferredCourtObjectingParty", null),
             entry("preferredCourtObjectingReason", null),
             entry("expertReportPermissionPartyAskedByClaimant", YES),
-            entry("expertReportPermissionPartyAskedByDefendant", YES)
+            entry("expertReportPermissionPartyAskedByDefendant", YES),
+            entry("grantExpertReportPermission", NO)
         );
     }
 
@@ -236,9 +245,8 @@ public class GenerateOrderCallbackHandlerTest {
             .request(callbackRequest)
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
             .build();
-        AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
-            generateOrderCallbackHandler
-                .handle(callbackParams);
+        AboutToStartOrSubmitCallbackResponse response =
+            (AboutToStartOrSubmitCallbackResponse) generateOrderCallbackHandler.handle(callbackParams);
 
         assertThat(response.getData()).contains(
             entry("directionList", ImmutableList.of("DOCUMENTS", "EYEWITNESS")),
@@ -247,12 +255,13 @@ public class GenerateOrderCallbackHandlerTest {
             entry("eyewitnessUploadDeadline", DEADLINE),
             entry("eyewitnessUploadForParty", "BOTH"),
             entry("paperDetermination", "NO"),
-            entry("preferredDQCourt", "Defendant Preferred Court"),
+            entry("preferredDQCourt", DEFENDANT_PREFERRED_COURT),
             entry("newRequestedCourt", null),
             entry("preferredCourtObjectingParty", null),
             entry("preferredCourtObjectingReason", null),
             entry("expertReportPermissionPartyAskedByClaimant", NO),
-            entry("expertReportPermissionPartyAskedByDefendant", NO)
+            entry("expertReportPermissionPartyAskedByDefendant", NO),
+            entry("grantExpertReportPermission", NO)
         ).doesNotContain(
             entry("hearingCourt", null)
         );
@@ -282,12 +291,13 @@ public class GenerateOrderCallbackHandlerTest {
             entry("eyewitnessUploadDeadline", DEADLINE),
             entry("eyewitnessUploadForParty", "BOTH"),
             entry("paperDetermination", "NO"),
-            entry("preferredDQCourt", "Defendant Preferred Court"),
+            entry("preferredDQCourt", DEFENDANT_PREFERRED_COURT),
             entry("newRequestedCourt", "Claimant Court"),
             entry("preferredCourtObjectingParty", "Res_CLAIMANT"),
             entry("preferredCourtObjectingReason", "As a claimant I like this court more"),
             entry("expertReportPermissionPartyAskedByClaimant", YES),
-            entry("expertReportPermissionPartyAskedByDefendant", NO)
+            entry("expertReportPermissionPartyAskedByDefendant", NO),
+            entry("grantExpertReportPermission", NO)
         ).doesNotContain(
             entry("otherDirectionHeaders", "HEADER_UPLOAD")
         );
@@ -319,12 +329,13 @@ public class GenerateOrderCallbackHandlerTest {
             entry("eyewitnessUploadDeadline", DEADLINE),
             entry("eyewitnessUploadForParty", "BOTH"),
             entry("paperDetermination", "NO"),
-            entry("preferredDQCourt", "Defendant Preferred Court"),
+            entry("preferredDQCourt", DEFENDANT_PREFERRED_COURT),
             entry("newRequestedCourt", "Defendant Court"),
             entry("preferredCourtObjectingParty", "Res_DEFENDANT"),
             entry("preferredCourtObjectingReason", "As a defendant I like this court more"),
             entry("expertReportPermissionPartyAskedByDefendant", NO),
-            entry("expertReportPermissionPartyAskedByClaimant", NO)
+            entry("expertReportPermissionPartyAskedByClaimant", NO),
+            entry("grantExpertReportPermission", NO)
         );
     }
 
