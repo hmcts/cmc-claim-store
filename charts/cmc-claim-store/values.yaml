@@ -39,8 +39,6 @@ java:
     CMC_DB_NAME: cmc
     CMC_DB_PORT: 5432
     FEATURE_TOGGLES_SAVE_CLAIM_STATE_ENABLED: true
-    #FRONTEND_BASE_URL: https://FRONTEND_BASE_URL
-    #RESPOND_TO_CLAIM_URL: https://RESPOND_TO_CLAIM_URL/first-contact/start
     STAFF_NOTIFICATIONS_RECIPIENT: civilmoneyclaims+staff-int-tests@gmail.com
     LIVE_SUPPORT_RECIPIENT: civilmoneyclaims+live-support-int-tests@gmail.com
     LIVE_SUPPORT_SENDER: noreply@reform.hmcts.net
@@ -55,9 +53,6 @@ java:
     MILO_CSV_SCHEDULE: '-'
     MILO_CSV_SENDER: noreply@reform.hmcts.net
     CLAIM_STAYED_SCHEDULE: ''
-    #PAY_URL: false
-    #FEES_URL: false
-
     IDAM_S2S_AUTH_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     IDAM_API_URL: https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net
     PDF_SERVICE_URL: http://cmc-pdf-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
