@@ -16,6 +16,9 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse.ClaimantResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import static java.math.BigDecimal.TEN;
 import static java.math.BigDecimal.ZERO;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,6 +26,7 @@ import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.CC
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.SETTLEMENT;
 
 public class ClaimantResponseTest extends BaseTest {
+    private static final BigDecimal TEN_2DP = TEN.setScale(2, RoundingMode.UNNECESSARY);
 
     private User claimant;
     private Claim claim;
@@ -58,7 +62,7 @@ public class ClaimantResponseTest extends BaseTest {
         ResponseAcceptation claimantResponse = (ResponseAcceptation) claimWithClaimantResponse.getClaimantResponse()
             .orElseThrow(() -> new AssertionError("Missing claimant response"));
 
-        assertThat(claimantResponse.getAmountPaid().orElse(ZERO)).isEqualByComparingTo(TEN);
+        assertThat(claimantResponse.getAmountPaid()).contains(TEN_2DP);
     }
 
     @Test
@@ -81,7 +85,7 @@ public class ClaimantResponseTest extends BaseTest {
         ResponseAcceptation claimantResponse = (ResponseAcceptation) claimWithClaimantResponse.getClaimantResponse()
             .orElseThrow(() -> new AssertionError("Missing claimant response"));
 
-        assertThat(claimantResponse.getAmountPaid()).contains(TEN);
+        assertThat(claimantResponse.getAmountPaid()).contains(TEN_2DP);
         assertThat(claimantResponse.getFormaliseOption()).contains(CCJ);
         CountyCourtJudgment countyCourtJudgment = claimWithClaimantResponse.getCountyCourtJudgment();
         assertThat(countyCourtJudgment).isNotNull();
@@ -148,7 +152,7 @@ public class ClaimantResponseTest extends BaseTest {
         ResponseAcceptation claimantResponse = (ResponseAcceptation) claimWithClaimantResponse.getClaimantResponse()
             .orElseThrow(() -> new AssertionError("Missing claimant response"));
 
-        assertThat(claimantResponse.getAmountPaid()).contains(TEN);
+        assertThat(claimantResponse.getAmountPaid()).contains(TEN_2DP);
         assertThat(claimantResponse.getFormaliseOption()).contains(SETTLEMENT);
         assertThat(claimWithClaimantResponse.getCountyCourtJudgment()).isNull();
         assertThat(claimWithClaimantResponse.getSettlement()).isNotEmpty();
@@ -172,7 +176,7 @@ public class ClaimantResponseTest extends BaseTest {
             .orElseThrow(() -> new AssertionError("Missing claimant response"));
 
         assertThat(claimantResponse.getFreeMediation()).isNotEmpty();
-        assertThat(claimantResponse.getAmountPaid()).contains(TEN);
+        assertThat(claimantResponse.getAmountPaid()).contains(TEN_2DP);
     }
 
     private Claim createClaimWithResponse(Claim createdCase, User defendant) {

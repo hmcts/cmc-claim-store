@@ -19,8 +19,8 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourtDetailsFinder;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
+import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -81,9 +81,10 @@ public class DrawOrderCallbackHandlerTest {
     @Mock
     private LegalOrderService legalOrderService;
     @Mock
-    private HearingCourtDetailsFinder hearingCourtDetailsFinder;
-    @Mock
     private DocAssemblyService docAssemblyService;
+
+    @Mock
+    private PilotCourtService pilotCourtService;
 
     private CallbackParams callbackParams;
 
@@ -94,7 +95,7 @@ public class DrawOrderCallbackHandlerTest {
     @Before
     public void setUp() {
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
-            caseDetailsConverter, legalOrderService, hearingCourtDetailsFinder);
+            caseDetailsConverter, legalOrderService, pilotCourtService);
 
         drawOrderCallbackHandler = new DrawOrderCallbackHandler(orderPostProcessor,
             caseDetailsConverter, docAssemblyService);
