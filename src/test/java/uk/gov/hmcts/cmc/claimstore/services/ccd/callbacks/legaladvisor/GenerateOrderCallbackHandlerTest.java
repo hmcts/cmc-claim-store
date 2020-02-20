@@ -24,6 +24,7 @@ import uk.gov.hmcts.cmc.claimstore.services.LegalOrderGenerationDeadlinesCalcula
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackVersion;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.rules.GenerateOrderRule;
 import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -83,9 +84,8 @@ public class GenerateOrderCallbackHandlerTest {
 
     @Before
     public void setUp() {
-        boolean jddoEnabled = true;
         OrderCreator orderCreator = new OrderCreator(legalOrderGenerationDeadlinesCalculator, caseDetailsConverter,
-            docAssemblyService, new GenerateOrderRule(jddoEnabled), jddoEnabled, directionsQuestionnaireService,
+            docAssemblyService, new GenerateOrderRule(), directionsQuestionnaireService,
             pilotCourtService);
 
         generateOrderCallbackHandler = new GenerateOrderCallbackHandler(orderCreator, orderPostProcessor,
@@ -169,6 +169,63 @@ public class GenerateOrderCallbackHandlerTest {
             entry("preferredCourtObjectingParty", null),
             entry("preferredCourtObjectingReason", null),
             entry("expertReportPermissionPartyAskedByClaimant", YES),
+            entry("expertReportPermissionPartyAskedByDefendant", YES)
+        );
+    }
+
+
+    @Test
+    public void shouldPrepopulateFieldsOnAboutToStartEventIfExpertReportsAreProvidedV2() {
+        ccdCase.setRespondents(
+            ImmutableList.of(
+                CCDCollectionElement.<CCDRespondent>builder()
+                    .value(CCDRespondent.builder()
+                        .claimantResponse(CCDResponseRejection.builder()
+                            .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder()
+                                .expertRequired(YES)
+                                .expertReports(ImmutableList.of(CCDCollectionElement.<CCDExpertReport>builder()
+                                    .value(CCDExpertReport.builder().expertName("expertName")
+                                        .expertReportDate(LocalDate.now())
+                                        .build())
+                                    .build()))
+                                .build())
+                            .build())
+                        .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder()
+                            .expertRequired(YES)
+                            .expertReports(ImmutableList.of(CCDCollectionElement.<CCDExpertReport>builder()
+                                .value(CCDExpertReport.builder().expertName("expertName")
+                                    .expertReportDate(LocalDate.now())
+                                    .build())
+                                .build()))
+                            .build())
+                        .build())
+                    .build()
+            ));
+
+        ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
+
+        CallbackParams callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_START)
+            .request(callbackRequest)
+            .version(CallbackVersion.V_2)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
+        AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
+            generateOrderCallbackHandler
+                .handle(callbackParams);
+
+        assertThat(response.getData()).contains(
+            entry("directionList", ImmutableList.of("DOCUMENTS", "EYEWITNESS")),
+            entry("docUploadDeadline", DEADLINE),
+            entry("docUploadForParty", "BOTH"),
+            entry("eyewitnessUploadDeadline", DEADLINE),
+            entry("eyewitnessUploadForParty", "BOTH"),
+            entry("paperDetermination", "NO"),
+            entry("preferredDQCourt", DEFENDANT_PREFERRED_COURT),
+            entry("newRequestedCourt", null),
+            entry("preferredCourtObjectingParty", null),
+            entry("preferredCourtObjectingReason", null),
+            entry("expertReportPermissionPartyAskedByClaimant", YES),
             entry("expertReportPermissionPartyAskedByDefendant", YES),
             entry("grantExpertReportPermission", NO)
         );
@@ -202,6 +259,55 @@ public class GenerateOrderCallbackHandlerTest {
             .type(CallbackType.ABOUT_TO_START)
             .request(callbackRequest)
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
+        AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
+            generateOrderCallbackHandler
+                .handle(callbackParams);
+
+        assertThat(response.getData()).contains(
+            entry("directionList", ImmutableList.of("DOCUMENTS", "EYEWITNESS")),
+            entry("docUploadDeadline", DEADLINE),
+            entry("docUploadForParty", "BOTH"),
+            entry("eyewitnessUploadDeadline", DEADLINE),
+            entry("eyewitnessUploadForParty", "BOTH"),
+            entry("paperDetermination", "NO"),
+            entry("preferredDQCourt", DEFENDANT_PREFERRED_COURT),
+            entry("newRequestedCourt", null),
+            entry("preferredCourtObjectingParty", null),
+            entry("preferredCourtObjectingReason", null),
+            entry("expertReportPermissionPartyAskedByClaimant", YES),
+            entry("expertReportPermissionPartyAskedByDefendant", YES)
+        );
+    }
+    @Test
+    public void shouldPrepopulateFieldsOnAboutToStartEventIfNobodyObjectsCourtV2() {
+        ccdCase.setRespondents(
+            ImmutableList.of(
+                CCDCollectionElement.<CCDRespondent>builder()
+                    .value(CCDRespondent.builder()
+                        .claimantResponse(CCDResponseRejection.builder()
+                            .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder()
+                                .expertRequired(YES)
+                                .permissionForExpert(YES)
+                                .expertEvidenceToExamine("Some Evidence")
+                                .build())
+                            .build())
+                        .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder()
+                            .expertRequired(YES)
+                            .permissionForExpert(YES)
+                            .expertEvidenceToExamine("Some Evidence")
+                            .build())
+                        .build())
+                    .build()
+            ));
+
+        ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
+
+        CallbackParams callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_START)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .version(CallbackVersion.V_2)
             .build();
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
             generateOrderCallbackHandler
@@ -260,6 +366,49 @@ public class GenerateOrderCallbackHandlerTest {
             entry("preferredCourtObjectingParty", null),
             entry("preferredCourtObjectingReason", null),
             entry("expertReportPermissionPartyAskedByClaimant", NO),
+            entry("expertReportPermissionPartyAskedByDefendant", NO)
+        ).doesNotContain(
+            entry("hearingCourt", null)
+        );
+    }
+
+    @Test
+    public void shouldPrepopulateFieldsOnAboutToStartEventIfOtherDirectionHeaderIsNullV2() {
+        ccdCase.setRespondents(
+            ImmutableList.of(
+                CCDCollectionElement.<CCDRespondent>builder()
+                    .value(CCDRespondent.builder()
+                        .claimantResponse(CCDResponseRejection.builder()
+                            .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder().build())
+                            .build())
+                        .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder().build())
+                        .build())
+                    .build()
+            ));
+
+        ccdCase = SampleData.addCCDOrderGenerationData(ccdCase).toBuilder().hearingCourt(null).build();
+
+        CallbackParams callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_START)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .version(CallbackVersion.V_2)
+            .build();
+        AboutToStartOrSubmitCallbackResponse response =
+            (AboutToStartOrSubmitCallbackResponse) generateOrderCallbackHandler.handle(callbackParams);
+
+        assertThat(response.getData()).contains(
+            entry("directionList", ImmutableList.of("DOCUMENTS", "EYEWITNESS")),
+            entry("docUploadDeadline", DEADLINE),
+            entry("docUploadForParty", "BOTH"),
+            entry("eyewitnessUploadDeadline", DEADLINE),
+            entry("eyewitnessUploadForParty", "BOTH"),
+            entry("paperDetermination", "NO"),
+            entry("preferredDQCourt", DEFENDANT_PREFERRED_COURT),
+            entry("newRequestedCourt", null),
+            entry("preferredCourtObjectingParty", null),
+            entry("preferredCourtObjectingReason", null),
+            entry("expertReportPermissionPartyAskedByClaimant", NO),
             entry("expertReportPermissionPartyAskedByDefendant", NO),
             entry("grantExpertReportPermission", NO)
         ).doesNotContain(
@@ -278,6 +427,42 @@ public class GenerateOrderCallbackHandlerTest {
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_START)
             .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
+        AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
+            generateOrderCallbackHandler
+                .handle(callbackParams);
+
+        assertThat(response.getData()).contains(
+            entry("directionList", ImmutableList.of("DOCUMENTS", "EYEWITNESS")),
+            entry("docUploadDeadline", DEADLINE),
+            entry("docUploadForParty", "BOTH"),
+            entry("eyewitnessUploadDeadline", DEADLINE),
+            entry("eyewitnessUploadForParty", "BOTH"),
+            entry("paperDetermination", "NO"),
+            entry("preferredDQCourt", DEFENDANT_PREFERRED_COURT),
+            entry("newRequestedCourt", "Claimant Court"),
+            entry("preferredCourtObjectingParty", "Res_CLAIMANT"),
+            entry("preferredCourtObjectingReason", "As a claimant I like this court more"),
+            entry("expertReportPermissionPartyAskedByClaimant", YES),
+            entry("expertReportPermissionPartyAskedByDefendant", NO)
+        ).doesNotContain(
+            entry("otherDirectionHeaders", "HEADER_UPLOAD")
+        );
+    }
+
+    @Test
+    public void shouldPrepopulateFieldsOnAboutToStartEventIfClaimantsObjectsCourtV2() {
+        ccdCase.setRespondents(
+            ImmutableList.of(
+                CCDCollectionElement.<CCDRespondent>builder()
+                    .value(SampleData.getIndividualRespondentWithDQInClaimantResponse())
+                    .build()
+            ));
+        CallbackParams callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_START)
+            .request(callbackRequest)
+            .version(CallbackVersion.V_2)
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
             .build();
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
@@ -334,6 +519,42 @@ public class GenerateOrderCallbackHandlerTest {
             entry("preferredCourtObjectingParty", "Res_DEFENDANT"),
             entry("preferredCourtObjectingReason", "As a defendant I like this court more"),
             entry("expertReportPermissionPartyAskedByDefendant", NO),
+            entry("expertReportPermissionPartyAskedByClaimant", NO)
+        );
+    }
+
+    @Test
+    public void shouldPrepopulateFieldsOnAboutToStartEventIfDefendantObjectsCourtV2() {
+        ccdCase.setRespondents(
+            ImmutableList.of(
+                CCDCollectionElement.<CCDRespondent>builder()
+                    .value(SampleData.getIndividualRespondentWithDQ())
+                    .build()
+            ));
+        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+
+        CallbackParams callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_START)
+            .request(callbackRequest)
+            .version(CallbackVersion.V_2)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
+        AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
+            generateOrderCallbackHandler
+                .handle(callbackParams);
+
+        assertThat(response.getData()).contains(
+            entry("directionList", ImmutableList.of("DOCUMENTS", "EYEWITNESS")),
+            entry("docUploadDeadline", DEADLINE),
+            entry("docUploadForParty", "BOTH"),
+            entry("eyewitnessUploadDeadline", DEADLINE),
+            entry("eyewitnessUploadForParty", "BOTH"),
+            entry("paperDetermination", "NO"),
+            entry("preferredDQCourt", DEFENDANT_PREFERRED_COURT),
+            entry("newRequestedCourt", "Defendant Court"),
+            entry("preferredCourtObjectingParty", "Res_DEFENDANT"),
+            entry("preferredCourtObjectingReason", "As a defendant I like this court more"),
+            entry("expertReportPermissionPartyAskedByDefendant", NO),
             entry("expertReportPermissionPartyAskedByClaimant", NO),
             entry("grantExpertReportPermission", NO)
         );
@@ -360,6 +581,7 @@ public class GenerateOrderCallbackHandlerTest {
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.MID)
             .request(callbackRequest)
+            .version(CallbackVersion.V_2)
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
             .build();
 
@@ -380,6 +602,7 @@ public class GenerateOrderCallbackHandlerTest {
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_START)
             .request(callbackRequest)
+            .version(CallbackVersion.V_2)
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
             .build();
 

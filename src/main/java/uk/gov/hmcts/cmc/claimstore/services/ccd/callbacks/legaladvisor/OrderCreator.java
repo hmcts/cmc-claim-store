@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -20,6 +19,7 @@ import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireService;
 import uk.gov.hmcts.cmc.claimstore.services.LegalOrderGenerationDeadlinesCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackVersion;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.rules.GenerateOrderRule;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.Pilot;
@@ -73,7 +73,6 @@ public class OrderCreator {
     private final CaseDetailsConverter caseDetailsConverter;
     private final DocAssemblyService docAssemblyService;
     private final GenerateOrderRule generateOrderRule;
-    private final boolean jddoEnabled;
     private final DirectionsQuestionnaireService directionsQuestionnaireService;
     private final PilotCourtService pilotCourtService;
 
@@ -82,7 +81,6 @@ public class OrderCreator {
         CaseDetailsConverter caseDetailsConverter,
         DocAssemblyService docAssemblyService,
         GenerateOrderRule generateOrderRule,
-        @Value("${feature_toggles.jddo:false}") boolean jddoEnabled,
         DirectionsQuestionnaireService directionsQuestionnaireService,
         PilotCourtService pilotCourtService
     ) {
@@ -90,7 +88,6 @@ public class OrderCreator {
         this.caseDetailsConverter = caseDetailsConverter;
         this.docAssemblyService = docAssemblyService;
         this.generateOrderRule = generateOrderRule;
-        this.jddoEnabled = jddoEnabled;
         this.directionsQuestionnaireService = directionsQuestionnaireService;
         this.pilotCourtService = pilotCourtService;
     }
@@ -112,8 +109,12 @@ public class OrderCreator {
         data.put(DOC_UPLOAD_FOR_PARTY, BOTH.name());
         data.put(EYEWITNESS_UPLOAD_FOR_PARTY, BOTH.name());
         data.put(PAPER_DETERMINATION, NO.name());
-        if (jddoEnabled) {
+
+        if (hasExpertsAtCaseLevel(callbackParams)) {
             data.put(HEARING_COURT, buildCourtsList(getPilot(callbackParams), claim.getCreatedAt()));
+        }
+
+        if (hasDynamicCourts(callbackParams)) {
             data.put(GRANT_EXPERT_REPORT_PERMISSION, NO);
         }
 
@@ -128,7 +129,8 @@ public class OrderCreator {
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
 
-        List<String> validations = generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase);
+        List<String> validations = generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase,
+            hasExpertsAtCaseLevel(callbackParams));
         if (!validations.isEmpty()) {
             return AboutToStartOrSubmitCallbackResponse.builder().errors(validations).build();
         }
@@ -233,5 +235,13 @@ public class OrderCreator {
             default:
                 throw new IllegalArgumentException("No pilot defined for event: " + caseEvent);
         }
+    }
+
+    private boolean hasExpertsAtCaseLevel(CallbackParams callbackParams) {
+        return callbackParams.getVersion() == CallbackVersion.V_2;
+    }
+
+    private boolean hasDynamicCourts(CallbackParams callbackParams) {
+        return callbackParams.getVersion() == CallbackVersion.V_2;
     }
 }
