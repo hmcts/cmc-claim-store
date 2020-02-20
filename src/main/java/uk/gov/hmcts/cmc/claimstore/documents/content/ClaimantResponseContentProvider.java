@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_CLAIMANT_RESPONSE;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDateTime;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.CCJ;
@@ -56,12 +58,12 @@ public class ClaimantResponseContentProvider {
         });
 
         ClaimantResponse claimantResponse = claim.getClaimantResponse()
-            .orElseThrow(() -> new IllegalStateException("Missing claimant response"));
+            .orElseThrow(() -> new IllegalStateException(MISSING_CLAIMANT_RESPONSE));
         content.put("amountPaid", claimantResponse.getAmountPaid());
         content.put("responseDashboardUrl", notificationsProperties.getFrontendBaseUrl());
 
         Response defendantResponse = claim.getResponse()
-            .orElseThrow(() -> new IllegalStateException("Missing response"));
+            .orElseThrow(() -> new IllegalStateException(MISSING_RESPONSE));
         content.put("defendant", partyDetailsContentProvider.createContent(
             claim.getClaimData().getDefendant(),
             defendantResponse.getDefendant(),

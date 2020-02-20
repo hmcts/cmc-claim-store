@@ -12,6 +12,7 @@ import java.util.Map;
 
 import static java.math.BigDecimal.ZERO;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_REPRESENTATIVE;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 
@@ -45,7 +46,7 @@ public class LegalSealedClaimContentProvider {
 
         Representative legalRepresentative = claim.getClaimData().getClaimants().stream()
             .findFirst().orElseThrow(() -> new IllegalArgumentException("Missing claimant"))
-            .getRepresentative().orElseThrow(() -> new IllegalArgumentException("Missing representative"));
+            .getRepresentative().orElseThrow(() -> new IllegalArgumentException(MISSING_REPRESENTATIVE));
 
         content.put("preferredCourt", claim.getClaimData().getPreferredCourt());
         content.put("feePaid", formatMoney(claim.getClaimData().getFeesPaidInPounds().orElse(ZERO)));

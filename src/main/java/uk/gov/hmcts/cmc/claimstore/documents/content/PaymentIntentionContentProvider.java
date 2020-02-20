@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.services.staff.content.RepaymentPlanContentProvider.create;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_PAYMENT_DATE;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 
 @Component
@@ -46,7 +47,7 @@ public class PaymentIntentionContentProvider {
                 return paymentAmount
                     + ", no later than "
                     + formatDate(Optional.ofNullable(paymentDate)
-                    .orElseThrow(() -> new IllegalStateException("Missing payment date")));
+                    .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT_DATE)));
             default:
                 return repaymentPlan == null
                     ? paymentOption.getDescription()

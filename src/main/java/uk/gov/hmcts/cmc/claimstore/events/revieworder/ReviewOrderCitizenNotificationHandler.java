@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import java.util.Map;
 
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.PaidInFull.referenceForDefendant;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_REVIEW_ORDER;
 import static uk.gov.hmcts.cmc.domain.utils.EmailUtils.getDefendantEmail;
 
 @Component
@@ -30,7 +31,7 @@ public class ReviewOrderCitizenNotificationHandler {
     @EventListener
     public void onReviewOrderEvent(ReviewOrderEvent event) {
         ReviewOrder reviewOrder = event.getClaim().getReviewOrder()
-            .orElseThrow(() -> new IllegalArgumentException("Missing review order"));
+            .orElseThrow(() -> new IllegalArgumentException(MISSING_REVIEW_ORDER));
         if (null == reviewOrder.getRequestedBy()) {
             throw new IllegalArgumentException("RequestedBy can't be null");
         }

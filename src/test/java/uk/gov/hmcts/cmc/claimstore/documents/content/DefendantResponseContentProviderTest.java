@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 
 public class DefendantResponseContentProviderTest {
@@ -90,7 +91,7 @@ public class DefendantResponseContentProviderTest {
         Map<String, Object> content = provider.createContent(claim);
 
         List<String> expected = ((FullDefenceResponse) claim.getResponse()
-            .orElseThrow(() -> new AssertionError("Missing response")))
+            .orElseThrow(() -> new AssertionError(MISSING_RESPONSE)))
             .getDefence()
             .map(ImmutableList::of)
             .map(immutableList -> (List<String>) immutableList)

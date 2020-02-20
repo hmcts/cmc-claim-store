@@ -36,6 +36,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCUTORY_JUDGMENT;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_OFFER;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_PAYMENT_DATE;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_PAYMENT_INTENTION;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_REPAYMENT_PLAN;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType.CLAIMANT;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType.COURT;
@@ -123,7 +127,7 @@ public class FormaliseResponseAcceptanceServiceTest {
         LocalDate respondentPayingBySetDate = ((PartAdmissionResponse) partAdmissionsResponsePayBySetDate)
             .getPaymentIntention()
             .flatMap(PaymentIntention::getPaymentDate)
-            .orElseThrow(() -> new IllegalStateException("Missing payment date"));
+            .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT_DATE));
 
         Claim claim = SampleClaim.getWithResponse(partAdmissionsResponsePayBySetDate);
         ResponseAcceptation responseAcceptation = ResponseAcceptation
@@ -141,7 +145,7 @@ public class FormaliseResponseAcceptanceServiceTest {
         assertThat(countyCourtJudgmentArgumentCaptor
             .getValue()
             .getPayBySetDate()
-            .orElseThrow(() -> new IllegalStateException("Missing payment date")))
+            .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT_DATE)))
             .isEqualTo(respondentPayingBySetDate);
 
         verifyNoInteractions(settlementAgreementService);
@@ -154,7 +158,7 @@ public class FormaliseResponseAcceptanceServiceTest {
         RepaymentPlan repaymentPlanOfDefendant = admissionResponsePayByInstalments
             .getPaymentIntention()
             .flatMap(PaymentIntention::getRepaymentPlan)
-            .orElseThrow(() -> new IllegalStateException("Missing repayment plan"));
+            .orElseThrow(() -> new IllegalStateException(MISSING_REPAYMENT_PLAN));
 
         Claim claim = SampleClaim.getWithResponse(admissionResponsePayByInstalments);
         ResponseAcceptation responseAcceptation = ResponseAcceptation
@@ -185,7 +189,7 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         PaymentIntention paymentIntention = SamplePaymentIntention.bySetDate();
         LocalDate appliedPaymentDate = paymentIntention.getPaymentDate()
-            .orElseThrow(() -> new IllegalStateException("Missing payment date"));
+            .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT_DATE));
 
         ResponseAcceptation responseAcceptation = ResponseAcceptation
             .builder()
@@ -207,7 +211,7 @@ public class FormaliseResponseAcceptanceServiceTest {
         assertThat(countyCourtJudgmentArgumentCaptor
             .getValue()
             .getPayBySetDate()
-            .orElseThrow(() -> new IllegalStateException("Missing payment date")))
+            .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT_DATE)))
             .isEqualTo(appliedPaymentDate);
 
         verifyNoInteractions(settlementAgreementService);
@@ -221,7 +225,7 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         PaymentIntention paymentIntention = SamplePaymentIntention.bySetDate();
         LocalDate appliedPaymentDate = paymentIntention.getPaymentDate()
-            .orElseThrow(() -> new IllegalStateException("Missing payment date"));
+            .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT_DATE));
 
         PaymentIntention claimantPaymentIntention = SamplePaymentIntention.instalments();
         ResponseAcceptation responseAcceptation = ResponseAcceptation
@@ -245,7 +249,7 @@ public class FormaliseResponseAcceptanceServiceTest {
         assertThat(countyCourtJudgmentArgumentCaptor
             .getValue()
             .getPayBySetDate()
-            .orElseThrow(() -> new IllegalStateException("Missing payment date")))
+            .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT_DATE)))
             .isEqualTo(appliedPaymentDate);
 
         verifyNoInteractions(settlementAgreementService);
@@ -296,7 +300,7 @@ public class FormaliseResponseAcceptanceServiceTest {
         RepaymentPlan appliedPlan = courtDeterminedPaymentPlanByInstalments
             .getCourtDecision()
             .getRepaymentPlan()
-            .orElseThrow(() -> new IllegalArgumentException("Missing repayment plan"));
+            .orElseThrow(() -> new IllegalArgumentException(MISSING_REPAYMENT_PLAN));
 
         ResponseAcceptation responseAcceptation = ResponseAcceptation
             .builder()
@@ -314,7 +318,7 @@ public class FormaliseResponseAcceptanceServiceTest {
         assertThat(countyCourtJudgmentArgumentCaptor
             .getValue()
             .getRepaymentPlan()
-            .orElseThrow(() -> new IllegalStateException("Missing repayment plan")))
+            .orElseThrow(() -> new IllegalStateException(MISSING_REPAYMENT_PLAN)))
             .isEqualTo(appliedPlan);
 
         verifyNoInteractions(settlementAgreementService);
@@ -327,7 +331,7 @@ public class FormaliseResponseAcceptanceServiceTest {
         RepaymentPlan repaymentPlan = fullAdmissionResponseWithInstalments
             .getPaymentIntention()
             .getRepaymentPlan()
-            .orElseThrow(() -> new IllegalStateException("Missing repayment plan"));
+            .orElseThrow(() -> new IllegalStateException(MISSING_REPAYMENT_PLAN));
 
         Claim claim = SampleClaim.getWithResponse(fullAdmissionResponseWithInstalments);
 
@@ -346,7 +350,7 @@ public class FormaliseResponseAcceptanceServiceTest {
         assertThat(countyCourtJudgmentArgumentCaptor
             .getValue()
             .getRepaymentPlan()
-            .orElseThrow(() -> new IllegalStateException("Missing repayment plan")))
+            .orElseThrow(() -> new IllegalStateException(MISSING_REPAYMENT_PLAN)))
             .isEqualTo(repaymentPlan);
 
         verifyNoInteractions(settlementAgreementService);
@@ -358,7 +362,7 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         PaymentIntention paymentIntentionOfDefendant = ((PartAdmissionResponse) partAdmissionsResponsePayBySetDate)
             .getPaymentIntention()
-            .orElseThrow(() -> new IllegalStateException("Missing payment intention"));
+            .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT_INTENTION));
 
         Claim claim = SampleClaim.getWithResponse(partAdmissionsResponsePayBySetDate);
 
@@ -378,9 +382,9 @@ public class FormaliseResponseAcceptanceServiceTest {
             .getValue()
             .getLastStatementOfType(StatementType.OFFER)
             .getOffer()
-            .orElseThrow(() -> new IllegalStateException("Missing settlement offer"))
+            .orElseThrow(() -> new IllegalStateException(MISSING_OFFER))
             .getPaymentIntention()
-            .orElseThrow(() -> new IllegalStateException("Missing payment intention"));
+            .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT_INTENTION));
 
         assertThat(paymentIntentionWithinOffer).isEqualTo(paymentIntentionOfDefendant);
 
@@ -392,7 +396,7 @@ public class FormaliseResponseAcceptanceServiceTest {
         PartAdmissionResponse partAdmissionResponsePayByInstalments = getPartAdmissionResponsePayByInstalments();
 
         PaymentIntention paymentIntentionOfDefendant = partAdmissionResponsePayByInstalments.getPaymentIntention()
-            .orElseThrow(() -> new IllegalStateException("Missing payment intention"));
+            .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT_INTENTION));
 
         Claim claim = SampleClaim.getWithResponse(partAdmissionResponsePayByInstalments);
 
@@ -412,7 +416,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .getValue()
             .getLastStatementOfType(StatementType.OFFER)
             .getOffer()
-            .orElseThrow(() -> new IllegalStateException("Missing offer"))
+            .orElseThrow(() -> new IllegalStateException(MISSING_OFFER))
             .getPaymentIntention()
             .orElseThrow(IllegalAccessError::new);
 
@@ -449,7 +453,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .getValue()
             .getLastStatementOfType(StatementType.OFFER)
             .getOffer()
-            .orElseThrow(() -> new IllegalStateException("Missing offer"))
+            .orElseThrow(() -> new IllegalStateException(MISSING_OFFER))
             .getPaymentIntention()
             .orElseThrow(IllegalAccessError::new);
 
@@ -487,7 +491,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .getValue()
             .getLastStatementOfType(StatementType.OFFER)
             .getOffer()
-            .orElseThrow(() -> new IllegalStateException("Missing offer"))
+            .orElseThrow(() -> new IllegalStateException(MISSING_OFFER))
             .getPaymentIntention()
             .orElseThrow(IllegalAccessError::new);
 
@@ -518,7 +522,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .getValue()
             .getLastStatementOfType(StatementType.OFFER)
             .getOffer()
-            .orElseThrow(() -> new IllegalStateException("Missing offer"));
+            .orElseThrow(() -> new IllegalStateException(MISSING_OFFER));
 
         assertThat(offer.getContent()).contains("John Rambo will repay £81.90, in instalments of £100.99 every week."
             + " The first instalment will be paid by 10 October 2100.");
@@ -558,7 +562,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .getValue()
             .getLastStatementOfType(StatementType.OFFER)
             .getOffer()
-            .orElseThrow(() -> new IllegalStateException("Missing offer"));
+            .orElseThrow(() -> new IllegalStateException(MISSING_OFFER));
 
         assertThat(offer.getContent()).startsWith("John Rambo will pay £81.90");
 

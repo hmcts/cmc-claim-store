@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.claimstore.services.staff.DefendantResponseStaffNotificationService.wrapInMap;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
 
 public class FullDefenceStaffEmailContentProviderTest {
 
@@ -51,7 +52,7 @@ public class FullDefenceStaffEmailContentProviderTest {
         Claim claim = SampleClaim.getWithDefaultResponse();
         EmailContent content = service.createContent(wrapInMap(claim, DEFENDANT_EMAIL));
         String expectedPhone = claim.getResponse()
-            .orElseThrow(() -> new IllegalStateException("Missing response"))
+            .orElseThrow(() -> new IllegalStateException(MISSING_RESPONSE))
             .getDefendant()
             .getPhone()
             .orElseThrow(() -> new IllegalStateException("Missing defendant phone"));

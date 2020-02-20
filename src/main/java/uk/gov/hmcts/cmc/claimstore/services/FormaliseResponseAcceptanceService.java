@@ -30,6 +30,9 @@ import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCUTORY_JUDGMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REJECT_ORGANISATION_PAYMENT_PLAN;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_PAYMENT_DATE;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_PAYMENT_INTENTION;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 import static uk.gov.hmcts.cmc.domain.utils.PartyUtils.isCompanyOrOrganisation;
@@ -75,7 +78,7 @@ public class FormaliseResponseAcceptanceService {
 
     private void createEventForReferToJudge(Claim claim, String authorisation) {
         Response response = claim.getResponse()
-            .orElseThrow(() -> new IllegalArgumentException("Missing response"));
+            .orElseThrow(() -> new IllegalArgumentException(MISSING_RESPONSE));
         CaseEvent caseEvent;
         if (isCompanyOrOrganisation(response.getDefendant())) {
             eventProducer.createRejectOrganisationPaymentPlanEvent(claim);
@@ -90,7 +93,7 @@ public class FormaliseResponseAcceptanceService {
     private void formaliseSettlement(Claim claim, ResponseAcceptation responseAcceptation, String authorisation) {
         Settlement settlement = new Settlement();
         Response response = claim.getResponse()
-            .orElseThrow(() -> new IllegalStateException("Missing response"));
+            .orElseThrow(() -> new IllegalStateException(MISSING_RESPONSE));
         PaymentIntention paymentIntention = acceptedPaymentIntention(responseAcceptation, response);
         BigDecimal claimAmountTillDate = claim.getTotalAmountTillToday().orElse(BigDecimal.ZERO);
         switch (getDecisionType(responseAcceptation)) {
@@ -128,7 +131,7 @@ public class FormaliseResponseAcceptanceService {
             case IMMEDIATELY:
             case BY_SPECIFIED_DATE:
                 LocalDate completionDate = paymentIntention.getPaymentDate()
-                    .orElseThrow(() -> new IllegalStateException("Missing payment date"));
+                    .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT_DATE));
                 builder.completionDate(completionDate);
                 builder.content(
                     prepareOfferContentsBySetDate(response, completionDate, claimAmountTillDate)
@@ -183,7 +186,7 @@ public class FormaliseResponseAcceptanceService {
 
     private void formaliseCCJ(Claim claim, ResponseAcceptation responseAcceptation, String authorisation) {
         Response response = claim.getResponse()
-            .orElseThrow(() -> new IllegalStateException("Missing response"));
+            .orElseThrow(() -> new IllegalStateException(MISSING_RESPONSE));
         PaymentIntention acceptedPaymentIntention = acceptedPaymentIntention(responseAcceptation, response);
 
         CountyCourtJudgment.CountyCourtJudgmentBuilder countyCourtJudgment = CountyCourtJudgment.builder()
@@ -224,7 +227,7 @@ public class FormaliseResponseAcceptanceService {
         switch (response.getResponseType()) {
             case PART_ADMISSION:
                 return ((PartAdmissionResponse) response).getPaymentIntention()
-                    .orElseThrow(() -> new IllegalStateException("Missing payment intention"));
+                    .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT_INTENTION));
             case FULL_ADMISSION:
                 return ((FullAdmissionResponse) response).getPaymentIntention();
             default:

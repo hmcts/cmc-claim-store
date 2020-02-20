@@ -12,6 +12,10 @@ import java.time.LocalDate;
 import javax.validation.constraints.NotNull;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_OFFER;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_PAYMENT_INTENTION;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_REPAYMENT_PLAN;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_SETTLEMENT;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
 @Service
@@ -95,11 +99,11 @@ public class CountyCourtJudgmentRule {
 
         if (claim.getSettlement().isPresent()) {
             PaymentIntention paymentIntention = claim.getSettlement()
-                .orElseThrow(() -> new IllegalArgumentException("Missing settlement"))
+                .orElseThrow(() -> new IllegalArgumentException(MISSING_SETTLEMENT))
                 .getLastStatementOfType(StatementType.OFFER).getOffer()
-                .orElseThrow(() -> new IllegalArgumentException("Missing offer"))
+                .orElseThrow(() -> new IllegalArgumentException(MISSING_OFFER))
                 .getPaymentIntention()
-                .orElseThrow(() -> new IllegalArgumentException("Missing payment intention"));
+                .orElseThrow(() -> new IllegalArgumentException(MISSING_PAYMENT_INTENTION));
 
             switch (paymentIntention.getPaymentOption()) {
                 case IMMEDIATELY:
@@ -108,7 +112,7 @@ public class CountyCourtJudgmentRule {
                     return nowInLocalZone().toLocalDate().isAfter(paymentDate);
                 case INSTALMENTS:
                     LocalDate firstPaymentDate = paymentIntention.getRepaymentPlan()
-                        .orElseThrow(() -> new IllegalArgumentException("Missing repayment plan"))
+                        .orElseThrow(() -> new IllegalArgumentException(MISSING_REPAYMENT_PLAN))
                         .getFirstPaymentDate();
                     return nowInLocalZone().toLocalDate().isAfter(firstPaymentDate);
                 default:

@@ -68,6 +68,9 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_CLAIMANT_RESPONSE;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_REPRESENTATIVE;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.REJECTION;
 
@@ -241,7 +244,7 @@ public class SupportController {
         if (claim.getClaimData().isClaimantRepresented()) {
             String submitterName = claim.getClaimData().getClaimant()
                 .getRepresentative()
-                .orElseThrow(() -> new IllegalArgumentException("Missing representative"))
+                .orElseThrow(() -> new IllegalArgumentException(MISSING_REPRESENTATIVE))
                 .getOrganisationName();
 
             this.postClaimOrchestrationHandler.representativeIssueHandler(
@@ -319,7 +322,7 @@ public class SupportController {
 
     private void resendStaffNotificationForIntentToProceed(Claim claim, String authorization) {
         ClaimantResponse claimantResponse = claim.getClaimantResponse()
-            .orElseThrow(() -> new IllegalArgumentException("Missing claimant response"));
+            .orElseThrow(() -> new IllegalArgumentException(MISSING_CLAIMANT_RESPONSE));
 
         if (claimantResponse.getType() != REJECTION) {
             throw new IllegalArgumentException("Rejected Claimant Response is mandatory for 'intent-to-proceed' event");
@@ -358,7 +361,7 @@ public class SupportController {
 
     private void resendStaffNotificationClaimantResponse(Claim claim, String authorization) {
         ClaimantResponse claimantResponse = claim.getClaimantResponse()
-                .orElseThrow(() -> new IllegalArgumentException("Missing claimant response"));
+                .orElseThrow(() -> new IllegalArgumentException(MISSING_CLAIMANT_RESPONSE));
         if (!isSettlementAgreement(claim, claimantResponse)) {
             claimantResponseStaffNotificationHandler.onClaimantResponse(
                 new ClaimantResponseEvent(claim, authorization)
@@ -374,7 +377,7 @@ public class SupportController {
     }
 
     private boolean isSettlementAgreement(Claim claim, ClaimantResponse claimantResponse) {
-        Response response = claim.getResponse().orElseThrow(() -> new IllegalStateException("Missing response"));
+        Response response = claim.getResponse().orElseThrow(() -> new IllegalStateException(MISSING_RESPONSE));
 
         if (shouldFormaliseResponseAcceptance(response, claimantResponse)) {
             return ((ResponseAcceptation) claimantResponse).getFormaliseOption()

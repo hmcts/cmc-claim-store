@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_REVIEW_ORDER;
 
 @Component
 public class ReviewOrderContentProvider {
@@ -22,7 +23,7 @@ public class ReviewOrderContentProvider {
 
     public Map<String, Object> createContent(Claim claim) {
         ReviewOrder reviewOrder = claim.getReviewOrder()
-            .orElseThrow(() -> new IllegalStateException("Missing review order"));
+            .orElseThrow(() -> new IllegalStateException(MISSING_REVIEW_ORDER));
         PersonContent party = reviewOrder.getRequestedBy().equals(ReviewOrder.RequestedBy.DEFENDANT)
             ? PersonContent.builder()
                 .address(claim.getClaimData().getDefendant().getAddress())

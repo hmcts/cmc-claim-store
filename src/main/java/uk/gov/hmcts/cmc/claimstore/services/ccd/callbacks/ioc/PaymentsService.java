@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_PAYMENT;
 
 @Service
 @Conditional(FeesAndPaymentsConfiguration.class)
@@ -62,7 +63,7 @@ public class PaymentsService {
             claim.getExternalId());
 
         Payment claimPayment = claim.getClaimData().getPayment()
-            .orElseThrow(() -> new IllegalStateException("Missing payment"));
+            .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT));
 
         return from(paymentsClient.retrievePayment(authorisation, claimPayment.getReference()),
             claimPayment.getNextUrl()

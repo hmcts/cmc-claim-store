@@ -9,6 +9,8 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificatio
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_REPRESENTATIVE;
+
 @Component
 public class RepresentativeConfirmationHandler {
 
@@ -35,7 +37,7 @@ public class RepresentativeConfirmationHandler {
             getEmailTemplates().getRepresentativeClaimIssued(),
             "representative-issue-notification-" + claim.getReferenceNumber(),
             event.getRepresentativeName()
-                .orElseThrow(() -> new IllegalArgumentException("Missing representative")));
+                .orElseThrow(() -> new IllegalArgumentException(MISSING_REPRESENTATIVE)));
     }
 
     private EmailTemplates getEmailTemplates() {

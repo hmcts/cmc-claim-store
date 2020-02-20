@@ -18,6 +18,9 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.util.Optional;
 
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_CLAIMANT_RESPONSE;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_PAYMENT_INTENTION;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
 import static uk.gov.hmcts.cmc.domain.utils.PartyUtils.isCompanyOrOrganisation;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseStatesPaid;
 
@@ -27,10 +30,10 @@ public class ClaimantResponseRule {
     public void isValid(Claim claim) {
         if (!isDefendantCompanyOrOrganisation(claim)) {
             ClaimantResponse claimantResponse = claim.getClaimantResponse()
-                .orElseThrow(() -> new IllegalStateException("Missing claimant response"));
+                .orElseThrow(() -> new IllegalStateException(MISSING_CLAIMANT_RESPONSE));
             if (claimantResponse.getType() == ClaimantResponseType.ACCEPTATION
                 && isFormaliseOptionExpectedForResponse(claim.getResponse()
-                        .orElseThrow(() -> new IllegalStateException("Missing response")))
+                        .orElseThrow(() -> new IllegalStateException(MISSING_RESPONSE)))
             ) {
                 ResponseAcceptation responseAcceptation = (ResponseAcceptation) claimantResponse;
                 if (!responseAcceptation.getFormaliseOption().isPresent()) {
@@ -91,7 +94,7 @@ public class ClaimantResponseRule {
 
     private boolean isDefendantCompanyOrOrganisation(Claim claim) {
         Response response = claim.getResponse()
-            .orElseThrow(() -> new IllegalArgumentException("Missing response"));
+            .orElseThrow(() -> new IllegalArgumentException(MISSING_RESPONSE));
         return isCompanyOrOrganisation(response.getDefendant());
     }
 
@@ -103,7 +106,7 @@ public class ClaimantResponseRule {
                 }
 
                 return ((PartAdmissionResponse) response).getPaymentIntention()
-                    .orElseThrow(() -> new IllegalStateException("Missing payment intention"))
+                    .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT_INTENTION))
                     .getPaymentOption() != PaymentOption.IMMEDIATELY;
             case FULL_ADMISSION:
                 return ((FullAdmissionResponse) response).getPaymentIntention()

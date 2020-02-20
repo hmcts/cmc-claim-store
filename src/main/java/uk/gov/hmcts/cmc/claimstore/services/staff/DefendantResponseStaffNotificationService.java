@@ -24,6 +24,7 @@ import java.util.Optional;
 
 import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_ADMISSION;
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.PART_ADMISSION;
 import static uk.gov.hmcts.cmc.domain.utils.PartyUtils.isCompanyOrOrganisation;
@@ -58,7 +59,7 @@ public class DefendantResponseStaffNotificationService {
         String defendantEmail
     ) {
         ResponseType responseType = claim.getResponse()
-            .orElseThrow(() -> new IllegalArgumentException("Missing response"))
+            .orElseThrow(() -> new IllegalArgumentException(MISSING_RESPONSE))
             .getResponseType();
         EmailContent emailContent;
 
@@ -92,7 +93,7 @@ public class DefendantResponseStaffNotificationService {
         Map<String, Object> map = new HashMap<>();
 
         Response response = claim.getResponse()
-            .orElseThrow(() -> new IllegalStateException("Missing response"));
+            .orElseThrow(() -> new IllegalStateException(MISSING_RESPONSE));
         map.put("claim", claim);
         map.put("response", response);
         map.put("defendantEmail", defendantEmail);

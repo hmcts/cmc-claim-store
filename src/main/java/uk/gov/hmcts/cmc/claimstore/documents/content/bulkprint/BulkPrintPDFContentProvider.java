@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_OFFER;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_SETTLEMENT;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDateTime;
 
@@ -28,10 +31,10 @@ public class BulkPrintPDFContentProvider {
         requireNonNull(claim);
 
         Offer acceptedOffer = claim.getSettlement()
-            .orElseThrow(() -> new IllegalArgumentException("Missing settlement"))
+            .orElseThrow(() -> new IllegalArgumentException(MISSING_SETTLEMENT))
             .getLastStatementOfType(StatementType.OFFER)
             .getOffer()
-            .orElseThrow(() -> new IllegalArgumentException("Missing offer"));
+            .orElseThrow(() -> new IllegalArgumentException(MISSING_OFFER));
         Map<String, Object> content = new HashMap<>();
         content.put("settlementReachedAt", formatDateTime(claim.getSettlementReachedAt()));
         content.put("acceptedOffer", acceptedOffer.getContent());
@@ -40,7 +43,7 @@ public class BulkPrintPDFContentProvider {
         content.put("claimant", claim.getClaimData().getClaimant());
         content.put("defendant", partyDetailsContentProvider.createContent(
             claim.getResponse()
-                .orElseThrow(() -> new IllegalStateException("Missing response"))
+                .orElseThrow(() -> new IllegalStateException(MISSING_RESPONSE))
                 .getDefendant(),
             claim.getDefendantEmail()
         ));

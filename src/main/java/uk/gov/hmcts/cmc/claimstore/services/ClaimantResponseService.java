@@ -34,6 +34,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_NON_PILOT_ELIGIBLE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_PILOT_ELIGIBLE;
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isSettlePreJudgment;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.REJECTION;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
@@ -88,7 +89,7 @@ public class ClaimantResponseService {
         Claim claim = claimService.getClaimByExternalId(externalId, authorization);
         claimantResponseRule.assertCanBeRequested(claim, claimantId);
 
-        Response response = claim.getResponse().orElseThrow(() -> new IllegalStateException("Missing response"));
+        Response response = claim.getResponse().orElseThrow(() -> new IllegalStateException(MISSING_RESPONSE));
         if (claim.getState().equals(ClaimState.STAYED) && ResponseUtils.isAdmissionResponse(response)) {
             claim = caseRepository.saveCaseEvent(authorization, claim, LIFT_STAY);
         }

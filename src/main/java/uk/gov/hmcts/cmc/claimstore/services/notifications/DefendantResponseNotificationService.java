@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.util.Map;
 import java.util.Objects;
 
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper.admissionResponse;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.hasDefendantOptedForMediation;
@@ -86,7 +87,7 @@ public class DefendantResponseNotificationService {
         String reference
     ) {
         Response response = claim.getResponse()
-            .orElseThrow(() -> new IllegalArgumentException("Missing response"));
+            .orElseThrow(() -> new IllegalArgumentException(MISSING_RESPONSE));
         Map<String, String> parameters = aggregateParams(claim, response);
 
         String emailTemplate = getClaimantEmailTemplate(claim, response);

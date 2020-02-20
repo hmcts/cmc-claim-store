@@ -14,6 +14,8 @@ import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isOptedForMediation;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_CLAIMANT_RESPONSE;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper.isOptedForMediation;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.REJECTION;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isFullDefenceDispute;
@@ -55,7 +57,7 @@ public class ClaimantResponseActionsHandler {
 
     private boolean hasIntentionToProceedAndIsOnlineDq(Claim claim) {
         ClaimantResponse claimantResponse = claim.getClaimantResponse()
-            .orElseThrow(() -> new IllegalStateException("Missing claimant response"));
+            .orElseThrow(() -> new IllegalStateException(MISSING_CLAIMANT_RESPONSE));
 
         return ClaimantResponseHelper.isIntentToProceed(claimantResponse)
             && FeaturesUtils.isOnlineDQ(claim);
@@ -63,7 +65,7 @@ public class ClaimantResponseActionsHandler {
 
     private boolean hasIntentionToProceedAndIsPaperDq(Claim claim) {
         ClaimantResponse claimantResponse = claim.getClaimantResponse()
-            .orElseThrow(() -> new IllegalStateException("Missing claimant response"));
+            .orElseThrow(() -> new IllegalStateException(MISSING_CLAIMANT_RESPONSE));
 
         return claimantResponse.getType() == REJECTION
             && !FeaturesUtils.isOnlineDQ(claim);
@@ -71,9 +73,9 @@ public class ClaimantResponseActionsHandler {
 
     private boolean isFreeMediationConfirmed(Claim claim) {
         ClaimantResponse claimantResponse = claim.getClaimantResponse()
-            .orElseThrow(() -> new IllegalStateException("Missing claimant response"));
+            .orElseThrow(() -> new IllegalStateException(MISSING_CLAIMANT_RESPONSE));
         Response response = claim.getResponse()
-            .orElseThrow(() -> new IllegalArgumentException("Missing response"));
+            .orElseThrow(() -> new IllegalArgumentException(MISSING_RESPONSE));
 
         return claimantResponse.getType() == ClaimantResponseType.REJECTION
             && isOptedForMediation(claimantResponse)
@@ -82,9 +84,9 @@ public class ClaimantResponseActionsHandler {
 
     private boolean hasClaimantSettledForFullDefense(Claim claim) {
         ClaimantResponse claimantResponse = claim.getClaimantResponse()
-            .orElseThrow(() -> new IllegalStateException("Missing claimant response"));
+            .orElseThrow(() -> new IllegalStateException(MISSING_CLAIMANT_RESPONSE));
         Response response = claim.getResponse()
-            .orElseThrow(() -> new IllegalArgumentException("Missing response"));
+            .orElseThrow(() -> new IllegalArgumentException(MISSING_RESPONSE));
 
         return claimantResponse.getType() == ClaimantResponseType.ACCEPTATION
             && response.getResponseType() == ResponseType.FULL_DEFENCE
@@ -104,9 +106,9 @@ public class ClaimantResponseActionsHandler {
 
     private boolean isRejectedStatesPaidOrPartAdmission(Claim claim) {
         ClaimantResponse claimantResponse = claim.getClaimantResponse()
-            .orElseThrow(() -> new IllegalStateException("Missing claimant response"));
+            .orElseThrow(() -> new IllegalStateException(MISSING_CLAIMANT_RESPONSE));
         Response response = claim.getResponse()
-            .orElseThrow(() -> new IllegalArgumentException("Missing response"));
+            .orElseThrow(() -> new IllegalArgumentException(MISSING_RESPONSE));
 
         return claimantResponse.getType() == ClaimantResponseType.REJECTION
             && (isResponseStatesPaid(response) || response.getResponseType() == ResponseType.PART_ADMISSION);
