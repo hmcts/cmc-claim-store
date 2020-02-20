@@ -15,7 +15,6 @@ import uk.gov.hmcts.cmc.claimstore.events.claim.PostClaimOrchestrationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedStaffNotificationHandler;
-import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
 import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedStaffNotificationHandler;
@@ -132,7 +131,6 @@ class SupportControllerTest {
             ccjStaffNotificationHandler,
             agreementCountersignedStaffNotificationHandler,
             claimantResponseStaffNotificationHandler,
-            paidInFullStaffNotificationHandler,
             documentsService,
             postClaimOrchestrationHandler,
             mediationReportService,
@@ -189,7 +187,7 @@ class SupportControllerTest {
                 controller = new SupportController(claimService, userService, documentGenerator,
                     moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
                     ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
-                    claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
+                    claimantResponseStaffNotificationHandler, documentsService,
                     postClaimOrchestrationHandler, mediationReportService, new ClaimSubmissionOperationIndicatorRule(),
                     intentionToProceedService
                 );
@@ -204,12 +202,13 @@ class SupportControllerTest {
             }
 
             @Test
-            void shouldResendStaffNotificationForPaidInFull() {
+            void shouldNotResendStaffNotificationForPaidInFull() {
                 when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(
                     Optional.of(SampleClaim.builder().withMoneyReceivedOn(LocalDate.now()).build()));
 
-                controller.resendStaffNotifications(CLAIM_REFERENCE, "paid-in-full");
-                verify(paidInFullStaffNotificationHandler).onPaidInFullEvent(any(PaidInFullEvent.class));
+                assertThrows(NotFoundException.class,
+                    () -> controller.resendStaffNotifications(CLAIM_REFERENCE, "paid-in-full"));
+
             }
         }
 
@@ -432,7 +431,7 @@ class SupportControllerTest {
                 controller = new SupportController(claimService, userService, documentGenerator,
                     moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
                     ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
-                    claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
+                    claimantResponseStaffNotificationHandler, documentsService,
                     postClaimOrchestrationHandler, mediationReportService, new ClaimSubmissionOperationIndicatorRule(),
                     intentionToProceedService
                 );
@@ -453,17 +452,6 @@ class SupportControllerTest {
 
                 assertThrows(IllegalArgumentException.class,
                     () -> controller.resendStaffNotifications(CLAIM_REFERENCE, "claimant-response"));
-            }
-
-            @Test
-            void shouldThrowExceptionWhenClaimHasNoMoneyReceivedOnDate() {
-                when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(
-                    Optional.of(SampleClaim.builder().withMoneyReceivedOn(null).build()));
-
-                assertThrows(IllegalArgumentException.class,
-                    () -> controller.resendStaffNotifications(CLAIM_REFERENCE, "paid-in-full"));
-
-                verify(paidInFullStaffNotificationHandler, never()).onPaidInFullEvent(any(PaidInFullEvent.class));
             }
         }
 
