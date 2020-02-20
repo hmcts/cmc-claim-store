@@ -9,8 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
-import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireService;
+import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.utils.DateUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -28,8 +29,11 @@ import static java.time.temporal.ChronoUnit.YEARS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeadlineSupportControllerTest {
@@ -40,29 +44,40 @@ public class DeadlineSupportControllerTest {
     @Mock
     private ClaimService claimService;
     @Mock
-    private DirectionsQuestionnaireService dqService;
+    private CaseRepository caseRepository;
+    @Mock
+    private DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
 
     private DeadlineSupportController controller;
 
     @Before
     public void setUp() {
-        controller = new DeadlineSupportController(userService, claimService, dqService);
+        controller = new DeadlineSupportController(userService,
+            claimService,
+            directionsQuestionnaireDeadlineCalculator,
+            caseRepository
+        );
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(new User("authorisation", null));
     }
 
     @Test(expected = NullPointerException.class)
     public void testNullUserService() {
-        new DeadlineSupportController(null, claimService, dqService);
+        new DeadlineSupportController(null, claimService, directionsQuestionnaireDeadlineCalculator, caseRepository);
     }
 
     @Test(expected = NullPointerException.class)
     public void testNullClaimService() {
-        new DeadlineSupportController(userService, null, dqService);
+        new DeadlineSupportController(userService, null, directionsQuestionnaireDeadlineCalculator, caseRepository);
     }
 
     @Test(expected = NullPointerException.class)
-    public void testNullDQService() {
-        new DeadlineSupportController(userService, claimService, null);
+    public void testNullDQCalculator() {
+        new DeadlineSupportController(userService, claimService, null, caseRepository);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testNullCaseRepository() {
+        new DeadlineSupportController(userService, claimService, directionsQuestionnaireDeadlineCalculator, null);
     }
 
     @Test(expected = NotFoundException.class)
@@ -80,7 +95,8 @@ public class DeadlineSupportControllerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
         assertThat(response.getBody()).isEqualTo("Unrecognised deadline type: unknown");
-        verifyNoInteractions(dqService);
+        verifyNoInteractions(directionsQuestionnaireDeadlineCalculator);
+        verifyNoInteractions(caseRepository);
     }
 
     @Test
@@ -98,7 +114,8 @@ public class DeadlineSupportControllerTest {
         assertThat(response.getBody())
             .isEqualTo("Claim %s already has a directions questionnaire deadline of %s.",
                 reference, deadline);
-        verifyNoInteractions(dqService);
+        verifyNoInteractions(directionsQuestionnaireDeadlineCalculator);
+        verifyNoInteractions(caseRepository);
     }
 
     @Test
@@ -115,7 +132,8 @@ public class DeadlineSupportControllerTest {
         assertThat(response.getBody())
             .isEqualTo("Claim %s has online DQs enabled; "
                 + "cannot define a directions questionnaire deadline", reference);
-        verifyNoInteractions(dqService);
+        verifyNoInteractions(directionsQuestionnaireDeadlineCalculator);
+        verifyNoInteractions(caseRepository);
     }
 
     @Test
@@ -132,7 +150,8 @@ public class DeadlineSupportControllerTest {
         assertThat(response.getBody())
             .isEqualTo("Claim %s does not have a response; "
                 + "cannot define a directions questionnaire deadline", reference);
-        verifyNoInteractions(dqService);
+        verifyNoInteractions(directionsQuestionnaireDeadlineCalculator);
+        verifyNoInteractions(caseRepository);
     }
 
     @Test
@@ -152,7 +171,8 @@ public class DeadlineSupportControllerTest {
         assertThat(response.getBody())
             .isEqualTo("Claim %s is from before 5.0.0 and its defendant agreed to mediation; "
                 + "cannot define a directions questionnaire deadline.", reference);
-        verifyNoInteractions(dqService);
+        verifyNoInteractions(directionsQuestionnaireDeadlineCalculator);
+        verifyNoInteractions(caseRepository);
     }
 
     @Test
@@ -172,7 +192,8 @@ public class DeadlineSupportControllerTest {
         assertThat(response.getBody())
             .isEqualTo("Claim %s is from before 5.0.0 and its defendant fully admitted; "
                 + "cannot define a directions questionnaire deadline.", reference);
-        verifyNoInteractions(dqService);
+        verifyNoInteractions(directionsQuestionnaireDeadlineCalculator);
+        verifyNoInteractions(caseRepository);
     }
 
     @Test
@@ -187,10 +208,13 @@ public class DeadlineSupportControllerTest {
                 .build())
             .withRespondedAt(LocalDateTime.now())
             .build()));
-        when(dqService.updateDirectionsQuestionnaireDeadline(any(Claim.class), any(LocalDateTime.class), anyString()))
-            .thenReturn(deadline);
+        when(directionsQuestionnaireDeadlineCalculator
+            .calculateDirectionsQuestionnaireDeadline(any(LocalDateTime.class))).thenReturn(deadline);
 
         ResponseEntity<String> response = controller.defineDeadline("dq", reference);
+
+        verify(caseRepository, once()).updateDirectionsQuestionnaireDeadline(any(Claim.class), eq(deadline),
+            anyString());
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody())
@@ -215,7 +239,8 @@ public class DeadlineSupportControllerTest {
         assertThat(response.getBody())
             .isEqualTo("Claim %s does not have a claimant response; "
                 + "cannot define a directions questionnaire deadline", reference);
-        verifyNoInteractions(dqService);
+        verifyNoInteractions(directionsQuestionnaireDeadlineCalculator);
+        verifyNoInteractions(caseRepository);
     }
 
     @Test
@@ -235,7 +260,8 @@ public class DeadlineSupportControllerTest {
         assertThat(response.getBody())
             .isEqualTo("Claim %s has an acceptation claimant response; "
                 + "cannot define a directions questionnaire deadline.", reference);
-        verifyNoInteractions(dqService);
+        verifyNoInteractions(directionsQuestionnaireDeadlineCalculator);
+        verifyNoInteractions(caseRepository);
     }
 
     @Test
@@ -255,7 +281,8 @@ public class DeadlineSupportControllerTest {
         assertThat(response.getBody())
             .isEqualTo("Claim %s has a mediation agreement; "
                 + "cannot define a directions questionnaire deadline.", reference);
-        verifyNoInteractions(dqService);
+        verifyNoInteractions(directionsQuestionnaireDeadlineCalculator);
+        verifyNoInteractions(caseRepository);
     }
 
     @Test
@@ -269,10 +296,13 @@ public class DeadlineSupportControllerTest {
             .withClaimantRespondedAt(LocalDateTime.now())
             .withClaimantResponse(SampleClaimantResponse.validDefaultRejection())
             .build()));
-        when(dqService.updateDirectionsQuestionnaireDeadline(any(Claim.class), any(LocalDateTime.class), anyString()))
+
+        when(directionsQuestionnaireDeadlineCalculator.calculateDirectionsQuestionnaireDeadline(any()))
             .thenReturn(deadline);
 
         ResponseEntity<String> response = controller.defineDeadline("dq", reference);
+
+        verify(caseRepository, once()).updateDirectionsQuestionnaireDeadline(any(Claim.class), any(), anyString());
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody())
