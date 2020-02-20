@@ -31,11 +31,9 @@ java:
     SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: true
     SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST: mta.reform.hmcts.net
     CLAIM_STORE_TEST_SUPPORT_ENABLED: true
-
     CMC_DB_USERNAME: 'cmc@{{ .Values.global.environment }}'
     CMC_DB_HOST: cmc-{{ .Values.global.environment }}.postgres.database.azure.com
     CMC_DB_CONNECTION_OPTIONS: '?sslmode=require'
-
     CMC_DB_NAME: cmc
     CMC_DB_PORT: 5432
     FEATURE_TOGGLES_SAVE_CLAIM_STATE_ENABLED: true
