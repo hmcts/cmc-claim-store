@@ -29,6 +29,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -88,6 +89,9 @@ public class ClaimantResponseServiceTest {
     @Mock
     private DirectionsQuestionnaireService directionsQuestionnaireService;
 
+    @Mock
+    private DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
+
     @Before
     public void setUp() {
         claimantResponseService = new ClaimantResponseService(
@@ -97,7 +101,8 @@ public class ClaimantResponseServiceTest {
             new ClaimantResponseRule(),
             eventProducer,
             formaliseResponseAcceptanceService,
-            directionsQuestionnaireService
+            directionsQuestionnaireService,
+            directionsQuestionnaireDeadlineCalculator
         );
     }
 
@@ -175,6 +180,8 @@ public class ClaimantResponseServiceTest {
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
         when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseRejection.class), eq(AUTHORISATION)))
             .thenReturn(claim);
+        when(directionsQuestionnaireService.prepareCaseEvent(any(), any()))
+            .thenReturn(Optional.of(REFERRED_TO_MEDIATION));
 
         claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
 
@@ -300,15 +307,15 @@ public class ClaimantResponseServiceTest {
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
         when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseRejection.class), eq(AUTHORISATION)))
             .thenReturn(claim);
-        when(directionsQuestionnaireService
-            .updateDirectionsQuestionnaireDeadline(any(Claim.class), any(LocalDateTime.class), eq(AUTHORISATION)))
+        when(directionsQuestionnaireDeadlineCalculator
+            .calculateDirectionsQuestionnaireDeadline(any(LocalDateTime.class)))
             .thenReturn(dqDeadline);
 
         claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
 
         verify(caseRepository).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
-        verify(directionsQuestionnaireService)
-            .updateDirectionsQuestionnaireDeadline(any(Claim.class), any(LocalDateTime.class), eq(AUTHORISATION));
+        verify(directionsQuestionnaireDeadlineCalculator)
+            .calculateDirectionsQuestionnaireDeadline(any(LocalDateTime.class));
         verify(eventProducer).createClaimantResponseEvent(any(Claim.class), anyString());
         verify(appInsights).trackEvent(eq(BOTH_PARTIES_OFFLINE_DQ), eq(REFERENCE_NUMBER),
             eq(claim.getReferenceNumber()));
@@ -336,8 +343,8 @@ public class ClaimantResponseServiceTest {
         claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
 
         verify(caseRepository).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
-        verify(directionsQuestionnaireService, never())
-            .updateDirectionsQuestionnaireDeadline(any(Claim.class), any(LocalDateTime.class), anyString());
+        verify(directionsQuestionnaireDeadlineCalculator, never())
+            .calculateDirectionsQuestionnaireDeadline(any(LocalDateTime.class));
         verify(caseRepository, never())
             .updateDirectionsQuestionnaireDeadline(any(Claim.class), any(LocalDate.class), anyString());
         verify(eventProducer).createClaimantResponseEvent(any(Claim.class), eq(AUTHORISATION));
@@ -363,15 +370,15 @@ public class ClaimantResponseServiceTest {
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
         when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseRejection.class), eq(AUTHORISATION)))
             .thenReturn(claim);
-        when(directionsQuestionnaireService
-            .updateDirectionsQuestionnaireDeadline(any(Claim.class), any(LocalDateTime.class), eq(AUTHORISATION)))
+        when(directionsQuestionnaireDeadlineCalculator
+            .calculateDirectionsQuestionnaireDeadline(any(LocalDateTime.class)))
             .thenReturn(dqDeadline);
 
         claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
 
         verify(caseRepository).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
-        verify(directionsQuestionnaireService)
-            .updateDirectionsQuestionnaireDeadline(any(Claim.class), any(LocalDateTime.class), eq(AUTHORISATION));
+        verify(directionsQuestionnaireDeadlineCalculator)
+            .calculateDirectionsQuestionnaireDeadline(any(LocalDateTime.class));
         verify(eventProducer).createClaimantResponseEvent(any(Claim.class), eq(AUTHORISATION));
         verify(appInsights).trackEvent(eq(BOTH_PARTIES_OFFLINE_DQ),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
@@ -401,8 +408,8 @@ public class ClaimantResponseServiceTest {
         claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
 
         verify(caseRepository).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
-        verify(directionsQuestionnaireService, never())
-            .updateDirectionsQuestionnaireDeadline(any(Claim.class), any(LocalDateTime.class), anyString());
+        verify(directionsQuestionnaireDeadlineCalculator, never())
+            .calculateDirectionsQuestionnaireDeadline(any(LocalDateTime.class));
         verify(caseRepository, never())
             .updateDirectionsQuestionnaireDeadline(any(Claim.class), any(LocalDate.class), anyString());
         verify(eventProducer).createClaimantResponseEvent(any(Claim.class), eq(AUTHORISATION));
