@@ -4,7 +4,6 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import uk.gov.hmcts.cmc.domain.models.Address;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.PilotCourt;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.time.LocalDateTime;
@@ -22,7 +21,7 @@ public class DirectionOrder {
     private String newRequestedCourt;
     private String preferredDQCourt;
     private String preferredCourtObjectingReason;
-    private PilotCourt hearingCourt;
+    private String hearingCourt;
     private String hearingCourtName;
     private Address hearingCourtAddress;
     private HearingDurationType estimatedHearingDuration;
