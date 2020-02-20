@@ -198,7 +198,7 @@ class SupportControllerTest {
             }
 
             @Test
-            void shouldNotResendStaffNotificationForPaidInFull() {
+            void shouldNotResendStaffNotificationForPaidInFullAndThrowException() {
                 when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(
                     Optional.of(SampleClaim.builder().withMoneyReceivedOn(LocalDate.now()).build()));
 
