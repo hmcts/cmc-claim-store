@@ -32,6 +32,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.PaymentsService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
+import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.scheduler.services.JobService;
@@ -114,6 +115,8 @@ public abstract class BaseMockSpringTest {
     protected NotificationClient notificationClient;
     @MockBean
     protected JobService jobService;
+    @MockBean
+    protected PilotCourtService pilotCourtService;
 
     @MockBean
     private Flyway flyway;

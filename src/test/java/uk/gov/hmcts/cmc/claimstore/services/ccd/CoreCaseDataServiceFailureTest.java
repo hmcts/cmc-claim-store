@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireService;
 import uk.gov.hmcts.cmc.claimstore.services.IntentionToProceedDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
@@ -92,6 +93,8 @@ public class CoreCaseDataServiceFailureTest {
     private IntentionToProceedDeadlineCalculator intentionToProceedDeadlineCalculator;
     @Mock
     private feign.Request request;
+    @Mock
+    private DirectionsQuestionnaireService directionsQuestionnaireService;
 
     private CoreCaseDataService service;
 
@@ -136,7 +139,8 @@ public class CoreCaseDataServiceFailureTest {
             jobSchedulerService,
             ccdCreateCaseService,
             caseDetailsConverter,
-            intentionToProceedDeadlineCalculator
+            intentionToProceedDeadlineCalculator,
+            directionsQuestionnaireService
         );
     }
 
