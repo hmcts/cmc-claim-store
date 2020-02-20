@@ -121,7 +121,7 @@ public class ClaimantResponseService {
 
         Optional<CaseEvent> caseEvent = Optional.empty();
         if (claimantResponse.getType() == REJECTION) {
-            Optional<CaseEvent> caseEvent = directionsQuestionnaireService.prepareCaseEvent(
+            caseEvent = directionsQuestionnaireService.prepareCaseEvent(
                 (ResponseRejection) claimantResponse,
                 updatedClaim
             );

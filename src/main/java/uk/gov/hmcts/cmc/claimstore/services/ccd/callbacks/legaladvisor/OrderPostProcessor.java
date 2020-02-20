@@ -50,7 +50,7 @@ public class OrderPostProcessor {
         OrderDrawnNotificationService orderDrawnNotificationService,
         CaseDetailsConverter caseDetailsConverter,
         LegalOrderService legalOrderService,
-        AppInsights appInsights
+        AppInsights appInsights,
         PilotCourtService pilotCourtService
     ) {
         this.clock = clock;

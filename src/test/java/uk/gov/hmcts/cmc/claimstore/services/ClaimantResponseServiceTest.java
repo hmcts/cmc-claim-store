@@ -39,6 +39,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_JUDGE_DIRECTIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LIFT_STAY;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFERRED_TO_MEDIATION;
@@ -620,6 +621,8 @@ public class ClaimantResponseServiceTest {
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
         when(caseRepository.saveClaimantResponse(any(Claim.class), any(), eq(AUTHORISATION)))
             .thenReturn(claim);
+        when(directionsQuestionnaireService.prepareCaseEvent(any(), any()))
+            .thenReturn(Optional.of(ASSIGNING_FOR_JUDGE_DIRECTIONS));
 
         claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
         verify(appInsights).trackEvent(eq(JDDO_PILOT_ELIGIBLE), eq(REFERENCE_NUMBER),
@@ -651,6 +654,8 @@ public class ClaimantResponseServiceTest {
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
         when(caseRepository.saveClaimantResponse(any(Claim.class), any(), eq(AUTHORISATION)))
             .thenReturn(claim);
+        when(directionsQuestionnaireService.prepareCaseEvent(any(), any()))
+            .thenReturn(Optional.of(ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS));
 
         claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
         verify(appInsights).trackEvent(eq(LA_PILOT_ELIGIBLE), eq(REFERENCE_NUMBER),
