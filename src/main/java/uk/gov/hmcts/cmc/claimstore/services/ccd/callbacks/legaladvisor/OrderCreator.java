@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -111,7 +112,7 @@ public class OrderCreator {
         data.put(DOC_UPLOAD_FOR_PARTY, BOTH.name());
         data.put(EYEWITNESS_UPLOAD_FOR_PARTY, BOTH.name());
         data.put(PAPER_DETERMINATION, NO.name());
-        data.put(HEARING_COURT, buildCourtsList(getPilot(callbackParams)));
+        data.put(HEARING_COURT, buildCourtsList(getPilot(callbackParams), claim.getCreatedAt()));
         if (jddoEnabled) {
             data.put(GRANT_EXPERT_REPORT_PERMISSION, NO);
         }
@@ -204,8 +205,8 @@ public class OrderCreator {
             && StringUtils.isNotBlank(directionsQuestionnaire.getExpertEvidenceToExamine());
     }
 
-    private Map<String, List<Map<String, String>>> buildCourtsList(Pilot pilot) {
-        List<Map<String, String>> listItems = pilotCourtService.getPilotHearingCourts(pilot).stream()
+    private Map<String, List<Map<String, String>>> buildCourtsList(Pilot pilot, LocalDateTime claimCreatedDate) {
+        List<Map<String, String>> listItems = pilotCourtService.getPilotHearingCourts(pilot, claimCreatedDate).stream()
             .sorted(Comparator.comparing(HearingCourt::getName))
             .map(hearingCourt -> {
                 String id =  pilotCourtService.getPilotCourtId(hearingCourt);
@@ -213,7 +214,9 @@ public class OrderCreator {
             })
             .collect(Collectors.toList());
 
-        listItems.add(ImmutableMap.of(DYNAMIC_LIST_CODE, "OTHER", DYNAMIC_LIST_LABEL, "Other Court"));
+        if (pilot == Pilot.JDDO) {
+            listItems.add(ImmutableMap.of(DYNAMIC_LIST_CODE, "OTHER", DYNAMIC_LIST_LABEL, "Other Court"));
+        }
 
         return ImmutableMap.of(DYNAMIC_LIST_ITEMS, listItems);
     }

@@ -129,7 +129,7 @@ public class DirectionsQuestionnaireServiceTest {
 
     @Before
     public void setUp() {
-        when(pilotCourtService.isPilotCourt(eq(PILOT_COURT_NAME), any())).thenReturn(true);
+        when(pilotCourtService.isPilotCourt(eq(PILOT_COURT_NAME), any(), any())).thenReturn(true);
         directionsQuestionnaireService = new DirectionsQuestionnaireService(pilotCourtService);
     }
 

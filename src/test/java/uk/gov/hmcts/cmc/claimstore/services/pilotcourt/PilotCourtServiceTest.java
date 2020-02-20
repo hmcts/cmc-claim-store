@@ -19,7 +19,10 @@ import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourtMapper;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -46,6 +49,8 @@ class PilotCourtServiceTest {
     private String csvPathLa = "/pilot-court/pilot-courts-LA.csv";
     private String csvPathJddo = "/pilot-court/pilot-courts-JDDO.csv";
     private String csvPathNames = "/pilot-court/pilot-courts-names.csv";
+    private String csvPathDates = "/pilot-court/pilot-courts-dates.csv";
+    private String csvPathCourtIds = "/pilot-court/pilot-courts-court-ids.csv";
 
     @Nested
     @DisplayName("Init")
@@ -178,6 +183,42 @@ class PilotCourtServiceTest {
         Assertions.assertThrows(AssertionError.class, pilotCourtService::init);
     }
 
+    @Test
+    void shouldReturnListOfCourtIdsForPilot() {
+
+        Court edmontonCourt = Court.builder().name("EDMONTON").build();
+        when(courtFinderApi.findMoneyClaimCourtByPostcode(eq("N182TN"))).thenReturn(ImmutableList.of(edmontonCourt));
+        when(hearingCourtMapper.from(eq(edmontonCourt))).thenReturn(HearingCourt.builder().name("EDMONTON").build());
+
+        Court manchesterCourt = Court.builder().name("MANCHESTER").build();
+        when(courtFinderApi.findMoneyClaimCourtByPostcode(eq("M609DJ"))).thenReturn(ImmutableList.of(manchesterCourt));
+        when(hearingCourtMapper.from(eq(manchesterCourt)))
+            .thenReturn(HearingCourt.builder().name("MANCHESTER").build());
+
+        PilotCourtService pilotCourtService = new PilotCourtService(
+            csvPathCourtIds,
+            courtFinderApi,
+            hearingCourtMapper,
+            appInsights
+        );
+        pilotCourtService.init();
+
+        LocalDateTime claimCreatedDate = LocalDateTime.of(2019, 9, 9, 11, 0, 0);
+        Pilot pilot = Pilot.LA;
+
+        Set<String> pilotHearingCourtNames = pilotCourtService.getPilotHearingCourts(pilot, claimCreatedDate)
+                .stream()
+                .map(HearingCourt::getName)
+                .collect(Collectors.toSet());
+
+        assertEquals(2, pilotHearingCourtNames.size());
+        assertTrue(pilotHearingCourtNames.contains("EDMONTON"));
+        assertTrue(pilotHearingCourtNames.contains("MANCHESTER"));
+        assertFalse(pilotHearingCourtNames.contains("BIRMINGHAM"));
+        assertFalse(pilotHearingCourtNames.contains("CLERKENWELL"));
+
+    }
+
     @Nested
     @DisplayName("Is Pilot Court tests")
     class IsPilotCourtTests {
@@ -239,12 +280,12 @@ class PilotCourtServiceTest {
 
                 @Test
                 void shouldReturnTrueIfCourtIsPilotCourt() {
-                    assertTrue(pilotCourtService.isPilotCourt(pilotCourtName, pilot));
+                    assertTrue(pilotCourtService.isPilotCourt(pilotCourtName, pilot, LocalDateTime.MAX));
                 }
 
                 @Test
                 void shouldReturnFalseIfCourtIsNotPilotCourt() {
-                    assertFalse(pilotCourtService.isPilotCourt(nonPilotCourtName, pilot));
+                    assertFalse(pilotCourtService.isPilotCourt(nonPilotCourtName, pilot, LocalDateTime.MAX));
                 }
             }
 
@@ -269,12 +310,12 @@ class PilotCourtServiceTest {
 
                 @Test
                 void shouldReturnTrueIfCourtIsPilotCourt() {
-                    assertTrue(pilotCourtService.isPilotCourt(pilotCourtName, pilot));
+                    assertTrue(pilotCourtService.isPilotCourt(pilotCourtName, pilot, LocalDateTime.MAX));
                 }
 
                 @Test
                 void shouldReturnFalseIfCourtIsNotPilotCourt() {
-                    assertFalse(pilotCourtService.isPilotCourt(nonPilotCourtName, pilot));
+                    assertFalse(pilotCourtService.isPilotCourt(nonPilotCourtName, pilot, LocalDateTime.MAX));
                 }
             }
         }
@@ -301,12 +342,13 @@ class PilotCourtServiceTest {
 
                 @Test
                 void shouldReturnTrueIfNameIsMatched() {
-                    assertTrue(pilotCourtService.isPilotCourt(pilotCourtName, Pilot.values()[0]));
+                    assertTrue(pilotCourtService.isPilotCourt(pilotCourtName, Pilot.values()[0], LocalDateTime.MAX));
                 }
 
                 @Test
                 void shouldReturnFalseIfNameIsNotMatched() {
-                    assertFalse(pilotCourtService.isPilotCourt(nonPilotCourtName, Pilot.values()[0]));
+                    assertFalse(pilotCourtService
+                        .isPilotCourt(nonPilotCourtName, Pilot.values()[0], LocalDateTime.MAX));
                 }
             }
 
@@ -318,14 +360,55 @@ class PilotCourtServiceTest {
 
                 @Test
                 void shouldReturnTrueIfNameIsMatched() {
-                    assertTrue(pilotCourtService.isPilotCourt(partialPilotCourtName, Pilot.values()[0]));
+                    assertTrue(pilotCourtService
+                        .isPilotCourt(partialPilotCourtName, Pilot.values()[0], LocalDateTime.MAX));
                 }
 
                 @Test
                 void shouldReturnFalseIfNameIsNotMatched() {
-                    assertFalse(pilotCourtService.isPilotCourt(partialNonPilotCourtName, Pilot.values()[0]));
+                    assertFalse(pilotCourtService
+                        .isPilotCourt(partialNonPilotCourtName, Pilot.values()[0], LocalDateTime.MAX));
                 }
 
+            }
+
+        }
+
+        @Nested
+        @DisplayName("Created date tests")
+        class CreatedDateTests {
+            private final LocalDateTime goLiveDate = LocalDateTime.of(2019, 9, 9, 11, 0, 0);
+            private final Pilot pilot = Pilot.LA;
+
+            @BeforeEach
+            void setUp() {
+
+                pilotCourtService = new PilotCourtService(
+                    csvPathDates,
+                    courtFinderApi,
+                    hearingCourtMapper,
+                    appInsights
+                );
+
+                pilotCourtService.init();
+            }
+
+            @Test
+            void shouldReturnTrueIfCreatedDateIsOnGoLiveDate() {
+                assertTrue(pilotCourtService
+                    .isPilotCourt(pilotCourtName, pilot, goLiveDate));
+            }
+
+            @Test
+            void shouldReturnTrueIfCreatedDateIsAfterGoLiveDate() {
+                assertTrue(pilotCourtService
+                    .isPilotCourt(pilotCourtName, pilot, goLiveDate.plus(1, ChronoUnit.SECONDS)));
+            }
+
+            @Test
+            void shouldReturnFalseIfCreatedDateIsBeforeGoLiveDate() {
+                assertFalse(pilotCourtService
+                    .isPilotCourt(pilotCourtName, pilot, goLiveDate.minus(1, ChronoUnit.SECONDS)));
             }
 
         }
