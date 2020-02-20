@@ -18,7 +18,6 @@ import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedStaffNotif
 import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
 import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseStaffNotificationHandler;
-import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimCreatedEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
@@ -88,9 +87,6 @@ class SupportControllerTest {
     private DocumentGenerator documentGenerator;
 
     @Mock
-    private MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler;
-
-    @Mock
     private DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler;
 
     @Mock
@@ -127,7 +123,6 @@ class SupportControllerTest {
             claimService,
             userService,
             documentGenerator,
-            moreTimeRequestedStaffNotificationHandler,
             defendantResponseStaffNotificationHandler,
             ccjStaffNotificationHandler,
             agreementCountersignedStaffNotificationHandler,
@@ -187,7 +182,7 @@ class SupportControllerTest {
                     .build();
 
                 controller = new SupportController(claimService, userService, documentGenerator,
-                    moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
+                    defendantResponseStaffNotificationHandler,
                     ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
                     claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
                     postClaimOrchestrationHandler, mediationReportService, new ClaimSubmissionOperationIndicatorRule(),
@@ -430,7 +425,7 @@ class SupportControllerTest {
                     .build();
 
                 controller = new SupportController(claimService, userService, documentGenerator,
-                    moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
+                    defendantResponseStaffNotificationHandler,
                     ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
                     claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
                     postClaimOrchestrationHandler, mediationReportService, new ClaimSubmissionOperationIndicatorRule(),

@@ -35,8 +35,6 @@ import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
 import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseStaffNotificationHandler;
-import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
-import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimCreatedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
@@ -87,7 +85,6 @@ public class SupportController {
     private final ClaimService claimService;
     private final UserService userService;
     private final DocumentGenerator documentGenerator;
-    private final MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler;
     private final DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler;
     private final CCJStaffNotificationHandler ccjStaffNotificationHandler;
     private final AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler;
@@ -104,7 +101,6 @@ public class SupportController {
             ClaimService claimService,
             UserService userService,
             DocumentGenerator documentGenerator,
-            MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler,
             DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler,
             CCJStaffNotificationHandler ccjStaffNotificationHandler,
             AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler,
@@ -119,7 +115,6 @@ public class SupportController {
         this.claimService = claimService;
         this.userService = userService;
         this.documentGenerator = documentGenerator;
-        this.moreTimeRequestedStaffNotificationHandler = moreTimeRequestedStaffNotificationHandler;
         this.defendantResponseStaffNotificationHandler = defendantResponseStaffNotificationHandler;
         this.ccjStaffNotificationHandler = ccjStaffNotificationHandler;
         this.agreementCountersignedStaffNotificationHandler = agreementCountersignedStaffNotificationHandler;
@@ -147,9 +142,6 @@ public class SupportController {
         switch (event) {
             case "claim":
                 resendStaffNotificationsOnClaimIssued(claim, authorisation);
-                break;
-            case "more-time":
-                resendStaffNotificationOnMoreTimeRequested(claim);
                 break;
             case "response":
                 resendStaffNotificationOnDefendantResponseSubmitted(claim, authorisation);
@@ -331,16 +323,6 @@ public class SupportController {
         claimantResponseStaffNotificationHandler.notifyStaffWithClaimantsIntentionToProceed(
             new ClaimantResponseEvent(claim, authorization)
         );
-    }
-
-    private void resendStaffNotificationOnMoreTimeRequested(Claim claim) {
-        if (!claim.isMoreTimeRequested()) {
-            throw new ConflictException("More time has not been requested yet - cannot send notification");
-        }
-
-        // Defendant email is not available at this point however it is not used in staff notifications
-        MoreTimeRequestedEvent event = new MoreTimeRequestedEvent(claim, claim.getResponseDeadline(), null);
-        moreTimeRequestedStaffNotificationHandler.sendNotifications(event);
     }
 
     private void resendStaffNotificationOnDefendantResponseSubmitted(Claim claim, String authorization) {
