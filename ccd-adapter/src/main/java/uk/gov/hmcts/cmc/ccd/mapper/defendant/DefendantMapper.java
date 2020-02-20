@@ -55,6 +55,7 @@ public class DefendantMapper {
         respondentBuilder.responseDeadline(claim.getResponseDeadline());
         respondentBuilder.letterHolderId(claim.getLetterHolderId());
         respondentBuilder.defendantId(claim.getDefendantId());
+        respondentBuilder.responseSubmittedOn(claim.getRespondedAt());
 
         CCDParty.CCDPartyBuilder partyDetail = CCDParty.builder();
         partyDetail.emailAddress(claim.getDefendantEmail());
@@ -133,7 +134,6 @@ public class DefendantMapper {
     ) {
         return response -> {
             responseMapper.to(builder, response, partyDetail);
-            builder.responseSubmittedOn(claim.getRespondedAt());
         };
     }
 }
