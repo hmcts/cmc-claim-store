@@ -7,7 +7,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.PilotCourt;
 import uk.gov.hmcts.cmc.domain.models.orders.Direction;
 import uk.gov.hmcts.cmc.domain.models.orders.DirectionHeaderType;
 import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
@@ -42,8 +41,7 @@ public class DirectionOrderMapper {
         Optional.ofNullable(ccdCase.getEstimatedHearingDuration()).ifPresent(estimatedDuration ->
             builder.estimatedHearingDuration(HearingDurationType.valueOf(estimatedDuration.name())));
 
-        Optional.ofNullable(ccdCase.getHearingCourt()).ifPresent(hearingCourt ->
-            builder.hearingCourt(PilotCourt.valueOf(hearingCourt.name())));
+        Optional.ofNullable(ccdCase.getHearingCourt()).ifPresent(builder::hearingCourt);
 
         Optional.ofNullable(ccdCase.getPaperDetermination()).ifPresent(paperDetermination ->
             builder.paperDetermination(YesNoOption.valueOf(paperDetermination.name())));
