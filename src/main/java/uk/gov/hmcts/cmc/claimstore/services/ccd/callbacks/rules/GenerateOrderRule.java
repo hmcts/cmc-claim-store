@@ -12,9 +12,6 @@ import java.util.Optional;
 @Component
 public class GenerateOrderRule {
 
-    public GenerateOrderRule() {
-    }
-
     public static final String CLAIMANT_REQUESTED_FOR_EXPORT_REPORT =
         "Enter if you  grant permission for expert to the claimant";
 
