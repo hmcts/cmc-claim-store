@@ -15,7 +15,6 @@ import uk.gov.hmcts.cmc.claimstore.events.claim.PostClaimOrchestrationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedStaffNotificationHandler;
-import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimCreatedEvent;
@@ -100,9 +99,6 @@ class SupportControllerTest {
 
     @Mock
     private ClaimantResponseStaffNotificationHandler claimantResponseStaffNotificationHandler;
-
-    @Mock
-    private PaidInFullStaffNotificationHandler paidInFullStaffNotificationHandler;
 
     @Mock
     private DocumentsService documentsService;
