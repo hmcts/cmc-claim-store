@@ -33,19 +33,10 @@ java:
   readinessDelay: 75
   environment:
     LOG_LEVEL: DEBUG
-    IDAM_S2S_AUTH_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-    SEND_LETTER_URL: http://rpe-send-letter-service-aat.service.core-compute-aat.internal
-    IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
-    PDF_SERVICE_URL: http://cmc-pdf-service-aat.service.core-compute-aat.internal
-    DOCUMENT_MANAGEMENT_URL: http://dm-store-aat.service.core-compute-aat.internal
-    PAY_URL: http://payment-api-aat.service.core-compute-aat.internal
-    FEES_URL: http://fees-register-api-aat.service.core-compute-aat.internal
-    DOC_ASSEMBLY_URL: http://dg-docassembly-aat.service.core-compute-aat.internal
-    FRONTEND_BASE_URL: https://cmc-citizen-frontend-aat.service.core-compute-aat.internal
-    RESPOND_TO_CLAIM_URL: https://cmc-citizen-frontend-aat.service.core-compute-aat.internal/first-contact/start
     CMC_DB_HOST: ${SERVICE_NAME}-postgres
     CMC_DB_USERNAME: hmcts
     CMC_DB_PASSWORD: hmcts
+    CMC_DB_CONNECTION_OPTIONS: '?sslmode=allow'
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-data-store-api
 
 cmc-citizen-frontend:
