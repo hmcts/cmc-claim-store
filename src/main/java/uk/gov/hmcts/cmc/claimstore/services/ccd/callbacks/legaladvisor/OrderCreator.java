@@ -112,8 +112,8 @@ public class OrderCreator {
         data.put(DOC_UPLOAD_FOR_PARTY, BOTH.name());
         data.put(EYEWITNESS_UPLOAD_FOR_PARTY, BOTH.name());
         data.put(PAPER_DETERMINATION, NO.name());
-        data.put(HEARING_COURT, buildCourtsList(getPilot(callbackParams), claim.getCreatedAt()));
         if (jddoEnabled) {
+            data.put(HEARING_COURT, buildCourtsList(getPilot(callbackParams), claim.getCreatedAt()));
             data.put(GRANT_EXPERT_REPORT_PERMISSION, NO);
         }
 
