@@ -102,6 +102,9 @@ doc_assembly:
 nonworking-days:
   datafile: ${NONWORKINGDAYS_DATAFILE:/data/non-working_days.dat}
 
+pilot-courts:
+  datafile: "/data/pilot-courts.csv"
+
 milo:
   schedule: "${MILO_CSV_SCHEDULE:-}"
   recipient: ${MILO_CSV_RECIPIENT:}

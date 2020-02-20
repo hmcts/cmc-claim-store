@@ -1,8 +1,13 @@
-package uk.gov.hmcts.cmc.claimstore.utils;
+package uk.gov.hmcts.cmc.claimstore.services;
 
 import com.google.common.collect.ImmutableList;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
@@ -19,6 +24,9 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_JUDGE_DIRECTIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFERRED_TO_MEDIATION;
@@ -26,26 +34,33 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.WAITING_TRANSFER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.DQ_FLAG;
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.JUDGE_PILOT_FLAG;
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.LA_PILOT_FLAG;
-import static uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.PilotCourt.BIRMINGHAM;
-import static uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.PilotCourt.MANCHESTER;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_JUDGE_DIRECTIONS;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_LEGAL_ADVISOR_DIRECTIONS;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_TRANSFER;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
-public class DirectionsQuestionnaireUtilsTest {
+@RunWith(MockitoJUnitRunner.class)
+public class DirectionsQuestionnaireServiceTest {
 
     private static final String NON_PILOT_COURT_NAME = "Non pilot court name";
+    private static final String PILOT_COURT_NAME = "birmingham";
 
-    private static final ResponseRejection CLAIMANT_REJECTION_PILOT = ResponseRejection.builder()
-        .freeMediation(NO)
-        .directionsQuestionnaire(
-            DirectionsQuestionnaire.builder()
-                .hearingLocation(HearingLocation.builder()
-                    .courtName(BIRMINGHAM.getName())
-                    .build()
+    private static final ResponseRejection CLAIMANT_REJECTION_PILOT;
+
+    static {
+        CLAIMANT_REJECTION_PILOT = ResponseRejection.builder()
+                .freeMediation(NO)
+                .directionsQuestionnaire(
+                    DirectionsQuestionnaire.builder()
+                        .hearingLocation(HearingLocation.builder()
+                            .courtName(PILOT_COURT_NAME)
+                            .build()
+                        )
+                        .build()
                 )
-                .build()
-        )
-        .build();
+                .build();
+    }
 
     private static final ResponseRejection CLAIMANT_REJECTION_NON_PILOT = ResponseRejection.builder()
         .freeMediation(NO)
@@ -64,7 +79,7 @@ public class DirectionsQuestionnaireUtilsTest {
         .directionsQuestionnaire(
             DirectionsQuestionnaire.builder()
                 .hearingLocation(HearingLocation.builder()
-                    .courtName(BIRMINGHAM.getName())
+                    .courtName(PILOT_COURT_NAME)
                     .build()
                 )
                 .build()
@@ -88,7 +103,7 @@ public class DirectionsQuestionnaireUtilsTest {
         .directionsQuestionnaire(
             DirectionsQuestionnaire.builder()
                 .hearingLocation(HearingLocation.builder()
-                    .courtName(BIRMINGHAM.getName())
+                    .courtName(PILOT_COURT_NAME)
                     .build()
                 )
                 .build()
@@ -107,6 +122,17 @@ public class DirectionsQuestionnaireUtilsTest {
         )
         .build();
 
+    @Mock
+    private PilotCourtService pilotCourtService;
+
+    private DirectionsQuestionnaireService directionsQuestionnaireService;
+
+    @Before
+    public void setUp() {
+        when(pilotCourtService.isPilotCourt(eq(PILOT_COURT_NAME), any(), any())).thenReturn(true);
+        directionsQuestionnaireService = new DirectionsQuestionnaireService(pilotCourtService);
+    }
+
     @Test
     public void shouldAssignForDirectionsIfNoFreeMediationAndDefendantIsBusinessAndClaimantCourtIsPilot() {
         Claim claim = SampleClaim.builder()
@@ -118,7 +144,8 @@ public class DirectionsQuestionnaireUtilsTest {
                 .withDefendant(CompanyDetails.builder().build())
                 .build())
             .build();
-        Optional<CaseEvent> caseEvent = DirectionsQuestionnaireUtils.prepareCaseEvent(CLAIMANT_REJECTION_PILOT, claim);
+        Optional<CaseEvent> caseEvent =
+            directionsQuestionnaireService.prepareCaseEvent(CLAIMANT_REJECTION_PILOT, claim);
         assertThat(caseEvent).contains(ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS);
     }
 
@@ -132,7 +159,7 @@ public class DirectionsQuestionnaireUtilsTest {
                 .withDefendant(CompanyDetails.builder().build())
                 .build())
             .build();
-        assertThat(DirectionsQuestionnaireUtils.getPreferredCourt(claim)).isEqualTo(BIRMINGHAM.getName());
+        assertThat(directionsQuestionnaireService.getPreferredCourt(claim)).isEqualTo(PILOT_COURT_NAME);
     }
 
     @Test
@@ -146,7 +173,7 @@ public class DirectionsQuestionnaireUtilsTest {
                 .withDefendant(IndividualDetails.builder().build())
                 .build())
             .build();
-        assertThat(DirectionsQuestionnaireUtils.getPreferredCourt(claim)).isEqualTo(NON_PILOT_COURT_NAME);
+        assertThat(directionsQuestionnaireService.getPreferredCourt(claim)).isEqualTo(NON_PILOT_COURT_NAME);
     }
 
     @Test
@@ -160,8 +187,9 @@ public class DirectionsQuestionnaireUtilsTest {
                 .withDefendant(CompanyDetails.builder().build())
                 .build())
             .build();
+
         Optional<CaseEvent> caseEvent =
-            DirectionsQuestionnaireUtils.prepareCaseEvent(CLAIMANT_REJECTION_NON_PILOT, claim);
+            directionsQuestionnaireService.prepareCaseEvent(CLAIMANT_REJECTION_NON_PILOT, claim);
         assertThat(caseEvent).contains(WAITING_TRANSFER);
     }
 
@@ -175,7 +203,7 @@ public class DirectionsQuestionnaireUtilsTest {
                 .withDefendant(CompanyDetails.builder().build())
                 .build())
             .build();
-        assertThat(DirectionsQuestionnaireUtils.prepareCaseEvent(CLAIMANT_REJECTION_NON_PILOT, claim)).isEmpty();
+        assertThat(directionsQuestionnaireService.prepareCaseEvent(CLAIMANT_REJECTION_NON_PILOT, claim)).isEmpty();
     }
 
     @Test
@@ -190,7 +218,7 @@ public class DirectionsQuestionnaireUtilsTest {
                 .build())
             .build();
         Optional<CaseEvent> caseEvent =
-            DirectionsQuestionnaireUtils.prepareCaseEvent(CLAIMANT_REJECTION_NON_PILOT, claim);
+            directionsQuestionnaireService.prepareCaseEvent(CLAIMANT_REJECTION_NON_PILOT, claim);
         assertThat(caseEvent).contains(ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS);
     }
 
@@ -206,7 +234,7 @@ public class DirectionsQuestionnaireUtilsTest {
                 .build())
             .build();
         Optional<CaseEvent> caseEvent =
-            DirectionsQuestionnaireUtils.prepareCaseEvent(CLAIMANT_REJECTION_NON_PILOT, claim);
+            directionsQuestionnaireService.prepareCaseEvent(CLAIMANT_REJECTION_NON_PILOT, claim);
         assertThat(caseEvent).contains(ASSIGNING_FOR_JUDGE_DIRECTIONS);
     }
 
@@ -222,7 +250,7 @@ public class DirectionsQuestionnaireUtilsTest {
                 .build())
             .build();
         Optional<CaseEvent> caseEvent =
-            DirectionsQuestionnaireUtils.prepareCaseEvent(CLAIMANT_REJECTION_NON_PILOT, claim);
+            directionsQuestionnaireService.prepareCaseEvent(CLAIMANT_REJECTION_NON_PILOT, claim);
         assertThat(caseEvent).contains(WAITING_TRANSFER);
     }
 
@@ -236,7 +264,7 @@ public class DirectionsQuestionnaireUtilsTest {
                 .withDefendant(IndividualDetails.builder().build())
                 .build())
             .build();
-        assertThat(DirectionsQuestionnaireUtils.prepareCaseEvent(CLAIMANT_REJECTION_PILOT, claim)).isEmpty();
+        assertThat(directionsQuestionnaireService.prepareCaseEvent(CLAIMANT_REJECTION_PILOT, claim)).isEmpty();
     }
 
     @Test
@@ -246,7 +274,7 @@ public class DirectionsQuestionnaireUtilsTest {
             .directionsQuestionnaire(
                 DirectionsQuestionnaire.builder()
                     .hearingLocation(HearingLocation.builder()
-                        .courtName(MANCHESTER.getName())
+                        .courtName("manchester")
                         .build()
                     )
                     .build()
@@ -261,7 +289,7 @@ public class DirectionsQuestionnaireUtilsTest {
                 .build())
             .build();
 
-        Optional<CaseEvent> caseEvent = DirectionsQuestionnaireUtils.prepareCaseEvent(responseRejection, claim);
+        Optional<CaseEvent> caseEvent = directionsQuestionnaireService.prepareCaseEvent(responseRejection, claim);
         assertThat(caseEvent).contains(REFERRED_TO_MEDIATION);
     }
 
@@ -287,7 +315,7 @@ public class DirectionsQuestionnaireUtilsTest {
                 .build())
             .build();
 
-        Optional<CaseEvent> caseEvent = DirectionsQuestionnaireUtils.prepareCaseEvent(responseRejection, claim);
+        Optional<CaseEvent> caseEvent = directionsQuestionnaireService.prepareCaseEvent(responseRejection, claim);
         assertThat(caseEvent).contains(REFERRED_TO_MEDIATION);
     }
 
@@ -302,7 +330,7 @@ public class DirectionsQuestionnaireUtilsTest {
                 .build())
             .build();
 
-        DirectionsQuestionnaireUtils.getPreferredCourt(claim);
+        directionsQuestionnaireService.getPreferredCourt(claim);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -320,7 +348,7 @@ public class DirectionsQuestionnaireUtilsTest {
                 .build())
             .build();
 
-        DirectionsQuestionnaireUtils.getPreferredCourt(claim);
+        directionsQuestionnaireService.getPreferredCourt(claim);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -336,7 +364,7 @@ public class DirectionsQuestionnaireUtilsTest {
                 .build())
             .build();
 
-        DirectionsQuestionnaireUtils.getPreferredCourt(claim);
+        directionsQuestionnaireService.getPreferredCourt(claim);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -355,7 +383,7 @@ public class DirectionsQuestionnaireUtilsTest {
                 .build())
             .build();
 
-        DirectionsQuestionnaireUtils.getPreferredCourt(claim);
+        directionsQuestionnaireService.getPreferredCourt(claim);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -374,7 +402,7 @@ public class DirectionsQuestionnaireUtilsTest {
                 .build())
             .build();
 
-        DirectionsQuestionnaireUtils.getPreferredCourt(claim);
+        directionsQuestionnaireService.getPreferredCourt(claim);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -392,6 +420,68 @@ public class DirectionsQuestionnaireUtilsTest {
                 .build())
             .build();
 
-        DirectionsQuestionnaireUtils.getPreferredCourt(claim);
+        directionsQuestionnaireService.getPreferredCourt(claim);
+    }
+
+    @Test
+    public void getDirectionsCaseStateNonPilotCourtShouldReturnReadyForTransfer() {
+        Claim claim = SampleClaim.builder()
+            .withClaimantResponse(CLAIMANT_REJECTION_NON_PILOT)
+            .withResponse(DEFENDANT_PART_ADMISSION_NON_PILOT)
+            .withClaimData(SampleClaimData
+                .builder()
+                .withDefendant(CompanyDetails.builder().build())
+                .build())
+            .build();
+
+        String directionsCaseState = directionsQuestionnaireService.getDirectionsCaseState(claim);
+        assertThat(directionsCaseState).isEqualTo(READY_FOR_TRANSFER.getValue());
+    }
+
+    @Test
+    public void getDirectionsCaseStateLAPilotCourtShouldReturnReadyForLADirections() {
+        Claim claim = SampleClaim.builder()
+            .withClaimantResponse(CLAIMANT_REJECTION_PILOT)
+            .withResponse(DEFENDANT_PART_ADMISSION_PILOT)
+            .withFeatures(ImmutableList.of(DQ_FLAG.getValue(), LA_PILOT_FLAG.getValue()))
+            .withClaimData(SampleClaimData
+                .builder()
+                .withDefendant(CompanyDetails.builder().build())
+                .build())
+            .build();
+
+        String directionsCaseState = directionsQuestionnaireService.getDirectionsCaseState(claim);
+        assertThat(directionsCaseState).isEqualTo(READY_FOR_LEGAL_ADVISOR_DIRECTIONS.getValue());
+    }
+
+    @Test
+    public void getDirectionsCaseStateJddoPilotCourtShouldReturnReadyForJudgeDirections() {
+        Claim claim = SampleClaim.builder()
+            .withClaimantResponse(CLAIMANT_REJECTION_PILOT)
+            .withResponse(DEFENDANT_PART_ADMISSION_PILOT)
+            .withFeatures(ImmutableList.of(DQ_FLAG.getValue(), JUDGE_PILOT_FLAG.getValue()))
+            .withClaimData(SampleClaimData
+                .builder()
+                .withDefendant(CompanyDetails.builder().build())
+                .build())
+            .build();
+
+        String directionsCaseState = directionsQuestionnaireService.getDirectionsCaseState(claim);
+        assertThat(directionsCaseState).isEqualTo(READY_FOR_JUDGE_DIRECTIONS.getValue());
+    }
+
+    @Test
+    public void getDirectionsCaseStatePilotCourtShouldReturnReadyForTransfer() {
+        Claim claim = SampleClaim.builder()
+            .withClaimantResponse(CLAIMANT_REJECTION_PILOT)
+            .withResponse(DEFENDANT_PART_ADMISSION_PILOT)
+            .withClaimData(SampleClaimData
+                .builder()
+                .withDefendant(CompanyDetails.builder().build())
+                .build())
+            .build();
+
+        String directionsCaseState = directionsQuestionnaireService.getDirectionsCaseState(claim);
+        assertThat(directionsCaseState).isEqualTo(READY_FOR_TRANSFER.getValue());
     }
 }

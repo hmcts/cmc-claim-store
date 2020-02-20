@@ -79,6 +79,9 @@ public class DocAssemblyTemplateBody implements FormPayload {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate directionDeadline;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate changeOrderDeadline;
 
     private boolean expertReportPermissionPartyAskedByClaimant;
