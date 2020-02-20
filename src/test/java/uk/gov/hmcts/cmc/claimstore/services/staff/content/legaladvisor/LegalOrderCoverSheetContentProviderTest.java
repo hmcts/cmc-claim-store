@@ -65,8 +65,10 @@ public class LegalOrderCoverSheetContentProviderTest {
 
         Map<String, Object> content = provider.createContentForClaimant(claim);
 
-        String expectedName = String.format("%s T/A %s", claimant.getName(),
-            claimant.getBusinessName().orElseThrow(IllegalStateException::new));
+        String expectedName = String.format("%s T/A %s",
+            claimant.getName(),
+            claimant.getBusinessName()
+                .orElseThrow(() -> new IllegalStateException("Missing business name")));
 
         assertThat(content).containsEntry("partyFullName", expectedName);
         assertThat(content).containsEntry("partyAddress", claim.getClaimData().getClaimant().getAddress());
