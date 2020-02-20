@@ -14,21 +14,32 @@ import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourtMapper;
+import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourt;
+import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtCSVHeader;
 import uk.gov.hmcts.cmc.claimstore.utils.ResourceReader;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
+
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 
 @Service
 public class PilotCourtService {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    private static final int PILOT_COURT_GO_LIVE_TIME = 11;
 
     private Map<String, PilotCourt> pilotCourts;
     private final CourtFinderApi courtFinderApi;
@@ -64,14 +75,25 @@ public class PilotCourtService {
         return pilotCourts.keySet();
     }
 
-    public HearingCourt getHearingCourt(String pilotCourtId) {
+    public Set<HearingCourt> getPilotHearingCourts(Pilot pilot, LocalDateTime claimCreated) {
+
+        return pilotCourts.values()
+            .stream()
+            .filter(p -> p.isActivePilotCourt(pilot, claimCreated))
+            .map(PilotCourt::getId)
+            .map(this::getPilotHearingCourt)
+            .collect(Collectors.toSet());
+    }
+
+    public HearingCourt getPilotHearingCourt(String pilotCourtId) {
         if (!pilotCourts.containsKey(pilotCourtId)) {
             throw new IllegalArgumentException(String.format("Supplied pilotCourtId '%s' not found", pilotCourtId));
         }
 
         PilotCourt pilotCourt = pilotCourts.get(pilotCourtId);
 
-        return pilotCourt.getHearingCourt().orElseGet(() -> {
+        return pilotCourt.getHearingCourt()
+            .orElseGet(() -> {
                 Optional<HearingCourt> court = getCourt(pilotCourt.getPostcode());
                 pilotCourt.setHearingCourt(court.orElse(null));
 
@@ -80,13 +102,22 @@ public class PilotCourtService {
         );
     }
 
-    public boolean isPilotCourt(String courtName) {
+    public boolean isPilotCourt(String courtName, Pilot pilot, LocalDateTime claimCreated) {
         if (courtName == null) {
             return false;
         }
 
-        return pilotCourts.keySet().stream().anyMatch(pilotCourt ->
-            StringUtils.containsIgnoreCase(courtName, pilotCourt));
+        return pilotCourts.values()
+            .stream()
+            .anyMatch(pilotCourt -> checkPilotCourt(pilotCourt, courtName, pilot, claimCreated));
+    }
+
+    private boolean checkPilotCourt(PilotCourt pilotCourt, String courtName, Pilot pilot, LocalDateTime claimCreated) {
+        String pilotCourtName = getPilotHearingCourt(pilotCourt.getId())
+            .getName();
+
+        return StringUtils.containsIgnoreCase(pilotCourtName, courtName)
+            && pilotCourt.isActivePilotCourt(pilot, claimCreated);
     }
 
     private Map<String, PilotCourt> buildPilotCourts(String data) throws IOException {
@@ -95,23 +126,66 @@ public class PilotCourtService {
 
         Map<String, PilotCourt> pilotCourts = new HashMap<>();
         while (iterator.hasNext()) {
-            CSVRecord next = iterator.next();
+            CSVRecord csvRecord = iterator.next();
 
-            String id = next.get(PilotCourtCSVHeader.ID.ordinal()).toUpperCase();
-            String postcode = next.get(PilotCourtCSVHeader.POSTCODE.ordinal());
+            if (csvRecord.size() != PilotCourtCSVHeader.values().length) {
+                throw new AssertionError(String.format("Pilot court configuration for %s is expected to have %d values",
+                    csvRecord.toString(),
+                    PilotCourtCSVHeader.values().length));
+            }
+
+            String id = csvRecord.get(PilotCourtCSVHeader.ID.ordinal()).toUpperCase();
+            String postcode = csvRecord.get(PilotCourtCSVHeader.POSTCODE.ordinal());
+
+            Map<Pilot, LocalDateTime> pilots = getPilots(csvRecord);
 
             try {
                 Optional<HearingCourt> pilotCourt = getCourt(postcode);
-                pilotCourts.put(id, new PilotCourt(id, postcode, pilotCourt.orElse(null)));
+                pilotCourts.put(id, new PilotCourt(id, postcode, pilotCourt.orElse(null), pilots));
 
             } catch (FeignException e) {
                 logger.error("Failed to get address from Court Finder API", e);
                 appInsights.trackEvent(AppInsightsEvent.COURT_FINDER_API_FAILURE, "Court postcode", postcode);
-                pilotCourts.put(id, new PilotCourt(id, postcode, null));
+                pilotCourts.put(id, new PilotCourt(id, postcode, null, pilots));
             }
         }
 
         return pilotCourts;
+    }
+
+    private Map<Pilot, LocalDateTime> getPilots(CSVRecord csvRecord) {
+        return Arrays.stream(PilotCourtCSVHeader.values())
+            .filter(pilotCourtCSVHeader -> pilotCourtCSVHeader.getPilot().isPresent()
+                && isActivePilot(csvRecord.get(pilotCourtCSVHeader.ordinal())))
+            .map(pilotCourtCSVHeader ->
+                new Object[]{
+                    pilotCourtCSVHeader.getPilot().get(),
+                    LocalDate.parse(csvRecord.get(pilotCourtCSVHeader.ordinal()), ISO_LOCAL_DATE)
+                        .atTime(PILOT_COURT_GO_LIVE_TIME, 0)
+
+                }
+            )
+            .collect(Collectors.toMap(e -> (Pilot)e[0], e -> (LocalDateTime) e[1]));
+    }
+
+    /**
+     *  Valid configuration for a pilot trigger date is either a date in ISO-8601 format (yyyy-MM-dd) or false.
+     *
+     * @param pilotConfig String holding pilot configuration.
+     * @return true if date exists and is valid, false if configuration is false.
+     * @throws IllegalArgumentException configuration is neither a date in ISO-8601 format (yyyy-MM-dd) or false.
+     */
+    private boolean isActivePilot(String pilotConfig) {
+        try {
+            LocalDate.parse(pilotConfig, ISO_LOCAL_DATE);
+        } catch (DateTimeParseException e) {
+            if (!pilotConfig.equals("false")) {
+                throw new IllegalArgumentException(String.format("Expecting configuration to either be a valid date or "
+                    + "'false' but got %s", pilotConfig));
+            }
+            return false;
+        }
+        return true;
     }
 
     private Optional<HearingCourt> getCourt(String postcode) {
@@ -119,5 +193,14 @@ public class PilotCourtService {
             .stream()
             .findFirst()
             .map(hearingCourtMapper::from);
+    }
+
+    public String getPilotCourtId(HearingCourt hearingCourt) {
+
+        return pilotCourts.keySet()
+            .stream()
+            .filter(pilotCourtId ->  getPilotHearingCourt(pilotCourtId).equals(hearingCourt))
+            .findAny()
+            .orElseThrow(() -> new IllegalArgumentException("Supplied Hearing Court is not a pilot court"));
     }
 }

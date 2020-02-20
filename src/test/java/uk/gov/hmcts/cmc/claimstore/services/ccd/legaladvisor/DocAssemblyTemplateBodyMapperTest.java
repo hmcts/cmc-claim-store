@@ -63,7 +63,7 @@ public class DocAssemblyTemplateBodyMapperTest {
         docAssemblyTemplateBodyMapper
             = new DocAssemblyTemplateBodyMapper(clock, pilotCourtService, workingDayIndicator);
 
-        when(pilotCourtService.getHearingCourt(anyString()))
+        when(pilotCourtService.getPilotHearingCourt(anyString()))
             .thenReturn(HearingCourt.builder()
                 .name("Birmingham Court")
                 .address(CCDAddress.builder()
@@ -249,7 +249,7 @@ public class DocAssemblyTemplateBodyMapperTest {
             .build();
 
         assertThat(requestBody).isEqualTo(expectedBody);
-        verify(pilotCourtService).getHearingCourt(anyString());
+        verify(pilotCourtService).getPilotHearingCourt(anyString());
     }
 
     @Test
@@ -263,7 +263,7 @@ public class DocAssemblyTemplateBodyMapperTest {
         assertThat(output).isNotNull();
         String expected = new ResourceReader().read("/doc-assembly-template.json");
         JSONAssert.assertEquals(expected, output, STRICT);
-        verify(pilotCourtService).getHearingCourt(anyString());
+        verify(pilotCourtService).getPilotHearingCourt(anyString());
     }
 
     @Test
@@ -276,7 +276,7 @@ public class DocAssemblyTemplateBodyMapperTest {
         DocAssemblyTemplateBody expectedBody = docAssemblyTemplateBodyBuilder.build();
 
         assertThat(requestBody).isEqualTo(expectedBody);
-        verify(pilotCourtService).getHearingCourt(anyString());
+        verify(pilotCourtService).getPilotHearingCourt(anyString());
     }
 
     @Test
@@ -294,6 +294,6 @@ public class DocAssemblyTemplateBodyMapperTest {
         DocAssemblyTemplateBody expectedBody = docAssemblyTemplateBodyBuilder.build();
 
         assertThat(requestBody).isEqualTo(expectedBody);
-        verify(pilotCourtService).getHearingCourt(anyString());
+        verify(pilotCourtService).getPilotHearingCourt(anyString());
     }
 }

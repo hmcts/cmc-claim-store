@@ -63,7 +63,7 @@ public class OrderPostProcessor {
             .orElseThrow(() -> new CallbackException("Draft order not present"));
 
         HearingCourt hearingCourt = Optional.ofNullable(ccdCase.getHearingCourt())
-            .map(pilotCourtService::getHearingCourt)
+            .map(pilotCourtService::getPilotHearingCourt)
             .orElseGet(() -> HearingCourt.builder().build());
 
         CCDCase updatedCase = ccdCase.toBuilder()

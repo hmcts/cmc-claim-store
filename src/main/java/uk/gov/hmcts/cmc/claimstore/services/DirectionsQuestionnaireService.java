@@ -19,6 +19,8 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_JUDGE_DIRECTIO
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFERRED_TO_MEDIATION;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.WAITING_TRANSFER;
+import static uk.gov.hmcts.cmc.claimstore.services.pilotcourt.Pilot.JDDO;
+import static uk.gov.hmcts.cmc.claimstore.services.pilotcourt.Pilot.LA;
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isOptedForMediation;
 import static uk.gov.hmcts.cmc.claimstore.utils.TheirDetailsHelper.isDefendantBusiness;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_JUDGE_DIRECTIONS;
@@ -47,15 +49,13 @@ public class DirectionsQuestionnaireService {
             return Optional.empty();
         }
 
-        if (!pilotCourtService.isPilotCourt(getPreferredCourt(claim))) {
-            return Optional.of(WAITING_TRANSFER);
-        }
+        String preferredCourt = getPreferredCourt(claim);
 
-        if (isLegalAdvisorPilot(claim)) {
+        if (isLegalAdvisorPilot(claim) && pilotCourtService.isPilotCourt(preferredCourt, LA, claim.getCreatedAt())) {
             return Optional.of(ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS);
         }
 
-        if (isJudgePilot(claim)) {
+        if (isJudgePilot(claim)  && pilotCourtService.isPilotCourt(preferredCourt, JDDO, claim.getCreatedAt())) {
             return Optional.of(ASSIGNING_FOR_JUDGE_DIRECTIONS);
         }
 
@@ -63,15 +63,14 @@ public class DirectionsQuestionnaireService {
     }
 
     public String getDirectionsCaseState(Claim claim) {
-        if (!pilotCourtService.isPilotCourt(getPreferredCourt(claim))) {
-            return READY_FOR_TRANSFER.getValue();
-        }
 
-        if (isLegalAdvisorPilot(claim)) {
+        String preferredCourt = getPreferredCourt(claim);
+
+        if (isLegalAdvisorPilot(claim) && pilotCourtService.isPilotCourt(preferredCourt, LA, claim.getCreatedAt())) {
             return READY_FOR_LEGAL_ADVISOR_DIRECTIONS.getValue();
         }
 
-        if (isJudgePilot(claim)) {
+        if (isJudgePilot(claim) && pilotCourtService.isPilotCourt(preferredCourt, JDDO, claim.getCreatedAt())) {
             return READY_FOR_JUDGE_DIRECTIONS.getValue();
         }
 

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
@@ -20,6 +21,8 @@ import uk.gov.hmcts.cmc.claimstore.services.LegalOrderGenerationDeadlinesCalcula
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.rules.GenerateOrderRule;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
+import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.Pilot;
 import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -29,6 +32,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -107,7 +112,7 @@ public class OrderCreator {
         data.put(DOC_UPLOAD_FOR_PARTY, BOTH.name());
         data.put(EYEWITNESS_UPLOAD_FOR_PARTY, BOTH.name());
         data.put(PAPER_DETERMINATION, NO.name());
-        data.put(HEARING_COURT, buildCourtsList());
+        data.put(HEARING_COURT, buildCourtsList(getPilot(callbackParams), claim.getCreatedAt()));
         if (jddoEnabled) {
             data.put(GRANT_EXPERT_REPORT_PERMISSION, NO);
         }
@@ -200,15 +205,33 @@ public class OrderCreator {
             && StringUtils.isNotBlank(directionsQuestionnaire.getExpertEvidenceToExamine());
     }
 
-    private Map<String, List<Map<String, String>>> buildCourtsList() {
-        List<Map<String, String>> listItems = pilotCourtService.getAllPilotCourtIds().stream()
-            .sorted()
-            .map(id -> ImmutableMap.of(DYNAMIC_LIST_CODE, id,
-                DYNAMIC_LIST_LABEL, pilotCourtService.getHearingCourt(id).getName()))
+    private Map<String, List<Map<String, String>>> buildCourtsList(Pilot pilot, LocalDateTime claimCreatedDate) {
+        List<Map<String, String>> listItems = pilotCourtService.getPilotHearingCourts(pilot, claimCreatedDate).stream()
+            .sorted(Comparator.comparing(HearingCourt::getName))
+            .map(hearingCourt -> {
+                String id =  pilotCourtService.getPilotCourtId(hearingCourt);
+                return ImmutableMap.of(DYNAMIC_LIST_CODE, id, DYNAMIC_LIST_LABEL, hearingCourt.getName());
+            })
             .collect(Collectors.toList());
 
-        listItems.add(ImmutableMap.of(DYNAMIC_LIST_CODE, "OTHER", DYNAMIC_LIST_LABEL, "Other Court"));
+        if (pilot == Pilot.JDDO) {
+            listItems.add(ImmutableMap.of(DYNAMIC_LIST_CODE, "OTHER", DYNAMIC_LIST_LABEL, "Other Court"));
+        }
 
         return ImmutableMap.of(DYNAMIC_LIST_ITEMS, listItems);
+    }
+
+    private Pilot getPilot(CallbackParams callbackParams) {
+        CaseEvent caseEvent = CaseEvent.fromValue(callbackParams.getRequest().getEventId());
+        switch (caseEvent) {
+            case GENERATE_ORDER:
+                return Pilot.LA;
+            case ACTION_REVIEW_COMMENTS:
+                return Pilot.LA;
+            case DRAW_JUDGES_ORDER:
+                return Pilot.JDDO;
+            default:
+                throw new IllegalArgumentException("No pilot defined for event: " + caseEvent);
+        }
     }
 }

@@ -55,7 +55,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DRAW_ORDER;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DRAW_JUDGES_ORDER;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.GENERATE_ORDER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.DQ_FLAG;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
@@ -152,7 +152,7 @@ public class DrawJudgeOrderCallbackHandlerTest {
 
         callbackRequest = CallbackRequest
             .builder()
-            .eventId(DRAW_ORDER.getValue())
+            .eventId(DRAW_JUDGES_ORDER.getValue())
             .caseDetails(caseDetails)
             .build();
     }
@@ -169,7 +169,7 @@ public class DrawJudgeOrderCallbackHandlerTest {
 
         callbackRequest = CallbackRequest
             .builder()
-            .eventId(DRAW_ORDER.getValue())
+            .eventId(DRAW_JUDGES_ORDER.getValue())
             .caseDetails(caseDetails)
             .build();
 
