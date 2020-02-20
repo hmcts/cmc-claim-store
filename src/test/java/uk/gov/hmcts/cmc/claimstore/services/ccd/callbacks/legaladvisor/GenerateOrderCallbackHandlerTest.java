@@ -173,7 +173,6 @@ public class GenerateOrderCallbackHandlerTest {
         );
     }
 
-
     @Test
     public void shouldPrepopulateFieldsOnAboutToStartEventIfExpertReportsAreProvidedV2() {
         ccdCase.setRespondents(
@@ -279,6 +278,7 @@ public class GenerateOrderCallbackHandlerTest {
             entry("expertReportPermissionPartyAskedByDefendant", YES)
         );
     }
+
     @Test
     public void shouldPrepopulateFieldsOnAboutToStartEventIfNobodyObjectsCourtV2() {
         ccdCase.setRespondents(
