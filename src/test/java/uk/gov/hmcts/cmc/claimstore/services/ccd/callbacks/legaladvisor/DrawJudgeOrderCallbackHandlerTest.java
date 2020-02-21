@@ -118,9 +118,8 @@ public class DrawJudgeOrderCallbackHandlerTest {
 
     @Before
     public void setUp() {
-        boolean jddoEnabled = true;
         OrderCreator orderCreator = new OrderCreator(legalOrderGenerationDeadlinesCalculator, caseDetailsConverter,
-            docAssemblyService, generateOrderRule, jddoEnabled, directionsQuestionnaireService, pilotCourtService);
+            docAssemblyService, generateOrderRule, directionsQuestionnaireService, pilotCourtService);
 
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
             caseDetailsConverter, legalOrderService, pilotCourtService);
