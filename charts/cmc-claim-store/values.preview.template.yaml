@@ -31,6 +31,7 @@ java:
   livenessFailureThreshold: 6
   livenessDelay: 75
   readinessDelay: 75
+  aadIdentityName:
   environment:
     LOG_LEVEL: DEBUG
     CMC_DB_HOST: ${SERVICE_NAME}-postgres

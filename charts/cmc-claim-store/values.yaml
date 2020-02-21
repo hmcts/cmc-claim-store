@@ -7,12 +7,15 @@ ccd:
 
 java:
   image: hmctspublic.azurecr.io/cmc/claim-store:latest
+  ingressHost: cmc-claim-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
   applicationPort: 4400
+  aadIdentityName: money-claims
   keyVaults:
     cmc:
       resourceGroup: cmc
       secrets:
         - AppInsightsInstrumentationKey
+        - cmc-db-password
         - citizen-oauth-client-secret
         - claim-store-s2s-secret
         - anonymous-caseworker-username
