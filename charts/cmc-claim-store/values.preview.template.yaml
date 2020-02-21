@@ -38,6 +38,7 @@ java:
     CMC_DB_PASSWORD: hmcts
     CMC_DB_CONNECTION_OPTIONS: '?sslmode=allow'
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-data-store-api
+    SPRING_CLOUD_PROPERTIESVOLUME_ENABLED: false
 
 cmc-citizen-frontend:
   enabled: false
