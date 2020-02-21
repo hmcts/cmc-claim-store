@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
-import uk.gov.hmcts.cmc.claimstore.services.staff.content.ClaimantDirectionsHearingContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.ClaimantRejectPartAdmissionContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -19,7 +18,6 @@ import uk.gov.hmcts.cmc.email.EmailService;
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_CLAIMANT_RESPONSE;
@@ -38,21 +36,18 @@ public class ClaimantRejectionStaffNotificationService {
     private final StaffEmailProperties staffEmailProperties;
     private final StaffPdfCreatorService pdfCreatorService;
     private final ClaimantRejectPartAdmissionContentProvider claimantRejectPartAdmissionContentProvider;
-    private final ClaimantDirectionsHearingContentProvider claimantDirectionsHearingContentProvider;
 
     @Autowired
     public ClaimantRejectionStaffNotificationService(
         EmailService emailService,
         StaffEmailProperties staffEmailProperties,
         StaffPdfCreatorService pdfCreatorService,
-        ClaimantRejectPartAdmissionContentProvider claimantRejectPartAdmissionContentProvider,
-        ClaimantDirectionsHearingContentProvider claimantDirectionsHearingContentProvider
+        ClaimantRejectPartAdmissionContentProvider claimantRejectPartAdmissionContentProvider
     ) {
         this.emailService = emailService;
         this.staffEmailProperties = staffEmailProperties;
         this.pdfCreatorService = pdfCreatorService;
         this.claimantRejectPartAdmissionContentProvider = claimantRejectPartAdmissionContentProvider;
-        this.claimantDirectionsHearingContentProvider = claimantDirectionsHearingContentProvider;
     }
 
     public void notifyStaffClaimantRejectPartAdmission(Claim claim) {
@@ -69,22 +64,6 @@ public class ClaimantRejectionStaffNotificationService {
                 emailContent.getBody(),
                 singletonList(createResponsePdfAttachment(claim))
             )
-        );
-    }
-
-    public void notifyStaffWithClaimantsIntentionToProceed(Claim claim) {
-        requireNonNull(claim);
-
-        EmailContent emailContent = claimantDirectionsHearingContentProvider.createContent(getParameters(claim));
-
-        emailService.sendEmail(
-            staffEmailProperties.getSender(),
-            EmailData.builder()
-                .to(staffEmailProperties.getRecipient())
-                .subject(emailContent.getSubject())
-                .message(emailContent.getBody())
-                .attachments(emptyList())
-                .build()
         );
     }
 
