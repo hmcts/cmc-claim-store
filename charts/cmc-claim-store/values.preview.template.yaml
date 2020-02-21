@@ -31,6 +31,19 @@ java:
   livenessFailureThreshold: 6
   livenessDelay: 75
   readinessDelay: 75
+  keyVaults:
+    cmc:
+      resourceGroup: cmc
+      secrets:
+        - AppInsightsInstrumentationKey
+        - citizen-oauth-client-secret
+        - claim-store-s2s-secret
+        - anonymous-caseworker-username
+        - anonymous-caseworker-password
+        - system-update-username
+        - system-update-password
+        - notify-api-key
+        - milo-recipient
   environment:
     LOG_LEVEL: DEBUG
     CMC_DB_HOST: ${SERVICE_NAME}-postgres
