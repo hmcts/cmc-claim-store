@@ -494,14 +494,14 @@ public class CoreCaseDataService {
             );
 
             Claim existingClaim = toClaim(startEventResponse);
-            Claim.ClaimBuilder updatedClaim = existingClaim.toBuilder();
+            Claim.ClaimBuilder claimBuilder = existingClaim.toBuilder();
 
-            updatedClaim.claimantResponse(response)
+            claimBuilder.claimantResponse(response)
                 .claimantRespondedAt(nowInUTC())
                 .dateReferredForDirections(nowInUTC())
-                .preferredDQCourt(getPreferredCourt(updatedClaim.build()));
+                .preferredDQCourt(getPreferredCourt(claimBuilder.build()));
 
-            CaseDataContent caseDataContent = caseDataContent(startEventResponse, updatedClaim.build());
+            CaseDataContent caseDataContent = caseDataContent(startEventResponse, claimBuilder.build());
 
             return caseDetailsConverter.extractClaim(submitUpdate(authorisation,
                 eventRequestData,
