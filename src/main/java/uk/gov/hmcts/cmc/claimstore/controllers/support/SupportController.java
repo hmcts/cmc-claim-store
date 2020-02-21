@@ -72,7 +72,6 @@ import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_CLAIMANT_RE
 import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_REPRESENTATIVE;
 import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
-import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.REJECTION;
 
 @RestController
 @RequestMapping("/support")
@@ -162,9 +161,6 @@ public class SupportController {
                 break;
             case "claimant-response":
                 resendStaffNotificationClaimantResponse(claim, authorisation);
-                break;
-            case "intent-to-proceed":
-                resendStaffNotificationForIntentToProceed(claim, authorisation);
                 break;
             case "paid-in-full":
                 resendStaffNotificationForPaidInFull(claim);
@@ -318,19 +314,6 @@ public class SupportController {
                     new RepresentedClaimIssuedEvent(claim, fullName, authorisation)
             );
         }
-    }
-
-    private void resendStaffNotificationForIntentToProceed(Claim claim, String authorization) {
-        ClaimantResponse claimantResponse = claim.getClaimantResponse()
-            .orElseThrow(() -> new IllegalArgumentException(MISSING_CLAIMANT_RESPONSE));
-
-        if (claimantResponse.getType() != REJECTION) {
-            throw new IllegalArgumentException("Rejected Claimant Response is mandatory for 'intent-to-proceed' event");
-        }
-
-        claimantResponseStaffNotificationHandler.notifyStaffWithClaimantsIntentionToProceed(
-            new ClaimantResponseEvent(claim, authorization)
-        );
     }
 
     private void resendStaffNotificationOnMoreTimeRequested(Claim claim) {

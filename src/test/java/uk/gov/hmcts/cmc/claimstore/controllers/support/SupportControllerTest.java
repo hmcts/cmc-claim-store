@@ -12,7 +12,6 @@ import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimCreatedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentGenerator;
 import uk.gov.hmcts.cmc.claimstore.events.claim.PostClaimOrchestrationHandler;
-import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
@@ -36,14 +35,12 @@ import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.MediationRequest;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse.ClaimantResponseAcceptation;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse.ClaimantResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse.PartAdmission;
@@ -176,40 +173,20 @@ class SupportControllerTest {
             }
 
             @Test
-            void shouldResendStaffNotificationsForIntentToProceed() {
-                ClaimantResponse claimantResponse = ClaimantResponseRejection.builder()
-                    .buildRejectionWithDirectionsQuestionnaire();
-
-                sampleClaim = SampleClaim.builder()
-                    .withClaimData(SampleClaimData.submittedByClaimant())
-                    .withResponse(PartAdmission.builder().buildWithFreeMediation())
-                    .withClaimantResponse(claimantResponse)
-                    .build();
-
-                controller = new SupportController(claimService, userService, documentGenerator,
-                    moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
-                    ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
-                    claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
-                    postClaimOrchestrationHandler, mediationReportService, new ClaimSubmissionOperationIndicatorRule(),
-                    intentionToProceedService
-                );
-
-                when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE)))
-                    .thenReturn(Optional.of(sampleClaim));
-
-                controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "intent-to-proceed");
-
-                verify(claimantResponseStaffNotificationHandler)
-                    .notifyStaffWithClaimantsIntentionToProceed(new ClaimantResponseEvent(sampleClaim, AUTHORISATION));
-            }
-
-            @Test
             void shouldResendStaffNotificationForPaidInFull() {
                 when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(
                     Optional.of(SampleClaim.builder().withMoneyReceivedOn(LocalDate.now()).build()));
 
                 controller.resendStaffNotifications(CLAIM_REFERENCE, "paid-in-full");
                 verify(paidInFullStaffNotificationHandler).onPaidInFullEvent(any(PaidInFullEvent.class));
+            }
+
+            @Test
+            void shouldNotSendStaffNotificationAndThrowExceptionWhenIntentToProceed() {
+                when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(
+                    Optional.of(SampleClaim.builder().withMoneyReceivedOn(LocalDate.now()).build()));
+                assertThrows(NotFoundException.class,
+                    () -> controller.resendStaffNotifications(CLAIM_REFERENCE, "intent-to-proceed"));
             }
         }
 
@@ -419,31 +396,6 @@ class SupportControllerTest {
                 controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claimant-response");
 
                 verify(claimantResponseStaffNotificationHandler, never()).onClaimantResponse(any());
-            }
-
-            @Test
-            void shouldThrowForIntentToProceedIfClaimantResponseIsNotRejection() {
-                sampleClaim = SampleClaim.builder()
-                    .withClaimData(SampleClaimData.submittedByClaimant())
-                    .withResponse(PartAdmission.builder().buildWithFreeMediation())
-                    .withClaimantResponse(ClaimantResponseAcceptation.builder().build())
-                    .build();
-
-                controller = new SupportController(claimService, userService, documentGenerator,
-                    moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
-                    ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
-                    claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
-                    postClaimOrchestrationHandler, mediationReportService, new ClaimSubmissionOperationIndicatorRule(),
-                    intentionToProceedService
-                );
-
-                when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE)))
-                    .thenReturn(Optional.of(sampleClaim));
-
-                assertThrows(IllegalArgumentException.class,
-                    () -> controller.resendStaffNotifications(
-                        sampleClaim.getReferenceNumber(),
-                        "intent-to-proceed"));
             }
 
             @Test
