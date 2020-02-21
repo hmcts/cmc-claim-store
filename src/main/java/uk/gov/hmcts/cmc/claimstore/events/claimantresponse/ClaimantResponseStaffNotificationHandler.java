@@ -63,14 +63,4 @@ public class ClaimantResponseStaffNotificationHandler {
             }
         }
     }
-
-    @EventListener
-    public void notifyStaffWithClaimantsIntentionToProceed(ClaimantResponseEvent event) {
-        ClaimantResponse claimantResponse = event.getClaim().getClaimantResponse()
-            .orElseThrow(() -> new IllegalArgumentException(MISSING_CLAIMANT_RESPONSE));
-
-        if (isIntentToProceed(claimantResponse)) {
-            claimantRejectionStaffNotificationService.notifyStaffWithClaimantsIntentionToProceed(event.getClaim());
-        }
-    }
 }

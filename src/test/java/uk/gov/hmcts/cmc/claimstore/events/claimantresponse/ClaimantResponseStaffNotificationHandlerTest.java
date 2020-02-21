@@ -57,40 +57,6 @@ class ClaimantResponseStaffNotificationHandlerTest {
     }
 
     @Nested
-    @DisplayName("Intend to proceed responses")
-    class IntendToProceed {
-        @Test
-        void shouldNotifyStaffWhenClaimantIntendsToProceed() {
-            Claim claim = Claim.builder()
-                .claimantRespondedAt(NOW_IN_LOCAL_ZONE)
-                .claimantResponse(
-                    SampleClaimantResponse.ClaimantResponseRejection.builder()
-                        .buildRejectionWithDirectionsQuestionnaire()
-                )
-                .build();
-            ClaimantResponseEvent event = new ClaimantResponseEvent(claim, AUTHORISATION);
-
-            handler.notifyStaffWithClaimantsIntentionToProceed(event);
-
-            verify(claimantRejectionStaffNotificationService)
-                .notifyStaffWithClaimantsIntentionToProceed(event.getClaim());
-        }
-
-        @Test
-        void shouldNotNotifyStaffWhenNotAnIntentToProceedResponse() {
-            Claim claim = Claim.builder()
-                .claimantRespondedAt(NOW_IN_LOCAL_ZONE)
-                .claimantResponse(SampleClaimantResponse.validDefaultAcceptation())
-                .build();
-            ClaimantResponseEvent event = new ClaimantResponseEvent(claim, AUTHORISATION);
-
-            handler.notifyStaffWithClaimantsIntentionToProceed(event);
-
-            verifyNoInteractions(claimantRejectionStaffNotificationService);
-        }
-    }
-
-    @Nested
     @DisplayName("Other claimant responses")
     class OtherResponses {
         @Test
@@ -120,16 +86,6 @@ class ClaimantResponseStaffNotificationHandlerTest {
 
             assertThrows(IllegalArgumentException.class,
                 () -> handler.onClaimantResponse(event));
-
-            verifyNoInteractions(statesPaidStaffNotificationService, claimantRejectionStaffNotificationService);
-        }
-
-        @Test
-        void shouldThrowExceptionWhenClaimantResponseNotPresent() {
-            ClaimantResponseEvent event = new ClaimantResponseEvent(SampleClaim.builder().build(), AUTHORISATION);
-
-            assertThrows(IllegalArgumentException.class,
-                () -> handler.notifyStaffWithClaimantsIntentionToProceed(event));
 
             verifyNoInteractions(statesPaidStaffNotificationService, claimantRejectionStaffNotificationService);
         }
