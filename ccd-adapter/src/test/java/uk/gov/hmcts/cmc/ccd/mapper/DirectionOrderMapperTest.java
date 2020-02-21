@@ -42,7 +42,8 @@ public class DirectionOrderMapperTest {
         CCDCase ccdCase = addCCDOrderGenerationData(CCDCase.builder().directionOrder(ccdDirectionOrder).build());
         mapper.from(ccdCase, claimBuilder);
 
-        DirectionOrder directionOrder = claimBuilder.build().getDirectionOrder().orElseThrow(AssertionFailedError::new);
+        DirectionOrder directionOrder = claimBuilder.build().getDirectionOrder()
+            .orElseThrow(() -> new AssertionFailedError("Missing direction order"));
         assertThat(directionOrder).isEqualTo(ccdDirectionOrder);
         assertThat(directionOrder.getDirections()).hasSize(4);
 
