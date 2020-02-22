@@ -5,6 +5,8 @@ import feign.FeignException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -107,6 +109,8 @@ public class CoreCaseDataServiceTest {
     private feign.Request request;
     @Mock
     private DirectionsQuestionnaireService directionsQuestionnaireService;
+    @Captor
+    private ArgumentCaptor<Claim> claimArgumentCaptor;
 
     private CoreCaseDataService service;
 
@@ -489,6 +493,8 @@ public class CoreCaseDataServiceTest {
 
         assertThat(claim).isNotNull();
         assertThat(claim.getClaimantResponse()).isPresent();
+        verify(directionsQuestionnaireService, atLeastOnce()).getPreferredCourt(claimArgumentCaptor.capture());
+        assertThat(claimArgumentCaptor.getValue().getClaimantResponse()).isPresent();
         verify(coreCaseDataApi, atLeastOnce()).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
             anyString(), anyString(), eq(CLAIMANT_RESPONSE_REJECTION.getValue()));
     }
