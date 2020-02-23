@@ -47,6 +47,8 @@ public class PilotCourtService {
     private final String dataSource;
     private final AppInsights appInsights;
 
+    public static final String OTHER_COURT_ID = "OTHER";
+
     public PilotCourtService(@Value("${pilot-courts.datafile}") String dataSource,
                              CourtFinderApi courtFinderApi,
                              HearingCourtMapper hearingCourtMapper,
@@ -82,24 +84,24 @@ public class PilotCourtService {
             .filter(p -> p.isActivePilotCourt(pilot, claimCreated))
             .map(PilotCourt::getId)
             .map(this::getPilotHearingCourt)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
             .collect(Collectors.toSet());
     }
 
-    public HearingCourt getPilotHearingCourt(String pilotCourtId) {
+    public Optional<HearingCourt> getPilotHearingCourt(String pilotCourtId) {
         if (!pilotCourts.containsKey(pilotCourtId)) {
             throw new IllegalArgumentException(String.format("Supplied pilotCourtId '%s' not found", pilotCourtId));
         }
 
         PilotCourt pilotCourt = pilotCourts.get(pilotCourtId);
 
-        return pilotCourt.getHearingCourt()
-            .orElseGet(() -> {
-                Optional<HearingCourt> court = getCourt(pilotCourt.getPostcode());
-                pilotCourt.setHearingCourt(court.orElse(null));
+        if (!pilotCourt.getHearingCourt().isPresent()) {
+            Optional<HearingCourt> court = getCourt(pilotCourt.getPostcode());
+            pilotCourt.setHearingCourt(court.orElse(null));
+        }
 
-                return court.orElseGet(() -> HearingCourt.builder().build());
-            }
-        );
+        return pilotCourt.getHearingCourt();
     }
 
     public boolean isPilotCourt(String courtName, Pilot pilot, LocalDateTime claimCreated) {
@@ -114,6 +116,7 @@ public class PilotCourtService {
 
     private boolean checkPilotCourt(PilotCourt pilotCourt, String courtName, Pilot pilot, LocalDateTime claimCreated) {
         String pilotCourtName = getPilotHearingCourt(pilotCourt.getId())
+            .orElseThrow(() -> new IllegalStateException("Hearing Court not found for " + pilotCourt.getId()))
             .getName();
 
         return StringUtils.containsIgnoreCase(pilotCourtName, courtName)
@@ -199,7 +202,7 @@ public class PilotCourtService {
 
         return pilotCourts.keySet()
             .stream()
-            .filter(pilotCourtId ->  getPilotHearingCourt(pilotCourtId).equals(hearingCourt))
+            .filter(pilotCourtId ->  getPilotHearingCourt(pilotCourtId).get().equals(hearingCourt))
             .findAny()
             .orElseThrow(() -> new IllegalArgumentException("Supplied Hearing Court is not a pilot court"));
     }

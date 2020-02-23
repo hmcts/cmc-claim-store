@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legaladvisor;
 
 import com.google.common.collect.ImmutableList;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -62,9 +63,7 @@ public class OrderPostProcessor {
         CCDDocument draftOrderDoc = Optional.ofNullable(ccdCase.getDraftOrderDoc())
             .orElseThrow(() -> new CallbackException("Draft order not present"));
 
-        HearingCourt hearingCourt = Optional.ofNullable(ccdCase.getHearingCourt())
-            .map(pilotCourtService::getPilotHearingCourt)
-            .orElseGet(() -> HearingCourt.builder().build());
+        HearingCourt hearingCourt = getHearingCourt(ccdCase);
 
         CCDCase updatedCase = ccdCase.toBuilder()
             .caseDocuments(updateCaseDocumentsWithOrder(ccdCase, draftOrderDoc))
@@ -81,14 +80,37 @@ public class OrderPostProcessor {
             .build();
     }
 
-    public CallbackResponse cleanUpDynamicListCallback(CallbackParams callbackParams) {
+    public CallbackResponse setHearingCourt(CallbackParams callbackParams) {
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
 
+        HearingCourt hearingCourt = getHearingCourt(ccdCase);
+
+        CCDCase updatedCase = ccdCase.toBuilder()
+            .hearingCourtName(hearingCourt.getName())
+            .hearingCourtAddress(hearingCourt.getAddress())
+            .build();
+
         return AboutToStartOrSubmitCallbackResponse
             .builder()
-            .data(caseDetailsConverter.convertToMap(cleanUpDynamicList(ccdCase)))
+            .data(caseDetailsConverter.convertToMap(cleanUpDynamicList(updatedCase)))
             .build();
+    }
+
+    private HearingCourt getHearingCourt(CCDCase ccdCase) {
+        if (StringUtils.isAllBlank(ccdCase.getHearingCourt())
+            || ccdCase.getHearingCourt().equals(PilotCourtService.OTHER_COURT_ID)) {
+
+            return  HearingCourt.builder()
+                .name(ccdCase.getHearingCourtName())
+                .address(ccdCase.getHearingCourtAddress())
+                .build();
+        }
+
+        return pilotCourtService.getPilotHearingCourt(ccdCase.getHearingCourt())
+            .orElseThrow(() -> new IllegalArgumentException("Court is not a pilot court: "
+                + ccdCase.getHearingCourt()));
+
     }
 
     private CCDCase cleanUpDynamicList(CCDCase ccdCase) {

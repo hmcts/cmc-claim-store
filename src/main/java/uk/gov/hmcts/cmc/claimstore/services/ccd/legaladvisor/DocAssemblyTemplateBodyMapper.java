@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -11,7 +12,6 @@ import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 
 import java.time.Clock;
 import java.time.LocalDate;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
@@ -38,9 +38,8 @@ public class DocAssemblyTemplateBodyMapper {
     }
 
     public DocAssemblyTemplateBody from(CCDCase ccdCase, UserDetails userDetails) {
-        HearingCourt hearingCourt = Optional.ofNullable(ccdCase.getHearingCourt())
-            .map(pilotCourtService::getPilotHearingCourt)
-            .orElseGet(() -> HearingCourt.builder().build());
+
+        HearingCourt hearingCourt = getHearingCourt(ccdCase);
 
         LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
         return DocAssemblyTemplateBody.builder()
@@ -102,5 +101,21 @@ public class DocAssemblyTemplateBodyMapper {
             .expertReportPermissionPartyGivenToDefendant(
                 ccdCase.getExpertReportPermissionPartyGivenToDefendant() == YES)
             .build();
+    }
+
+    private HearingCourt getHearingCourt(CCDCase ccdCase) {
+        if (StringUtils.isAllBlank(ccdCase.getHearingCourt())
+            || ccdCase.getHearingCourt().equals(PilotCourtService.OTHER_COURT_ID)) {
+
+            return HearingCourt.builder()
+                .name(ccdCase.getHearingCourtName())
+                .address(ccdCase.getHearingCourtAddress())
+                .build();
+        }
+
+        return pilotCourtService.getPilotHearingCourt(ccdCase.getHearingCourt())
+            .orElseThrow(() -> new IllegalArgumentException("Court is not a pilot court: "
+                + ccdCase.getHearingCourt())
+            );
     }
 }
