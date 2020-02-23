@@ -1,5 +1,4 @@
 tags:
-  cmc-claim-store-postgresql-pod: true
   cmc-citizen-frontend-pod: true
   cmc-ccd-stack: true
   ccd-idam-pr: true
