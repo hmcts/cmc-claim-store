@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +10,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
-import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.PaymentsService;
-import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
@@ -20,52 +19,50 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Payment;
-import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
+import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
+import static java.lang.String.format;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CANCEL_CLAIM_PAYMENT_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
-import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
-import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
+import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.INITIATED;
+import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.PENDING;
 
 @Service
 @Conditional(FeesAndPaymentsConfiguration.class)
-public class ResumePaymentCallbackHandler extends CallbackHandler {
-    private static final List<CaseEvent> EVENTS = Collections.singletonList(RESUME_CLAIM_PAYMENT_CITIZEN);
+public class CancelPaymentCallbackHandler extends CallbackHandler {
+    private static final List<CaseEvent> EVENTS = Collections.singletonList(CANCEL_CLAIM_PAYMENT_CITIZEN);
     private static final List<Role> ROLES = Collections.singletonList(CITIZEN);
+    private static final Set<PaymentStatus> CANCELLABLE_STATUSES = ImmutableSet.of(PENDING, INITIATED);
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
     private final PaymentsService paymentsService;
     private final CaseDetailsConverter caseDetailsConverter;
     private final CaseMapper caseMapper;
-    private final IssueDateCalculator issueDateCalculator;
-    private final ResponseDeadlineCalculator responseDeadlineCalculator;
 
     @Autowired
-    public ResumePaymentCallbackHandler(
+    public CancelPaymentCallbackHandler(
         PaymentsService paymentsService,
         CaseDetailsConverter caseDetailsConverter,
-        CaseMapper caseMapper,
-        IssueDateCalculator issueDateCalculator,
-        ResponseDeadlineCalculator responseDeadlineCalculator) {
+        CaseMapper caseMapper
+    ) {
         this.paymentsService = paymentsService;
         this.caseDetailsConverter = caseDetailsConverter;
         this.caseMapper = caseMapper;
-        this.issueDateCalculator = issueDateCalculator;
-        this.responseDeadlineCalculator = responseDeadlineCalculator;
     }
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
         return ImmutableMap.of(
-            CallbackType.ABOUT_TO_SUBMIT, this::resumePayment
+            CallbackType.ABOUT_TO_SUBMIT, this::cancelPayment
         );
     }
 
@@ -79,35 +76,34 @@ public class ResumePaymentCallbackHandler extends CallbackHandler {
         return ROLES;
     }
 
-    private CallbackResponse resumePayment(CallbackParams callbackParams) {
+    private CallbackResponse cancelPayment(CallbackParams callbackParams) {
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         String authorisation = callbackParams.getParams()
             .get(CallbackParams.Params.BEARER_TOKEN).toString();
 
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
 
-        logger.info("Resuming payment for callback of type {}, claim with external id {}",
+        logger.info("Cancelling payment for callback of type {}, claim with external id {}",
             callbackParams.getType(),
             claim.getExternalId());
 
-        Claim claimAfterPayment = withPayment(authorisation, claim);
+        Claim claimAfterCancelledPayment = withCancelledPayment(authorisation, claim);
 
-        return AboutToStartOrSubmitCallbackResponse
-            .builder()
-            .data(caseDetailsConverter.convertToMap(caseMapper.to(claimAfterPayment)))
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetailsConverter.convertToMap(caseMapper.to(claimAfterCancelledPayment)))
             .build();
     }
 
-    private Claim withPayment(String authorisation, Claim claim) {
+    private Claim withCancelledPayment(String authorisation, Claim claim) {
         Payment originalPayment = paymentsService.retrievePayment(authorisation, claim.getClaimData()).orElseThrow(
             () -> new NotFoundException("No payment found in claim with external id " + claim.getExternalId())
         );
 
         logger.info("Retrieved payment from pay hub with status {}, claim with external id {}",
-            originalPayment.getStatus().toString(),
+            originalPayment.getStatus(),
             claim.getExternalId());
 
-        if (originalPayment.getStatus().equals(SUCCESS)) {
+        if (!CANCELLABLE_STATUSES.contains(originalPayment.getStatus())) {
             return claim.toBuilder()
                 .claimData(claim.getClaimData().toBuilder()
                     .payment(originalPayment)
@@ -115,27 +111,19 @@ public class ResumePaymentCallbackHandler extends CallbackHandler {
                 .build();
         }
 
-        LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
-        LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
+        logger.info("Cancelling payment for claim with external id {}", claim.getExternalId());
 
-        Claim updatedClaim = claim.toBuilder()
-            .issuedOn(issuedOn)
-            .serviceDate(issuedOn.plusDays(5))
-            .responseDeadline(responseDeadline)
-            .build();
+        paymentsService.cancelPayment(authorisation, originalPayment.getReference());
 
-        logger.info("Creating payment for claim with external id {}",
-            updatedClaim.getExternalId());
+        Payment cancelledPayment = paymentsService.retrievePayment(authorisation, claim.getClaimData())
+            .orElseThrow(() -> new IllegalStateException(format(
+                "Expected cancelled payment with reference %s but got null",
+                originalPayment.getReference()))
+            );
 
-        Payment newPayment = paymentsService.createPayment(
-            authorisation,
-            updatedClaim
-        );
-
-        return updatedClaim.toBuilder()
-            .claimData(updatedClaim.getClaimData().toBuilder()
-                .payment(newPayment)
-                .feeAmountInPennies(MonetaryConversions.poundsToPennies(newPayment.getAmount()))
+        return claim.toBuilder()
+            .claimData(claim.getClaimData().toBuilder()
+                .payment(cancelledPayment)
                 .build())
             .build();
 

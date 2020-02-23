@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
@@ -29,7 +30,7 @@ import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
-import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
+import uk.gov.hmcts.cmc.domain.models.ioc.PaymentDetailsResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
@@ -39,6 +40,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CANCEL_CLAIM_PAYMENT_CITIZEN;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
@@ -177,44 +179,55 @@ public class ClaimService {
     }
 
     @LogExecutionTime
-    public CreatePaymentResponse initiatePayment(
-        String authorisation,
-        ClaimData claimData) {
+    public PaymentDetailsResponse initiatePayment(String authorisation, ClaimData claimData) {
         User user = userService.getUser(authorisation);
 
-        Claim claim = buildClaimFrom(user,
-            user.getUserDetails().getId(),
-            claimData,
-            emptyList());
+        Claim claim = buildClaimFrom(user, user.getUserDetails().getId(), claimData, emptyList());
 
         Claim createdClaim = caseRepository.initiatePayment(user, claim);
 
         Payment payment = createdClaim.getClaimData().getPayment()
             .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT));
-        return CreatePaymentResponse.builder()
+        return PaymentDetailsResponse.builder()
             .nextUrl(payment.getNextUrl())
+            .reference(payment.getReference())
+            .status(payment.getStatus().getStatus())
+            .amount(payment.getAmount())
             .build();
     }
 
     @LogExecutionTime
-    public CreatePaymentResponse resumePayment(String authorisation, ClaimData claimData) {
+    public PaymentDetailsResponse resumePayment(String authorisation, ClaimData claimData) {
+        return processExistingPaymentEvent(authorisation, claimData, RESUME_CLAIM_PAYMENT_CITIZEN);
+    }
+
+    public PaymentDetailsResponse cancelPayment(String authorisation, ClaimData claimData) {
+        return processExistingPaymentEvent(authorisation, claimData, CANCEL_CLAIM_PAYMENT_CITIZEN);
+    }
+
+    private PaymentDetailsResponse processExistingPaymentEvent(
+        String authorisation,
+        ClaimData claimData,
+        CaseEvent caseEvent
+    ) {
         User user = userService.getUser(authorisation);
-        Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), user)
-            .toBuilder()
+        Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), user).toBuilder()
             .claimData(claimData)
             .build();
 
-        Claim resumedClaim = caseRepository.saveCaseEventIOC(user, claim, RESUME_CLAIM_PAYMENT_CITIZEN);
+        Claim processedClaim = caseRepository.saveCaseEventIOC(user, claim, caseEvent);
 
-        Payment payment = resumedClaim.getClaimData().getPayment()
+        Payment payment = processedClaim.getClaimData().getPayment()
             .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT));
 
-        return CreatePaymentResponse.builder()
-            .nextUrl(
-                payment.getStatus().equals(PaymentStatus.SUCCESS)
-                    ? String.format(returnUrlPattern, claim.getExternalId())
-                    : payment.getNextUrl()
+        return PaymentDetailsResponse.builder()
+            .nextUrl(payment.getStatus().equals(PaymentStatus.SUCCESS)
+                ? String.format(returnUrlPattern, claim.getExternalId())
+                : payment.getNextUrl()
             )
+            .reference(payment.getReference())
+            .status(payment.getStatus().getStatus())
+            .amount(payment.getAmount())
             .build();
     }
 

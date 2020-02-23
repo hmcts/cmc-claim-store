@@ -19,7 +19,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
-import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
+import uk.gov.hmcts.cmc.domain.models.ioc.PaymentDetailsResponse;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantLinkStatus;
 
 import java.util.List;
@@ -34,6 +34,7 @@ import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
 @RequestMapping(
     path = "/claims",
     produces = MediaType.APPLICATION_JSON_VALUE)
+@SuppressWarnings("MVCPathVariableInspection")
 public class ClaimController {
 
     private final ClaimService claimService;
@@ -116,7 +117,7 @@ public class ClaimController {
 
     @PostMapping(value = "/initiate-citizen-payment", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Initiates a citizen payment")
-    public CreatePaymentResponse initiatePayment(
+    public PaymentDetailsResponse initiatePayment(
         @Valid @NotNull @RequestBody ClaimData claimData,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
@@ -125,11 +126,20 @@ public class ClaimController {
 
     @PutMapping(value = "/resume-citizen-payment", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Resumes a citizen payment")
-    public CreatePaymentResponse resumePayment(
+    public PaymentDetailsResponse resumePayment(
         @Valid @NotNull @RequestBody ClaimData claimData,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
         return claimService.resumePayment(authorisation, claimData);
+    }
+
+    @PostMapping(value = "/cancel-citizen-payment", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Cancels a citizen payment")
+    public PaymentDetailsResponse cancelPayment(
+        @Valid @NotNull @RequestBody ClaimData claimData,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
+    ) {
+        return claimService.cancelPayment(authorisation, claimData);
     }
 
     @PutMapping(value = "/create-citizen-claim", consumes = MediaType.APPLICATION_JSON_VALUE)

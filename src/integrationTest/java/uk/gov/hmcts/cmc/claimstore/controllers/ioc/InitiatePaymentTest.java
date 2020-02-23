@@ -16,7 +16,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
-import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
+import uk.gov.hmcts.cmc.domain.models.ioc.PaymentDetailsResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -113,8 +113,8 @@ public class InitiatePaymentTest extends BaseMockSpringTest {
                 any()
             );
 
-        assertThat(jsonMappingHelper.deserializeObjectFrom(result, CreatePaymentResponse.class))
-            .extracting(CreatePaymentResponse::getNextUrl)
+        assertThat(jsonMappingHelper.deserializeObjectFrom(result, PaymentDetailsResponse.class))
+            .extracting(PaymentDetailsResponse::getNextUrl)
             .isEqualTo("http://nexturl.test");
     }
 

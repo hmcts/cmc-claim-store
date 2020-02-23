@@ -27,8 +27,8 @@ import uk.gov.hmcts.cmc.claimstore.helper.JsonMappingHelper;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.TestingSupportRepository;
+import uk.gov.hmcts.cmc.claimstore.services.PaymentsService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.PaymentsService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
@@ -61,7 +61,7 @@ public abstract class BaseMockSpringTest {
 
     protected static final String AUTHORISATION_TOKEN = "Bearer token";
 
-    protected static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
+    protected static final byte[] PDF_BYTES = new byte[] {1, 2, 3, 4};
 
     protected static final String USER_ID = "1";
     protected static final String JURISDICTION_ID = "CMC";

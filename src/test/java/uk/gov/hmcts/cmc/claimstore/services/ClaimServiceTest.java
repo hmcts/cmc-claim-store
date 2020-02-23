@@ -34,7 +34,7 @@ import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
-import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
+import uk.gov.hmcts.cmc.domain.models.ioc.PaymentDetailsResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountBreakdown;
@@ -456,8 +456,10 @@ public class ClaimServiceTest {
     public void initiatePaymentShouldFinishSuccessfully() {
         Claim claim = SampleClaim.builder()
             .withClaimData(SampleClaimData.builder()
-                .withPayment(
-                    Payment.builder().nextUrl("http://nexturl.test").build())
+                .withPayment(Payment.builder()
+                    .nextUrl("http://nexturl.test")
+                    .status(PaymentStatus.INITIATED)
+                    .build())
                 .build())
             .build();
         when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
@@ -466,10 +468,11 @@ public class ClaimServiceTest {
         when(caseRepository.initiatePayment(eq(USER), any(Claim.class)))
             .thenReturn(claim);
 
-        CreatePaymentResponse response = claimService.initiatePayment(AUTHORISATION, VALID_APP);
+        PaymentDetailsResponse response = claimService.initiatePayment(AUTHORISATION, VALID_APP);
 
-        CreatePaymentResponse expectedResponse = CreatePaymentResponse.builder()
+        PaymentDetailsResponse expectedResponse = PaymentDetailsResponse.builder()
             .nextUrl("http://nexturl.test")
+            .status(PaymentStatus.INITIATED.getStatus())
             .build();
         assertThat(response).isEqualTo(expectedResponse);
     }
@@ -489,7 +492,7 @@ public class ClaimServiceTest {
             .thenReturn(Optional.of(claim));
         when(caseRepository.saveCaseEventIOC(USER, claim, RESUME_CLAIM_PAYMENT_CITIZEN))
             .thenReturn(claim);
-        CreatePaymentResponse response = claimService.resumePayment(AUTHORISATION, claimData);
+        PaymentDetailsResponse response = claimService.resumePayment(AUTHORISATION, claimData);
 
         assertThat(response.getNextUrl()).isEqualTo(format(RETURN_URL, claim.getExternalId()));
     }
@@ -515,7 +518,7 @@ public class ClaimServiceTest {
             .thenReturn(Optional.of(claim));
         when(caseRepository.saveCaseEventIOC(USER, claim, RESUME_CLAIM_PAYMENT_CITIZEN))
             .thenReturn(claim);
-        CreatePaymentResponse response = claimService.resumePayment(AUTHORISATION, claimData);
+        PaymentDetailsResponse response = claimService.resumePayment(AUTHORISATION, claimData);
 
         assertThat(response.getNextUrl()).isEqualTo("http://payment.nexturl.test");
     }
@@ -563,7 +566,7 @@ public class ClaimServiceTest {
         Claim argumentCaptorValue = claimArgumentCaptor.getValue();
 
         assertThat(argumentCaptorValue.getClaimData().getFeeAccountNumber().orElse("")).isEqualTo("NEW_ACCOUNT");
-        AmountBreakDown finalAmount = (AmountBreakDown)argumentCaptorValue.getClaimData().getAmount();
+        AmountBreakDown finalAmount = (AmountBreakDown) argumentCaptorValue.getClaimData().getAmount();
         assertThat(finalAmount.getTotalAmount()).isEqualTo("1000.99");
         assertThat(argumentCaptorValue.getClaimData()).isEqualTo(claimDataToBeUpdated);
     }

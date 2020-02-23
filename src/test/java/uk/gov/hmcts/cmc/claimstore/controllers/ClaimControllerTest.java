@@ -9,7 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
-import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
+import uk.gov.hmcts.cmc.domain.models.ioc.PaymentDetailsResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
@@ -120,12 +120,12 @@ public class ClaimControllerTest {
         //given
         ClaimData input = SampleClaimData.validDefaults();
 
-        CreatePaymentResponse response = CreatePaymentResponse.builder().build();
+        PaymentDetailsResponse response = PaymentDetailsResponse.builder().build();
         when(claimService.initiatePayment(AUTHORISATION, input))
             .thenReturn(response);
 
         //when
-        CreatePaymentResponse output = claimController.initiatePayment(input, AUTHORISATION);
+        PaymentDetailsResponse output = claimController.initiatePayment(input, AUTHORISATION);
 
         //then
         assertThat(output).isEqualTo(response);
@@ -135,13 +135,29 @@ public class ClaimControllerTest {
     public void shouldResumePaymentForCitizen() {
         //given
         ClaimData claimData = SampleClaimData.builder().build();
-        CreatePaymentResponse expectedResponse =
-            CreatePaymentResponse.builder().nextUrl("http://next.url").build();
+        PaymentDetailsResponse expectedResponse =
+            PaymentDetailsResponse.builder().nextUrl("http://next.url").build();
         when(claimService.resumePayment(AUTHORISATION, claimData))
             .thenReturn(expectedResponse);
 
         //when
-        CreatePaymentResponse output = claimController.resumePayment(claimData, AUTHORISATION);
+        PaymentDetailsResponse output = claimController.resumePayment(claimData, AUTHORISATION);
+
+        //then
+        assertThat(output).isEqualTo(expectedResponse);
+    }
+
+    @Test
+    public void shouldCancelPaymentForCitizen() {
+        //given
+        ClaimData claimData = SampleClaimData.builder().build();
+        PaymentDetailsResponse expectedResponse =
+            PaymentDetailsResponse.builder().nextUrl("http://next.url").build();
+        when(claimService.cancelPayment(AUTHORISATION, claimData))
+            .thenReturn(expectedResponse);
+
+        //when
+        PaymentDetailsResponse output = claimController.cancelPayment(claimData, AUTHORISATION);
 
         //then
         assertThat(output).isEqualTo(expectedResponse);

@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -28,6 +29,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -84,8 +86,8 @@ public class ResumePaymentCallbackHandlerTest extends BaseMockSpringTest {
         given(paymentsService
             .retrievePayment(
                 eq(AUTHORISATION_TOKEN),
-                any(Claim.class)))
-            .willReturn(payment);
+                any(ClaimData.class)))
+            .willReturn(Optional.of(payment));
 
         Payment newPayment = Payment.builder()
             .amount(BigDecimal.valueOf(25))
@@ -141,8 +143,8 @@ public class ResumePaymentCallbackHandlerTest extends BaseMockSpringTest {
         given(paymentsService
             .retrievePayment(
                 eq(AUTHORISATION_TOKEN),
-                any(Claim.class)))
-            .willReturn(payment);
+                any(ClaimData.class)))
+            .willReturn(Optional.of(payment));
 
         MvcResult mvcResult = makeRequest(CallbackType.ABOUT_TO_SUBMIT.getValue())
             .andExpect(status().isOk())
@@ -176,8 +178,8 @@ public class ResumePaymentCallbackHandlerTest extends BaseMockSpringTest {
         given(paymentsService
             .retrievePayment(
                 eq(AUTHORISATION_TOKEN),
-                any(Claim.class)))
-            .willReturn(payment);
+                any(ClaimData.class)))
+            .willReturn(Optional.of(payment));
 
         Payment newPayment = Payment.builder()
             .amount(BigDecimal.valueOf(25))

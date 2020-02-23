@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.PaymentsService;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -28,6 +30,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.Optional;
 
 import static java.math.BigDecimal.TEN;
 import static java.time.LocalDate.now;
@@ -117,8 +120,8 @@ public class CreateCitizenClaimCallbackHandlerTest {
 
     @Test
     public void shouldSuccessfullyReturnCallBackResponseWhenSuccessfulPayment() {
-        when(paymentsService.retrievePayment(eq(BEARER_TOKEN), any(Claim.class)))
-            .thenReturn(paymentBuilder.status(SUCCESS).build());
+        when(paymentsService.retrievePayment(eq(BEARER_TOKEN), any(ClaimData.class)))
+            .thenReturn(Optional.of(paymentBuilder.status(SUCCESS).build()));
 
         Claim claim = SampleClaim.getDefault().toBuilder()
             .referenceNumber(referenceNumberRepository.getReferenceNumberForCitizen())
@@ -149,8 +152,8 @@ public class CreateCitizenClaimCallbackHandlerTest {
 
     @Test
     public void shouldSuccessfullyReturnCallBackResponseWhenUnSuccessfulPayment() {
-        when(paymentsService.retrievePayment(eq(BEARER_TOKEN), any(Claim.class)))
-            .thenReturn(paymentBuilder.status(FAILED).build());
+        when(paymentsService.retrievePayment(eq(BEARER_TOKEN), any(ClaimData.class)))
+            .thenReturn(Optional.of(paymentBuilder.status(FAILED).build()));
 
         Claim claim = SampleClaim.withFullClaimDataAndFailedPayment();
 
