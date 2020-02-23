@@ -78,6 +78,7 @@ public class DocAssemblyTemplateBodyMapperTest {
 
         ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
         ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
+        ccdCase.setHearingCourt("BIRMINGHAM");
         ccdCase.setRespondents(
             ImmutableList.of(
                 CCDCollectionElement.<CCDRespondent>builder()

@@ -167,6 +167,7 @@ public class DrawOrderCallbackHandlerTest {
 
         CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList()).toBuilder()
             .draftOrderDoc(DOCUMENT)
+            .hearingCourt("BIRMINGHAM")
             .directionOrder(CCDDirectionOrder.builder()
                 .hearingCourtName(SampleData.MANCHESTER_CIVIL_JUSTICE_CENTRE_CIVIL_AND_FAMILY_COURTS)
                 .hearingCourtAddress(SampleData.getHearingCourtAddress())

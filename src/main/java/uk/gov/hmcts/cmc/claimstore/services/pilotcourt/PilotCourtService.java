@@ -47,6 +47,8 @@ public class PilotCourtService {
     private final String dataSource;
     private final AppInsights appInsights;
 
+    public static final String OTHER_COURT_ID = "OTHER";
+
     public PilotCourtService(@Value("${pilot-courts.datafile}") String dataSource,
                              CourtFinderApi courtFinderApi,
                              HearingCourtMapper hearingCourtMapper,

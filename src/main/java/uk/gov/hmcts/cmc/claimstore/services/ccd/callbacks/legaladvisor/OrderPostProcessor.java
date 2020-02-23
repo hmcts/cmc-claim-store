@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legaladvisor;
 import com.google.common.collect.ImmutableList;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
@@ -63,6 +64,7 @@ public class OrderPostProcessor {
             .orElseThrow(() -> new CallbackException("Draft order not present"));
 
         HearingCourt hearingCourt = Optional.ofNullable(ccdCase.getHearingCourt())
+            .filter(s -> !s.equals(PilotCourtService.OTHER_COURT_ID))
             .map(pilotCourtService::getPilotHearingCourt)
             .orElseGet(() -> HearingCourt.builder().build());
 
@@ -70,8 +72,8 @@ public class OrderPostProcessor {
             .caseDocuments(updateCaseDocumentsWithOrder(ccdCase, draftOrderDoc))
             .directionOrder(CCDDirectionOrder.builder()
                 .createdOn(nowInUTC())
-                .hearingCourtName(hearingCourt.getName())
-                .hearingCourtAddress(hearingCourt.getAddress())
+                .hearingCourtName(getHearingCourtName(hearingCourt, ccdCase))
+                .hearingCourtAddress(getHearingCourtAddress(hearingCourt, ccdCase))
                 .build())
             .build();
 
@@ -136,5 +138,15 @@ public class OrderPostProcessor {
             .addAll(ccdCase.getCaseDocuments())
             .add(claimDocument)
             .build();
+    }
+
+    private String getHearingCourtName(HearingCourt hearingCourt, CCDCase ccdCase) {
+        return ccdCase.getHearingCourt().equals(PilotCourtService.OTHER_COURT_ID)
+            ? ccdCase.getHearingCourtName() : hearingCourt.getName();
+    }
+
+    private CCDAddress getHearingCourtAddress(HearingCourt hearingCourt, CCDCase ccdCase) {
+        return ccdCase.getHearingCourt().equals(PilotCourtService.OTHER_COURT_ID)
+            ? ccdCase.getHearingCourtAddress() : hearingCourt.getAddress();
     }
 }

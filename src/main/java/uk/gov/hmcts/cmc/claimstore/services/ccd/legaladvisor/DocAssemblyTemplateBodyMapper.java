@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
@@ -39,6 +40,7 @@ public class DocAssemblyTemplateBodyMapper {
 
     public DocAssemblyTemplateBody from(CCDCase ccdCase, UserDetails userDetails) {
         HearingCourt hearingCourt = Optional.ofNullable(ccdCase.getHearingCourt())
+            .filter(s -> !s.equals(PilotCourtService.OTHER_COURT_ID))
             .map(pilotCourtService::getPilotHearingCourt)
             .orElseGet(() -> HearingCourt.builder().build());
 
@@ -70,8 +72,8 @@ public class DocAssemblyTemplateBodyMapper {
             .extraDocUploadList(ccdCase.getExtraDocUploadList())
             .eyewitnessUploadForParty(ccdCase.getEyewitnessUploadForParty())
             .paperDetermination(ccdCase.getPaperDetermination() == YES)
-            .hearingCourtName(hearingCourt.getName())
-            .hearingCourtAddress(hearingCourt.getAddress())
+            .hearingCourtName(getHearingCourtName(hearingCourt, ccdCase))
+            .hearingCourtAddress(getHearingCourtAddress(hearingCourt, ccdCase))
             .estimatedHearingDuration(ccdCase.getEstimatedHearingDuration())
             .otherDirections(ccdCase.getOtherDirections()
                 .stream()
@@ -102,5 +104,15 @@ public class DocAssemblyTemplateBodyMapper {
             .expertReportPermissionPartyGivenToDefendant(
                 ccdCase.getExpertReportPermissionPartyGivenToDefendant() == YES)
             .build();
+    }
+
+    private String getHearingCourtName(HearingCourt hearingCourt, CCDCase ccdCase) {
+        return ccdCase.getHearingCourt().equals(PilotCourtService.OTHER_COURT_ID)
+            ? ccdCase.getHearingCourtName() : hearingCourt.getName();
+    }
+
+    private CCDAddress getHearingCourtAddress(HearingCourt hearingCourt, CCDCase ccdCase) {
+        return ccdCase.getHearingCourt().equals(PilotCourtService.OTHER_COURT_ID)
+            ? ccdCase.getHearingCourtAddress() : hearingCourt.getAddress();
     }
 }

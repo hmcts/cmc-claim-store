@@ -27,6 +27,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.rules.GenerateOrderRule;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
+import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.Pilot;
 import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -180,6 +181,7 @@ public class DrawJudgeOrderCallbackHandlerTest {
 
         CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList()).toBuilder()
             .draftOrderDoc(DOCUMENT)
+            .hearingCourt(PilotCourtService.OTHER_COURT_ID)
             .directionOrder(CCDDirectionOrder.builder()
                 .hearingCourtName(SampleData.MANCHESTER_CIVIL_JUSTICE_CENTRE_CIVIL_AND_FAMILY_COURTS)
                 .hearingCourtAddress(SampleData.getHearingCourtAddress())
