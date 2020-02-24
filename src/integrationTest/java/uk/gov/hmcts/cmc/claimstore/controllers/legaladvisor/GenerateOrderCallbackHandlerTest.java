@@ -90,6 +90,7 @@ public class GenerateOrderCallbackHandlerTest extends BaseMockSpringTest {
                 .build()
             ));
         given(pilotCourtService.getPilotCourtId(any())).willReturn("COURT_ID");
+        given(directionOrderService.getHearingCourt(any())).willReturn(HearingCourt.builder().build());
 
         given(authTokenGenerator.generate()).willReturn(serviceToken);
         given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(USER_DETAILS);
