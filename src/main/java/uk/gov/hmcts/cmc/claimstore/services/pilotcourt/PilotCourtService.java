@@ -202,7 +202,7 @@ public class PilotCourtService {
 
         return pilotCourts.keySet()
             .stream()
-            .filter(pilotCourtId ->  getPilotHearingCourt(pilotCourtId).get().equals(hearingCourt))
+            .filter(pilotCourtId ->  getPilotHearingCourt(pilotCourtId).filter(hearingCourt::equals).isPresent())
             .findAny()
             .orElseThrow(() -> new IllegalArgumentException("Supplied Hearing Court is not a pilot court"));
     }

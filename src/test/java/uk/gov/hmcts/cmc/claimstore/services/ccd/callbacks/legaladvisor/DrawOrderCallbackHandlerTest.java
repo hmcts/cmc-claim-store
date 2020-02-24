@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
+import uk.gov.hmcts.cmc.claimstore.services.DirectionOrderService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
@@ -36,12 +37,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.MapEntry.entry;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -89,6 +88,9 @@ public class DrawOrderCallbackHandlerTest {
     @Mock
     private PilotCourtService pilotCourtService;
 
+    @Mock
+    private DirectionOrderService directionOrderService;
+
     private CallbackParams callbackParams;
 
     private CallbackRequest callbackRequest;
@@ -98,7 +100,7 @@ public class DrawOrderCallbackHandlerTest {
     @Before
     public void setUp() {
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
-            caseDetailsConverter, legalOrderService, pilotCourtService);
+            caseDetailsConverter, legalOrderService, directionOrderService);
 
         drawOrderCallbackHandler = new DrawOrderCallbackHandler(orderPostProcessor,
             caseDetailsConverter, docAssemblyService);
@@ -180,8 +182,7 @@ public class DrawOrderCallbackHandlerTest {
             .hearingCourt(SampleData.MANCHESTER_CIVIL_JUSTICE_CENTRE_CIVIL_AND_FAMILY_COURTS)
             .build();
 
-        when(pilotCourtService.getPilotHearingCourt(anyString()))
-            .thenReturn(Optional.of(HearingCourt.builder().build()));
+        when(directionOrderService.getHearingCourt(any())).thenReturn(HearingCourt.builder().build());
 
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
 

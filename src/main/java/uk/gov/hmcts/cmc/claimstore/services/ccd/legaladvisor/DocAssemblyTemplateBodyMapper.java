@@ -1,14 +1,13 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.DirectionOrderService;
 import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
-import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -23,23 +22,23 @@ public class DocAssemblyTemplateBodyMapper {
     public static final long DIRECTION_DEADLINE_NO_OF_DAYS = 19L;
     public static final long CHANGE_ORDER_DEADLINE_NO_OF_DAYS = 12L;
     private final Clock clock;
-    private final PilotCourtService pilotCourtService;
+    private final DirectionOrderService directionOrderService;
     private final WorkingDayIndicator workingDayIndicator;
 
     @Autowired
     public DocAssemblyTemplateBodyMapper(
         Clock clock,
-        PilotCourtService pilotCourtService,
+        DirectionOrderService directionOrderService,
         WorkingDayIndicator workingDayIndicator
     ) {
         this.clock = clock;
-        this.pilotCourtService = pilotCourtService;
+        this.directionOrderService = directionOrderService;
         this.workingDayIndicator = workingDayIndicator;
     }
 
     public DocAssemblyTemplateBody from(CCDCase ccdCase, UserDetails userDetails) {
 
-        HearingCourt hearingCourt = getHearingCourt(ccdCase);
+        HearingCourt hearingCourt = directionOrderService.getHearingCourt(ccdCase);
 
         LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
         return DocAssemblyTemplateBody.builder()
@@ -101,21 +100,5 @@ public class DocAssemblyTemplateBodyMapper {
             .expertReportPermissionPartyGivenToDefendant(
                 ccdCase.getExpertReportPermissionPartyGivenToDefendant() == YES)
             .build();
-    }
-
-    private HearingCourt getHearingCourt(CCDCase ccdCase) {
-        if (StringUtils.isAllBlank(ccdCase.getHearingCourt())
-            || ccdCase.getHearingCourt().equals(PilotCourtService.OTHER_COURT_ID)) {
-
-            return HearingCourt.builder()
-                .name(ccdCase.getHearingCourtName())
-                .address(ccdCase.getHearingCourtAddress())
-                .build();
-        }
-
-        return pilotCourtService.getPilotHearingCourt(ccdCase.getHearingCourt())
-            .orElseThrow(() -> new IllegalArgumentException("Court is not a pilot court: "
-                + ccdCase.getHearingCourt())
-            );
     }
 }

@@ -18,19 +18,18 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.DirectionOrderService;
 import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
-import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
@@ -52,7 +51,7 @@ class DocAssemblyTemplateBodyMapperTest {
     @Mock
     private Clock clock;
     @Mock
-    private PilotCourtService pilotCourtService;
+    private DirectionOrderService directionOrderService;
     @Mock
     private WorkingDayIndicator workingDayIndicator;
 
@@ -64,7 +63,7 @@ class DocAssemblyTemplateBodyMapperTest {
     @BeforeEach
     void setUp() {
         docAssemblyTemplateBodyMapper
-            = new DocAssemblyTemplateBodyMapper(clock, pilotCourtService, workingDayIndicator);
+            = new DocAssemblyTemplateBodyMapper(clock, directionOrderService, workingDayIndicator);
 
         ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
         ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
@@ -238,78 +237,6 @@ class DocAssemblyTemplateBodyMapperTest {
                 .expertReportInstruction(SUBMIT_MORE_DOCS_INSTRUCTION)
                 .build();
         }
-
-        @Test
-        void shouldMapAddressIfHearingCourtSupplied() {
-            when(pilotCourtService.getPilotHearingCourt(anyString()))
-                .thenReturn(Optional.of(HearingCourt.builder()
-                    .name("Birmingham Court")
-                    .address(CCDAddress.builder()
-                        .addressLine1("line1")
-                        .addressLine2("line2")
-                        .addressLine3("line3")
-                        .postCode("SW1P4BB")
-                        .postTown("Birmingham")
-                        .build()
-                    )
-                    .build()));
-
-            ccdCase = SampleData.addCCDOrderGenerationData(ccdCase).toBuilder().hearingCourt("BIRMINGHAM").build();
-            DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
-                ccdCase,
-                userDetails
-            );
-
-            assertThat(requestBody).isEqualTo(expectedBody);
-        }
-
-        @Test
-        void shouldMapAddressIfOtherHearingCourtSupplied() {
-            CCDAddress address = CCDAddress.builder()
-                .addressLine1("line1")
-                .addressLine2("line2")
-                .addressLine3("line3")
-                .postCode("SW1P4BB")
-                .postTown("Birmingham")
-                .build();
-
-            ccdCase = SampleData.addCCDOrderGenerationData(ccdCase)
-                .toBuilder()
-                .hearingCourt("OTHER")
-                .hearingCourtName("Birmingham Court")
-                .hearingCourtAddress(address)
-                .build();
-            DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
-                ccdCase,
-                userDetails
-            );
-
-            assertThat(requestBody).isEqualTo(expectedBody);
-        }
-
-        @Test
-        void shouldMapAddressIfNoHearingCourtSupplied() {
-            CCDAddress address = CCDAddress.builder()
-                .addressLine1("line1")
-                .addressLine2("line2")
-                .addressLine3("line3")
-                .postCode("SW1P4BB")
-                .postTown("Birmingham")
-                .build();
-
-            ccdCase = SampleData.addCCDOrderGenerationData(ccdCase)
-                .toBuilder()
-                .hearingCourt(null)
-                .hearingCourtName("Birmingham Court")
-                .hearingCourtAddress(address)
-                .build();
-            DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
-                ccdCase,
-                userDetails
-            );
-
-            assertThat(requestBody).isEqualTo(expectedBody);
-        }
     }
 
     @Nested
@@ -317,8 +244,8 @@ class DocAssemblyTemplateBodyMapperTest {
     class GeneralTests {
         @BeforeEach
         void setUp() {
-            when(pilotCourtService.getPilotHearingCourt(anyString()))
-                .thenReturn(Optional.of(HearingCourt.builder()
+            when(directionOrderService.getHearingCourt(any()))
+                .thenReturn(HearingCourt.builder()
                     .name("Birmingham Court")
                     .address(CCDAddress.builder()
                         .addressLine1("line1")
@@ -328,7 +255,7 @@ class DocAssemblyTemplateBodyMapperTest {
                         .postTown("Birmingham")
                         .build()
                     )
-                    .build()));
+                    .build());
         }
 
         @Test
@@ -342,7 +269,7 @@ class DocAssemblyTemplateBodyMapperTest {
             assertThat(output).isNotNull();
             String expected = new ResourceReader().read("/doc-assembly-template.json");
             JSONAssert.assertEquals(expected, output, STRICT);
-            verify(pilotCourtService).getPilotHearingCourt(anyString());
+            verify(directionOrderService).getHearingCourt(any());
         }
 
         @Test
@@ -355,7 +282,7 @@ class DocAssemblyTemplateBodyMapperTest {
             DocAssemblyTemplateBody expectedBody = docAssemblyTemplateBodyBuilder.build();
 
             assertThat(requestBody).isEqualTo(expectedBody);
-            verify(pilotCourtService).getPilotHearingCourt(anyString());
+            verify(directionOrderService).getHearingCourt(any());
         }
 
         @Test
@@ -376,7 +303,7 @@ class DocAssemblyTemplateBodyMapperTest {
             DocAssemblyTemplateBody expectedBody = docAssemblyTemplateBodyBuilder.build();
 
             assertThat(requestBody).isEqualTo(expectedBody);
-            verify(pilotCourtService).getPilotHearingCourt(anyString());
+            verify(directionOrderService).getHearingCourt(any());
         }
     }
 }

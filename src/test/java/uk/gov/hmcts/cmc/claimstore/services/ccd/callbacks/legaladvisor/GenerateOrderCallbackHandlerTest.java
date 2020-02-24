@@ -9,7 +9,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
-import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
@@ -19,6 +18,7 @@ import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestion
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDExpertReport;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.services.DirectionOrderService;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireService;
 import uk.gov.hmcts.cmc.claimstore.services.LegalOrderGenerationDeadlinesCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
@@ -26,7 +26,6 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackVersion;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.rules.GenerateOrderRule;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
@@ -44,7 +43,6 @@ import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.MapEntry.entry;
@@ -90,6 +88,9 @@ public class GenerateOrderCallbackHandlerTest {
     @Mock
     private LegalOrderService legalOrderService;
 
+    @Mock
+    private DirectionOrderService directionOrderService;
+
     private CallbackRequest callbackRequest;
     private GenerateOrderCallbackHandler generateOrderCallbackHandler;
     private CCDCase ccdCase;
@@ -101,7 +102,7 @@ public class GenerateOrderCallbackHandlerTest {
             pilotCourtService);
 
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
-            caseDetailsConverter, legalOrderService, pilotCourtService);
+            caseDetailsConverter, legalOrderService, directionOrderService);
 
         generateOrderCallbackHandler = new GenerateOrderCallbackHandler(orderCreator, orderPostProcessor,
             caseDetailsConverter, appInsights);
@@ -639,114 +640,4 @@ public class GenerateOrderCallbackHandlerTest {
             .trackEvent(DRAFTED_BY_LEGAL_ADVISOR, REFERENCE_NUMBER, ccdCase.getPreviousServiceCaseReference());
     }
 
-    @Test
-    public void shouldSetHearingCourtWhenPilotCourtSelected() {
-        String pilotCourtName = "BIRMINGHAM";
-        CCDCase ccdCase = CCDCase.builder()
-            .hearingCourt(pilotCourtName)
-            .build();
-
-        CCDAddress address = CCDAddress.builder()
-            .addressLine1("line1")
-            .addressLine2("line2")
-            .addressLine3("line3")
-            .postCode("SW1P4BB")
-            .postTown("Birmingham")
-            .build();
-
-        String courtName = "Birmingham Court";
-        when(pilotCourtService.getPilotHearingCourt(eq(pilotCourtName)))
-            .thenReturn(Optional.of(HearingCourt.builder()
-                .name(courtName)
-                .address(address)
-                .build()));
-        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-
-        CallbackParams callbackParams = CallbackParams.builder()
-            .type(CallbackType.ABOUT_TO_SUBMIT)
-            .request(callbackRequest)
-            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
-            .build();
-
-        generateOrderCallbackHandler.handle(callbackParams);
-
-        CCDCase expectedCcdCase = CCDCase.builder()
-            .hearingCourtName(courtName)
-            .hearingCourtAddress(address)
-            .build();
-
-        verify(caseDetailsConverter).convertToMap(eq(expectedCcdCase));
-    }
-
-    @Test
-    public void shouldSetHearingCourtWhenOtherPilotCourtSelected() {
-        CCDAddress address = CCDAddress.builder()
-            .addressLine1("line1")
-            .addressLine2("line2")
-            .addressLine3("line3")
-            .postCode("SW1P4BB")
-            .postTown("Birmingham")
-            .build();
-
-        String courtName = "Birmingham Court";
-
-        String otherCourtName = "OTHER";
-        CCDCase ccdCase = CCDCase.builder()
-            .hearingCourt(otherCourtName)
-            .hearingCourtName(courtName)
-            .hearingCourtAddress(address)
-            .build();
-
-        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-
-        CallbackParams callbackParams = CallbackParams.builder()
-            .type(CallbackType.ABOUT_TO_SUBMIT)
-            .request(callbackRequest)
-            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
-            .build();
-
-        generateOrderCallbackHandler.handle(callbackParams);
-
-        CCDCase expectedCcdCase = CCDCase.builder()
-            .hearingCourtName(courtName)
-            .hearingCourtAddress(address)
-            .build();
-
-        verify(caseDetailsConverter).convertToMap(eq(expectedCcdCase));
-    }
-
-    @Test
-    public void shouldSetHearingCourtWhenNoPilotCourtSelected() {
-        CCDAddress address = CCDAddress.builder()
-            .addressLine1("line1")
-            .addressLine2("line2")
-            .addressLine3("line3")
-            .postCode("SW1P4BB")
-            .postTown("Birmingham")
-            .build();
-
-        String courtName = "Birmingham Court";
-
-        CCDCase ccdCase = CCDCase.builder()
-            .hearingCourtName(courtName)
-            .hearingCourtAddress(address)
-            .build();
-
-        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-
-        CallbackParams callbackParams = CallbackParams.builder()
-            .type(CallbackType.ABOUT_TO_SUBMIT)
-            .request(callbackRequest)
-            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
-            .build();
-
-        generateOrderCallbackHandler.handle(callbackParams);
-
-        CCDCase expectedCcdCase = CCDCase.builder()
-            .hearingCourtName(courtName)
-            .hearingCourtAddress(address)
-            .build();
-
-        verify(caseDetailsConverter).convertToMap(eq(expectedCcdCase));
-    }
 }

@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legaladvisor;
 
 import com.google.common.collect.ImmutableList;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -10,10 +9,10 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
+import uk.gov.hmcts.cmc.claimstore.services.DirectionOrderService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
-import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -40,20 +39,20 @@ public class OrderPostProcessor {
     private final OrderDrawnNotificationService orderDrawnNotificationService;
     private final CaseDetailsConverter caseDetailsConverter;
     private final LegalOrderService legalOrderService;
-    private final PilotCourtService pilotCourtService;
+    private final DirectionOrderService directionOrderService;
 
     public OrderPostProcessor(
         Clock clock,
         OrderDrawnNotificationService orderDrawnNotificationService,
         CaseDetailsConverter caseDetailsConverter,
         LegalOrderService legalOrderService,
-        PilotCourtService pilotCourtService
+        DirectionOrderService directionOrderService
     ) {
         this.clock = clock;
         this.orderDrawnNotificationService = orderDrawnNotificationService;
         this.caseDetailsConverter = caseDetailsConverter;
         this.legalOrderService = legalOrderService;
-        this.pilotCourtService = pilotCourtService;
+        this.directionOrderService = directionOrderService;
     }
 
     public CallbackResponse copyDraftToCaseDocument(CallbackParams callbackParams) {
@@ -63,7 +62,7 @@ public class OrderPostProcessor {
         CCDDocument draftOrderDoc = Optional.ofNullable(ccdCase.getDraftOrderDoc())
             .orElseThrow(() -> new CallbackException("Draft order not present"));
 
-        HearingCourt hearingCourt = getHearingCourt(ccdCase);
+        HearingCourt hearingCourt = directionOrderService.getHearingCourt(ccdCase);
 
         CCDCase updatedCase = ccdCase.toBuilder()
             .caseDocuments(updateCaseDocumentsWithOrder(ccdCase, draftOrderDoc))
@@ -84,7 +83,7 @@ public class OrderPostProcessor {
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
 
-        HearingCourt hearingCourt = getHearingCourt(ccdCase);
+        HearingCourt hearingCourt = directionOrderService.getHearingCourt(ccdCase);
 
         CCDCase updatedCase = ccdCase.toBuilder()
             .hearingCourtName(hearingCourt.getName())
@@ -95,22 +94,6 @@ public class OrderPostProcessor {
             .builder()
             .data(caseDetailsConverter.convertToMap(cleanUpDynamicList(updatedCase)))
             .build();
-    }
-
-    private HearingCourt getHearingCourt(CCDCase ccdCase) {
-        if (StringUtils.isAllBlank(ccdCase.getHearingCourt())
-            || ccdCase.getHearingCourt().equals(PilotCourtService.OTHER_COURT_ID)) {
-
-            return  HearingCourt.builder()
-                .name(ccdCase.getHearingCourtName())
-                .address(ccdCase.getHearingCourtAddress())
-                .build();
-        }
-
-        return pilotCourtService.getPilotHearingCourt(ccdCase.getHearingCourt())
-            .orElseThrow(() -> new IllegalArgumentException("Court is not a pilot court: "
-                + ccdCase.getHearingCourt()));
-
     }
 
     private CCDCase cleanUpDynamicList(CCDCase ccdCase) {
