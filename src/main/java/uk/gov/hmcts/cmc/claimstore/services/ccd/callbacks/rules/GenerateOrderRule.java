@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.rules;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
@@ -12,11 +11,6 @@ import java.util.Optional;
 
 @Component
 public class GenerateOrderRule {
-    private final boolean jddoEnabled;
-
-    public GenerateOrderRule(@Value("${feature_toggles.jddo:false}") boolean jddoEnabled) {
-        this.jddoEnabled = jddoEnabled;
-    }
 
     public static final String CLAIMANT_REQUESTED_FOR_EXPORT_REPORT =
         "Enter if you  grant permission for expert to the claimant";
@@ -24,12 +18,12 @@ public class GenerateOrderRule {
     public static final String DEFENDANT_REQUESTED_FOR_EXPORT_REPORT =
         "Enter if you  grant permission for expert to the defendant";
 
-    public List<String> validateExpectedFieldsAreSelectedByLegalAdvisor(CCDCase ccdCase) {
+    public List<String> validateExpectedFieldsAreSelectedByLegalAdvisor(CCDCase ccdCase, boolean expertsAtCaseLevel) {
         Objects.requireNonNull(ccdCase, "ccd case object can not be null");
 
         List<String> validationErrors = new ArrayList<>();
 
-        if (jddoEnabled) {
+        if (expertsAtCaseLevel) {
             if (isPresentAndIsYes(ccdCase.getExpertReportPermissionPartyAskedByClaimant())
                 && !isPresent(ccdCase.getGrantExpertReportPermission())
             ) {
