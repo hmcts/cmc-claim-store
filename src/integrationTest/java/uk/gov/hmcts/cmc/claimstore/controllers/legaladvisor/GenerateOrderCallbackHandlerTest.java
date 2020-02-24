@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -130,6 +131,7 @@ public class GenerateOrderCallbackHandlerTest extends BaseMockSpringTest {
     @SuppressWarnings("unchecked")
     @Test
     public void shouldGenerateDocumentOnMidEvent() throws Exception {
+        given(pilotCourtService.getPilotHearingCourt(any())).willReturn(Optional.of(HearingCourt.builder().build()));
         MvcResult mvcResult = makeRequest(MID.getValue())
             .andExpect(status().isOk())
             .andReturn();
