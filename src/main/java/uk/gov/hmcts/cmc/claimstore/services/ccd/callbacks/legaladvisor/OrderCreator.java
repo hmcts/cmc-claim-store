@@ -227,7 +227,6 @@ public class OrderCreator {
         CaseEvent caseEvent = CaseEvent.fromValue(callbackParams.getRequest().getEventId());
         switch (caseEvent) {
             case GENERATE_ORDER:
-                return Pilot.LA;
             case ACTION_REVIEW_COMMENTS:
                 return Pilot.LA;
             case DRAW_JUDGES_ORDER:
