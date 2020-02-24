@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
@@ -26,6 +27,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackVersion;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.rules.GenerateOrderRule;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
@@ -638,6 +640,39 @@ public class GenerateOrderCallbackHandlerTest {
 
         verify(appInsights)
             .trackEvent(DRAFTED_BY_LEGAL_ADVISOR, REFERENCE_NUMBER, ccdCase.getPreviousServiceCaseReference());
+    }
+
+    @Test
+    public void shouldPopulateAddressDetails() {
+        ccdCase = CCDCase.builder().build();
+        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+
+        CCDAddress address = CCDAddress.builder()
+            .addressLine1("line1")
+            .addressLine2("line2")
+            .addressLine3("line3")
+            .postCode("SW1P4BB")
+            .postTown("Birmingham")
+            .build();
+        String courtName = "Birmingham Court";
+
+        when(directionOrderService.getHearingCourt(any()))
+            .thenReturn(HearingCourt.builder().name(courtName).address(address).build());
+
+        CCDCase expectedCcdCase = CCDCase.builder()
+            .hearingCourtName(courtName)
+            .hearingCourtAddress(address)
+            .build();
+
+        CallbackParams callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_SUBMIT)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
+        generateOrderCallbackHandler.handle(callbackParams);
+
+        verify(caseDetailsConverter).convertToMap(eq(expectedCcdCase));
+
     }
 
 }
