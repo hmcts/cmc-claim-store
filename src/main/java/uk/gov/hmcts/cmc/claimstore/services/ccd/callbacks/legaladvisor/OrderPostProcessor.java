@@ -81,13 +81,20 @@ public class OrderPostProcessor {
             .build();
     }
 
-    public CallbackResponse cleanUpDynamicListCallback(CallbackParams callbackParams) {
+    public CallbackResponse persistData(CallbackParams callbackParams) {
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
 
+        CCDCase updatedCase = ccdCase.toBuilder()
+            .expertReportPermissionPartyGivenToClaimant(null)
+            .expertReportPermissionPartyGivenToDefendant(null)
+            .expertReportInstructionClaimant(null)
+            .expertReportInstructionDefendant(null)
+            .build();
+
         return AboutToStartOrSubmitCallbackResponse
             .builder()
-            .data(caseDetailsConverter.convertToMap(cleanUpDynamicList(ccdCase)))
+            .data(caseDetailsConverter.convertToMap(cleanUpDynamicList(updatedCase)))
             .build();
     }
 
