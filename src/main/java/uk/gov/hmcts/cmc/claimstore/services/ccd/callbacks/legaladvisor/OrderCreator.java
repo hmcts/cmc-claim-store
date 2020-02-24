@@ -217,7 +217,8 @@ public class OrderCreator {
             .collect(Collectors.toList());
 
         if (pilot == Pilot.JDDO) {
-            listItems.add(ImmutableMap.of(DYNAMIC_LIST_CODE, "OTHER", DYNAMIC_LIST_LABEL, "Other Court"));
+            listItems.add(ImmutableMap.of(DYNAMIC_LIST_CODE, PilotCourtService.OTHER_COURT_ID,
+                DYNAMIC_LIST_LABEL, "Other Court"));
         }
 
         return ImmutableMap.of(DYNAMIC_LIST_ITEMS, listItems);
