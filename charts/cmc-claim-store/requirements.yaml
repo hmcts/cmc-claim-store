@@ -8,11 +8,6 @@ dependencies:
     repository: '@stable'
     condition: postgresql.enabled
 
-  - name: cmc-citizen-frontend
-    version: ~1.1.0
-    repository: '@hmctspublic'
-    condition: cmc-citizen-frontend.enabled
-
   - name: ccd
     version: ~3.3.1
     repository: '@hmctspublic'

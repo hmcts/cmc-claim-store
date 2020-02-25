@@ -27,6 +27,8 @@ import uk.gov.hmcts.cmc.claimstore.helper.JsonMappingHelper;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.TestingSupportRepository;
+import uk.gov.hmcts.cmc.claimstore.services.DirectionOrderService;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.PaymentsService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
@@ -117,6 +119,8 @@ public abstract class BaseMockSpringTest {
     protected JobService jobService;
     @MockBean
     protected PilotCourtService pilotCourtService;
+    @MockBean
+    protected DirectionOrderService directionOrderService;
 
     @MockBean
     private Flyway flyway;

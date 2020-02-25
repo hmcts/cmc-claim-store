@@ -6,12 +6,11 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.DirectionOrderService;
 import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
-import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 
 import java.time.Clock;
 import java.time.LocalDate;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
@@ -23,24 +22,23 @@ public class DocAssemblyTemplateBodyMapper {
     public static final long DIRECTION_DEADLINE_NO_OF_DAYS = 19L;
     public static final long CHANGE_ORDER_DEADLINE_NO_OF_DAYS = 12L;
     private final Clock clock;
-    private final PilotCourtService pilotCourtService;
+    private final DirectionOrderService directionOrderService;
     private final WorkingDayIndicator workingDayIndicator;
 
     @Autowired
     public DocAssemblyTemplateBodyMapper(
         Clock clock,
-        PilotCourtService pilotCourtService,
+        DirectionOrderService directionOrderService,
         WorkingDayIndicator workingDayIndicator
     ) {
         this.clock = clock;
-        this.pilotCourtService = pilotCourtService;
+        this.directionOrderService = directionOrderService;
         this.workingDayIndicator = workingDayIndicator;
     }
 
     public DocAssemblyTemplateBody from(CCDCase ccdCase, UserDetails userDetails) {
-        HearingCourt hearingCourt = Optional.ofNullable(ccdCase.getHearingCourt())
-            .map(pilotCourtService::getPilotHearingCourt)
-            .orElseGet(() -> HearingCourt.builder().build());
+
+        HearingCourt hearingCourt = directionOrderService.getHearingCourt(ccdCase);
 
         LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
         return DocAssemblyTemplateBody.builder()
