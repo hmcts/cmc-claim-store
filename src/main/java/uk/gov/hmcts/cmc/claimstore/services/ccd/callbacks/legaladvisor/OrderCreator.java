@@ -270,7 +270,7 @@ public class OrderCreator {
         Map<String, Object> hearingCourtListDefinition = new HashMap<>();
         hearingCourtListDefinition.put(DYNAMIC_LIST_ITEMS, listItems);
 
-        if (StringUtils.isAllBlank(hearingCourtName)) {
+        if (StringUtils.isBlank(hearingCourtName)) {
             return hearingCourtListDefinition;
         }
 
