@@ -34,7 +34,7 @@ import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
-import uk.gov.hmcts.cmc.domain.models.ioc.PaymentDetailsResponse;
+import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountBreakdown;
@@ -468,11 +468,10 @@ public class ClaimServiceTest {
         when(caseRepository.initiatePayment(eq(USER), any(Claim.class)))
             .thenReturn(claim);
 
-        PaymentDetailsResponse response = claimService.initiatePayment(AUTHORISATION, VALID_APP);
+        CreatePaymentResponse response = claimService.initiatePayment(AUTHORISATION, VALID_APP);
 
-        PaymentDetailsResponse expectedResponse = PaymentDetailsResponse.builder()
+        CreatePaymentResponse expectedResponse = CreatePaymentResponse.builder()
             .nextUrl("http://nexturl.test")
-            .status(PaymentStatus.INITIATED.getStatus())
             .build();
         assertThat(response).isEqualTo(expectedResponse);
     }
@@ -492,7 +491,7 @@ public class ClaimServiceTest {
             .thenReturn(Optional.of(claim));
         when(caseRepository.saveCaseEventIOC(USER, claim, RESUME_CLAIM_PAYMENT_CITIZEN))
             .thenReturn(claim);
-        PaymentDetailsResponse response = claimService.resumePayment(AUTHORISATION, claimData);
+        CreatePaymentResponse response = claimService.resumePayment(AUTHORISATION, claimData);
 
         assertThat(response.getNextUrl()).isEqualTo(format(RETURN_URL, claim.getExternalId()));
     }
@@ -518,7 +517,7 @@ public class ClaimServiceTest {
             .thenReturn(Optional.of(claim));
         when(caseRepository.saveCaseEventIOC(USER, claim, RESUME_CLAIM_PAYMENT_CITIZEN))
             .thenReturn(claim);
-        PaymentDetailsResponse response = claimService.resumePayment(AUTHORISATION, claimData);
+        CreatePaymentResponse response = claimService.resumePayment(AUTHORISATION, claimData);
 
         assertThat(response.getNextUrl()).isEqualTo("http://payment.nexturl.test");
     }

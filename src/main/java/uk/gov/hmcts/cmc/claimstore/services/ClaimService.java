@@ -30,7 +30,7 @@ import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
-import uk.gov.hmcts.cmc.domain.models.ioc.PaymentDetailsResponse;
+import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
@@ -179,7 +179,7 @@ public class ClaimService {
     }
 
     @LogExecutionTime
-    public PaymentDetailsResponse initiatePayment(String authorisation, ClaimData claimData) {
+    public CreatePaymentResponse initiatePayment(String authorisation, ClaimData claimData) {
         User user = userService.getUser(authorisation);
 
         Claim claim = buildClaimFrom(user, user.getUserDetails().getId(), claimData, emptyList());
@@ -188,24 +188,21 @@ public class ClaimService {
 
         Payment payment = createdClaim.getClaimData().getPayment()
             .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT));
-        return PaymentDetailsResponse.builder()
+        return CreatePaymentResponse.builder()
             .nextUrl(payment.getNextUrl())
-            .reference(payment.getReference())
-            .status(payment.getStatus().getStatus())
-            .amount(payment.getAmount())
             .build();
     }
 
     @LogExecutionTime
-    public PaymentDetailsResponse resumePayment(String authorisation, ClaimData claimData) {
+    public CreatePaymentResponse resumePayment(String authorisation, ClaimData claimData) {
         return processExistingPaymentEvent(authorisation, claimData, RESUME_CLAIM_PAYMENT_CITIZEN);
     }
 
-    public PaymentDetailsResponse cancelPayment(String authorisation, ClaimData claimData) {
+    public CreatePaymentResponse cancelPayment(String authorisation, ClaimData claimData) {
         return processExistingPaymentEvent(authorisation, claimData, CANCEL_CLAIM_PAYMENT_CITIZEN);
     }
 
-    private PaymentDetailsResponse processExistingPaymentEvent(
+    private CreatePaymentResponse processExistingPaymentEvent(
         String authorisation,
         ClaimData claimData,
         CaseEvent caseEvent
@@ -220,14 +217,11 @@ public class ClaimService {
         Payment payment = processedClaim.getClaimData().getPayment()
             .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT));
 
-        return PaymentDetailsResponse.builder()
+        return CreatePaymentResponse.builder()
             .nextUrl(payment.getStatus().equals(PaymentStatus.SUCCESS)
                 ? String.format(returnUrlPattern, claim.getExternalId())
                 : payment.getNextUrl()
             )
-            .reference(payment.getReference())
-            .status(payment.getStatus().getStatus())
-            .amount(payment.getAmount())
             .build();
     }
 

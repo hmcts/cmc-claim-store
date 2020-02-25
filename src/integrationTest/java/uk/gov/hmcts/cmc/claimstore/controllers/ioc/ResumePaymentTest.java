@@ -17,7 +17,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
-import uk.gov.hmcts.cmc.domain.models.ioc.PaymentDetailsResponse;
+import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.email.EmailService;
@@ -83,8 +83,8 @@ public class ResumePaymentTest extends BaseMockSpringTest {
 
         verify(paymentsService, never()).createPayment(eq(BEARER_TOKEN), any(Claim.class));
 
-        assertThat(jsonMappingHelper.deserializeObjectFrom(result, PaymentDetailsResponse.class))
-            .extracting(PaymentDetailsResponse::getNextUrl)
+        assertThat(jsonMappingHelper.deserializeObjectFrom(result, CreatePaymentResponse.class))
+            .extracting(CreatePaymentResponse::getNextUrl)
             .isEqualTo(String.format(RETURN_URL, claim.getExternalId()));
     }
 
@@ -99,8 +99,8 @@ public class ResumePaymentTest extends BaseMockSpringTest {
 
         verify(paymentsService, never()).createPayment(eq(BEARER_TOKEN), any(Claim.class));
 
-        assertThat(jsonMappingHelper.deserializeObjectFrom(result, PaymentDetailsResponse.class))
-            .extracting(PaymentDetailsResponse::getNextUrl)
+        assertThat(jsonMappingHelper.deserializeObjectFrom(result, CreatePaymentResponse.class))
+            .extracting(CreatePaymentResponse::getNextUrl)
             .isEqualTo(NEXT_URL);
     }
 

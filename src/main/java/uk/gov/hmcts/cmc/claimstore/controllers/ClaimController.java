@@ -19,7 +19,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
-import uk.gov.hmcts.cmc.domain.models.ioc.PaymentDetailsResponse;
+import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantLinkStatus;
 
 import java.util.List;
@@ -117,7 +117,7 @@ public class ClaimController {
 
     @PostMapping(value = "/initiate-citizen-payment", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Initiates a citizen payment")
-    public PaymentDetailsResponse initiatePayment(
+    public CreatePaymentResponse initiatePayment(
         @Valid @NotNull @RequestBody ClaimData claimData,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
@@ -126,7 +126,7 @@ public class ClaimController {
 
     @PutMapping(value = "/resume-citizen-payment", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Resumes a citizen payment")
-    public PaymentDetailsResponse resumePayment(
+    public CreatePaymentResponse resumePayment(
         @Valid @NotNull @RequestBody ClaimData claimData,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
@@ -135,7 +135,7 @@ public class ClaimController {
 
     @PostMapping(value = "/cancel-citizen-payment", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Cancels a citizen payment")
-    public PaymentDetailsResponse cancelPayment(
+    public CreatePaymentResponse cancelPayment(
         @Valid @NotNull @RequestBody ClaimData claimData,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
