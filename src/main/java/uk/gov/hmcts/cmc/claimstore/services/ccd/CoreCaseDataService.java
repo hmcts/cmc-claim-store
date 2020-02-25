@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireService;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.StateTransitionCalculator;
@@ -23,7 +24,6 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
-import uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
@@ -99,6 +99,7 @@ public class CoreCaseDataService {
     private final CaseDetailsConverter caseDetailsConverter;
     private final WorkingDayIndicator workingDayIndicator;
     private final int intentionToProceedDeadlineDays;
+    private final DirectionsQuestionnaireService directionsQuestionnaireService;
 
     @SuppressWarnings("squid:S00107") // All parameters are required here
     @Autowired
@@ -113,7 +114,8 @@ public class CoreCaseDataService {
         CaseDetailsConverter caseDetailsConverter,
         @Value("#{new Integer('${dateCalculations.stayClaimDeadlineInDays}')}")
             Integer intentionToProceedDeadlineDays,
-        WorkingDayIndicator workingDayIndicator
+        WorkingDayIndicator workingDayIndicator,
+        DirectionsQuestionnaireService directionsQuestionnaireService
     ) {
         this.caseMapper = caseMapper;
         this.userService = userService;
@@ -125,6 +127,7 @@ public class CoreCaseDataService {
         this.caseDetailsConverter = caseDetailsConverter;
         this.workingDayIndicator = workingDayIndicator;
         this.intentionToProceedDeadlineDays = intentionToProceedDeadlineDays;
+        this.directionsQuestionnaireService = directionsQuestionnaireService;
     }
 
     @LogExecutionTime
@@ -497,14 +500,14 @@ public class CoreCaseDataService {
             );
 
             Claim existingClaim = toClaim(startEventResponse);
-            Claim updatedClaim = existingClaim.toBuilder()
-                .claimantResponse(response)
+            Claim.ClaimBuilder claimBuilder = existingClaim.toBuilder();
+
+            claimBuilder.claimantResponse(response)
                 .claimantRespondedAt(nowInUTC())
                 .dateReferredForDirections(nowInUTC())
-                .preferredDQCourt(getPreferredCourt(existingClaim))
-                .build();
+                .preferredDQCourt(getPreferredCourt(claimBuilder.build()));
 
-            CaseDataContent caseDataContent = caseDataContent(startEventResponse, updatedClaim);
+            CaseDataContent caseDataContent = caseDataContent(startEventResponse, claimBuilder.build());
 
             return caseDetailsConverter.extractClaim(submitUpdate(authorisation,
                 eventRequestData,
@@ -526,7 +529,7 @@ public class CoreCaseDataService {
 
     private String getPreferredCourt(Claim existingClaim) {
         try {
-            return DirectionsQuestionnaireUtils.getPreferredCourt(existingClaim);
+            return directionsQuestionnaireService.getPreferredCourt(existingClaim);
         } catch (Exception e) {
             return null;
         }

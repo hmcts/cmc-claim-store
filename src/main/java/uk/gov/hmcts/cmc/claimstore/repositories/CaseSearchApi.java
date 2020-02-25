@@ -12,4 +12,6 @@ public interface CaseSearchApi {
     List<Claim> getMediationClaims(String authorisation, LocalDate mediationAgreementDate);
 
     List<Claim> getClaims(User user, QueryBuilder queryBuilder);
+
+    List<Claim> getClaimsWithDefaultCCJ(User user, LocalDate ccjRequestedDate);
 }

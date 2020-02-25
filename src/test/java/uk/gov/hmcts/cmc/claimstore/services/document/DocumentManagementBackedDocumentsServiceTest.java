@@ -46,7 +46,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEM
 public class DocumentManagementBackedDocumentsServiceTest {
 
     private static final String AUTHORISATION = "Bearer: aaa";
-    private static final byte[] PDF_BYTES = new byte[] {1, 2, 3, 4};
+    private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
 
     private DocumentManagementBackedDocumentsService documentManagementBackedDocumentsService;
 
@@ -222,7 +222,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
         final ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
         final ClaimDocumentType documentType = MEDIATION_AGREEMENT;
         final ClaimDocument claimDocument = new ClaimDocument("", null, null, "", documentType, null, null,
-            "", 1L);
+            null, "", 1L);
         claimDocumentCollection.addClaimDocument(claimDocument);
         Claim claim = Claim.builder()
             .externalId("externalID")
@@ -244,7 +244,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
         final ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
         final ClaimDocumentType documentType = ORDER_SANCTIONS;
         final ClaimDocument claimDocument = new ClaimDocument("", null, null, "", documentType, null, null,
-            "", 1L);
+            null, "", 1L);
         claimDocumentCollection.addClaimDocument(claimDocument);
         Claim claim = Claim.builder()
             .externalId("externalID")
@@ -266,7 +266,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
         final ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
         final ClaimDocumentType documentType = ORDER_DIRECTIONS;
         final ClaimDocument claimDocument = new ClaimDocument("", null, null, "", documentType, null, null,
-            "", 1L);
+            null, "", 1L);
         claimDocumentCollection.addClaimDocument(claimDocument);
         Claim claim = Claim.builder()
             .externalId("externalID")
