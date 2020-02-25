@@ -59,6 +59,9 @@ public class EmailTemplates {
     private String claimantCCJRequested;
 
     @NotEmpty
+    private String claimantCCJReminder;
+
+    @NotEmpty
     private String defendantOfferMade;
 
     @NotEmpty
@@ -141,4 +144,23 @@ public class EmailTemplates {
 
     @NotEmpty
     private  String claimantSettledAfterFullDefence;
+
+    @NotEmpty
+    private  String claimantMediationSuccess;
+
+    @NotEmpty
+    private  String defendantMediationSuccess;
+
+    @NotEmpty
+    private String claimantReadyForTransfer;
+
+    @NotEmpty
+    private String defendantReadyForTransfer;
+
+    @NotEmpty
+    private String claimantMediationFailureOfflineDQ;
+
+    @NotEmpty
+    private String defendantMediationFailureOfflineDQ;
+
 }

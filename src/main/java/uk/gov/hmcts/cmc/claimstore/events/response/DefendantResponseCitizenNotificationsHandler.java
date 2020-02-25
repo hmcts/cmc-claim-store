@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.ResponseSubmitted.referenceForClaimant;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.ResponseSubmitted.referenceForDefendant;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
 
 @Component
 public class DefendantResponseCitizenNotificationsHandler {
@@ -35,7 +36,9 @@ public class DefendantResponseCitizenNotificationsHandler {
     }
 
     private boolean isAdmissionResponse(Claim claim) {
-        ResponseType responseType = claim.getResponse().orElseThrow(IllegalArgumentException::new).getResponseType();
+        ResponseType responseType = claim.getResponse()
+            .orElseThrow(() -> new IllegalArgumentException(MISSING_RESPONSE))
+            .getResponseType();
         return responseType == ResponseType.FULL_ADMISSION || responseType == ResponseType.PART_ADMISSION;
     }
 

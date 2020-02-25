@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.DEFENDANT_OPTED_OUT_FOR_MEDIATION_PILOT;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.DEFENDANT_OPTED_OUT_FOR_NON_MEDIATION_PILOT;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED_IMMEDIATELY;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED_INSTALMENTS;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED_SET_DATE;
@@ -27,6 +28,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED_INSTALMENTS;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED_SET_DATE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED_STATES_PAID;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_PAYMENT_INTENTION;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.hasDefendantOptedForMediation;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseStatesPaid;
 
@@ -82,8 +84,8 @@ public class DefendantResponseService {
 
         appInsights.trackEvent(getAppInsightsEventName(response), REFERENCE_NUMBER, referenceNumber);
 
-        if (!hasDefendantOptedForMediation(response) && FeaturesUtils.hasMediationPilotFeature(claim)) {
-            appInsights.trackEvent(DEFENDANT_OPTED_OUT_FOR_MEDIATION_PILOT, REFERENCE_NUMBER, referenceNumber);
+        if (!hasDefendantOptedForMediation(response)) {
+            appInsights.trackEvent(getAppInsightEventForMediation(claim), REFERENCE_NUMBER, referenceNumber);
         }
 
         return claimAfterSavingResponse;
@@ -114,7 +116,7 @@ public class DefendantResponseService {
                 }
 
                 paymentOption = ((PartAdmissionResponse) response).getPaymentIntention()
-                    .orElseThrow(IllegalStateException::new)
+                    .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT_INTENTION))
                     .getPaymentOption();
                 switch (paymentOption) {
                     case IMMEDIATELY:
@@ -135,6 +137,12 @@ public class DefendantResponseService {
             default:
                 throw new IllegalArgumentException("Invalid response type " + responseType);
         }
+    }
+
+    private AppInsightsEvent getAppInsightEventForMediation(Claim claim) {
+        return FeaturesUtils.hasMediationPilotFeature(claim)
+            ? DEFENDANT_OPTED_OUT_FOR_MEDIATION_PILOT
+            : DEFENDANT_OPTED_OUT_FOR_NON_MEDIATION_PILOT;
     }
 
     private boolean isClaimLinkedWithDefendant(Claim claim, String defendantId) {

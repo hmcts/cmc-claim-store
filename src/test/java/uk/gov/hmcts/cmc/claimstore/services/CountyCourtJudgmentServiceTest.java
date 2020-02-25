@@ -12,10 +12,12 @@ import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimDeadlineService;
 import uk.gov.hmcts.cmc.claimstore.rules.CountyCourtJudgmentRule;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
@@ -32,6 +34,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LIFT_STAY;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType.ADMISSIONS;
@@ -55,13 +58,15 @@ public class CountyCourtJudgmentServiceTest {
     private EventProducer eventProducer;
     @Mock
     private AppInsights appInsights;
+    @Mock
+    private CaseRepository caseRepository;
 
-    private ReDetermination reDetermination = ReDetermination.builder()
+    private final ReDetermination reDetermination = ReDetermination.builder()
         .explanation("I feel defendant can pay")
         .partyType(MadeBy.CLAIMANT)
         .build();
 
-    private UserDetails userDetails = SampleUserDetails.builder().withUserId(USER_ID).build();
+    private final UserDetails userDetails = SampleUserDetails.builder().withUserId(USER_ID).build();
 
     @Before
     public void setup() {
@@ -72,7 +77,8 @@ public class CountyCourtJudgmentServiceTest {
             eventProducer,
             new CountyCourtJudgmentRule(new ClaimDeadlineService()),
             userService,
-            appInsights);
+            appInsights,
+            caseRepository);
 
         when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetails);
     }
@@ -86,6 +92,30 @@ public class CountyCourtJudgmentServiceTest {
             .build();
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
+
+        CountyCourtJudgment ccjByDefault = SampleCountyCourtJudgment.builder().ccjType(DEFAULT).build();
+        countyCourtJudgmentService.save(ccjByDefault, EXTERNAL_ID, AUTHORISATION);
+
+        InOrder inOrder = inOrder(claimService, eventProducer, appInsights);
+
+        inOrder.verify(claimService, once()).saveCountyCourtJudgment(eq(AUTHORISATION), any(), any());
+        inOrder.verify(eventProducer, once()).createCountyCourtJudgmentEvent(any(Claim.class), any());
+        inOrder.verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.CCJ_REQUESTED),
+            eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+    }
+
+    @Test
+    public void saveCCJByDefaultWhenClaimIsStayed() {
+
+        Claim claim = SampleClaim
+            .builder()
+            .withResponseDeadline(LocalDate.now().minusMonths(2))
+            .withResponse(SampleResponse.FullAdmission.builder().buildWithPaymentOptionImmediately())
+            .withState(ClaimState.STAYED)
+            .build();
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
+        when(caseRepository.saveCaseEvent(eq(AUTHORISATION), eq(claim), eq(LIFT_STAY))).thenReturn(claim);
 
         CountyCourtJudgment ccjByDefault = SampleCountyCourtJudgment.builder().ccjType(DEFAULT).build();
         countyCourtJudgmentService.save(ccjByDefault, EXTERNAL_ID, AUTHORISATION);

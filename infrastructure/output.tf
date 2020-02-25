@@ -4,7 +4,7 @@ output "idam_api_url" {
 }
 
 output "s2s_url" {
-  value = "${local.s2sUrl}"
+  value = "${var.s2s_url}"
 }
 
 output "frontend_base_url" {

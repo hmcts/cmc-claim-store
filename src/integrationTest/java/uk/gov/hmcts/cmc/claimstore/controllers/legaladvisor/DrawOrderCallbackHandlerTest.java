@@ -16,17 +16,16 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
-import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
+import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
-import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
-import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
-import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
+import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -52,13 +51,16 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
         "doc_assembly.url=http://doc-assembly-api"
     }
 )
-public class DrawOrderCallbackHandlerTest extends MockSpringTest {
+public class DrawOrderCallbackHandlerTest extends BaseMockSpringTest {
 
     private static final String AUTHORISATION_TOKEN = "Bearer let me in";
     private static final String DOCUMENT_URL = "http://bla.test";
     private static final String DOCUMENT_BINARY_URL = "http://bla.binary.test";
     private static final String DOCUMENT_FILE_NAME = "sealed_claim.pdf";
     private static final LocalDateTime DATE = LocalDateTime.parse("2020-11-16T13:15:30");
+
+    @MockBean
+    protected EmailService emailService;
 
     private static final CCDDocument DOCUMENT = CCDDocument
         .builder()
@@ -76,13 +78,6 @@ public class DrawOrderCallbackHandlerTest extends MockSpringTest {
                 .build())
             .build();
 
-    @MockBean
-    private OrderDrawnNotificationService orderDrawnNotificationService;
-    @MockBean
-    private DocumentManagementService documentManagementService;
-    @MockBean
-    private LegalOrderService legalOrderService;
-
     @Before
     public void setUp() {
         given(documentManagementService
@@ -92,14 +87,16 @@ public class DrawOrderCallbackHandlerTest extends MockSpringTest {
 
         UserDetails userDetails = SampleUserDetails.builder().withRoles("caseworker-cmc-legaladvisor").build();
         given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
+        given(directionOrderService.getHearingCourt(any())).willReturn(HearingCourt.builder().build());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void shouldAddDraftDocumentToCaseDocumentsOnEventStart() throws Exception {
         MvcResult mvcResult = makeRequest(CallbackType.ABOUT_TO_SUBMIT.getValue())
             .andExpect(status().isOk())
             .andReturn();
-        Map<String, Object> responseData = deserializeObjectFrom(
+        Map<String, Object> responseData = jsonMappingHelper.deserializeObjectFrom(
             mvcResult,
             AboutToStartOrSubmitCallbackResponse.class
         ).getData();
@@ -122,7 +119,7 @@ public class DrawOrderCallbackHandlerTest extends MockSpringTest {
         MvcResult mvcResult = makeRequest(CallbackType.SUBMITTED.getValue())
             .andExpect(status().isOk())
             .andReturn();
-        SubmittedCallbackResponse response = deserializeObjectFrom(
+        SubmittedCallbackResponse response = jsonMappingHelper.deserializeObjectFrom(
             mvcResult,
             SubmittedCallbackResponse.class
         );
@@ -156,7 +153,7 @@ public class DrawOrderCallbackHandlerTest extends MockSpringTest {
             .perform(post("/cases/callbacks/" + callbackType)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
-                .content(jsonMapper.toJson(callbackRequest))
+                .content(jsonMappingHelper.toJson(callbackRequest))
             );
     }
 

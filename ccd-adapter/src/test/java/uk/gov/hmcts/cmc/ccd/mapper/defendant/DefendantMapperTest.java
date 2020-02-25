@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.mapper.defendant;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +15,8 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.otherparty.IndividualDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
@@ -26,13 +27,10 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static java.time.LocalDate.now;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.INDIVIDUAL;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.ORGANISATION;
@@ -73,7 +71,7 @@ public class DefendantMapperTest {
         CCDRespondent respondent = ccdRespondent.getValue();
 
         //Then
-        Assertions.assertThat(theirDetails.getId()).isEqualTo(ccdRespondent.getId());
+        assertThat(theirDetails.getId()).isEqualTo(ccdRespondent.getId());
 
         assertEquals("Response served date is not mapped properly",
             respondent.getServedDate(), claim.getServiceDate());
@@ -126,10 +124,10 @@ public class DefendantMapperTest {
             respondent.getResponseMoreTimeNeededOption().toBoolean(), claim.isMoreTimeRequested());
 
         //Verify if the TheirDetails mapper and response mapper are called by assert not null
-        assertThat(respondent.getResponseSubmittedOn(), is(notNullValue()));
-        assertThat(respondent.getResponseType(), is(notNullValue()));
-        assertThat(respondent.getClaimantProvidedDetail(), is(notNullValue()));
-        assertThat(respondent.getClaimantProvidedDetail().getType(), is(notNullValue()));
+        assertThat(respondent.getResponseSubmittedOn()).isNotNull();
+        assertThat(respondent.getResponseType()).isNotNull();
+        assertThat(respondent.getClaimantProvidedDetail()).isNotNull();
+        assertThat(respondent.getClaimantProvidedDetail().getType()).isNotNull();
 
         assertEquals("The mapping for theirDetailsMapper is not done properly",
             INDIVIDUAL, respondent.getPartyDetail().getType());
@@ -138,7 +136,8 @@ public class DefendantMapperTest {
             respondent.getResponseSubmittedOn(), claim.getRespondedAt());
 
         assertEquals("The Response mapper is not called / mapped when response is available",
-            respondent.getResponseType().name(), claim.getResponse().get().getResponseType().name());
+            respondent.getResponseType().name(), claim.getResponse().map(Response::getResponseType)
+                .map(ResponseType::name).orElse(null));
     }
 
     @Test
@@ -182,8 +181,8 @@ public class DefendantMapperTest {
         Claim finalClaim = claimBuilder.build();
 
         // Then
-        assertThat("Claim response more time requested is not mapped properly",
-            finalClaim.isMoreTimeRequested(), is(false));
+        assertThat(finalClaim.isMoreTimeRequested()).as("Claim response more time requested is not mapped properly")
+            .isFalse();
     }
 
     @Test
@@ -201,7 +200,7 @@ public class DefendantMapperTest {
         Claim finalClaim = claimBuilder.build();
 
         // Then
-        assertThat(party, instanceOf(IndividualDetails.class));
+        assertThat(party).isInstanceOf(IndividualDetails.class);
 
         assertEquals("Response served date is not mapped properly",
             finalClaim.getServiceDate(), ccdRespondent.getServedDate());
@@ -267,7 +266,8 @@ public class DefendantMapperTest {
 
         //Then
         assertTrue(claim.getMoneyReceivedOn().isPresent());
-        assertEquals(ccdRespondent.getPaidInFullDate(), claim.getMoneyReceivedOn().orElseThrow(AssertionError::new));
+        assertEquals(ccdRespondent.getPaidInFullDate(), claim.getMoneyReceivedOn()
+            .orElseThrow(() -> new AssertionError("Missing money received date")));
     }
 
     @Test
@@ -301,7 +301,7 @@ public class DefendantMapperTest {
         //Then
         assertNotNull(ccdRespondent.getSettlementPartyStatements());
         assertNotNull(ccdRespondent.getSettlementReachedAt());
-        assertThat(ccdRespondent.getSettlementPartyStatements().size(), is(2));
+        assertThat(ccdRespondent.getSettlementPartyStatements()).hasSize(2);
         assertEquals(settlementReachedAt, ccdRespondent.getSettlementReachedAt());
     }
 
@@ -325,8 +325,8 @@ public class DefendantMapperTest {
         //Then
         assertNotNull(ccdRespondent.getMediationFailedReason());
         assertNotNull(ccdRespondent.getMediationSettlementReachedAt());
-        assertThat(ccdRespondent.getMediationFailedReason(), is(failureReason));
-        assertThat(ccdRespondent.getMediationSettlementReachedAt(), is(mediationSettledTime));
+        assertThat(ccdRespondent.getMediationFailedReason()).isEqualTo(failureReason);
+        assertThat(ccdRespondent.getMediationSettlementReachedAt()).isEqualTo(mediationSettledTime);
 
     }
 
@@ -344,6 +344,7 @@ public class DefendantMapperTest {
         assertNull(ccdRespondent.getSettlementPartyStatements());
     }
 
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Test
     public void mapFromCCDDefendantWithSettlements() {
         //Given
@@ -357,7 +358,7 @@ public class DefendantMapperTest {
         // Then
         assertNotNull(finalClaim.getSettlementReachedAt());
         assertNotNull(finalClaim.getSettlement());
-        assertThat(finalClaim.getSettlement().get().getPartyStatements().size(), is(3));
+        assertThat(finalClaim.getSettlement().get().getPartyStatements().size()).isEqualTo(3);
     }
 
     @Test
@@ -387,7 +388,7 @@ public class DefendantMapperTest {
 
         // Then
         assertEquals(mediationSettledTime, finalClaim.getMediationSettlementReachedAt()
-            .orElseThrow(IllegalStateException::new));
+            .orElseThrow(() -> new AssertionError("Expected mediation settled time but got null")));
 
     }
 }

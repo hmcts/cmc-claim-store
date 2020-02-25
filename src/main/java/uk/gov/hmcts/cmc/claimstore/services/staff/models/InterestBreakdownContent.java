@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.models;
 
 public class InterestBreakdownContent {
-    private String totalAmount;
-    private String explanation;
+    private final String totalAmount;
+    private final String explanation;
 
     public InterestBreakdownContent(String totalAmount, String explanation) {
         this.totalAmount = totalAmount;

@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_PAYMENT;
 
 @Service
 @Conditional(FeesAndPaymentsConfiguration.class)
@@ -61,7 +62,8 @@ public class PaymentsService {
         logger.info("Retrieving payment amount for claim with external id {}",
             claim.getExternalId());
 
-        Payment claimPayment = claim.getClaimData().getPayment().orElseThrow(IllegalStateException::new);
+        Payment claimPayment = claim.getClaimData().getPayment()
+            .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT));
 
         return from(paymentsClient.retrievePayment(authorisation, claimPayment.getReference()),
             claimPayment.getNextUrl()
@@ -76,7 +78,8 @@ public class PaymentsService {
         logger.info("Calculating interest amount for claim with external id {}",
             claim.getExternalId());
 
-        BigDecimal amount = claim.getTotalClaimAmount().orElseThrow(IllegalStateException::new);
+        BigDecimal amount = claim.getTotalClaimAmount()
+            .orElseThrow(() -> new IllegalStateException("Missing total claim amount"));
         BigDecimal interest = claim.getTotalInterest().orElse(BigDecimal.ZERO);
 
         BigDecimal amountPlusInterest = amount.add(interest);
@@ -95,7 +98,7 @@ public class PaymentsService {
 
         logger.info("Creating payment in pay hub for claim with external id {}",
             claim.getExternalId());
-
+        logger.info("Next URL: {}", format(returnUrlPattern, claim.getExternalId()));
         PaymentDto payment = paymentsClient.createPayment(
             authorisation,
             paymentRequest,

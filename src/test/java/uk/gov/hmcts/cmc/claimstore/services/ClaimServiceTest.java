@@ -33,9 +33,11 @@ import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountBreakdown;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SamplePayment;
@@ -64,6 +66,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESET_CLAIM_SUBMISSION_OPERA
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NUMBER_OF_RECONSIDERATION;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.CLAIM_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_ID;
@@ -122,7 +125,6 @@ public class ClaimServiceTest {
         when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(VALID_DEFENDANT);
 
         claimService = new ClaimService(
-            claimRepository,
             caseRepository,
             userService,
             issueDateCalculator,
@@ -134,25 +136,6 @@ public class ClaimServiceTest {
             new ClaimAuthorisationRule(userService),
             new ReviewOrderRule(),
             RETURN_URL);
-    }
-
-    @Test
-    public void getClaimByIdShouldCallRepositoryWhenValidClaimIsReturned() {
-
-        Optional<Claim> result = Optional.of(claim);
-
-        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(result);
-
-        Claim actual = claimService.getClaimById(CLAIM_ID);
-        assertThat(actual).isEqualTo(claim);
-    }
-
-    @Test(expected = NotFoundException.class)
-    public void getClaimByIdShouldThrowNotFoundException() {
-
-        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(empty());
-
-        claimService.getClaimById(CLAIM_ID);
     }
 
     @Test
@@ -201,7 +184,6 @@ public class ClaimServiceTest {
         when(caseRepository.saveClaim(eq(USER), any())).thenReturn(claim);
 
         claimService = new ClaimService(
-            claimRepository,
             caseRepository,
             userService,
             issueDateCalculator,
@@ -218,7 +200,7 @@ public class ClaimServiceTest {
 
         //when
         Claim createdClaim = claimService
-            .saveClaim(USER_ID, claimData, AUTHORISATION, singletonList("admissions"));
+            .saveClaim(USER_ID, claimData, AUTHORISATION, singletonList(ADMISSIONS.getValue()));
 
         //verify
         ClaimData outputClaimData = claim.getClaimData();
@@ -505,7 +487,7 @@ public class ClaimServiceTest {
 
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
             .thenReturn(Optional.of(claim));
-        when(caseRepository.saveCaseEvent(AUTHORISATION, claim, RESUME_CLAIM_PAYMENT_CITIZEN))
+        when(caseRepository.saveCaseEventIOC(USER, claim, RESUME_CLAIM_PAYMENT_CITIZEN))
             .thenReturn(claim);
         CreatePaymentResponse response = claimService.resumePayment(AUTHORISATION, claimData);
 
@@ -531,11 +513,59 @@ public class ClaimServiceTest {
 
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
             .thenReturn(Optional.of(claim));
-        when(caseRepository.saveCaseEvent(AUTHORISATION, claim, RESUME_CLAIM_PAYMENT_CITIZEN))
+        when(caseRepository.saveCaseEventIOC(USER, claim, RESUME_CLAIM_PAYMENT_CITIZEN))
             .thenReturn(claim);
         CreatePaymentResponse response = claimService.resumePayment(AUTHORISATION, claimData);
 
         assertThat(response.getNextUrl()).isEqualTo("http://payment.nexturl.test");
+    }
+
+    @Test
+    public void resumePaymentShouldUpdateClaimDataBeingPassed() {
+        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
+        ClaimData claimData = SampleClaimData.builder()
+            .withExternalId(UUID.fromString(EXTERNAL_ID))
+            .withFeeAccountNumber("OLD_ACCOUNT")
+            .withAmount(SampleAmountBreakdown.builder().build())
+            .withPayment(
+                SamplePayment.builder()
+                    .status(PaymentStatus.INITIATED)
+                    .nextUrl("http://payment.nexturl.test")
+                    .build()
+            )
+            .build();
+
+        ClaimData claimDataToBeUpdated = SampleClaimData.builder()
+            .withExternalId(UUID.fromString(EXTERNAL_ID))
+            .withFeeAccountNumber("NEW_ACCOUNT")
+            .withAmount(SampleAmountBreakdown.withThousandAsAmount().build())
+            .withPayment(
+                SamplePayment.builder()
+                    .status(PaymentStatus.INITIATED)
+                    .nextUrl("http://payment.nexturl.test")
+                    .build()
+            )
+            .build();
+        Claim claim = SampleClaim.builder()
+            .withExternalId(EXTERNAL_ID)
+            .withClaimData(claimData)
+            .build();
+
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
+            .thenReturn(Optional.of(claim));
+        when(caseRepository.saveCaseEventIOC(eq(USER), any(), eq(RESUME_CLAIM_PAYMENT_CITIZEN)))
+            .thenReturn(claim);
+
+        claimService.resumePayment(AUTHORISATION, claimDataToBeUpdated);
+
+        verify(caseRepository, once()).saveCaseEventIOC(any(), claimArgumentCaptor.capture(), any());
+
+        Claim argumentCaptorValue = claimArgumentCaptor.getValue();
+
+        assertThat(argumentCaptorValue.getClaimData().getFeeAccountNumber().orElse("")).isEqualTo("NEW_ACCOUNT");
+        AmountBreakDown finalAmount = (AmountBreakDown)argumentCaptorValue.getClaimData().getAmount();
+        assertThat(finalAmount.getTotalAmount()).isEqualTo("1000.99");
+        assertThat(argumentCaptorValue.getClaimData()).isEqualTo(claimDataToBeUpdated);
     }
 
     @Test
@@ -544,13 +574,13 @@ public class ClaimServiceTest {
         when(caseRepository.getClaimByExternalId(VALID_APP.getExternalId().toString(), USER))
             .thenReturn(Optional.of(claim));
         when(caseRepository
-            .saveCaseEventIOC(eq(AUTHORISATION), any(Claim.class), eq(CREATE_CITIZEN_CLAIM)))
+            .saveCaseEventIOC(eq(USER), any(Claim.class), eq(CREATE_CITIZEN_CLAIM)))
             .thenReturn(claim);
 
         Claim createdClaim = claimService.createCitizenClaim(
             AUTHORISATION,
             VALID_APP,
-            singletonList("admissions"));
+            singletonList(ADMISSIONS.getValue()));
 
         assertThat(createdClaim).isEqualTo(claim);
     }

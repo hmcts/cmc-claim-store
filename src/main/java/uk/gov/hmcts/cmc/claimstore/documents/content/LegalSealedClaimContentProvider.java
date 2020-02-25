@@ -12,6 +12,7 @@ import java.util.Map;
 
 import static java.math.BigDecimal.ZERO;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_REPRESENTATIVE;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 
@@ -44,14 +45,14 @@ public class LegalSealedClaimContentProvider {
         content.put("externalReferenceNumber", claim.getClaimData().getExternalReferenceNumber());
 
         Representative legalRepresentative = claim.getClaimData().getClaimants().stream()
-            .findFirst().orElseThrow(IllegalArgumentException::new)
-            .getRepresentative().orElseThrow(IllegalArgumentException::new);
+            .findFirst().orElseThrow(() -> new IllegalArgumentException("Missing claimant"))
+            .getRepresentative().orElseThrow(() -> new IllegalArgumentException(MISSING_REPRESENTATIVE));
 
         content.put("preferredCourt", claim.getClaimData().getPreferredCourt());
         content.put("feePaid", formatMoney(claim.getClaimData().getFeesPaidInPounds().orElse(ZERO)));
         StatementOfTruth statementOfTruth = claim.getClaimData()
             .getStatementOfTruth()
-            .orElseThrow(IllegalArgumentException::new);
+            .orElseThrow(() -> new IllegalArgumentException("Missing statement of truth"));
         content.put("signerName", statementOfTruth.getSignerName());
         content.put("signerRole", statementOfTruth.getSignerRole());
         content.put("signerCompany", legalRepresentative.getOrganisationName());

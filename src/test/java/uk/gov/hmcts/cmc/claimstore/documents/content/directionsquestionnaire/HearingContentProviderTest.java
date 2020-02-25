@@ -23,7 +23,7 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleHearingLocation.de
 
 public class HearingContentProviderTest {
 
-    private HearingContentProvider hearingContentProvider = new HearingContentProvider();
+    private final HearingContentProvider hearingContentProvider = new HearingContentProvider();
     private final String disabledAccess = "Disabled Access";
     private final String hearingLoop = "Hearing Loop";
     private final String yes = "Yes";

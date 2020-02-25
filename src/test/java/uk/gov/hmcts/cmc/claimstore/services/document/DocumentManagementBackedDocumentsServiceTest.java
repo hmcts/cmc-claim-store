@@ -30,10 +30,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIMANT_DIRECTIONS_QUESTIONNAIRE;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.MEDIATION_AGREEMENT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.ORDER_DIRECTIONS;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.ORDER_SANCTIONS;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.REVIEW_ORDER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
@@ -42,7 +46,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEM
 public class DocumentManagementBackedDocumentsServiceTest {
 
     private static final String AUTHORISATION = "Bearer: aaa";
-    private static final byte[] PDF_BYTES = new byte[] {1, 2, 3, 4};
+    private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
 
     private DocumentManagementBackedDocumentsService documentManagementBackedDocumentsService;
 
@@ -211,6 +215,72 @@ public class DocumentManagementBackedDocumentsServiceTest {
             CLAIMANT_DIRECTIONS_QUESTIONNAIRE,
             AUTHORISATION);
         verifyCommon(pdf);
+    }
+
+    @Test
+    public void shouldGetOrderDocumentsForMediationAgreement() {
+        final ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
+        final ClaimDocumentType documentType = MEDIATION_AGREEMENT;
+        final ClaimDocument claimDocument = new ClaimDocument("", null, null, "", documentType, null, null,
+            null, "", 1L);
+        claimDocumentCollection.addClaimDocument(claimDocument);
+        Claim claim = Claim.builder()
+            .externalId("externalID")
+            .claimDocumentCollection(claimDocumentCollection)
+            .build();
+        when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(AUTHORISATION)))
+            .thenReturn(claim);
+        when(documentManagementService.downloadDocument(eq(AUTHORISATION), eq(claimDocument))).thenReturn(new byte[1]);
+        documentManagementBackedDocumentsService.generateDocument(
+            claim.getExternalId(),
+            documentType,
+            AUTHORISATION
+        );
+        verify(documentManagementService, once()).downloadDocument(any(), any());
+    }
+
+    @Test
+    public void shouldGetOrderDocumentsForOrderSanctions() {
+        final ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
+        final ClaimDocumentType documentType = ORDER_SANCTIONS;
+        final ClaimDocument claimDocument = new ClaimDocument("", null, null, "", documentType, null, null,
+            null, "", 1L);
+        claimDocumentCollection.addClaimDocument(claimDocument);
+        Claim claim = Claim.builder()
+            .externalId("externalID")
+            .claimDocumentCollection(claimDocumentCollection)
+            .build();
+        when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(AUTHORISATION)))
+            .thenReturn(claim);
+        when(documentManagementService.downloadDocument(eq(AUTHORISATION), eq(claimDocument))).thenReturn(new byte[1]);
+        documentManagementBackedDocumentsService.generateDocument(
+            claim.getExternalId(),
+            documentType,
+            AUTHORISATION
+        );
+        verify(documentManagementService, once()).downloadDocument(any(), any());
+    }
+
+    @Test
+    public void shouldGetOrderDocumentsForOrderDirections() {
+        final ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
+        final ClaimDocumentType documentType = ORDER_DIRECTIONS;
+        final ClaimDocument claimDocument = new ClaimDocument("", null, null, "", documentType, null, null,
+            null, "", 1L);
+        claimDocumentCollection.addClaimDocument(claimDocument);
+        Claim claim = Claim.builder()
+            .externalId("externalID")
+            .claimDocumentCollection(claimDocumentCollection)
+            .build();
+        when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(AUTHORISATION)))
+            .thenReturn(claim);
+        when(documentManagementService.downloadDocument(eq(AUTHORISATION), eq(claimDocument))).thenReturn(new byte[1]);
+        documentManagementBackedDocumentsService.generateDocument(
+            claim.getExternalId(),
+            documentType,
+            AUTHORISATION
+        );
+        verify(documentManagementService, once()).downloadDocument(any(), any());
     }
 
     private void verifyCommon(byte[] pdf) {

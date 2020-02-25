@@ -4,7 +4,7 @@ public enum CCDYesNoOption {
     YES("yes"),
     NO("no");
 
-    private String value;
+    private final String value;
 
     CCDYesNoOption(String value) {
         this.value = value;

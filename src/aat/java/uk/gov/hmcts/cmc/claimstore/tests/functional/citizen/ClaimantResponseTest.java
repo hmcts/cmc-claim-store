@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -15,13 +16,17 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse.ClaimantResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import static java.math.BigDecimal.TEN;
-import static java.math.BigDecimal.ZERO;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_CLAIMANT_RESPONSE;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.CCJ;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.SETTLEMENT;
 
 public class ClaimantResponseTest extends BaseTest {
+    private static final BigDecimal TEN_2DP = TEN.setScale(2, RoundingMode.UNNECESSARY);
 
     private User claimant;
     private Claim claim;
@@ -55,9 +60,9 @@ public class ClaimantResponseTest extends BaseTest {
 
         assertThat(claimWithClaimantResponse.getClaimantRespondedAt()).isNotEmpty();
         ResponseAcceptation claimantResponse = (ResponseAcceptation) claimWithClaimantResponse.getClaimantResponse()
-            .orElseThrow(AssertionError::new);
+            .orElseThrow(() -> new AssertionError(MISSING_CLAIMANT_RESPONSE));
 
-        assertThat(claimantResponse.getAmountPaid().orElse(ZERO)).isEqualByComparingTo(TEN);
+        assertThat(claimantResponse.getAmountPaid()).contains(TEN_2DP);
     }
 
     @Test
@@ -78,13 +83,13 @@ public class ClaimantResponseTest extends BaseTest {
     private void assertClaimantResponseFormaliseAsCCJ(Claim claimWithClaimantResponse) {
         assertThat(claimWithClaimantResponse.getClaimantRespondedAt()).isNotEmpty();
         ResponseAcceptation claimantResponse = (ResponseAcceptation) claimWithClaimantResponse.getClaimantResponse()
-            .orElseThrow(AssertionError::new);
+            .orElseThrow(() -> new AssertionError(MISSING_CLAIMANT_RESPONSE));
 
-        assertThat(claimantResponse.getAmountPaid().orElse(ZERO)).isEqualByComparingTo(TEN);
-        assertThat(claimantResponse.getFormaliseOption().orElseThrow(AssertionError::new)).isEqualTo(CCJ);
+        assertThat(claimantResponse.getAmountPaid()).contains(TEN_2DP);
+        assertThat(claimantResponse.getFormaliseOption()).contains(CCJ);
         CountyCourtJudgment countyCourtJudgment = claimWithClaimantResponse.getCountyCourtJudgment();
         assertThat(countyCourtJudgment).isNotNull();
-        assertThat(countyCourtJudgment.getPayBySetDate()).isNotEmpty();
+        assertThat(countyCourtJudgment.getPaymentOption()).isEqualTo(PaymentOption.BY_SPECIFIED_DATE);
     }
 
     @Test
@@ -145,10 +150,10 @@ public class ClaimantResponseTest extends BaseTest {
     private void assertClaimantResponseFormaliseAsSettlement(Claim claimWithClaimantResponse) {
         assertThat(claimWithClaimantResponse.getClaimantRespondedAt()).isNotEmpty();
         ResponseAcceptation claimantResponse = (ResponseAcceptation) claimWithClaimantResponse.getClaimantResponse()
-            .orElseThrow(AssertionError::new);
+            .orElseThrow(() -> new AssertionError(MISSING_CLAIMANT_RESPONSE));
 
-        assertThat(claimantResponse.getAmountPaid().orElse(ZERO)).isEqualByComparingTo(TEN);
-        assertThat(claimantResponse.getFormaliseOption().orElseThrow(AssertionError::new)).isEqualTo(SETTLEMENT);
+        assertThat(claimantResponse.getAmountPaid()).contains(TEN_2DP);
+        assertThat(claimantResponse.getFormaliseOption()).contains(SETTLEMENT);
         assertThat(claimWithClaimantResponse.getCountyCourtJudgment()).isNull();
         assertThat(claimWithClaimantResponse.getSettlement()).isNotEmpty();
     }
@@ -156,7 +161,7 @@ public class ClaimantResponseTest extends BaseTest {
     @Test
     public void shouldSaveClaimantResponseRejection() {
         commonOperations.submitClaimantResponse(
-            SampleClaimantResponse.validDefaultRejection(),
+            SampleClaimantResponse.validRejectionWithDirectionsQuestionnaire(),
             claim.getExternalId(),
             claimant
         ).then()
@@ -168,10 +173,10 @@ public class ClaimantResponseTest extends BaseTest {
         assertThat(claimWithClaimantResponse.getClaimantRespondedAt()).isNotEmpty();
 
         ResponseRejection claimantResponse = (ResponseRejection) claimWithClaimantResponse.getClaimantResponse()
-            .orElseThrow(AssertionError::new);
+            .orElseThrow(() -> new AssertionError(MISSING_CLAIMANT_RESPONSE));
 
         assertThat(claimantResponse.getFreeMediation()).isNotEmpty();
-        assertThat(claimantResponse.getAmountPaid().orElse(ZERO)).isEqualByComparingTo(TEN);
+        assertThat(claimantResponse.getAmountPaid()).contains(TEN_2DP);
     }
 
     private Claim createClaimWithResponse(Claim createdCase, User defendant) {

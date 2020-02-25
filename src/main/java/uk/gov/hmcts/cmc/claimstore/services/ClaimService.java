@@ -12,7 +12,6 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
-import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimAuthorisationRule;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.rules.PaidInFullRule;
@@ -37,22 +36,24 @@ import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
+import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NUMBER_OF_RECONSIDERATION;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_PAYMENT;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
 @Component
 public class ClaimService {
 
-    private final ClaimRepository claimRepository;
     private final IssueDateCalculator issueDateCalculator;
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
     private final UserService userService;
@@ -65,10 +66,9 @@ public class ClaimService {
     private final ReviewOrderRule reviewOrderRule;
     private final String returnUrlPattern;
 
-    @SuppressWarnings("squid:S00107") //Constructor need all parameters
+    @SuppressWarnings("squid:S00107")
     @Autowired
     public ClaimService(
-        ClaimRepository claimRepository,
         CaseRepository caseRepository,
         UserService userService,
         IssueDateCalculator issueDateCalculator,
@@ -81,7 +81,6 @@ public class ClaimService {
         ReviewOrderRule reviewOrderRule,
         @Value("${payments.returnUrlPattern}") String returnUrlPattern
     ) {
-        this.claimRepository = claimRepository;
         this.userService = userService;
         this.issueDateCalculator = issueDateCalculator;
         this.responseDeadlineCalculator = responseDeadlineCalculator;
@@ -93,12 +92,6 @@ public class ClaimService {
         this.claimAuthorisationRule = claimAuthorisationRule;
         this.reviewOrderRule = reviewOrderRule;
         this.returnUrlPattern = returnUrlPattern;
-    }
-
-    public Claim getClaimById(long claimId) {
-        return claimRepository
-            .getById(claimId)
-            .orElseThrow(() -> new NotFoundException("Claim not found by id " + claimId));
     }
 
     public List<Claim> getClaimBySubmitterId(String submitterId, String authorisation) {
@@ -154,7 +147,11 @@ public class ClaimService {
     public List<Claim> getClaimByExternalReference(String externalReference, String authorisation) {
         String submitterId = userService.getUserDetails(authorisation).getId();
 
-        return claimRepository.getByExternalReference(externalReference, submitterId);
+        return asStream(caseRepository.getBySubmitterId(submitterId, authorisation))
+            .filter(claim -> externalReference.equals(
+                claim.getClaimData().getExternalReferenceNumber().orElse("")
+            ))
+            .collect(Collectors.toList());
     }
 
     public List<Claim> getClaimByDefendantId(String id, String authorisation) {
@@ -192,7 +189,8 @@ public class ClaimService {
 
         Claim createdClaim = caseRepository.initiatePayment(user, claim);
 
-        Payment payment = createdClaim.getClaimData().getPayment().orElseThrow(IllegalStateException::new);
+        Payment payment = createdClaim.getClaimData().getPayment()
+            .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT));
         return CreatePaymentResponse.builder()
             .nextUrl(payment.getNextUrl())
             .build();
@@ -200,11 +198,16 @@ public class ClaimService {
 
     @LogExecutionTime
     public CreatePaymentResponse resumePayment(String authorisation, ClaimData claimData) {
+        User user = userService.getUser(authorisation);
+        Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), user)
+            .toBuilder()
+            .claimData(claimData)
+            .build();
 
-        Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), authorisation);
-        Claim resumedClaim = caseRepository.saveCaseEvent(authorisation, claim, RESUME_CLAIM_PAYMENT_CITIZEN);
+        Claim resumedClaim = caseRepository.saveCaseEventIOC(user, claim, RESUME_CLAIM_PAYMENT_CITIZEN);
 
-        Payment payment = resumedClaim.getClaimData().getPayment().orElseThrow(IllegalStateException::new);
+        Payment payment = resumedClaim.getClaimData().getPayment()
+            .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT));
 
         return CreatePaymentResponse.builder()
             .nextUrl(
@@ -221,13 +224,14 @@ public class ClaimService {
         ClaimData claimData,
         List<String> features
     ) {
-        Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), authorisation)
+        User user = userService.getUser(authorisation);
+        Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), user)
             .toBuilder()
             .claimData(claimData)
             .features(features)
             .build();
 
-        return caseRepository.saveCaseEventIOC(authorisation, claim, CREATE_CITIZEN_CLAIM);
+        return caseRepository.saveCaseEventIOC(user, claim, CREATE_CITIZEN_CLAIM);
     }
 
     @LogExecutionTime
@@ -240,10 +244,10 @@ public class ClaimService {
         String externalId = claimData.getExternalId().toString();
         User user = userService.getUser(authorisation);
         caseRepository.getClaimByExternalId(externalId, user)
-                .ifPresent(claim -> {
-                    throw new ConflictException(
-                            String.format("Claim already exist with same external reference as %s", externalId));
-                });
+            .ifPresent(claim -> {
+                throw new ConflictException(
+                    String.format("Claim already exist with same external reference as %s", externalId));
+            });
 
         Claim claim = buildClaimFrom(user,
             submitterId,
@@ -293,7 +297,7 @@ public class ClaimService {
         Claim claim = getClaimByExternalId(externalId, authorisation);
 
         LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
-        
+
         this.moreTimeRequestRule.assertMoreTimeCanBeRequested(claim);
 
         caseRepository.requestMoreTimeForResponse(authorisation, claim, newDeadline);

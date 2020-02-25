@@ -97,8 +97,11 @@ public class Settlement {
 
     @JsonIgnore
     public boolean isSettlementThroughAdmissions() {
-        return getLastStatementOfType(StatementType.OFFER).getOffer().orElseThrow(IllegalStateException::new)
-            .getPaymentIntention().isPresent();
+        return getLastStatementOfType(StatementType.OFFER)
+            .getOffer()
+            .orElseThrow(() -> new IllegalStateException("Last offer statement is missing an offer"))
+            .getPaymentIntention()
+            .isPresent();
     }
 
     public List<PartyStatement> getPartyStatements() {
@@ -153,6 +156,7 @@ public class Settlement {
         return getLastStatement().getType().equals(StatementType.OFFER);
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean lastStatementIsAcceptationNotBy(MadeBy madeBy) {
         PartyStatement lastStatement = getLastStatement();
         return lastStatement.getType().equals(StatementType.ACCEPTATION)

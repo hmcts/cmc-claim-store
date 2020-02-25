@@ -24,7 +24,7 @@ public class ValidCountyCourtJudgmentValidatorTest {
     @Mock
     private ConstraintValidatorContext context;
 
-    private ValidCountyCourtJudgmentValidator validator = new ValidCountyCourtJudgmentValidator();
+    private final ValidCountyCourtJudgmentValidator validator = new ValidCountyCourtJudgmentValidator();
 
     @Before
     public void beforeEachTest() {

@@ -141,6 +141,7 @@ public class DocumentManagementService {
             );
 
             ByteArrayResource resource = (ByteArrayResource) responseEntity.getBody();
+            //noinspection ConstantConditions let the NPE be thrown
             return resource.getByteArray();
         } catch (Exception ex) {
             throw new DocumentManagementException(

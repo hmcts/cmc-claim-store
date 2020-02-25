@@ -1,12 +1,12 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.PilotCourt;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.orders.Direction;
 import uk.gov.hmcts.cmc.domain.models.orders.DirectionHeaderType;
 import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
@@ -30,35 +30,31 @@ public class DirectionOrderMapper {
         this.addressMapper = addressMapper;
     }
 
-    public DirectionOrder from(CCDDirectionOrder ccdDirectionOrder, CCDOrderGenerationData directionOrderData) {
-        if (ccdDirectionOrder == null || directionOrderData == null) {
-            return null;
+    public void from(CCDCase ccdCase, Claim.ClaimBuilder claimBuilder) {
+        CCDDirectionOrder ccdDirectionOrder = ccdCase.getDirectionOrder();
+        if (ccdDirectionOrder == null || ccdCase.getDirectionList().isEmpty()) {
+            return;
         }
 
         DirectionOrder.DirectionOrderBuilder builder = DirectionOrder.builder();
 
-        Optional.ofNullable(directionOrderData.getEstimatedHearingDuration()).ifPresent(estimatedDuration ->
+        Optional.ofNullable(ccdCase.getEstimatedHearingDuration()).ifPresent(estimatedDuration ->
             builder.estimatedHearingDuration(HearingDurationType.valueOf(estimatedDuration.name())));
 
-        Optional.ofNullable(directionOrderData.getHearingCourt()).ifPresent(hearingCourt ->
-            builder.hearingCourt(PilotCourt.valueOf(hearingCourt.name())));
+        Optional.ofNullable(ccdCase.getHearingCourt()).ifPresent(builder::hearingCourt);
 
-        Optional.ofNullable(directionOrderData.getPaperDetermination()).ifPresent(paperDetermination ->
+        Optional.ofNullable(ccdCase.getPaperDetermination()).ifPresent(paperDetermination ->
             builder.paperDetermination(YesNoOption.valueOf(paperDetermination.name())));
 
-        Optional.ofNullable(directionOrderData.getExpertReportPermissionPartyGivenToClaimant())
+        Optional.ofNullable(ccdCase.getGrantExpertReportPermission())
             .ifPresent(permission -> builder
-                .expertReportPermissionGivenToClaimant(YesNoOption.valueOf(permission.name())));
+                .grantExpertReportPermission(YesNoOption.valueOf(permission.name())));
 
-        Optional.ofNullable(directionOrderData.getExpertReportPermissionPartyGivenToDefendant())
-            .ifPresent(permission -> builder
-                .expertReportPermissionGivenToDefendant(YesNoOption.valueOf(permission.name())));
-
-        Optional.ofNullable(directionOrderData.getExpertReportPermissionPartyAskedByClaimant())
+        Optional.ofNullable(ccdCase.getExpertReportPermissionPartyAskedByClaimant())
             .ifPresent(permission -> builder
                 .expertReportPermissionAskedByClaimant(YesNoOption.valueOf(permission.name())));
 
-        Optional.ofNullable(directionOrderData.getExpertReportPermissionPartyAskedByDefendant())
+        Optional.ofNullable(ccdCase.getExpertReportPermissionPartyAskedByDefendant())
             .ifPresent(permission -> builder
                 .expertReportPermissionAskedByDefendant(YesNoOption.valueOf(permission.name())));
 
@@ -66,22 +62,19 @@ public class DirectionOrderMapper {
             .createdOn(ccdDirectionOrder.getCreatedOn())
             .hearingCourtName(ccdDirectionOrder.getHearingCourtName())
             .hearingCourtAddress(addressMapper.from(ccdDirectionOrder.getHearingCourtAddress()))
-            .preferredDQCourt(directionOrderData.getPreferredDQCourt())
-            .preferredCourtObjectingReason(directionOrderData.getPreferredCourtObjectingReason())
-            .newRequestedCourt(directionOrderData.getNewRequestedCourt())
-            .extraDocUploadList(directionOrderData.getExtraDocUploadList().stream()
+            .preferredDQCourt(ccdCase.getPreferredDQCourt())
+            .preferredCourtObjectingReason(ccdCase.getPreferredCourtObjectingReason())
+            .newRequestedCourt(ccdCase.getNewRequestedCourt())
+            .extraDocUploadList(ccdCase.getExtraDocUploadList().stream()
                 .map(CCDCollectionElement::getValue)
                 .collect(Collectors.toList()))
-            .expertReportInstructionsForClaimant(directionOrderData.getExpertReportInstructionClaimant()
-                .stream().map(CCDCollectionElement::getValue).collect(Collectors.toList()))
-            .expertReportInstructionsForDefendant(directionOrderData.getExpertReportInstructionDefendant()
-                .stream().map(CCDCollectionElement::getValue).collect(Collectors.toList()))
+            .expertReportInstruction(ccdCase.getExpertReportInstruction())
             .build();
 
-        addUploadDocumentDirection(directionOrderData, directionOrder);
-        addEyeWitnessDirection(directionOrderData, directionOrder);
+        addUploadDocumentDirection(ccdCase, directionOrder);
+        addEyeWitnessDirection(ccdCase, directionOrder);
 
-        asStream(directionOrderData.getOtherDirections())
+        asStream(ccdCase.getOtherDirections())
             .map(CCDCollectionElement::getValue)
             .forEach(ccdOrderDirection -> directionOrder.addDirection(Direction.builder()
                 .directionType(DirectionType.valueOf(ccdOrderDirection.getExtraOrderDirection().name()))
@@ -102,44 +95,44 @@ public class DirectionOrderMapper {
                     .collect(Collectors.toList()))
                 .build()));
 
-        return directionOrder;
+        claimBuilder.directionOrder(directionOrder);
     }
 
-    private void addEyeWitnessDirection(CCDOrderGenerationData directionOrderData, DirectionOrder directionOrder) {
-        if (directionOrderData.getDirectionList().contains(CCDOrderDirectionType.EYEWITNESS)) {
-            directionOrder.addDirection(mapDirectionData(directionOrderData, CCDOrderDirectionType.EYEWITNESS));
+    private void addEyeWitnessDirection(CCDCase ccdCase, DirectionOrder directionOrder) {
+        if (ccdCase.getDirectionList().contains(CCDOrderDirectionType.EYEWITNESS)) {
+            directionOrder.addDirection(mapDirectionData(ccdCase, CCDOrderDirectionType.EYEWITNESS));
         }
     }
 
-    private void addUploadDocumentDirection(CCDOrderGenerationData directionOrderData, DirectionOrder directionOrder) {
-        if (directionOrderData.getDirectionList().contains(CCDOrderDirectionType.DOCUMENTS)) {
-            directionOrder.addDirection(mapDirectionData(directionOrderData, CCDOrderDirectionType.DOCUMENTS));
+    private void addUploadDocumentDirection(CCDCase ccdCase, DirectionOrder directionOrder) {
+        if (ccdCase.getDirectionList().contains(CCDOrderDirectionType.DOCUMENTS)) {
+            directionOrder.addDirection(mapDirectionData(ccdCase, CCDOrderDirectionType.DOCUMENTS));
         }
     }
 
-    private Direction mapDirectionData(CCDOrderGenerationData directionOrderData, CCDOrderDirectionType directionType) {
+    private Direction mapDirectionData(CCDCase ccdCase, CCDOrderDirectionType directionType) {
         Direction.DirectionBuilder builder = Direction.builder();
-        mapDirectionForType(directionOrderData, builder, directionType);
+        mapDirectionForType(ccdCase, builder, directionType);
         return builder.build();
     }
 
     private void mapDirectionForType(
-        CCDOrderGenerationData directionOrderData,
+        CCDCase ccdCase,
         Direction.DirectionBuilder builder,
         CCDOrderDirectionType directionType
     ) {
         switch (directionType) {
             case DOCUMENTS:
-                addDirectionParty(builder, directionOrderData.getDocUploadForParty());
+                addDirectionParty(builder, ccdCase.getDocUploadForParty());
 
                 builder.directionType(DirectionType.valueOf(directionType.name()))
-                    .directionActionedDate(directionOrderData.getDocUploadDeadline());
+                    .directionActionedDate(ccdCase.getDocUploadDeadline());
                 break;
             case EYEWITNESS:
-                addDirectionParty(builder, directionOrderData.getEyewitnessUploadForParty());
+                addDirectionParty(builder, ccdCase.getEyewitnessUploadForParty());
 
                 builder.directionType(DirectionType.valueOf(directionType.name()))
-                    .directionActionedDate(directionOrderData.getEyewitnessUploadDeadline());
+                    .directionActionedDate(ccdCase.getEyewitnessUploadDeadline());
                 break;
             default:
                 throw new IllegalArgumentException("Invalid direction type");

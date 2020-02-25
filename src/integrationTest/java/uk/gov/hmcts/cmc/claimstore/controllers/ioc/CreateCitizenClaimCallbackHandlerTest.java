@@ -3,25 +3,22 @@ package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 import com.github.tomakehurst.wiremock.http.MimeType;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
-import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
-import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.PaymentsService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
-import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Payment;
+import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -44,7 +41,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.sample.data.SampleData.getAmountBreakDown;
-import static uk.gov.hmcts.cmc.claimstore.services.CallbackHandlerFactoryTest.BEARER_TOKEN;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
 import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.FAILED;
@@ -57,7 +53,8 @@ import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
         "payments.api.url=http://payments-api"
     }
 )
-public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
+public class CreateCitizenClaimCallbackHandlerTest extends BaseMockSpringTest {
+
     private static final String AUTHORISATION_TOKEN = "Bearer let me in";
     private static final long CASE_ID = 42L;
     private static final String NEXT_URL = "http://nexturl.test";
@@ -65,24 +62,15 @@ public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
     private static final LocalDate ISSUE_DATE = now();
     private static final LocalDate RESPONSE_DEADLINE = ISSUE_DATE.plusDays(14);
 
-    @MockBean
-    private PaymentsService paymentsService;
-
-    @MockBean
-    protected ResponseDeadlineCalculator responseDeadlineCalculator;
-
-    @MockBean
-    protected IssueDateCalculator issueDateCalculator;
-
-    @MockBean
-    private EventProducer eventProducer;
-
-    @Autowired
-    private CaseDetailsConverter caseDetailsConverter;
-
     private Payment.PaymentBuilder paymentBuilder;
-
     private Payment payment;
+
+    @MockBean
+    private ResponseDeadlineCalculator responseDeadlineCalculator;
+    @MockBean
+    private IssueDateCalculator issueDateCalculator;
+    @MockBean
+    protected EmailService emailService;
 
     @Before
     public void setUp() {
@@ -110,13 +98,10 @@ public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
         MvcResult mvcResult = makeRequestAndRespondWithSuccess(CallbackType.ABOUT_TO_SUBMIT.getValue())
             .andExpect(status().isOk())
             .andReturn();
-        Map<String, Object> responseData = deserializeObjectFrom(
+        Map<String, Object> responseData = jsonMappingHelper.deserializeObjectFrom(
             mvcResult,
             AboutToStartOrSubmitCallbackResponse.class
         ).getData();
-
-        List<Map<String, Object>> respondents = (List<Map<String, Object>>) responseData.get("respondents");
-        Map<String, Object> defendant = (Map<String, Object>) respondents.get(0).get("value");
 
         assertThat(responseData).contains(
             entry("paymentStatus", SUCCESS.toString()),
@@ -124,6 +109,10 @@ public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
             entry("previousServiceCaseReference", REFERENCE_NO)
         );
 
+        List<Map<String, Object>> respondents = (List<Map<String, Object>>) responseData.get("respondents");
+        Map<String, Object> defendant = (Map<String, Object>) respondents.get(0).get("value");
+
+        assertThat(defendant).contains(entry("servedDate", ISSUE_DATE.plusDays(5).toString()));
         assertThat(defendant).contains(entry("responseDeadline", RESPONSE_DEADLINE.toString()));
     }
 
@@ -137,7 +126,7 @@ public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        List<String> responseData = deserializeObjectFrom(
+        List<String> responseData = jsonMappingHelper.deserializeObjectFrom(
             mvcResult,
             AboutToStartOrSubmitCallbackResponse.class
         ).getErrors();
@@ -153,7 +142,7 @@ public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        SubmittedCallbackResponse response = deserializeObjectFrom(
+        SubmittedCallbackResponse response = jsonMappingHelper.deserializeObjectFrom(
             mvcResult,
             SubmittedCallbackResponse.class
         );
@@ -178,7 +167,7 @@ public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
         return webClient.perform(post("/cases/callbacks/" + callbackType)
             .header(HttpHeaders.CONTENT_TYPE, MimeType.JSON)
             .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
-            .content(jsonMapper.toJson(callbackRequest))
+            .content(jsonMappingHelper.toJson(callbackRequest))
         );
     }
 
@@ -199,7 +188,7 @@ public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
         return webClient.perform(post("/cases/callbacks/" + callbackType)
             .header(HttpHeaders.CONTENT_TYPE, MimeType.JSON)
             .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
-            .content(jsonMapper.toJson(callbackRequest))
+            .content(jsonMappingHelper.toJson(callbackRequest))
         );
     }
 }

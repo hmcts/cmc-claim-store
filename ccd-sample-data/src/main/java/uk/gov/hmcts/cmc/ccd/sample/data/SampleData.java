@@ -37,10 +37,8 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMean
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingCourtType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.math.BigDecimal;
@@ -76,6 +74,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.OTH
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOtherDirectionHeaderType.UPLOAD;
 import static uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDClaimSubmissionOperationIndicators.defaultCCDClaimSubmissionOperationIndicators;
 import static uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDTelephone.withDefaultPhoneNumber;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOUSAND_POUNDS_OR_LESS;
@@ -95,13 +94,13 @@ public class SampleData {
 
         return CCDCase.builder()
             .id(1L)
-            .submittedOn(LocalDateTime.of(2017, 11, 01, 10, 15, 30))
+            .submittedOn(LocalDateTime.of(2017, 11, 1, 10, 15, 30))
             .issuedOn(LocalDate.of(2017, 11, 15))
             .submitterEmail("my@email.com")
             .submitterId("123")
             .previousServiceCaseReference("ref no")
             .externalId(UUID.randomUUID().toString())
-            .features("admissions")
+            .features(ADMISSIONS.getValue())
             .amountType(BREAK_DOWN)
             .housingDisrepairCostOfRepairDamages(MORE_THAN_THOUSAND_POUNDS.name())
             .housingDisrepairOtherDamages(THOUSAND_POUNDS_OR_LESS.name())
@@ -125,7 +124,7 @@ public class SampleData {
             .interestSpecificDailyAmount("1000")
             .interestEndDateType(CCDInterestEndDateType.SUBMISSION)
             .paymentStatus("Success")
-            .paymentDateCreated(LocalDate.of(2019, 01, 01))
+            .paymentDateCreated(LocalDate.of(2019, 1, 1))
             .paymentId("PaymentId")
             .paymentAmount("400000")
             .paymentReference("RC-1524-6488-1670-7520")
@@ -271,7 +270,7 @@ public class SampleData {
                 CCDParty.builder()
                     .type(INDIVIDUAL)
                     .primaryAddress(ccdAddress)
-                    .dateOfBirth(LocalDate.of(1950, 01, 01))
+                    .dateOfBirth(LocalDate.of(1950, 1, 1))
                     .correspondenceAddress(ccdAddress)
                     .telephoneNumber(withDefaultPhoneNumber())
                     .build())
@@ -358,7 +357,7 @@ public class SampleData {
                 .primaryAddress(ccdAddress)
                 .emailAddress("claimant@email.test")
                 .telephoneNumber(CCDTelephone.builder().telephoneNumber("07987654321").build())
-                .dateOfBirth(LocalDate.of(1950, 01, 01))
+                .dateOfBirth(LocalDate.of(1950, 1, 1))
                 .correspondenceAddress(ccdAddress)
                 .build())
             .partyName("Individual")
@@ -378,7 +377,7 @@ public class SampleData {
                 CCDParty.builder()
                     .type(INDIVIDUAL)
                     .primaryAddress(ccdAddress)
-                    .dateOfBirth(LocalDate.of(1950, 01, 01))
+                    .dateOfBirth(LocalDate.of(1950, 1, 1))
                     .correspondenceAddress(ccdAddress)
                     .build())
             .claimantProvidedPartyName("Individual")
@@ -409,7 +408,7 @@ public class SampleData {
                 CCDParty.builder()
                     .type(INDIVIDUAL)
                     .primaryAddress(ccdAddress)
-                    .dateOfBirth(LocalDate.of(1950, 01, 01))
+                    .dateOfBirth(LocalDate.of(1950, 1, 1))
                     .correspondenceAddress(ccdAddress)
                     .build())
             .claimantProvidedPartyName("Individual")
@@ -505,13 +504,13 @@ public class SampleData {
             = singletonList(CCDCollectionElement.<CCDRespondent>builder().value(getCCDRespondentIndividual()).build());
         return CCDCase.builder()
             .id(1L)
-            .submittedOn(LocalDateTime.of(2017, 11, 01, 10, 15, 30))
+            .submittedOn(LocalDateTime.of(2017, 11, 1, 10, 15, 30))
             .issuedOn(LocalDate.of(2017, 11, 15))
             .submitterEmail("my@email.com")
             .submitterId("123")
             .previousServiceCaseReference("ref no")
             .externalId(UUID.randomUUID().toString())
-            .features("admissions")
+            .features(ADMISSIONS.getValue())
             .amountType(RANGE)
             .amountLowerValue("5000")
             .amountHigherValue("50000")
@@ -566,8 +565,8 @@ public class SampleData {
             .build();
     }
 
-    public static CCDOrderGenerationData getCCDOrderGenerationData() {
-        return CCDOrderGenerationData.builder()
+    public static CCDCase addCCDOrderGenerationData(CCDCase ccdCase) {
+        return ccdCase.toBuilder()
             .directionList(ImmutableList.of(
                 DOCUMENTS, EYEWITNESS))
             .otherDirections(ImmutableList.of(
@@ -613,7 +612,7 @@ public class SampleData {
             .paperDetermination(NO)
             .docUploadDeadline(LocalDate.parse("2020-10-11"))
             .eyewitnessUploadDeadline(LocalDate.parse("2020-10-11"))
-            .hearingCourt(CCDHearingCourtType.BIRMINGHAM)
+            .hearingCourt("BIRMINGHAM")
             .preferredCourtObjectingReason("I like this court more")
             .newRequestedCourt("Another court")
             .docUploadForParty(CCDDirectionPartyType.CLAIMANT)
@@ -629,12 +628,8 @@ public class SampleData {
             .estimatedHearingDuration(CCDHearingDurationType.FOUR_HOURS)
             .expertReportPermissionPartyAskedByClaimant(YES)
             .expertReportPermissionPartyAskedByDefendant(YES)
-            .expertReportPermissionPartyGivenToClaimant(YES)
-            .expertReportPermissionPartyGivenToDefendant(YES)
-            .expertReportInstructionClaimant(ImmutableList.of(CCDCollectionElement.<String>builder()
-                .value(SUBMIT_MORE_DOCS_INSTRUCTION).build()))
-            .expertReportInstructionDefendant(ImmutableList.of(CCDCollectionElement.<String>builder()
-                .value(SUBMIT_MORE_DOCS_INSTRUCTION).build()))
+            .grantExpertReportPermission(YES)
+            .expertReportInstruction(SUBMIT_MORE_DOCS_INSTRUCTION)
             .build();
     }
 
@@ -768,6 +763,30 @@ public class SampleData {
             .addressLine1("1 Bridge Street West")
             .postTown("Manchester")
             .postCode("M60 9DJ")
+            .build();
+    }
+
+    public static CCDCase withPaperResponseFromStaffUploadedDoc() {
+        List<CCDCollectionElement<CCDApplicant>> applicants
+            = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
+
+        return ccdBuilderWithDefault()
+            .amountBreakDown(getAmountBreakDown())
+            .applicants(applicants)
+            .staffUploadedDocuments(SampleStaffUploadedDoc.staffUploadedDocs)
+            .state(OPEN.getValue())
+            .build();
+    }
+
+    public static CCDCase withPaperResponseFromScannedDoc() {
+        List<CCDCollectionElement<CCDApplicant>> applicants
+            = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
+
+        return ccdBuilderWithDefault()
+            .amountBreakDown(getAmountBreakDown())
+            .applicants(applicants)
+            .scannedDocuments(SampleStaffUploadedDoc.scannedDocsPaperResponse)
+            .state(OPEN.getValue())
             .build();
     }
 }

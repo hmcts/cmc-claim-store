@@ -82,7 +82,7 @@ public class CreateCitizenClaimCallbackHandlerTest {
     private CallbackRequest callbackRequest;
     private CreateCitizenClaimCallbackHandler createCitizenClaimCallbackHandler;
 
-    private CaseDetails caseDetails = CaseDetails.builder().id(3L).data(Collections.emptyMap()).build();
+    private final CaseDetails caseDetails = CaseDetails.builder().id(3L).data(Collections.emptyMap()).build();
 
     private Payment.PaymentBuilder paymentBuilder;
 
@@ -142,6 +142,7 @@ public class CreateCitizenClaimCallbackHandlerTest {
 
         Claim toBeSaved = claimArgumentCaptor.getValue();
         assertThat(toBeSaved.getIssuedOn()).isEqualTo(ISSUE_DATE);
+        assertThat(toBeSaved.getServiceDate()).isEqualTo(ISSUE_DATE.plusDays(5));
         assertThat(toBeSaved.getReferenceNumber()).isEqualTo(REFERENCE_NO);
         assertThat(toBeSaved.getResponseDeadline()).isEqualTo(RESPONSE_DEADLINE);
     }

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
@@ -8,7 +7,6 @@ import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimantResponseRule;
-import uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
@@ -18,10 +16,10 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
+import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static java.util.function.Predicate.isEqual;
@@ -29,11 +27,14 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LIFT_STAY;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BOTH_OPTED_IN_FOR_MEDIATION_PILOT;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BOTH_OPTED_IN_FOR_NON_MEDIATION_PILOT;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_OPTED_OUT_FOR_MEDIATION_PILOT;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_OPTED_OUT_FOR_NON_MEDIATION_PILOT;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_RESPONSE_ACCEPTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_NON_PILOT_ELIGIBLE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_PILOT_ELIGIBLE;
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isSettlePreJudgment;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.REJECTION;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
@@ -55,9 +56,8 @@ public class ClaimantResponseService {
     private final ClaimantResponseRule claimantResponseRule;
     private final EventProducer eventProducer;
     private final FormaliseResponseAcceptanceService formaliseResponseAcceptanceService;
+    private final DirectionsQuestionnaireService directionsQuestionnaireService;
     private final DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
-    @Value("${feature_toggles.directions_questionnaire_enabled:false}")
-    boolean directionsQuestionnaireEnabled;
 
     @SuppressWarnings("squid:S00107") // All parameters are required here
     public ClaimantResponseService(
@@ -67,6 +67,7 @@ public class ClaimantResponseService {
         ClaimantResponseRule claimantResponseRule,
         EventProducer eventProducer,
         FormaliseResponseAcceptanceService formaliseResponseAcceptanceService,
+        DirectionsQuestionnaireService directionsQuestionnaireService,
         DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator
     ) {
         this.claimService = claimService;
@@ -75,6 +76,7 @@ public class ClaimantResponseService {
         this.claimantResponseRule = claimantResponseRule;
         this.eventProducer = eventProducer;
         this.formaliseResponseAcceptanceService = formaliseResponseAcceptanceService;
+        this.directionsQuestionnaireService = directionsQuestionnaireService;
         this.directionsQuestionnaireDeadlineCalculator = directionsQuestionnaireDeadlineCalculator;
     }
 
@@ -87,7 +89,7 @@ public class ClaimantResponseService {
         Claim claim = claimService.getClaimByExternalId(externalId, authorization);
         claimantResponseRule.assertCanBeRequested(claim, claimantId);
 
-        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+        Response response = claim.getResponse().orElseThrow(() -> new IllegalStateException(MISSING_RESPONSE));
         if (claim.getState().equals(ClaimState.STAYED) && ResponseUtils.isAdmissionResponse(response)) {
             claim = caseRepository.saveCaseEvent(authorization, claim, LIFT_STAY);
         }
@@ -103,9 +105,10 @@ public class ClaimantResponseService {
             caseRepository.saveCaseEvent(authorization, updatedClaim, CaseEvent.STAY_CLAIM);
         }
 
-        if (!DirectionsQuestionnaireUtils.isOnlineDQ(updatedClaim)
-            && isRejectResponseNoMediation(claimantResponse)) {
-            updateDirectionsQuestionnaireDeadline(updatedClaim, authorization);
+        if (!FeaturesUtils.isOnlineDQ(updatedClaim) && isRejectResponseNoMediation(claimantResponse)) {
+            LocalDate deadline = directionsQuestionnaireDeadlineCalculator
+                .calculateDirectionsQuestionnaireDeadline(claim.getRespondedAt());
+            caseRepository.updateDirectionsQuestionnaireDeadline(claim, deadline, authorization);
             updatedClaim = claimService.getClaimByExternalId(externalId, authorization);
         }
 
@@ -117,8 +120,8 @@ public class ClaimantResponseService {
             caseRepository.saveCaseEvent(authorization, updatedClaim, SETTLED_PRE_JUDGMENT);
         }
 
-        if (directionsQuestionnaireEnabled && claimantResponse.getType() == REJECTION) {
-            Optional<CaseEvent> caseEvent = DirectionsQuestionnaireUtils.prepareCaseEvent(
+        if (claimantResponse.getType() == REJECTION) {
+            Optional<CaseEvent> caseEvent = directionsQuestionnaireService.prepareCaseEvent(
                 (ResponseRejection) claimantResponse,
                 updatedClaim
             );
@@ -147,12 +150,6 @@ public class ClaimantResponseService {
             .isPresent();
     }
 
-    private void updateDirectionsQuestionnaireDeadline(Claim claim, String authorization) {
-        LocalDate deadline = directionsQuestionnaireDeadlineCalculator
-            .calculateDirectionsQuestionnaireDeadlineCalculator(LocalDateTime.now());
-        caseRepository.updateDirectionsQuestionnaireDeadline(claim, deadline, authorization);
-    }
-
     private void formaliseResponseAcceptance(
         ClaimantResponse claimantResponse,
         Response response,
@@ -172,7 +169,7 @@ public class ClaimantResponseService {
             appInsights.trackEvent(CLAIMANT_RESPONSE_ACCEPTED, REFERENCE_NUMBER, claim.getReferenceNumber());
         } else if (claimantResponse instanceof ResponseRejection) {
             if (isPartAdmissionOrIsStatePaidOrIsFullDefence(response)) {
-                raiseAppInsightEventForDirectionQuestionnaire(claim);
+                raiseAppInsightEventForLegalAdvisorPilot(claim);
                 raiseAppInsightEventForMediation(claim, response, (ResponseRejection) claimantResponse);
             }
         } else {
@@ -180,8 +177,8 @@ public class ClaimantResponseService {
         }
     }
 
-    private void raiseAppInsightEventForDirectionQuestionnaire(Claim claim) {
-        AppInsightsEvent appInsightsEvent = DirectionsQuestionnaireUtils.isOnlineDQ(claim)
+    private void raiseAppInsightEventForLegalAdvisorPilot(Claim claim) {
+        AppInsightsEvent appInsightsEvent = FeaturesUtils.isLegalAdvisorPilot(claim)
             ? AppInsightsEvent.LA_PILOT_ELIGIBLE
             : AppInsightsEvent.NON_LA_CASES;
 
@@ -192,16 +189,23 @@ public class ClaimantResponseService {
         String referenceNumber = claim.getReferenceNumber();
         boolean claimantNotOptedForMediation = responseRejection.getFreeMediation().filter(isEqual(NO)).isPresent();
 
-        if (claimantNotOptedForMediation && hasMediationPilotFeature(claim)) {
-            appInsights.trackEvent(CLAIMANT_OPTED_OUT_FOR_MEDIATION_PILOT, REFERENCE_NUMBER, referenceNumber);
+        if (claimantNotOptedForMediation) {
+            appInsights.trackEvent(getAppInsightEventBasedOnMediationPilot(claim), REFERENCE_NUMBER, referenceNumber);
         } else if (hasBothOptedForMediation(response, responseRejection)) {
             if (hasMediationPilotFeature(claim)) {
                 appInsights.trackEvent(MEDIATION_PILOT_ELIGIBLE, REFERENCE_NUMBER, referenceNumber);
                 appInsights.trackEvent(BOTH_OPTED_IN_FOR_MEDIATION_PILOT, REFERENCE_NUMBER, referenceNumber);
             } else {
+                appInsights.trackEvent(BOTH_OPTED_IN_FOR_NON_MEDIATION_PILOT, REFERENCE_NUMBER, referenceNumber);
                 appInsights.trackEvent(MEDIATION_NON_PILOT_ELIGIBLE, REFERENCE_NUMBER, referenceNumber);
             }
         }
+    }
+
+    private AppInsightsEvent getAppInsightEventBasedOnMediationPilot(Claim claim) {
+        return hasMediationPilotFeature(claim)
+            ? CLAIMANT_OPTED_OUT_FOR_MEDIATION_PILOT
+            : CLAIMANT_OPTED_OUT_FOR_NON_MEDIATION_PILOT;
     }
 
     private boolean hasBothOptedForMediation(Response response, ResponseRejection responseRejection) {
