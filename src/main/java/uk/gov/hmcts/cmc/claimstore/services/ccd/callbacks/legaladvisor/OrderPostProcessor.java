@@ -65,6 +65,10 @@ public class OrderPostProcessor {
         HearingCourt hearingCourt = directionOrderService.getHearingCourt(ccdCase);
 
         CCDCase updatedCase = ccdCase.toBuilder()
+            .expertReportPermissionPartyGivenToClaimant(null)
+            .expertReportPermissionPartyGivenToDefendant(null)
+            .expertReportInstructionClaimant(null)
+            .expertReportInstructionDefendant(null)
             .caseDocuments(updateCaseDocumentsWithOrder(ccdCase, draftOrderDoc))
             .directionOrder(CCDDirectionOrder.builder()
                 .createdOn(nowInUTC())
