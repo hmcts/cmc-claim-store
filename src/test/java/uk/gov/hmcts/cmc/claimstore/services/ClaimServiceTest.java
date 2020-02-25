@@ -456,10 +456,8 @@ public class ClaimServiceTest {
     public void initiatePaymentShouldFinishSuccessfully() {
         Claim claim = SampleClaim.builder()
             .withClaimData(SampleClaimData.builder()
-                .withPayment(Payment.builder()
-                    .nextUrl("http://nexturl.test")
-                    .status(PaymentStatus.INITIATED)
-                    .build())
+                .withPayment(
+                    Payment.builder().nextUrl("http://nexturl.test").build())
                 .build())
             .build();
         when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
@@ -565,7 +563,7 @@ public class ClaimServiceTest {
         Claim argumentCaptorValue = claimArgumentCaptor.getValue();
 
         assertThat(argumentCaptorValue.getClaimData().getFeeAccountNumber().orElse("")).isEqualTo("NEW_ACCOUNT");
-        AmountBreakDown finalAmount = (AmountBreakDown) argumentCaptorValue.getClaimData().getAmount();
+        AmountBreakDown finalAmount = (AmountBreakDown)argumentCaptorValue.getClaimData().getAmount();
         assertThat(finalAmount.getTotalAmount()).isEqualTo("1000.99");
         assertThat(argumentCaptorValue.getClaimData()).isEqualTo(claimDataToBeUpdated);
     }

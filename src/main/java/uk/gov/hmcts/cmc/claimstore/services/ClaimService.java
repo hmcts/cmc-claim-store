@@ -179,10 +179,16 @@ public class ClaimService {
     }
 
     @LogExecutionTime
-    public CreatePaymentResponse initiatePayment(String authorisation, ClaimData claimData) {
+    public CreatePaymentResponse initiatePayment(
+        String authorisation,
+        ClaimData claimData
+    ) {
         User user = userService.getUser(authorisation);
 
-        Claim claim = buildClaimFrom(user, user.getUserDetails().getId(), claimData, emptyList());
+        Claim claim = buildClaimFrom(user,
+            user.getUserDetails().getId(),
+            claimData,
+            emptyList());
 
         Claim createdClaim = caseRepository.initiatePayment(user, claim);
 
@@ -208,7 +214,8 @@ public class ClaimService {
         CaseEvent caseEvent
     ) {
         User user = userService.getUser(authorisation);
-        Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), user).toBuilder()
+        Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), user)
+            .toBuilder()
             .claimData(claimData)
             .build();
 
@@ -218,9 +225,10 @@ public class ClaimService {
             .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT));
 
         return CreatePaymentResponse.builder()
-            .nextUrl(payment.getStatus().equals(PaymentStatus.SUCCESS)
-                ? String.format(returnUrlPattern, claim.getExternalId())
-                : payment.getNextUrl()
+            .nextUrl(
+                payment.getStatus().equals(PaymentStatus.SUCCESS)
+                    ? String.format(returnUrlPattern, claim.getExternalId())
+                    : payment.getNextUrl()
             )
             .build();
     }

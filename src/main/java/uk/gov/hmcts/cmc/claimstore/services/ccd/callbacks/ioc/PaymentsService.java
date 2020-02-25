@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.FeesAndPaymentsConfiguration;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Payment;
@@ -15,13 +14,9 @@ import uk.gov.hmcts.reform.fees.client.model.FeeLookupResponseDto;
 import uk.gov.hmcts.reform.payments.client.CardPaymentRequest;
 import uk.gov.hmcts.reform.payments.client.PaymentsClient;
 import uk.gov.hmcts.reform.payments.client.models.FeeDto;
-import uk.gov.hmcts.reform.payments.client.models.LinkDto;
 import uk.gov.hmcts.reform.payments.client.models.PaymentDto;
 
 import java.math.BigDecimal;
-import java.net.URI;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.util.Optional;
 
 import static java.lang.String.format;
@@ -59,7 +54,11 @@ public class PaymentsService {
         this.description = description;
     }
 
-    public Optional<Payment> retrievePayment(String authorisation, ClaimData claimData) {
+    public Optional<Payment> retrievePayment(
+        String authorisation,
+        ClaimData claimData
+    ) {
+
         Optional<Payment> optionalPayment = claimData.getPayment();
         if (!optionalPayment.isPresent()) {
             return Optional.empty();
@@ -71,7 +70,11 @@ public class PaymentsService {
         return Optional.of(from(paymentDto, claimPayment.getNextUrl()));
     }
 
-    public Payment createPayment(String authorisation, Claim claim) {
+    public Payment createPayment(
+        String authorisation,
+        Claim claim
+    ) {
+
         logger.info("Calculating interest amount for claim with external id {}", claim.getExternalId());
 
         BigDecimal amount = claim.getTotalClaimAmount()
@@ -80,13 +83,21 @@ public class PaymentsService {
 
         BigDecimal amountPlusInterest = amount.add(interest);
 
-        logger.info("Retrieving fee for claim with external id {}", claim.getExternalId());
+        logger.info("Retrieving fee for claim with external id {}",
+            claim.getExternalId());
 
-        FeeLookupResponseDto feeOutcome = feesClient.lookupFee(FEE_CHANNEL, FEE_EVENT, amountPlusInterest);
+        FeeLookupResponseDto feeOutcome = feesClient.lookupFee(
+            FEE_CHANNEL, FEE_EVENT, amountPlusInterest
+        );
 
-        CardPaymentRequest paymentRequest = buildPaymentRequest(claim, feeOutcome);
+        CardPaymentRequest paymentRequest = buildPaymentRequest(
+            claim,
+            feeOutcome
+        );
 
-        logger.info("Creating payment in pay hub for claim with external id {}", claim.getExternalId());
+        logger.info("Creating payment in pay hub for claim with external id {}",
+            claim.getExternalId());
+        logger.info("Next URL: {}", format(returnUrlPattern, claim.getExternalId()));
         PaymentDto payment = paymentsClient.createPayment(
             authorisation,
             paymentRequest,
@@ -114,7 +125,10 @@ public class PaymentsService {
         };
     }
 
-    private CardPaymentRequest buildPaymentRequest(Claim claim, FeeLookupResponseDto feeOutcome) {
+    private CardPaymentRequest buildPaymentRequest(
+        Claim claim,
+        FeeLookupResponseDto feeOutcome
+    ) {
         String ccdCaseId = String.valueOf(claim.getCcdCaseId());
         FeeDto[] fees = buildFees(ccdCaseId, feeOutcome);
         return CardPaymentRequest.builder()
@@ -131,12 +145,10 @@ public class PaymentsService {
 
     private Payment from(PaymentDto paymentDto, String nextUrlCurrent) {
         String dateCreated = Optional.ofNullable(paymentDto.getDateCreated())
-            .map(OffsetDateTime::toLocalDate)
-            .map(LocalDate::toString)
+            .map(date -> date.toLocalDate().toString())
             .orElse(null);
         String nextUrl = Optional.ofNullable(paymentDto.getLinks().getNextUrl())
-            .map(LinkDto::getHref)
-            .map(URI::toString)
+            .map(url -> url.getHref().toString())
             .orElse(nextUrlCurrent);
         return Payment.builder()
             .amount(paymentDto.getAmount())

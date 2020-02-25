@@ -167,7 +167,7 @@ public class PaymentsServiceTest {
 
     @Test
     public void shouldMakePaymentAndSetThePaymentAmount() {
-        FeeDto[] fees = new FeeDto[] {
+        FeeDto[] fees = new FeeDto[]{
             FeeDto.builder()
                 .ccdCaseNumber(String.valueOf(claim.getCcdCaseId()))
                 .calculatedAmount(feeOutcome.getFeeAmount())
