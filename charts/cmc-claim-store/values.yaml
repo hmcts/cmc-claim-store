@@ -1,5 +1,3 @@
-cmc-citizen-frontend:
-  enabled: false
 postgresql:
   enabled: false
 ccd:
