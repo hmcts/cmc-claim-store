@@ -21,6 +21,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourtMapper;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -119,7 +120,7 @@ class PilotCourtServiceTest {
         when(hearingCourtMapper.from(eq(court))).thenReturn(hearingCourt);
         pilotCourtService.init();
 
-        HearingCourt actualHearingCourt = pilotCourtService.getPilotHearingCourt("BIRMINGHAM");
+        HearingCourt actualHearingCourt = pilotCourtService.getPilotHearingCourt("BIRMINGHAM").get();
 
         assertEquals(hearingCourt, actualHearingCourt);
 
@@ -146,14 +147,14 @@ class PilotCourtServiceTest {
         HearingCourt hearingCourt = HearingCourt.builder().name("SAMPLE COURT").build();
         when(hearingCourtMapper.from(eq(court))).thenReturn(hearingCourt);
 
-        HearingCourt actualHearingCourt = pilotCourtService.getPilotHearingCourt("BIRMINGHAM");
+        HearingCourt actualHearingCourt = pilotCourtService.getPilotHearingCourt("BIRMINGHAM").get();
 
         assertEquals(hearingCourt, actualHearingCourt);
 
     }
 
     @Test
-    void shouldReturnABlankHearingCourtIfCourtFinderReturnsNothing() {
+    void shouldReturnAnEmptyOptionalIfCourtFinderReturnsNothing() {
         PilotCourtService pilotCourtService = new PilotCourtService(
             csvPathSingle,
             courtFinderApi,
@@ -164,10 +165,9 @@ class PilotCourtServiceTest {
         when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString())).thenReturn(ImmutableList.of());
         pilotCourtService.init();
 
-        HearingCourt actualHearingCourt = pilotCourtService.getPilotHearingCourt("BIRMINGHAM");
+        Optional<HearingCourt> actualHearingCourt = pilotCourtService.getPilotHearingCourt("BIRMINGHAM");
 
-        assertEquals(HearingCourt.builder().build(), actualHearingCourt);
-
+        assertEquals(Optional.empty(), actualHearingCourt);
     }
 
     @Test

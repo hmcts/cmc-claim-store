@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legaladvisor;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,10 +10,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
@@ -26,6 +29,7 @@ import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.services.DirectionOrderService;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireService;
 import uk.gov.hmcts.cmc.claimstore.services.LegalOrderGenerationDeadlinesCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
@@ -33,6 +37,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackVersion;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.rules.GenerateOrderRule;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
@@ -51,6 +56,7 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -96,6 +102,8 @@ public class GenerateOrderCallbackHandlerTest {
     private OrderDrawnNotificationService orderDrawnNotificationService;
     @Mock
     private LegalOrderService legalOrderService;
+    @Mock
+    private DirectionOrderService directionOrderService;
 
     private CallbackRequest callbackRequest;
     private GenerateOrderCallbackHandler generateOrderCallbackHandler;
@@ -107,7 +115,7 @@ public class GenerateOrderCallbackHandlerTest {
             pilotCourtService);
 
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
-            caseDetailsConverter, legalOrderService, pilotCourtService);
+            caseDetailsConverter, legalOrderService, directionOrderService);
 
         generateOrderCallbackHandler = new GenerateOrderCallbackHandler(orderCreator, orderPostProcessor,
             caseDetailsConverter, appInsights);
@@ -162,21 +170,111 @@ public class GenerateOrderCallbackHandlerTest {
     @Nested
     @DisplayName("Submitted tests")
     class SubmittedTests {
-        @Test
-        void shouldRaiseAppInsight() {
-            CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
-            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
 
-            CallbackParams callbackParams = CallbackParams.builder()
+        private CallbackParams callbackParams;
+
+        @BeforeEach
+        void setUp() {
+            callbackParams = CallbackParams.builder()
                 .type(CallbackType.SUBMITTED)
                 .request(callbackRequest)
                 .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
                 .build();
 
+        }
+
+        @Test
+        void shouldRaiseAppInsight() {
+            CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+
             generateOrderCallbackHandler.handle(callbackParams);
 
             verify(appInsights)
                 .trackEvent(DRAFTED_BY_LEGAL_ADVISOR, REFERENCE_NUMBER, ccdCase.getPreviousServiceCaseReference());
+        }
+    }
+
+    @Nested
+    @DisplayName("About to Submit tests")
+    class AboutToSubmitTests {
+
+        private CallbackParams callbackParams;
+
+        private CCDAddress address;
+
+        private final String courtName = "Birmingham Court";
+
+        @BeforeEach
+        void setUp() {
+            callbackParams = CallbackParams.builder()
+                .type(CallbackType.ABOUT_TO_SUBMIT)
+                .request(callbackRequest)
+                .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+                .build();
+
+            address = CCDAddress.builder()
+                .addressLine1("line1")
+                .addressLine2("line2")
+                .addressLine3("line3")
+                .postCode("SW1P4BB")
+                .postTown("Birmingham")
+                .build();
+
+            HearingCourt hearingCourt = HearingCourt.builder().name(courtName).address(address).build();
+            when(directionOrderService.getHearingCourt(any())).thenReturn(hearingCourt);
+        }
+
+        @Test
+        void shouldPersistHearingCourt() {
+            CCDCase ccdCase = CCDCase.builder().hearingCourt("birmingham").build();
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+
+            generateOrderCallbackHandler.handle(callbackParams);
+
+            ArgumentCaptor<CCDCase> argument = ArgumentCaptor.forClass(CCDCase.class);
+            verify(caseDetailsConverter).convertToMap(argument.capture());
+            CCDCase returnedValue = argument.getValue();
+
+            assertThat(returnedValue.getHearingCourtName()).isEqualTo(courtName);
+            assertThat(returnedValue.getHearingCourtAddress()).isEqualTo(address);
+        }
+
+        @Test
+        void shouldClearHearingCourtField() {
+            CCDCase ccdCase = CCDCase.builder().hearingCourt("BIRMINGHAM").build();
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+
+            generateOrderCallbackHandler.handle(callbackParams);
+
+            ArgumentCaptor<CCDCase> argument = ArgumentCaptor.forClass(CCDCase.class);
+            verify(caseDetailsConverter).convertToMap(argument.capture());
+            CCDCase returnedValue = argument.getValue();
+
+            assertThat(returnedValue.getHearingCourt()).isNull();
+        }
+
+        @Test
+        void shouldRemoveOldExportReportFields() {
+            CCDCase ccdCase = CCDCase.builder()
+                .expertReportPermissionPartyGivenToClaimant(YES)
+                .expertReportPermissionPartyGivenToDefendant(NO)
+                .expertReportInstructionClaimant(Collections.emptyList())
+                .expertReportInstructionDefendant(Collections.emptyList())
+                .build();
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+
+            generateOrderCallbackHandler.handle(callbackParams);
+
+            ArgumentCaptor<CCDCase> argument = ArgumentCaptor.forClass(CCDCase.class);
+            verify(caseDetailsConverter).convertToMap(argument.capture());
+            CCDCase returnedValue = argument.getValue();
+
+            assertThat(returnedValue.getExpertReportPermissionPartyGivenToClaimant()).isNull();
+            assertThat(returnedValue.getExpertReportPermissionPartyGivenToDefendant()).isNull();
+            assertThat(returnedValue.getExpertReportInstructionClaimant()).isNull();
+            assertThat(returnedValue.getExpertReportInstructionDefendant()).isNull();
+
         }
     }
 
@@ -483,6 +581,15 @@ public class GenerateOrderCallbackHandlerTest {
                         entry("preferredCourtObjectingReason", "As a defendant I like this court more")
                     );
                 }
+
+                @Test
+                void shouldNotPopulateHearingCourt() {
+
+                    AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
+                        generateOrderCallbackHandler.handle(callbackParams);
+
+                    assertThat(response.getData()).doesNotContainKeys("hearingCourt");
+                }
             }
 
             @Nested
@@ -587,6 +694,72 @@ public class GenerateOrderCallbackHandlerTest {
                         generateOrderCallbackHandler.handle(callbackParams);
 
                     assertThat(response.getData()).contains(entry("expertReportInstruction", expertReportInstruction));
+                }
+
+                @Test
+                void shouldPopulateHearingCourt() {
+                    CCDAddress address = CCDAddress.builder()
+                        .addressLine1("line1")
+                        .addressLine2("line2")
+                        .addressLine3("line3")
+                        .postCode("SW1P4BB")
+                        .postTown("Birmingham")
+                        .build();
+
+                    String courtName = "Birmingham Court";
+                    HearingCourt hearingCourt = HearingCourt.builder().name(courtName).address(address).build();
+                    when(pilotCourtService.getPilotHearingCourts(any(), any()))
+                        .thenReturn(ImmutableSet.of(hearingCourt));
+                    String courtId = "BIRMINGHAM";
+                    when(pilotCourtService.getPilotCourtId(any())).thenReturn(courtId);
+
+                    AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
+                        generateOrderCallbackHandler.handle(callbackParams);
+
+                    assertThat(response.getData()).containsKeys("hearingCourt");
+                    assert response.getData().get("hearingCourt") instanceof Map;
+                    Map<String, Object> hearingCourtMap = (Map<String, Object>)response.getData().get("hearingCourt");
+
+                    assertThat(hearingCourtMap).containsKeys("list_items");
+                    assertThat(hearingCourtMap).doesNotContainKeys("value");
+
+                    List<Map<String, Object>> listItems =  (List<Map<String, Object>>)hearingCourtMap.get("list_items");
+                    assertThat(listItems).contains(ImmutableMap.of("code", courtId, "label", hearingCourt.getName()));
+                    assertThat(listItems).doesNotContain(ImmutableMap.of("code", PilotCourtService.OTHER_COURT_ID,
+                        "label", "Other Court"));
+                }
+
+                @Test
+                void shouldPopulateSelectedHearingCourt() {
+                    CCDAddress address = CCDAddress.builder()
+                        .addressLine1("line1")
+                        .addressLine2("line2")
+                        .addressLine3("line3")
+                        .postCode("SW1P4BB")
+                        .postTown("Birmingham")
+                        .build();
+
+                    String courtName = "Birmingham Court";
+                    ccdCase.setHearingCourtName(courtName);
+                    HearingCourt hearingCourt = HearingCourt.builder().name(courtName).address(address).build();
+                    when(pilotCourtService.getPilotHearingCourts(any(), any()))
+                        .thenReturn(ImmutableSet.of(hearingCourt));
+
+                    String courtId = "BIRMINGHAM";
+                    when(pilotCourtService.getPilotCourtId(any())).thenReturn(courtId);
+
+                    AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
+                        generateOrderCallbackHandler.handle(callbackParams);
+
+                    assertThat(response.getData()).containsKeys("hearingCourt");
+                    assert response.getData().get("hearingCourt") instanceof Map;
+                    Map<String, Object> hearingCourtMap = (Map<String, Object>)response.getData().get("hearingCourt");
+
+                    assertThat(hearingCourtMap).containsKeys("value");
+
+                    Map<String, Object> selectedValue = (Map<String, Object>)hearingCourtMap.get("value");
+                    assertThat(selectedValue).containsExactly(entry("code", courtId),
+                        entry("label", hearingCourt.getName()));
                 }
             }
 
@@ -719,5 +892,4 @@ public class GenerateOrderCallbackHandlerTest {
             }
         }
     }
-
 }

@@ -264,7 +264,8 @@ public class OrderCreator {
             .collect(Collectors.toList());
 
         if (pilot == Pilot.JDDO) {
-            listItems.add(ImmutableMap.of(DYNAMIC_LIST_CODE, "OTHER", DYNAMIC_LIST_LABEL, "Other Court"));
+            listItems.add(ImmutableMap.of(DYNAMIC_LIST_CODE, PilotCourtService.OTHER_COURT_ID,
+                DYNAMIC_LIST_LABEL, "Other Court"));
         }
         Map<String, Object> hearingCourtListDefinition = new HashMap<>();
         hearingCourtListDefinition.put(DYNAMIC_LIST_ITEMS, listItems);
@@ -289,7 +290,6 @@ public class OrderCreator {
         CaseEvent caseEvent = CaseEvent.fromValue(callbackParams.getRequest().getEventId());
         switch (caseEvent) {
             case GENERATE_ORDER:
-                return Pilot.LA;
             case ACTION_REVIEW_COMMENTS:
                 return Pilot.LA;
             case DRAW_JUDGES_ORDER:
