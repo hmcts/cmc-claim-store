@@ -106,23 +106,23 @@ public class OrderCreator {
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
 
         Map<String, Object> data = new HashMap<>();
-        data.put(DIRECTION_LIST, choseItem(ccdCase.getDirectionList(), ImmutableList.of(DOCUMENTS, EYEWITNESS)));
+        data.put(DIRECTION_LIST, chooseItem(ccdCase.getDirectionList(), ImmutableList.of(DOCUMENTS, EYEWITNESS)));
 
         addCourtData(claim, ccdCase, data);
 
         LocalDate deadline = legalOrderGenerationDeadlinesCalculator.calculateOrderGenerationDeadlines();
-        data.put(DOC_UPLOAD_DEADLINE, choseItem(ccdCase.getDocUploadDeadline(), deadline));
-        data.put(EYEWITNESS_UPLOAD_DEADLINE, choseItem(ccdCase.getEyewitnessUploadDeadline(), deadline));
-        data.put(DOC_UPLOAD_FOR_PARTY, choseItem(ccdCase.getDocUploadForParty(), BOTH));
-        data.put(EYEWITNESS_UPLOAD_FOR_PARTY, choseItem(ccdCase.getEyewitnessUploadForParty(), BOTH));
-        data.put(PAPER_DETERMINATION, choseItem(ccdCase.getPaperDetermination(), NO));
-        data.put(ESTIMATED_HEARING_DURATION, choseItem(ccdCase.getEstimatedHearingDuration(), null));
+        data.put(DOC_UPLOAD_DEADLINE, chooseItem(ccdCase.getDocUploadDeadline(), deadline));
+        data.put(EYEWITNESS_UPLOAD_DEADLINE, chooseItem(ccdCase.getEyewitnessUploadDeadline(), deadline));
+        data.put(DOC_UPLOAD_FOR_PARTY, chooseItem(ccdCase.getDocUploadForParty(), BOTH));
+        data.put(EYEWITNESS_UPLOAD_FOR_PARTY, chooseItem(ccdCase.getEyewitnessUploadForParty(), BOTH));
+        data.put(PAPER_DETERMINATION, chooseItem(ccdCase.getPaperDetermination(), NO));
+        data.put(ESTIMATED_HEARING_DURATION, ccdCase.getEstimatedHearingDuration());
 
         data.put(OTHER_DIRECTIONS, ccdCase.getOtherDirections());
 
         if (hasDynamicCourts(callbackParams)) {
-            data.put(GRANT_EXPERT_REPORT_PERMISSION, choseItem(ccdCase.getGrantExpertReportPermission(), NO));
-            data.put(EXPERT_REPORT_INSTRUCTION, choseItem(ccdCase.getExpertReportInstruction(), null));
+            data.put(GRANT_EXPERT_REPORT_PERMISSION, chooseItem(ccdCase.getGrantExpertReportPermission(), NO));
+            data.put(EXPERT_REPORT_INSTRUCTION, chooseItem(ccdCase.getExpertReportInstruction(), null));
         }
 
         if (hasExpertsAtCaseLevel(callbackParams)) {
@@ -151,11 +151,11 @@ public class OrderCreator {
             .build();
     }
 
-    private Object choseItem(Object value, Object defaultValue) {
+    private static <T> T chooseItem(T value, T defaultValue) {
         return value != null ? value : defaultValue;
     }
 
-    private Object choseItem(List list, List defaultList) {
+    private static <T> List<T> chooseItem(List<T> list, List<T> defaultList) {
         return list != null && !list.isEmpty() ? list : defaultList;
     }
 
@@ -263,10 +263,13 @@ public class OrderCreator {
             })
             .collect(Collectors.toList());
 
+        ImmutableMap<String, String> otherCourtItem = ImmutableMap.of(DYNAMIC_LIST_CODE,
+            PilotCourtService.OTHER_COURT_ID, DYNAMIC_LIST_LABEL, "Other Court");
+
         if (pilot == Pilot.JDDO) {
-            listItems.add(ImmutableMap.of(DYNAMIC_LIST_CODE, PilotCourtService.OTHER_COURT_ID,
-                DYNAMIC_LIST_LABEL, "Other Court"));
+            listItems.add(otherCourtItem);
         }
+
         Map<String, Object> hearingCourtListDefinition = new HashMap<>();
         hearingCourtListDefinition.put(DYNAMIC_LIST_ITEMS, listItems);
 
@@ -280,7 +283,7 @@ public class OrderCreator {
         if (selectedCourt.isPresent()) {
             hearingCourtListDefinition.put(DYNAMIC_LIST_SELECTED_VALUE, selectedCourt.get());
         } else if (pilot == Pilot.JDDO) {
-            hearingCourtListDefinition.put(DYNAMIC_LIST_SELECTED_VALUE, listItems.get(listItems.size() - 1));
+            hearingCourtListDefinition.put(DYNAMIC_LIST_SELECTED_VALUE, otherCourtItem);
         }
 
         return hearingCourtListDefinition;
