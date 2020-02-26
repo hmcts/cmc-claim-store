@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
@@ -40,7 +39,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CANCEL_CLAIM_PAYMENT_CITIZEN;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
@@ -201,27 +199,15 @@ public class ClaimService {
 
     @LogExecutionTime
     public CreatePaymentResponse resumePayment(String authorisation, ClaimData claimData) {
-        return processExistingPaymentEvent(authorisation, claimData, RESUME_CLAIM_PAYMENT_CITIZEN);
-    }
-
-    public CreatePaymentResponse cancelPayment(String authorisation, ClaimData claimData) {
-        return processExistingPaymentEvent(authorisation, claimData, CANCEL_CLAIM_PAYMENT_CITIZEN);
-    }
-
-    private CreatePaymentResponse processExistingPaymentEvent(
-        String authorisation,
-        ClaimData claimData,
-        CaseEvent caseEvent
-    ) {
         User user = userService.getUser(authorisation);
         Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), user)
             .toBuilder()
             .claimData(claimData)
             .build();
 
-        Claim processedClaim = caseRepository.saveCaseEventIOC(user, claim, caseEvent);
+        Claim resumedClaim = caseRepository.saveCaseEventIOC(user, claim, RESUME_CLAIM_PAYMENT_CITIZEN);
 
-        Payment payment = processedClaim.getClaimData().getPayment()
+        Payment payment = resumedClaim.getClaimData().getPayment()
             .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT));
 
         return CreatePaymentResponse.builder()

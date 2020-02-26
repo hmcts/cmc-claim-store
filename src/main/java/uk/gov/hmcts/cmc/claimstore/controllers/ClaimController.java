@@ -34,7 +34,6 @@ import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
 @RequestMapping(
     path = "/claims",
     produces = MediaType.APPLICATION_JSON_VALUE)
-@SuppressWarnings("MVCPathVariableInspection")
 public class ClaimController {
 
     private final ClaimService claimService;
@@ -131,15 +130,6 @@ public class ClaimController {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
         return claimService.resumePayment(authorisation, claimData);
-    }
-
-    @PostMapping(value = "/cancel-citizen-payment", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Cancels a citizen payment")
-    public CreatePaymentResponse cancelPayment(
-        @Valid @NotNull @RequestBody ClaimData claimData,
-        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
-    ) {
-        return claimService.cancelPayment(authorisation, claimData);
     }
 
     @PutMapping(value = "/create-citizen-claim", consumes = MediaType.APPLICATION_JSON_VALUE)

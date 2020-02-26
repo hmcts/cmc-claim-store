@@ -148,22 +148,6 @@ public class ClaimControllerTest {
     }
 
     @Test
-    public void shouldCancelPaymentForCitizen() {
-        //given
-        ClaimData claimData = SampleClaimData.builder().build();
-        CreatePaymentResponse expectedResponse =
-            CreatePaymentResponse.builder().nextUrl("http://next.url").build();
-        when(claimService.cancelPayment(AUTHORISATION, claimData))
-            .thenReturn(expectedResponse);
-
-        //when
-        CreatePaymentResponse output = claimController.cancelPayment(claimData, AUTHORISATION);
-
-        //then
-        assertThat(output).isEqualTo(expectedResponse);
-    }
-
-    @Test
     public void shouldCreateClaimForCitizen() {
         //given
         ClaimData claimData = SampleClaimData.builder().build();
