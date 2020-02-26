@@ -3,28 +3,17 @@ postgresql:
 ccd:
   enabled: false
 
-global:
-  devMode: true
-  idamApiUrl: ""
-  s2sAuthUrl: ""
-  cmcFrontendUrl: ""
-  pdfServiceUrl: ""
-  paymentUrl: ""
-  feesUrl: ""
-  sendLetterUrl: ""
-  documentManagementUrl: ""
-  dgAssemblyUrl: ""
-  ccdCaseDataApiUrl: ""
-  postgresqlHost: ""
-
 java:
   image: hmctspublic.azurecr.io/cmc/claim-store:latest
+  ingressHost: cmc-claim-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
   applicationPort: 4400
+  aadIdentityName: money-claims
   keyVaults:
     cmc:
       resourceGroup: cmc
       secrets:
         - AppInsightsInstrumentationKey
+        - cmc-db-password
         - citizen-oauth-client-secret
         - claim-store-s2s-secret
         - anonymous-caseworker-username
@@ -43,12 +32,12 @@ java:
     SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: true
     SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST: mta.reform.hmcts.net
     CLAIM_STORE_TEST_SUPPORT_ENABLED: true
-    CMC_DB_USERNAME: hmcts
-    CMC_DB_PASSWORD: hmcts
+    CMC_DB_USERNAME: 'cmc@cmc-{{ .Values.global.environment }}'
+    CMC_DB_HOST: cmc-{{ .Values.global.environment }}.postgres.database.azure.com
+    CMC_DB_CONNECTION_OPTIONS: '?sslmode=require'
     CMC_DB_NAME: cmc
     CMC_DB_PORT: 5432
     FEATURE_TOGGLES_SAVE_CLAIM_STATE_ENABLED: true
-    FEATURE_TOGGLES_DIRECTIONS_QUESTIONNAIRE_ENABLED: true
     STAFF_NOTIFICATIONS_RECIPIENT: civilmoneyclaims+staff-int-tests@gmail.com
     LIVE_SUPPORT_RECIPIENT: civilmoneyclaims+live-support-int-tests@gmail.com
     LIVE_SUPPORT_SENDER: noreply@reform.hmcts.net
@@ -63,14 +52,13 @@ java:
     MILO_CSV_SCHEDULE: '-'
     MILO_CSV_SENDER: noreply@reform.hmcts.net
     CLAIM_STAYED_SCHEDULE: ''
-    FRONTEND_BASE_URL: '{{ .Values.global.cmcFrontendUrl }}'
-    RESPOND_TO_CLAIM_URL: https://{{ tpl .Values.global.cmcFrontendUrl $}}/first-contact/start
-    CORE_CASE_DATA_API_URL: '{{ .Values.global.ccdCaseDataApiUrl }}'
-    IDAM_API_URL: '{{ .Values.global.idamApiUrl }}'
-    IDAM_S2S_AUTH_URL: '{{ .Values.global.s2sAuthUrl }}'
-    PDF_SERVICE_URL: '{{ .Values.global.pdfServiceUrl }}'
-    SEND_LETTER_URL: '{{ .Values.global.sendLetterUrl }}'
-    DOCUMENT_MANAGEMENT_URL: '{{ .Values.global.documentManagementUrl }}'
-    DOC_ASSEMBLY_URL: '{{ .Values.global.dgAssemblyUrl }}'
-    PAY_URL: '{{ .Values.global.paymentUrl }}'
-    FEES_URL: '{{ .Values.global.feesUrl }}'
+    IDAM_S2S_AUTH_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    IDAM_API_URL: https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net
+    PDF_SERVICE_URL: http://cmc-pdf-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    SEND_LETTER_URL: http://rpe-send-letter-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    DOCUMENT_MANAGEMENT_URL: http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    PAY_URL: http://payment-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    FEES_URL: http://fees-register-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    FRONTEND_BASE_URL: https://cmc-citizen-frontend-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    RESPOND_TO_CLAIM_URL: https://cmc-citizen-frontend-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/first-contact/start
+    CORE_CASE_DATA_API_URL: http://ccd-data-store-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal

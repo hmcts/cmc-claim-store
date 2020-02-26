@@ -37,7 +37,6 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMean
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingCourtType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
@@ -613,7 +612,7 @@ public class SampleData {
             .paperDetermination(NO)
             .docUploadDeadline(LocalDate.parse("2020-10-11"))
             .eyewitnessUploadDeadline(LocalDate.parse("2020-10-11"))
-            .hearingCourt(CCDHearingCourtType.BIRMINGHAM)
+            .hearingCourt("BIRMINGHAM")
             .preferredCourtObjectingReason("I like this court more")
             .newRequestedCourt("Another court")
             .docUploadForParty(CCDDirectionPartyType.CLAIMANT)

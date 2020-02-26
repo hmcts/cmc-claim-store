@@ -4,12 +4,16 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.documents.content.PartyDetailsContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
+import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.offers.StatementType;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_OFFER;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_SETTLEMENT;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDateTime;
 
@@ -30,8 +34,11 @@ public class SettlementAgreementPDFContentProvider {
     public Map<String, Object> createContent(Claim claim) {
         requireNonNull(claim);
 
-        Offer acceptedOffer = claim.getSettlement().orElseThrow(IllegalArgumentException::new)
-            .getLastStatementOfType(StatementType.OFFER).getOffer().orElseThrow(IllegalArgumentException::new);
+        Offer acceptedOffer = claim.getSettlement()
+            .orElseThrow(() -> new IllegalArgumentException(MISSING_SETTLEMENT))
+            .getLastStatementOfType(StatementType.OFFER)
+            .getOffer()
+            .orElseThrow(() -> new IllegalArgumentException(MISSING_OFFER));
         Map<String, Object> content = new HashMap<>();
         content.put("settlementReachedAt", formatDateTime(claim.getSettlementReachedAt()));
         content.put("acceptedOffer", acceptedOffer.getContent());
@@ -42,11 +49,15 @@ public class SettlementAgreementPDFContentProvider {
             claim.getSubmitterEmail()
         ));
         content.put("defendant", partyDetailsContentProvider.createContent(
-            claim.getResponse().orElseThrow(IllegalStateException::new).getDefendant(),
+            claim.getResponse()
+                .orElseThrow(() -> new IllegalStateException(MISSING_RESPONSE))
+                .getDefendant(),
             claim.getDefendantEmail()
         ));
 
-        if (claim.getSettlement().orElseThrow(IllegalArgumentException::new).isSettlementThroughAdmissions()) {
+        Settlement settlement = claim.getSettlement()
+            .orElseThrow(() -> new IllegalArgumentException(MISSING_SETTLEMENT));
+        if (settlement.isSettlementThroughAdmissions()) {
             content.put("formName", SETTLEMENT_FORM_NAME_ADMISSIONS_ROUTE);
         } else {
             content.put("formName", SETTLEMENT_FORM_NAME_OFFERS_ROUTE);

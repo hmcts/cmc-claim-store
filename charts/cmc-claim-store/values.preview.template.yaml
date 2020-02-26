@@ -1,18 +1,6 @@
-
-global:
-  devMode: true
-  subscriptionId: 1c4f0704-a29e-403d-b719-b90c34ef14c9
-  tenantId: 531ff96d-0ae9-462a-8d2d-bec7c0b42082
-  environment: aat
-  idamApiUrl: "https://idam-api.aat.platform.hmcts.net"
-  s2sAuthUrl: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-  cmcFrontendUrl: "https://cmc-citizen-frontend-aat.service.core-compute-aat.internal"
-  pdfServiceUrl: "http://cmc-pdf-service-aat.service.core-compute-aat.internal"
-  paymentUrl: "http://payment-api-aat.service.core-compute-aat.internal"
-  feesUrl: "http://fees-register-api-aat.service.core-compute-aat.internal"
-  sendLetterUrl: "http://rpe-send-letter-service-aat.service.core-compute-aat.internal"
-  documentManagementUrl: "http://dm-store-aat.service.core-compute-aat.internal"
-  dgAssemblyUrl: "http://dg-docassembly-aat.service.core-compute-aat.internal"
+tags:
+  ccd-idam-pr: true
+  postgresql-pod: false  # stop any subcharts starting their own postgres instance
 
 postgresql:
   enabled: true
@@ -26,9 +14,9 @@ postgresql:
       CREATE DATABASE cmc WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
       CREATE DATABASE "data-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
       CREATE DATABASE "definition-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+      CREATE DATABASE "user-profile" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
   postgresqlUsername: hmcts
   postgresqlPassword: hmcts
-  postgresqlDatabase: user-profile
   nameOverride: postgres
   persistence:
     enabled: false
@@ -39,21 +27,30 @@ java:
   livenessFailureThreshold: 6
   livenessDelay: 75
   readinessDelay: 75
+  keyVaults:
+    cmc:
+      resourceGroup: cmc
+      secrets:
+        - AppInsightsInstrumentationKey
+        - citizen-oauth-client-secret
+        - claim-store-s2s-secret
+        - anonymous-caseworker-username
+        - anonymous-caseworker-password
+        - system-update-username
+        - system-update-password
+        - notify-api-key
+        - milo-recipient
   environment:
     LOG_LEVEL: DEBUG
     CMC_DB_HOST: ${SERVICE_NAME}-postgres
+    CMC_DB_USERNAME: hmcts
+    CMC_DB_PASSWORD: hmcts
+    CMC_DB_CONNECTION_OPTIONS: '?sslmode=allow'
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-data-store-api
+
 
 ccd:
   enabled: true
-  postgresql:
-    enabled: false
-    nameOverride: postgres
-  userProfileImporter:
-    enabled: false
-  s2s:
-    enabled: true
-
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP}

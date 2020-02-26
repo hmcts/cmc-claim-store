@@ -20,14 +20,16 @@ import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestion
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDExpertReport;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
+import uk.gov.hmcts.cmc.claimstore.services.DirectionOrderService;
+import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireService;
 import uk.gov.hmcts.cmc.claimstore.services.LegalOrderGenerationDeadlinesCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.rules.GenerateOrderRule;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourtDetailsFinder;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
+import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -55,7 +57,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DRAW_ORDER;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DRAW_JUDGES_ORDER;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.GENERATE_ORDER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.DQ_FLAG;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
@@ -68,6 +70,7 @@ public class DrawJudgeOrderCallbackHandlerTest {
     private static final String DOCUMENT_BINARY_URL = "http://bla.binary.test";
     private static final String DOCUMENT_FILE_NAME = "sealed_claim.pdf";
     private static final LocalDate DEADLINE = LocalDate.parse("2018-11-16");
+    private static final String DEFENDANT_PREFERRED_COURT = "Defendant Preferred Court";
 
     private final CaseDetails caseDetails = CaseDetails.builder().id(3L).data(Collections.emptyMap()).build();
 
@@ -96,15 +99,22 @@ public class DrawJudgeOrderCallbackHandlerTest {
     @Mock
     private LegalOrderService legalOrderService;
     @Mock
-    private HearingCourtDetailsFinder hearingCourtDetailsFinder;
-    @Mock
     private DocAssemblyService docAssemblyService;
+    @Mock
+    private DirectionsQuestionnaireService directionsQuestionnaireService;
 
     @Mock
     private LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator;
 
     @Mock
     private GenerateOrderRule generateOrderRule;
+
+    @Mock
+    private PilotCourtService pilotCourtService;
+
+    @Mock
+    private DirectionOrderService directionOrderService;
+
     private CallbackParams callbackParams;
 
     private CallbackRequest callbackRequest;
@@ -113,12 +123,11 @@ public class DrawJudgeOrderCallbackHandlerTest {
 
     @Before
     public void setUp() {
-        boolean jddoEnabled = true;
         OrderCreator orderCreator = new OrderCreator(legalOrderGenerationDeadlinesCalculator, caseDetailsConverter,
-            docAssemblyService, generateOrderRule, jddoEnabled);
+            docAssemblyService, generateOrderRule, directionsQuestionnaireService, pilotCourtService);
 
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
-            caseDetailsConverter, legalOrderService, hearingCourtDetailsFinder);
+            caseDetailsConverter, legalOrderService, directionOrderService);
 
         drawJudgeOrderCallbackHandler = new DrawJudgeOrderCallbackHandler(orderCreator, orderPostProcessor);
 
@@ -130,7 +139,7 @@ public class DrawJudgeOrderCallbackHandlerTest {
                         .directionsQuestionnaire(DirectionsQuestionnaire.builder()
                             .hearingLocation(
                                 HearingLocation.builder()
-                                    .courtName("Defendant Preferred Court")
+                                    .courtName(DEFENDANT_PREFERRED_COURT)
                                     .build()
                             )
                             .build()).build()
@@ -139,7 +148,7 @@ public class DrawJudgeOrderCallbackHandlerTest {
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
         when(legalOrderGenerationDeadlinesCalculator.calculateOrderGenerationDeadlines()).thenReturn(DEADLINE);
 
-        when(hearingCourtDetailsFinder.getHearingCourt(any())).thenReturn(HearingCourt.builder().build());
+        when(directionsQuestionnaireService.getPreferredCourt(eq(claim))).thenReturn(DEFENDANT_PREFERRED_COURT);
 
         when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
@@ -147,7 +156,7 @@ public class DrawJudgeOrderCallbackHandlerTest {
 
         callbackRequest = CallbackRequest
             .builder()
-            .eventId(DRAW_ORDER.getValue())
+            .eventId(DRAW_JUDGES_ORDER.getValue())
             .caseDetails(caseDetails)
             .build();
     }
@@ -164,7 +173,7 @@ public class DrawJudgeOrderCallbackHandlerTest {
 
         callbackRequest = CallbackRequest
             .builder()
-            .eventId(DRAW_ORDER.getValue())
+            .eventId(DRAW_JUDGES_ORDER.getValue())
             .caseDetails(caseDetails)
             .build();
 
@@ -176,11 +185,15 @@ public class DrawJudgeOrderCallbackHandlerTest {
 
         CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList()).toBuilder()
             .draftOrderDoc(DOCUMENT)
+            .hearingCourt(PilotCourtService.OTHER_COURT_ID)
             .directionOrder(CCDDirectionOrder.builder()
                 .hearingCourtName(SampleData.MANCHESTER_CIVIL_JUSTICE_CENTRE_CIVIL_AND_FAMILY_COURTS)
                 .hearingCourtAddress(SampleData.getHearingCourtAddress())
                 .build())
+            .hearingCourt(SampleData.MANCHESTER_CIVIL_JUSTICE_CENTRE_CIVIL_AND_FAMILY_COURTS)
             .build();
+
+        when(directionOrderService.getHearingCourt(any())).thenReturn(HearingCourt.builder().build());
 
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
 
@@ -304,7 +317,7 @@ public class DrawJudgeOrderCallbackHandlerTest {
             entry("eyewitnessUploadDeadline", DEADLINE),
             entry("eyewitnessUploadForParty", "BOTH"),
             entry("paperDetermination", "NO"),
-            entry("preferredDQCourt", "Defendant Preferred Court"),
+            entry("preferredDQCourt", DEFENDANT_PREFERRED_COURT),
             entry("newRequestedCourt", null),
             entry("preferredCourtObjectingParty", null),
             entry("preferredCourtObjectingReason", null),
@@ -354,7 +367,7 @@ public class DrawJudgeOrderCallbackHandlerTest {
             entry("eyewitnessUploadDeadline", DEADLINE),
             entry("eyewitnessUploadForParty", "BOTH"),
             entry("paperDetermination", "NO"),
-            entry("preferredDQCourt", "Defendant Preferred Court"),
+            entry("preferredDQCourt", DEFENDANT_PREFERRED_COURT),
             entry("newRequestedCourt", null),
             entry("preferredCourtObjectingParty", null),
             entry("preferredCourtObjectingReason", null),
@@ -398,7 +411,7 @@ public class DrawJudgeOrderCallbackHandlerTest {
             entry("eyewitnessUploadDeadline", DEADLINE),
             entry("eyewitnessUploadForParty", "BOTH"),
             entry("paperDetermination", "NO"),
-            entry("preferredDQCourt", "Defendant Preferred Court"),
+            entry("preferredDQCourt", DEFENDANT_PREFERRED_COURT),
             entry("newRequestedCourt", null),
             entry("preferredCourtObjectingParty", null),
             entry("preferredCourtObjectingReason", null),
@@ -434,7 +447,7 @@ public class DrawJudgeOrderCallbackHandlerTest {
             entry("eyewitnessUploadDeadline", DEADLINE),
             entry("eyewitnessUploadForParty", "BOTH"),
             entry("paperDetermination", "NO"),
-            entry("preferredDQCourt", "Defendant Preferred Court"),
+            entry("preferredDQCourt", DEFENDANT_PREFERRED_COURT),
             entry("newRequestedCourt", "Claimant Court"),
             entry("preferredCourtObjectingParty", "Res_CLAIMANT"),
             entry("preferredCourtObjectingReason", "As a claimant I like this court more"),
@@ -472,7 +485,7 @@ public class DrawJudgeOrderCallbackHandlerTest {
             entry("eyewitnessUploadDeadline", DEADLINE),
             entry("eyewitnessUploadForParty", "BOTH"),
             entry("paperDetermination", "NO"),
-            entry("preferredDQCourt", "Defendant Preferred Court"),
+            entry("preferredDQCourt", DEFENDANT_PREFERRED_COURT),
             entry("newRequestedCourt", "Defendant Court"),
             entry("preferredCourtObjectingParty", "Res_DEFENDANT"),
             entry("preferredCourtObjectingReason", "As a defendant I like this court more"),
