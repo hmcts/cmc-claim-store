@@ -8,6 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.CCJStaffNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.InterlocutoryJudgmentStaffNotificationService;
+import uk.gov.hmcts.cmc.claimstore.services.staff.SaveClaimantResponseDocumentService;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -29,22 +30,43 @@ public class CCJStaffNotificationHandlerTest {
     @Mock
     InterlocutoryJudgmentStaffNotificationService interlocutoryJudgmentStaffNotificationService;
 
+    @Mock
+    SaveClaimantResponseDocumentService saveClaimantResponseDocumentService;
+
     @Before
     public void setup() {
         handler = new CCJStaffNotificationHandler(
             ccjStaffNotificationService,
-            interlocutoryJudgmentStaffNotificationService
+            interlocutoryJudgmentStaffNotificationService,
+            saveClaimantResponseDocumentService,
+            true
         );
     }
 
     @Test
-    public void notifyStaffDefaultCCJRequestSubmitted() {
+    public void notifyStaffDefaultCCJRequestSubmittedWhenStaffEmailsEnabled() {
         CountyCourtJudgmentEvent event = new CountyCourtJudgmentEvent(
             SampleClaimIssuedEvent.CLAIM, "Bearer token here");
 
         handler.onDefaultJudgmentRequestSubmitted(event);
 
         verify(ccjStaffNotificationService, once()).notifyStaffCCJRequestSubmitted(eq(SampleClaimIssuedEvent.CLAIM));
+    }
+
+    @Test
+    public void shouldNotNotifyStaffAndUploadClaimantResponseToCcdWhenStaffEmailNotEnabled() {
+        handler = new CCJStaffNotificationHandler(
+            ccjStaffNotificationService,
+            interlocutoryJudgmentStaffNotificationService,
+            saveClaimantResponseDocumentService,
+            false
+        );
+        CountyCourtJudgmentEvent event = new CountyCourtJudgmentEvent(
+            SampleClaimIssuedEvent.CLAIM, "Bearer token here");
+
+        handler.onDefaultJudgmentRequestSubmitted(event);
+
+        verify(saveClaimantResponseDocumentService, once()).getAndSaveDocumentToCcd(eq(SampleClaimIssuedEvent.CLAIM));
     }
 
     @Test
