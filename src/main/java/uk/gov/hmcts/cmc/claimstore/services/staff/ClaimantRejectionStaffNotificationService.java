@@ -22,6 +22,8 @@ import java.util.Map;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_CLAIMANT_RESPONSE;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
 
 @Service
 public class ClaimantRejectionStaffNotificationService {
@@ -96,8 +98,10 @@ public class ClaimantRejectionStaffNotificationService {
 
     public static Map<String, Object> wrapInMap(Claim claim) {
         Map<String, Object> map = new HashMap<>();
-        Response defendantResponse = claim.getResponse().orElseThrow(IllegalStateException::new);
-        ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
+        Response defendantResponse = claim.getResponse()
+            .orElseThrow(() -> new IllegalStateException(MISSING_RESPONSE));
+        ClaimantResponse claimantResponse = claim.getClaimantResponse()
+            .orElseThrow(() -> new IllegalStateException(MISSING_CLAIMANT_RESPONSE));
 
         map.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
         map.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());

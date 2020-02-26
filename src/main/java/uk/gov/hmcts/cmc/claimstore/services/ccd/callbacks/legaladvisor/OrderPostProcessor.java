@@ -12,10 +12,10 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
+import uk.gov.hmcts.cmc.claimstore.services.DirectionOrderService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
-import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -42,7 +42,7 @@ public class OrderPostProcessor {
     private final OrderDrawnNotificationService orderDrawnNotificationService;
     private final CaseDetailsConverter caseDetailsConverter;
     private final LegalOrderService legalOrderService;
-    private final PilotCourtService pilotCourtService;
+    private final DirectionOrderService directionOrderService;
     private AppInsights appInsights;
 
     public OrderPostProcessor(
@@ -51,13 +51,13 @@ public class OrderPostProcessor {
         CaseDetailsConverter caseDetailsConverter,
         LegalOrderService legalOrderService,
         AppInsights appInsights,
-        PilotCourtService pilotCourtService
+        DirectionOrderService directionOrderService
     ) {
         this.clock = clock;
         this.orderDrawnNotificationService = orderDrawnNotificationService;
         this.caseDetailsConverter = caseDetailsConverter;
         this.legalOrderService = legalOrderService;
-        this.pilotCourtService = pilotCourtService;
+        this.directionOrderService = directionOrderService;
         this.appInsights = appInsights;
     }
 
@@ -68,9 +68,7 @@ public class OrderPostProcessor {
         CCDDocument draftOrderDoc = Optional.ofNullable(ccdCase.getDraftOrderDoc())
             .orElseThrow(() -> new CallbackException("Draft order not present"));
 
-        HearingCourt hearingCourt = Optional.ofNullable(ccdCase.getHearingCourt())
-            .map(pilotCourtService::getPilotHearingCourt)
-            .orElseGet(() -> HearingCourt.builder().build());
+        HearingCourt hearingCourt = directionOrderService.getHearingCourt(ccdCase);
 
         CCDCase updatedCase = ccdCase.toBuilder()
             .caseDocuments(updateCaseDocumentsWithOrder(ccdCase, draftOrderDoc))
@@ -87,13 +85,20 @@ public class OrderPostProcessor {
             .build();
     }
 
-    public CallbackResponse cleanUpDynamicListCallback(CallbackParams callbackParams) {
+    public CallbackResponse setHearingCourt(CallbackParams callbackParams) {
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
 
+        HearingCourt hearingCourt = directionOrderService.getHearingCourt(ccdCase);
+
+        CCDCase updatedCase = ccdCase.toBuilder()
+            .hearingCourtName(hearingCourt.getName())
+            .hearingCourtAddress(hearingCourt.getAddress())
+            .build();
+
         return AboutToStartOrSubmitCallbackResponse
             .builder()
-            .data(caseDetailsConverter.convertToMap(cleanUpDynamicList(ccdCase)))
+            .data(caseDetailsConverter.convertToMap(cleanUpDynamicList(updatedCase)))
             .build();
     }
 
