@@ -171,7 +171,7 @@ public class ResumePaymentCallbackHandlerTest {
     }
 
     @Test
-    public void shouldCreatePaymentIfPaymentIsPending() {
+    public void shouldCancelPaymentIfPaymentIsPending() {
         Payment originalPayment = Payment.builder()
             .reference("reference")
             .status(PENDING)
@@ -221,6 +221,8 @@ public class ResumePaymentCallbackHandlerTest {
 
         Payment payment = toBeSaved.getClaimData().getPayment().orElse(null);
         assertThat(payment).isEqualTo(newPayment);
+
+        verify(paymentsService).cancelPayment(BEARER_TOKEN, originalPayment.getReference());
     }
 
     @Test

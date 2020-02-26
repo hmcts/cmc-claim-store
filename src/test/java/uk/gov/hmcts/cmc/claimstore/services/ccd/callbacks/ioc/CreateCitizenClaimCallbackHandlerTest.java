@@ -31,11 +31,15 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Optional;
 
+import static java.lang.String.format;
 import static java.math.BigDecimal.TEN;
 import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
@@ -200,6 +204,39 @@ public class CreateCitizenClaimCallbackHandlerTest {
 
         Claim toBeSaved = claimArgumentCaptor.getValue();
         assertThat(toBeSaved.getClaimData()).isEqualTo(claim.getClaimData());
+    }
+
+    @Test
+    public void shouldThrowExceptionIfMissingPayment() {
+        when(paymentsService.retrievePayment(eq(BEARER_TOKEN), any(ClaimData.class)))
+            .thenReturn(Optional.empty());
+
+        Claim claim = SampleClaim.getDefault().toBuilder()
+            .claimData(withFullClaimData().getClaimData().toBuilder().payment(null).build())
+            .build();
+
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+            .thenReturn(claim);
+
+        callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_SUBMIT)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
+
+        when(userService.getUser(BEARER_TOKEN))
+            .thenReturn(new User(BEARER_TOKEN, SampleUserDetails.builder()
+                .withRoles("letter-" + claim.getLetterHolderId())
+                .build()));
+
+        assertThatThrownBy(() -> createCitizenClaimCallbackHandler.handle(callbackParams))
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessage(format("Claim with external id %s has no payment record", claim.getExternalId()));
+
+        verify(eventProducer, never()).createClaimCreatedEvent(
+            any(Claim.class),
+            anyString(),
+            anyString());
     }
 
     @Test
