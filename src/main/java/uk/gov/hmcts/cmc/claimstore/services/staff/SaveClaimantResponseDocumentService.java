@@ -27,10 +27,10 @@ public class SaveClaimantResponseDocumentService {
         this.userService = userService;
     }
 
-    public void getAndSaveDocumentToCcd(Claim claim) {
+    public Claim getAndSaveDocumentToCcd(Claim claim) {
         PDF document = claimantResponseReceiptService.createPdf(claim);
         User user = userService.authenticateAnonymousCaseWorker();
         String authorisation = user.getAuthorisation();
-        documentService.uploadToDocumentManagement(document, authorisation, claim);
+        return documentService.uploadToDocumentManagement(document, authorisation, claim);
     }
 }
