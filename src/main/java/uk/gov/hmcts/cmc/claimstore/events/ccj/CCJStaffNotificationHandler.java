@@ -18,7 +18,7 @@ public class CCJStaffNotificationHandler {
     public CCJStaffNotificationHandler(
         CCJStaffNotificationService ccjStaffNotificationService,
         InterlocutoryJudgmentStaffNotificationService interlocutoryJudgmentStaffNotificationService,
-        @Value("${feature_toggles.staff_emails_enabled}") boolean staffEmailEnabled
+        @Value("${feature_toggles.watermark_pdf}") boolean staffEmailEnabled
     ) {
         this.ccjStaffNotificationService = ccjStaffNotificationService;
         this.interlocutoryJudgmentStaffNotificationService = interlocutoryJudgmentStaffNotificationService;

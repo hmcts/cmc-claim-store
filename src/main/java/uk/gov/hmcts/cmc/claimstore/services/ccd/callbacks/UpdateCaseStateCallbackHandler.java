@@ -71,7 +71,7 @@ public class UpdateCaseStateCallbackHandler extends CallbackHandler {
             || claim.getCountyCourtJudgment().getCcjType().equals(CountyCourtJudgmentType.DETERMINATION))) {
             saveClaimantResponseDocumentService.getAndSaveDocumentToCcd(claim);
             CCDCase ccdCase = caseMapper.to(claim);
-            ccdCase.setState(ClaimState.JUDGEMENT_REQUESTED.getValue());
+            ccdCase.setState(ClaimState.PROCEEDS_IN_CASE_MAN.getValue());
             dataMap = caseDetailsConverter.convertToMap(ccdCase);
 
         } else {
