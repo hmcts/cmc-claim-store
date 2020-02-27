@@ -48,7 +48,6 @@ java:
     CMC_DB_CONNECTION_OPTIONS: '?sslmode=allow'
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-data-store-api
 
-
 ccd:
   enabled: true
   ingressHost: ${SERVICE_FQDN}
@@ -68,13 +67,13 @@ ccd:
     environment:
       CCD_DEF_CLAIM_STORE_BASE_URL: http://${SERVICE_NAME}-java
     definitionFilename: cmc-ccd.xlsx
-      userRoles:
-        - citizen
-        - caseworker-cmc
-        - caseworker-cmc-solicitor
-        - caseworker-cmc-systemupdate
-        - letter-holder
-        - caseworker-autotest1
-        - caseworker-cmc-anonymouscitizen
-        - caseworker-cmc-judge
-        - caseworker-cmc-legaladvisor
+    userRoles:
+    - citizen
+    - caseworker-cmc
+    - caseworker-cmc-solicitor
+    - caseworker-cmc-systemupdate
+    - letter-holder
+    - caseworker-autotest1
+    - caseworker-cmc-anonymouscitizen
+    - caseworker-cmc-judge
+    - caseworker-cmc-legaladvisor
