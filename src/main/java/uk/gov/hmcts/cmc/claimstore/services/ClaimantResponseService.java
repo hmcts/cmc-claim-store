@@ -131,7 +131,7 @@ public class ClaimantResponseService {
             }
         }
 
-        raiseAppInsightEvents(updatedClaim, response, claimantResponse, caseEvent);
+        raiseAppInsightEvents(updatedClaim, response, claimantResponse, caseEvent.orElseGet(() -> null));
     }
 
     private boolean isSettlementAgreement(Response response, ClaimantResponse claimantResponse) {
@@ -168,7 +168,7 @@ public class ClaimantResponseService {
     private void raiseAppInsightEvents(Claim claim,
                                         Response response,
                                         ClaimantResponse claimantResponse,
-                                        Optional<CaseEvent> caseEvent) {
+                                        CaseEvent caseEvent) {
 
         if (claimantResponse instanceof ResponseAcceptation) {
             appInsights.trackEvent(CLAIMANT_RESPONSE_ACCEPTED, REFERENCE_NUMBER, claim.getReferenceNumber());
@@ -177,32 +177,33 @@ public class ClaimantResponseService {
             if (isPartAdmissionOrIsStatePaidOrIsFullDefence(response)) {
                 raiseAppInsightEventForOnlineOrOfflineDQ(claim);
                 raiseAppInsightEventForMediation(claim, response, (ResponseRejection) claimantResponse);
-                raiseAppInsightsEventForPilot(claim, caseEvent);
+
+                if (caseEvent != null) {
+                    raiseAppInsightsEventForPilot(claim, caseEvent);
+                }
             }
         } else {
             throw new IllegalStateException("Unknown response type");
         }
     }
 
-    private void raiseAppInsightsEventForPilot(Claim claim, Optional<CaseEvent> caseEvent) {
-        if (caseEvent.isPresent()) {
-            switch (caseEvent.get()) {
-                case ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS:
-                    appInsights.trackEvent(AppInsightsEvent.LA_PILOT_ELIGIBLE, REFERENCE_NUMBER,
+    private void raiseAppInsightsEventForPilot(Claim claim, CaseEvent caseEvent) {
+        switch (caseEvent) {
+            case ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS:
+                appInsights.trackEvent(AppInsightsEvent.LA_PILOT_ELIGIBLE, REFERENCE_NUMBER,
+                    claim.getReferenceNumber());
+                break;
+            case ASSIGNING_FOR_JUDGE_DIRECTIONS:
+                appInsights.trackEvent(AppInsightsEvent.JDDO_PILOT_ELIGIBLE, REFERENCE_NUMBER,
+                    claim.getReferenceNumber());
+                break;
+            case WAITING_TRANSFER:
+                appInsights.trackEvent(AppInsightsEvent.READY_FOR_TRANSFER, REFERENCE_NUMBER,
                         claim.getReferenceNumber());
-                    break;
-                case ASSIGNING_FOR_JUDGE_DIRECTIONS:
-                    appInsights.trackEvent(AppInsightsEvent.JDDO_PILOT_ELIGIBLE, REFERENCE_NUMBER,
-                        claim.getReferenceNumber());
-                    break;
-                case WAITING_TRANSFER:
-                    appInsights.trackEvent(AppInsightsEvent.READY_FOR_TRANSFER, REFERENCE_NUMBER,
-                            claim.getReferenceNumber());
-                    break;
-                default:
-                    //Empty
-                    break;
-            }
+                break;
+            default:
+                //Empty
+                break;
         }
     }
 

@@ -36,7 +36,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_JUDGE_DIRECTIONS;
@@ -131,7 +130,7 @@ public class ClaimantResponseServiceTest {
         verify(appInsights, once()).trackEvent(eq(BOTH_PARTIES_OFFLINE_DQ),
                 eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
 
-        verify(formaliseResponseAcceptanceService, times(0)).formalise(any(), any(), anyString());
+        verify(formaliseResponseAcceptanceService, never()).formalise(any(), any(), anyString());
 
         verify(caseRepository, never()).saveCaseEvent(AUTHORISATION, claim, ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS);
         verify(caseRepository, never()).saveCaseEvent(AUTHORISATION, claim, REFERRED_TO_MEDIATION);
