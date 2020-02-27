@@ -64,7 +64,7 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
         return ImmutableMap.of(
             CallbackType.ABOUT_TO_START, orderCreator::prepopulateOrder,
             CallbackType.MID, orderCreator::generateOrder,
-            CallbackType.ABOUT_TO_SUBMIT, orderPostProcessor::setHearingCourt,
+            CallbackType.ABOUT_TO_SUBMIT, orderPostProcessor::persistHearingCourtAndMigrateExpertReport,
             CallbackType.SUBMITTED, this::raiseAppInsight
         );
     }
