@@ -50,18 +50,19 @@ java:
 
 ccd:
   enabled: true
+  ccd:
+    s2s:
+      enabled: false
+    postgresql:
+      enabled: false
+    adminWeb:
+      enabled: false
+    userProfileImporter:
+      enabled: false
+
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP}
-
-  s2s:
-    enabled: false
-  postgresql:
-    enabled: false
-  adminWeb:
-    enabled: false
-  userProfileImporter:
-    enabled: false
 
   ccd-definition-store-api:
     java:
