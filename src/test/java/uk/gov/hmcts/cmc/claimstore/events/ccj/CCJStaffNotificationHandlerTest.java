@@ -8,43 +8,33 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.CCJStaffNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.InterlocutoryJudgmentStaffNotificationService;
-import uk.gov.hmcts.cmc.claimstore.services.staff.SaveClaimantResponseDocumentService;
 
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
-import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.getDefault;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.getWithClaimantResponse;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CCJStaffNotificationHandlerTest {
 
-    private static final CountyCourtJudgmentEvent EVENT = new CountyCourtJudgmentEvent(
-        getDefault(),
-        "Bearer token here");
     private CCJStaffNotificationHandler handler;
-
     @Mock
-    CCJStaffNotificationService ccjStaffNotificationService;
-
+    private CCJStaffNotificationService ccjStaffNotificationService;
     @Mock
-    InterlocutoryJudgmentStaffNotificationService interlocutoryJudgmentStaffNotificationService;
-
-    @Mock
-    SaveClaimantResponseDocumentService saveClaimantResponseDocumentService;
+    private InterlocutoryJudgmentStaffNotificationService interlocutoryJudgmentStaffNotificationService;
 
     @Before
     public void setup() {
         handler = new CCJStaffNotificationHandler(
             ccjStaffNotificationService,
             interlocutoryJudgmentStaffNotificationService,
-            saveClaimantResponseDocumentService,
             true
         );
     }
 
     @Test
-    public void notifyStaffDefaultCCJRequestSubmittedWhenStaffEmailsEnabled() {
+    public void notifyStaffWhenDefaultCCJRequestSubmittedAndStaffEmailEnabled() {
         CountyCourtJudgmentEvent event = new CountyCourtJudgmentEvent(
             SampleClaimIssuedEvent.CLAIM, "Bearer token here");
 
@@ -54,11 +44,10 @@ public class CCJStaffNotificationHandlerTest {
     }
 
     @Test
-    public void shouldNotNotifyStaffAndUploadClaimantResponseToCcdWhenStaffEmailNotEnabled() {
+    public void shouldNotNotifyStaffWhenDefaultCCJRequestSubmittedAndStaffEmailDisabled() {
         handler = new CCJStaffNotificationHandler(
             ccjStaffNotificationService,
             interlocutoryJudgmentStaffNotificationService,
-            saveClaimantResponseDocumentService,
             false
         );
         CountyCourtJudgmentEvent event = new CountyCourtJudgmentEvent(
@@ -66,17 +55,7 @@ public class CCJStaffNotificationHandlerTest {
 
         handler.onDefaultJudgmentRequestSubmitted(event);
 
-        verify(saveClaimantResponseDocumentService, once()).getAndSaveDocumentToCcd(eq(SampleClaimIssuedEvent.CLAIM));
-    }
-
-    @Test
-    public void notifyStaffCCJRequestByAdmissionSubmitted() {
-        CountyCourtJudgmentEvent event = new CountyCourtJudgmentEvent(
-            SampleClaimIssuedEvent.CLAIM, "Bearer token here");
-
-        handler.onDefaultJudgmentRequestSubmitted(event);
-
-        verify(ccjStaffNotificationService, once()).notifyStaffCCJRequestSubmitted(eq(SampleClaimIssuedEvent.CLAIM));
+        verify(ccjStaffNotificationService, never()).notifyStaffCCJRequestSubmitted(eq(SampleClaimIssuedEvent.CLAIM));
     }
 
     @Test
