@@ -195,6 +195,7 @@ feature_toggles:
   watermark_pdf: false
   reminderEmails: false
   save_claim_state_enabled: false
+  staff_emails_enabled: true
 
 feign:
   httpclient:
