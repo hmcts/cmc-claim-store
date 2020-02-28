@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.events.settlement.RejectSettlementAgreementEv
 import uk.gov.hmcts.cmc.claimstore.services.staff.RejectSettlementAgreementStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -23,16 +24,29 @@ public class RejectSettlementAgreementStaffNotificationHandlerTest {
 
     @Before
     public void setUp() {
-        handler = new RejectSettlementAgreementStaffNotificationHandler(
-            rejectSettlementAgreementStaffNotificationService
-        );
     }
 
     @Test
-    public void notifyStaffClaimantResponseStatesPaidSubmittedFor() {
+    public void notifyStaffClaimantResponseStatesPaidSubmittedForWhenStaffEmailEnabled() {
+        handler = new RejectSettlementAgreementStaffNotificationHandler(
+            rejectSettlementAgreementStaffNotificationService,
+            true
+        );
         handler.onSettlementAgreementRejected(event);
 
         verify(rejectSettlementAgreementStaffNotificationService)
+            .notifySettlementRejected(event.getClaim());
+    }
+
+    @Test
+    public void shouldNotNotifyStaffClaimantResponseStatesPaidSubmittedForWhenStaffEmailDisabled() {
+        handler = new RejectSettlementAgreementStaffNotificationHandler(
+            rejectSettlementAgreementStaffNotificationService,
+            false
+        );
+        handler.onSettlementAgreementRejected(event);
+
+        verify(rejectSettlementAgreementStaffNotificationService, never())
             .notifySettlementRejected(event.getClaim());
     }
 }
