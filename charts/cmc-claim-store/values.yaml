@@ -63,3 +63,4 @@ java:
     FRONTEND_BASE_URL: https://cmc-citizen-frontend-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     RESPOND_TO_CLAIM_URL: https://cmc-citizen-frontend-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/first-contact/start
     CORE_CASE_DATA_API_URL: http://ccd-data-store-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    DOC_ASSEMBLY_URL: http://dg-docassembly-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
