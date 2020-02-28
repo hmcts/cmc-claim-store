@@ -22,10 +22,6 @@ public class RejectSettlementAgreementStaffNotificationHandlerTest {
     @Mock
     private RejectSettlementAgreementStaffNotificationService rejectSettlementAgreementStaffNotificationService;
 
-    @Before
-    public void setUp() {
-    }
-
     @Test
     public void notifyStaffClaimantResponseStatesPaidSubmittedForWhenStaffEmailEnabled() {
         handler = new RejectSettlementAgreementStaffNotificationHandler(
