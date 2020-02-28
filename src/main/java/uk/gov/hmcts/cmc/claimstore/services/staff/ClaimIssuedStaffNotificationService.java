@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
@@ -21,6 +22,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEI
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service
+@ConditionalOnProperty("feature_toggles.staff_emails_enabled")
 public class ClaimIssuedStaffNotificationService {
 
     private final EmailService emailService;
