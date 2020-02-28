@@ -17,7 +17,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class AgreementCountersignedStaffNotificationHandlerTest {
+class AgreementCountersignedStaffNotificationHandlerTest {
 
     @Mock
     private SettlementReachedStaffNotificationService settlementReachedStaffNotificationService;
@@ -25,7 +25,7 @@ public class AgreementCountersignedStaffNotificationHandlerTest {
     private AgreementCountersignedEvent event;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         event = new AgreementCountersignedEvent(SampleClaim.getWithSettlement(SampleSettlement.validDefaults()),
             MadeBy.CLAIMANT,
             "authorisation");
