@@ -60,6 +60,13 @@ ccd:
     userProfileImporter:
       enabled: false
 
+  global:
+    idamApiUrl: "https://idam-api.aat.platform.hmcts.net"
+    s2sUrl: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+    postgresUsername: hmcts
+    postgresPassword: hmcts
+    devMode: true
+
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP}
@@ -67,18 +74,10 @@ ccd:
   ccd-definition-store-api:
     java:
       image: hmctspublic.azurecr.io/ccd/definition-store-api:latest
-    keyVaults:
-      ccd:
-        secrets:
-          - AppInsightsInstrumentationKey
 
   ccd-data-store-api:
     java:
       image: hmctspublic.azurecr.io/ccd/data-store-api:latest
-    keyVaults:
-      ccd:
-        secrets:
-          - AppInsightsInstrumentationKey
 
   ccd-definition-importer:
     image: hmctspublic.azurecr.io/cmc/ccd-definition-importer:1.5.9
