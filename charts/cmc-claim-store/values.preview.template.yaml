@@ -1,6 +1,5 @@
 tags:
   idam-pr: true
-  postgresql-pod: false  # stop any subcharts starting their own postgres instance
 
 postgresql:
   enabled: true
@@ -17,7 +16,6 @@ postgresql:
       CREATE DATABASE "user-profile" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
   postgresqlUsername: hmcts
   postgresqlPassword: hmcts
-  nameOverride: postgres
   persistence:
     enabled: false
 
@@ -42,11 +40,11 @@ java:
         - milo-recipient
   environment:
     LOG_LEVEL: DEBUG
-    CMC_DB_HOST: ${SERVICE_NAME}-postgres
+    CMC_DB_HOST: ${SERVICE_NAME}-postgresql
     CMC_DB_USERNAME: hmcts
     CMC_DB_PASSWORD: hmcts
     CMC_DB_CONNECTION_OPTIONS: '?sslmode=allow'
-    CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-data-store-api
+    CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-ccd-data-store-api
 
 ccd:
   enabled: true
@@ -80,7 +78,7 @@ ccd:
       image: hmctspublic.azurecr.io/ccd/data-store-api:latest
 
   ccd-definition-importer:
-    image: hmctspublic.azurecr.io/cmc/ccd-definition-importer:1.5.9
+    image: hmctspublic.azurecr.io/cmc/ccd-definition-importer:1.5.10
     environment:
       CCD_DEF_CLAIM_STORE_BASE_URL: http://${SERVICE_NAME}-java
     definitionFilename: cmc-ccd.xlsx
