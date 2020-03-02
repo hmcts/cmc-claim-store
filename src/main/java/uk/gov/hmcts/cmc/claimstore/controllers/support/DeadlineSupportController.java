@@ -145,6 +145,12 @@ public class DeadlineSupportController {
                 claim.getReferenceNumber()));
         }
 
+        if (!claim.getClaimantRespondedAt().isPresent()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(format("Claim %s does not have a claimant "
+                    + "response; cannot define a directions questionnaire deadline.",
+                claim.getReferenceNumber()));
+        }
+
         // if the defendant disputed any/all of the claim and did not want mediation for a pre-5.0.0 claim
         // then we can define a directions questionnaire deadline
         LocalDate deadline = updateDeadline(claim, authorisation);
@@ -154,7 +160,9 @@ public class DeadlineSupportController {
 
     private LocalDate updateDeadline(Claim claim, String authorisation) {
         LocalDate deadline = directionsQuestionnaireDeadlineCalculator
-            .calculateDirectionsQuestionnaireDeadline(claim.getRespondedAt());
+            .calculateDirectionsQuestionnaireDeadline(claim.getClaimantRespondedAt()
+                .orElseThrow(() -> new IllegalStateException("Cannot update DQ deadline when claimant hasn't "
+                    + "responded")));
         caseRepository.updateDirectionsQuestionnaireDeadline(claim, deadline, authorisation);
         return deadline;
     }
