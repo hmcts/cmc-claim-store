@@ -4,6 +4,7 @@ locals {
   local_env = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "aat" : "saat" : var.env}"
   local_ase = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "core-compute-aat" : "core-compute-saat" : local.aseName}"
 
+  s2sUrl = "http://rpe-service-auth-provider-${local.local_env}.service.${local.local_ase}.internal"
   sendLetterUrl = "http://rpe-send-letter-service-${local.local_env}.service.${local.local_ase}.internal"
   pdfserviceUrl = "http://cmc-pdf-service-${local.local_env}.service.${local.local_ase}.internal"
 
@@ -153,7 +154,7 @@ module "claim-store-api" {
 
     // idam
     IDAM_API_URL = "${var.idam_api_url}"
-    IDAM_S2S_AUTH_URL = "${var.s2s_url}"
+    IDAM_S2S_AUTH_URL = "${local.s2sUrl}"
     IDAM_S2S_AUTH_TOTP_SECRET = "${data.azurerm_key_vault_secret.s2s_secret.value}"
 
     IDAM_CASEWORKER_ANONYMOUS_USERNAME = "${data.azurerm_key_vault_secret.anonymous_caseworker_username.value}"

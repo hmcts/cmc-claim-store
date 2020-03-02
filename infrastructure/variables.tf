@@ -50,10 +50,6 @@ variable "payments_url" {
   default = "false"
 }
 
-variable "s2s_url" {
-  default = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-}
-
 variable "ilbIp" {}
 
 variable "tenant_id" {

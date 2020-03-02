@@ -10,4 +10,3 @@ doc_assembly_api_url = "http://dg-docassembly-aat.service.core-compute-aat.inter
 claim_stayed_schedule = "0 0 16 ? * MON-FRI *"
 fees_url = "http://fees-register-api-aat.service.core-compute-aat.internal"
 payments_url = "http://payment-api-aat.service.core-compute-aat.internal"
-s2s_url = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
