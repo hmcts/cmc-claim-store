@@ -145,24 +145,16 @@ public class DeadlineSupportController {
                 claim.getReferenceNumber()));
         }
 
-        if (!claim.getClaimantRespondedAt().isPresent()) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(format("Claim %s does not have a claimant "
-                    + "response; cannot define a directions questionnaire deadline.",
-                claim.getReferenceNumber()));
-        }
-
         // if the defendant disputed any/all of the claim and did not want mediation for a pre-5.0.0 claim
         // then we can define a directions questionnaire deadline
-        LocalDate deadline = updateDeadline(claim, authorisation);
+        LocalDate deadline = updateDeadline(claim, authorisation, claim.getRespondedAt());
         return ResponseEntity.status(HttpStatus.CREATED).body(format("Claim %s has been been assigned a "
             + "directions questionnaire deadline of %s.", claim.getReferenceNumber(), deadline));
     }
 
-    private LocalDate updateDeadline(Claim claim, String authorisation) {
+    private LocalDate updateDeadline(Claim claim, String authorisation, LocalDateTime respondedDate) {
         LocalDate deadline = directionsQuestionnaireDeadlineCalculator
-            .calculateDirectionsQuestionnaireDeadline(claim.getClaimantRespondedAt()
-                .orElseThrow(() -> new IllegalStateException("Cannot update DQ deadline when claimant hasn't "
-                    + "responded")));
+            .calculateDirectionsQuestionnaireDeadline(respondedDate);
         caseRepository.updateDirectionsQuestionnaireDeadline(claim, deadline, authorisation);
         return deadline;
     }
@@ -187,7 +179,7 @@ public class DeadlineSupportController {
                 + "cannot define a directions questionnaire deadline.", claim.getReferenceNumber()));
         }
 
-        LocalDate deadline = updateDeadline(claim, authorisation);
+        LocalDate deadline = updateDeadline(claim, authorisation, optionalClaimantResponseTime.get());
         return ResponseEntity.status(HttpStatus.CREATED).body(format("Claim %s has been been assigned a "
             + "directions questionnaire deadline of %s.", claim.getReferenceNumber(), deadline));
     }
