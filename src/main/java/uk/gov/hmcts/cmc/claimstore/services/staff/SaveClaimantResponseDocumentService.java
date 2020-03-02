@@ -33,16 +33,14 @@ public class SaveClaimantResponseDocumentService {
     }
 
     @EventListener
-    public Claim getAndSaveDocumentToCcd(CountyCourtJudgmentEvent event) {
+    public void getAndSaveDocumentToCcd(CountyCourtJudgmentEvent event) {
         Claim claim = event.getClaim();
         if (claim.getCountyCourtJudgment().getCcjType().equals(ADMISSIONS)
             || claim.getCountyCourtJudgment().getCcjType().equals(DETERMINATION)) {
             PDF document = claimantResponseReceiptService.createPdf(claim);
             User user = userService.authenticateAnonymousCaseWorker();
             String authorisation = user.getAuthorisation();
-            return documentService.uploadToDocumentManagement(document, authorisation, claim);
-        } else {
-            return null;
+            documentService.uploadToDocumentManagement(document, authorisation, claim);
         }
     }
 }
