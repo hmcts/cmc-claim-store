@@ -12,6 +12,7 @@ public class CallbackParams {
     private CallbackType type;
     private CallbackRequest request;
     private Map<Params, Object> params;
+    private CallbackVersion version;
 
     public enum Params {
         BEARER_TOKEN

@@ -266,7 +266,8 @@ public class DefendantMapperTest {
 
         //Then
         assertTrue(claim.getMoneyReceivedOn().isPresent());
-        assertEquals(ccdRespondent.getPaidInFullDate(), claim.getMoneyReceivedOn().orElseThrow(AssertionError::new));
+        assertEquals(ccdRespondent.getPaidInFullDate(), claim.getMoneyReceivedOn()
+            .orElseThrow(() -> new AssertionError("Missing money received date")));
     }
 
     @Test
@@ -387,7 +388,7 @@ public class DefendantMapperTest {
 
         // Then
         assertEquals(mediationSettledTime, finalClaim.getMediationSettlementReachedAt()
-            .orElseThrow(IllegalStateException::new));
+            .orElseThrow(() -> new AssertionError("Expected mediation settled time but got null")));
 
     }
 }
