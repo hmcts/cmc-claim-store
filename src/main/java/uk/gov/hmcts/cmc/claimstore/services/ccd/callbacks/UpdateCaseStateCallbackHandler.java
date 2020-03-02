@@ -9,8 +9,6 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimState;
-import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
@@ -24,6 +22,8 @@ import java.util.Map;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.JUDGE;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.LEGAL_ADVISOR;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.JUDGEMENT_REQUESTED;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.PROCEEDS_IN_CASE_MAN;
 
 @Service
 public class UpdateCaseStateCallbackHandler extends CallbackHandler {
@@ -62,13 +62,11 @@ public class UpdateCaseStateCallbackHandler extends CallbackHandler {
         Map<String, Object> dataMap = new HashMap<>();
         CallbackRequest callbackRequest = callbackParams.getRequest();
         Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
+        CCDCase ccdCase = caseMapper.to(claim);
         if (claim.getCountyCourtJudgment() != null
-            && (claim.getCountyCourtJudgment().getCcjType().equals(CountyCourtJudgmentType.ADMISSIONS)
-            || claim.getCountyCourtJudgment().getCcjType().equals(CountyCourtJudgmentType.DETERMINATION))) {
-            CCDCase ccdCase = caseMapper.to(claim);
-            ccdCase.setState(ClaimState.PROCEEDS_IN_CASE_MAN.getValue());
+            && (ccdCase.getState().equals(JUDGEMENT_REQUESTED.getValue()))) {
+            ccdCase.setState(PROCEEDS_IN_CASE_MAN.getValue());
             dataMap = caseDetailsConverter.convertToMap(ccdCase);
-
         } else {
             dataMap.put(claim.getReferenceNumber(), CANNOT_UPDATE);
         }

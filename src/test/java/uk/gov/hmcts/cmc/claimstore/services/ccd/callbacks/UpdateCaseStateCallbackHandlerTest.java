@@ -34,6 +34,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.PROCEEDS_IN_CASEMAN;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.JUDGEMENT_REQUESTED;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
 
 @ExtendWith(MockitoExtension.class)
 public class UpdateCaseStateCallbackHandlerTest {
@@ -97,12 +99,12 @@ public class UpdateCaseStateCallbackHandlerTest {
     @DisplayName("Proceed in Caseman")
     class ProceedInCaseMan {
         @Test
-        void shouldUpdateTheCaseStateToProceedsInCaseManForCCJByAdmission() {
+        void shouldUpdateTheCaseStateToProceedsInCaseManForCCJByAdmissionAndInJudgementRequestedState() {
             CountyCourtJudgment ccj = CountyCourtJudgment.builder()
                 .ccjType(CountyCourtJudgmentType.ADMISSIONS).build();
             Claim claim = SampleClaim.builder()
                 .withCountyCourtJudgment(ccj).build();
-            ccdCase = CCDCase.builder().state(PROCEEDS_IN_CASEMAN.getValue()).build();
+            ccdCase = CCDCase.builder().state(JUDGEMENT_REQUESTED.getValue()).build();
             dataMap.put(CCD_CASE_KEY, ccdCase);
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
             when(caseMapper.to(any(Claim.class))).thenReturn(ccdCase);
@@ -116,12 +118,12 @@ public class UpdateCaseStateCallbackHandlerTest {
         }
 
         @Test
-        void shouldUpdateTheCaseStateToProceedsInCaseManForCCJByDetermination() {
+        void shouldUpdateTheCaseStateToProceedsInCaseManForCCJByDeterminationAndInJudgementRequestedState() {
             CountyCourtJudgment ccj = CountyCourtJudgment.builder()
                 .ccjType(CountyCourtJudgmentType.DETERMINATION).build();
             Claim claim = SampleClaim.builder()
                 .withCountyCourtJudgment(ccj).build();
-            ccdCase = CCDCase.builder().state(PROCEEDS_IN_CASEMAN.getValue()).build();
+            ccdCase = CCDCase.builder().state(JUDGEMENT_REQUESTED.getValue()).build();
             dataMap.put(CCD_CASE_KEY, ccdCase);
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
             when(caseMapper.to(any(Claim.class))).thenReturn(ccdCase);
@@ -133,7 +135,11 @@ public class UpdateCaseStateCallbackHandlerTest {
             CCDCase ccdCase = (CCDCase) response.getData().get(CCD_CASE_KEY);
             assertThat(ccdCase.getState().equals(PROCEEDS_IN_CASEMAN));
         }
+    }
 
+    @Nested
+    @DisplayName("Should Not Proceed in Caseman")
+    class ShouldNotProceedInCaseMan {
         @Test
         void shouldNotUpdateTheCaseStateToProceedsInCaseManForCCJByDefault() {
             CountyCourtJudgment ccj = CountyCourtJudgment.builder()
@@ -141,7 +147,9 @@ public class UpdateCaseStateCallbackHandlerTest {
             Claim claim = SampleClaim.builder()
                 .withCountyCourtJudgment(ccj).build();
             dataMap.put(claim.getReferenceNumber(), CANNOT_UPDATE);
+            ccdCase = CCDCase.builder().state(OPEN.getValue()).build();
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+            when(caseMapper.to(any(Claim.class))).thenReturn(ccdCase);
             AboutToStartOrSubmitCallbackResponse response
                 = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
             String message = (String) response.getData().get(claim.getReferenceNumber());
@@ -154,7 +162,25 @@ public class UpdateCaseStateCallbackHandlerTest {
             Claim claim = SampleClaim.builder()
                 .withCountyCourtJudgment(null).build();
             dataMap.put(claim.getReferenceNumber(), CANNOT_UPDATE);
+            ccdCase = CCDCase.builder().state(OPEN.getValue()).build();
+            when(caseMapper.to(any(Claim.class))).thenReturn(ccdCase);
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+            AboutToStartOrSubmitCallbackResponse response
+                = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
+            String message = (String) response.getData().get(claim.getReferenceNumber());
+            verify(caseDetailsConverter, never()).convertToMap(any(CCDCase.class));
+            assertThat(message.equals(CANNOT_UPDATE));
+        }
+
+        @Test
+        void shouldNotUpdateTheCaseStateToProceedsInCaseManForNotJudgementRequestedState() {
+            CountyCourtJudgment ccj = CountyCourtJudgment.builder()
+                .ccjType(CountyCourtJudgmentType.ADMISSIONS).build();
+            Claim claim = SampleClaim.builder()
+                .withCountyCourtJudgment(ccj).build();
+            ccdCase = CCDCase.builder().state(OPEN.getValue()).build();
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+            when(caseMapper.to(any(Claim.class))).thenReturn(ccdCase);
             AboutToStartOrSubmitCallbackResponse response
                 = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
             String message = (String) response.getData().get(claim.getReferenceNumber());
