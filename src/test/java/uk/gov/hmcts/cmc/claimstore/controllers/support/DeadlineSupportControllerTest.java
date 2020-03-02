@@ -197,6 +197,27 @@ public class DeadlineSupportControllerTest {
     }
 
     @Test
+    public void testDefineDQDeadlineOnPre500WithNOClaimantResponse() {
+        final String reference = "000MC005";
+        when(claimService.getClaimByReferenceAnonymous(reference)).thenReturn(Optional.of(SampleClaim.builder()
+            .withReferenceNumber(reference)
+            .withCreatedAt(PRE_5_0_0_DATETIME)
+            .withResponse(SampleResponse.FullDefence.builder()
+                .withMediation(YesNoOption.NO)
+                .build())
+            .build()));
+
+        ResponseEntity<String> response = controller.defineDeadline("dq", reference);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(response.getBody())
+            .isEqualTo("Claim %s does not have a claimant response; cannot define a directions questionnaire deadline.",
+                reference);
+        verifyNoInteractions(directionsQuestionnaireDeadlineCalculator);
+        verifyNoInteractions(caseRepository);
+    }
+
+    @Test
     public void testDefineDQDeadlineOnValidPre500Claim() {
         final String reference = "000MC006";
         final LocalDate deadline = LocalDate.now();
@@ -206,7 +227,7 @@ public class DeadlineSupportControllerTest {
             .withResponse(SampleResponse.FullDefence.builder()
                 .withMediation(YesNoOption.NO)
                 .build())
-            .withRespondedAt(LocalDateTime.now())
+            .withClaimantRespondedAt(LocalDateTime.now())
             .build()));
         when(directionsQuestionnaireDeadlineCalculator
             .calculateDirectionsQuestionnaireDeadline(any(LocalDateTime.class))).thenReturn(deadline);
