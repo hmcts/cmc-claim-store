@@ -24,8 +24,11 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -62,6 +65,8 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.EXTERNAL_ID;
 public class ClaimantResponseServiceTest {
 
     private static final String AUTHORISATION = "Bearer: aaa";
+    private static final ZonedDateTime TODAY_ZONED = LocalDate.of(2019, 1, 2).atStartOfDay(ZoneOffset.UTC);
+    private static final LocalDateTime TODAY = TODAY_ZONED.toLocalDateTime();
 
     private ClaimantResponseService claimantResponseService;
 
@@ -86,6 +91,9 @@ public class ClaimantResponseServiceTest {
     @Mock
     private DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
 
+    @Mock
+    private Clock clock;
+
     @Before
     public void setUp() {
         claimantResponseService = new ClaimantResponseService(
@@ -96,8 +104,11 @@ public class ClaimantResponseServiceTest {
             eventProducer,
             formaliseResponseAcceptanceService,
             directionsQuestionnaireService,
-            directionsQuestionnaireDeadlineCalculator
+            directionsQuestionnaireDeadlineCalculator,
+            clock
         );
+        when(clock.instant()).thenReturn(TODAY_ZONED.toInstant());
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
     }
 
     @Test
@@ -300,15 +311,13 @@ public class ClaimantResponseServiceTest {
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
         when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseRejection.class), eq(AUTHORISATION)))
             .thenReturn(claim);
-        when(directionsQuestionnaireDeadlineCalculator
-            .calculateDirectionsQuestionnaireDeadline(any(LocalDateTime.class)))
+        when(directionsQuestionnaireDeadlineCalculator.calculateDirectionsQuestionnaireDeadline(eq(TODAY)))
             .thenReturn(dqDeadline);
 
         claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
 
         verify(caseRepository).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
-        verify(directionsQuestionnaireDeadlineCalculator)
-            .calculateDirectionsQuestionnaireDeadline(any(LocalDateTime.class));
+        verify(directionsQuestionnaireDeadlineCalculator).calculateDirectionsQuestionnaireDeadline(eq(TODAY));
         verify(eventProducer).createClaimantResponseEvent(any(Claim.class), anyString());
         verify(appInsights).trackEvent(eq(NON_LA_CASES), eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
@@ -361,15 +370,13 @@ public class ClaimantResponseServiceTest {
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
         when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseRejection.class), eq(AUTHORISATION)))
             .thenReturn(claim);
-        when(directionsQuestionnaireDeadlineCalculator
-            .calculateDirectionsQuestionnaireDeadline(any(LocalDateTime.class)))
+        when(directionsQuestionnaireDeadlineCalculator.calculateDirectionsQuestionnaireDeadline(eq(TODAY)))
             .thenReturn(dqDeadline);
 
         claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
 
         verify(caseRepository).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
-        verify(directionsQuestionnaireDeadlineCalculator)
-            .calculateDirectionsQuestionnaireDeadline(any(LocalDateTime.class));
+        verify(directionsQuestionnaireDeadlineCalculator).calculateDirectionsQuestionnaireDeadline(eq(TODAY));
         verify(eventProducer).createClaimantResponseEvent(any(Claim.class), eq(AUTHORISATION));
         verify(appInsights).trackEvent(eq(NON_LA_CASES),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
