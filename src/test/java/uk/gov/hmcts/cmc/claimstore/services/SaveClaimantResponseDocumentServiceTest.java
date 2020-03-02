@@ -39,8 +39,6 @@ class SaveClaimantResponseDocumentServiceTest {
     private ClaimantResponseReceiptService claimantResponseReceiptService;
     @Mock
     private DocumentsService documentService;
-    @Mock
-    private UserService userService;
     private SaveClaimantResponseDocumentService service;
     private Claim claim;
     private PDF pdf;
@@ -51,8 +49,7 @@ class SaveClaimantResponseDocumentServiceTest {
 
         service = new SaveClaimantResponseDocumentService(
             claimantResponseReceiptService,
-            documentService,
-            userService);
+            documentService);
     }
 
     @Nested
@@ -75,14 +72,10 @@ class SaveClaimantResponseDocumentServiceTest {
             when(claimantResponseReceiptService.createPdf(claim)).thenReturn(pdf);
             when(documentService.uploadToDocumentManagement(any(PDF.class),
                 anyString(), any(Claim.class))).thenReturn(claim);
-            when(userService.authenticateAnonymousCaseWorker())
-                .thenReturn(USER);
             event = new CountyCourtJudgmentEvent(claim, "authorisation");
             service.getAndSaveDocumentToCcd(event);
             verify(claimantResponseReceiptService)
                 .createPdf(claim);
-            verify(userService)
-                .authenticateAnonymousCaseWorker();
             verify(documentService)
                 .uploadToDocumentManagement(pdf, USER.getAuthorisation(), claim);
         }
@@ -104,14 +97,10 @@ class SaveClaimantResponseDocumentServiceTest {
             when(claimantResponseReceiptService.createPdf(claim)).thenReturn(pdf);
             when(documentService.uploadToDocumentManagement(any(PDF.class),
                 anyString(), any(Claim.class))).thenReturn(claim);
-            when(userService.authenticateAnonymousCaseWorker())
-                .thenReturn(USER);
             event = new CountyCourtJudgmentEvent(claim, "authorisation");
             service.getAndSaveDocumentToCcd(event);
             verify(claimantResponseReceiptService)
                 .createPdf(claim);
-            verify(userService)
-                .authenticateAnonymousCaseWorker();
             verify(documentService)
                 .uploadToDocumentManagement(pdf, USER.getAuthorisation(), claim);
         }
@@ -129,8 +118,6 @@ class SaveClaimantResponseDocumentServiceTest {
             service.getAndSaveDocumentToCcd(event);
             verify(claimantResponseReceiptService, never())
                 .createPdf(claim);
-            verify(userService, never())
-                .authenticateAnonymousCaseWorker();
             verify(documentService, never())
                 .uploadToDocumentManagement(pdf, USER.getAuthorisation(), claim);
         }
