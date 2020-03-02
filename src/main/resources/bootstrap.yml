@@ -14,4 +14,5 @@ spring:
         system-update-username: idam.caseworker.system.username
         system-update-password: idam.caseworker.system.password
         AppInsightsInstrumentationKey: azure.application-insights.instrumentation-key
+        milo-recipient: MILO_CSV_RECIPIENT
 
