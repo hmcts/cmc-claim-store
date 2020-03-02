@@ -73,10 +73,18 @@ ccd:
   ccd-definition-store-api:
     java:
       image: hmctspublic.azurecr.io/ccd/definition-store-api:latest
+    keyVaults:
+      ccd:
+        secrets:
+          - ccd-definition-s2s-secret
 
   ccd-data-store-api:
     java:
       image: hmctspublic.azurecr.io/ccd/data-store-api:latest
+    keyVaults:
+      ccd:
+        secrets:
+          - ccd-data-s2s-secret
 
   ccd-definition-importer:
     image: hmctspublic.azurecr.io/cmc/ccd-definition-importer:1.5.10
