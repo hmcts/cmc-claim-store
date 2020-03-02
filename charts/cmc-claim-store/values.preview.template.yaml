@@ -64,7 +64,6 @@ ccd:
     postgresUsername: hmcts
     postgresPassword: hmcts
     devMode: true
-    enableKeyVaults: false
 
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
