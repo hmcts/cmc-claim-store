@@ -7,7 +7,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
-import uk.gov.hmcts.cmc.claimstore.services.staff.SaveClaimantResponseDocumentService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
@@ -32,17 +31,14 @@ public class UpdateCaseStateCallbackHandler extends CallbackHandler {
     private static final List<Role> ROLES = Arrays.asList(CASEWORKER, JUDGE, LEGAL_ADVISOR);
     private final CaseDetailsConverter caseDetailsConverter;
     private final CaseMapper caseMapper;
-    private final SaveClaimantResponseDocumentService saveClaimantResponseDocumentService;
     private static final String CANNOT_UPDATE = "cannot update the case for the given claim";
 
     @Autowired
     public UpdateCaseStateCallbackHandler(
         CaseDetailsConverter caseDetailsConverter,
-        CaseMapper caseMapper,
-        SaveClaimantResponseDocumentService saveClaimantResponseDocumentService) {
+        CaseMapper caseMapper) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.caseMapper = caseMapper;
-        this.saveClaimantResponseDocumentService = saveClaimantResponseDocumentService;
     }
 
     @Override
@@ -69,7 +65,6 @@ public class UpdateCaseStateCallbackHandler extends CallbackHandler {
         if (claim.getCountyCourtJudgment() != null
             && (claim.getCountyCourtJudgment().getCcjType().equals(CountyCourtJudgmentType.ADMISSIONS)
             || claim.getCountyCourtJudgment().getCcjType().equals(CountyCourtJudgmentType.DETERMINATION))) {
-            saveClaimantResponseDocumentService.getAndSaveDocumentToCcd(claim);
             CCDCase ccdCase = caseMapper.to(claim);
             ccdCase.setState(ClaimState.PROCEEDS_IN_CASE_MAN.getValue());
             dataMap = caseDetailsConverter.convertToMap(ccdCase);

@@ -15,7 +15,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
-import uk.gov.hmcts.cmc.claimstore.services.staff.SaveClaimantResponseDocumentService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
@@ -31,7 +30,6 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -65,8 +63,6 @@ public class UpdateCaseStateCallbackHandlerTest {
     private CaseDetailsConverter caseDetailsConverter;
     @Mock
     private CaseMapper caseMapper;
-    @Mock
-    private SaveClaimantResponseDocumentService saveClaimantResponseDocumentService;
     private UpdateCaseStateCallbackHandler handler;
     private CallbackParams callbackParams;
     private CallbackRequest callbackRequest;
@@ -77,8 +73,7 @@ public class UpdateCaseStateCallbackHandlerTest {
     void setUp() {
         handler = new UpdateCaseStateCallbackHandler(
             caseDetailsConverter,
-            caseMapper,
-            saveClaimantResponseDocumentService
+            caseMapper
         );
         ImmutableMap<String, Object> data = ImmutableMap.of("data", "existingData",
             "caseDocuments", ImmutableList.of(CLAIM_DOCUMENT));
@@ -112,7 +107,6 @@ public class UpdateCaseStateCallbackHandlerTest {
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
             when(caseMapper.to(any(Claim.class))).thenReturn(ccdCase);
             when(caseDetailsConverter.convertToMap(any(CCDCase.class))).thenReturn(dataMap);
-            doNothing().when(saveClaimantResponseDocumentService).getAndSaveDocumentToCcd(any(Claim.class));
             AboutToStartOrSubmitCallbackResponse response
                 = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
             verify(caseDetailsConverter)
@@ -132,7 +126,6 @@ public class UpdateCaseStateCallbackHandlerTest {
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
             when(caseMapper.to(any(Claim.class))).thenReturn(ccdCase);
             when(caseDetailsConverter.convertToMap(any(CCDCase.class))).thenReturn(dataMap);
-            doNothing().when(saveClaimantResponseDocumentService).getAndSaveDocumentToCcd(any(Claim.class));
             AboutToStartOrSubmitCallbackResponse response
                 = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
             verify(caseDetailsConverter)
@@ -167,64 +160,6 @@ public class UpdateCaseStateCallbackHandlerTest {
             String message = (String) response.getData().get(claim.getReferenceNumber());
             verify(caseDetailsConverter, never()).convertToMap(any(CCDCase.class));
             assertThat(message.equals(CANNOT_UPDATE));
-        }
-    }
-
-    @Nested
-    @DisplayName("Save claim response document in CCD")
-    class SaveClaimResponseDocument {
-        @Test
-        void shouldSaveClaimResponseDocumentInCCDForCCJByAdmission() {
-            CountyCourtJudgment ccj = CountyCourtJudgment.builder()
-                .ccjType(CountyCourtJudgmentType.ADMISSIONS).build();
-            Claim claim = SampleClaim.builder()
-                .withCountyCourtJudgment(ccj).build();
-            ccdCase = CCDCase.builder().state(PROCEEDS_IN_CASEMAN.getValue()).build();
-            dataMap.put(CCD_CASE_KEY, ccdCase);
-            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
-            when(caseMapper.to(any(Claim.class))).thenReturn(ccdCase);
-            when(caseDetailsConverter.convertToMap(any(CCDCase.class))).thenReturn(dataMap);
-            doNothing().when(saveClaimantResponseDocumentService).getAndSaveDocumentToCcd(any(Claim.class));
-            handler.handle(callbackParams);
-            verify(saveClaimantResponseDocumentService)
-                .getAndSaveDocumentToCcd(claim);
-        }
-
-        @Test
-        void shouldSaveClaimResponseDocumentInCCDForCCJByDetermination() {
-            CountyCourtJudgment ccj = CountyCourtJudgment.builder()
-                .ccjType(CountyCourtJudgmentType.DETERMINATION).build();
-            Claim claim = SampleClaim.builder()
-                .withCountyCourtJudgment(ccj).build();
-            ccdCase = CCDCase.builder().state(PROCEEDS_IN_CASEMAN.getValue()).build();
-            dataMap.put(CCD_CASE_KEY, ccdCase);
-            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
-            when(caseMapper.to(any(Claim.class))).thenReturn(ccdCase);
-            when(caseDetailsConverter.convertToMap(any(CCDCase.class))).thenReturn(dataMap);
-            doNothing().when(saveClaimantResponseDocumentService).getAndSaveDocumentToCcd(any(Claim.class));
-            handler.handle(callbackParams);
-            verify(saveClaimantResponseDocumentService)
-                .getAndSaveDocumentToCcd(claim);
-        }
-
-        @Test
-        void shouldNotSaveClaimResponseDocumentInCCDForCCJByDefault() {
-            CountyCourtJudgment ccj = CountyCourtJudgment.builder()
-                .ccjType(CountyCourtJudgmentType.DEFAULT).build();
-            Claim claim = SampleClaim.builder()
-                .withCountyCourtJudgment(ccj).build();
-            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
-            handler.handle(callbackParams);
-            verify(saveClaimantResponseDocumentService, never()).getAndSaveDocumentToCcd(claim);
-        }
-
-        @Test
-        void shouldNotSaveClaimResponseDocumentInCCDForCCJNotRequested() {
-            Claim claim = SampleClaim.builder()
-                .withCountyCourtJudgment(null).build();
-            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
-            handler.handle(callbackParams);
-            verify(saveClaimantResponseDocumentService, never()).getAndSaveDocumentToCcd(claim);
         }
     }
 }
