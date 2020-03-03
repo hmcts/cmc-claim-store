@@ -228,7 +228,6 @@ public class ClaimService {
         User user = userService.getUser(authorisation);
         Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), user)
             .toBuilder()
-            .claimData(claimData)
             .features(features)
             .build();
 
