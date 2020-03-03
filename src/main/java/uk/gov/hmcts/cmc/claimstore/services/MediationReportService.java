@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,8 +15,10 @@ import uk.gov.hmcts.cmc.email.EmailService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.time.format.DateTimeFormatter.ISO_DATE;
 
@@ -89,7 +90,9 @@ public class MediationReportService {
         ImmutableMap<String, String> exceptionProperties = ImmutableMap.<String, String>builder()
             .put("MILO report date time", reportDate.format(ISO_DATE))
             .put("Error Message ", e.getMessage())
-            .put("Error Stack", ExceptionUtils.getFullStackTrace(e))
+            .put("Error Stack",
+                Arrays.stream(e.getStackTrace())
+                    .map(StackTraceElement::toString).collect(Collectors.joining(System.lineSeparator())))
             .build();
 
         appInsights.trackEvent(AppInsightsEvent.MEDIATION_REPORT_FAILURE, exceptionProperties);

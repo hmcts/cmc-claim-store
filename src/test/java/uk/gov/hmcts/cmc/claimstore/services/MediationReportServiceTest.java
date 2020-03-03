@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -109,7 +110,7 @@ public class MediationReportServiceTest {
         assertThatThrownBy(() -> service.automatedMediationReport())
             .isInstanceOf(MediationCSVGenerationException.class);
 
-        verify(appInsights).trackEvent(eq(AppInsightsEvent.MEDIATION_REPORT_FAILURE), anyString(), any());
+        verify(appInsights).trackEvent(eq(AppInsightsEvent.MEDIATION_REPORT_FAILURE), any());
     }
 
     @Test
@@ -129,8 +130,8 @@ public class MediationReportServiceTest {
 
         verify(appInsights).trackEvent(
             eq(AppInsightsEvent.MEDIATION_REPORT_FAILURE),
-            anyString(),
-            eq("{000CM001=Unable to find total amount of claim}"));
+            eq(ImmutableMap.of("MILO report date time", "2020-03-02",
+                "000CM001", "Unable to find total amount of claim")));
     }
 
     private static String inputStreamToString(InputStream is) {

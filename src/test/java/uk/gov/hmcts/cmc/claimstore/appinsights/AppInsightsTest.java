@@ -17,12 +17,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 
@@ -62,7 +62,7 @@ class AppInsightsTest {
             verify(telemetryClient).trackEvent(
                 eq(AppInsightsEvent.CLAIM_ATTEMPT_DUPLICATE.toString()),
                 eq(singletonMap("reference", "value")),
-                isNull()
+                eq(Collections.emptyMap())
             );
         }
 
@@ -95,7 +95,7 @@ class AppInsightsTest {
             verify(telemetryClient).trackEvent(
                 eq(AppInsightsEvent.CLAIM_ATTEMPT_DUPLICATE.toString()),
                 eq(singletonMap("reference", "value")),
-                isNull()
+                eq(Collections.emptyMap())
             );
 
             List<ILoggingEvent> logsList = listAppender.list;
@@ -119,7 +119,7 @@ class AppInsightsTest {
             verify(telemetryClient).trackEvent(
                 eq(AppInsightsEvent.CLAIM_ATTEMPT_DUPLICATE.toString()),
                 eq(properties),
-                isNull()
+                eq(Collections.emptyMap())
             );
 
             List<ILoggingEvent> logsList = listAppender.list;
