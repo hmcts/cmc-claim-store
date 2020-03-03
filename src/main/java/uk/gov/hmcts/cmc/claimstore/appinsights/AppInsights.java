@@ -37,7 +37,7 @@ public class AppInsights {
     }
 
     public void trackEvent(AppInsightsEvent appInsightsEvent, Map<String, String> properties) {
-        telemetry.trackEvent(appInsightsEvent.toString(), properties, Collections.emptyMap());
+        telemetry.trackEvent(appInsightsEvent.toString(), properties, null);
         if (stdout) {
             LOGGER.info("AppInsights event: {}: {}", appInsightsEvent, properties);
         }
