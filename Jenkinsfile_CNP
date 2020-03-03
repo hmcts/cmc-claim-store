@@ -64,4 +64,5 @@ withPipeline("java", product, component) {
   loadVaultSecrets(secrets)
   enableSlackNotifications(notificationsChannel)
   installCharts()
+  disableLegacyDeployment()
 }
