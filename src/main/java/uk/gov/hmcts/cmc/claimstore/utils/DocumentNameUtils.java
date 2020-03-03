@@ -112,4 +112,16 @@ public class DocumentNameUtils {
 
         return format("%s-directions-order-cover-sheet", number);
     }
+
+    public static String buildRequestForJudgementByDeterminationFileBaseName(String caseRef) {
+        requireNonBlank(caseRef);
+
+        return format("%s-ccj-request-determination", caseRef);
+    }
+
+    public static String buildRequestForJudgementByAdmissionFileBaseName(String caseRef) {
+        requireNonBlank(caseRef);
+
+        return format("%s-ccj-request-admission", caseRef);
+    }
 }

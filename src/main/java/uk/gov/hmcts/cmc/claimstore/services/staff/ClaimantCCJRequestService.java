@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.staff;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.claimstore.documents.ClaimantResponseReceiptService;
+import uk.gov.hmcts.cmc.claimstore.documents.CcjByAdmissionOrDeterminationPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
@@ -13,17 +13,17 @@ import static uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType.ADMISSIONS;
 import static uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType.DETERMINATION;
 
 @Service
-public class SaveClaimantResponseDocumentService {
+public class ClaimantCCJRequestService {
 
-    private final ClaimantResponseReceiptService claimantResponseReceiptService;
+    private final CcjByAdmissionOrDeterminationPdfService ccjByAdmissionOrDeterminationPdfService;
     private final DocumentsService documentService;
 
     @Autowired
-    public SaveClaimantResponseDocumentService(
-        ClaimantResponseReceiptService claimantResponseReceiptService,
+    public ClaimantCCJRequestService(
+        CcjByAdmissionOrDeterminationPdfService ccjByAdmissionOrDeterminationPdfService,
         DocumentsService documentService
     ) {
-        this.claimantResponseReceiptService = claimantResponseReceiptService;
+        this.ccjByAdmissionOrDeterminationPdfService = ccjByAdmissionOrDeterminationPdfService;
         this.documentService = documentService;
     }
 
@@ -32,7 +32,7 @@ public class SaveClaimantResponseDocumentService {
         Claim claim = event.getClaim();
         if (claim.getCountyCourtJudgment().getCcjType().equals(ADMISSIONS)
             || claim.getCountyCourtJudgment().getCcjType().equals(DETERMINATION)) {
-            PDF document = claimantResponseReceiptService.createPdf(claim);
+            PDF document = ccjByAdmissionOrDeterminationPdfService.createPdf(claim);
             documentService.uploadToDocumentManagement(document, event.getAuthorisation(), claim);
         }
     }
