@@ -33,13 +33,13 @@ import static uk.gov.hmcts.cmc.domain.models.MediationOutcome.SUCCEEDED;
 public class MapperUtil {
     private static final String OTHERS = " + others";
 
-    private static List<CCDClaimDocumentType> paperResponseDocTypes = Arrays.asList(PAPER_RESPONSE_FULL_ADMIT,
+    private static final List<CCDClaimDocumentType> paperResponseDocTypes = Arrays.asList(PAPER_RESPONSE_FULL_ADMIT,
         PAPER_RESPONSE_PART_ADMIT,
         PAPER_RESPONSE_STATES_PAID,
         PAPER_RESPONSE_MORE_TIME,
         PAPER_RESPONSE_DISPUTES_ALL);
 
-    private static List<String> paperResponseScannedType = Arrays.asList("N9a",
+    private static final List<String> paperResponseScannedType = Arrays.asList("N9a",
         "N9b",
         "N11",
         "N225",
@@ -48,10 +48,10 @@ public class MapperUtil {
     public static final Function<Claim, String> toCaseName = claim ->
         fetchClaimantName(claim) + " Vs " + fetchDefendantName(claim);
 
-    private static Predicate<CCDClaimDocument> filterStaffUploadedPaperResponseDoc = doc ->
+    private static final Predicate<CCDClaimDocument> filterStaffUploadedPaperResponseDoc = doc ->
         paperResponseDocTypes.stream().anyMatch(type -> type.equals(doc.getDocumentType()));
 
-    private static Predicate<CCDScannedDocument> filterCaseDocumentsPaperResponseDoc = doc ->
+    private static final Predicate<CCDScannedDocument> filterCaseDocumentsPaperResponseDoc = doc ->
         paperResponseScannedType.stream().anyMatch(type -> type.equalsIgnoreCase(doc.getSubtype()));
 
     public static final Function<CCDCase, YesNoOption> hasPaperResponse = ccdCase ->
@@ -67,8 +67,10 @@ public class MapperUtil {
 
     public static MediationOutcome getMediationOutcome(CCDCase ccdCase) {
 
-        CCDRespondent defendant = ccdCase.getRespondents()
-            .stream().findFirst().map(CCDCollectionElement::getValue).orElseThrow(IllegalStateException::new);
+        CCDRespondent defendant = ccdCase.getRespondents().stream()
+            .findFirst()
+            .map(CCDCollectionElement::getValue)
+            .orElseThrow(() -> new IllegalStateException("Missing respondent"));
 
         if (Optional.ofNullable(defendant.getMediationFailedReason()).isPresent()) {
             return FAILED;

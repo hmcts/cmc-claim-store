@@ -86,8 +86,7 @@ public class FormattingTest {
 
     @Test(expected = NullPointerException.class)
     public void formatMoneyShouldThrowNullPointerWhenGivenNullAmount() {
-        BigInteger value = null;
-        Formatting.formatMoney(value);
+        Formatting.formatMoney((BigInteger) null);
     }
 
     @Test

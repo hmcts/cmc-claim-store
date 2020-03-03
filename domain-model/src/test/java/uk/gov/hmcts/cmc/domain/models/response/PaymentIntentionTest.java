@@ -21,7 +21,7 @@ public class PaymentIntentionTest {
             .build())
         .build();
 
-    private Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+    private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
     @Test
     public void shouldFailPastDateWhenProposing() {

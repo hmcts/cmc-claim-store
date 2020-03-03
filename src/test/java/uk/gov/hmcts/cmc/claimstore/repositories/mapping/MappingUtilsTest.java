@@ -19,7 +19,6 @@ public class MappingUtilsTest {
 
     @Test
     public void toNullableLongShouldReturnLongPrimitiveType() {
-        assertThat(toNullableLong(null)).isNull();
         assertThat(toNullableLong(100)).isEqualTo(100L);
         assertThat(toNullableLong(0)).isEqualTo(0L);
         assertThat(toNullableLong(-100)).isEqualTo(-100L);
@@ -27,6 +26,7 @@ public class MappingUtilsTest {
 
     @Test
     public void toNullableLongShouldReturnNull() {
+        //noinspection ConstantConditions
         assertThat(toNullableLong(null)).isNull();
     }
 
@@ -37,6 +37,7 @@ public class MappingUtilsTest {
 
     @Test(expected = NullPointerException.class)
     public void toLocalDateTimeFromUtcWhenNullShouldThrow() {
+        //noinspection ConstantConditions
         toLocalDateTimeFromUTC(null);
     }
 

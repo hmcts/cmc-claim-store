@@ -2,9 +2,10 @@ package uk.gov.hmcts.cmc.domain.models.orders;
 
 public enum DirectionHeaderType {
     UPLOAD("Upload"),
-    CONFIRM("Confirm");
+    CONFIRM("Confirm"),
+    OTHER("Other");
 
-    private String value;
+    private final String value;
 
     DirectionHeaderType(String value) {
         this.value = value;

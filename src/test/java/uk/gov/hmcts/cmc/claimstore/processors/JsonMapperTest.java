@@ -40,13 +40,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.BOTH;
-import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingCourtType.BIRMINGHAM;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType.HALF_HOUR;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EYEWITNESS;
 
 public class JsonMapperTest {
 
-    private JsonMapper processor = JsonMapperFactory.create();
+    private final JsonMapper processor = JsonMapperFactory.create();
 
     @Test
     public void shouldProcessClaimDataToJson() throws JSONException {
@@ -227,7 +226,6 @@ public class JsonMapperTest {
             .submitterId("2")
             .submittedOn(timestamp)
             .externalId(uuid)
-            .directionOrderData(CCDOrderGenerationData.builder().build())
             .build();
 
         assertThat(ccdCase).isEqualTo(expected);
@@ -254,7 +252,7 @@ public class JsonMapperTest {
             .otherDirections(Collections.emptyList())
             .paperDetermination(NO)
             .eyewitnessUploadDeadline(LocalDate.parse("2019-06-03"))
-            .hearingCourt(BIRMINGHAM)
+            .hearingCourt("BIRMINGHAM")
             .eyewitnessUploadForParty(BOTH)
             .estimatedHearingDuration(HALF_HOUR)
             .build();

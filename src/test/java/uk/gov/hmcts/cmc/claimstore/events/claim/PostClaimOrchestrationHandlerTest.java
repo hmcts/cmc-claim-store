@@ -5,6 +5,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.documents.CitizenServiceDocumentsService;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
@@ -35,7 +37,7 @@ import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
@@ -46,9 +48,9 @@ public class PostClaimOrchestrationHandlerTest {
     public static final String AUTHORISATION = "AUTHORISATION";
     private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
 
-    private Map<String, Object> claimContents = new HashMap<>();
-    private String claimTemplate = "claimTemplate";
-    private Document sealedClaimLetterDocument = new Document(claimTemplate, claimContents);
+    private final Map<String, Object> claimContents = new HashMap<>();
+    private final String claimTemplate = "claimTemplate";
+    private final Document sealedClaimLetterDocument = new Document(claimTemplate, claimContents);
 
     private PostClaimOrchestrationHandler postClaimOrchestrationHandler;
     @Mock
@@ -73,6 +75,8 @@ public class PostClaimOrchestrationHandlerTest {
     private UserService userService;
     @Mock
     private PinOrchestrationService pinOrchestrationService;
+    @Mock
+    private AppInsights appInsights;
 
     @Before
     public void before() {
@@ -92,7 +96,8 @@ public class PostClaimOrchestrationHandlerTest {
             claimantOperationService,
             rpaOperationService,
             notifyStaffOperationService,
-            claimService
+            claimService,
+            appInsights
         );
 
         given(citizenServiceDocumentsService.sealedClaimDocument(any())).willReturn(sealedClaimLetterDocument);
@@ -133,7 +138,7 @@ public class PostClaimOrchestrationHandlerTest {
         verify(uploadOperationService, atLeast(2)).uploadDocument(eq(CLAIM),
             eq(AUTHORISATION), any());
         verify(claimService, never()).updateClaimState(eq(AUTHORISATION), any(Claim.class), eq(ClaimState.OPEN));
-
+        verifyNoInteractions(appInsights);
     }
 
     @Test
@@ -157,7 +162,10 @@ public class PostClaimOrchestrationHandlerTest {
         verify(uploadOperationService, atLeast(2)).uploadDocument(eq(CLAIM),
             eq(AUTHORISATION), any());
         verify(claimService).updateClaimState(eq(AUTHORISATION), any(Claim.class), eq(ClaimState.OPEN));
-
+        verify(appInsights).trackEvent(
+            AppInsightsEvent.CLAIM_ISSUED_CITIZEN,
+            AppInsights.REFERENCE_NUMBER,
+            SampleClaim.REFERENCE_NUMBER);
     }
 
     @Test
@@ -225,7 +233,7 @@ public class PostClaimOrchestrationHandlerTest {
         postClaimOrchestrationHandler.citizenIssueHandler(event);
 
         //then
-        verifyZeroInteractions(pinOrchestrationService);
+        verifyNoInteractions(pinOrchestrationService);
         verify(citizenServiceDocumentsService).sealedClaimDocument(eq(claimWithPinOperationSucceededIndicator));
         verify(pdfServiceClient).generateFromHtml(any(), anyMap());
         verify(claimIssueReceiptService).createPdf(eq(claimWithPinOperationSucceededIndicator));
@@ -253,10 +261,10 @@ public class PostClaimOrchestrationHandlerTest {
         postClaimOrchestrationHandler.citizenIssueHandler(event);
 
         //then
-        verifyZeroInteractions(pinOrchestrationService);
-        verifyZeroInteractions(claimantOperationService);
-        verifyZeroInteractions(rpaOperationService);
-        verifyZeroInteractions(uploadOperationService);
+        verifyNoInteractions(pinOrchestrationService);
+        verifyNoInteractions(claimantOperationService);
+        verifyNoInteractions(rpaOperationService);
+        verifyNoInteractions(uploadOperationService);
 
     }
 
@@ -294,7 +302,7 @@ public class PostClaimOrchestrationHandlerTest {
         verify(rpaOperationService).notify(eq(claimWithUploadSealedClaimSuccess), eq(AUTHORISATION), any());
         verify(uploadOperationService).uploadDocument(eq(claimWithUploadSealedClaimSuccess),
             eq(AUTHORISATION), any());
-        verifyZeroInteractions(pinOrchestrationService);
+        verifyNoInteractions(pinOrchestrationService);
 
     }
 
@@ -329,8 +337,8 @@ public class PostClaimOrchestrationHandlerTest {
         verify(claimantOperationService).notifyCitizen(eq(claimWithClaimReceiptUploadSuccess),
             any(), eq(AUTHORISATION));
         verify(rpaOperationService).notify(eq(claimWithClaimReceiptUploadSuccess), eq(AUTHORISATION), any());
-        verifyZeroInteractions(uploadOperationService);
-        verifyZeroInteractions(pinOrchestrationService);
+        verifyNoInteractions(uploadOperationService);
+        verifyNoInteractions(pinOrchestrationService);
 
     }
 
@@ -359,9 +367,9 @@ public class PostClaimOrchestrationHandlerTest {
         verify(pdfServiceClient).generateFromHtml(any(), anyMap());
         verify(claimIssueReceiptService).createPdf(eq(claimWithRpaSuccess));
         verify(claimantOperationService).notifyCitizen(eq(claimWithRpaSuccess), any(), eq(AUTHORISATION));
-        verifyZeroInteractions(rpaOperationService);
-        verifyZeroInteractions(uploadOperationService);
-        verifyZeroInteractions(pinOrchestrationService);
+        verifyNoInteractions(rpaOperationService);
+        verifyNoInteractions(uploadOperationService);
+        verifyNoInteractions(pinOrchestrationService);
 
     }
 

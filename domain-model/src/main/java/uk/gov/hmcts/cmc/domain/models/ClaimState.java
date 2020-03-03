@@ -7,7 +7,8 @@ public enum ClaimState {
     OPEN("open"),
     CLOSED("closed"),
     SETTLED("settled"),
-    READY_FOR_DIRECTIONS("readyForDirections"),
+    READY_FOR_LEGAL_ADVISOR_DIRECTIONS("readyForDirections"),
+    READY_FOR_JUDGE_DIRECTIONS("readyForJudgeDirections"),
     STAYED("stayed"),
     ORDER_FOR_JUDGE_REVIEW("orderForJudgeReview"),
     ORDER_FOR_LA_REVIEW("orderForLAReview"),
@@ -32,7 +33,8 @@ public enum ClaimState {
 
     public static ClaimState fromValue(String value) {
         return Arrays.stream(ClaimState.values())
-            .filter(state -> state.getValue().equalsIgnoreCase(value))
-            .findFirst().orElseThrow(IllegalArgumentException::new);
+            .filter(state -> state.state.equalsIgnoreCase(value))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Unknown ClaimState: " + value));
     }
 }

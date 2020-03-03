@@ -20,7 +20,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.
 public class CallbackHandlerFactory {
 
     private final UserService userService;
-    private HashMap<String, CallbackHandler> eventHandlers = new HashMap<>();
+    private final HashMap<String, CallbackHandler> eventHandlers = new HashMap<>();
 
     @Autowired(required = false)
     public CallbackHandlerFactory(List<CallbackHandler> beans, UserService userService) {

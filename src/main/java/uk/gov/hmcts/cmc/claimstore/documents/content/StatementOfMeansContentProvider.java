@@ -35,7 +35,8 @@ public class StatementOfMeansContentProvider {
         contentBuilder.put("residence", residence);
         contentBuilder.put("residenceTypeDescription",
             residence.getType() == OTHER
-                ? residence.getOtherDetail().orElseThrow(IllegalStateException::new)
+                ? residence.getOtherDetail()
+                    .orElseThrow(() -> new IllegalStateException("Missing residence type description"))
                 : residence.getType().getDescription());
 
         contentBuilder.putAll(createDependant(statementOfMeans));
@@ -126,7 +127,8 @@ public class StatementOfMeansContentProvider {
 
         return new ImmutableMap.Builder<String, Object>()
             .put("type", income.getType() == Income.IncomeType.OTHER
-                ? income.getOtherSource().orElseThrow(IllegalStateException::new)
+                ? income.getOtherSource()
+                    .orElseThrow(() -> new IllegalStateException("Missing other income source"))
                 : income.getType().getDescription())
             .put("amount", formatMoney(income.getAmount()))
             .put("frequency", income.getFrequency().getDescription())
@@ -138,7 +140,8 @@ public class StatementOfMeansContentProvider {
 
         return new ImmutableMap.Builder<String, Object>()
             .put("type", expense.getType() == Expense.ExpenseType.OTHER
-                ? expense.getOtherName().orElseThrow(IllegalStateException::new)
+                ? expense.getOtherName()
+                    .orElseThrow(() -> new IllegalStateException("Missing other expense type name"))
                 : expense.getType().getDescription())
             .put("amount", formatMoney(expense.getAmount()))
             .put("frequency", expense.getFrequency().getDescription())
@@ -186,9 +189,8 @@ public class StatementOfMeansContentProvider {
                 .map(this::createChild)
                 .collect(toList())
             );
-            dependant.getOtherDependants().ifPresent(otherDependants -> {
-                contentBuilder.put("otherDependants", otherDependants);
-            });
+            dependant.getOtherDependants()
+                .ifPresent(otherDependants -> contentBuilder.put("otherDependants", otherDependants));
             dependant.getNumberOfMaintainedChildren().ifPresent(
                 maintainedChildren -> contentBuilder.put("maintainedChildren", maintainedChildren)
             );

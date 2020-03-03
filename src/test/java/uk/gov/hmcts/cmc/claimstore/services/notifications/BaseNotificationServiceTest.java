@@ -39,6 +39,7 @@ public abstract class BaseNotificationServiceTest {
     protected static final String ONLINE_DQ_WITH_NO_MEDIATION_CLAIMANT_RESPONSE_TEMPLATE
         = "online-dq-with-no-Mediation-claimant-response";
     protected static final String CLAIMANT_CCJ_REQUESTED_TEMPLATE = "claimantCcjRequested";
+    protected static final String CLAIMANT_CCJ_REMINDER_TEMPLATE = "claimantCcjReminder";
     protected static final String CLAIMANT_SAYS_DEFENDANT_PAID_IN_FULL_TEMPLATE = "claimant-says-paid-in-full";
     protected static final String DEFENDANT_RESPOND_BY_ADMISSION = "defenceResponseByAdmissions";
 
@@ -49,7 +50,7 @@ public abstract class BaseNotificationServiceTest {
 
     protected final Claim claim = SampleClaim.getDefault().toBuilder().respondedAt(LocalDateTime.now()).build();
 
-    protected Logger log = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+    protected final Logger log = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
     @Mock
     protected NotificationClient notificationClient;

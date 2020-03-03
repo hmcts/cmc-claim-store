@@ -24,7 +24,7 @@ import uk.gov.hmcts.cmc.claimstore.tests.AATConfiguration;
 import uk.gov.hmcts.cmc.claimstore.tests.exception.ForbiddenException;
 import uk.gov.hmcts.cmc.claimstore.tests.helpers.TestData;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
 import static uk.gov.hmcts.cmc.claimstore.services.UserService.AUTHORIZATION_CODE;
@@ -115,7 +115,7 @@ public class IdamTestService {
 
     private void upliftUser(String email, String password, TokenExchangeResponse exchangeResponse) {
         Response response = idamInternalApi.upliftUser(
-            UriUtils.encode(email, Charset.forName("UTF-8")),
+            UriUtils.encode(email, StandardCharsets.UTF_8),
             password,
             exchangeResponse.getAccessToken(),
             oauth2.getClientId(),
@@ -150,7 +150,7 @@ public class IdamTestService {
 
     private String getCodeFromRedirect(Response response) {
         String location = response.headers().get("Location").stream().findFirst()
-            .orElseThrow(IllegalArgumentException::new);
+            .orElseThrow(() -> new IllegalArgumentException("Missing 'Location' header"));
 
         UriComponents build = UriComponentsBuilder.fromUriString(location).build();
         return build.getQueryParams().getFirst("code");

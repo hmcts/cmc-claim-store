@@ -48,9 +48,11 @@ public enum CaseEvent {
     COMPLEX_CASE("ComplexCase"),
     REVIEW_COMPLEX_CASE("ReviewComplexCase"),
     ACTION_REVIEW_COMMENTS("ActionReviewComments"),
-    ASSIGNING_FOR_DIRECTIONS("AssigningForDirections"),
+    ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS("AssigningForDirections"),
+    ASSIGNING_FOR_JUDGE_DIRECTIONS("AssigningForJudgeDirections"),
     REFERRED_TO_MEDIATION("ReferredToMediation"),
     DRAW_ORDER("DrawOrder"),
+    DRAW_JUDGES_ORDER("DrawJudgesOrder"),
     RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS("ResetClaimSubmissionOperationIndicators"),
     CLAIMANT_DIRECTIONS_QUESTIONNAIRE_UPLOAD("ClaimantDirectionsQuestionnaireUpload"),
     ORDER_REVIEW_REQUESTED("OrderReviewRequested"),
@@ -64,9 +66,10 @@ public enum CaseEvent {
     CREATE_CITIZEN_CLAIM("CreateCitizenClaim"),
     REVIEWED_PAPER_RESPONSE("ReviewedPaperResponse"),
     MEDIATION_FAILED("FailedMediation"),
-    MEDIATION_SUCCESSFUL("SuccessfulMediation");
+    MEDIATION_SUCCESSFUL("SuccessfulMediation"),
+    RESET_PIN("ResetPin");
 
-    private String value;
+    private final String value;
 
     CaseEvent(String value) {
         this.value = value;

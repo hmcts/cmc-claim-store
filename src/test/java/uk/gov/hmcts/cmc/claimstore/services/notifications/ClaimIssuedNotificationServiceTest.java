@@ -31,7 +31,7 @@ public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceT
     private ClaimIssuedNotificationService service;
 
     @Rule
-    public ExpectedException expectedException = ExpectedException.none();
+    public final ExpectedException expectedException = ExpectedException.none();
 
     @Before
     public void beforeEachTest() {

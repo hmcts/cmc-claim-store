@@ -25,7 +25,7 @@ public class MinTotalAmountValidatorTest {
     @Mock
     private ConstraintValidatorContext context;
 
-    private MinTotalAmountValidator validator = new MinTotalAmountValidator();
+    private final MinTotalAmountValidator validator = new MinTotalAmountValidator();
 
     @Before
     public void beforeEachTest() {

@@ -58,9 +58,10 @@ public enum AppInsightsEvent {
     CLAIMANT_OPTED_OUT_FOR_NON_MEDIATION_PILOT("Non-mediation pilot - Claimant opted out"),
     BOTH_OPTED_IN_FOR_NON_MEDIATION_PILOT("Non-mediation pilot - Both opted in"),
     NON_MEDIATION_PILOT_FAILED("Non-mediation pilot - Failed"),
-    NON_MEDIATION_PILOT_SUCCESS("Non-mediation pilot - Success");
+    NON_MEDIATION_PILOT_SUCCESS("Non-mediation pilot - Success"),
+    COURT_FINDER_API_FAILURE("Failed to get address from Court Finder API");
 
-    private String displayName;
+    private final String displayName;
 
     AppInsightsEvent(String displayName) {
         this.displayName = displayName;

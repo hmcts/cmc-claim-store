@@ -48,6 +48,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISS
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NUMBER_OF_RECONSIDERATION;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_PAYMENT;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
 @Component
@@ -188,7 +189,8 @@ public class ClaimService {
 
         Claim createdClaim = caseRepository.initiatePayment(user, claim);
 
-        Payment payment = createdClaim.getClaimData().getPayment().orElseThrow(IllegalStateException::new);
+        Payment payment = createdClaim.getClaimData().getPayment()
+            .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT));
         return CreatePaymentResponse.builder()
             .nextUrl(payment.getNextUrl())
             .build();
@@ -197,10 +199,15 @@ public class ClaimService {
     @LogExecutionTime
     public CreatePaymentResponse resumePayment(String authorisation, ClaimData claimData) {
         User user = userService.getUser(authorisation);
-        Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), user);
+        Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), user)
+            .toBuilder()
+            .claimData(claimData)
+            .build();
+
         Claim resumedClaim = caseRepository.saveCaseEventIOC(user, claim, RESUME_CLAIM_PAYMENT_CITIZEN);
 
-        Payment payment = resumedClaim.getClaimData().getPayment().orElseThrow(IllegalStateException::new);
+        Payment payment = resumedClaim.getClaimData().getPayment()
+            .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT));
 
         return CreatePaymentResponse.builder()
             .nextUrl(

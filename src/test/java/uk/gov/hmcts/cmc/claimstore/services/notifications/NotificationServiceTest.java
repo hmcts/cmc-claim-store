@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -18,6 +19,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationServiceTest extends BaseNotificationServiceTest {
@@ -29,7 +31,7 @@ public class NotificationServiceTest extends BaseNotificationServiceTest {
     private NotificationService service;
 
     @Rule
-    public ExpectedException expectedException = ExpectedException.none();
+    public final ExpectedException expectedException = ExpectedException.none();
 
     @Before
     public void beforeEachTest() {
@@ -63,7 +65,7 @@ public class NotificationServiceTest extends BaseNotificationServiceTest {
             new NotificationException("expected exception"),
             null,
             "hidden@email.com",
-            null,
+            ImmutableMap.of(CLAIM_REFERENCE_NUMBER, "reference"),
             "reference"
         );
 

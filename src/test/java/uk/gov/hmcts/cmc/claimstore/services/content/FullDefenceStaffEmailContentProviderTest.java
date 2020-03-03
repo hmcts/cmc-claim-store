@@ -16,16 +16,17 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.claimstore.services.staff.DefendantResponseStaffNotificationService.wrapInMap;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
 
 public class FullDefenceStaffEmailContentProviderTest {
 
     private static final String DEFENDANT_EMAIL = "defendant@mail.com";
 
-    private TemplateService templateService = new TemplateService(
+    private final TemplateService templateService = new TemplateService(
         new PebbleConfiguration().pebbleEngine()
     );
 
-    private StaffEmailTemplates templates = new StaffEmailTemplates();
+    private final StaffEmailTemplates templates = new StaffEmailTemplates();
 
     private FullDefenceStaffEmailContentProvider service;
 
@@ -50,10 +51,14 @@ public class FullDefenceStaffEmailContentProviderTest {
     public void shouldUseRequiredFieldsInTheBody() {
         Claim claim = SampleClaim.getWithDefaultResponse();
         EmailContent content = service.createContent(wrapInMap(claim, DEFENDANT_EMAIL));
+        String expectedPhone = claim.getResponse()
+            .orElseThrow(() -> new IllegalStateException(MISSING_RESPONSE))
+            .getDefendant()
+            .getPhone()
+            .orElseThrow(() -> new IllegalStateException("Missing defendant phone"));
         assertThat(content.getBody())
             .contains("Email: " + DEFENDANT_EMAIL)
-            .contains("Phone number: " + claim.getResponse().orElseThrow(IllegalStateException::new).getDefendant()
-                .getPhone().orElseThrow(IllegalStateException::new));
+            .contains("Phone number: " + expectedPhone);
     }
 
     @Test

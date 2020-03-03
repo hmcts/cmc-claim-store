@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 @Component
 public class LegalOrderGenerationDeadlinesCalculator {
-    private static final int DAYS_FOR_RESPONSE = 42;
+    private static final int DAYS_FOR_RESPONSE = 33;
 
     private final WorkingDayIndicator workingDayIndicator;
 
@@ -23,8 +23,7 @@ public class LegalOrderGenerationDeadlinesCalculator {
     }
 
     public LocalDate calculateOrderGenerationDeadlines() {
-        long totalDays = (long) DAYS_FOR_RESPONSE;
-        LocalDate result = LocalDate.now(clock).plusDays(totalDays);
+        LocalDate result = LocalDate.now(clock).plusDays(DAYS_FOR_RESPONSE);
 
         while (!workingDayIndicator.isWorkingDay(result)) {
             result = result.plusDays(1);

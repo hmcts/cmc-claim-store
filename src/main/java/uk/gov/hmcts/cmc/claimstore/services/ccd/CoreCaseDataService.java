@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireService;
 import uk.gov.hmcts.cmc.claimstore.services.IntentionToProceedDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
@@ -95,6 +96,7 @@ public class CoreCaseDataService {
     private final CCDCreateCaseService ccdCreateCaseService;
     private final CaseDetailsConverter caseDetailsConverter;
     private final IntentionToProceedDeadlineCalculator intentionToProceedDeadlineCalculator;
+    private final DirectionsQuestionnaireService directionsQuestionnaireService;
 
     @SuppressWarnings("squid:S00107") // All parameters are required here
     @Autowired
@@ -107,7 +109,8 @@ public class CoreCaseDataService {
         JobSchedulerService jobSchedulerService,
         CCDCreateCaseService ccdCreateCaseService,
         CaseDetailsConverter caseDetailsConverter,
-        IntentionToProceedDeadlineCalculator intentionToProceedDeadlineCalculator
+        IntentionToProceedDeadlineCalculator intentionToProceedDeadlineCalculator,
+        DirectionsQuestionnaireService directionsQuestionnaireService
     ) {
         this.caseMapper = caseMapper;
         this.userService = userService;
@@ -118,6 +121,7 @@ public class CoreCaseDataService {
         this.ccdCreateCaseService = ccdCreateCaseService;
         this.caseDetailsConverter = caseDetailsConverter;
         this.intentionToProceedDeadlineCalculator = intentionToProceedDeadlineCalculator;
+        this.directionsQuestionnaireService = directionsQuestionnaireService;
     }
 
     @LogExecutionTime
@@ -489,12 +493,15 @@ public class CoreCaseDataService {
                 isRepresented(userDetails)
             );
 
-            Claim updatedClaim = toClaimBuilder(startEventResponse)
-                .claimantResponse(response)
-                .claimantRespondedAt(nowInUTC())
-                .build();
+            Claim existingClaim = toClaim(startEventResponse);
+            Claim.ClaimBuilder claimBuilder = existingClaim.toBuilder();
 
-            CaseDataContent caseDataContent = caseDataContent(startEventResponse, updatedClaim);
+            claimBuilder.claimantResponse(response)
+                .claimantRespondedAt(nowInUTC())
+                .dateReferredForDirections(nowInUTC())
+                .preferredDQCourt(getPreferredCourt(claimBuilder.build()));
+
+            CaseDataContent caseDataContent = caseDataContent(startEventResponse, claimBuilder.build());
 
             return caseDetailsConverter.extractClaim(submitUpdate(authorisation,
                 eventRequestData,
@@ -511,6 +518,14 @@ public class CoreCaseDataService {
                     caseEvent
                 ), exception
             );
+        }
+    }
+
+    private String getPreferredCourt(Claim existingClaim) {
+        try {
+            return directionsQuestionnaireService.getPreferredCourt(existingClaim);
+        } catch (Exception e) {
+            return null;
         }
     }
 

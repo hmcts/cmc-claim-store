@@ -38,11 +38,13 @@ public class LegalOrderCoverSheetContentProviderTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaimForClaimant() {
+        //noinspection ConstantConditions
         provider.createContentForClaimant(null);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaimForDefendant() {
+        //noinspection ConstantConditions
         provider.createContentForDefendant(null);
     }
 
@@ -63,8 +65,10 @@ public class LegalOrderCoverSheetContentProviderTest {
 
         Map<String, Object> content = provider.createContentForClaimant(claim);
 
-        String expectedName = String.format("%s T/A %s", claimant.getName(),
-            claimant.getBusinessName().orElseThrow(IllegalStateException::new));
+        String expectedName = String.format("%s T/A %s",
+            claimant.getName(),
+            claimant.getBusinessName()
+                .orElseThrow(() -> new IllegalStateException("Missing business name")));
 
         assertThat(content).containsEntry("partyFullName", expectedName);
         assertThat(content).containsEntry("partyAddress", claim.getClaimData().getClaimant().getAddress());

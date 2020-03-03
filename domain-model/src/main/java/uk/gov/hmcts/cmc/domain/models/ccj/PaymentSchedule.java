@@ -5,7 +5,7 @@ public enum PaymentSchedule {
     EVERY_TWO_WEEKS("Every two weeks"),
     EVERY_MONTH("Every month");
 
-    private String description;
+    private final String description;
 
     PaymentSchedule(String description) {
         this.description = description;

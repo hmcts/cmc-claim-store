@@ -50,7 +50,7 @@ public class SettlementTest {
         settlement.makeOffer(offer, MadeBy.DEFENDANT, null);
         settlement.makeOffer(counterOffer, MadeBy.CLAIMANT, null);
 
-        assertThat(settlement.getLastStatement().getOffer().get()).isEqualTo(counterOffer);
+        assertThat(settlement.getLastStatement().getOffer().orElse(null)).isEqualTo(counterOffer);
     }
 
     @Test
@@ -182,10 +182,9 @@ public class SettlementTest {
         settlement.makeOffer(counterOffer, MadeBy.DEFENDANT, null);
         settlement.accept(MadeBy.CLAIMANT, null);
 
-        assertThat(settlement.getLastStatementOfType(StatementType.OFFER).getOffer()
-            .orElseThrow(IllegalArgumentException::new)
-            .getContent()
-        )
+        assertThat(settlement.getLastStatementOfType(StatementType.OFFER).getOffer())
+            .isPresent().get()
+            .extracting(Offer::getContent)
             .isEqualTo(COUNTER_OFFER);
     }
 

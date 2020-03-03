@@ -15,8 +15,8 @@ public class PaidInFullJsonMapper {
         return new NullAwareJsonObjectBuilder()
             .add("caseNumber", claim.getReferenceNumber())
             .add("paidInFullSubmittedOn", DateFormatter.format(LocalDateTime.now()))
-            .add("claimantPaidOn", DateFormatter.format(
-                claim.getMoneyReceivedOn().orElseThrow(IllegalStateException::new)))
+            .add("claimantPaidOn", DateFormatter.format(claim.getMoneyReceivedOn()
+                .orElseThrow(() -> new IllegalStateException("Missing money received date"))))
             .build();
     }
 

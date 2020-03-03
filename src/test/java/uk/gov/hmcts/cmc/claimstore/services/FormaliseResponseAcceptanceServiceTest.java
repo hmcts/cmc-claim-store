@@ -34,8 +34,12 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCUTORY_JUDGMENT;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_OFFER;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_PAYMENT_DATE;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_PAYMENT_INTENTION;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_REPAYMENT_PLAN;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType.CLAIMANT;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType.COURT;
@@ -122,9 +126,8 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         LocalDate respondentPayingBySetDate = ((PartAdmissionResponse) partAdmissionsResponsePayBySetDate)
             .getPaymentIntention()
-            .get()
-            .getPaymentDate()
-            .orElseThrow(IllegalStateException::new);
+            .flatMap(PaymentIntention::getPaymentDate)
+            .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT_DATE));
 
         Claim claim = SampleClaim.getWithResponse(partAdmissionsResponsePayBySetDate);
         ResponseAcceptation responseAcceptation = ResponseAcceptation
@@ -142,21 +145,20 @@ public class FormaliseResponseAcceptanceServiceTest {
         assertThat(countyCourtJudgmentArgumentCaptor
             .getValue()
             .getPayBySetDate()
-            .orElseThrow(IllegalStateException::new))
+            .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT_DATE)))
             .isEqualTo(respondentPayingBySetDate);
 
-        verifyZeroInteractions(settlementAgreementService);
+        verifyNoInteractions(settlementAgreementService);
     }
 
     @Test
     public void formaliseCCJWithDefendantPaymentIntentionByInstalmentsAccepted() {
-        Response admissionResponsePayByInstalments = getPartAdmissionResponsePayByInstalments();
+        PartAdmissionResponse admissionResponsePayByInstalments = getPartAdmissionResponsePayByInstalments();
 
-        RepaymentPlan repaymentPlanOfDefendant = ((PartAdmissionResponse) admissionResponsePayByInstalments)
+        RepaymentPlan repaymentPlanOfDefendant = admissionResponsePayByInstalments
             .getPaymentIntention()
-            .get()
-            .getRepaymentPlan()
-            .orElseThrow(IllegalStateException::new);
+            .flatMap(PaymentIntention::getRepaymentPlan)
+            .orElseThrow(() -> new IllegalStateException(MISSING_REPAYMENT_PLAN));
 
         Claim claim = SampleClaim.getWithResponse(admissionResponsePayByInstalments);
         ResponseAcceptation responseAcceptation = ResponseAcceptation
@@ -176,7 +178,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .getRepaymentPlan().orElseThrow(IllegalAccessError::new))
             .isEqualTo(repaymentPlanOfDefendant);
 
-        verifyZeroInteractions(settlementAgreementService);
+        verifyNoInteractions(settlementAgreementService);
     }
 
     @Test
@@ -186,7 +188,8 @@ public class FormaliseResponseAcceptanceServiceTest {
         Claim claim = SampleClaim.getWithResponse(partAdmissionsResponsePayBySetDate);
 
         PaymentIntention paymentIntention = SamplePaymentIntention.bySetDate();
-        LocalDate appliedPaymentDate = paymentIntention.getPaymentDate().orElseThrow(IllegalStateException::new);
+        LocalDate appliedPaymentDate = paymentIntention.getPaymentDate()
+            .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT_DATE));
 
         ResponseAcceptation responseAcceptation = ResponseAcceptation
             .builder()
@@ -208,10 +211,10 @@ public class FormaliseResponseAcceptanceServiceTest {
         assertThat(countyCourtJudgmentArgumentCaptor
             .getValue()
             .getPayBySetDate()
-            .orElseThrow(IllegalStateException::new))
+            .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT_DATE)))
             .isEqualTo(appliedPaymentDate);
 
-        verifyZeroInteractions(settlementAgreementService);
+        verifyNoInteractions(settlementAgreementService);
     }
 
     @Test
@@ -221,7 +224,8 @@ public class FormaliseResponseAcceptanceServiceTest {
         Claim claim = SampleClaim.getWithResponse(partAdmissionsResponsePayBySetDate);
 
         PaymentIntention paymentIntention = SamplePaymentIntention.bySetDate();
-        LocalDate appliedPaymentDate = paymentIntention.getPaymentDate().orElseThrow(IllegalStateException::new);
+        LocalDate appliedPaymentDate = paymentIntention.getPaymentDate()
+            .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT_DATE));
 
         PaymentIntention claimantPaymentIntention = SamplePaymentIntention.instalments();
         ResponseAcceptation responseAcceptation = ResponseAcceptation
@@ -245,10 +249,10 @@ public class FormaliseResponseAcceptanceServiceTest {
         assertThat(countyCourtJudgmentArgumentCaptor
             .getValue()
             .getPayBySetDate()
-            .orElseThrow(IllegalStateException::new))
+            .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT_DATE)))
             .isEqualTo(appliedPaymentDate);
 
-        verifyZeroInteractions(settlementAgreementService);
+        verifyNoInteractions(settlementAgreementService);
     }
 
     @Test
@@ -282,7 +286,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .getValue()
             .getPayBySetDate().isPresent()).isFalse();
 
-        verifyZeroInteractions(settlementAgreementService);
+        verifyNoInteractions(settlementAgreementService);
     }
 
     @Test
@@ -296,7 +300,7 @@ public class FormaliseResponseAcceptanceServiceTest {
         RepaymentPlan appliedPlan = courtDeterminedPaymentPlanByInstalments
             .getCourtDecision()
             .getRepaymentPlan()
-            .orElseThrow(IllegalArgumentException::new);
+            .orElseThrow(() -> new IllegalArgumentException(MISSING_REPAYMENT_PLAN));
 
         ResponseAcceptation responseAcceptation = ResponseAcceptation
             .builder()
@@ -314,20 +318,20 @@ public class FormaliseResponseAcceptanceServiceTest {
         assertThat(countyCourtJudgmentArgumentCaptor
             .getValue()
             .getRepaymentPlan()
-            .orElseThrow(IllegalStateException::new))
+            .orElseThrow(() -> new IllegalStateException(MISSING_REPAYMENT_PLAN)))
             .isEqualTo(appliedPlan);
 
-        verifyZeroInteractions(settlementAgreementService);
+        verifyNoInteractions(settlementAgreementService);
     }
 
     @Test
     public void formaliseCCJWithFullAdmissionAndDefendantsPaymentIntention() {
-        Response fullAdmissionResponseWithInstalments = SampleResponse.FullAdmission.builder().build();
+        FullAdmissionResponse fullAdmissionResponseWithInstalments = SampleResponse.FullAdmission.builder().build();
 
-        RepaymentPlan repaymentPlan = ((FullAdmissionResponse) fullAdmissionResponseWithInstalments)
+        RepaymentPlan repaymentPlan = fullAdmissionResponseWithInstalments
             .getPaymentIntention()
             .getRepaymentPlan()
-            .orElseThrow(IllegalStateException::new);
+            .orElseThrow(() -> new IllegalStateException(MISSING_REPAYMENT_PLAN));
 
         Claim claim = SampleClaim.getWithResponse(fullAdmissionResponseWithInstalments);
 
@@ -346,10 +350,10 @@ public class FormaliseResponseAcceptanceServiceTest {
         assertThat(countyCourtJudgmentArgumentCaptor
             .getValue()
             .getRepaymentPlan()
-            .orElseThrow(IllegalStateException::new))
+            .orElseThrow(() -> new IllegalStateException(MISSING_REPAYMENT_PLAN)))
             .isEqualTo(repaymentPlan);
 
-        verifyZeroInteractions(settlementAgreementService);
+        verifyNoInteractions(settlementAgreementService);
     }
 
     @Test
@@ -357,7 +361,8 @@ public class FormaliseResponseAcceptanceServiceTest {
         Response partAdmissionsResponsePayBySetDate = getPartAdmissionsResponsePayBySetDate();
 
         PaymentIntention paymentIntentionOfDefendant = ((PartAdmissionResponse) partAdmissionsResponsePayBySetDate)
-            .getPaymentIntention().orElseThrow(IllegalStateException::new);
+            .getPaymentIntention()
+            .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT_INTENTION));
 
         Claim claim = SampleClaim.getWithResponse(partAdmissionsResponsePayBySetDate);
 
@@ -377,21 +382,21 @@ public class FormaliseResponseAcceptanceServiceTest {
             .getValue()
             .getLastStatementOfType(StatementType.OFFER)
             .getOffer()
-            .orElseThrow(IllegalStateException::new)
+            .orElseThrow(() -> new IllegalStateException(MISSING_OFFER))
             .getPaymentIntention()
-            .orElseThrow(IllegalAccessError::new);
+            .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT_INTENTION));
 
         assertThat(paymentIntentionWithinOffer).isEqualTo(paymentIntentionOfDefendant);
 
-        verifyZeroInteractions(countyCourtJudgmentService);
+        verifyNoInteractions(countyCourtJudgmentService);
     }
 
     @Test
     public void formaliseSettlementWithDefendantPaymentIntentionByInstalments() {
-        Response partAdmissionResponsePayByInstalments = getPartAdmissionResponsePayByInstalments();
+        PartAdmissionResponse partAdmissionResponsePayByInstalments = getPartAdmissionResponsePayByInstalments();
 
-        PaymentIntention paymentIntentionOfDefendant = ((PartAdmissionResponse)
-            partAdmissionResponsePayByInstalments).getPaymentIntention().orElseThrow(IllegalStateException::new);
+        PaymentIntention paymentIntentionOfDefendant = partAdmissionResponsePayByInstalments.getPaymentIntention()
+            .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT_INTENTION));
 
         Claim claim = SampleClaim.getWithResponse(partAdmissionResponsePayByInstalments);
 
@@ -411,13 +416,13 @@ public class FormaliseResponseAcceptanceServiceTest {
             .getValue()
             .getLastStatementOfType(StatementType.OFFER)
             .getOffer()
-            .orElseThrow(IllegalStateException::new)
+            .orElseThrow(() -> new IllegalStateException(MISSING_OFFER))
             .getPaymentIntention()
             .orElseThrow(IllegalAccessError::new);
 
         assertThat(paymentIntentionWithinOffer).isEqualTo(paymentIntentionOfDefendant);
 
-        verifyZeroInteractions(countyCourtJudgmentService);
+        verifyNoInteractions(countyCourtJudgmentService);
     }
 
     @Test
@@ -448,13 +453,13 @@ public class FormaliseResponseAcceptanceServiceTest {
             .getValue()
             .getLastStatementOfType(StatementType.OFFER)
             .getOffer()
-            .orElseThrow(IllegalStateException::new)
+            .orElseThrow(() -> new IllegalStateException(MISSING_OFFER))
             .getPaymentIntention()
             .orElseThrow(IllegalAccessError::new);
 
         assertThat(paymentIntentionWithinOffer).isEqualTo(paymentIntention);
 
-        verifyZeroInteractions(countyCourtJudgmentService);
+        verifyNoInteractions(countyCourtJudgmentService);
     }
 
     @Test
@@ -486,13 +491,13 @@ public class FormaliseResponseAcceptanceServiceTest {
             .getValue()
             .getLastStatementOfType(StatementType.OFFER)
             .getOffer()
-            .orElseThrow(IllegalStateException::new)
+            .orElseThrow(() -> new IllegalStateException(MISSING_OFFER))
             .getPaymentIntention()
             .orElseThrow(IllegalAccessError::new);
 
         assertThat(paymentIntentionWithinOffer).isEqualTo(paymentIntention);
 
-        verifyZeroInteractions(countyCourtJudgmentService);
+        verifyNoInteractions(countyCourtJudgmentService);
     }
 
     @Test
@@ -517,7 +522,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .getValue()
             .getLastStatementOfType(StatementType.OFFER)
             .getOffer()
-            .orElseThrow(IllegalStateException::new);
+            .orElseThrow(() -> new IllegalStateException(MISSING_OFFER));
 
         assertThat(offer.getContent()).contains("John Rambo will repay £81.90, in instalments of £100.99 every week."
             + " The first instalment will be paid by 10 October 2100.");
@@ -529,7 +534,7 @@ public class FormaliseResponseAcceptanceServiceTest {
         assertThat(paymentIntentionWithinOffer)
             .isEqualTo(fullAdmissionResponseWithInstalments.getPaymentIntention());
 
-        verifyZeroInteractions(countyCourtJudgmentService);
+        verifyNoInteractions(countyCourtJudgmentService);
     }
 
     @Test
@@ -557,7 +562,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .getValue()
             .getLastStatementOfType(StatementType.OFFER)
             .getOffer()
-            .orElseThrow(IllegalStateException::new);
+            .orElseThrow(() -> new IllegalStateException(MISSING_OFFER));
 
         assertThat(offer.getContent()).startsWith("John Rambo will pay £81.90");
 
@@ -567,7 +572,7 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         assertThat(paymentIntentionWithinOffer).isEqualTo(fullAdmissionResponseBySetDate.getPaymentIntention());
 
-        verifyZeroInteractions(countyCourtJudgmentService);
+        verifyNoInteractions(countyCourtJudgmentService);
     }
 
     @Test
@@ -582,8 +587,8 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         verify(eventProducer, once()).createInterlocutoryJudgmentEvent(eq(claim));
         verify(caseRepository, once()).saveCaseEvent(anyString(), eq(claim), eq(INTERLOCUTORY_JUDGMENT));
-        verifyZeroInteractions(countyCourtJudgmentService);
-        verifyZeroInteractions(settlementAgreementService);
+        verifyNoInteractions(countyCourtJudgmentService);
+        verifyNoInteractions(settlementAgreementService);
     }
 
     private PartAdmissionResponse getPartAdmissionResponsePayByInstalments() {

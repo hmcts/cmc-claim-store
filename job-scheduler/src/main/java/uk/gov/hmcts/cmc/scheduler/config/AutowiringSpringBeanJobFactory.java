@@ -15,6 +15,7 @@ public class AutowiringSpringBeanJobFactory extends SpringBeanJobFactory impleme
         this.beanFactory = applicationContext.getAutowireCapableBeanFactory();
     }
 
+    @SuppressWarnings("NullableProblems")
     @Override
     protected Object createJobInstance(TriggerFiredBundle bundle) throws Exception {
         final Object job = super.createJobInstance(bundle);
