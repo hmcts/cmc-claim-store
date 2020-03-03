@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDateTime;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
@@ -49,7 +50,8 @@ public class DefendantResponseContentProvider {
 
     public Map<String, Object> createContent(Claim claim) {
         requireNonNull(claim);
-        Response defendantResponse = claim.getResponse().orElseThrow(IllegalStateException::new);
+        Response defendantResponse = claim.getResponse()
+            .orElseThrow(() -> new IllegalStateException(MISSING_RESPONSE));
 
         Map<String, Object> content = new HashMap<>();
         Optional<StatementOfTruth> optionalStatementOfTruth = defendantResponse.getStatementOfTruth();

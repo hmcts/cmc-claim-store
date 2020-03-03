@@ -120,7 +120,7 @@ public class ClaimDocumentCollectionMapperTest {
 
         Claim build = builder.build();
         ClaimDocumentCollection caseDocuments = build.getClaimDocumentCollection()
-            .orElseThrow(IllegalStateException::new);
+            .orElseThrow(() -> new IllegalStateException("Missing claim document collection"));
         Assert.notNull(caseDocuments.getScannedDocuments(), "Staff Uploaded document list cant be null");
         assertThat(caseDocuments.getScannedDocuments().size()).isEqualTo(1);
 
@@ -135,7 +135,7 @@ public class ClaimDocumentCollectionMapperTest {
 
         Claim build = builder.build();
         ClaimDocumentCollection caseDocuments = build.getClaimDocumentCollection()
-            .orElseThrow(IllegalStateException::new);
+            .orElseThrow(() -> new IllegalStateException("Missing claim document collection"));
         Assert.notNull(caseDocuments.getStaffUploadedDocuments(), "Scanned document list cant be null");
         assertThat(caseDocuments.getStaffUploadedDocuments().size()).isEqualTo(1);
     }
