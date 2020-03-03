@@ -67,7 +67,7 @@ public class MediationReportService {
         }
     }
 
-    public void automatedMediationReport() {
+    public void automatedMediationReport() throws Exception {
         sendMediationReport(
             userService.authenticateAnonymousCaseWorker().getAuthorisation(),
             LocalDate.now().minusDays(1)

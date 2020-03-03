@@ -85,7 +85,7 @@ public class MediationReportServiceTest {
     }
 
     @Test
-    public void automatedCSVShouldUseYesterdayAndAnonymousUser() throws IOException {
+    public void automatedCSVShouldUseYesterdayAndAnonymousUser() throws Exception {
         final User mockUser = mock(User.class);
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(mockUser);
         when(mockUser.getAuthorisation()).thenReturn(AUTHORISATION);
@@ -114,7 +114,7 @@ public class MediationReportServiceTest {
     }
 
     @Test
-    public void shouldReportAppInsightsEventOnProblematicRecords() {
+    public void shouldReportAppInsightsEventOnProblematicRecords() throws Exception {
         User mockUser = mock(User.class);
         Claim claimWithNoClaimData = SampleClaim.builder()
             .withResponse(SampleResponse.FullDefence.validDefaults())
