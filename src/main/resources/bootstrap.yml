@@ -17,8 +17,8 @@ spring:
         milo-recipient: MILO_CSV_RECIPIENT
         staff-email: staff-notifications.recipient
         live-support-email: live-support.recipient
-        rpa-email-sealed-claim: RPA_NOTIFICATIONS_SEALEDCLAIMRECIPIENT
-        rpa-email-more-time-requested: RPA_NOTIFICATIONS_MORETIMEREQUESTEDRECIPIENT
-        rpa-email-response: RPA_NOTIFICATIONS_RESPONSERECIPIENT
-        rpa-email-ccj: RPA_NOTIFICATIONS_COUNTYCOURTJUDGEMENTRECIPIENT
-        rpa-email-paid-in-full: RPA_NOTIFICATIONS_PAIDINFULLRECIPIENT
+        rpa-email-sealed-claim: rpa.notifications.sealedClaimRecipient
+        rpa-email-more-time-requested: rpa.notifications.moreTimeRequestedRecipient
+        rpa-email-response: rpa.notifications.responseRecipient
+        rpa-email-ccj: rpa.notifications.countyCourtJudgementRecipient
+        rpa-email-paid-in-full: rpa.notifications.paidInFullRecipient
