@@ -30,8 +30,8 @@ public class ClaimantCCJRequestService {
     @EventListener
     public void getAndSaveDocumentToCcd(CountyCourtJudgmentEvent event) {
         Claim claim = event.getClaim();
-        if (claim.getCountyCourtJudgment().getCcjType().equals(ADMISSIONS)
-            || claim.getCountyCourtJudgment().getCcjType().equals(DETERMINATION)) {
+        if (claim.getCountyCourtJudgment().getCcjType() == ADMISSIONS
+            || claim.getCountyCourtJudgment().getCcjType() == DETERMINATION) {
             PDF document = ccjByAdmissionOrDeterminationPdfService.createPdf(claim);
             documentService.uploadToDocumentManagement(document, event.getAuthorisation(), claim);
         }
