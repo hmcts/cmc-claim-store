@@ -1,0 +1,103 @@
+tags:
+  idam-pr: true
+
+postgresql:
+  enabled: true
+  image:
+    tag: '11.3.0'
+  resources:
+    requests:
+      cpu: 25m
+  initdbScripts:
+    init.sql: |-
+      CREATE DATABASE cmc WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+      CREATE DATABASE "data-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+      CREATE DATABASE "definition-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+      CREATE DATABASE "user-profile" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+  postgresqlUsername: hmcts
+  postgresqlPassword: hmcts
+  persistence:
+    enabled: false
+
+java:
+  image: hmctspublic.azurecr.io/cmc/claim-store:pr-1474-cb3afefb
+  ingressHost: cmc-claim-store-pr-1474.service.core-compute-preview.internal
+  livenessFailureThreshold: 6
+  livenessDelay: 75
+  readinessDelay: 75
+  keyVaults:
+    cmc:
+      resourceGroup: cmc
+      secrets:
+        - AppInsightsInstrumentationKey
+        - citizen-oauth-client-secret
+        - claim-store-s2s-secret
+        - anonymous-caseworker-username
+        - anonymous-caseworker-password
+        - system-update-username
+        - system-update-password
+        - notify-api-key
+        - milo-recipient
+  environment:
+    LOG_LEVEL: DEBUG
+    CMC_DB_HOST: cmc-claim-store-pr-1474-postgresql
+    CMC_DB_USERNAME: hmcts
+    CMC_DB_PASSWORD: hmcts
+    CMC_DB_CONNECTION_OPTIONS: '?sslmode=allow'
+    CORE_CASE_DATA_API_URL: http://cmc-claim-store-pr-1474-ccd-data-store-api
+
+ccd:
+  enabled: true
+  ccd:
+    s2s:
+      enabled: false
+    postgresql:
+      enabled: false
+    adminWeb:
+      enabled: false
+    userProfileImporter:
+      enabled: false
+
+  global:
+    idamApiUrl: "https://idam-api.aat.platform.hmcts.net"
+    s2sUrl: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+    postgresUsername: hmcts
+    postgresPassword: hmcts
+    devMode: true
+    environment: aat
+
+  ingressHost: cmc-claim-store-pr-1474.service.core-compute-preview.internal
+  ingressIP: 10.97.17.51
+  consulIP: 10.97.11.254
+
+  ccd-definition-store-api:
+    java:
+      image: hmctspublic.azurecr.io/ccd/definition-store-api:latest
+    keyVaults:
+      ccd:
+        secrets:
+          - ccd-definition-s2s-secret
+
+  ccd-data-store-api:
+    java:
+      image: hmctspublic.azurecr.io/ccd/data-store-api:latest
+    keyVaults:
+      ccd:
+        secrets:
+          - ccd-data-s2s-secret
+
+  ccd-definition-importer:
+    image: hmctspublic.azurecr.io/cmc/ccd-definition-importer:1.5.10
+    environment:
+      CCD_DEF_CLAIM_STORE_BASE_URL: http://cmc-claim-store-pr-1474-java
+    definitionFilename: cmc-ccd.xlsx
+    userRoles:
+    - citizen
+    - caseworker-cmc
+    - caseworker-cmc-solicitor
+    - caseworker-cmc-systemupdate
+    - letter-holder
+    - caseworker-autotest1
+    - caseworker-cmc-anonymouscitizen
+    - caseworker-cmc-judge
+    - caseworker-cmc-legaladvisor
