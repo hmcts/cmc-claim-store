@@ -36,7 +36,8 @@ public class DefenceResponseJsonMapper {
     }
 
     public JsonObject map(Claim claim) {
-        Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
+        Response response = claim.getResponse()
+            .orElseThrow(() -> new IllegalArgumentException("Missing response"));
         String defendantsEmail = claim.getDefendantEmail();
 
         return new NullAwareJsonObjectBuilder()
@@ -76,7 +77,8 @@ public class DefenceResponseJsonMapper {
             if (partAdmissionResponse.getPaymentDeclaration().isPresent()) {
                 return null;
             }
-            paymentIntention = partAdmissionResponse.getPaymentIntention().orElseThrow(IllegalArgumentException::new);
+            paymentIntention = partAdmissionResponse.getPaymentIntention()
+                .orElseThrow(() -> new IllegalArgumentException("Missing payment intention"));
         } else if (response instanceof FullAdmissionResponse) {
             FullAdmissionResponse fullAdmissionResponse = (FullAdmissionResponse) response;
             paymentIntention = fullAdmissionResponse.getPaymentIntention();
@@ -84,12 +86,15 @@ public class DefenceResponseJsonMapper {
         requireNonNull(paymentIntention);
         PaymentOption paymentOption = paymentIntention.getPaymentOption();
         jsonObjectBuilder.add("paymentType", paymentOption.name());
-        String fullPaymentDeadLine = paymentOption.equals(PaymentOption.BY_SPECIFIED_DATE)
+        String fullPaymentDeadLine = paymentOption == PaymentOption.BY_SPECIFIED_DATE
             ? paymentIntention.getPaymentDate().map(DateFormatter::format)
-            .orElseThrow(IllegalArgumentException::new) : null;
+                .orElseThrow(() -> new IllegalArgumentException("Missing payment date"))
+            : null;
         jsonObjectBuilder.add("fullPaymentDeadline", fullPaymentDeadLine);
-        JsonObject installmentObj = paymentOption.equals(PaymentOption.INSTALMENTS) ? RPAMapperHelper
-            .toJson(paymentIntention.getRepaymentPlan().orElseThrow(IllegalArgumentException::new)) : null;
+        JsonObject installmentObj = paymentOption == PaymentOption.INSTALMENTS
+            ? RPAMapperHelper.toJson(paymentIntention.getRepaymentPlan()
+                .orElseThrow(() -> new IllegalArgumentException("Missing repayment plan")))
+            : null;
         jsonObjectBuilder.add("instalments", installmentObj);
 
         return jsonObjectBuilder;

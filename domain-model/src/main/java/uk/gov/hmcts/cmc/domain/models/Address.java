@@ -26,6 +26,9 @@ public class Address {
     @Size(max = 100, message = "City should not be longer than {max} characters")
     private final String city;
 
+    @Size(max = 100, message = "County should not be longer than {max} characters")
+    private final String county;
+
     @NotNull
     @Postcode
     private final String postcode;
@@ -34,11 +37,13 @@ public class Address {
                    String line2,
                    String line3,
                    String city,
+                   String county,
                    String postcode) {
         this.line1 = line1;
         this.line2 = line2;
         this.line3 = line3;
         this.city = city;
+        this.county = county;
         this.postcode = postcode;
     }
 
@@ -58,6 +63,10 @@ public class Address {
         return city;
     }
 
+    public String getCounty() {
+        return county;
+    }
+
     public String getPostcode() {
         return postcode;
     }
@@ -69,6 +78,7 @@ public class Address {
             + ", line2='" + line2 + '\''
             + ", line3='" + line3 + '\''
             + ", city='" + city + '\''
+            + ", county='" + county + '\''
             + ", postcode='" + postcode + '\''
             + '}';
     }

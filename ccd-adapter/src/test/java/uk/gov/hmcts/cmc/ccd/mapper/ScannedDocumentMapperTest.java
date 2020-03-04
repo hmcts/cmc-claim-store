@@ -22,8 +22,8 @@ public class ScannedDocumentMapperTest {
         LocalDateTime now = LocalDateTime.now();
         ScannedDocument scannedDocument = ScannedDocument.builder()
             .documentType(ScannedDocumentType.CHERISHED)
-            .documentManagementUrl(URI.create("http://www.cnn.com"))
-            .documentManagementBinaryUrl(URI.create("http://www.cnn.com"))
+            .documentManagementUrl(URI.create("http://www.cnn.com/fake/news"))
+            .documentManagementBinaryUrl(URI.create("http://www.cnn.com/fake/news/101"))
             .scannedDate(now)
             .deliveryDate(now)
             .controlNumber("Control")
@@ -38,8 +38,8 @@ public class ScannedDocumentMapperTest {
         CCDDocument documentUrl = document.getUrl();
         assertEquals(scannedDocument.getId(), ccdScannedDocumentElement.getId());
         assertEquals(CCDScannedDocumentType.cherished, document.getType());
-        assertEquals(scannedDocument.getDocumentManagementBinaryUrl().getPath(), documentUrl.getDocumentBinaryUrl());
-        assertEquals(scannedDocument.getDocumentManagementUrl().getPath(), documentUrl.getDocumentUrl());
+        assertEquals(scannedDocument.getDocumentManagementBinaryUrl().toString(), documentUrl.getDocumentBinaryUrl());
+        assertEquals(scannedDocument.getDocumentManagementUrl().toString(), documentUrl.getDocumentUrl());
         assertEquals(now, document.getScannedDate());
         assertEquals(now, document.getDeliveryDate());
         assertEquals(scannedDocument.getControlNumber(), document.getControlNumber());

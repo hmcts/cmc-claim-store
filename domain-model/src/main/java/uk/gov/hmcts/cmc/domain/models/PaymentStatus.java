@@ -20,7 +20,7 @@ public enum PaymentStatus {
         return Arrays.stream(PaymentStatus.values())
             .filter(val -> val.status.equalsIgnoreCase(value))
             .findFirst()
-            .orElseThrow(IllegalArgumentException::new);
+            .orElseThrow(() -> new IllegalArgumentException("Unknown PaymentStatus: " + value));
     }
 
     @Override

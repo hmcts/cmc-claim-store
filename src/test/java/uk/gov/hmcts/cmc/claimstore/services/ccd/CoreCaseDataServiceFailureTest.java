@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireService;
 import uk.gov.hmcts.cmc.claimstore.services.IntentionToProceedDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
@@ -90,6 +91,10 @@ public class CoreCaseDataServiceFailureTest {
     private CaseDetailsConverter caseDetailsConverter;
     @Mock
     private IntentionToProceedDeadlineCalculator intentionToProceedDeadlineCalculator;
+    @Mock
+    private feign.Request request;
+    @Mock
+    private DirectionsQuestionnaireService directionsQuestionnaireService;
 
     private CoreCaseDataService service;
 
@@ -134,7 +139,8 @@ public class CoreCaseDataServiceFailureTest {
             jobSchedulerService,
             ccdCreateCaseService,
             caseDetailsConverter,
-            intentionToProceedDeadlineCalculator
+            intentionToProceedDeadlineCalculator,
+            directionsQuestionnaireService
         );
     }
 
@@ -179,7 +185,7 @@ public class CoreCaseDataServiceFailureTest {
             any(CaseDataContent.class),
             eq(solicitorUser.isRepresented())
         ))
-            .thenThrow(new FeignException.Conflict("Status 409 while creating the case", null));
+            .thenThrow(new FeignException.Conflict("Status 409 while creating the case", request, null));
 
         service.createRepresentedClaim(solicitorUser, providedClaim);
     }
@@ -616,7 +622,7 @@ public class CoreCaseDataServiceFailureTest {
 
         ClaimSubmissionOperationIndicators operationIndicators = ClaimSubmissionOperationIndicators.builder().build();
         Claim claim = SampleClaim.getDefault();
-        
+
         service.saveClaimSubmissionOperationIndicators(claim.getId(), operationIndicators, AUTHORISATION,
             PIN_GENERATION_OPERATIONS);
     }

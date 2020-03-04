@@ -10,8 +10,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
+import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
-import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireService;
+import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
@@ -60,20 +61,24 @@ public class DeadlineSupportController {
 
     private final UserService userService;
     private final ClaimService claimService;
-    private final DirectionsQuestionnaireService dqService;
+    private final DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
+    private final CaseRepository caseRepository;
 
     public DeadlineSupportController(
         UserService userService,
         ClaimService claimService,
-        DirectionsQuestionnaireService dqService
+        DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator,
+        CaseRepository caseRepository
     ) {
         requireNonNull(userService);
         requireNonNull(claimService);
-        requireNonNull(dqService);
+        requireNonNull(directionsQuestionnaireDeadlineCalculator);
+        requireNonNull(caseRepository);
 
         this.userService = userService;
         this.claimService = claimService;
-        this.dqService = dqService;
+        this.directionsQuestionnaireDeadlineCalculator = directionsQuestionnaireDeadlineCalculator;
+        this.caseRepository = caseRepository;
     }
 
     @PutMapping("/{deadlineType}/claim/{referenceNumber}")
@@ -142,10 +147,16 @@ public class DeadlineSupportController {
 
         // if the defendant disputed any/all of the claim and did not want mediation for a pre-5.0.0 claim
         // then we can define a directions questionnaire deadline
-        LocalDate deadline = dqService.updateDirectionsQuestionnaireDeadline(
-            claim, claim.getRespondedAt(), authorisation);
+        LocalDate deadline = updateDeadline(claim, authorisation);
         return ResponseEntity.status(HttpStatus.CREATED).body(format("Claim %s has been been assigned a "
             + "directions questionnaire deadline of %s.", claim.getReferenceNumber(), deadline));
+    }
+
+    private LocalDate updateDeadline(Claim claim, String authorisation) {
+        LocalDate deadline = directionsQuestionnaireDeadlineCalculator
+            .calculateDirectionsQuestionnaireDeadline(claim.getRespondedAt());
+        caseRepository.updateDirectionsQuestionnaireDeadline(claim, deadline, authorisation);
+        return deadline;
     }
 
     private ResponseEntity<String> defineDQDeadlinePost_5_0_0(Claim claim, String authorisation) {
@@ -168,8 +179,7 @@ public class DeadlineSupportController {
                 + "cannot define a directions questionnaire deadline.", claim.getReferenceNumber()));
         }
 
-        LocalDate deadline = dqService.updateDirectionsQuestionnaireDeadline(
-            claim, optionalClaimantResponseTime.get(), authorisation);
+        LocalDate deadline = updateDeadline(claim, authorisation);
         return ResponseEntity.status(HttpStatus.CREATED).body(format("Claim %s has been been assigned a "
             + "directions questionnaire deadline of %s.", claim.getReferenceNumber(), deadline));
     }

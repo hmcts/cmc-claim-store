@@ -22,6 +22,8 @@ import java.util.Optional;
 
 import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_CLAIMANT_RESPONSE;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service
@@ -63,8 +65,10 @@ public class StatesPaidStaffNotificationService {
     public static Map<String, Object> wrapInMap(Claim claim) {
 
         Map<String, Object> map = new HashMap<>();
-        Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
-        ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalArgumentException::new);
+        Response response = claim.getResponse()
+            .orElseThrow(() -> new IllegalArgumentException(MISSING_RESPONSE));
+        ClaimantResponse claimantResponse = claim.getClaimantResponse()
+            .orElseThrow(() -> new IllegalArgumentException(MISSING_CLAIMANT_RESPONSE));
 
         map.put("claim", claim);
         map.put("response", response);

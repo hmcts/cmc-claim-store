@@ -1,7 +1,7 @@
 apiVersion: v1
 name: cmc-claim-store
 home: https://github.com/hmcts/cmc-claim-store
-version: 3.1.0
+version: 3.2.8
 description: Helm chart for the HMCTS CMC Claim-Store service
 # be aware when bumping version that it is used elsewhere, e.g.:
 # chart-cmc - demo: https://github.com/hmcts/chart-cmc/tree/master/cmc

@@ -129,6 +129,17 @@ public final class SampleClaim {
             .build();
     }
 
+    public static Claim getDefaultWithoutResponse(String defendantEmail) {
+        return builder()
+            .withClaimData(
+                SampleClaimData.builder().withDefendant(
+                    SampleTheirDetails.builder()
+                        .withEmail(defendantEmail).individualDetails())
+                    .build())
+            .withDefendantId(null)
+            .build();
+    }
+
     public static Claim getWithClaimSubmissionOperationIndicators() {
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimantBuilder().withExternalId(RAND_UUID).build())

@@ -150,7 +150,7 @@ public class IdamTestService {
 
     private String getCodeFromRedirect(Response response) {
         String location = response.headers().get("Location").stream().findFirst()
-            .orElseThrow(IllegalArgumentException::new);
+            .orElseThrow(() -> new IllegalArgumentException("Missing 'Location' header"));
 
         UriComponents build = UriComponentsBuilder.fromUriString(location).build();
         return build.getQueryParams().getFirst("code");

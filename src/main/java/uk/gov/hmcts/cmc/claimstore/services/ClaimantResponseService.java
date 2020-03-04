@@ -7,7 +7,6 @@ import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimantResponseRule;
-import uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
@@ -20,7 +19,7 @@ import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static java.util.function.Predicate.isEqual;
@@ -35,6 +34,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_NON_PILOT_ELIGIBLE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_PILOT_ELIGIBLE;
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isSettlePreJudgment;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.REJECTION;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
@@ -57,6 +57,7 @@ public class ClaimantResponseService {
     private final EventProducer eventProducer;
     private final FormaliseResponseAcceptanceService formaliseResponseAcceptanceService;
     private final DirectionsQuestionnaireService directionsQuestionnaireService;
+    private final DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
 
     @SuppressWarnings("squid:S00107") // All parameters are required here
     public ClaimantResponseService(
@@ -66,7 +67,8 @@ public class ClaimantResponseService {
         ClaimantResponseRule claimantResponseRule,
         EventProducer eventProducer,
         FormaliseResponseAcceptanceService formaliseResponseAcceptanceService,
-        DirectionsQuestionnaireService directionsQuestionnaireService
+        DirectionsQuestionnaireService directionsQuestionnaireService,
+        DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator
     ) {
         this.claimService = claimService;
         this.appInsights = appInsights;
@@ -75,6 +77,7 @@ public class ClaimantResponseService {
         this.eventProducer = eventProducer;
         this.formaliseResponseAcceptanceService = formaliseResponseAcceptanceService;
         this.directionsQuestionnaireService = directionsQuestionnaireService;
+        this.directionsQuestionnaireDeadlineCalculator = directionsQuestionnaireDeadlineCalculator;
     }
 
     public void save(
@@ -86,7 +89,7 @@ public class ClaimantResponseService {
         Claim claim = claimService.getClaimByExternalId(externalId, authorization);
         claimantResponseRule.assertCanBeRequested(claim, claimantId);
 
-        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+        Response response = claim.getResponse().orElseThrow(() -> new IllegalStateException(MISSING_RESPONSE));
         if (claim.getState().equals(ClaimState.STAYED) && ResponseUtils.isAdmissionResponse(response)) {
             claim = caseRepository.saveCaseEvent(authorization, claim, LIFT_STAY);
         }
@@ -103,8 +106,9 @@ public class ClaimantResponseService {
         }
 
         if (!FeaturesUtils.isOnlineDQ(updatedClaim) && isRejectResponseNoMediation(claimantResponse)) {
-            directionsQuestionnaireService.updateDirectionsQuestionnaireDeadline(
-                updatedClaim, LocalDateTime.now(), authorization);
+            LocalDate deadline = directionsQuestionnaireDeadlineCalculator
+                .calculateDirectionsQuestionnaireDeadline(claim.getRespondedAt());
+            caseRepository.updateDirectionsQuestionnaireDeadline(claim, deadline, authorization);
             updatedClaim = claimService.getClaimByExternalId(externalId, authorization);
         }
 
@@ -117,7 +121,7 @@ public class ClaimantResponseService {
         }
 
         if (claimantResponse.getType() == REJECTION) {
-            Optional<CaseEvent> caseEvent = DirectionsQuestionnaireUtils.prepareCaseEvent(
+            Optional<CaseEvent> caseEvent = directionsQuestionnaireService.prepareCaseEvent(
                 (ResponseRejection) claimantResponse,
                 updatedClaim
             );
