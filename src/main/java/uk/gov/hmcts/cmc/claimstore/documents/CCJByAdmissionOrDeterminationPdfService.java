@@ -16,14 +16,14 @@ import static uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType.ADMISSIONS;
 import static uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType.DETERMINATION;
 
 @Service
-public class CcjByAdmissionOrDeterminationPdfService implements PdfService {
+public class CCJByAdmissionOrDeterminationPdfService implements PdfService {
 
     private final DocumentTemplates documentTemplates;
     private final PDFServiceClient pdfServiceClient;
     private final ContentProvider contentProvider;
 
     @Autowired
-    public CcjByAdmissionOrDeterminationPdfService(
+    public CCJByAdmissionOrDeterminationPdfService(
         DocumentTemplates documentTemplates,
         PDFServiceClient pdfServiceClient,
         ContentProvider contentProvider
@@ -38,9 +38,9 @@ public class CcjByAdmissionOrDeterminationPdfService implements PdfService {
         requireNonNull(claim);
         String fileBaseName = "";
 
-        if (claim.getCountyCourtJudgment().getCcjType().equals(ADMISSIONS)) {
+        if (claim.getCountyCourtJudgment().getCcjType() == ADMISSIONS) {
             fileBaseName = buildRequestForJudgementByAdmissionFileBaseName(claim.getReferenceNumber());
-        } else if (claim.getCountyCourtJudgment().getCcjType().equals(DETERMINATION)) {
+        } else if (claim.getCountyCourtJudgment().getCcjType() == DETERMINATION) {
             fileBaseName = buildRequestForJudgementByDeterminationFileBaseName(claim.getReferenceNumber());
         }
 

@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class CcjByAdmissionOrDeterminationPdfServiceTest {
+class CCJByAdmissionOrDeterminationPdfServiceTest {
 
     @Mock
     private DocumentTemplates documentTemplates;
@@ -25,11 +25,11 @@ class CcjByAdmissionOrDeterminationPdfServiceTest {
     @Mock
     private ContentProvider contentProvider;
 
-    private CcjByAdmissionOrDeterminationPdfService ccjByAdmissionOrDeterminationPdfService;
+    private CCJByAdmissionOrDeterminationPdfService ccjByAdmissionOrDeterminationPdfService;
 
     @BeforeEach
-    public void beforeTest() {
-        ccjByAdmissionOrDeterminationPdfService = new CcjByAdmissionOrDeterminationPdfService(
+    void setUp() {
+        ccjByAdmissionOrDeterminationPdfService = new CCJByAdmissionOrDeterminationPdfService(
             documentTemplates,
             pdfServiceClient,
             contentProvider

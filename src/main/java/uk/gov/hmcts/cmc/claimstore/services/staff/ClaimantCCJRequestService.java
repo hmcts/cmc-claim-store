@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.staff;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.claimstore.documents.CcjByAdmissionOrDeterminationPdfService;
+import uk.gov.hmcts.cmc.claimstore.documents.CCJByAdmissionOrDeterminationPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
@@ -15,12 +15,12 @@ import static uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType.DETERMINATI
 @Service
 public class ClaimantCCJRequestService {
 
-    private final CcjByAdmissionOrDeterminationPdfService ccjByAdmissionOrDeterminationPdfService;
+    private final CCJByAdmissionOrDeterminationPdfService ccjByAdmissionOrDeterminationPdfService;
     private final DocumentsService documentService;
 
     @Autowired
     public ClaimantCCJRequestService(
-        CcjByAdmissionOrDeterminationPdfService ccjByAdmissionOrDeterminationPdfService,
+        CCJByAdmissionOrDeterminationPdfService ccjByAdmissionOrDeterminationPdfService,
         DocumentsService documentService
     ) {
         this.ccjByAdmissionOrDeterminationPdfService = ccjByAdmissionOrDeterminationPdfService;
