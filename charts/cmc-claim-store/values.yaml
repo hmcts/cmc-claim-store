@@ -22,6 +22,13 @@ java:
         - system-update-password
         - notify-api-key
         - milo-recipient
+        - staff-email
+        - live-support-email
+        - rpa-email-sealed-claim
+        - rpa-email-more-time-requested
+        - rpa-email-response
+        - rpa-email-ccj
+        - rpa-email-paid-in-full
   environment:
     REFORM_TEAM: cmc
     REFORM_SERVICE_NAME: claim-store
@@ -38,16 +45,9 @@ java:
     CMC_DB_NAME: cmc
     CMC_DB_PORT: 5432
     FEATURE_TOGGLES_SAVE_CLAIM_STATE_ENABLED: true
-    STAFF_NOTIFICATIONS_RECIPIENT: civilmoneyclaims+staff-int-tests@gmail.com
-    LIVE_SUPPORT_RECIPIENT: civilmoneyclaims+live-support-int-tests@gmail.com
     LIVE_SUPPORT_SENDER: noreply@reform.hmcts.net
     STAFF_NOTIFICATIONS_SENDER: noreply@reform.hmcts.net
     RPA_NOTIFICATIONS_SENDER: noreply@reform.hmcts.net
-    RPA_NOTIFICATIONS_SEALEDCLAIMRECIPIENT: civilmoneyclaims+rpa-claim-issued@gmail.com
-    RPA_NOTIFICATIONS_MORETIMEREQUESTEDRECIPIENT: civilmoneyclaims+rpa-more-time-requested@gmail.com
-    RPA_NOTIFICATIONS_RESPONSERECIPIENT: civilmoneyclaims+rpa-defence-response@gmail.com
-    RPA_NOTIFICATIONS_COUNTYCOURTJUDGEMENTRECIPIENT: civilmoneyclaims+rpa-county-court-judgement@gmail.com
-    RPA_NOTIFICATIONS_PAIDINFULLRECIPIENT: civilmoneyclaims+rpa-paid-in-full@gmail.com
     DOCUMENT_MANAGEMENT_USERROLES: caseworker-cmc,citizen
     MILO_CSV_SCHEDULE: '-'
     MILO_CSV_SENDER: noreply@reform.hmcts.net

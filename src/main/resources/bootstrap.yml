@@ -15,4 +15,10 @@ spring:
         system-update-password: idam.caseworker.system.password
         AppInsightsInstrumentationKey: azure.application-insights.instrumentation-key
         milo-recipient: MILO_CSV_RECIPIENT
-
+        staff-email: STAFF_NOTIFICATIONS_RECIPIENT
+        live-support-email: LIVE_SUPPORT_RECIPIENT
+        rpa-email-sealed-claim: RPA_NOTIFICATIONS_SEALEDCLAIMRECIPIENT
+        rpa-email-more-time-requested: RPA_NOTIFICATIONS_MORETIMEREQUESTEDRECIPIENT
+        rpa-email-response: RPA_NOTIFICATIONS_RESPONSERECIPIENT
+        rpa-email-ccj: RPA_NOTIFICATIONS_COUNTYCOURTJUDGEMENTRECIPIENT
+        rpa-email-paid-in-full: RPA_NOTIFICATIONS_PAIDINFULLRECIPIENT
