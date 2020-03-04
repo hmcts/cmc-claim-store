@@ -53,12 +53,13 @@ public class ReDeterminationMapperTest {
         CCDRespondent ccdRespondent = builder.build();
 
         //then
-        ReDetermination reDetermination = claim.getReDetermination().orElseThrow(AssertionError::new);
+        ReDetermination reDetermination = claim.getReDetermination()
+            .orElseThrow(() -> new AssertionError("Missing redetermination"));
         assertThat(reDetermination.getExplanation()).isEqualTo(ccdRespondent.getRedeterminationExplanation());
         assertThat(reDetermination.getPartyType().name()).isEqualTo(ccdRespondent.getRedeterminationMadeBy().name());
 
-        LocalDateTime reDeterminationAt = claim.getReDeterminationRequestedAt().orElseThrow(AssertionError::new);
-        assertThat(reDeterminationAt).isEqualTo(ccdRespondent.getRedeterminationRequestedDate());
+        assertThat(claim.getReDeterminationRequestedAt())
+            .contains(ccdRespondent.getRedeterminationRequestedDate());
     }
 
     @Test
@@ -105,11 +106,11 @@ public class ReDeterminationMapperTest {
         Claim claim = builder.build();
 
         //then
-        ReDetermination reDetermination = claim.getReDetermination().orElseThrow(AssertionError::new);
+        ReDetermination reDetermination = claim.getReDetermination()
+            .orElseThrow(() -> new AssertionError("Missing redetermination"));
         assertThat(reDetermination.getPartyType().name()).isEqualTo(ccdRespondent.getRedeterminationMadeBy().name());
         assertThat(reDetermination.getExplanation()).isEqualTo(ccdRespondent.getRedeterminationExplanation());
 
-        LocalDateTime reDeterminationAt = claim.getReDeterminationRequestedAt().orElseThrow(AssertionError::new);
-        assertThat(reDeterminationAt).isEqualTo(ccdRespondent.getRedeterminationRequestedDate());
+        assertThat(claim.getReDeterminationRequestedAt()).contains(ccdRespondent.getRedeterminationRequestedDate());
     }
 }

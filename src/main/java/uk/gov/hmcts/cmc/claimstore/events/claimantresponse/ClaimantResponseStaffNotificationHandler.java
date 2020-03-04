@@ -15,6 +15,8 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isIntentToProceed;
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isReferredToJudge;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_CLAIMANT_RESPONSE;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
 import static uk.gov.hmcts.cmc.domain.utils.PartyUtils.isCompanyOrOrganisation;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isPartAdmission;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseFullDefenceStatesPaid;
@@ -43,11 +45,13 @@ public class ClaimantResponseStaffNotificationHandler {
     @EventListener
     public void onClaimantResponse(ClaimantResponseEvent event) {
         Claim claim = event.getClaim();
-        Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
+        Response response = claim.getResponse()
+            .orElseThrow(() -> new IllegalArgumentException(MISSING_RESPONSE));
         if (isResponseFullDefenceStatesPaid(response)) {
             this.statesPaidStaffNotificationService.notifyStaffClaimantResponseStatesPaidSubmittedFor(claim);
         }
-        ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalArgumentException::new);
+        ClaimantResponse claimantResponse = claim.getClaimantResponse()
+            .orElseThrow(() -> new IllegalArgumentException(MISSING_CLAIMANT_RESPONSE));
         if (isPartAdmission(response) && claimantResponse.getType() == ClaimantResponseType.REJECTION) {
             claimantRejectionStaffNotificationService.notifyStaffClaimantRejectPartAdmission(claim);
         }
@@ -63,7 +67,7 @@ public class ClaimantResponseStaffNotificationHandler {
     @EventListener
     public void notifyStaffWithClaimantsIntentionToProceed(ClaimantResponseEvent event) {
         ClaimantResponse claimantResponse = event.getClaim().getClaimantResponse()
-            .orElseThrow(IllegalArgumentException::new);
+            .orElseThrow(() -> new IllegalArgumentException(MISSING_CLAIMANT_RESPONSE));
 
         if (isIntentToProceed(claimantResponse)) {
             claimantRejectionStaffNotificationService.notifyStaffWithClaimantsIntentionToProceed(event.getClaim());

@@ -33,7 +33,8 @@ public enum ClaimState {
 
     public static ClaimState fromValue(String value) {
         return Arrays.stream(ClaimState.values())
-            .filter(state -> state.getValue().equalsIgnoreCase(value))
-            .findFirst().orElseThrow(IllegalArgumentException::new);
+            .filter(state -> state.state.equalsIgnoreCase(value))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Unknown ClaimState: " + value));
     }
 }

@@ -1,7 +1,4 @@
 tags:
-  cmc-claim-store-postgresql-pod: true
-  cmc-citizen-frontend-pod: true
-  cmc-ccd-stack: true
   ccd-idam-pr: true
   postgresql-pod: false  # stop any subcharts starting their own postgres instance
 
@@ -18,9 +15,9 @@ postgresql:
       CREATE DATABASE features WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
       CREATE DATABASE "data-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
       CREATE DATABASE "definition-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+      CREATE DATABASE "user-profile" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
   postgresqlUsername: hmcts
   postgresqlPassword: hmcts
-  postgresqlDatabase: user-profile
   nameOverride: postgres
   persistence:
     enabled: false
@@ -28,77 +25,36 @@ postgresql:
 java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
+  livenessFailureThreshold: 6
+  livenessDelay: 75
+  readinessDelay: 75
+  keyVaults:
+    cmc:
+      resourceGroup: cmc
+      secrets:
+        - AppInsightsInstrumentationKey
+        - citizen-oauth-client-secret
+        - claim-store-s2s-secret
+        - anonymous-caseworker-username
+        - anonymous-caseworker-password
+        - system-update-username
+        - system-update-password
+        - notify-api-key
+        - milo-recipient
+        - staff-email
+        - live-support-email
+        - rpa-email-sealed-claim
+        - rpa-email-more-time-requested
+        - rpa-email-response
+        - rpa-email-ccj
+        - rpa-email-paid-in-full
   environment:
     LOG_LEVEL: DEBUG
-    IDAM_S2S_AUTH_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-    SEND_LETTER_URL: http://rpe-send-letter-service-aat.service.core-compute-aat.internal
-    IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
-    PDF_SERVICE_URL: http://cmc-pdf-service-aat.service.core-compute-aat.internal
-    DOCUMENT_MANAGEMENT_URL: http://dm-store-aat.service.core-compute-aat.internal
-    PAY_URL: http://payment-api-aat.service.core-compute-aat.internal
-    FEES_URL: http://fees-register-api-aat.service.core-compute-aat.internal
-    DOC_ASSEMBLY_URL: http://dg-docassembly-aat.service.core-compute-aat.internal
-    FRONTEND_BASE_URL: https://www-${SERVICE_FQDN}
-    RESPOND_TO_CLAIM_URL: https://www-${SERVICE_FQDN}/first-contact/start
     CMC_DB_HOST: ${SERVICE_NAME}-postgres
     CMC_DB_USERNAME: hmcts
     CMC_DB_PASSWORD: hmcts
+    CMC_DB_CONNECTION_OPTIONS: '?sslmode=allow'
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-data-store-api
-
-cmc-citizen-frontend:
-  enabled: true
-  nodejs:
-    image: hmctspublic.azurecr.io/cmc/citizen-frontend:latest  # master
-    ingressIP: ${INGRESS_IP}
-    consulIP: ${CONSUL_LB_IP}
-    memoryRequests: 512Mi
-    memoryLimits: 1024Mi
-    releaseNameOverride: ${SERVICE_NAME}-nodejs
-    readinessDelay: 90  # claim-store will start much slower
-    livenessDelay: 90  # claim-store will start much slower
-    registerAdditionalDns:
-      enabled: true
-      primaryIngressHost: ${SERVICE_FQDN}
-      prefix: www
-    environment:
-      LOG_LEVEL: DEBUG
-      FEATURE_TOGGLES_API_URL: http://${SERVICE_NAME}-ftr-tgl-api
-      CLAIM_STORE_URL: http://${SERVICE_NAME}-java
-      IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
-      IDAM_AUTHENTICATION_WEB_URL: https://idam-web-public.aat.platform.hmcts.net
-      IDAM_S2S_AUTH: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-      PAY_URL: http://payment-api-aat.service.core-compute-aat.internal
-      FEES_URL: http://fees-register-api-aat.service.core-compute-aat.internal
-      DRAFT_STORE_URL: http://draft-store-service-aat.service.core-compute-aat.internal
-  rpe-feature-toggle-api:
-    java:
-      releaseNameOverride: ${SERVICE_NAME}-ftr-tgl-api
-      environment:
-        FEATURES_DB_HOST: ${SERVICE_NAME}-postgres
-        FEATURES_DB_NAME: features
-        FEATURES_DB_USER_NAME: hmcts
-        FEATURES_DB_PASSWORD: hmcts
-      postgresql:
-        image:
-          tag: '11.3.0'
-    importer:
-      apiUrl: http://${SERVICE_NAME}-ftr-tgl-api/api/ff4j/store/features/
-      kvSecretRef: kvcreds
-      cron:
-        enabled: false
-      oneoff:
-        command: /scripts/add-weighted-toggle.sh cmc_admissions 'CMC admissions' '1.0' &&
-          /scripts/add-weighted-toggle.sh cmc_directions_questionnaire 'CMC Directions Questionnaire' '1.0' &&
-          /scripts/add-weighted-toggle.sh cmc_mediation_pilot 'CMC Mediation Pilot' '1.0' &&
-          /scripts/add-weighted-toggle.sh cmc_legal_advisor 'CMC LEGAL ADVISOR' '1.0' &&
-          /scripts/add-weighted-toggle.sh cmc_judge_pilot 'CMC Judge Pilot' '1.0' &&
-          /scripts/add-toggle.sh cmc_defence_reminders 'CMC defence reminders' false
-        enabled: true
-        permissions: cmc-new-features-consent-given
-  idam-pr:
-    redirect_uris:
-      Money Claims - Citizen:
-        - https://www-${SERVICE_FQDN}/receiver
 
 ccd:
   enabled: true

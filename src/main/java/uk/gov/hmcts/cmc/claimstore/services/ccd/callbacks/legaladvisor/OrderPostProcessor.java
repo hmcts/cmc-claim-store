@@ -9,9 +9,9 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
+import uk.gov.hmcts.cmc.claimstore.services.DirectionOrderService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourtDetailsFinder;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -39,20 +39,20 @@ public class OrderPostProcessor {
     private final OrderDrawnNotificationService orderDrawnNotificationService;
     private final CaseDetailsConverter caseDetailsConverter;
     private final LegalOrderService legalOrderService;
-    private final HearingCourtDetailsFinder hearingCourtDetailsFinder;
+    private final DirectionOrderService directionOrderService;
 
     public OrderPostProcessor(
         Clock clock,
         OrderDrawnNotificationService orderDrawnNotificationService,
         CaseDetailsConverter caseDetailsConverter,
         LegalOrderService legalOrderService,
-        HearingCourtDetailsFinder hearingCourtDetailsFinder
+        DirectionOrderService directionOrderService
     ) {
         this.clock = clock;
         this.orderDrawnNotificationService = orderDrawnNotificationService;
         this.caseDetailsConverter = caseDetailsConverter;
         this.legalOrderService = legalOrderService;
-        this.hearingCourtDetailsFinder = hearingCourtDetailsFinder;
+        this.directionOrderService = directionOrderService;
     }
 
     public CallbackResponse copyDraftToCaseDocument(CallbackParams callbackParams) {
@@ -62,11 +62,13 @@ public class OrderPostProcessor {
         CCDDocument draftOrderDoc = Optional.ofNullable(ccdCase.getDraftOrderDoc())
             .orElseThrow(() -> new CallbackException("Draft order not present"));
 
-        HearingCourt hearingCourt = Optional.ofNullable(ccdCase.getHearingCourt())
-            .map(hearingCourtDetailsFinder::findHearingCourtAddress)
-            .orElseGet(() -> HearingCourt.builder().build());
+        HearingCourt hearingCourt = directionOrderService.getHearingCourt(ccdCase);
 
         CCDCase updatedCase = ccdCase.toBuilder()
+            .expertReportPermissionPartyGivenToClaimant(null)
+            .expertReportPermissionPartyGivenToDefendant(null)
+            .expertReportInstructionClaimant(null)
+            .expertReportInstructionDefendant(null)
             .caseDocuments(updateCaseDocumentsWithOrder(ccdCase, draftOrderDoc))
             .directionOrder(CCDDirectionOrder.builder()
                 .createdOn(nowInUTC())
@@ -77,7 +79,35 @@ public class OrderPostProcessor {
 
         return AboutToStartOrSubmitCallbackResponse
             .builder()
-            .data(caseDetailsConverter.convertToMap(updatedCase))
+            .data(caseDetailsConverter.convertToMap(cleanUpDynamicList(updatedCase)))
+            .build();
+    }
+
+    public CallbackResponse persistHearingCourtAndMigrateExpertReport(CallbackParams callbackParams) {
+        CallbackRequest callbackRequest = callbackParams.getRequest();
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
+        HearingCourt hearingCourt = directionOrderService.getHearingCourt(ccdCase);
+
+        CCDCase updatedCase = ccdCase.toBuilder()
+            .hearingCourtName(hearingCourt.getName())
+            .hearingCourtAddress(hearingCourt.getAddress())
+            .expertReportPermissionPartyGivenToClaimant(null)
+            .expertReportPermissionPartyGivenToDefendant(null)
+            .expertReportInstructionClaimant(null)
+            .expertReportInstructionDefendant(null)
+            .build();
+
+        return AboutToStartOrSubmitCallbackResponse
+            .builder()
+            .data(caseDetailsConverter.convertToMap(cleanUpDynamicList(updatedCase)))
+            .build();
+    }
+
+    private CCDCase cleanUpDynamicList(CCDCase ccdCase) {
+        return ccdCase.toBuilder()
+            //CCD cannot currently handle storing values from dynamic lists, is getting re-implemented in RDM-6651
+            //Once CCD is fixed we can remove setting the hearing court to null
+            .hearingCourt(null)
             .build();
     }
 

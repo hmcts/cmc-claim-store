@@ -21,7 +21,8 @@ public enum ClaimFeatures {
 
     public static ClaimFeatures fromValue(String value) {
         return Arrays.stream(ClaimFeatures.values())
-            .filter(state -> state.getValue().equalsIgnoreCase(value))
-            .findFirst().orElseThrow(IllegalArgumentException::new);
+            .filter(state -> state.state.equalsIgnoreCase(value))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Unknown ClaimFeatures: " + value));
     }
 }

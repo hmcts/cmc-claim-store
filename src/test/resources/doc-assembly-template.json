@@ -34,6 +34,7 @@
     "AddressLine2": "line2",
     "AddressLine3": "line3",
     "Country": null,
+    "County": null,
     "PostCode": "SW1P4BB",
     "PostTown": "Birmingham"
   },
@@ -87,18 +88,10 @@
   "paperDetermination": false,
   "expertReportPermissionPartyAskedByClaimant": true,
   "expertReportPermissionPartyAskedByDefendant": true,
-  "expertReportPermissionPartyGivenToClaimant": true,
-  "expertReportPermissionPartyGivenToDefendant": true,
-  "expertReportInstructionClaimant": [
-    {
-      "id": null,
-      "value": "submit more docs"
-    }
-  ],
-  "expertReportInstructionDefendant": [
-    {
-      "id": null,
-      "value": "submit more docs"
-    }
-  ]
+  "expertReportInstructionClaimant" : [],
+  "expertReportInstructionDefendant" : [],
+  "expertReportPermissionPartyGivenToClaimant" : false,
+  "expertReportPermissionPartyGivenToDefendant" : false,
+  "grantExpertReportPermission": true,
+  "expertReportInstruction": "submit more docs"
 }

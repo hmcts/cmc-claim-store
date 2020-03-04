@@ -16,6 +16,7 @@ public class AddressMapper implements Mapper<CCDAddress, Address> {
             .addressLine3(address.getLine3())
             .postTown(address.getCity())
             .postCode(address.getPostcode())
+            .county(address.getCounty())
             .build();
     }
 
@@ -26,6 +27,6 @@ public class AddressMapper implements Mapper<CCDAddress, Address> {
         }
 
         return new Address(address.getAddressLine1(), address.getAddressLine2(), address.getAddressLine3(),
-            address.getPostTown(), address.getPostCode());
+            address.getPostTown(), address.getCounty(), address.getPostCode());
     }
 }

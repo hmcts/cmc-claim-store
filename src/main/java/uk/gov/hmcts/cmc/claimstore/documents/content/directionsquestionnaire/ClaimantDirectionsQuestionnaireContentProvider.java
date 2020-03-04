@@ -8,7 +8,6 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDateTime;
 
@@ -28,10 +27,8 @@ public class ClaimantDirectionsQuestionnaireContentProvider {
         DirectionsQuestionnaire claimantDirectionsQuestionnaire = claim.getClaimantResponse()
             .filter(ResponseRejection.class::isInstance)
             .map(ResponseRejection.class::cast)
-            .map(ResponseRejection::getDirectionsQuestionnaire)
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .orElseThrow(IllegalArgumentException::new);
+            .flatMap(ResponseRejection::getDirectionsQuestionnaire)
+            .orElseThrow(() -> new IllegalArgumentException("Missing directions questionnaire"));
 
         ImmutableMap.Builder<String, Object> contentBuilder = new ImmutableMap.Builder<>();
         contentBuilder.putAll(claimContentProvider.createContent(claim));

@@ -13,6 +13,7 @@ public enum YesNoOption {
     public static YesNoOption fromValue(String value) {
         return Arrays.stream(YesNoOption.values())
             .filter(val -> val.name().equalsIgnoreCase(value))
-            .findFirst().orElseThrow(IllegalArgumentException::new);
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Unknown YesNoOption: " + value));
     }
 }
