@@ -139,7 +139,7 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
         }
 
         if (!FeaturesUtils.isOnlineDQ(claim)) {
-            return ClaimState.OPEN.getValue();
+            return ClaimState.READY_FOR_PAPER_DQ.getValue();
         }
 
         return directionsQuestionnaireService.getDirectionsCaseState(claim);
@@ -151,3 +151,4 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
             : NON_MEDIATION_PILOT_FAILED;
     }
 }
+

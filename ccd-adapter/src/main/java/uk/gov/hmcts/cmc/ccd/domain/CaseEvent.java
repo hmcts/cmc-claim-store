@@ -66,6 +66,9 @@ public enum CaseEvent {
     CREATE_CITIZEN_CLAIM("CreateCitizenClaim"),
     REVIEWED_PAPER_RESPONSE("ReviewedPaperResponse"),
     MEDIATION_FAILED("FailedMediation"),
+    MEDIATION_FAILED_100("FailedMediation100"),
+    MEDIATION_FAILED_NON_PILOT("FailedMediationNonP"),
+    MEDIATION_FAILED_PAPER("FailedMediationPaper"),
     MEDIATION_SUCCESSFUL("SuccessfulMediation"),
     RESET_PIN("ResetPin");
 
