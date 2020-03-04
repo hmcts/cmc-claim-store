@@ -65,6 +65,10 @@ public class OrderPostProcessor {
         HearingCourt hearingCourt = directionOrderService.getHearingCourt(ccdCase);
 
         CCDCase updatedCase = ccdCase.toBuilder()
+            .expertReportPermissionPartyGivenToClaimant(null)
+            .expertReportPermissionPartyGivenToDefendant(null)
+            .expertReportInstructionClaimant(null)
+            .expertReportInstructionDefendant(null)
             .caseDocuments(updateCaseDocumentsWithOrder(ccdCase, draftOrderDoc))
             .directionOrder(CCDDirectionOrder.builder()
                 .createdOn(nowInUTC())
@@ -79,15 +83,18 @@ public class OrderPostProcessor {
             .build();
     }
 
-    public CallbackResponse setHearingCourt(CallbackParams callbackParams) {
+    public CallbackResponse persistHearingCourtAndMigrateExpertReport(CallbackParams callbackParams) {
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
-
         HearingCourt hearingCourt = directionOrderService.getHearingCourt(ccdCase);
 
         CCDCase updatedCase = ccdCase.toBuilder()
             .hearingCourtName(hearingCourt.getName())
             .hearingCourtAddress(hearingCourt.getAddress())
+            .expertReportPermissionPartyGivenToClaimant(null)
+            .expertReportPermissionPartyGivenToDefendant(null)
+            .expertReportInstructionClaimant(null)
+            .expertReportInstructionDefendant(null)
             .build();
 
         return AboutToStartOrSubmitCallbackResponse
