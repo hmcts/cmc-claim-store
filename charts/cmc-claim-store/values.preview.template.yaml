@@ -15,9 +15,9 @@ postgresql:
       CREATE DATABASE features WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
       CREATE DATABASE "data-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
       CREATE DATABASE "definition-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+      CREATE DATABASE "user-profile" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
   postgresqlUsername: hmcts
   postgresqlPassword: hmcts
-  postgresqlDatabase: user-profile
   nameOverride: postgres
   persistence:
     enabled: false
@@ -41,6 +41,13 @@ java:
         - system-update-password
         - notify-api-key
         - milo-recipient
+        - staff-email
+        - live-support-email
+        - rpa-email-sealed-claim
+        - rpa-email-more-time-requested
+        - rpa-email-response
+        - rpa-email-ccj
+        - rpa-email-paid-in-full
   environment:
     LOG_LEVEL: DEBUG
     CMC_DB_HOST: ${SERVICE_NAME}-postgres
