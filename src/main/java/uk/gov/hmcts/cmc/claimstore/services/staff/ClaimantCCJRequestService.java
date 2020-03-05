@@ -30,7 +30,7 @@ public class ClaimantCCJRequestService {
     }
 
     @EventListener
-    public void getAndSaveDocumentToCcd(CountyCourtJudgmentEvent event) {
+    public void uploadDocumentToDocumentStore(CountyCourtJudgmentEvent event) {
         Claim claim = event.getClaim();
         if (claim.getCountyCourtJudgment().getCcjType() == ADMISSIONS
             || claim.getCountyCourtJudgment().getCcjType() == DETERMINATION) {

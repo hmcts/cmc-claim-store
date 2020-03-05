@@ -68,7 +68,7 @@ class ClaimantCCJRequestServiceTest {
         when(documentService.uploadToDocumentManagement(any(PDF.class),
             anyString(), any(Claim.class))).thenReturn(claim);
         event = new CountyCourtJudgmentEvent(claim, "authorisation");
-        service.getAndSaveDocumentToCcd(event);
+        service.uploadDocumentToDocumentStore(event);
         verify(ccjByAdmissionOrDeterminationPdfService)
             .createPdf(claim);
         verify(documentService)
@@ -93,7 +93,7 @@ class ClaimantCCJRequestServiceTest {
         when(documentService.uploadToDocumentManagement(any(PDF.class),
             anyString(), any(Claim.class))).thenReturn(claim);
         event = new CountyCourtJudgmentEvent(claim, "authorisation");
-        service.getAndSaveDocumentToCcd(event);
+        service.uploadDocumentToDocumentStore(event);
         verify(ccjByAdmissionOrDeterminationPdfService)
             .createPdf(claim);
         verify(documentService)
@@ -110,7 +110,7 @@ class ClaimantCCJRequestServiceTest {
                 .builder().build())
             .build();
         event = new CountyCourtJudgmentEvent(claim, "authorisation");
-        service.getAndSaveDocumentToCcd(event);
+        service.uploadDocumentToDocumentStore(event);
         verify(ccjByAdmissionOrDeterminationPdfService, never())
             .createPdf(any());
         verify(documentService, never())
