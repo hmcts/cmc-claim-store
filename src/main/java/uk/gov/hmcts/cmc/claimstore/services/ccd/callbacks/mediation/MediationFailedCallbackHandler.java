@@ -47,6 +47,8 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
 
     private static final String STATE = "state";
 
+    private static final List<CaseEvent> EVENTS = ImmutableList.of(CaseEvent.MEDIATION_FAILED);
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final CaseDetailsConverter caseDetailsConverter;
@@ -85,17 +87,7 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
     }
 
     @Override
-    public List<CaseEvent> handledEvents() {
-        if(ctscEnabled) {
-            return ImmutableList.of(CaseEvent.MEDIATION_FAILED);
-        } else {
-            return ImmutableList.of(
-                CaseEvent.MEDIATION_FAILED,
-                CaseEvent.MEDIATION_FAILED_100,
-                CaseEvent.MEDIATION_FAILED_NON_PILOT,
-                CaseEvent.MEDIATION_FAILED_PAPER);
-        }
-    }
+    public List<CaseEvent> handledEvents() { return EVENTS; }
 
     @Override
     public List<Role> getSupportedRoles() {
