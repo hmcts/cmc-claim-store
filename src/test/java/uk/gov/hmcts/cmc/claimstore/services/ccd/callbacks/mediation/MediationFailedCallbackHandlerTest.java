@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
@@ -43,6 +44,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.LA_PILOT_FLAG;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_JUDGE_DIRECTIONS;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_LEGAL_ADVISOR_DIRECTIONS;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_PAPER_DQ;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_TRANSFER;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -118,7 +120,7 @@ public class MediationFailedCallbackHandlerTest {
     }
 
     @Test
-    public void setsToOpenIfNotOnlineDQCase() {
+    public void setsToOpenIfNotOnlineDQCaseAndNotCTSCEnabled() {
 
         Claim claim = claimSetForMediation.toBuilder()
             .claimData(SampleClaimData.submittedWithAmountMoreThanThousand())
@@ -133,6 +135,26 @@ public class MediationFailedCallbackHandlerTest {
                 .handle(callbackParams);
 
         assertThat(response.getData()).containsEntry("state", OPEN.getValue());
+
+    }
+
+    @Test
+    public void setsToReadyForPaperDQIfNotOnlineDQCaseAndCTSCEnabled() {
+
+        ReflectionTestUtils.setField(mediationFailedCallbackHandler, "ctscEnabled", true);
+        Claim claim = claimSetForMediation.toBuilder()
+            .claimData(SampleClaimData.submittedWithAmountMoreThanThousand())
+            .build();
+
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+        when(deadlineCalculator.calculateDirectionsQuestionnaireDeadline(any()))
+            .thenReturn(LocalDate.now().plusDays(8));
+
+        AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
+            mediationFailedCallbackHandler
+                .handle(callbackParams);
+
+        assertThat(response.getData()).containsEntry("state", READY_FOR_PAPER_DQ.getValue());
 
     }
 
