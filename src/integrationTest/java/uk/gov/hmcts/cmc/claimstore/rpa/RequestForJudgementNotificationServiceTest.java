@@ -26,7 +26,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.rpa.ClaimIssuedNotificationService.JSON_EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildJsonRequestForJudgementFileBaseName;
@@ -106,6 +105,39 @@ public class RequestForJudgementNotificationServiceTest extends BaseMockSpringTe
 
         service.notifyRobotics(event);
 
+        verifyEmailSent();
+    }
+
+    @Test
+    public void shouldSendRoboticsEmailWhenCCJByAdmission() {
+        Claim claimWithCCJByAdmission = SampleClaim.builder()
+            .withCountyCourtJudgmentRequestedAt(LocalDate.of(2018, 4, 26).atStartOfDay())
+            .withCountyCourtJudgment(CCJ_BY_ADMISSION)
+            .build();
+
+        CountyCourtJudgmentEvent event = new CountyCourtJudgmentEvent(claimWithCCJByAdmission, "AUTH_CODE");
+
+        service.notifyRobotics(event);
+
+        verifyEmailSent();
+    }
+
+    @Test
+    public void shouldSendRoboticsEmailWhenCCJByDetermination() {
+        Claim claimWithCCJByDetermination = SampleClaim.builder()
+            .withCountyCourtJudgmentRequestedAt(LocalDate.of(2018, 4, 26).atStartOfDay())
+            .withCountyCourtJudgment(CCJ_BY_DETERMINATION)
+            .build();
+
+        CountyCourtJudgmentEvent event = new CountyCourtJudgmentEvent(claimWithCCJByDetermination,
+            "AUTH_CODE");
+
+        service.notifyRobotics(event);
+
+        verifyEmailSent();
+    }
+
+    private void verifyEmailSent() {
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
         EmailAttachment ccjPdfAttachment = emailDataArgument.getValue()
@@ -127,34 +159,5 @@ public class RequestForJudgementNotificationServiceTest extends BaseMockSpringTe
 
         assertThat(ccjJsonAttachment.getContentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
         assertThat(ccjJsonAttachment.getFilename()).isEqualTo(expectedCcjJsonFilename);
-    }
-
-    @Test
-    public void shouldNotSendRoboticsEmailWhenCCJByAdmission() {
-        Claim claimWithCCJByAdmission = SampleClaim.builder()
-            .withCountyCourtJudgmentRequestedAt(LocalDate.of(2018, 4, 26).atStartOfDay())
-            .withCountyCourtJudgment(CCJ_BY_ADMISSION)
-            .build();
-
-        CountyCourtJudgmentEvent event = new CountyCourtJudgmentEvent(claimWithCCJByAdmission, "AUTH_CODE");
-
-        service.notifyRobotics(event);
-
-        verifyNoInteractions(emailService);
-    }
-
-    @Test
-    public void shouldNotSendRoboticsEmailWhenCCJByDetermination() {
-        Claim claimWithCCJByDetermination = SampleClaim.builder()
-            .withCountyCourtJudgmentRequestedAt(LocalDate.of(2018, 4, 26).atStartOfDay())
-            .withCountyCourtJudgment(CCJ_BY_DETERMINATION)
-            .build();
-
-        CountyCourtJudgmentEvent event = new CountyCourtJudgmentEvent(claimWithCCJByDetermination,
-            "AUTH_CODE");
-
-        service.notifyRobotics(event);
-
-        verifyNoInteractions(emailService);
     }
 }

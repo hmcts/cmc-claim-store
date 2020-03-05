@@ -47,12 +47,10 @@ public class RequestForJudgementNotificationService {
         CountyCourtJudgmentType countyCourtJudgmentType = event.getClaim().getCountyCourtJudgment().getCcjType();
         switch (countyCourtJudgmentType) {
             case DEFAULT:
-                EmailData emailData = prepareEmailData(event.getClaim());
-                emailService.sendEmail(emailProperties.getSender(), emailData);
-                break;
             case DETERMINATION:
             case ADMISSIONS:
-                //No RPA email sent
+                EmailData emailData = prepareEmailData(event.getClaim());
+                emailService.sendEmail(emailProperties.getSender(), emailData);
                 break;
             default:
                 throw new IllegalArgumentException("CountyCourtJudgmentType types not support "

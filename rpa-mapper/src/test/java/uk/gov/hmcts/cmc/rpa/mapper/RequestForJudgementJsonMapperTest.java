@@ -10,6 +10,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment.CountyCourtJudgmentBuilder;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.ccj.PaymentSchedule;
@@ -39,6 +40,40 @@ public class RequestForJudgementJsonMapperTest {
 
     @Autowired
     private RequestForJudgementJsonMapper mapper;
+
+    @Test
+    public void shouldMapRequestForJudgementWithDefaultJudgementType() throws JSONException {
+        CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
+            .builder()
+            .ccjType(CountyCourtJudgmentType.DEFAULT)
+            .build();
+
+        Claim claim = SampleClaim.builder()
+            .withCountyCourtJudgmentRequestedAt(CCJ_REQUESTED_AT)
+            .withCountyCourtJudgment(countyCourtJudgment)
+            .build();
+
+        String expected = new ResourceReader()
+            .read("/judgement/rpa_request_for_default_judgement.json").trim();
+        assertEquals(expected, mapper.map(claim).toString(), STRICT);
+    }
+
+    @Test
+    public void shouldMapRequestForJudgementWithByAdmissionJudgementType() throws JSONException {
+        CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
+            .builder()
+            .ccjType(CountyCourtJudgmentType.ADMISSIONS)
+            .build();
+
+        Claim claim = SampleClaim.builder()
+            .withCountyCourtJudgmentRequestedAt(CCJ_REQUESTED_AT)
+            .withCountyCourtJudgment(countyCourtJudgment)
+            .build();
+
+        String expected = new ResourceReader()
+            .read("/judgement/rpa_request_for_by_admission_judgement.json").trim();
+        assertEquals(expected, mapper.map(claim).toString(), STRICT);
+    }
 
     @Test
     public void shouldMapRequestForJudgementImmediatelyWithPaidAlready() throws JSONException {
