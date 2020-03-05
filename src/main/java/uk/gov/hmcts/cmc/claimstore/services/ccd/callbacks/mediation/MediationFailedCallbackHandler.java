@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
@@ -43,11 +44,6 @@ import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseTy
 @Service
 public class MediationFailedCallbackHandler extends CallbackHandler {
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
-    private static final List<CaseEvent> EVENTS = ImmutableList.of(
-        CaseEvent.MEDIATION_FAILED,
-        CaseEvent.MEDIATION_FAILED_100,
-        CaseEvent.MEDIATION_FAILED_NON_PILOT,
-        CaseEvent.MEDIATION_FAILED_PAPER);
 
     private static final String STATE = "state";
 
@@ -62,6 +58,8 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
     private final DirectionsQuestionnaireService directionsQuestionnaireService;
 
     private final MediationFailedNotificationService notificationService;
+
+    @Value("${feature_toggles.ctsc_enabled}") boolean ctscEnabled;
 
     @Autowired
     public MediationFailedCallbackHandler(CaseDetailsConverter caseDetailsConverter,
@@ -88,7 +86,15 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
 
     @Override
     public List<CaseEvent> handledEvents() {
-        return EVENTS;
+        if(ctscEnabled) {
+            return ImmutableList.of(CaseEvent.MEDIATION_FAILED);
+        } else {
+            return ImmutableList.of(
+                CaseEvent.MEDIATION_FAILED,
+                CaseEvent.MEDIATION_FAILED_100,
+                CaseEvent.MEDIATION_FAILED_NON_PILOT,
+                CaseEvent.MEDIATION_FAILED_PAPER);
+        }
     }
 
     @Override
@@ -143,7 +149,12 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
         }
 
         if (!FeaturesUtils.isOnlineDQ(claim)) {
-            return ClaimState.READY_FOR_PAPER_DQ.getValue();
+            if (ctscEnabled) {
+                return ClaimState.READY_FOR_PAPER_DQ.getValue();
+            } else {
+                return ClaimState.OPEN.getValue();
+            }
+
         }
 
         return directionsQuestionnaireService.getDirectionsCaseState(claim);
@@ -154,5 +165,6 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
             ? MEDIATION_PILOT_FAILED
             : NON_MEDIATION_PILOT_FAILED;
     }
+
 }
 
