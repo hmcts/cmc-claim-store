@@ -35,7 +35,7 @@ public class CCJByAdmissionOrDeterminationPdfService implements PdfService {
         requireNonNull(claim);
         return new PDF(
             buildRequestForJudgmentByAdmissionOrDeterminationFileBaseName(claim.getReferenceNumber(),
-                claim.getCountyCourtJudgment().getCcjType().name()),
+                claim.getCountyCourtJudgment().getCcjType().name().toLowerCase()),
             pdfServiceClient.generateFromHtml(
                 documentTemplates.getCountyCourtJudgmentByRequest(),
                 contentProvider.createContent(claim)),
