@@ -33,11 +33,9 @@ public class CCJByAdmissionOrDeterminationPdfService implements PdfService {
     @Override
     public PDF createPdf(Claim claim) {
         requireNonNull(claim);
-        String fileBaseName = "";
-        fileBaseName = buildRequestForJudgmentByAdmissionOrDeterminationFileBaseName(claim.getReferenceNumber(),
-            claim.getCountyCourtJudgment().getCcjType().name());
         return new PDF(
-            fileBaseName,
+            buildRequestForJudgmentByAdmissionOrDeterminationFileBaseName(claim.getReferenceNumber(),
+                claim.getCountyCourtJudgment().getCcjType().name()),
             pdfServiceClient.generateFromHtml(
                 documentTemplates.getCountyCourtJudgmentByRequest(),
                 contentProvider.createContent(claim)),
