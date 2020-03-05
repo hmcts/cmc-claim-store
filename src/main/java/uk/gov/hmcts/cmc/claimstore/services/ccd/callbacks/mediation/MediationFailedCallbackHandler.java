@@ -43,7 +43,11 @@ import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseTy
 @Service
 public class MediationFailedCallbackHandler extends CallbackHandler {
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
-    private static final List<CaseEvent> EVENTS = ImmutableList.of(CaseEvent.MEDIATION_FAILED);
+    private static final List<CaseEvent> EVENTS = ImmutableList.of(
+        CaseEvent.MEDIATION_FAILED,
+        CaseEvent.MEDIATION_FAILED_100,
+        CaseEvent.MEDIATION_FAILED_NON_PILOT,
+        CaseEvent.MEDIATION_FAILED_PAPER);
 
     private static final String STATE = "state";
 
