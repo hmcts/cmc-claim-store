@@ -71,7 +71,7 @@ public class DocumentNameUtilsTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowErrorWhenReferenceIsEmptyWhileBuildingReviewOrderileBaseName() {
+    public void shouldThrowErrorWhenReferenceIsEmptyWhileBuildingReviewOrderFileBaseName() {
         buildReviewOrderFileBaseName("");
     }
 
