@@ -120,7 +120,7 @@ public class MediationFailedCallbackHandlerTest {
     }
 
     @Test
-    public void setsToOpenIfNotOnlineDQCaseAndNotCTSCEnabled() {
+    public void setsToOpenStateIfNotOnlineDQCaseAndNotFeatureFlagEnabled() {
 
         Claim claim = claimSetForMediation.toBuilder()
             .claimData(SampleClaimData.submittedWithAmountMoreThanThousand())
@@ -139,7 +139,7 @@ public class MediationFailedCallbackHandlerTest {
     }
 
     @Test
-    public void setsToReadyForPaperDQIfNotOnlineDQCaseAndCTSCEnabled() {
+    public void setsToReadyStateForPaperDQIfNotOnlineDQCaseAndFeatureFlagEnabled() {
 
         ReflectionTestUtils.setField(mediationFailedCallbackHandler, "ctscEnabled", true);
         Claim claim = claimSetForMediation.toBuilder()

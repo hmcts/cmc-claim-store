@@ -87,7 +87,9 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
     }
 
     @Override
-    public List<CaseEvent> handledEvents() { return EVENTS; }
+    public List<CaseEvent> handledEvents() {
+        return EVENTS;
+    }
 
     @Override
     public List<Role> getSupportedRoles() {
