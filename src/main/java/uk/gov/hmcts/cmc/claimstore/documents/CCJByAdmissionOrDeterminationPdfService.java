@@ -10,10 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForJudgementByAdmissionFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForJudgementByDeterminationFileBaseName;
-import static uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType.ADMISSIONS;
-import static uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType.DETERMINATION;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForJudgmentByAdmissionOrDeterminationFileBaseName;
 
 @Service
 public class CCJByAdmissionOrDeterminationPdfService implements PdfService {
@@ -37,13 +34,8 @@ public class CCJByAdmissionOrDeterminationPdfService implements PdfService {
     public PDF createPdf(Claim claim) {
         requireNonNull(claim);
         String fileBaseName = "";
-
-        if (claim.getCountyCourtJudgment().getCcjType() == ADMISSIONS) {
-            fileBaseName = buildRequestForJudgementByAdmissionFileBaseName(claim.getReferenceNumber());
-        } else if (claim.getCountyCourtJudgment().getCcjType() == DETERMINATION) {
-            fileBaseName = buildRequestForJudgementByDeterminationFileBaseName(claim.getReferenceNumber());
-        }
-
+        fileBaseName = buildRequestForJudgmentByAdmissionOrDeterminationFileBaseName(claim.getReferenceNumber(),
+            claim.getCountyCourtJudgment().getCcjType().name());
         return new PDF(
             fileBaseName,
             pdfServiceClient.generateFromHtml(
