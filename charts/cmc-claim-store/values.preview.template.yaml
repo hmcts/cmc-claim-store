@@ -25,26 +25,6 @@ java:
   livenessFailureThreshold: 6
   livenessDelay: 75
   readinessDelay: 75
-  keyVaults:
-    cmc:
-      resourceGroup: cmc
-      secrets:
-        - AppInsightsInstrumentationKey
-        - citizen-oauth-client-secret
-        - claim-store-s2s-secret
-        - anonymous-caseworker-username
-        - anonymous-caseworker-password
-        - system-update-username
-        - system-update-password
-        - notify-api-key
-        - milo-recipient
-        - staff-email
-        - live-support-email
-        - rpa-email-sealed-claim
-        - rpa-email-more-time-requested
-        - rpa-email-response
-        - rpa-email-ccj
-        - rpa-email-paid-in-full
   environment:
     LOG_LEVEL: DEBUG
     CMC_DB_HOST: ${SERVICE_NAME}-postgresql
@@ -71,6 +51,7 @@ ccd:
     postgresUsername: hmcts
     postgresPassword: hmcts
     devMode: true
+    enableKeyVaults: false
 
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
@@ -79,18 +60,10 @@ ccd:
   ccd-definition-store-api:
     java:
       image: hmctspublic.azurecr.io/ccd/definition-store-api:latest
-    keyVaults:
-      ccd:
-        secrets:
-          - ccd-definition-s2s-secret
 
   ccd-data-store-api:
     java:
       image: hmctspublic.azurecr.io/ccd/data-store-api:latest
-    keyVaults:
-      ccd:
-        secrets:
-          - ccd-data-s2s-secret
 
   ccd-definition-importer:
     image: hmctspublic.azurecr.io/cmc/ccd-definition-importer:1.5.10
