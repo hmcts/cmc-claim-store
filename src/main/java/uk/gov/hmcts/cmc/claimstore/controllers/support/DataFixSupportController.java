@@ -23,8 +23,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
-import uk.gov.hmcts.cmc.domain.models.party.Party;
-import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,8 +54,7 @@ public class DataFixSupportController {
 
     private static final Predicate<ClaimDocument> filterDocsToRecreate = doc ->
         doc.getDocumentType().equals(ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT) ||
-            doc.getDocumentType().equals(ClaimDocumentType.SETTLEMENT_AGREEMENT) ||
-            doc.getDocumentType().equals(ClaimDocumentType.ORDER_DIRECTIONS);
+            doc.getDocumentType().equals(ClaimDocumentType.SETTLEMENT_AGREEMENT);
 
     @Autowired
     public DataFixSupportController(SettlementAgreementCopyService settlementAgreementCopyService,
@@ -88,9 +85,7 @@ public class DataFixSupportController {
         Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
             .orElseThrow(() -> new NotFoundException(referenceNumber));
 
-        checkIfDefendantNameNeedsChange
-            .andThen(fixDefendantName)
-            .andThen(fixClaimDocs)
+        fixClaimDocs
             .andThen(updateClaim)
             .andThen(sendNotifications)
             .apply(claim);
@@ -120,6 +115,7 @@ public class DataFixSupportController {
             } else if (doc.getDocumentType().equals(SETTLEMENT_AGREEMENT)) {
                 newlyCreatedDocument = createSettlementPdf.apply(claim);
             }
+
             docsRegenerated.add(documentManagementService.uploadDocument(anonymousCaseWorker.getAuthorisation(),
                 newlyCreatedDocument));
         }
@@ -137,34 +133,8 @@ public class DataFixSupportController {
         docCollection.getClaimDocuments().stream().filter(filterDocsToRecreate.negate())
             .forEach(newCollection::addClaimDocument);
         existingList.forEach(newCollection::addClaimDocument);
-        existinClaim.toBuilder().claimDocumentCollection(newCollection);
-        return existinClaim;
+        return existinClaim.toBuilder().claimDocumentCollection(newCollection).build();
     }
-
-    // TODO - Looks like we may not need to fix the defendant name.
-    private Function<Claim, Claim> fixDefendantName = claim -> claim.toBuilder().build();
-
-    private final Function<Claim, String> getDefendantName = claim -> claim.getResponse()
-        .map(Response::getDefendant)
-        .map(Party::getName)
-        .orElse("UNKNOWN");
-
-    private final Function<Claim, String> getClaimantProvidedDefendantName = claim -> claim.getResponse()
-        .map(Response::getDefendant)
-        .map(Party::getName)
-        .orElse("NOTPROVIDED");
-
-    private Function<Claim, Claim> checkIfDefendantNameNeedsChange = claim -> {
-        if (!claim.getResponse().isPresent()) {
-            throw new IllegalStateException("No response found");
-        }
-
-        if (getDefendantName.apply(claim).equals(getClaimantProvidedDefendantName.apply(claim))) {
-            throw new IllegalStateException("Defendant provided name is no different from one provided by Claimant.");
-        }
-
-        return claim;
-    };
 
     private UnaryOperator<Claim> updateClaim = claim -> {
         User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
