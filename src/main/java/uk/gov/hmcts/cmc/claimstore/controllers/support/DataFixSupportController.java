@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
@@ -14,6 +16,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -39,11 +42,13 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEM
 public class DataFixSupportController {
 
     private final ClaimService claimService;
+    private CaseMapper caseMapper;
     private DocumentManagementService documentManagementService;
     private Function<Claim, PDF> createDefendantResponsePdf;
     private Function<Claim, PDF> createSettlementPdf;
     private NotificationService notificationService;
     private UserService userService;
+    private CoreCaseDataService coreCaseDataService;
 
     private static final String claimantNotificationEmailTemplateID = "594e64c9-edca-4dc5-bd83-35a44c4e28dc";
     private static final String defendantNotificationEmailTemplateID = "6d0a9f4d-f9e6-4962-b6c6-32c09169e6f2";
@@ -60,13 +65,17 @@ public class DataFixSupportController {
                                     ClaimService claimService,
                                     DocumentManagementService documentManagementService,
                                     NotificationService notificationService,
-                                    UserService userService
+                                    UserService userService,
+                                    CoreCaseDataService coreCaseDataService,
+                                    CaseMapper caseMapper
     ) {
 
         this.claimService = claimService;
+        this.caseMapper = caseMapper;
         this.documentManagementService = documentManagementService;
         this.notificationService = notificationService;
         this.userService = userService;
+        this.coreCaseDataService = coreCaseDataService;
 
         createDefendantResponsePdf = defendantResponseReceiptService::createPdf;
         createSettlementPdf = settlementAgreementCopyService::createPdf;
@@ -82,6 +91,7 @@ public class DataFixSupportController {
         checkIfDefendantNameNeedsChange
             .andThen(fixDefendantName)
             .andThen(fixClaimDocs)
+            .andThen(updateClaim)
             .andThen(sendNotifications)
             .apply(claim);
 
@@ -153,6 +163,14 @@ public class DataFixSupportController {
             throw new IllegalStateException("Defendant provided name is no different from one provided by Claimant.");
         }
 
+        return claim;
+    };
+
+    private UnaryOperator<Claim> updateClaim = claim -> {
+        User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
+        coreCaseDataService.update(anonymousCaseWorker.getAuthorisation(),
+            caseMapper.to(claim),
+            CaseEvent.SUPPORT_UPDATE);
         return claim;
     };
 
