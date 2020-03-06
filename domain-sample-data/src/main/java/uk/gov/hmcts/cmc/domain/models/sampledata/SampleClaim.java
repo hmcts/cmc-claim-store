@@ -36,11 +36,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static java.math.BigDecimal.TEN;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.*;
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
 import static uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType.DEFAULT;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
@@ -69,6 +65,7 @@ public final class SampleClaim {
     public static final String DEFENDANT_EMAIL_VERIFIED = "defendant@mail.com";
     private static final URI DOCUMENT_URI = URI.create("http://localhost/doc.pdf");
     private static final String OCMC = "OCMC";
+    public static final String LEGAL_ADVISOR_ORDER_PDF = "legal-advisor-order.pdf";
 
     private String submitterId = USER_ID;
     private String letterHolderId = LETTER_HOLDER_ID;
@@ -726,9 +723,22 @@ public final class SampleClaim {
         return this;
     }
 
+    public SampleClaim withOrderDocument(URI uri) {
+        ClaimDocument claimDocument = ClaimDocument.builder()
+            .documentManagementUrl(uri)
+            .documentName(LEGAL_ADVISOR_ORDER_PDF)
+            .documentType(ORDER_DIRECTIONS)
+            .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
+            .createdBy(OCMC)
+            .build();
+        this.claimDocumentCollection.addClaimDocument(claimDocument);
+        return this;
+    }
+
     public SampleClaim withCCJRequestDocument(URI uri) {
         ClaimDocument claimDocument = ClaimDocument.builder()
             .documentManagementUrl(uri)
+            .documentManagementBinaryUrl(uri)
             .documentName("county-court-judgment-details.pdf")
             .documentType(CCJ_REQUEST)
             .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
