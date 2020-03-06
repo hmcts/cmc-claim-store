@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimantResponseRule;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
@@ -18,8 +19,13 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Optional;
 
 import static java.util.function.Predicate.isEqual;
@@ -110,6 +116,7 @@ public class ClaimantResponseService {
                 .calculateDirectionsQuestionnaireDeadline(claim.getRespondedAt());
             caseRepository.updateDirectionsQuestionnaireDeadline(claim, deadline, authorization);
             updatedClaim = claimService.getClaimByExternalId(externalId, authorization);
+            //save claim state as Ready for paper dqs
         }
 
         if (!isSettlementAgreement(response, claimantResponse)) {

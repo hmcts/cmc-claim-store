@@ -10,8 +10,10 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
+import uk.gov.hmcts.cmc.claimstore.services.AuthorisationService;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
@@ -29,6 +31,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +46,9 @@ import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseTy
 @Service
 public class MediationFailedCallbackHandler extends CallbackHandler {
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
-    private static final List<CaseEvent> EVENTS = ImmutableList.of(CaseEvent.MEDIATION_FAILED);
+    private static final List<CaseEvent> EVENTS = new ArrayList<CaseEvent>();
+    //needs to include "Add dqs" event if offline dqs
+    //needs save method which needs authorization which is in service
 
     private static final String STATE = "state";
 
@@ -150,4 +155,5 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
             ? MEDIATION_PILOT_FAILED
             : NON_MEDIATION_PILOT_FAILED;
     }
+
 }
