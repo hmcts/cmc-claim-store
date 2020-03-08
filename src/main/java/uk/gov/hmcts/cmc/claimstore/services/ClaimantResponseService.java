@@ -144,7 +144,7 @@ public class ClaimantResponseService {
         return false;
     }
 
-    public boolean isRejectResponseNoMediation(ClaimantResponse claimantResponse) {
+    private boolean isRejectResponseNoMediation(ClaimantResponse claimantResponse) {
         return ClaimantResponseType.REJECTION.equals(claimantResponse.getType())
             && ((ResponseRejection) claimantResponse).getFreeMediation()
             .filter(isEqual(YesNoOption.NO))
