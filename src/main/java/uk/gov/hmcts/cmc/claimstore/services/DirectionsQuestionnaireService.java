@@ -17,6 +17,7 @@ import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_JUDGE_DIRECTIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFERRED_TO_MEDIATION;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.WAITING_TRANSFER;
 import static uk.gov.hmcts.cmc.claimstore.services.pilotcourt.Pilot.JDDO;
@@ -45,9 +46,9 @@ public class DirectionsQuestionnaireService {
         if (isOptedForMediation(responseRejection)) {
             return Optional.of(REFERRED_TO_MEDIATION);
         }
-        if (!isOnlineDQ(claim)) {
-            return Optional.empty();
-        }
+//        if (!isOnlineDQ(claim)) {
+//            return Optional.of(DIRECTIONS_QUESTIONNAIRE_DEADLINE);
+//        }
 
         String preferredCourt = getPreferredCourt(claim);
 

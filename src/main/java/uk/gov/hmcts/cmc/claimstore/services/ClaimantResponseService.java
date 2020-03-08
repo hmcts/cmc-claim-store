@@ -110,7 +110,6 @@ public class ClaimantResponseService {
                 .calculateDirectionsQuestionnaireDeadline(claim.getRespondedAt());
             caseRepository.updateDirectionsQuestionnaireDeadline(claim, deadline, authorization);
             updatedClaim = claimService.getClaimByExternalId(externalId, authorization);
-            //save claim state as Ready for paper dqs
         }
 
         if (!isSettlementAgreement(response, claimantResponse)) {
@@ -145,7 +144,7 @@ public class ClaimantResponseService {
         return false;
     }
 
-    private boolean isRejectResponseNoMediation(ClaimantResponse claimantResponse) {
+    public boolean isRejectResponseNoMediation(ClaimantResponse claimantResponse) {
         return ClaimantResponseType.REJECTION.equals(claimantResponse.getType())
             && ((ResponseRejection) claimantResponse).getFreeMediation()
             .filter(isEqual(YesNoOption.NO))

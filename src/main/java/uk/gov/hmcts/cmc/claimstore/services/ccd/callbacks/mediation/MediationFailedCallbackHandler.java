@@ -29,9 +29,12 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_PILOT_FAILED;
@@ -43,9 +46,7 @@ import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseTy
 @Service
 public class MediationFailedCallbackHandler extends CallbackHandler {
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
-    private static final List<CaseEvent> EVENTS = new ArrayList<CaseEvent>();
-    //needs to include "Add dqs" event if offline dqs
-    //needs save method which needs authorization which is in service
+    private static final List<CaseEvent> EVENTS = Stream.of(new CaseEvent[]{CaseEvent.MEDIATION_FAILED}).collect(Collectors.toList());
 
     private static final String STATE = "state";
 
@@ -115,6 +116,7 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
             LocalDate deadline = deadlineCalculator
                 .calculateDirectionsQuestionnaireDeadline(LocalDateTime.now());
             claim = claim.toBuilder().directionsQuestionnaireDeadline(deadline).build();
+            EVENTS.add(CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE);
         }
 
         Map<String, Object> dataMap = caseDetailsConverter.convertToMap(caseMapper.to(claim));
