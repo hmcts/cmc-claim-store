@@ -11,6 +11,8 @@ import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireService;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
@@ -59,6 +61,9 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
     private final CaseMapper caseMapper;
     private final AppInsights appInsights;
     private final DirectionsQuestionnaireService directionsQuestionnaireService;
+    private final CoreCaseDataService coreCaseDataService;
+    private final UserService userService;
+
 
     private final MediationFailedNotificationService notificationService;
 
@@ -68,13 +73,17 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
                                           CaseMapper caseMapper,
                                           AppInsights appInsights,
                                           MediationFailedNotificationService notificationService,
-                                          DirectionsQuestionnaireService directionsQuestionnaireService) {
+                                          DirectionsQuestionnaireService directionsQuestionnaireService,
+                                          CoreCaseDataService coreCaseDataService,
+                                          UserService userService) {
+        this.userService =  userService;
         this.caseDetailsConverter = caseDetailsConverter;
         this.deadlineCalculator = deadlineCalculator;
         this.caseMapper = caseMapper;
         this.notificationService = notificationService;
         this.appInsights = appInsights;
         this.directionsQuestionnaireService = directionsQuestionnaireService;
+        this.coreCaseDataService = coreCaseDataService;
     }
 
     @Override
@@ -116,7 +125,7 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
             LocalDate deadline = deadlineCalculator
                 .calculateDirectionsQuestionnaireDeadline(LocalDateTime.now());
             claim = claim.toBuilder().directionsQuestionnaireDeadline(deadline).build();
-            EVENTS.add(CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE);
+            coreCaseDataService.saveCaseEvent(userService.authenticateAnonymousCaseWorker().getAuthorisation(), claim.getCcdCaseId(), CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE);
         }
 
         Map<String, Object> dataMap = caseDetailsConverter.convertToMap(caseMapper.to(claim));
