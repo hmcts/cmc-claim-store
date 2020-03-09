@@ -82,7 +82,7 @@ public class SupportController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static final String CLAIM = "Claim ";
-    private static final String CLAIM_DOES_NOT_EXIST = "Claim %s does not exist";
+    public static final String CLAIM_DOES_NOT_EXIST = "Claim %s does not exist";
     private static final String AUTHORISATION_IS_REQUIRED = "Authorisation is required";
 
     private final ClaimService claimService;

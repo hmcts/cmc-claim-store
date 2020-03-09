@@ -115,7 +115,7 @@ public class GenerateOrderCallbackHandlerTest {
             pilotCourtService);
 
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
-            caseDetailsConverter, legalOrderService, directionOrderService);
+            caseDetailsConverter, legalOrderService, appInsights, directionOrderService);
 
         generateOrderCallbackHandler = new GenerateOrderCallbackHandler(orderCreator, orderPostProcessor,
             caseDetailsConverter, appInsights);
