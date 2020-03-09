@@ -30,8 +30,8 @@ public enum AppInsightsEvent {
     BULK_PRINT_FAILED("Bulk print failed"),
     SCHEDULER_JOB_FAILED("Scheduler job failed"),
     CLAIMANT_RESPONSE_REJECTED("Claimant response - rejected"),
-    LA_PILOT_ELIGIBLE("LA pilot eligible"),
-    NON_LA_CASES("Non LA cases"),
+    BOTH_PARTIES_ONLINE_DQ("Both parties online DQ"),
+    BOTH_PARTIES_OFFLINE_DQ("Both parties offline DQ"),
     CLAIMANT_RESPONSE_ACCEPTED("Claimant response - accepted"),
     CCD_ASYNC_FAILURE("CCD Async handling - failure"),
     REDETERMINATION_REQUESTED("CCJ - Requested by re-determination "),
@@ -59,6 +59,11 @@ public enum AppInsightsEvent {
     BOTH_OPTED_IN_FOR_NON_MEDIATION_PILOT("Non-mediation pilot - Both opted in"),
     NON_MEDIATION_PILOT_FAILED("Non-mediation pilot - Failed"),
     NON_MEDIATION_PILOT_SUCCESS("Non-mediation pilot - Success"),
+    LA_PILOT_ELIGIBLE("LA pilot eligible"),
+    READY_FOR_TRANSFER("Ready for transfer"),
+    DRAW_ORDER("Judge draws LA order"),
+    DRAW_JUDGES_ORDER("Directions drawn - Judge"),
+    JDDO_PILOT_ELIGIBLE("Ready for directions - Judge"),
     COURT_FINDER_API_FAILURE("Failed to get address from Court Finder API");
 
     private final String displayName;

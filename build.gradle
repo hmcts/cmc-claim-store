@@ -184,7 +184,7 @@ dependencies {
   compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
 
-  compile group: 'org.elasticsearch', name: 'elasticsearch', version: '7.6.0'
+  compile group: 'org.elasticsearch', name: 'elasticsearch', version: '7.6.1'
   compile group: 'org.postgresql', name: 'postgresql', version: '42.2.10'
 
   compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.15.1-RELEASE'
@@ -236,7 +236,7 @@ dependencies {
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.15.0'
   testCompile group: 'org.mockito', name: 'mockito-core', version: '3.3.1'
   testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.3.1'
-  testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.12.5'
+  testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.13.0'
 
   testCompile group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
   testCompile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: '2.4.0'
