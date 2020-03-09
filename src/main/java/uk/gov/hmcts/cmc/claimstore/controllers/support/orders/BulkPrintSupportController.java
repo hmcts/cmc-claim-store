@@ -53,7 +53,11 @@ public class BulkPrintSupportController {
 
         User user = userService.authenticateAnonymousCaseWorker();
         String authorisation = user.getAuthorisation();
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> 9fac6ab7396c8cfba15dc58e57c6cbc782e6f42a
         CCDDocument document = ccdCase.getCaseDocuments().stream()
             .map(CCDCollectionElement::getValue)
             .filter(d -> d.getDocumentType() == CCDClaimDocumentType.ORDER_DIRECTIONS)
