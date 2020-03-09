@@ -46,6 +46,7 @@ public class DirectionsQuestionnaireService {
         if (isOptedForMediation(responseRejection)) {
             return Optional.of(REFERRED_TO_MEDIATION);
         }
+
         if (!isOnlineDQ(claim)) {
             return Optional.of(DIRECTIONS_QUESTIONNAIRE_DEADLINE);
         }

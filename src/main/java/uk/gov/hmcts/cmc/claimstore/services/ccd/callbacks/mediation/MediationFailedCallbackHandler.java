@@ -11,7 +11,6 @@ import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireService;
-import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
@@ -30,13 +29,9 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_PILOT_FAILED;
@@ -48,7 +43,7 @@ import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseTy
 @Service
 public class MediationFailedCallbackHandler extends CallbackHandler {
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
-    private static final List<CaseEvent> EVENTS = Stream.of(new CaseEvent[]{CaseEvent.MEDIATION_FAILED}).collect(Collectors.toList());
+    private static final List<CaseEvent> EVENTS = Collections.singletonList(CaseEvent.MEDIATION_FAILED);
 
     private static final String STATE = "state";
 
@@ -62,7 +57,6 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
     private final AppInsights appInsights;
     private final DirectionsQuestionnaireService directionsQuestionnaireService;
     private final CoreCaseDataService coreCaseDataService;
-    private final UserService userService;
 
 
     private final MediationFailedNotificationService notificationService;
@@ -74,9 +68,7 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
                                           AppInsights appInsights,
                                           MediationFailedNotificationService notificationService,
                                           DirectionsQuestionnaireService directionsQuestionnaireService,
-                                          CoreCaseDataService coreCaseDataService,
-                                          UserService userService) {
-        this.userService =  userService;
+                                          CoreCaseDataService coreCaseDataService) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.deadlineCalculator = deadlineCalculator;
         this.caseMapper = caseMapper;
@@ -89,8 +81,8 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
     @Override
     protected Map<CallbackType, Callback> callbacks() {
         return ImmutableMap.of(
-            CallbackType.ABOUT_TO_SUBMIT, this::assignCaseState,
-            CallbackType.SUBMITTED, this::notifyPartiesOfOutcome
+                CallbackType.ABOUT_TO_SUBMIT, this::assignCaseState,
+                CallbackType.SUBMITTED, this::notifyPartiesOfOutcome
         );
     }
 
@@ -109,9 +101,13 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
 
         Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
         appInsights
-            .trackEvent(getAppInsightEventBasedOnMediationPilot(claim), REFERENCE_NUMBER, claim.getReferenceNumber());
+                .trackEvent(getAppInsightEventBasedOnMediationPilot(claim), REFERENCE_NUMBER, claim.getReferenceNumber());
 
         notificationService.notifyParties(claim);
+
+        if (!FeaturesUtils.isOnlineDQ(claim)) {
+            offlineDQCheck(callbackParams, claim);
+        }
         return SubmittedCallbackResponse.builder().build();
     }
 
@@ -122,10 +118,8 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
         Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
 
         if (!FeaturesUtils.isOnlineDQ(claim)) {
-            LocalDate deadline = deadlineCalculator
-                .calculateDirectionsQuestionnaireDeadline(LocalDateTime.now());
+            LocalDate deadline = deadlineCalculator.calculateDirectionsQuestionnaireDeadline(LocalDateTime.now());
             claim = claim.toBuilder().directionsQuestionnaireDeadline(deadline).build();
-            coreCaseDataService.saveCaseEvent(userService.authenticateAnonymousCaseWorker().getAuthorisation(), claim.getCcdCaseId(), CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE);
         }
 
         Map<String, Object> dataMap = caseDetailsConverter.convertToMap(caseMapper.to(claim));
@@ -134,9 +128,14 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
         logger.info("Mediation failure about-to-submit callback: state determined - {}", dataMap.get(STATE));
 
         return AboutToStartOrSubmitCallbackResponse
-            .builder()
-            .data(dataMap)
-            .build();
+                .builder()
+                .data(dataMap)
+                .build();
+    }
+
+    private void offlineDQCheck(CallbackParams callbackParams, Claim claim) {
+        String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
+        coreCaseDataService.saveCaseEvent(authorisation, claim.getCcdCaseId(), CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE);
     }
 
     private String stateByOnlineDQnPilotCheck(Claim claim) {
@@ -146,8 +145,8 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
         }
 
         if (!claim.getClaimantResponse()
-            .map(ClaimantResponse::getType)
-            .filter(REJECTION::equals).isPresent()) {
+                .map(ClaimantResponse::getType)
+                .filter(REJECTION::equals).isPresent()) {
             throw new IllegalStateException("Claimant response is not an Rejection");
         }
 
@@ -160,8 +159,8 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
 
     private AppInsightsEvent getAppInsightEventBasedOnMediationPilot(Claim claim) {
         return FeaturesUtils.hasMediationPilotFeature(claim)
-            ? MEDIATION_PILOT_FAILED
-            : NON_MEDIATION_PILOT_FAILED;
+                ? MEDIATION_PILOT_FAILED
+                : NON_MEDIATION_PILOT_FAILED;
     }
 
 }
