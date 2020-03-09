@@ -76,6 +76,23 @@ public class RequestForJudgementJsonMapperTest {
     }
 
     @Test
+    public void shouldMapRequestForJudgementWithByDeterminationJudgementType() throws JSONException {
+        CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
+            .builder()
+            .ccjType(CountyCourtJudgmentType.DETERMINATION)
+            .build();
+
+        Claim claim = SampleClaim.builder()
+            .withCountyCourtJudgmentRequestedAt(CCJ_REQUESTED_AT)
+            .withCountyCourtJudgment(countyCourtJudgment)
+            .build();
+
+        String expected = new ResourceReader()
+            .read("/judgement/rpa_request_for_by_determination_judgement.json").trim();
+        assertEquals(expected, mapper.map(claim).toString(), STRICT);
+    }
+
+    @Test
     public void shouldMapRequestForJudgementImmediatelyWithPaidAlready() throws JSONException {
         CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
             .builder()

@@ -26,6 +26,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.rpa.ClaimIssuedNotificationService.JSON_EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildJsonRequestForJudgementFileBaseName;
@@ -123,7 +124,7 @@ public class RequestForJudgementNotificationServiceTest extends BaseMockSpringTe
     }
 
     @Test
-    public void shouldSendRoboticsEmailWhenCCJByDetermination() {
+    public void shouldNotSendRoboticsEmailWhenCCJByDetermination() {
         Claim claimWithCCJByDetermination = SampleClaim.builder()
             .withCountyCourtJudgmentRequestedAt(LocalDate.of(2018, 4, 26).atStartOfDay())
             .withCountyCourtJudgment(CCJ_BY_DETERMINATION)
@@ -134,7 +135,7 @@ public class RequestForJudgementNotificationServiceTest extends BaseMockSpringTe
 
         service.notifyRobotics(event);
 
-        verifyEmailSent();
+        verifyNoInteractions(emailService);
     }
 
     private void verifyEmailSent() {
@@ -147,6 +148,7 @@ public class RequestForJudgementNotificationServiceTest extends BaseMockSpringTe
         String expectedPdfFilename = buildRequestForJudgementFileBaseName(claim.getReferenceNumber(),
             claim.getClaimData().getDefendant().getName()) + EXTENSION;
 
+        assertThat(senderArgument.getValue()).isEqualTo(emailProperties.getSender());
         assertThat(ccjPdfAttachment.getContentType()).isEqualTo(MediaType.APPLICATION_PDF_VALUE);
         assertThat(ccjPdfAttachment.getFilename()).isEqualTo(expectedPdfFilename);
 

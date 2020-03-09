@@ -20,7 +20,7 @@ public class RequestForJudgementJsonMapper {
         return new NullAwareJsonObjectBuilder()
             .add("caseNumber", claim.getReferenceNumber())
             .add("ccjRequestedOn", DateFormatter.format(claim.getCountyCourtJudgmentRequestedAt()))
-            .add("judgmentType", mapCountyCourtJudgementType(countyCourtJudgment.getCcjType()))
+            .add("judgmentType", mapCountyCourtJudgmentType(countyCourtJudgment.getCcjType()))
             .add("amountWithInterest", claim.getAmountWithInterest().orElse(null))
             .add("courtFee", claim.getClaimData().getFeesPaidInPounds().orElse(ZERO))
             .add("alreadyPaid", countyCourtJudgment.getPaidAmount().orElse(null))
@@ -32,7 +32,7 @@ public class RequestForJudgementJsonMapper {
             .build();
     }
 
-    private String mapCountyCourtJudgementType(CountyCourtJudgmentType ccjType) {
+    private String mapCountyCourtJudgmentType(CountyCourtJudgmentType ccjType) {
 
         switch (ccjType) {
             case ADMISSIONS:
