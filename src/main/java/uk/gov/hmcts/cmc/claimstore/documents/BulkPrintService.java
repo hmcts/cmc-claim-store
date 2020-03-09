@@ -10,7 +10,7 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.Printable;
-import uk.gov.hmcts.cmc.claimstore.services.livesupport.BulkPrintNotificationService;
+import uk.gov.hmcts.cmc.claimstore.services.staff.BulkPrintStaffNotificationService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -50,21 +50,21 @@ public class BulkPrintService implements PrintService {
     private final SendLetterApi sendLetterApi;
     private final AuthTokenGenerator authTokenGenerator;
     private final AppInsights appInsights;
-    private final BulkPrintNotificationService bulkPrintNotificationService;
+    private final BulkPrintStaffNotificationService bulkPrintStaffNotificationService;
     private final PDFServiceClient pdfServiceClient;
 
     @Autowired
     public BulkPrintService(
         SendLetterApi sendLetterApi,
         AuthTokenGenerator authTokenGenerator,
-        BulkPrintNotificationService bulkPrintNotificationService,
+        BulkPrintStaffNotificationService bulkPrintStaffNotificationService,
         AppInsights appInsights,
         PDFServiceClient pdfServiceClient
     ) {
         this.sendLetterApi = sendLetterApi;
         this.authTokenGenerator = authTokenGenerator;
         this.appInsights = appInsights;
-        this.bulkPrintNotificationService = bulkPrintNotificationService;
+        this.bulkPrintStaffNotificationService = bulkPrintStaffNotificationService;
         this.pdfServiceClient = pdfServiceClient;
     }
 
@@ -102,7 +102,7 @@ public class BulkPrintService implements PrintService {
         Claim claim,
         List<Printable> documents
     ) {
-        bulkPrintNotificationService.notifyFailedBulkPrint(
+        bulkPrintStaffNotificationService.notifyFailedBulkPrint(
             documents,
             claim
         );
