@@ -21,7 +21,6 @@ public class RejectSettlementAgreementStaffNotificationHandler {
 
     @EventListener
     public void onSettlementAgreementRejected(RejectSettlementAgreementEvent event) {
-            notificationService.notifySettlementRejected(
-                event.getClaim());
-        }
+        notificationService.notifySettlementRejected(event.getClaim());
+    }
 }
