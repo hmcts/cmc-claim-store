@@ -13,3 +13,9 @@ dependencies {
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.15.0'
   testCompile project(':domain-sample-data')
 }
+
+sonarqube {
+  properties {
+    property "sonar.sources", "src"
+  }
+}
