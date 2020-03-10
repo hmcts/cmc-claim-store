@@ -1,14 +1,12 @@
 package uk.gov.hmcts.cmc.claimstore.events.response;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.services.staff.DefendantResponseStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 @Component
-@ConditionalOnProperty("feature_toggles.staff_emails_enabled")
 public class DefendantResponseStaffNotificationHandler {
 
     private final DefendantResponseStaffNotificationService defendantResponseStaffNotificationService;

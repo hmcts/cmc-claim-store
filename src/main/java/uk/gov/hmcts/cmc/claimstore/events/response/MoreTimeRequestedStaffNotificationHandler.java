@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.events.response;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
@@ -16,7 +15,6 @@ import java.util.Map;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 
 @Component
-@ConditionalOnProperty("feature_toggles.staff_emails_enabled")
 public class MoreTimeRequestedStaffNotificationHandler {
 
     private static final String REFERENCE_TEMPLATE = "more-time-requested-notification-to-%s-%s";

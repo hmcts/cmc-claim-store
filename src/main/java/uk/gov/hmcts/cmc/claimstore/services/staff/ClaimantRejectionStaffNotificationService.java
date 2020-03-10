@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.ClaimantDirectionsHearingContentProvider;
@@ -27,7 +26,6 @@ import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_CLAIMANT_RE
 import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
 
 @Service
-@ConditionalOnProperty("feature_toggles.staff_emails_enabled")
 public class ClaimantRejectionStaffNotificationService {
 
     public static final String CLAIM_REFERENCE_NUMBER = "claimReferenceNumber";

@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
@@ -28,7 +27,6 @@ import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service
-@ConditionalOnProperty("feature_toggles.staff_emails_enabled")
 public class StatesPaidStaffNotificationService {
     private final EmailService emailService;
     private final StaffEmailProperties emailProperties;
