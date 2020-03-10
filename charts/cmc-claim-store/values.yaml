@@ -46,7 +46,6 @@ java:
     CMC_DB_PORT: 5432
     FEATURE_TOGGLES_SAVE_CLAIM_STATE_ENABLED: true
     FEATURE_TOGGLES_STAFF_EMAIL_ENABLED: true
-    STAFF_NOTIFICATIONS_RECIPIENT: civilmoneyclaims+staff-int-tests@gmail.com
     STAFF_NOTIFICATIONS_SENDER: noreply@reform.hmcts.net
     RPA_NOTIFICATIONS_SENDER: noreply@reform.hmcts.net
     DOCUMENT_MANAGEMENT_USERROLES: caseworker-cmc,citizen
