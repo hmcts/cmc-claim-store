@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -43,6 +44,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.LA_PILOT_FLAG;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_JUDGE_DIRECTIONS;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_LEGAL_ADVISOR_DIRECTIONS;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_PAPER_DQ;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_TRANSFER;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -66,6 +68,9 @@ public class MediationFailedCallbackHandlerTest {
     @Mock
     private DirectionsQuestionnaireService directionsQuestionnaireService;
 
+    @Mock
+    private CoreCaseDataService coreCaseDataService;
+
     private MediationFailedCallbackHandler mediationFailedCallbackHandler;
 
     private CallbackParams callbackParams;
@@ -73,6 +78,7 @@ public class MediationFailedCallbackHandlerTest {
 
     private final Claim claimSetForMediation =
         SampleClaim.getWithClaimantResponseRejectionForPartAdmissionAndMediation();
+
     private CallbackRequest callbackRequest;
 
     //TODO Clean up these tests
@@ -85,7 +91,8 @@ public class MediationFailedCallbackHandlerTest {
             caseMapper,
             appInsights,
             mediationFailedNotificationService,
-            directionsQuestionnaireService);
+            directionsQuestionnaireService,
+                coreCaseDataService);
         callbackRequest = CallbackRequest
             .builder()
             .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
@@ -118,7 +125,7 @@ public class MediationFailedCallbackHandlerTest {
     }
 
     @Test
-    public void setsToOpenIfNotOnlineDQCase() {
+    public void setsStateFirstToOpenForOfflineDQCase() {
 
         Claim claim = claimSetForMediation.toBuilder()
             .claimData(SampleClaimData.submittedWithAmountMoreThanThousand())
@@ -134,7 +141,7 @@ public class MediationFailedCallbackHandlerTest {
 
         assertThat(response.getData()).containsEntry("state", OPEN.getValue());
 
-    }
+        }
 
     @Test
     public void shouldSendNotificationsIfOnlineDQCaseSubmitted() {
@@ -269,7 +276,48 @@ public class MediationFailedCallbackHandlerTest {
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 
-    private void handleSubmittedCallback() {
+    @Test
+    public void shouldTriggerDQDeadlineEventIfOfflineDQ() {
+        callbackParams = CallbackParams.builder()
+                .type(CallbackType.SUBMITTED)
+                .request(callbackRequest)
+                .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
+                .build();
+
+        Claim claim = claimSetForMediation.toBuilder()
+                .claimData(SampleClaimData.submittedWithAmountMoreThanThousand())
+                .build();
+
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+
+        mediationFailedCallbackHandler.handle(callbackParams);
+
+        verify(coreCaseDataService).saveCaseEvent(AUTHORISATION, claim.getCcdCaseId(), CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE);
+    }
+
+    @Test
+    public void endStateIsReadyForPaperDQsForOfflineDQCase() {
+        // not working - ends in open state
+        callbackParams = CallbackParams.builder()
+                .type(CallbackType.SUBMITTED)
+                .request(callbackRequest)
+                .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
+                .build();
+
+        Claim claim = claimSetForMediation.toBuilder()
+                .claimData(SampleClaimData.submittedWithAmountMoreThanThousand())
+                .build();
+
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+
+        mediationFailedCallbackHandler.handle(callbackParams);
+
+        assertThat(claim.getState()).isEqualTo(READY_FOR_PAPER_DQ.getValue());
+    }
+
+
+
+        private void handleSubmittedCallback() {
         CallbackRequest callbackRequest = CallbackRequest
             .builder()
             .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
