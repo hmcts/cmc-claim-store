@@ -29,6 +29,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_JUDGE_DIRECTIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFERRED_TO_MEDIATION;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.WAITING_TRANSFER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.DQ_FLAG;
@@ -144,9 +145,9 @@ public class DirectionsQuestionnaireServiceTest {
                 .withDefendant(CompanyDetails.builder().build())
                 .build())
             .build();
-        Optional<CaseEvent> caseEvent =
+        CaseEvent caseEvent =
             directionsQuestionnaireService.prepareCaseEvent(CLAIMANT_REJECTION_PILOT, claim);
-        assertThat(caseEvent).contains(ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS);
+        assertThat(caseEvent).isEqualTo(ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS);
     }
 
     @Test
@@ -188,9 +189,9 @@ public class DirectionsQuestionnaireServiceTest {
                 .build())
             .build();
 
-        Optional<CaseEvent> caseEvent =
+        CaseEvent caseEvent =
             directionsQuestionnaireService.prepareCaseEvent(CLAIMANT_REJECTION_NON_PILOT, claim);
-        assertThat(caseEvent).contains(WAITING_TRANSFER);
+        assertThat(caseEvent).isEqualTo(WAITING_TRANSFER);
     }
 
     @Test
@@ -203,7 +204,8 @@ public class DirectionsQuestionnaireServiceTest {
                 .withDefendant(CompanyDetails.builder().build())
                 .build())
             .build();
-        assertThat(directionsQuestionnaireService.prepareCaseEvent(CLAIMANT_REJECTION_NON_PILOT, claim)).isEmpty();
+        CaseEvent caseEvent = directionsQuestionnaireService.prepareCaseEvent(CLAIMANT_REJECTION_NON_PILOT, claim);
+        assertThat(caseEvent).isEqualTo(DIRECTIONS_QUESTIONNAIRE_DEADLINE);
     }
 
     @Test
@@ -217,9 +219,9 @@ public class DirectionsQuestionnaireServiceTest {
                 .withDefendant(IndividualDetails.builder().build())
                 .build())
             .build();
-        Optional<CaseEvent> caseEvent =
+        CaseEvent caseEvent =
             directionsQuestionnaireService.prepareCaseEvent(CLAIMANT_REJECTION_NON_PILOT, claim);
-        assertThat(caseEvent).contains(ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS);
+        assertThat(caseEvent).isEqualTo(ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS);
     }
 
     @Test
@@ -233,9 +235,9 @@ public class DirectionsQuestionnaireServiceTest {
                 .withDefendant(IndividualDetails.builder().build())
                 .build())
             .build();
-        Optional<CaseEvent> caseEvent =
+        CaseEvent caseEvent =
             directionsQuestionnaireService.prepareCaseEvent(CLAIMANT_REJECTION_NON_PILOT, claim);
-        assertThat(caseEvent).contains(ASSIGNING_FOR_JUDGE_DIRECTIONS);
+        assertThat(caseEvent).isEqualTo(ASSIGNING_FOR_JUDGE_DIRECTIONS);
     }
 
     @Test
@@ -249,9 +251,9 @@ public class DirectionsQuestionnaireServiceTest {
                 .withDefendant(IndividualDetails.builder().build())
                 .build())
             .build();
-        Optional<CaseEvent> caseEvent =
+        CaseEvent caseEvent =
             directionsQuestionnaireService.prepareCaseEvent(CLAIMANT_REJECTION_NON_PILOT, claim);
-        assertThat(caseEvent).contains(WAITING_TRANSFER);
+        assertThat(caseEvent).isEqualTo(WAITING_TRANSFER);
     }
 
     @Test
@@ -264,7 +266,9 @@ public class DirectionsQuestionnaireServiceTest {
                 .withDefendant(IndividualDetails.builder().build())
                 .build())
             .build();
-        assertThat(directionsQuestionnaireService.prepareCaseEvent(CLAIMANT_REJECTION_PILOT, claim)).isEmpty();
+
+        CaseEvent caseEvent = directionsQuestionnaireService.prepareCaseEvent(CLAIMANT_REJECTION_PILOT, claim);
+        assertThat(caseEvent).isEqualTo(DIRECTIONS_QUESTIONNAIRE_DEADLINE);
     }
 
     @Test
@@ -289,8 +293,8 @@ public class DirectionsQuestionnaireServiceTest {
                 .build())
             .build();
 
-        Optional<CaseEvent> caseEvent = directionsQuestionnaireService.prepareCaseEvent(responseRejection, claim);
-        assertThat(caseEvent).contains(REFERRED_TO_MEDIATION);
+        CaseEvent caseEvent = directionsQuestionnaireService.prepareCaseEvent(responseRejection, claim);
+        assertThat(caseEvent).isEqualTo(REFERRED_TO_MEDIATION);
     }
 
     @Test
@@ -315,8 +319,8 @@ public class DirectionsQuestionnaireServiceTest {
                 .build())
             .build();
 
-        Optional<CaseEvent> caseEvent = directionsQuestionnaireService.prepareCaseEvent(responseRejection, claim);
-        assertThat(caseEvent).contains(REFERRED_TO_MEDIATION);
+        CaseEvent caseEvent = directionsQuestionnaireService.prepareCaseEvent(responseRejection, claim);
+        assertThat(caseEvent).isEqualTo(REFERRED_TO_MEDIATION);
     }
 
     @Test(expected = IllegalStateException.class)

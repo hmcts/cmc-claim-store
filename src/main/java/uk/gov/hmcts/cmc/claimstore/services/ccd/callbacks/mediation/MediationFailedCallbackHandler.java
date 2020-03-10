@@ -106,7 +106,7 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
         notificationService.notifyParties(claim);
 
         if (!FeaturesUtils.isOnlineDQ(claim)) {
-            offlineDQCheck(callbackParams, claim);
+            updateCaseEvent(callbackParams, claim);
         }
         return SubmittedCallbackResponse.builder().build();
     }
@@ -133,7 +133,7 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
             .build();
     }
 
-    private void offlineDQCheck(CallbackParams callbackParams, Claim claim) {
+    private void updateCaseEvent(CallbackParams callbackParams, Claim claim) {
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
         coreCaseDataService
                 .saveCaseEvent(authorisation, claim.getCcdCaseId(), CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE);

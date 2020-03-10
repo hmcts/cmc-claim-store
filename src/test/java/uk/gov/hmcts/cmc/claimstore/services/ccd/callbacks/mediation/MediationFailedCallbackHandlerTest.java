@@ -44,7 +44,6 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.LA_PILOT_FLAG;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_JUDGE_DIRECTIONS;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_LEGAL_ADVISOR_DIRECTIONS;
-import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_PAPER_DQ;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_TRANSFER;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -78,7 +77,6 @@ public class MediationFailedCallbackHandlerTest {
 
     private final Claim claimSetForMediation =
         SampleClaim.getWithClaimantResponseRejectionForPartAdmissionAndMediation();
-
     private CallbackRequest callbackRequest;
 
     //TODO Clean up these tests
@@ -141,7 +139,7 @@ public class MediationFailedCallbackHandlerTest {
 
         assertThat(response.getData()).containsEntry("state", OPEN.getValue());
 
-        }
+    }
 
     @Test
     public void shouldSendNotificationsIfOnlineDQCaseSubmitted() {
@@ -296,18 +294,18 @@ public class MediationFailedCallbackHandlerTest {
     }
 
     private void handleSubmittedCallback() {
-    CallbackRequest callbackRequest = CallbackRequest
-        .builder()
-        .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
-        .eventId(CaseEvent.MEDIATION_FAILED.getValue())
-        .build();
+        CallbackRequest callbackRequest = CallbackRequest
+            .builder()
+            .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
+            .eventId(CaseEvent.MEDIATION_FAILED.getValue())
+            .build();
 
-    CallbackParams callbackParams = CallbackParams.builder()
-        .type(CallbackType.SUBMITTED)
-        .request(callbackRequest)
-        .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
-        .build();
+        CallbackParams callbackParams = CallbackParams.builder()
+            .type(CallbackType.SUBMITTED)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
+            .build();
 
-    mediationFailedCallbackHandler.handle(callbackParams);
+        mediationFailedCallbackHandler.handle(callbackParams);
     }
 }
