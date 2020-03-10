@@ -403,3 +403,5 @@ bootRun {
     jvmArgs = ['-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005']
   }
 }
+
+task checkStyle(dependsOn: [checkstyleMain, checkstyleAat, checkstyleTest, checkstyleIntegrationTest]){}
