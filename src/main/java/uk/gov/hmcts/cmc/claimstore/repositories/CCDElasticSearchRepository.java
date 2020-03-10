@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.repositories;
 
-import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -11,15 +11,12 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.claimstore.utils.DateUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,8 +29,6 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
     private final AuthTokenGenerator authTokenGenerator;
     private final UserService userService;
     private final CaseDetailsConverter ccdCaseDetailsConverter;
-    private static final LocalDateTime DATE_OF_5_POINT_0_RELEASE =
-        LocalDateTime.of(2019, Month.SEPTEMBER, 9, 3, 12, 0);
 
     @Autowired
     public CCDElasticSearchRepository(CoreCaseDataApi coreCaseDataApi,
@@ -80,15 +75,9 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
 
     }
 
-    public List<Claim> getClaimsPastIntentionToProceed(User user, LocalDate responseDate) {
-
-        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
-            .must(QueryBuilders.termQuery("state", ClaimState.OPEN.getValue()))
-            .must(QueryBuilders.rangeQuery("data.respondents.value.responseSubmittedOn").lte(responseDate))
-            .must(QueryBuilders.rangeQuery("data.submittedOn").gte(DATE_OF_5_POINT_0_RELEASE));
-
+    @Override
+    public List<Claim> getClaims(User user, QueryBuilder queryBuilder) {
         return searchClaimsWith(user, new Query(queryBuilder, 1000));
-
     }
 
     private List<Claim> searchClaimsWith(User user, Query query) {
