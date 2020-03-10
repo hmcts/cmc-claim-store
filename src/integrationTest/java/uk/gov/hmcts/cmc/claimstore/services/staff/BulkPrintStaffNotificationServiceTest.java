@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.services.livesupport;
+package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Before;
@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
-import uk.gov.hmcts.cmc.claimstore.config.properties.emails.LiveSupportEmailProperties;
+import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintableTemplate;
 import uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -28,14 +28,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
 
-public class BulkPrintNotificationServiceTest extends BaseMockSpringTest {
+public class BulkPrintStaffNotificationServiceTest extends BaseMockSpringTest {
 
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
 
     @Autowired
-    private BulkPrintNotificationService service;
+    private BulkPrintStaffNotificationService service;
     @Autowired
-    private LiveSupportEmailProperties emailProperties;
+    private StaffEmailProperties emailProperties;
 
     @Captor
     private ArgumentCaptor<String> senderArgument;
