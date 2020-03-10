@@ -32,11 +32,12 @@ import static uk.gov.hmcts.cmc.claimstore.rpa.ClaimIssuedNotificationService.JSO
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildJsonRequestForJudgementFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForJudgementFileBaseName;
 
-public class RequestForJudgementNotificationServiceTest extends BaseMockSpringTest {
+public class RequestForJudgmentNotificationServiceTest extends BaseMockSpringTest {
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
 
     @Autowired
-    private RequestForJudgementNotificationService service;
+    private RequestForJudgmentNotificationService service;
+
     @Autowired
     private EmailProperties emailProperties;
 
@@ -97,7 +98,7 @@ public class RequestForJudgementNotificationServiceTest extends BaseMockSpringTe
         assertThat(senderArgument.getValue()).isEqualTo(emailProperties.getSender());
         assertThat(emailDataArgument.getValue().getTo()).isEqualTo(emailProperties.getResponseRecipient());
         assertThat(emailDataArgument.getValue().getSubject())
-            .isEqualToIgnoringNewLines("J judgement request 000CM001");
+            .isEqualToIgnoringNewLines("J judgment request 000CM001");
         assertThat(emailDataArgument.getValue().getMessage()).isEmpty();
     }
 

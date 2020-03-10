@@ -75,8 +75,8 @@ public class RequestForJudgementJsonMapperTest {
         assertEquals(expected, mapper.map(claim).toString(), STRICT);
     }
 
-    @Test
-    public void shouldMapRequestForJudgementWithByDeterminationJudgementType() throws JSONException {
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldThrowExceptionForJudgementWithDeterminationJudgementType() throws JSONException {
         CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
             .builder()
             .ccjType(CountyCourtJudgmentType.DETERMINATION)
@@ -87,9 +87,7 @@ public class RequestForJudgementJsonMapperTest {
             .withCountyCourtJudgment(countyCourtJudgment)
             .build();
 
-        String expected = new ResourceReader()
-            .read("/judgement/rpa_request_for_by_determination_judgement.json").trim();
-        assertEquals(expected, mapper.map(claim).toString(), STRICT);
+        mapper.map(claim);
     }
 
     @Test

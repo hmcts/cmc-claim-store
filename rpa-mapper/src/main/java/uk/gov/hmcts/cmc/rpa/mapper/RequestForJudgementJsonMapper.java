@@ -38,9 +38,9 @@ public class RequestForJudgementJsonMapper {
             case ADMISSIONS:
                 return "BY_ADMISSION";
             case DEFAULT:
-            case DETERMINATION:
-            default:
                 return "DEFAULT";
+            default:
+                throw new UnsupportedOperationException("Unsupported CountyCourtJudgmentType: " + ccjType);
         }
     }
 }

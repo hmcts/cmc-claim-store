@@ -21,7 +21,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.JSON_EXTENSION
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service("rpa/request-judgement-notification-service")
-public class RequestForJudgementNotificationService {
+public class RequestForJudgmentNotificationService {
 
     private final EmailService emailService;
     private final EmailProperties emailProperties;
@@ -29,7 +29,7 @@ public class RequestForJudgementNotificationService {
     private final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
 
     @Autowired
-    public RequestForJudgementNotificationService(
+    public RequestForJudgmentNotificationService(
         EmailService emailService,
         EmailProperties emailProperties,
         RequestForJudgementJsonMapper jsonMapper,
@@ -64,7 +64,7 @@ public class RequestForJudgementNotificationService {
         EmailAttachment ccjPdfAttachment = generateCountyCourtJudgmentPdf(claim);
 
         return new EmailData(emailProperties.getCountyCourtJudgementRecipient(),
-            "J judgement request " + claim.getReferenceNumber(),
+            "J judgment request " + claim.getReferenceNumber(),
             "",
             Lists.newArrayList(ccjPdfAttachment, createRequestForJudgementJsonAttachment(claim))
         );
