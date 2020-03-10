@@ -32,7 +32,7 @@ def versions = [
   springBoot        : springBootVersion,
   springfoxSwagger  : '2.9.2',
   reformJavaLogging : '5.1.1',
-  restAssuredVersion: '4.0.0',
+  restAssuredVersion: '4.2.0',
   jackson           : '2.10.0',
   junit             : '5.5.2',
   junitPlatform     : '1.5.2',
@@ -201,7 +201,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.0.0'
   compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.3.0'
   compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.5'
-  compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version:'0.0.4'
+  compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.0.4'
 
   compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
   compile group: 'org.apache.commons', name: 'commons-csv', version: '1.8'
@@ -227,9 +227,9 @@ dependencies {
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
   testCompile group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock'
 
-  testCompile group: 'org.junit.jupiter', name:'junit-jupiter-api', version: versions.junit
-  testCompile group: 'org.junit.jupiter', name:'junit-jupiter-engine', version: versions.junit
-  testCompile group: 'org.junit.vintage', name:'junit-vintage-engine', version: versions.junit
+  testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit
+  testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit
+  testCompile group: 'org.junit.vintage', name: 'junit-vintage-engine', version: versions.junit
   testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: versions.junit
   testCompile group: 'org.junit.platform', name: 'junit-platform-commons', version: versions.junitPlatform
   testCompile group: 'org.junit.platform', name: 'junit-platform-engine', version: versions.junitPlatform
