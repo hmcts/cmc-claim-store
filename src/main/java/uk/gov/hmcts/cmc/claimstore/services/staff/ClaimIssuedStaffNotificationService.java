@@ -44,7 +44,7 @@ public class ClaimIssuedStaffNotificationService {
 
     @LogExecutionTime
     public void notifyStaffOfClaimIssue(Claim claim, List<PDF> documents) {
-        if(staffEmailsEnabled) {
+        if (staffEmailsEnabled) {
             requireNonNull(claim);
             EmailData emailData = prepareEmailData(claim, documents);
             emailService.sendEmail(staffEmailProperties.getSender(), emailData);
