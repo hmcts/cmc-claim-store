@@ -13,7 +13,7 @@ import javax.json.JsonObject;
 import static java.math.BigDecimal.ZERO;
 
 @Component
-public class RequestForJudgementJsonMapper {
+public class RequestForJudgmentJsonMapper {
 
     public JsonObject map(Claim claim) {
         CountyCourtJudgment countyCourtJudgment = claim.getCountyCourtJudgment();

@@ -14,7 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
-import uk.gov.hmcts.cmc.rpa.mapper.RequestForJudgementJsonMapper;
+import uk.gov.hmcts.cmc.rpa.mapper.RequestForJudgmentJsonMapper;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.JSON_EXTENSION;
@@ -25,14 +25,14 @@ public class RequestForJudgmentNotificationService {
 
     private final EmailService emailService;
     private final EmailProperties emailProperties;
-    private final RequestForJudgementJsonMapper jsonMapper;
+    private final RequestForJudgmentJsonMapper jsonMapper;
     private final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
 
     @Autowired
     public RequestForJudgmentNotificationService(
         EmailService emailService,
         EmailProperties emailProperties,
-        RequestForJudgementJsonMapper jsonMapper,
+        RequestForJudgmentJsonMapper jsonMapper,
         CountyCourtJudgmentPdfService countyCourtJudgmentPdfService
     ) {
         this.emailService = emailService;
