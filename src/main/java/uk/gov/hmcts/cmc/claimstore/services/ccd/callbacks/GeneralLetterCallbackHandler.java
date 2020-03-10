@@ -12,13 +12,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.GENERAL_LETTER;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ISSUE_GENERAL_LETTER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
 @Service
 public class GeneralLetterCallbackHandler extends CallbackHandler {
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
-    private static final List<CaseEvent> EVENTS = ImmutableList.of(GENERAL_LETTER);
+    private static final List<CaseEvent> EVENTS = ImmutableList.of(ISSUE_GENERAL_LETTER);
 
     @Autowired
     public GeneralLetterCallbackHandler() {
@@ -28,10 +28,8 @@ public class GeneralLetterCallbackHandler extends CallbackHandler {
     @Override
     protected Map<CallbackType, Callback> callbacks() {
         return ImmutableMap.of(
-            CallbackType.ABOUT_TO_START, this::prepopulateFields,
-            CallbackType.MID, this::generatePreview,
-            CallbackType.ABOUT_TO_SUBMIT, this::saveToDraftStore,
-            CallbackType.SUBMITTED, this::response
+            CallbackType.MID, this::generateLetter,
+            CallbackType.ABOUT_TO_SUBMIT, this::printLetter
         );
     }
 
@@ -45,19 +43,11 @@ public class GeneralLetterCallbackHandler extends CallbackHandler {
         return ROLES;
     }
 
-    public CallbackResponse prepopulateFields(CallbackParams callbackParams) {
+    public CallbackResponse printLetter(CallbackParams callbackParams) {
         return null;
     }
 
-    public CallbackResponse saveToDraftStore(CallbackParams callbackParams) {
-        return null;
-    }
-
-    public CallbackResponse generatePreview(CallbackParams callbackParams) {
-        return null;
-    }
-
-    public CallbackResponse response(CallbackParams callbackParams) {
+    public CallbackResponse generateLetter(CallbackParams callbackParams) {
         return null;
     }
 }
