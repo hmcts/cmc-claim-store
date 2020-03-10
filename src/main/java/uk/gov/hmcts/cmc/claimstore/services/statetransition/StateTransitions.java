@@ -40,7 +40,8 @@ public enum StateTransitions implements StateTransition {
     WAITING_TRANSFER(CaseEvent.WAITING_TRANSFER,
         AppInsightsEvent.WAITING_TRANSFER,
         (responseDate -> QueryBuilders.boolQuery()
-                .must(QueryBuilders.termQuery("state", ClaimState.ORDER_DRAWN.getValue()))
+                // state must be lower cased regardless of case format in CCD database
+                .must(QueryBuilders.termQuery("state", ClaimState.ORDER_DRAWN.getValue().toLowerCase()))
                 .must(QueryBuilders.rangeQuery("data.directionOrder.createdOn").lte(responseDate))
         )
     );
