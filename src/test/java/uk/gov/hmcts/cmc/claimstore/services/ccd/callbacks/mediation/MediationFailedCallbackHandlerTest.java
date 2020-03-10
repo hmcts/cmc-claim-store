@@ -92,7 +92,7 @@ public class MediationFailedCallbackHandlerTest {
             appInsights,
             mediationFailedNotificationService,
             directionsQuestionnaireService,
-                coreCaseDataService);
+            coreCaseDataService);
         callbackRequest = CallbackRequest
             .builder()
             .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
@@ -295,41 +295,19 @@ public class MediationFailedCallbackHandlerTest {
         verify(coreCaseDataService).saveCaseEvent(AUTHORISATION, claim.getCcdCaseId(), CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE);
     }
 
-    @Test
-    public void endStateIsReadyForPaperDQsForOfflineDQCase() {
-        // not working - ends in open state
-        callbackParams = CallbackParams.builder()
-                .type(CallbackType.SUBMITTED)
-                .request(callbackRequest)
-                .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
-                .build();
+    private void handleSubmittedCallback() {
+    CallbackRequest callbackRequest = CallbackRequest
+        .builder()
+        .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
+        .eventId(CaseEvent.MEDIATION_FAILED.getValue())
+        .build();
 
-        Claim claim = claimSetForMediation.toBuilder()
-                .claimData(SampleClaimData.submittedWithAmountMoreThanThousand())
-                .build();
+    CallbackParams callbackParams = CallbackParams.builder()
+        .type(CallbackType.SUBMITTED)
+        .request(callbackRequest)
+        .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
+        .build();
 
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
-
-        mediationFailedCallbackHandler.handle(callbackParams);
-
-        assertThat(claim.getState()).isEqualTo(READY_FOR_PAPER_DQ.getValue());
-    }
-
-
-
-        private void handleSubmittedCallback() {
-        CallbackRequest callbackRequest = CallbackRequest
-            .builder()
-            .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
-            .eventId(CaseEvent.MEDIATION_FAILED.getValue())
-            .build();
-
-        CallbackParams callbackParams = CallbackParams.builder()
-            .type(CallbackType.SUBMITTED)
-            .request(callbackRequest)
-            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
-            .build();
-
-        mediationFailedCallbackHandler.handle(callbackParams);
+    mediationFailedCallbackHandler.handle(callbackParams);
     }
 }

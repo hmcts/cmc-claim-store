@@ -81,8 +81,8 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
     @Override
     protected Map<CallbackType, Callback> callbacks() {
         return ImmutableMap.of(
-                CallbackType.ABOUT_TO_SUBMIT, this::assignCaseState,
-                CallbackType.SUBMITTED, this::notifyPartiesOfOutcome
+            CallbackType.ABOUT_TO_SUBMIT, this::assignCaseState,
+            CallbackType.SUBMITTED, this::notifyPartiesOfOutcome
         );
     }
 
@@ -101,7 +101,7 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
 
         Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
         appInsights
-              .trackEvent(getAppInsightEventBasedOnMediationPilot(claim), REFERENCE_NUMBER, claim.getReferenceNumber());
+            .trackEvent(getAppInsightEventBasedOnMediationPilot(claim), REFERENCE_NUMBER, claim.getReferenceNumber());
 
         notificationService.notifyParties(claim);
 
