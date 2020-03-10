@@ -20,7 +20,6 @@ import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 import static java.util.function.Predicate.isEqual;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LIFT_STAY;

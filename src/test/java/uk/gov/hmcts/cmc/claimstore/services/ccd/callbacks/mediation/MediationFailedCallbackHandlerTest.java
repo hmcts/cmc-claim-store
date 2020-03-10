@@ -290,7 +290,8 @@ public class MediationFailedCallbackHandlerTest {
 
         mediationFailedCallbackHandler.handle(callbackParams);
 
-        verify(coreCaseDataService).saveCaseEvent(AUTHORISATION, claim.getCcdCaseId(), CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE);
+        verify(coreCaseDataService)
+                .saveCaseEvent(AUTHORISATION, claim.getCcdCaseId(), CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE);
     }
 
     private void handleSubmittedCallback() {
