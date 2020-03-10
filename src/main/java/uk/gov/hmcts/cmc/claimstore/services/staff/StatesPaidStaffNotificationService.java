@@ -28,7 +28,6 @@ import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service
-@ConditionalOnProperty("feature_toggles.staff_emails_enabled")
 public class StatesPaidStaffNotificationService {
     private final EmailService emailService;
     private final StaffEmailProperties emailProperties;

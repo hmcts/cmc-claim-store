@@ -27,7 +27,6 @@ import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_CLAIMANT_RE
 import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
 
 @Service
-@ConditionalOnProperty("feature_toggles.staff_emails_enabled")
 public class ClaimantRejectionStaffNotificationService {
 
     public static final String CLAIM_REFERENCE_NUMBER = "claimReferenceNumber";

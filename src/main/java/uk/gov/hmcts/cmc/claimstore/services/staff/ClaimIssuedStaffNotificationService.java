@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
@@ -22,30 +22,33 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEI
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service
-@ConditionalOnProperty("feature_toggles.staff_emails_enabled")
 public class ClaimIssuedStaffNotificationService {
 
     private final EmailService emailService;
     private final StaffEmailProperties staffEmailProperties;
     private final ClaimIssuedStaffNotificationEmailContentProvider provider;
+    private final boolean staffEmailsEnabled;
 
     @Autowired
     public ClaimIssuedStaffNotificationService(
         EmailService emailService,
         StaffEmailProperties staffEmailProperties,
-        ClaimIssuedStaffNotificationEmailContentProvider provider
+        ClaimIssuedStaffNotificationEmailContentProvider provider,
+        @Value("${feature_toggles.staff_emails_enabled}") boolean staffEmailsEnabled
     ) {
         this.emailService = emailService;
         this.staffEmailProperties = staffEmailProperties;
         this.provider = provider;
+        this.staffEmailsEnabled = staffEmailsEnabled;
     }
 
     @LogExecutionTime
     public void notifyStaffOfClaimIssue(Claim claim, List<PDF> documents) {
-        requireNonNull(claim);
-
-        EmailData emailData = prepareEmailData(claim, documents);
-        emailService.sendEmail(staffEmailProperties.getSender(), emailData);
+        if(staffEmailsEnabled) {
+            requireNonNull(claim);
+            EmailData emailData = prepareEmailData(claim, documents);
+            emailService.sendEmail(staffEmailProperties.getSender(), emailData);
+        }
     }
 
     private EmailData prepareEmailData(Claim claim, List<PDF> documents) {

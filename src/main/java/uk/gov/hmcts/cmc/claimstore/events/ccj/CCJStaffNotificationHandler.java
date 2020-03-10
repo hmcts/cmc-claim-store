@@ -8,7 +8,6 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.CCJStaffNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.InterlocutoryJudgmentStaffNotificationService;
 
 @Component
-@ConditionalOnProperty("feature_toggles.staff_emails_enabled")
 public class CCJStaffNotificationHandler {
 
     private final CCJStaffNotificationService ccjStaffNotificationService;

@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.Map;
 
 @Service
-@ConditionalOnProperty("feature_toggles.staff_emails_enabled")
 public class PaidInFullStaffNotificationService {
 
     private static final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd/MM/yyyy");

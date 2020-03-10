@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.services.staff.SettlementReachedStaffNotificationService;
 
 @Component
-@ConditionalOnProperty("feature_toggles.staff_emails_enabled")
 public class AgreementCountersignedStaffNotificationHandler {
 
     private final SettlementReachedStaffNotificationService notificationService;

@@ -8,7 +8,6 @@ import uk.gov.hmcts.cmc.claimstore.events.settlement.RejectSettlementAgreementEv
 import uk.gov.hmcts.cmc.claimstore.services.staff.RejectSettlementAgreementStaffNotificationService;
 
 @Component
-@ConditionalOnProperty("feature_toggles.staff_emails_enabled")
 public class RejectSettlementAgreementStaffNotificationHandler {
 
     private final RejectSettlementAgreementStaffNotificationService notificationService;

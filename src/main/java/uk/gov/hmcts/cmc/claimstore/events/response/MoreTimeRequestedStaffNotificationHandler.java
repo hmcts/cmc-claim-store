@@ -16,7 +16,6 @@ import java.util.Map;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 
 @Component
-@ConditionalOnProperty("feature_toggles.staff_emails_enabled")
 public class MoreTimeRequestedStaffNotificationHandler {
 
     private static final String REFERENCE_TEMPLATE = "more-time-requested-notification-to-%s-%s";
