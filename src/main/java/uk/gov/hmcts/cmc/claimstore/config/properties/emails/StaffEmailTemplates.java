@@ -119,11 +119,11 @@ public class StaffEmailTemplates {
         return readString("/staff/templates/email/claimantResponse/rejection/directionsHearing/body.txt");
     }
 
-    public String getIntentionToProceedEmailSubject() {
-        return readString("/staff/templates/email/intentionToProceed/subject.txt");
+    public String getScheduledStateTransitionEmailSubject() {
+        return readString("/staff/templates/email/scheduledStateTransition/subject.txt");
     }
 
-    public String getIntentionToProceedEmailBody() {
-        return readString("/staff/templates/email/intentionToProceed/body.txt");
+    public String getScheduledStateTransitionEmailBody() {
+        return readString("/staff/templates/email/scheduledStateTransition/body.txt");
     }
 }
