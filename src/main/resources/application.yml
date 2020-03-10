@@ -98,7 +98,8 @@ doc_assembly:
   url: ${DOC_ASSEMBLY_URL:false}
   templateId: "CV-CMC-GOR-ENG-0004-1.docx"
   judgeTemplateId: "CV-CMC-GOR-ENG-00219-1.docx"
-  
+  generalLetterTemplateId: "CV-CMC-GOR-ENG-0005.docx"
+
 nonworking-days:
   datafile: ${NONWORKINGDAYS_DATAFILE:/data/non-working_days.dat}
 
