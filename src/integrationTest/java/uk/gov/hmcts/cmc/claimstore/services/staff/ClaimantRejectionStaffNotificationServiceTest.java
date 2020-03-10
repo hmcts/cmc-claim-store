@@ -22,6 +22,7 @@ import java.io.IOException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -88,9 +89,7 @@ public class ClaimantRejectionStaffNotificationServiceTest extends BaseMockSprin
 
         service.notifyStaffClaimantRejectPartAdmission(claimWithPartAdmission);
 
-        verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
-
-        assertThat(senderArgument.getValue()).isEqualTo(emailProperties.getSender());
+        verify(emailService, never()).sendEmail(any(), any());
     }
 
     @Test
