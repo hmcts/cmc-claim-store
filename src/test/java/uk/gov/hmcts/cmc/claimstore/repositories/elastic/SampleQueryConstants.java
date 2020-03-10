@@ -98,7 +98,7 @@ public interface SampleQueryConstants {
         + "      {\n"
         + "        \"term\" : {\n"
         + "          \"state\" : {\n"
-        + "            \"value\" : \"orderDrawn\",\n"
+        + "            \"value\" : \"orderdrawn\",\n"
         + "            \"boost\" : 1.0\n"
         + "          }\n"
         + "        }\n"
