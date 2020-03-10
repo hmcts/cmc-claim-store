@@ -44,15 +44,15 @@ public class BulkPrintSupportController {
     }
 
     @PutMapping("/claim/{referenceNumber}/resend-order-for-print")
-    @ApiOperation("Resend staff notifications associated with provided event")
+    @ApiOperation("Resend failed legal orders for bulk print")
     public void resendLegalAdvisorOrderToPrint(@PathVariable("referenceNumber") String referenceNumber) {
-        User user = userService.authenticateAnonymousCaseWorker();
-        String authorisation = user.getAuthorisation();
-
         Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
             .orElseThrow(claimNotFoundException(referenceNumber));
 
         CCDCase ccdCase = caseMapper.to(claim);
+
+        User user = userService.authenticateAnonymousCaseWorker();
+        String authorisation = user.getAuthorisation();
 
         CCDDocument document = ccdCase.getCaseDocuments().stream()
             .map(CCDCollectionElement::getValue)

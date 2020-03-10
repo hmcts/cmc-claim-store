@@ -90,4 +90,3 @@ public class BulkPrintSupportControllerTest {
         bulkPrintSupportController.resendLegalAdvisorOrderToPrint(CLAIM_REFERENCE);
     }
 }
-
