@@ -125,9 +125,7 @@ public class ClaimantResponseService {
                 (ResponseRejection) claimantResponse,
                 updatedClaim
             );
-            if (caseEvent != null) {
-                caseRepository.saveCaseEvent(authorization, updatedClaim, caseEvent);
-            }
+            caseRepository.saveCaseEvent(authorization, updatedClaim, caseEvent);
         }
 
         raiseAppInsightEvents(updatedClaim, response, claimantResponse, caseEvent);
