@@ -27,11 +27,12 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimSubmissionOperationIndicatorRule;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
-import uk.gov.hmcts.cmc.claimstore.services.IntentionToProceedService;
 import uk.gov.hmcts.cmc.claimstore.services.MediationReportService;
+import uk.gov.hmcts.cmc.claimstore.services.ScheduledStateTransitionService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.statetransition.StateTransitions;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
@@ -115,7 +116,7 @@ class SupportControllerTest {
     private MediationReportService mediationReportService;
 
     @Mock
-    private IntentionToProceedService intentionToProceedService;
+    private ScheduledStateTransitionService scheduledStateTransitionService;
 
     private SupportController controller;
 
@@ -137,7 +138,7 @@ class SupportControllerTest {
             postClaimOrchestrationHandler,
             mediationReportService,
             new ClaimSubmissionOperationIndicatorRule(),
-            intentionToProceedService
+            scheduledStateTransitionService
         );
         sampleClaim = SampleClaim.getDefault();
     }
@@ -191,7 +192,7 @@ class SupportControllerTest {
                     ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
                     claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
                     postClaimOrchestrationHandler, mediationReportService, new ClaimSubmissionOperationIndicatorRule(),
-                    intentionToProceedService
+            scheduledStateTransitionService
                 );
 
                 when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE)))
@@ -434,7 +435,7 @@ class SupportControllerTest {
                     ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
                     claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
                     postClaimOrchestrationHandler, mediationReportService, new ClaimSubmissionOperationIndicatorRule(),
-                    intentionToProceedService
+                    scheduledStateTransitionService
                 );
 
                 when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE)))
@@ -515,9 +516,10 @@ class SupportControllerTest {
             final User user = new User(null, userDetails);
             when(userService.getUser(auth)).thenReturn(user);
 
-            controller.checkClaimsPastIntentionToProceedDeadline(auth, localDateTime);
+            controller.transitionClaimState(auth, StateTransitions.STAY_CLAIM, localDateTime);
 
-            verify(intentionToProceedService).checkClaimsPastIntentionToProceedDeadline(localDateTime, user);
+            verify(scheduledStateTransitionService).transitionClaims(localDateTime, user,
+                StateTransitions.STAY_CLAIM);
         }
 
         @Test
@@ -528,9 +530,10 @@ class SupportControllerTest {
             final User user = new User(null, userDetails);
             when(userService.getUser(auth)).thenReturn(user);
 
-            controller.checkClaimsPastIntentionToProceedDeadline(auth, null);
+            controller.transitionClaimState(auth, StateTransitions.STAY_CLAIM, null);
 
-            verify(intentionToProceedService).checkClaimsPastIntentionToProceedDeadline(notNull(), eq(user));
+            verify(scheduledStateTransitionService).transitionClaims(notNull(), eq(user),
+                eq(StateTransitions.STAY_CLAIM));
         }
 
     }
