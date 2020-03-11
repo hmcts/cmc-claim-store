@@ -21,7 +21,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class PaidInFullStaffNotificationServiceTest extends BaseMockSpringTest {
 
@@ -51,7 +53,7 @@ public class PaidInFullStaffNotificationServiceTest extends BaseMockSpringTest {
     public void shouldSendStaffEmailPaidInFullWhenStaffEmailsEnabled() {
 
         service = new PaidInFullStaffNotificationService(
-            emailService, emailProperties, emailContentProvider, true );
+            emailService, emailProperties, emailContentProvider, true);
 
         Claim claimWithPaidInFull = SampleClaim.builder()
             .withMoneyReceivedOn(LocalDate.parse("01/12/2025", DateTimeFormatter.ofPattern("dd/MM/yyyy")))
@@ -69,7 +71,7 @@ public class PaidInFullStaffNotificationServiceTest extends BaseMockSpringTest {
     public void shouldNotSendStaffEmailPaidInFullWhenStaffEmailsDisabled() {
 
         service = new PaidInFullStaffNotificationService(
-            emailService, emailProperties, emailContentProvider, false );
+            emailService, emailProperties, emailContentProvider, false);
 
         service.notifyPaidInFull(SampleClaim.getDefault());
 
