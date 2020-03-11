@@ -41,6 +41,13 @@ java:
         - system-update-password
         - notify-api-key
         - milo-recipient
+        - staff-email
+        - live-support-email
+        - rpa-email-sealed-claim
+        - rpa-email-more-time-requested
+        - rpa-email-response
+        - rpa-email-ccj
+        - rpa-email-paid-in-full
   environment:
     LOG_LEVEL: DEBUG
     CMC_DB_HOST: ${SERVICE_NAME}-postgres
@@ -102,7 +109,7 @@ ccd:
       userProfileDatabaseName: user-profile
     definition:
       enabled: true
-      image: hmctspublic.azurecr.io/cmc/ccd-definition-importer:1.5.7
+      image: hmctspublic.azurecr.io/cmc/ccd-definition-importer:1.5.10
       environment:
         CCD_DEF_CLAIM_STORE_BASE_URL: http://${SERVICE_NAME}-java
       kvSecretRef: kvcreds

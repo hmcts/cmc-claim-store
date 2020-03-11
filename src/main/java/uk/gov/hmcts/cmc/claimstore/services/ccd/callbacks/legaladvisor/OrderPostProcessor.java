@@ -8,6 +8,9 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionOrderService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
@@ -40,12 +43,14 @@ public class OrderPostProcessor {
     private final CaseDetailsConverter caseDetailsConverter;
     private final LegalOrderService legalOrderService;
     private final DirectionOrderService directionOrderService;
+    private AppInsights appInsights;
 
     public OrderPostProcessor(
         Clock clock,
         OrderDrawnNotificationService orderDrawnNotificationService,
         CaseDetailsConverter caseDetailsConverter,
         LegalOrderService legalOrderService,
+        AppInsights appInsights,
         DirectionOrderService directionOrderService
     ) {
         this.clock = clock;
@@ -53,6 +58,7 @@ public class OrderPostProcessor {
         this.caseDetailsConverter = caseDetailsConverter;
         this.legalOrderService = legalOrderService;
         this.directionOrderService = directionOrderService;
+        this.appInsights = appInsights;
     }
 
     public CallbackResponse copyDraftToCaseDocument(CallbackParams callbackParams) {
@@ -65,6 +71,10 @@ public class OrderPostProcessor {
         HearingCourt hearingCourt = directionOrderService.getHearingCourt(ccdCase);
 
         CCDCase updatedCase = ccdCase.toBuilder()
+            .expertReportPermissionPartyGivenToClaimant(null)
+            .expertReportPermissionPartyGivenToDefendant(null)
+            .expertReportInstructionClaimant(null)
+            .expertReportInstructionDefendant(null)
             .caseDocuments(updateCaseDocumentsWithOrder(ccdCase, draftOrderDoc))
             .directionOrder(CCDDirectionOrder.builder()
                 .createdOn(nowInUTC())
@@ -79,15 +89,18 @@ public class OrderPostProcessor {
             .build();
     }
 
-    public CallbackResponse setHearingCourt(CallbackParams callbackParams) {
+    public CallbackResponse persistHearingCourtAndMigrateExpertReport(CallbackParams callbackParams) {
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
-
         HearingCourt hearingCourt = directionOrderService.getHearingCourt(ccdCase);
 
         CCDCase updatedCase = ccdCase.toBuilder()
             .hearingCourtName(hearingCourt.getName())
             .hearingCourtAddress(hearingCourt.getAddress())
+            .expertReportPermissionPartyGivenToClaimant(null)
+            .expertReportPermissionPartyGivenToDefendant(null)
+            .expertReportInstructionClaimant(null)
+            .expertReportInstructionDefendant(null)
             .build();
 
         return AboutToStartOrSubmitCallbackResponse
@@ -109,8 +122,25 @@ public class OrderPostProcessor {
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         notifyParties(claim);
+        raiseAppInsightEvents(CaseEvent.fromValue(callbackParams.getRequest().getEventId()), ccdCase);
         String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
         return printOrder(authorisation, claim, ccdCase);
+    }
+
+    private void raiseAppInsightEvents(CaseEvent caseEvent, CCDCase ccdCase) {
+        switch (caseEvent) {
+            case DRAW_ORDER:
+                appInsights.trackEvent(AppInsightsEvent.DRAW_ORDER, AppInsights.REFERENCE_NUMBER,
+                    ccdCase.getPreviousServiceCaseReference());
+                break;
+            case DRAW_JUDGES_ORDER:
+                appInsights.trackEvent(AppInsightsEvent.DRAW_JUDGES_ORDER, AppInsights.REFERENCE_NUMBER,
+                    ccdCase.getPreviousServiceCaseReference());
+                break;
+            default:
+                //Empty
+                break;
+        }
     }
 
     private void notifyParties(Claim claim) {

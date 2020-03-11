@@ -67,6 +67,8 @@ public enum CaseEvent {
     REVIEWED_PAPER_RESPONSE("ReviewedPaperResponse"),
     MEDIATION_FAILED("FailedMediation"),
     MEDIATION_SUCCESSFUL("SuccessfulMediation"),
+    ATTACH_SCANNED_DOCS("attachScannedDocs"),
+    UPDATE_CLAIM("UpdateClaim"),
     RESET_PIN("ResetPin");
 
     private final String value;
