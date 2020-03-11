@@ -188,17 +188,14 @@ module "claim-store-api" {
     STAFF_NOTIFICATIONS_SENDER = "noreply@reform.hmcts.net"
     STAFF_NOTIFICATIONS_RECIPIENT = "${data.azurerm_key_vault_secret.staff_email.value}"
 
-    // live support notifications
-    LIVE_SUPPORT_SENDER = "noreply@reform.hmcts.net"
-    LIVE_SUPPORT_RECIPIENT = "${data.azurerm_key_vault_secret.live_support_email.value}"
-
     // MILO
     MILO_CSV_SENDER = "noreply@reform.hmcts.net"
     MILO_CSV_RECIPIENT = "${data.azurerm_key_vault_secret.milo_recipient.value}"
     MILO_CSV_SCHEDULE = "${var.milo_csv_schedule}"
 
-    // Intention to proceed
-    CLAIM_STAYED_SCHEDULE = "${var.claim_stayed_schedule}"
+    // State Transition schedules
+    SCHEDULE_STATE_TRANSITION_STAY_CLAIM = "${var.schedule_state-transition_stay-claim}"
+    SCHEDULE_STATE_TRANSITION_WAITING_TRANSFER = "${var.schedule_state-transition_waiting-transfer}"
 
     // robot notifications
     RPA_NOTIFICATIONS_SENDER = "noreply@reform.hmcts.net"
