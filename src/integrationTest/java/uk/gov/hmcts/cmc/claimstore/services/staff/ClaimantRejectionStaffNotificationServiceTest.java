@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.ClaimantDirectionsHearingContentProvider;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.ClaimantRejectPartAdmissionContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
@@ -20,6 +22,7 @@ import java.io.IOException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -35,22 +38,37 @@ public class ClaimantRejectionStaffNotificationServiceTest extends BaseMockSprin
     @Autowired
     private StaffEmailProperties emailProperties;
 
-    @Autowired
     private ClaimantRejectionStaffNotificationService service;
 
     @MockBean
     protected EmailService emailService;
 
+    @Autowired
+    private StaffPdfCreatorService pdfCreatorService;
+
+    @Autowired
+    private ClaimantRejectPartAdmissionContentProvider claimantRejectPartAdmissionContentProvider;
+
+    @Autowired
+    private ClaimantDirectionsHearingContentProvider claimantDirectionsHearingContentProvider;
+
     @Before
     public void beforeEachTest() {
         claimWithPartAdmission = SampleClaim.getWithClaimantResponseRejectionForPartAdmissionAndMediation();
+        service = new ClaimantRejectionStaffNotificationService(
+            emailService,
+            emailProperties,
+            pdfCreatorService,
+            claimantRejectPartAdmissionContentProvider,
+            claimantDirectionsHearingContentProvider,
+            true);
 
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .thenReturn(PDF_CONTENT);
     }
 
     @Test
-    public void shouldSendEmailToExpectedRecipient() {
+    public void shouldSendEmailToExpectedRecipientWhenStaffEmailsEnabled() {
 
         service.notifyStaffClaimantRejectPartAdmission(claimWithPartAdmission);
 
@@ -60,7 +78,22 @@ public class ClaimantRejectionStaffNotificationServiceTest extends BaseMockSprin
     }
 
     @Test
-    public void shouldSendEmailWithExpectedContentClaimantRejectionWithPartAdmission() {
+    public void shouldNotSendEmailToExpectedRecipientWhenStaffEmailsDisabled() {
+        service = new ClaimantRejectionStaffNotificationService(
+            emailService,
+            emailProperties,
+            pdfCreatorService,
+            claimantRejectPartAdmissionContentProvider,
+            claimantDirectionsHearingContentProvider,
+            false);
+
+        service.notifyStaffClaimantRejectPartAdmission(claimWithPartAdmission);
+
+        verify(emailService, never()).sendEmail(any(), any());
+    }
+
+    @Test
+    public void shouldSendEmailWithExpectedContentClaimantRejectionWithPartAdmissionWhenStaffEmailsEnabled() {
 
         service.notifyStaffClaimantRejectPartAdmission(claimWithPartAdmission);
 
@@ -82,7 +115,7 @@ public class ClaimantRejectionStaffNotificationServiceTest extends BaseMockSprin
     }
 
     @Test
-    public void shouldSendEmailWithExpectedPDFAttachments() throws IOException {
+    public void shouldSendEmailWithExpectedPDFAttachmentsWhenStaffEmailsEnabled() throws IOException {
 
         service.notifyStaffClaimantRejectPartAdmission(claimWithPartAdmission);
 
