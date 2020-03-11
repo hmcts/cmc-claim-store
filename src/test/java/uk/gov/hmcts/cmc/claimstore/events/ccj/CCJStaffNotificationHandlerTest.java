@@ -10,6 +10,8 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.CCJStaffNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.InterlocutoryJudgmentStaffNotificationService;
 
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.getDefault;
@@ -33,12 +35,13 @@ public class CCJStaffNotificationHandlerTest {
     public void setup() {
         handler = new CCJStaffNotificationHandler(
             ccjStaffNotificationService,
-            interlocutoryJudgmentStaffNotificationService
+            interlocutoryJudgmentStaffNotificationService,
+            true
         );
     }
 
     @Test
-    public void notifyStaffDefaultCCJRequestSubmitted() {
+    public void notifyStaffDefaultCCJRequestSubmittedWhenStaffEmailEnabled() {
         CountyCourtJudgmentEvent event = new CountyCourtJudgmentEvent(
             SampleClaimIssuedEvent.CLAIM, "Bearer token here");
 
@@ -48,7 +51,22 @@ public class CCJStaffNotificationHandlerTest {
     }
 
     @Test
-    public void notifyStaffCCJRequestByAdmissionSubmitted() {
+    public void shouldNotNotifyStaffForCCJRequestSubmittedWhenStaffEmailDisabled() {
+        CountyCourtJudgmentEvent event = new CountyCourtJudgmentEvent(
+            SampleClaimIssuedEvent.CLAIM, "Bearer token here");
+        handler = new CCJStaffNotificationHandler(
+            ccjStaffNotificationService,
+            interlocutoryJudgmentStaffNotificationService,
+            false
+        );
+
+        handler.onDefaultJudgmentRequestSubmitted(event);
+
+        verify(ccjStaffNotificationService, never()).notifyStaffCCJRequestSubmitted(any());
+    }
+
+    @Test
+    public void notifyStaffCCJRequestByAdmissionSubmittedWhenStaffEmailEnabled() {
         CountyCourtJudgmentEvent event = new CountyCourtJudgmentEvent(
             SampleClaimIssuedEvent.CLAIM, "Bearer token here");
 
