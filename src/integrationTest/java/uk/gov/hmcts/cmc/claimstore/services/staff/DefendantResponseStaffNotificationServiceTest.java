@@ -11,8 +11,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
+import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.DefendantAdmissionStaffEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.FullDefenceStaffEmailContentProvider;
+import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
@@ -38,7 +40,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimIssueReceiptFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
 
 public class DefendantResponseStaffNotificationServiceTest extends BaseMockSpringTest {
 
@@ -57,6 +61,9 @@ public class DefendantResponseStaffNotificationServiceTest extends BaseMockSprin
     @Autowired
     private StaffEmailProperties emailProperties;
 
+    @Autowired
+    private DefendantResponseStaffNotificationService service;
+
     @Mock
     private FullDefenceStaffEmailContentProvider fullDefenceStaffEmailContentProvider;
 
@@ -66,20 +73,10 @@ public class DefendantResponseStaffNotificationServiceTest extends BaseMockSprin
     @Mock
     private DefendantResponseReceiptService defendantResponseReceiptService;
 
-    private DefendantResponseStaffNotificationService service;
-
     private Claim claimWithFullDefenceAlreadyPaidResponse;
 
     @Before
     public void beforeEachTest() {
-
-        service = new DefendantResponseStaffNotificationService(
-            emailService,
-            emailProperties,
-            fullDefenceStaffEmailContentProvider,
-            defendantAdmissionStaffEmailContentProvider,
-            defendantResponseReceiptService,
-            true);
 
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .thenReturn(PDF_CONTENT);
@@ -99,7 +96,26 @@ public class DefendantResponseStaffNotificationServiceTest extends BaseMockSprin
     @Test
     public void shouldSendEmailToExpectedRecipientWhenStaffEmailsEnabled() {
 
-        service.notifyStaffDefenceSubmittedFor(
+        DefendantResponseStaffNotificationService staffNotificationService;
+        staffNotificationService = new DefendantResponseStaffNotificationService(
+            emailService,
+            emailProperties,
+            fullDefenceStaffEmailContentProvider,
+            defendantAdmissionStaffEmailContentProvider,
+            defendantResponseReceiptService,
+            true);
+
+        when(fullDefenceStaffEmailContentProvider.createContent(anyMap()))
+            .thenReturn(new EmailContent("subject", "body"));
+        when(defendantAdmissionStaffEmailContentProvider.createContent(anyMap()))
+            .thenReturn(new EmailContent("subject", "body"));
+        when(defendantResponseReceiptService.createPdf(any(Claim.class))).thenReturn(new PDF(
+            buildClaimIssueReceiptFileBaseName(claimWithFullDefenceAlreadyPaidResponse.getReferenceNumber()),
+            PDF_BYTES,
+            DEFENDANT_RESPONSE_RECEIPT
+        ));
+
+        staffNotificationService.notifyStaffDefenceSubmittedFor(
             claimWithFullDefenceAlreadyPaidResponse, DEFENDANT_EMAIL);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
