@@ -84,7 +84,7 @@ ccd:
       ingressHost: ccd-admin-web-${SERVICE_FQDN}
       secrets:
         IDAM_OAUTH2_AW_CLIENT_SECRET: ${ADMIN_WEB_IDAM_SECRET}
-          disabled: false
+        disabled: false
 
   ccd-user-profile-api:
     java:
