@@ -193,8 +193,9 @@ module "claim-store-api" {
     MILO_CSV_RECIPIENT = "${data.azurerm_key_vault_secret.milo_recipient.value}"
     MILO_CSV_SCHEDULE = "${var.milo_csv_schedule}"
 
-    // Intention to proceed
-    CLAIM_STAYED_SCHEDULE = "${var.claim_stayed_schedule}"
+    // State Transition schedules
+    SCHEDULE_STATE_TRANSITION_STAY_CLAIM = "${var.schedule_state-transition_stay-claim}"
+    SCHEDULE_STATE_TRANSITION_WAITING_TRANSFER = "${var.schedule_state-transition_waiting-transfer}"
 
     // robot notifications
     RPA_NOTIFICATIONS_SENDER = "noreply@reform.hmcts.net"
