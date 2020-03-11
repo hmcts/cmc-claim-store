@@ -24,7 +24,10 @@ import java.io.IOException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
 
@@ -64,9 +67,8 @@ public class StatesPaidStaffNotificationServiceTest extends BaseMockSpringTest {
     @Test
     public void shouldSendEmailToExpectedRecipientStaffEmailsEnabled() {
         StatesPaidStaffNotificationService staffNotificationService;
-        staffNotificationService = new StatesPaidStaffNotificationService
-            (emailService, emailProperties, emailContentProvider,
-                defendantResponseReceiptService, true );
+        staffNotificationService = new StatesPaidStaffNotificationService(
+            emailService, emailProperties, emailContentProvider, defendantResponseReceiptService, true);
         
         when(emailContentProvider.createContent(anyMap())).thenReturn(new EmailContent("subject", "body"));
 
@@ -81,9 +83,8 @@ public class StatesPaidStaffNotificationServiceTest extends BaseMockSpringTest {
     public void shouldNotSendEmailToExpectedRecipientStaffEmailsDisabled() {
 
         StatesPaidStaffNotificationService staffNotificationService;
-        staffNotificationService = new StatesPaidStaffNotificationService
-            (emailService, emailProperties, emailContentProvider,
-                defendantResponseReceiptService, false );
+        staffNotificationService = new StatesPaidStaffNotificationService(
+            emailService, emailProperties, emailContentProvider, defendantResponseReceiptService, false);
 
         staffNotificationService.notifyStaffClaimantResponseStatesPaidSubmittedFor(claimWithFullDefenceResponse);
 
