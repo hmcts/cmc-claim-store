@@ -68,10 +68,10 @@ ccd:
   global:
     idamApiUrl: "https://idam-api.aat.platform.hmcts.net"
     s2sUrl: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+    redirectUri: "https://ccd-case-management-web-aat.service.core-compute-aat.internal/oauth2redirect"
     postgresUsername: hmcts
     postgresPassword: hmcts
     devMode: true
-    environment: aat
 
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
@@ -102,6 +102,7 @@ ccd:
       CCD_DEF_CLAIM_STORE_BASE_URL: http://${SERVICE_NAME}-java
     definitionFilename: cmc-ccd.xlsx
     definitionStoreUrl: http://${SERVICE_NAME}-ccd-definition-store
+    redirectUri: '{{ .Values.global.redirectUri }}'
     userRoles:
     - citizen
     - caseworker-cmc
