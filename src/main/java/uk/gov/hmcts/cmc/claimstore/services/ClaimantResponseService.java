@@ -19,7 +19,9 @@ import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static java.util.function.Predicate.isEqual;
@@ -58,6 +60,7 @@ public class ClaimantResponseService {
     private final FormaliseResponseAcceptanceService formaliseResponseAcceptanceService;
     private final DirectionsQuestionnaireService directionsQuestionnaireService;
     private final DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
+    private final Clock clock;
 
     @SuppressWarnings("squid:S00107") // All parameters are required here
     public ClaimantResponseService(
@@ -68,7 +71,8 @@ public class ClaimantResponseService {
         EventProducer eventProducer,
         FormaliseResponseAcceptanceService formaliseResponseAcceptanceService,
         DirectionsQuestionnaireService directionsQuestionnaireService,
-        DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator
+        DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator,
+        Clock clock
     ) {
         this.claimService = claimService;
         this.appInsights = appInsights;
@@ -78,6 +82,7 @@ public class ClaimantResponseService {
         this.formaliseResponseAcceptanceService = formaliseResponseAcceptanceService;
         this.directionsQuestionnaireService = directionsQuestionnaireService;
         this.directionsQuestionnaireDeadlineCalculator = directionsQuestionnaireDeadlineCalculator;
+        this.clock = clock;
     }
 
     public void save(
@@ -107,7 +112,7 @@ public class ClaimantResponseService {
 
         if (!FeaturesUtils.isOnlineDQ(updatedClaim) && isRejectResponseNoMediation(claimantResponse)) {
             LocalDate deadline = directionsQuestionnaireDeadlineCalculator
-                .calculateDirectionsQuestionnaireDeadline(claim.getRespondedAt());
+                .calculateDirectionsQuestionnaireDeadline(LocalDateTime.now(clock));
             caseRepository.updateDirectionsQuestionnaireDeadline(claim, deadline, authorization);
             updatedClaim = claimService.getClaimByExternalId(externalId, authorization);
         }

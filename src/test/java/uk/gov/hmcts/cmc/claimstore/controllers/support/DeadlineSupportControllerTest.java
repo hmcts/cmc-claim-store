@@ -289,15 +289,16 @@ public class DeadlineSupportControllerTest {
     public void testDefineDQDeadlineOnValidPost500Claim() {
         final String reference = "000MC010";
         final LocalDate deadline = LocalDate.now();
+        LocalDateTime now = LocalDateTime.now();
         when(claimService.getClaimByReferenceAnonymous(reference)).thenReturn(Optional.of(SampleClaim.builder()
             .withReferenceNumber(reference)
-            .withCreatedAt(LocalDateTime.now())
+            .withCreatedAt(now)
             .withResponse(SampleResponse.validDefaults())
-            .withClaimantRespondedAt(LocalDateTime.now())
+            .withClaimantRespondedAt(now)
             .withClaimantResponse(SampleClaimantResponse.validDefaultRejection())
             .build()));
 
-        when(directionsQuestionnaireDeadlineCalculator.calculateDirectionsQuestionnaireDeadline(any()))
+        when(directionsQuestionnaireDeadlineCalculator.calculateDirectionsQuestionnaireDeadline(eq(now)))
             .thenReturn(deadline);
 
         ResponseEntity<String> response = controller.defineDeadline("dq", reference);
