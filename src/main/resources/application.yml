@@ -96,19 +96,24 @@ bankHolidays:
 
 doc_assembly:
   url: ${DOC_ASSEMBLY_URL:false}
-  templateId: "CV-CMC-GOR-ENG-0004.docx"
-  judgeTemplateId: "CV-CMC-GOR-ENG-00219.docx"
+  templateId: "CV-CMC-GOR-ENG-0004-1.docx"
+  judgeTemplateId: "CV-CMC-GOR-ENG-00219-1.docx"
 
 nonworking-days:
   datafile: ${NONWORKINGDAYS_DATAFILE:/data/non-working_days.dat}
+
+pilot-courts:
+  datafile: "/data/pilot-courts.csv"
 
 milo:
   schedule: "${MILO_CSV_SCHEDULE:-}"
   recipient: ${MILO_CSV_RECIPIENT:}
   sender: ${MILO_CSV_SENDER:}
 
-claim_stayed:
-  schedule: ""
+schedule:
+  state-transition:
+    waiting-transfer: ""
+    stay-claim: ""
 
 dateCalculations:
   endOfBusinessDayHour: 16
@@ -120,7 +125,8 @@ dateCalculations:
   offerMadeTimeForResponseInDays: 14
   lastResponseReminderDay: 1
   firstResponseReminderDay: 5
-  intentionToProceedDeadlineInDays: 33
+  stayClaimDeadlineInDays: 33
+  waitingTransferDeadlineInDays: 19
   claimantCcjReminderDays: 10
 
 notifications:
@@ -181,10 +187,6 @@ notifications:
       defendantMediationFailureOfflineDQ: "15a38762-2141-4a70-8cc9-22a27db985bc"
 
 staff-notifications:
-  sender:
-  recipient:
-
-live-support:
   sender:
   recipient:
 

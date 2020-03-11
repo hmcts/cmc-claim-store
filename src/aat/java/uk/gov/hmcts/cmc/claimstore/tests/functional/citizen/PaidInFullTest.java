@@ -39,8 +39,8 @@ public class PaidInFullTest extends BaseTest {
             .and()
             .extract().body().as(Claim.class);
 
-        assertThat(updatedCase.getMoneyReceivedOn().orElseThrow(AssertionError::new))
-            .isEqualTo(paidInFull.getMoneyReceivedOn());
+        assertThat(updatedCase.getMoneyReceivedOn())
+            .contains(paidInFull.getMoneyReceivedOn());
     }
 
     @Test
@@ -88,8 +88,8 @@ public class PaidInFullTest extends BaseTest {
             .and()
             .extract().body().as(Claim.class);
 
-        assertThat(updatedCase.getMoneyReceivedOn().orElseThrow(AssertionError::new))
-            .isEqualTo(paidInFull.getMoneyReceivedOn());
+        assertThat(updatedCase.getMoneyReceivedOn())
+            .contains(paidInFull.getMoneyReceivedOn());
 
         commonOperations
             .paidInFull(createdCase.getExternalId(), paidInFull, claimant)

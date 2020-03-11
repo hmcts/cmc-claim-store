@@ -1,4 +1,0 @@
-Transitioning to stayed state failed for {{noOfClaims}} claims.
-
-Failed claims:
-{{claimIds}}

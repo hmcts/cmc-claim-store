@@ -5,6 +5,8 @@ import feign.FeignException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -12,10 +14,11 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.services.IntentionToProceedDeadlineCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireService;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -101,7 +104,15 @@ public class CoreCaseDataServiceTest {
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
     @Mock
-    private IntentionToProceedDeadlineCalculator intentionToProceedDeadlineCalculator;
+    private WorkingDayIndicator workingDayIndicator;
+
+    private final int intentionToProceedDeadlineDays = 33;
+    @Mock
+    private feign.Request request;
+    @Mock
+    private DirectionsQuestionnaireService directionsQuestionnaireService;
+    @Captor
+    private ArgumentCaptor<Claim> claimArgumentCaptor;
 
     private CoreCaseDataService service;
 
@@ -151,7 +162,9 @@ public class CoreCaseDataServiceTest {
             jobSchedulerService,
             ccdCreateCaseService,
             caseDetailsConverter,
-            intentionToProceedDeadlineCalculator
+            intentionToProceedDeadlineDays,
+            workingDayIndicator,
+            directionsQuestionnaireService
         );
     }
 
@@ -483,6 +496,8 @@ public class CoreCaseDataServiceTest {
 
         assertThat(claim).isNotNull();
         assertThat(claim.getClaimantResponse()).isPresent();
+        verify(directionsQuestionnaireService, atLeastOnce()).getPreferredCourt(claimArgumentCaptor.capture());
+        assertThat(claimArgumentCaptor.getValue().getClaimantResponse()).isPresent();
         verify(coreCaseDataApi, atLeastOnce()).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
             anyString(), anyString(), eq(CLAIMANT_RESPONSE_REJECTION.getValue()));
     }
@@ -658,7 +673,7 @@ public class CoreCaseDataServiceTest {
             anyBoolean(),
             any()
         ))
-            .thenThrow(new FeignException.UnprocessableEntity("Status 422 from CCD", null));
+            .thenThrow(new FeignException.UnprocessableEntity("Status 422 from CCD", request, null));
 
         Claim returnedClaim = service.saveCaseEventIOC(USER, providedClaim, CREATE_CITIZEN_CLAIM);
 

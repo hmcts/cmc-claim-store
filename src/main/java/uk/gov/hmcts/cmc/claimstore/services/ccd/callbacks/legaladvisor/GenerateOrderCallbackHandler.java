@@ -38,6 +38,7 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final OrderCreator orderCreator;
+    private final OrderPostProcessor orderPostProcessor;
 
     @Value("${doc_assembly.templateId}")
     private String templateId;
@@ -48,10 +49,12 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
     @Autowired
     public GenerateOrderCallbackHandler(
         OrderCreator orderCreator,
+        OrderPostProcessor orderPostProcessor,
         CaseDetailsConverter caseDetailsConverter,
         AppInsights appInsights
     ) {
         this.orderCreator = orderCreator;
+        this.orderPostProcessor = orderPostProcessor;
         this.caseDetailsConverter = caseDetailsConverter;
         this.appInsights = appInsights;
     }
@@ -61,6 +64,7 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
         return ImmutableMap.of(
             CallbackType.ABOUT_TO_START, orderCreator::prepopulateOrder,
             CallbackType.MID, orderCreator::generateOrder,
+            CallbackType.ABOUT_TO_SUBMIT, orderPostProcessor::persistHearingCourtAndMigrateExpertReport,
             CallbackType.SUBMITTED, this::raiseAppInsight
         );
     }

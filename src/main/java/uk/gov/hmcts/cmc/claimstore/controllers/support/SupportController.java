@@ -46,10 +46,11 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimSubmissionOperationIndicatorRule;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
-import uk.gov.hmcts.cmc.claimstore.services.IntentionToProceedService;
 import uk.gov.hmcts.cmc.claimstore.services.MediationReportService;
+import uk.gov.hmcts.cmc.claimstore.services.ScheduledStateTransitionService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
+import uk.gov.hmcts.cmc.claimstore.services.statetransition.StateTransitions;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
@@ -68,6 +69,9 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_CLAIMANT_RESPONSE;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_REPRESENTATIVE;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.REJECTION;
 
@@ -78,7 +82,7 @@ public class SupportController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static final String CLAIM = "Claim ";
-    private static final String CLAIM_DOES_NOT_EXIST = "Claim %s does not exist";
+    public static final String CLAIM_DOES_NOT_EXIST = "Claim %s does not exist";
     private static final String AUTHORISATION_IS_REQUIRED = "Authorisation is required";
 
     private final ClaimService claimService;
@@ -94,7 +98,7 @@ public class SupportController {
     private final PostClaimOrchestrationHandler postClaimOrchestrationHandler;
     private final MediationReportService mediationReportService;
     private final ClaimSubmissionOperationIndicatorRule claimSubmissionOperationIndicatorRule;
-    private final IntentionToProceedService intentionToProceedService;
+    private final ScheduledStateTransitionService scheduledStateTransitionService;
 
     @SuppressWarnings("squid:S00107")
     public SupportController(
@@ -111,7 +115,7 @@ public class SupportController {
             PostClaimOrchestrationHandler postClaimOrchestrationHandler,
             MediationReportService mediationReportService,
             ClaimSubmissionOperationIndicatorRule claimSubmissionOperationIndicatorRule,
-            IntentionToProceedService intentionToProceedService
+            ScheduledStateTransitionService scheduledStateTransitionService
     ) {
         this.claimService = claimService;
         this.userService = userService;
@@ -126,7 +130,7 @@ public class SupportController {
         this.postClaimOrchestrationHandler = postClaimOrchestrationHandler;
         this.mediationReportService = mediationReportService;
         this.claimSubmissionOperationIndicatorRule = claimSubmissionOperationIndicatorRule;
-        this.intentionToProceedService = intentionToProceedService;
+        this.scheduledStateTransitionService = scheduledStateTransitionService;
     }
 
     @PutMapping("/claim/{referenceNumber}/event/{event}/resend-staff-notifications")
@@ -195,8 +199,9 @@ public class SupportController {
 
         documentsService.generateDocument(claim.getExternalId(), documentType, caseworker.getAuthorisation());
 
+        // local claim object is now outdated
         claimService.getClaimByReferenceAnonymous(referenceNumber)
-                .orElseThrow(IllegalStateException::new)
+                .orElseThrow(() -> new IllegalStateException("Missing claim " + referenceNumber))
                 .getClaimDocument(documentType)
                 .orElseThrow(() -> new ServerErrorException(
                         "Unable to upload the document. Please try again later",
@@ -239,8 +244,9 @@ public class SupportController {
     private void triggerAsyncOperation(String authorisation, Claim claim) {
         if (claim.getClaimData().isClaimantRepresented()) {
             String submitterName = claim.getClaimData().getClaimant()
-                    .getRepresentative().orElseThrow(IllegalArgumentException::new)
-                    .getOrganisationName();
+                .getRepresentative()
+                .orElseThrow(() -> new IllegalArgumentException(MISSING_REPRESENTATIVE))
+                .getOrganisationName();
 
             this.postClaimOrchestrationHandler.representativeIssueHandler(
                 new RepresentedClaimCreatedEvent(claim, submitterName, authorisation)
@@ -263,22 +269,24 @@ public class SupportController {
 
     }
 
-    @PostMapping(value = "/claims/checkIntentionToProceedDeadline")
-    @ApiOperation("Stay claims past their intention proceed deadline")
-    public void checkClaimsPastIntentionToProceedDeadline(
+    @PostMapping(value = "/claims/transitionClaimState")
+    @ApiOperation("Trigger scheduled state transition")
+    public void transitionClaimState(
             @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation,
+            @RequestParam StateTransitions stateTransition,
             @RequestParam(required = false)
-            @ApiParam("Optional. If supplied check will run as if triggered at this timestamp. Format is ISO 8601")
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime localDateTime
-    ) {
+            @ApiParam("Optional. If supplied check will run as if triggered at this timestamp. Format is "
+                    + "yyyy-MM-ddThh:mm:ss")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                    LocalDateTime localDateTime) {
 
         LocalDateTime runDateTime = localDateTime == null ? LocalDateTimeFactory.nowInLocalZone() : localDateTime;
 
         User user = userService.getUser(authorisation);
         String format = runDateTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss"));
-        logger.info(format("checkClaimsPastIntentionToProceedDeadline called by %s for date: %s",
+        logger.info(format("transitionClaimState %s called by %s for date: %s ", stateTransition,
                 user.getUserDetails().getId(), format));
-        intentionToProceedService.checkClaimsPastIntentionToProceedDeadline(runDateTime, user);
+        scheduledStateTransitionService.transitionClaims(runDateTime, user, stateTransition);
     }
 
     private void resendStaffNotificationCCJRequestSubmitted(Claim claim, String authorisation) {
@@ -316,7 +324,8 @@ public class SupportController {
     }
 
     private void resendStaffNotificationForIntentToProceed(Claim claim, String authorization) {
-        ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalArgumentException::new);
+        ClaimantResponse claimantResponse = claim.getClaimantResponse()
+            .orElseThrow(() -> new IllegalArgumentException(MISSING_CLAIMANT_RESPONSE));
 
         if (claimantResponse.getType() != REJECTION) {
             throw new IllegalArgumentException("Rejected Claimant Response is mandatory for 'intent-to-proceed' event");
@@ -355,8 +364,7 @@ public class SupportController {
 
     private void resendStaffNotificationClaimantResponse(Claim claim, String authorization) {
         ClaimantResponse claimantResponse = claim.getClaimantResponse()
-                .orElseThrow(IllegalArgumentException::new);
-        Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new IllegalArgumentException(MISSING_CLAIMANT_RESPONSE));
         if (!isSettlementAgreement(claim, claimantResponse)) {
             claimantResponseStaffNotificationHandler.onClaimantResponse(
                 new ClaimantResponseEvent(claim, authorization)
@@ -366,12 +374,13 @@ public class SupportController {
 
     @SuppressWarnings("squid:S2201") // not ignored
     private void resendStaffNotificationForPaidInFull(Claim claim) {
-        claim.getMoneyReceivedOn().orElseThrow(IllegalArgumentException::new);
+        claim.getMoneyReceivedOn()
+            .orElseThrow(() -> new IllegalArgumentException("Claim missing money received on date"));
         paidInFullStaffNotificationHandler.onPaidInFullEvent(new PaidInFullEvent(claim));
     }
 
     private boolean isSettlementAgreement(Claim claim, ClaimantResponse claimantResponse) {
-        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+        Response response = claim.getResponse().orElseThrow(() -> new IllegalStateException(MISSING_RESPONSE));
 
         if (shouldFormaliseResponseAcceptance(response, claimantResponse)) {
             return ((ResponseAcceptation) claimantResponse).getFormaliseOption()

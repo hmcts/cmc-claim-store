@@ -14,10 +14,11 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.services.IntentionToProceedDeadlineCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireService;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -89,7 +90,13 @@ public class CoreCaseDataServiceFailureTest {
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
     @Mock
-    private IntentionToProceedDeadlineCalculator intentionToProceedDeadlineCalculator;
+    private WorkingDayIndicator workingDayIndicator;
+
+    private final int intentionToProceedDeadlineDays = 33;
+    @Mock
+    private feign.Request request;
+    @Mock
+    private DirectionsQuestionnaireService directionsQuestionnaireService;
 
     private CoreCaseDataService service;
 
@@ -134,7 +141,9 @@ public class CoreCaseDataServiceFailureTest {
             jobSchedulerService,
             ccdCreateCaseService,
             caseDetailsConverter,
-            intentionToProceedDeadlineCalculator
+            intentionToProceedDeadlineDays,
+            workingDayIndicator,
+            directionsQuestionnaireService
         );
     }
 
@@ -179,7 +188,7 @@ public class CoreCaseDataServiceFailureTest {
             any(CaseDataContent.class),
             eq(solicitorUser.isRepresented())
         ))
-            .thenThrow(new FeignException.Conflict("Status 409 while creating the case", null));
+            .thenThrow(new FeignException.Conflict("Status 409 while creating the case", request, null));
 
         service.createRepresentedClaim(solicitorUser, providedClaim);
     }
@@ -616,7 +625,7 @@ public class CoreCaseDataServiceFailureTest {
 
         ClaimSubmissionOperationIndicators operationIndicators = ClaimSubmissionOperationIndicators.builder().build();
         Claim claim = SampleClaim.getDefault();
-        
+
         service.saveClaimSubmissionOperationIndicators(claim.getId(), operationIndicators, AUTHORISATION,
             PIN_GENERATION_OPERATIONS);
     }
