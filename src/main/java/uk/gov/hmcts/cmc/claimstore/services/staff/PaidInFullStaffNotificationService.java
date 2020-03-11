@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.PaidInFullStaffEmailContentProvider;
@@ -16,7 +15,6 @@ import java.util.Collections;
 import java.util.Map;
 
 @Service
-@ConditionalOnProperty("feature_toggles.staff_emails_enabled")
 public class PaidInFullStaffNotificationService {
 
     private static final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd/MM/yyyy");
