@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,11 +37,20 @@ class AgreementCountersignedStaffNotificationHandlerTest {
     class StaffEmailNotificationSent {
 
         @Test
-        void shouldSendStaffNotificationWhenSettlementReached() {
+        void shouldSendStaffNotificationWhenSettlementReachedAndStaffEmailsEnabled() {
             handler = new AgreementCountersignedStaffNotificationHandler(
-                settlementReachedStaffNotificationService);
+                settlementReachedStaffNotificationService, true);
             handler.onAgreementCountersigned(event);
             verify(settlementReachedStaffNotificationService)
+                .notifySettlementReached(any(Claim.class));
+        }
+
+        @Test
+        void shouldNotSendStaffNotificationWhenSettlementReachedAndStaffEmailsDisabled() {
+            handler = new AgreementCountersignedStaffNotificationHandler(
+                settlementReachedStaffNotificationService, false);
+            handler.onAgreementCountersigned(event);
+            verify(settlementReachedStaffNotificationService, never())
                 .notifySettlementReached(any(Claim.class));
         }
     }
