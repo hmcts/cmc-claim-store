@@ -71,6 +71,7 @@ ccd:
     postgresUsername: hmcts
     postgresPassword: hmcts
     devMode: true
+    environment: aat
 
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
