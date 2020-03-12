@@ -120,6 +120,8 @@ public class CCDCase {
     private CCDYesNoOption expertReportPermissionPartyAskedByDefendant;
     private CCDYesNoOption grantExpertReportPermission;
 
+    private CCDYesNoOption changeContactDetailsForParty;
+
     //TODO - Remove once CCD 1.5.9 released
     private CCDYesNoOption expertReportPermissionPartyGivenToClaimant;
     private CCDYesNoOption expertReportPermissionPartyGivenToDefendant;

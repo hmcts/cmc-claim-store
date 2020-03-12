@@ -68,6 +68,11 @@ public class DocAssemblyService {
         );
     }
 
+    //create defendant letter?
+    public DocAssemblyResponse createDefendantLetter(CCDCase ccdCase, String authorisation){
+        return
+    }
+
     private String getTemplateId(String state) {
         return Optional.ofNullable(state)
             .filter(input -> ClaimState.fromValue(input).equals(ClaimState.READY_FOR_JUDGE_DIRECTIONS))
