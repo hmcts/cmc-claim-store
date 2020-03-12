@@ -62,8 +62,6 @@ ccd:
       enabled: false
     adminWeb:
       enabled: true
-    userProfileImporter:
-      enabled: false
 
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
@@ -108,6 +106,13 @@ ccd:
       keyVaults:
       environment:
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
+
+  ccd-user-profile-importer:
+    image: hmctspublic.azurecr.io/ccd/user-profile-importer:db2r9a
+    users:
+      - civilmoneyclaims+ccd@gmail.com|CMC|MoneyClaimCase|open
+      - civilmoneyclaims+judge@gmail.com|CMC|MoneyClaimCase|orderForJudgeReview
+      - civilmoneyclaims+la@gmail.com|CMC|MoneyClaimCase|readyForDirections
 
   ccd-definition-importer:
     image: hmctspublic.azurecr.io/cmc/ccd-definition-importer:1.5.10
