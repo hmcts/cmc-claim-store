@@ -19,7 +19,9 @@ import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static java.util.function.Predicate.isEqual;
@@ -58,6 +60,7 @@ public class ClaimantResponseService {
     private final FormaliseResponseAcceptanceService formaliseResponseAcceptanceService;
     private final DirectionsQuestionnaireService directionsQuestionnaireService;
     private final DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
+    private final Clock clock;
 
     @SuppressWarnings("squid:S00107") // All parameters are required here
     public ClaimantResponseService(
@@ -68,7 +71,8 @@ public class ClaimantResponseService {
         EventProducer eventProducer,
         FormaliseResponseAcceptanceService formaliseResponseAcceptanceService,
         DirectionsQuestionnaireService directionsQuestionnaireService,
-        DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator
+        DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator,
+        Clock clock
     ) {
         this.claimService = claimService;
         this.appInsights = appInsights;
@@ -78,6 +82,7 @@ public class ClaimantResponseService {
         this.formaliseResponseAcceptanceService = formaliseResponseAcceptanceService;
         this.directionsQuestionnaireService = directionsQuestionnaireService;
         this.directionsQuestionnaireDeadlineCalculator = directionsQuestionnaireDeadlineCalculator;
+        this.clock = clock;
     }
 
     public void save(
@@ -107,7 +112,7 @@ public class ClaimantResponseService {
 
         if (!FeaturesUtils.isOnlineDQ(updatedClaim) && isRejectResponseNoMediation(claimantResponse)) {
             LocalDate deadline = directionsQuestionnaireDeadlineCalculator
-                .calculateDirectionsQuestionnaireDeadline(claim.getRespondedAt());
+                .calculateDirectionsQuestionnaireDeadline(LocalDateTime.now(clock));
             caseRepository.updateDirectionsQuestionnaireDeadline(claim, deadline, authorization);
             updatedClaim = claimService.getClaimByExternalId(externalId, authorization);
         }
@@ -120,8 +125,9 @@ public class ClaimantResponseService {
             caseRepository.saveCaseEvent(authorization, updatedClaim, SETTLED_PRE_JUDGMENT);
         }
 
+        Optional<CaseEvent> caseEvent = Optional.empty();
         if (claimantResponse.getType() == REJECTION) {
-            Optional<CaseEvent> caseEvent = directionsQuestionnaireService.prepareCaseEvent(
+            caseEvent = directionsQuestionnaireService.prepareCaseEvent(
                 (ResponseRejection) claimantResponse,
                 updatedClaim
             );
@@ -130,7 +136,7 @@ public class ClaimantResponseService {
             }
         }
 
-        raiseAppInsightEvents(updatedClaim, response, claimantResponse);
+        raiseAppInsightEvents(updatedClaim, response, claimantResponse, caseEvent.orElseGet(() -> null));
     }
 
     private boolean isSettlementAgreement(Response response, ClaimantResponse claimantResponse) {
@@ -164,23 +170,52 @@ public class ClaimantResponseService {
         }
     }
 
-    private void raiseAppInsightEvents(Claim claim, Response response, ClaimantResponse claimantResponse) {
+    private void raiseAppInsightEvents(Claim claim,
+                                        Response response,
+                                        ClaimantResponse claimantResponse,
+                                        CaseEvent caseEvent) {
+
         if (claimantResponse instanceof ResponseAcceptation) {
             appInsights.trackEvent(CLAIMANT_RESPONSE_ACCEPTED, REFERENCE_NUMBER, claim.getReferenceNumber());
+
         } else if (claimantResponse instanceof ResponseRejection) {
             if (isPartAdmissionOrIsStatePaidOrIsFullDefence(response)) {
-                raiseAppInsightEventForLegalAdvisorPilot(claim);
+                raiseAppInsightEventForOnlineOrOfflineDQ(claim);
                 raiseAppInsightEventForMediation(claim, response, (ResponseRejection) claimantResponse);
+
+                if (caseEvent != null) {
+                    raiseAppInsightsEventForPilot(claim, caseEvent);
+                }
             }
         } else {
             throw new IllegalStateException("Unknown response type");
         }
     }
 
-    private void raiseAppInsightEventForLegalAdvisorPilot(Claim claim) {
-        AppInsightsEvent appInsightsEvent = FeaturesUtils.isLegalAdvisorPilot(claim)
-            ? AppInsightsEvent.LA_PILOT_ELIGIBLE
-            : AppInsightsEvent.NON_LA_CASES;
+    private void raiseAppInsightsEventForPilot(Claim claim, CaseEvent caseEvent) {
+        switch (caseEvent) {
+            case ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS:
+                appInsights.trackEvent(AppInsightsEvent.LA_PILOT_ELIGIBLE, REFERENCE_NUMBER,
+                    claim.getReferenceNumber());
+                break;
+            case ASSIGNING_FOR_JUDGE_DIRECTIONS:
+                appInsights.trackEvent(AppInsightsEvent.JDDO_PILOT_ELIGIBLE, REFERENCE_NUMBER,
+                    claim.getReferenceNumber());
+                break;
+            case WAITING_TRANSFER:
+                appInsights.trackEvent(AppInsightsEvent.READY_FOR_TRANSFER, REFERENCE_NUMBER,
+                        claim.getReferenceNumber());
+                break;
+            default:
+                //Empty
+                break;
+        }
+    }
+
+    private void raiseAppInsightEventForOnlineOrOfflineDQ(Claim claim) {
+        AppInsightsEvent appInsightsEvent = FeaturesUtils.isOnlineDQ(claim)
+            ? AppInsightsEvent.BOTH_PARTIES_ONLINE_DQ
+            : AppInsightsEvent.BOTH_PARTIES_OFFLINE_DQ;
 
         appInsights.trackEvent(appInsightsEvent, REFERENCE_NUMBER, claim.getReferenceNumber());
     }

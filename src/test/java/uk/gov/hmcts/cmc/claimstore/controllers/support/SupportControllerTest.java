@@ -27,11 +27,12 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimSubmissionOperationIndicatorRule;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
-import uk.gov.hmcts.cmc.claimstore.services.IntentionToProceedService;
 import uk.gov.hmcts.cmc.claimstore.services.MediationReportService;
+import uk.gov.hmcts.cmc.claimstore.services.ScheduledStateTransitionService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.statetransition.StateTransitions;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
@@ -115,7 +116,7 @@ class SupportControllerTest {
     private MediationReportService mediationReportService;
 
     @Mock
-    private IntentionToProceedService intentionToProceedService;
+    private ScheduledStateTransitionService scheduledStateTransitionService;
 
     private SupportController controller;
 
@@ -137,7 +138,7 @@ class SupportControllerTest {
             postClaimOrchestrationHandler,
             mediationReportService,
             new ClaimSubmissionOperationIndicatorRule(),
-            intentionToProceedService
+            scheduledStateTransitionService
         );
         sampleClaim = SampleClaim.getDefault();
     }
@@ -191,7 +192,7 @@ class SupportControllerTest {
                     ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
                     claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
                     postClaimOrchestrationHandler, mediationReportService, new ClaimSubmissionOperationIndicatorRule(),
-                    intentionToProceedService
+                    scheduledStateTransitionService
                 );
 
                 when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE)))
@@ -422,32 +423,6 @@ class SupportControllerTest {
             }
 
             @Test
-            void shouldPerformIntentionToProceedCheckWithDatetime() {
-                final LocalDateTime localDateTime
-                    = LocalDateTime.of(2019, 1, 1, 1, 1, 1);
-                final UserDetails userDetails
-                    = new UserDetails("id", null, null, null, null);
-                final User user = new User(null, userDetails);
-                when(userService.authenticateAnonymousCaseWorker()).thenReturn(user);
-
-                controller.checkClaimsPastIntentionToProceedDeadline(localDateTime);
-
-                verify(intentionToProceedService).checkClaimsPastIntentionToProceedDeadline(localDateTime, user);
-            }
-
-            @Test
-            void shouldPerformIntentionToProceedCheckWithNullDatetime() {
-                final UserDetails userDetails
-                    = new UserDetails("id", null, null, null, null);
-                final User user = new User(null, userDetails);
-                when(userService.authenticateAnonymousCaseWorker()).thenReturn(user);
-
-                controller.checkClaimsPastIntentionToProceedDeadline(null);
-
-                verify(intentionToProceedService).checkClaimsPastIntentionToProceedDeadline(notNull(), eq(user));
-            }
-
-            @Test
             void shouldThrowForIntentToProceedIfClaimantResponseIsNotRejection() {
                 sampleClaim = SampleClaim.builder()
                     .withClaimData(SampleClaimData.submittedByClaimant())
@@ -460,7 +435,7 @@ class SupportControllerTest {
                     ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
                     claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
                     postClaimOrchestrationHandler, mediationReportService, new ClaimSubmissionOperationIndicatorRule(),
-                    intentionToProceedService
+                    scheduledStateTransitionService
                 );
 
                 when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE)))
@@ -528,28 +503,34 @@ class SupportControllerTest {
     }
 
     @Nested
-    @DisplayName("Intention to proceed deadline")
-    class IntentionToProceedDeadlineTests {
+    @DisplayName("Transition state service tests")
+    class TransitionStateServiceTests {
+        private final String auth = "auth";
+        private final UserDetails userDetails = new UserDetails("id", null, null, null, null);
+        private final User user = new User(null, userDetails);
 
         @BeforeEach
         void setUpAnonymousCaseworker() {
-            when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
+            when(userService.getUser(auth)).thenReturn(user);
         }
 
         @Test
         void shouldPerformIntentionToProceedCheckWithDatetime() {
             final LocalDateTime localDateTime
                 = LocalDateTime.of(2019, 1, 1, 1, 1, 1);
-            controller.checkClaimsPastIntentionToProceedDeadline(localDateTime);
 
-            verify(intentionToProceedService).checkClaimsPastIntentionToProceedDeadline(localDateTime, USER);
+            controller.transitionClaimState(auth, StateTransitions.STAY_CLAIM, localDateTime);
+
+            verify(scheduledStateTransitionService).transitionClaims(localDateTime, user,
+                StateTransitions.STAY_CLAIM);
         }
 
         @Test
         void shouldPerformIntentionToProceedCheckWithNullDatetime() {
-            controller.checkClaimsPastIntentionToProceedDeadline(null);
+            controller.transitionClaimState(auth, StateTransitions.STAY_CLAIM, null);
 
-            verify(intentionToProceedService).checkClaimsPastIntentionToProceedDeadline(notNull(), eq(USER));
+            verify(scheduledStateTransitionService).transitionClaims(notNull(), eq(user),
+                eq(StateTransitions.STAY_CLAIM));
         }
 
     }
