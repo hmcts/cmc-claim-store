@@ -16,8 +16,8 @@ def secrets = [
   ],
   // below is just for CCD in AKS - to be cleaned up when CCD Helm chart is updated to use flexvolume for secrets
   'ccd-${env}': [
-    secret('ccd-data-s2s-secret', 'DATA_STORE_IDAM_KEY'),
-    secret('ccd-definition-s2s-secret', 'DEFINITION_STORE_IDAM_KEY'),
+    secret('ccd-data-s2s-secret', 'DATA_STORE_S2S_KEY'),
+    secret('ccd-definition-s2s-secret', 'DEFINITION_STORE_S2S_KEY'),
     secret('ccd-admin-web-oauth2-client-secret', 'ADMIN_WEB_IDAM_SECRET')
   ]
 ]
