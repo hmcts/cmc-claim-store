@@ -74,6 +74,7 @@ ccd:
     idamWebUrl: https://idam-web-public.aat.platform.hmcts.net
     s2sUrl: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
     ccdAdminWebIngress: ccd-admin-web-${SERVICE_FQDN}
+    ccdDefinitionStoreUrl: ${SERVICE_NAME}-ccd-definition-store
     postgresUsername: hmcts
     postgresPassword: hmcts
     devMode: true
@@ -90,6 +91,8 @@ ccd:
     java:
       image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
       keyVaults:
+      environment:
+        USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin,cmc_claim_store
 
   ccd-definition-store-api:
     java:
@@ -97,6 +100,7 @@ ccd:
       keyVaults:
       environment:
         DEFINITION_STORE_IDAM_KEY: ${DEFINITION_STORE_S2S_KEY}
+        DEFINITION_STORE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_gw,ccd_admin,cmc_claim_store
 
   ccd-data-store-api:
     java:
@@ -110,8 +114,6 @@ ccd:
     environment:
       CCD_DEF_CLAIM_STORE_BASE_URL: http://${SERVICE_NAME}-java
     definitionFilename: cmc-ccd.xlsx
-    definitionStoreUrl: http://${SERVICE_NAME}-ccd-definition-store
-    redirectUri: '{{ .Values.global.ccdAdminWebIngress }}/oauth2redirect'
     userRoles:
     - citizen
     - caseworker-cmc
