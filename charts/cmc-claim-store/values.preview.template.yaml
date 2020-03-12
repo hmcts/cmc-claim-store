@@ -72,7 +72,8 @@ ccd:
     idamWebUrl: https://idam-web-public.aat.platform.hmcts.net
     s2sUrl: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
     ccdAdminWebIngress: ccd-admin-web-${SERVICE_FQDN}
-    ccdDefinitionStoreUrl: ${SERVICE_NAME}-ccd-definition-store
+    ccdDefinitionStoreUrl: http://${SERVICE_NAME}-ccd-definition-store
+    ccdUserProfileUrl: http://${SERVICE_NAME}-ccd-user-profile-api
     postgresUsername: hmcts
     postgresPassword: hmcts
     devMode: true
