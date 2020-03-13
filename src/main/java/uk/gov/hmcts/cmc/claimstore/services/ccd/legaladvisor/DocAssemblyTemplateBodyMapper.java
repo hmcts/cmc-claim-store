@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
@@ -11,6 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
@@ -24,6 +26,9 @@ public class DocAssemblyTemplateBodyMapper {
     private final Clock clock;
     private final DirectionOrderService directionOrderService;
     private final WorkingDayIndicator workingDayIndicator;
+    private final String CLAIMANT = "claimant";
+    private final String PARTY_TYPE = "partyType";
+    private final String BODY = "body";
 
     @Autowired
     public DocAssemblyTemplateBodyMapper(
@@ -99,6 +104,25 @@ public class DocAssemblyTemplateBodyMapper {
             .expertReportPermissionPartyGivenToClaimant(ccdCase.getExpertReportPermissionPartyGivenToClaimant() == YES)
             .expertReportPermissionPartyGivenToDefendant(
                 ccdCase.getExpertReportPermissionPartyGivenToDefendant() == YES)
+            .build();
+    }
+
+    public DocAssemblyTemplateBody from(CCDCase ccdCase, UserDetails userDetails, Map<String, Object> data) {
+        LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
+        return DocAssemblyTemplateBody.builder()
+            .currentDate(currentDate)
+            .referenceNumber(ccdCase.getPreviousServiceCaseReference())
+            .caseworkerName(userDetails.getFullName())
+            .caseName(ccdCase.getCaseName())
+            .partyName(String.valueOf(data.get(PARTY_TYPE)).equalsIgnoreCase(CLAIMANT)
+                ? ccdCase.getApplicants().get(0).getValue().getPartyName()
+                : ccdCase.getRespondents().get(0).getValue().getPartyName())
+            .partyAddress(String.valueOf(data.get(PARTY_TYPE)).equalsIgnoreCase(CLAIMANT)
+            ? ccdCase.getApplicants().get(0)
+                .getValue().getPartyDetail().getPrimaryAddress()
+                : ccdCase.getRespondents().get(0)
+                .getValue().getPartyDetail().getPrimaryAddress())
+            .body(String.valueOf(data.get(BODY)))
             .build();
     }
 }

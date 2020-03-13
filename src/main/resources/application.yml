@@ -95,7 +95,7 @@ bankHolidays:
     url: "https://www.gov.uk"
 
 doc_assembly:
-  url: ${DOC_ASSEMBLY_URL:false}
+  url: ${DOC_ASSEMBLY_URL:true}
   templateId: "CV-CMC-GOR-ENG-0004-1.docx"
   judgeTemplateId: "CV-CMC-GOR-ENG-00219-1.docx"
   generalLetterTemplateId: "CV-CMC-GOR-ENG-0005.docx"
@@ -188,8 +188,8 @@ notifications:
       defendantMediationFailureOfflineDQ: "15a38762-2141-4a70-8cc9-22a27db985bc"
 
 staff-notifications:
-  sender:
-  recipient:
+  sender: "akritis@kainos.com"
+  recipient: "civilmoneyclaims+staff-int-tests@gmail.com"
 
 feature_toggles:
   watermark_pdf: false

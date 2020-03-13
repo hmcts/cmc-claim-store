@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyRequest;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 import uk.gov.hmcts.reform.docassembly.domain.OutputType;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -30,6 +31,7 @@ public class DocAssemblyService {
     private final UserService userService;
     private final String legalAdvisorTemplateId;
     private final String judgeTemplateId;
+    private final String generalLetterTemplateId;
 
     @Autowired
     public DocAssemblyService(
@@ -38,7 +40,8 @@ public class DocAssemblyService {
         DocAssemblyClient docAssemblyClient,
         UserService userService,
         @Value("${doc_assembly.templateId}") String legalAdvisorTemplateId,
-        @Value("${doc_assembly.judgeTemplateId}") String judgeTemplateId
+        @Value("${doc_assembly.judgeTemplateId}") String judgeTemplateId,
+        @Value("${doc_assembly.generalLetterTemplateId}") String generalLetterTemplateId
     ) {
         this.authTokenGenerator = authTokenGenerator;
         this.docAssemblyTemplateBodyMapper = docAssemblyTemplateBodyMapper;
@@ -46,6 +49,7 @@ public class DocAssemblyService {
         this.userService = userService;
         this.legalAdvisorTemplateId = legalAdvisorTemplateId;
         this.judgeTemplateId = judgeTemplateId;
+        this.generalLetterTemplateId = generalLetterTemplateId;
     }
 
     public DocAssemblyResponse createOrder(CCDCase ccdCase, String authorisation) {
@@ -57,6 +61,26 @@ public class DocAssemblyService {
             .templateId(getTemplateId(ccdCase.getState()))
             .outputType(OutputType.PDF)
             .formPayload(docAssemblyTemplateBodyMapper.from(ccdCase, userDetails))
+            .build();
+
+        logger.info("Doc assembly service: sending request to doc assembly");
+
+        return docAssemblyClient.generateOrder(
+            authorisation,
+            authTokenGenerator.generate(),
+            docAssemblyRequest
+        );
+    }
+
+    public DocAssemblyResponse createGeneralLetter(CCDCase ccdCase, String authorisation, Map<String, Object> data) {
+        UserDetails userDetails = userService.getUserDetails(authorisation);
+
+        logger.info("Doc assembly service: creating request for doc assembly");
+
+        DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
+            .templateId(generalLetterTemplateId)
+            .outputType(OutputType.PDF)
+            .formPayload(docAssemblyTemplateBodyMapper.from(ccdCase, userDetails, data))
             .build();
 
         logger.info("Doc assembly service: sending request to doc assembly");
