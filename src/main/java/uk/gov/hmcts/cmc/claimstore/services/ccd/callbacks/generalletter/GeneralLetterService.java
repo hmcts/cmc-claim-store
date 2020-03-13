@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
@@ -26,7 +27,7 @@ public class GeneralLetterService {
     private static final String LETTER_CONTENT = "letterContent";
     private static final String EMPTY_BODY_ERROR = "The body of the letter cannot be empty";
     private static final String DRAFT_LETTER_DOC = "draftLetterDoc";
-    private static final String PARTY_TYPE = "partyType";
+    private static final String CHANGE_CONTACT_PARTY = "changeContactParty";
     private static final String BODY = "body";
 
     private final CaseDetailsConverter caseDetailsConverter;
@@ -49,10 +50,10 @@ public class GeneralLetterService {
             .getData().get(LETTER_CONTENT).toString();
         String partyType = callbackParams
             .getRequest().getCaseDetails()
-            .getData().get(PARTY_TYPE).toString();
+            .getData().get(CHANGE_CONTACT_PARTY).toString();
         if (body != null) {
             data.put(BODY, body);
-            data.put(PARTY_TYPE, partyType);
+            data.put(CHANGE_CONTACT_PARTY, partyType);
             String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
             DocAssemblyResponse docAssemblyResponse = docAssemblyService
                 .createGeneralLetter(ccdCase, authorisation, data);
@@ -72,11 +73,8 @@ public class GeneralLetterService {
 
     public CallbackResponse sendToPrint(CallbackParams callbackParams) {
         logger.info("General Letter creator: sending to print");
-        return null;
-    }
-
-    public CallbackResponse captureResponse(CallbackParams callbackParams) {
-        logger.info("General Letter creator: capturing response");
+        CallbackRequest callbackRequest = callbackParams.getRequest();
+        Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
         return null;
     }
 }
