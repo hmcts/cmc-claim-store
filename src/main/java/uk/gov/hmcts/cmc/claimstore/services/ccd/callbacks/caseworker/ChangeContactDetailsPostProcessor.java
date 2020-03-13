@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.Params.BEARER_TOKEN;
 
@@ -51,6 +54,17 @@ public class ChangeContactDetailsPostProcessor {
     }
 
     public CallbackResponse generateNotificationContent(CallbackParams callbackParams) {
+        CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
+        Claim oldClaim = caseDetailsConverter.extractClaim(caseDetails);
+        //immutable list of changeable details
+
+        return AboutToStartOrSubmitCallbackResponse
+                .builder()
+                .data(oldClaim)
+                .build();
+    }
+
+    public CallbackResponse generateNotificationContent(CallbackParams callbackParams) {
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
@@ -59,6 +73,13 @@ public class ChangeContactDetailsPostProcessor {
         if (!validations.isEmpty()) {
             return AboutToStartOrSubmitCallbackResponse.builder().errors(validations).build();
         }
+
+        CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
+        CaseDetails caseDetailsNow = callbackRequest.getCaseDetails();
+        System.out.println(caseDetailsBefore.getData().keySet());
+        List oldContactDetails = ImmutableList.of();
+        List newContactDetails = ImmutableList.of();
+
 
         //get changed values to pass to email and template
 

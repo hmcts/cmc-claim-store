@@ -15,6 +15,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.DEFENDANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.NEW_FEATURES;
 
 @Service
 public class ChangeContactDetailsNotificationService {
@@ -66,6 +67,8 @@ public class ChangeContactDetailsNotificationService {
         parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
         parameters.put(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName());
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
+        parameters.put(NEW_FEATURES, claim.getFeatures() == null || claim.getFeatures().isEmpty() ? "false" : "true");
+        //put in the parameters needed
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
         return parameters;
     }
