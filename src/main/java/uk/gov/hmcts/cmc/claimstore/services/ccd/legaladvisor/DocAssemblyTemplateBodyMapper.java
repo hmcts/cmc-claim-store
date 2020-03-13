@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
@@ -26,9 +25,9 @@ public class DocAssemblyTemplateBodyMapper {
     private final Clock clock;
     private final DirectionOrderService directionOrderService;
     private final WorkingDayIndicator workingDayIndicator;
-    private final String CLAIMANT = "claimant";
-    private final String PARTY_TYPE = "partyType";
-    private final String BODY = "body";
+    private static final String CLAIMANT = "claimant";
+    private static final String PARTY_TYPE = "partyType";
+    private static final String BODY = "body";
 
     @Autowired
     public DocAssemblyTemplateBodyMapper(

@@ -15,7 +15,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @ConditionalOnProperty(prefix = "doc_assembly", name = "url")
@@ -24,19 +26,17 @@ public class GeneralLetterService {
     private static final String LETTER_CONTENT = "letterContent";
     private static final String EMPTY_BODY_ERROR = "The body of the letter cannot be empty";
     private static final String DRAFT_LETTER_DOC = "draftLetterDoc";
-    private final String PARTY_TYPE = "partyType";
-    private final String BODY = "body";
+    private static final String PARTY_TYPE = "partyType";
+    private static final String BODY = "body";
 
     private final CaseDetailsConverter caseDetailsConverter;
     private final DocAssemblyService docAssemblyService;
-
 
     public GeneralLetterService(CaseDetailsConverter caseDetailsConverter,
                                 DocAssemblyService docAssemblyService) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.docAssemblyService = docAssemblyService;
     }
-
 
     public CallbackResponse createAndPreview(CallbackParams callbackParams) {
         logger.info("General Letter: creating letter");
@@ -69,7 +69,6 @@ public class GeneralLetterService {
         }
         return response;
     }
-
 
     public CallbackResponse sendToPrint(CallbackParams callbackParams) {
         logger.info("General Letter creator: sending to print");

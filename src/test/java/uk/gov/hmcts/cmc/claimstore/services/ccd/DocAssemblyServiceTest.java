@@ -34,7 +34,6 @@ public class DocAssemblyServiceTest {
     public static final String LEGAL_ADVISOR_TEMPLATE_ID = "legalAdvisorTemplateId";
     public static final String GENERAL_LETTER_TEMPLATE_ID = "generalLetterTemplateId";
 
-
     private static final UserDetails JUDGE = new UserDetails(
         "1",
         "email",
