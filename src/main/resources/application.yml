@@ -188,8 +188,8 @@ notifications:
       defendantMediationFailureOfflineDQ: "15a38762-2141-4a70-8cc9-22a27db985bc"
 
 staff-notifications:
-  sender: "akritis@kainos.com"
-  recipient: "civilmoneyclaims+staff-int-tests@gmail.com"
+  sender:
+  recipient:
 
 feature_toggles:
   watermark_pdf: false

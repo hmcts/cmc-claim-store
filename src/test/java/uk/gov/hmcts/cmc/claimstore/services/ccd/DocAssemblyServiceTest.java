@@ -32,6 +32,9 @@ public class DocAssemblyServiceTest {
     private static final String SERVICE_TOKEN = "Bearer service let me in";
     private static final String DOC_URL = "http://success.test";
     public static final String LEGAL_ADVISOR_TEMPLATE_ID = "legalAdvisorTemplateId";
+    public static final String GENERAL_LETTER_TEMPLATE_ID = "generalLetterTemplateId";
+
+
     private static final UserDetails JUDGE = new UserDetails(
         "1",
         "email",
@@ -58,7 +61,8 @@ public class DocAssemblyServiceTest {
             docAssemblyClient,
             userService,
             LEGAL_ADVISOR_TEMPLATE_ID,
-            JUDGE_TEMPLATE_ID);
+            JUDGE_TEMPLATE_ID,
+            GENERAL_LETTER_TEMPLATE_ID);
 
         when(userService.getUserDetails(eq(BEARER_TOKEN))).thenReturn(JUDGE);
     }
