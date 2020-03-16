@@ -1,0 +1,4 @@
+Transitioning via {{caseEvent}} failed for {{noOfClaims}} claims.
+
+Failed claims:
+{{claimIds}}

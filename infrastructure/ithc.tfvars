@@ -5,6 +5,9 @@ db_host = "cmc-ithc.postgres.database.azure.com"
 capacity = "2"
 dm_url = "http://dm-store-ithc.service.core-compute-ithc.internal"
 save_claim_state_enabled = "true"
-claim_stayed_schedule = "0 0 16 ? * MON-FRI *"
 fees_url = "http://fees-register-api-ithc.service.core-compute-ithc.internal"
 payments_url = "http://payment-api-ithc.service.core-compute-ithc.internal"
+schedule_state-transition_stay-claim = ""
+schedule_state-transition_waiting-transfer = ""
+
+

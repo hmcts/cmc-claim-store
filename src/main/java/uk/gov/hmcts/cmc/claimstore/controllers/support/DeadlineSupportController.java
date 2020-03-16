@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
@@ -90,23 +91,24 @@ public class DeadlineSupportController {
     })
     public ResponseEntity<String> defineDeadline(
         @PathVariable String deadlineType,
-        @PathVariable String referenceNumber
+        @PathVariable String referenceNumber,
+        @RequestParam(name = "overwrite", required = false, defaultValue = "false") boolean overwrite
     ) {
         String authorisation = userService.authenticateAnonymousCaseWorker().getAuthorisation();
         Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
             .orElseThrow(() -> new NotFoundException(format("Claim %s does not exist", referenceNumber)));
 
         if ("dq".equals(deadlineType)) {
-            return defineDQDeadline(claim, authorisation);
+            return defineDQDeadline(claim, authorisation, overwrite);
         }
 
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
             .body("Unrecognised deadline type: " + deadlineType);
     }
 
-    private ResponseEntity<String> defineDQDeadline(Claim claim, String authorisation) {
+    private ResponseEntity<String> defineDQDeadline(Claim claim, String authorisation, boolean overwrite) {
         // if there's already a DQ deadline - return 200
-        if (HAS_DQ_DEADLINE.test(claim)) {
+        if (!overwrite && HAS_DQ_DEADLINE.test(claim)) {
             return ResponseEntity.ok(format("Claim %s already has a directions questionnaire deadline of %s.",
                 claim.getReferenceNumber(), claim.getDirectionsQuestionnaireDeadline()));
         }
@@ -147,14 +149,14 @@ public class DeadlineSupportController {
 
         // if the defendant disputed any/all of the claim and did not want mediation for a pre-5.0.0 claim
         // then we can define a directions questionnaire deadline
-        LocalDate deadline = updateDeadline(claim, authorisation);
+        LocalDate deadline = updateDeadline(claim, authorisation, claim.getRespondedAt());
         return ResponseEntity.status(HttpStatus.CREATED).body(format("Claim %s has been been assigned a "
             + "directions questionnaire deadline of %s.", claim.getReferenceNumber(), deadline));
     }
 
-    private LocalDate updateDeadline(Claim claim, String authorisation) {
+    private LocalDate updateDeadline(Claim claim, String authorisation, LocalDateTime respondedDate) {
         LocalDate deadline = directionsQuestionnaireDeadlineCalculator
-            .calculateDirectionsQuestionnaireDeadline(claim.getRespondedAt());
+            .calculateDirectionsQuestionnaireDeadline(respondedDate);
         caseRepository.updateDirectionsQuestionnaireDeadline(claim, deadline, authorisation);
         return deadline;
     }
@@ -179,7 +181,7 @@ public class DeadlineSupportController {
                 + "cannot define a directions questionnaire deadline.", claim.getReferenceNumber()));
         }
 
-        LocalDate deadline = updateDeadline(claim, authorisation);
+        LocalDate deadline = updateDeadline(claim, authorisation, optionalClaimantResponseTime.get());
         return ResponseEntity.status(HttpStatus.CREATED).body(format("Claim %s has been been assigned a "
             + "directions questionnaire deadline of %s.", claim.getReferenceNumber(), deadline));
     }
