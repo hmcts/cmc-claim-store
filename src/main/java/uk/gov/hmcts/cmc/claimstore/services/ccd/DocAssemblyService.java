@@ -68,25 +68,6 @@ public class DocAssemblyService {
         );
     }
 
-    //create defendant letter?
-    public DocAssemblyResponse createDefendantLetter(CCDCase ccdCase, String authorisation){
-        UserDetails userDetails = userService.getUserDetails(authorisation);
-
-        DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
-                .templateId(getTemplateId(ccdCase.getState()))
-                .outputType(OutputType.PDF)
-                .formPayload(docAssemblyTemplateBodyMapper.from(ccdCase, userDetails))
-                .build();
-
-        //how can I do this if there is no api for it?
-
-        return docAssemblyClient.generateOrder(
-                authorisation,
-                authTokenGenerator.generate(),
-                docAssemblyRequest
-        );
-    }
-
     private String getTemplateId(String state) {
         return Optional.ofNullable(state)
             .filter(input -> ClaimState.fromValue(input).equals(ClaimState.READY_FOR_JUDGE_DIRECTIONS))

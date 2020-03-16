@@ -122,8 +122,13 @@ public class ChangeContactDetailsPostProcessor {
         String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
 
         return claim.getDefendantId().isEmpty() || claim.getDefendantId() == null
-                ? sendDefendantLetter()
+                ? printDefendantLetter()
                 : changeContactDetailsNotificationService.sendEmailToRightRecipient(ccdCase, claim);
+    }
+
+    public void printDefendantLetter() {
+        //send to bulkprint
+        //delete function if too short
     }
 
     public void compareClaims(CallbackRequest callbackRequest) {
