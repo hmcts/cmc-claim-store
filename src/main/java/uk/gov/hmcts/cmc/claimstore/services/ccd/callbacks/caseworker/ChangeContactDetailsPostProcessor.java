@@ -1,16 +1,13 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.MapDifference;
-import com.google.common.collect.Maps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
-import uk.gov.hmcts.cmc.claimstore.documents.BulkPrintHandler;
+import uk.gov.hmcts.cmc.claimstore.config.LoggerHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -22,20 +19,24 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.Params.BEARER_TOKEN;
 
 @Service
 @ConditionalOnProperty(prefix = "doc_assembly", name = "url")
 public class ChangeContactDetailsPostProcessor {
+
+    private static final Logger logger = LoggerFactory.getLogger(LoggerHandler.class);
+    private static final String NO_DETAILS_CHANGED_ERROR = "Notifications cannot be send if contact details we not changed.";
+    private static final String DRAFT_LETTER_DOC = "draftLetterDoc";
+    private static final String CHANGE_CONTACT_PARTY = "changeContactParty";
+    private static final String BODY = "body";
+    private static final String FIRST_LINE = "We’re contacting you because ((ClaimantName)) has changed their contact details.";
+
     private final CaseDetailsConverter caseDetailsConverter;
     private final DocAssemblyService docAssemblyService;
     private final ChangeContactDetailsNotificationService changeContactDetailsNotificationService;
@@ -59,26 +60,44 @@ public class ChangeContactDetailsPostProcessor {
 
     public CallbackResponse showNewContactDetails(CallbackParams callbackParams) {
         logger.info("New Contact Details: creating preview");
-
+        AboutToStartOrSubmitCallbackResponse response;
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
 
         compareClaims(callbackRequest);
 
-
-
         Map<String, Object> data = new HashMap<>();
-        String body = callbackParams
-                .getRequest().getCaseDetails()
-                .getData().get(LETTER_CONTENT).toString();
         String partyType = callbackParams
                 .getRequest().getCaseDetails()
                 .getData().get(CHANGE_CONTACT_PARTY).toString();
-        if (body != null) {
+
+        String body = "We’re contacting you because ((ClaimantName)) has changed their contact details.";
+        if (address) {
+            body += "Their address is now: ((Claimant address))";
+        }
+        if (phone) {
+            body += "Their phone number is now: ((Claimant phone))";
+        }
+        if (corraddress) {
+            body += "The address they want to use for post about the claim is now:: ((Claimant correspondence addr))";
+        }
+        if (email) {
+            body += "Their email address is now:: ((Claimant email))";
+        }
+        if (phoneRemoved) {
+            body += "They’ve removed their phone number.";
+        }
+        if (corrAddressRemoved) {
+            body += "They’ve removed the address they want to use for post about the claim.";
+        }
+        if (emailRemoved) {
+            body += "They’ve removed their email address.";
+        }
+
+        if (!body.equals(FIRST_LINE)) {
             data.put(BODY, body);
             data.put(CHANGE_CONTACT_PARTY, partyType);
-            String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
             DocAssemblyResponse docAssemblyResponse = docAssemblyService
                     .createGeneralLetter(ccdCase, authorisation, data);
             response = AboutToStartOrSubmitCallbackResponse
@@ -90,30 +109,22 @@ public class ChangeContactDetailsPostProcessor {
                     .build();
         } else {
             response = AboutToStartOrSubmitCallbackResponse.builder()
-                    .errors(Collections.singletonList(EMPTY_BODY_ERROR)).build();
+                    .errors(Collections.singletonList(NO_DETAILS_CHANGED_ERROR)).build();
         }
         return response;
     }
 
 
-    //how do I persist the boolean values of what has changed for the email template
+    public CallbackResponse notifyPartiesViaEmailAndLetter(CallbackParams callbackParams) {
+        CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
+        Claim claim = caseDetailsConverter.extractClaim(caseDetails);
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
+        String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
 
-        //what am I sending back?
-
-
-//    public CallbackResponse notifyPartiesViaEmailAndLetter(CallbackParams callbackParams) {
-//        CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
-//        Claim claim = caseDetailsConverter.extractClaim(caseDetails);
-//        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
-//        String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
-//
-//
-//
-//        return claim.getDefendantId().isEmpty() || claim.getDefendantId() == null
-//                ? sendDefendantLetter() //send letter to bulkprint
-//                : changeContactDetailsNotificationService.sendEmailToRightRecipient(ccdCase, claim);
-//
-//    }
+        return claim.getDefendantId().isEmpty() || claim.getDefendantId() == null
+                ? sendDefendantLetter()
+                : changeContactDetailsNotificationService.sendEmailToRightRecipient(ccdCase, claim);
+    }
 
     public void compareClaims(CallbackRequest callbackRequest) {
         Claim claimBefore = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetailsBefore());
