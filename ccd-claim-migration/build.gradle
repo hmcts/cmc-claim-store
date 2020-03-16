@@ -28,7 +28,7 @@ dependencies {
   compile group: 'org.postgresql', name: 'postgresql', version: '42.2.10'
 }
 
-sourceCompatibility = 1.8
+sourceCompatibility = 11
 
 bootJar {
   mainClassName = 'uk.gov.hmcts.cmc.ccd.migration.App'
