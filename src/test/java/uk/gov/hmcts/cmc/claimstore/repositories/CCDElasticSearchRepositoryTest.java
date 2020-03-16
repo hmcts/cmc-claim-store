@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.repositories;
 
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,6 +10,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.claimstore.repositories.elastic.Query;
 import uk.gov.hmcts.cmc.claimstore.repositories.elastic.SampleQueryConstants;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -74,16 +77,16 @@ public class CCDElasticSearchRepositoryTest {
     }
 
     @Test
-    public void casesPastIntentionToProceedQueriesElastic() {
+    public void getClaimsShouldCallCoreCaseDataApi() {
         User user = new User(AUTHORISATION, null);
-        ccdElasticSearchRepository.getClaimsPastIntentionToProceed(user,
-            LocalDate.of(2019, 7, 7));
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+        ccdElasticSearchRepository.getClaims(user, queryBuilder);
         verify(coreCaseDataApi).searchCases(
             eq(AUTHORISATION),
             eq(SERVICE_AUTH),
             eq(CASE_TYPE_ID),
-            queryStringCaptor.capture());
-        assertEquals(SampleQueryConstants.stayableCaseQuery, queryStringCaptor.getValue());
+            eq(new Query(queryBuilder, 1000).toString())
+        );
     }
 
     @Test
