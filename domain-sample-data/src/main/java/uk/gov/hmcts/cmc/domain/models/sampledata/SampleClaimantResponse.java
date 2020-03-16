@@ -18,25 +18,25 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleHearingLocation.pi
 import static uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention.bySetDate;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention.instalments;
 
-public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>> {
+public abstract class SampleClaimantResponse {
 
-    public static ClaimantResponse validDefaultAcceptation() {
+    public static ResponseAcceptation validDefaultAcceptation() {
         return ClaimantResponseAcceptation.builder().build();
     }
 
-    public static ClaimantResponse validDefaultRejection() {
+    public static ResponseRejection validDefaultRejection() {
         return ClaimantResponseRejection.builder().build();
     }
 
-    public static ClaimantResponse validRejectionWithFreeMediation() {
+    public static ResponseRejection validRejectionWithFreeMediation() {
         return ClaimantResponseRejection.builder().buildRejectionWithFreeMediation();
     }
 
-    public static ClaimantResponse validRejectionWithDirectionsQuestionnaire() {
+    public static ResponseRejection validRejectionWithDirectionsQuestionnaire() {
         return ClaimantResponseRejection.builder().buildRejectionWithDirectionsQuestionnaire();
     }
 
-    public static class ClaimantResponseAcceptation extends SampleClaimantResponse<ClaimantResponseAcceptation> {
+    public static class ClaimantResponseAcceptation extends SampleClaimantResponse {
 
         private BigDecimal amountPaid = TEN;
         private FormaliseOption formaliseOption = REFER_TO_JUDGE;
@@ -56,28 +56,21 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
         }
 
         @Override
-        public ClaimantResponse build() {
+        public ResponseAcceptation build() {
             return ResponseAcceptation.builder()
                 .amountPaid(amountPaid)
                 .formaliseOption(formaliseOption)
                 .build();
         }
 
-        public ClaimantResponse buildStatePaidAcceptationWithoutFormaliseOption() {
-            return ResponseAcceptation.builder()
-                .amountPaid(amountPaid)
-                .formaliseOption(null)
-                .build();
-        }
-
-        public ClaimantResponse buildAcceptationIssueCCJWithDefendantPaymentIntention() {
+        public ResponseAcceptation buildAcceptationIssueCCJWithDefendantPaymentIntention() {
             return ResponseAcceptation.builder()
                 .amountPaid(amountPaid)
                 .formaliseOption(CCJ)
                 .build();
         }
 
-        public ClaimantResponse buildAcceptationIssueCCJWithClaimantPaymentIntentionBySetDate() {
+        public ResponseAcceptation buildAcceptationIssueCCJWithClaimantPaymentIntentionBySetDate() {
             return ResponseAcceptation.builder()
                 .amountPaid(amountPaid)
                 .formaliseOption(CCJ)
@@ -85,7 +78,7 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
                 .build();
         }
 
-        public ClaimantResponse buildAcceptationIssueCCJWithCourtDetermination() {
+        public ResponseAcceptation buildAcceptationIssueCCJWithCourtDetermination() {
             return ResponseAcceptation.builder()
                 .amountPaid(amountPaid)
                 .formaliseOption(CCJ)
@@ -94,14 +87,14 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
                 .build();
         }
 
-        public ClaimantResponse buildAcceptationIssueSettlementWithDefendantPaymentIntention() {
+        public ResponseAcceptation buildAcceptationIssueSettlementWithDefendantPaymentIntention() {
             return ResponseAcceptation.builder()
                 .amountPaid(amountPaid)
                 .formaliseOption(SETTLEMENT)
                 .build();
         }
 
-        public ClaimantResponse buildAcceptationIssueSettlementWithClaimantPaymentIntention() {
+        public ResponseAcceptation buildAcceptationIssueSettlementWithClaimantPaymentIntention() {
             return ResponseAcceptation.builder()
                 .amountPaid(amountPaid)
                 .formaliseOption(SETTLEMENT)
@@ -109,7 +102,7 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
                 .build();
         }
 
-        public ClaimantResponse buildAcceptationIssueSettlementWithCourtDetermination() {
+        public ResponseAcceptation buildAcceptationIssueSettlementWithCourtDetermination() {
             return ResponseAcceptation.builder()
                 .amountPaid(amountPaid)
                 .formaliseOption(SETTLEMENT)
@@ -118,7 +111,7 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
                 .build();
         }
 
-        public ClaimantResponse buildAcceptationReferToJudgeWithCourtDetermination() {
+        public ResponseAcceptation buildAcceptationReferToJudgeWithCourtDetermination() {
             return ResponseAcceptation.builder()
                 .amountPaid(amountPaid)
                 .formaliseOption(REFER_TO_JUDGE)
@@ -127,7 +120,7 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
                 .build();
         }
 
-        public ClaimantResponse buildAcceptanceIssueSettlementWithCourtDeterminationPayByInstalments() {
+        public ResponseAcceptation buildAcceptanceIssueSettlementWithCourtDeterminationPayByInstalments() {
             return ResponseAcceptation.builder()
                 .amountPaid(amountPaid)
                 .formaliseOption(SETTLEMENT)
@@ -136,7 +129,7 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
                 .build();
         }
 
-        public ClaimantResponse buildAcceptanceIssueSettlementWithClaimantPaymentIntentionPayImmediately() {
+        public ResponseAcceptation buildAcceptanceIssueSettlementWithClaimantPaymentIntentionPayImmediately() {
             return ResponseAcceptation.builder()
                 .amountPaid(amountPaid)
                 .formaliseOption(SETTLEMENT)
@@ -145,7 +138,7 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
                 .build();
         }
 
-        public ClaimantResponse buildAcceptanceSettlePreJudgement() {
+        public ResponseAcceptation buildAcceptanceSettlePreJudgement() {
             return ResponseAcceptation.builder()
                 .paymentReceived(YES)
                 .settleForAmount(YES)
@@ -153,14 +146,14 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
         }
     }
 
-    public static class ClaimantResponseRejection extends SampleClaimantResponse<ClaimantResponseAcceptation> {
+    public static class ClaimantResponseRejection extends SampleClaimantResponse {
 
         public static ClaimantResponseRejection builder() {
             return new ClaimantResponseRejection();
         }
 
         @Override
-        public ClaimantResponse build() {
+        public ResponseRejection build() {
             return ResponseRejection.builder()
                 .amountPaid(TEN)
                 .freeMediation(NO)
@@ -168,14 +161,14 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
                 .build();
         }
 
-        public ClaimantResponse buildRejectionSettlePreJudgement() {
-            return ResponseAcceptation.builder()
+        public ResponseRejection buildRejectionSettlePreJudgement() {
+            return ResponseRejection.builder()
                 .paymentReceived(YES)
                 .settleForAmount(NO)
                 .build();
         }
 
-        public ClaimantResponse buildRejectionWithFreeMediation() {
+        public ResponseRejection buildRejectionWithFreeMediation() {
             return ResponseRejection.builder()
                 .amountPaid(TEN)
                 .freeMediation(YES)
@@ -185,7 +178,7 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
                 .build();
         }
 
-        public ClaimantResponse buildRejectionWithDirectionsQuestionnaire() {
+        public ResponseRejection buildRejectionWithDirectionsQuestionnaire() {
             return ResponseRejection.builder()
                 .amountPaid(TEN)
                 .freeMediation(NO)
