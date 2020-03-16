@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 
 import java.util.Collections;
@@ -36,6 +37,7 @@ public class ChangeContactDetailsPostProcessor {
     private static final String CHANGE_CONTACT_PARTY = "changeContactParty";
     private static final String BODY = "body";
     private static final String FIRST_LINE = "We’re contacting you because ((ClaimantName)) has changed their contact details.";
+    private static final String CLAIMANT = "CLAIMANT";
 
     private final CaseDetailsConverter caseDetailsConverter;
     private final DocAssemblyService docAssemblyService;
@@ -59,72 +61,35 @@ public class ChangeContactDetailsPostProcessor {
 
 
     public CallbackResponse showNewContactDetails(CallbackParams callbackParams) {
-        logger.info("New Contact Details: creating preview");
-        AboutToStartOrSubmitCallbackResponse response;
+        logger.info("Change Contact Details: create letter (preview)");
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
+        Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
 
         compareClaims(callbackRequest);
 
-        Map<String, Object> data = new HashMap<>();
-        String partyType = callbackParams
-                .getRequest().getCaseDetails()
-                .getData().get(CHANGE_CONTACT_PARTY).toString();
+//        if (letterNeeded(ccdCase, claim)) {
+            return defendantLetter(callbackParams);
+//        }
+//
 
-        String body = "We’re contacting you because ((ClaimantName)) has changed their contact details.";
-        if (address) {
-            body += "Their address is now: ((Claimant address))";
-        }
-        if (phone) {
-            body += "Their phone number is now: ((Claimant phone))";
-        }
-        if (corraddress) {
-            body += "The address they want to use for post about the claim is now:: ((Claimant correspondence addr))";
-        }
-        if (email) {
-            body += "Their email address is now:: ((Claimant email))";
-        }
-        if (phoneRemoved) {
-            body += "They’ve removed their phone number.";
-        }
-        if (corrAddressRemoved) {
-            body += "They’ve removed the address they want to use for post about the claim.";
-        }
-        if (emailRemoved) {
-            body += "They’ve removed their email address.";
-        }
-
-        if (!body.equals(FIRST_LINE)) {
-            data.put(BODY, body);
-            data.put(CHANGE_CONTACT_PARTY, partyType);
-            DocAssemblyResponse docAssemblyResponse = docAssemblyService
-                    .createGeneralLetter(ccdCase, authorisation, data);
-            response = AboutToStartOrSubmitCallbackResponse
-                    .builder()
-                    .data(ImmutableMap.of(
-                            DRAFT_LETTER_DOC,
-                            CCDDocument.builder().documentUrl(docAssemblyResponse.getRenditionOutputLocation()).build()
-                    ))
-                    .build();
-        } else {
-            response = AboutToStartOrSubmitCallbackResponse.builder()
-                    .errors(Collections.singletonList(NO_DETAILS_CHANGED_ERROR)).build();
-        }
-        return response;
+       // return email template
     }
 
 
-    public CallbackResponse notifyPartiesViaEmailAndLetter(CallbackParams callbackParams) {
-        CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
-        Claim claim = caseDetailsConverter.extractClaim(caseDetails);
-        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
-        String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
-
-        return claim.getDefendantId().isEmpty() || claim.getDefendantId() == null
-                ? printDefendantLetter()
-                : changeContactDetailsNotificationService.sendEmailToRightRecipient(ccdCase, claim);
-    }
+//    public CallbackResponse notifyPartiesViaEmailAndLetter(CallbackParams callbackParams) {
+//        logger.info("Change Contact Details: print letter or send email notifications");
+//        CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
+//        Claim claim = caseDetailsConverter.extractClaim(caseDetails);
+//        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
+//        String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
+//
+////        return letterNeeded(ccdCase, claim)
+////                ? printDefendantLetter()
+////                : changeContactDetailsNotificationService.sendEmailToRightRecipient(ccdCase, claim);
+//
+//    }
 
     public void printDefendantLetter() {
         //send to bulkprint
@@ -168,6 +133,57 @@ public class ChangeContactDetailsPostProcessor {
                 emailRemoved = true;
             }
         }
+    }
+
+    public CallbackResponse defendantLetter(CallbackParams callbackParams) {
+        AboutToStartOrSubmitCallbackResponse response;
+        Map<String, Object> data = new HashMap<>();
+        String partyType = callbackParams
+                .getRequest().getCaseDetails()
+                .getData().get(CHANGE_CONTACT_PARTY).toString();
+
+        String body = "We’re contacting you because ((ClaimantName)) has changed their contact details.";
+        if (address) {
+            body += "Their address is now: ((Claimant address))";
+        }
+        if (phone) {
+            body += "Their phone number is now: ((Claimant phone))";
+        }
+        if (corraddress) {
+            body += "The address they want to use for post about the claim is now:: ((Claimant correspondence addr))";
+        }
+        if (email) {
+            body += "Their email address is now:: ((Claimant email))";
+        }
+        if (phoneRemoved) {
+            body += "They’ve removed their phone number.";
+        }
+        if (corrAddressRemoved) {
+            body += "They’ve removed the address they want to use for post about the claim.";
+        }
+        if (emailRemoved) {
+            body += "They’ve removed their email address.";
+        }
+
+        if (!body.equals(FIRST_LINE)) {
+            data.put(BODY, body);
+            data.put(CHANGE_CONTACT_PARTY, partyType);
+            data.put("changeContactPreview", body);
+//            DocAssemblyResponse docAssemblyResponse = docAssemblyService
+//                    .createGeneralLetter(ccdCase, authorisation, data);
+            response = AboutToStartOrSubmitCallbackResponse
+                    .builder()
+                    .data(data)
+                    .build();
+        } else {
+            response = AboutToStartOrSubmitCallbackResponse.builder()
+                    .errors(Collections.singletonList(NO_DETAILS_CHANGED_ERROR)).build();
+        }
+        return response;
+    }
+
+    public boolean letterNeeded(CCDCase ccdCase, Claim claim) {
+        return ccdCase.getChangeContactDetailsForParty().getValue().equals(CLAIMANT) && (claim.getDefendantId().isEmpty() || claim.getDefendantId() == null);
     }
 }
 

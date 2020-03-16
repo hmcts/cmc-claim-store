@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -8,7 +7,6 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.Notifications
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +20,6 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.EMAIL_ADDRESS_REMOVED;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.MAIN_ADDRESS_CHANGED;
-import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.NEW_FEATURES;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.PHONE_NUMBER_CHANGED;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.PHONE_NUMBER_REMOVED;
 
@@ -44,13 +41,13 @@ public class ChangeContactDetailsNotificationService {
     }
 
 
-    public void sendEmailToRightRecipient(CCDCase ccdCase, Claim claim){
-        if (ccdCase.getChangeContactDetailsForParty().getValue().equals(CLAIMANT)) {
-            notifyDefendant(claim);
-        } else if (ccdCase.getChangeContactDetailsForParty().getValue().equals(DEFENDANT)) {
-            notifyClaimant(claim);
-        }
-    }
+//    public void sendEmailToRightRecipient(CCDCase ccdCase, Claim claim){
+//        if (ccdCase.getChangeContactDetailsForParty().getValue().equals(CLAIMANT)) {
+//            notifyDefendant(claim, );
+//        } else if (ccdCase.getChangeContactDetailsForParty().getValue().equals(DEFENDANT)) {
+//            notifyClaimant(claim);
+//        }
+//    }
 
     private void notifyClaimant(Claim claim, Boolean address, Boolean phone, Boolean email,
                                 Boolean corraddress, Boolean phoneRemoved,

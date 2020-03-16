@@ -35,11 +35,4 @@ public class CitizenServiceDocumentsService {
             letterContentProvider.createContent(claim, defendantPin)
         );
     }
-
-    public Document changeDetailsDocument(Claim claim) {
-        return new Document(
-                new String(documentTemplates.getDefendantPinLetter()),
-                letterContentProvider.createContent(claim, defendantPin)
-        );
-    }
 }
