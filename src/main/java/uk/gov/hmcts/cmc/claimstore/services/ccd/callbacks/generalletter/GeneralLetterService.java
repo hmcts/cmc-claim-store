@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -75,6 +76,7 @@ public class GeneralLetterService {
         logger.info("General Letter creator: sending to print");
         CallbackRequest callbackRequest = callbackParams.getRequest();
         Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
+        callbackRequest.getCaseDetails().getData().get(DRAFT_LETTER_DOC);
         return null;
     }
 }
