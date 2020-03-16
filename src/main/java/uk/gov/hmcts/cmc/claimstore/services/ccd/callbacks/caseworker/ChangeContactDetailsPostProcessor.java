@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -56,11 +57,65 @@ public class ChangeContactDetailsPostProcessor {
     }
 
 
-    public CallbackResponse showNewContactDetails(CallbackParams callbackParams) throws IOException {
+    public CallbackResponse showNewContactDetails(CallbackParams callbackParams) {
+        logger.info("New Contact Details: creating preview");
+
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
 
+        compareClaims(callbackRequest);
+
+
+
+        Map<String, Object> data = new HashMap<>();
+        String body = callbackParams
+                .getRequest().getCaseDetails()
+                .getData().get(LETTER_CONTENT).toString();
+        String partyType = callbackParams
+                .getRequest().getCaseDetails()
+                .getData().get(CHANGE_CONTACT_PARTY).toString();
+        if (body != null) {
+            data.put(BODY, body);
+            data.put(CHANGE_CONTACT_PARTY, partyType);
+            String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
+            DocAssemblyResponse docAssemblyResponse = docAssemblyService
+                    .createGeneralLetter(ccdCase, authorisation, data);
+            response = AboutToStartOrSubmitCallbackResponse
+                    .builder()
+                    .data(ImmutableMap.of(
+                            DRAFT_LETTER_DOC,
+                            CCDDocument.builder().documentUrl(docAssemblyResponse.getRenditionOutputLocation()).build()
+                    ))
+                    .build();
+        } else {
+            response = AboutToStartOrSubmitCallbackResponse.builder()
+                    .errors(Collections.singletonList(EMPTY_BODY_ERROR)).build();
+        }
+        return response;
+    }
+
+
+    //how do I persist the boolean values of what has changed for the email template
+
+        //what am I sending back?
+
+
+//    public CallbackResponse notifyPartiesViaEmailAndLetter(CallbackParams callbackParams) {
+//        CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
+//        Claim claim = caseDetailsConverter.extractClaim(caseDetails);
+//        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
+//        String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
+//
+//
+//
+//        return claim.getDefendantId().isEmpty() || claim.getDefendantId() == null
+//                ? sendDefendantLetter() //send letter to bulkprint
+//                : changeContactDetailsNotificationService.sendEmailToRightRecipient(ccdCase, claim);
+//
+//    }
+
+    public void compareClaims(CallbackRequest callbackRequest) {
         Claim claimBefore = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetailsBefore());
         Claim claimNow = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
 
@@ -97,36 +152,7 @@ public class ChangeContactDetailsPostProcessor {
                 emailRemoved = true;
             }
         }
-
-        //how do I persist the boolean values of what has changed for the email template
-
-        //what am I sending back?
-
-
-        return AboutToStartOrSubmitCallbackResponse
-                .builder()
-                .data(result)
-                .build();
     }
-
-//    public CallbackResponse notifyPartiesViaEmailAndLetter(CallbackParams callbackParams) {
-//        CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
-//        Claim claim = caseDetailsConverter.extractClaim(caseDetails);
-//        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
-//        String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
-//
-//
-//
-//        return claim.getDefendantId().isEmpty() || claim.getDefendantId() == null
-//                ? sendDefendantLetter() //send letter to bulkprint
-//                : changeContactDetailsNotificationService.sendEmailToRightRecipient(ccdCase, claim);
-//
-//    }
-
-//    public void sendDefendantLetter() {
-//        DocAssemblyResponse docAssemblyResponse = docAssemblyService.createDefendantLetter(ccdCase, authorisation);
-//        //print somehow via bulkprint
-//    }
 }
 
 
