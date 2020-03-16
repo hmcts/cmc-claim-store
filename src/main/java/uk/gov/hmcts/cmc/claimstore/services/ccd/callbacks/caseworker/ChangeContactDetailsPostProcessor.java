@@ -60,43 +60,6 @@ public class ChangeContactDetailsPostProcessor {
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
-//
-//        ObjectMapper mapper = new ObjectMapper();
-//        TypeReference<Map<String, Object>> type =
-//                new TypeReference<Map<String, Object>>() {};
-
-//        Map<String, Object> leftMap = mapper.readValue((JsonParser) callbackRequest.getCaseDetailsBefore().getData(), type);
-//        Map<String, Object> rightMap = mapper.readValue((JsonParser) callbackRequest.getCaseDetails().getData(), type);
-//
-//        MapDifference<String, Object> difference = Maps.difference(leftMap, rightMap);
-//
-//        Map<String, Object> result = Collections.emptyMap();
-//
-//        difference.entriesDiffering()
-//                .forEach(result::put);
-//        System.out.println();
-//
-//        if (result.containsKey("address")) {
-//            address = true;
-//        }
-//        if (result.containsKey("correspondenceAddress")){
-//            corraddress = true;
-//            if (result.get("correspondenceAddress") == null){
-//                corrAddressRemoved = true;
-//            }
-//        }
-//        if (result.containsKey("phoneNumber")){
-//            phone = true;
-//            if (result.get("phoneNumber") == null){
-//                phoneRemoved = true;
-//            }
-//        }
-//        if (result.containsKey("emailAddress")){
-//            email = true;
-//            if (result.get("emailAddress") == null){
-//                emailRemoved = true;
-//            }
-//        }
 
         Claim claimBefore = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetailsBefore());
         Claim claimNow = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
@@ -107,24 +70,33 @@ public class ChangeContactDetailsPostProcessor {
         Optional<Address> oldCorrespondenceAddress = claimBefore.getClaimData().getClaimant().getCorrespondenceAddress();
         Optional<Address> newCorrespondenceAddress = claimNow.getClaimData().getClaimant().getCorrespondenceAddress();
 
-        String oldPhone = claimBefore.getClaimData().getClaimant().getPhone().toString();
-        String newPhone = claimNow.getClaimData().getClaimant().getPhone().toString();
+        Optional<String> oldPhone = claimBefore.getClaimData().getClaimant().getPhone();
+        Optional<String> newPhone = claimNow.getClaimData().getClaimant().getPhone();
 
         String oldEmail = claimBefore.getSubmitterEmail();
         String newEmail = claimNow.getSubmitterEmail();
 
-//        , claimBefore.getSubmitterEmail(), oldPhone
-//                , claimNow.getSubmitterEmail(), newPhone
-
-        List<String> old = Arrays.asList(oldAddress.getLine1(), oldAddress.getLine2(), oldAddress.getLine3(), oldAddress.getCity(), oldAddress.getCounty(), oldAddress.getPostcode());
-        List<String> newlist = Arrays.asList(newAddress.getLine1(), newAddress.getLine2(), newAddress.getLine3(), newAddress.getCity(), newAddress.getCounty(), newAddress.getPostcode());
-
-        List<String> result = newlist.stream().filter(aObject ->
-                !old.contains(aObject)).collect(Collectors.toList());
-
-
-        System.out.println(result);
-
+        if (!oldAddress.equals(newAddress)) {
+            address = true;
+        }
+        if (!oldCorrespondenceAddress.equals(newCorrespondenceAddress)){
+            corraddress = true;
+            if (!newCorrespondenceAddress.isPresent()){
+                corrAddressRemoved = true;
+            }
+        }
+        if (!oldPhone.equals(newPhone)){
+            phone = true;
+            if (!newPhone.isPresent()){
+                phoneRemoved = true;
+            }
+        }
+        if (!oldEmail.equals(newEmail)){
+            email = true;
+            if (newEmail.isEmpty()){
+                emailRemoved = true;
+            }
+        }
 
         //how do I persist the boolean values of what has changed for the email template
 
