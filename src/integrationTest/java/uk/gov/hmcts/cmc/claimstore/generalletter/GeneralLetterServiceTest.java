@@ -15,7 +15,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.events.GeneralLetterReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -24,7 +23,6 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 
@@ -49,8 +47,6 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.GENERAL_LETT
 @ExtendWith(MockitoExtension.class)
 class GeneralLetterServiceTest {
 
-    private CallbackRequest callbackRequest;
-    private CallbackParams callbackParams;
     private Map<String, Object> data;
     private static final String DOC_URL = "http://success.test";
     private static final String DOC_URL_BINARY = "http://success.test/binary";
@@ -72,6 +68,7 @@ class GeneralLetterServiceTest {
     private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
     private static final String ERROR_MESSAGE =
         "There was a technical problem. Nothing has been sent. You need to try again.";
+    private static final String DRAFT_LETTER_DOC_KEY = "draftLetterDoc";
 
     private static final CCDDocument DOCUMENT = CCDDocument
         .builder()
@@ -129,16 +126,6 @@ class GeneralLetterServiceTest {
         caseDetails = CaseDetails.builder()
             .data(data)
             .build();
-        callbackRequest = CallbackRequest
-            .builder()
-            .caseDetails(CaseDetails.builder()
-                .data(data)
-                .build())
-            .build();
-        callbackParams = CallbackParams.builder()
-            .request(callbackRequest)
-            .params(ImmutableMap.of(BEARER_TOKEN, BEARER_TOKEN))
-            .build();
     }
 
     @Test
@@ -147,7 +134,7 @@ class GeneralLetterServiceTest {
         when(docAssemblyService
             .createGeneralLetter(any(CCDCase.class), anyString())).thenReturn(docAssemblyResponse);
         when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
-        generalLetterService.createAndPreview(callbackParams);
+        generalLetterService.createAndPreview(caseDetails, BEARER_TOKEN.name(), DRAFT_LETTER_DOC_KEY);
         verify(caseDetailsConverter, once()).extractCCDCase(eq(caseDetails));
         verify(docAssemblyService, once()).createGeneralLetter(eq(ccdCase), eq(BEARER_TOKEN.name()));
     }
@@ -157,7 +144,7 @@ class GeneralLetterServiceTest {
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
             .thenThrow(new RuntimeException("exception"));
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
-            generalLetterService.createAndPreview(callbackParams);
+            generalLetterService.createAndPreview(caseDetails, BEARER_TOKEN.name(), DRAFT_LETTER_DOC_KEY);
         assertThat(response.getErrors().get(0)).isEqualTo(ERROR_MESSAGE);
     }
 
@@ -177,7 +164,7 @@ class GeneralLetterServiceTest {
         when(documentManagementService.downloadDocument(anyString(), any(ClaimDocument.class)))
             .thenReturn(PDF_BYTES);
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
-            generalLetterService.printAndUpdateCaseDocuments(callbackParams);
+            generalLetterService.printAndUpdateCaseDocuments(caseDetails, BEARER_TOKEN.name());
         verify(caseDetailsConverter, once()).extractCCDCase(eq(caseDetails));
         verify(caseDetailsConverter, once()).extractClaim(eq(caseDetails));
         verify(caseDetailsConverter, once()).convertToMap(any(CCDCase.class));
@@ -190,7 +177,7 @@ class GeneralLetterServiceTest {
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
             .thenThrow(new RuntimeException("exception"));
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
-            generalLetterService.printAndUpdateCaseDocuments(callbackParams);
+            generalLetterService.printAndUpdateCaseDocuments(caseDetails, BEARER_TOKEN.name());
         assertThat(response.getErrors().get(0)).isEqualTo(ERROR_MESSAGE);
     }
 }

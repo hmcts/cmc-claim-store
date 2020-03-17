@@ -13,13 +13,11 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.events.GeneralLetterReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
@@ -34,14 +32,12 @@ import java.util.Collections;
 import java.util.List;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.GENERAL_LETTER;
-import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.Params.BEARER_TOKEN;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 
 @Service
 @ConditionalOnProperty(prefix = "doc_assembly", name = "url")
 public class GeneralLetterService {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private static final String DRAFT_LETTER_DOC = "draftLetterDoc";
     private static final String ERROR_MESSAGE =
         "There was a technical problem. Nothing has been sent. You need to try again.";
 
@@ -65,17 +61,15 @@ public class GeneralLetterService {
         this.clock = clock;
     }
 
-    public CallbackResponse createAndPreview(CallbackParams callbackParams) {
+    public CallbackResponse createAndPreview(CaseDetails caseDetails, String authorisation, String letterType) {
         try {
             logger.info("General Letter: creating letter");
-            CallbackRequest callbackRequest = callbackParams.getRequest();
-            CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
-            String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
+            CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
             DocAssemblyResponse docAssemblyResponse = docAssemblyService.createGeneralLetter(ccdCase, authorisation);
             return AboutToStartOrSubmitCallbackResponse
                 .builder()
                 .data(ImmutableMap.of(
-                    DRAFT_LETTER_DOC,
+                    letterType,
                     CCDDocument.builder().documentUrl(docAssemblyResponse.getRenditionOutputLocation())))
                 .build();
         } catch (Exception e) {
@@ -86,11 +80,8 @@ public class GeneralLetterService {
         }
     }
 
-    public CallbackResponse printAndUpdateCaseDocuments(CallbackParams callbackParams) {
+    public CallbackResponse printAndUpdateCaseDocuments(CaseDetails caseDetails, String authorisation) {
         try {
-            CallbackRequest callbackRequest = callbackParams.getRequest();
-            String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
-            CaseDetails caseDetails = callbackRequest.getCaseDetails();
             CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
             CCDDocument draftLetterDoc = ccdCase.getDraftLetterDoc();
             Claim claim = caseDetailsConverter.extractClaim(caseDetails);

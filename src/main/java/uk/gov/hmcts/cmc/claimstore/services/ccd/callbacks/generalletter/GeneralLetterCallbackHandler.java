@@ -9,7 +9,10 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +26,7 @@ public class GeneralLetterCallbackHandler extends CallbackHandler {
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
     private static final List<CaseEvent> EVENTS = ImmutableList.of(ISSUE_GENERAL_LETTER);
     private final GeneralLetterService generalLetterService;
+    private static final String DRAFT_LETTER_DOC = "draftLetterDoc";
 
     @Autowired
     public GeneralLetterCallbackHandler(
@@ -33,8 +37,8 @@ public class GeneralLetterCallbackHandler extends CallbackHandler {
     @Override
     protected Map<CallbackType, Callback> callbacks() {
         return ImmutableMap.of(
-            CallbackType.MID, generalLetterService::createAndPreview,
-            CallbackType.ABOUT_TO_SUBMIT, generalLetterService::printAndUpdateCaseDocuments
+            CallbackType.MID, this::createAndPreview,
+            CallbackType.ABOUT_TO_SUBMIT, this::printAndUpdateCaseDocuments
         );
     }
 
@@ -46,5 +50,20 @@ public class GeneralLetterCallbackHandler extends CallbackHandler {
     @Override
     public List<Role> getSupportedRoles() {
         return ROLES;
+    }
+
+    public CallbackResponse createAndPreview(CallbackParams callbackParams) {
+        String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
+        return generalLetterService.createAndPreview(
+            callbackParams.getRequest().getCaseDetails(),
+            authorisation,
+            DRAFT_LETTER_DOC);
+    }
+
+    public CallbackResponse printAndUpdateCaseDocuments(CallbackParams callbackParams) {
+        String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
+        return generalLetterService.printAndUpdateCaseDocuments(
+            callbackParams.getRequest().getCaseDetails(),
+            authorisation);
     }
 }
