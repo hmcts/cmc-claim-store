@@ -17,9 +17,7 @@ import uk.gov.hmcts.reform.docassembly.DocAssemblyClient;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyRequest;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 import uk.gov.hmcts.reform.docassembly.domain.OutputType;
-
 import java.util.Collections;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -96,13 +94,12 @@ public class DocAssemblyServiceTest {
 
     @Test
     public void shouldCreateGeneralLetter() {
-
-        when(docAssemblyTemplateBodyMapper.from(eq(ccdCase), eq(JUDGE)))
+        when(docAssemblyTemplateBodyMapper.generalLetterBody(eq(ccdCase), eq(JUDGE)))
             .thenReturn(DocAssemblyTemplateBody.builder().build());
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
             .templateId(GENERAL_LETTER_TEMPLATE_ID)
             .outputType(OutputType.PDF)
-            .formPayload(docAssemblyTemplateBodyMapper.from(ccdCase, JUDGE))
+            .formPayload(docAssemblyTemplateBodyMapper.generalLetterBody(ccdCase, JUDGE))
             .build();
         when(docAssemblyClient
             .generateOrder(eq(BEARER_TOKEN), eq(SERVICE_TOKEN), eq(docAssemblyRequest)))
