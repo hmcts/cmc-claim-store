@@ -34,7 +34,7 @@ public class GeneralLetterCallbackHandler extends CallbackHandler {
     protected Map<CallbackType, Callback> callbacks() {
         return ImmutableMap.of(
             CallbackType.MID, generalLetterService::createAndPreview,
-            CallbackType.ABOUT_TO_SUBMIT, generalLetterService::sendToPrint
+            CallbackType.ABOUT_TO_SUBMIT, generalLetterService::printAndUpdateCaseDocuments
         );
     }
 

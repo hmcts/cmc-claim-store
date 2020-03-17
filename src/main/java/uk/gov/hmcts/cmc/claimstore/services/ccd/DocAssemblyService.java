@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyRequest;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 import uk.gov.hmcts.reform.docassembly.domain.OutputType;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -24,6 +25,8 @@ import java.util.Optional;
 @ConditionalOnProperty(prefix = "doc_assembly", name = "url")
 public class DocAssemblyService {
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    private static final String BODY = "body";
+    private static final String CHANGE_CONTACT_PARTY = "changeContactParty";
 
     private final AuthTokenGenerator authTokenGenerator;
     private final DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
@@ -72,7 +75,7 @@ public class DocAssemblyService {
         );
     }
 
-    public DocAssemblyResponse createGeneralLetter(CCDCase ccdCase, String authorisation, Map<String, Object> data) {
+    public DocAssemblyResponse createGeneralLetter(CCDCase ccdCase, String authorisation) {
         UserDetails userDetails = userService.getUserDetails(authorisation);
 
         logger.info("Doc assembly service: creating request for doc assembly");
@@ -80,7 +83,7 @@ public class DocAssemblyService {
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
             .templateId(generalLetterTemplateId)
             .outputType(OutputType.PDF)
-            .formPayload(docAssemblyTemplateBodyMapper.from(ccdCase, userDetails, data))
+            .formPayload(docAssemblyTemplateBodyMapper.generalLetterBody(ccdCase, userDetails))
             .build();
 
         logger.info("Doc assembly service: sending request to doc assembly");

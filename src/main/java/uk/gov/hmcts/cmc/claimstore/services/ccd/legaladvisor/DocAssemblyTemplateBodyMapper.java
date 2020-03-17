@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionOrderService;
@@ -106,22 +107,22 @@ public class DocAssemblyTemplateBodyMapper {
             .build();
     }
 
-    public DocAssemblyTemplateBody from(CCDCase ccdCase, UserDetails userDetails, Map<String, Object> data) {
+    public DocAssemblyTemplateBody generalLetterBody(CCDCase ccdCase, UserDetails userDetails) {
         LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
         return DocAssemblyTemplateBody.builder()
             .currentDate(currentDate)
             .referenceNumber(ccdCase.getPreviousServiceCaseReference())
             .caseworkerName(userDetails.getFullName())
             .caseName(ccdCase.getCaseName())
-            .partyName(String.valueOf(data.get(CHANGE_CONTACT_PARTY)).equalsIgnoreCase(CLAIMANT)
+            .partyName(ccdCase.getIssueLetterContact() == CCDContactPartyType.CLAIMANT
                 ? ccdCase.getApplicants().get(0).getValue().getPartyName()
                 : ccdCase.getRespondents().get(0).getValue().getPartyName())
-            .partyAddress(String.valueOf(data.get(CHANGE_CONTACT_PARTY)).equalsIgnoreCase(CLAIMANT)
+            .partyAddress(ccdCase.getIssueLetterContact() == CCDContactPartyType.CLAIMANT
             ? ccdCase.getApplicants().get(0)
                 .getValue().getPartyDetail().getPrimaryAddress()
                 : ccdCase.getRespondents().get(0)
                 .getValue().getPartyDetail().getPrimaryAddress())
-            .body(String.valueOf(data.get(BODY)))
+            .body(ccdCase.getLetterContent())
             .build();
     }
 }
