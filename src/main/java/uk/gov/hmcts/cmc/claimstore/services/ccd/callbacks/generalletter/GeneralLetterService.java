@@ -42,6 +42,8 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 public class GeneralLetterService {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final String DRAFT_LETTER_DOC = "draftLetterDoc";
+    private static final String ERROR_MESSAGE =
+        "There was a technical problem. Nothing has been sent. You need to try again.";
 
     private final CaseDetailsConverter caseDetailsConverter;
     private final DocAssemblyService docAssemblyService;
@@ -64,49 +66,47 @@ public class GeneralLetterService {
     }
 
     public CallbackResponse createAndPreview(CallbackParams callbackParams) {
-        logger.info("General Letter: creating letter");
-        CallbackRequest callbackRequest = callbackParams.getRequest();
-        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
-        String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
-        DocAssemblyResponse docAssemblyResponse = docAssemblyService.createGeneralLetter(ccdCase, authorisation);
-        return AboutToStartOrSubmitCallbackResponse
-            .builder()
-            .data(ImmutableMap.of(
-                DRAFT_LETTER_DOC,
-                CCDDocument.builder().documentUrl(docAssemblyResponse.getRenditionOutputLocation()).build()
-            ))
-            .build();
-
+        try {
+            logger.info("General Letter: creating letter");
+            CallbackRequest callbackRequest = callbackParams.getRequest();
+            CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
+            String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
+            DocAssemblyResponse docAssemblyResponse = docAssemblyService.createGeneralLetter(ccdCase, authorisation);
+            return AboutToStartOrSubmitCallbackResponse
+                .builder()
+                .data(ImmutableMap.of(
+                    DRAFT_LETTER_DOC,
+                    CCDDocument.builder().documentUrl(docAssemblyResponse.getRenditionOutputLocation())))
+                .build();
+        } catch (Exception e) {
+            return AboutToStartOrSubmitCallbackResponse
+                .builder()
+                .errors(Collections.singletonList(ERROR_MESSAGE))
+                .build();
+        }
     }
 
     public CallbackResponse printAndUpdateCaseDocuments(CallbackParams callbackParams) {
-        CallbackRequest callbackRequest = callbackParams.getRequest();
-        String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
-        CCDDocument draftLetterDoc = ccdCase.getDraftLetterDoc();
-        Claim claim = caseDetailsConverter.extractClaim(caseDetails);
-
         try {
+            CallbackRequest callbackRequest = callbackParams.getRequest();
+            String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
+            CaseDetails caseDetails = callbackRequest.getCaseDetails();
+            CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
+            CCDDocument draftLetterDoc = ccdCase.getDraftLetterDoc();
+            Claim claim = caseDetailsConverter.extractClaim(caseDetails);
             printLetter(authorisation, draftLetterDoc, claim);
-
             CCDCase updatedCase = ccdCase.toBuilder()
                 .caseDocuments(updateCaseDocumentsWithOrder(ccdCase, draftLetterDoc))
                 .build();
-
             return AboutToStartOrSubmitCallbackResponse
                 .builder()
                 .data(caseDetailsConverter.convertToMap(updatedCase))
                 .build();
 
         } catch (Exception e) {
-
             return AboutToStartOrSubmitCallbackResponse
                 .builder()
-                .data(ImmutableMap.of(
-                    DRAFT_LETTER_DOC,
-                    "failed to print"
-                ))
+                .errors(Collections.singletonList(ERROR_MESSAGE))
                 .build();
         }
     }
@@ -123,7 +123,6 @@ public class GeneralLetterService {
                 .documentType(GENERAL_LETTER)
                 .build())
             .build();
-
         return ImmutableList.<CCDCollectionElement<CCDClaimDocument>>builder()
             .addAll(ccdCase.getCaseDocuments())
             .add(claimDocument)
@@ -135,12 +134,10 @@ public class GeneralLetterService {
             claim,
             downloadLetter(authorisation, document)
         );
-
         publisher.publishEvent(event);
     }
 
     private Document downloadLetter(String authorisation, CCDDocument document) throws URISyntaxException {
-
         return new Document(Base64.getEncoder().encodeToString(
             documentManagementService.downloadDocument(
                 authorisation,

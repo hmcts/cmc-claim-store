@@ -327,8 +327,7 @@ class DocAssemblyTemplateBodyMapperTest {
             data.put(CHANGE_CONTACT_PARTY, "DEFENDANT");
             DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
                 ccdCase,
-                userDetails,
-                data
+                userDetails
             );
             DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
                 .currentDate(LocalDate.parse("2019-04-24"))
@@ -342,7 +341,7 @@ class DocAssemblyTemplateBodyMapperTest {
                     .build())
                 .referenceNumber("ref no")
                 .caseName("case name")
-                .caseworkerName("Judge McJudge")
+                .caseWorkerName("Judge McJudge")
                 .body("body")
                 .build();
             assertThat(requestBody).isEqualTo(expectedBody);
@@ -353,8 +352,7 @@ class DocAssemblyTemplateBodyMapperTest {
             data.put(CHANGE_CONTACT_PARTY, "CLAIMANT");
             DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
                 ccdCase,
-                userDetails,
-                data
+                userDetails
             );
             DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
                 .currentDate(LocalDate.parse("2019-04-24"))
@@ -368,7 +366,7 @@ class DocAssemblyTemplateBodyMapperTest {
                     .build())
                 .referenceNumber("ref no")
                 .caseName("case name")
-                .caseworkerName("Judge McJudge")
+                .caseWorkerName("Judge McJudge")
                 .body("body")
                 .build();
             assertThat(requestBody).isEqualTo(expectedBody);

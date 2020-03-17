@@ -17,8 +17,6 @@ import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyRequest;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 import uk.gov.hmcts.reform.docassembly.domain.OutputType;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @Service

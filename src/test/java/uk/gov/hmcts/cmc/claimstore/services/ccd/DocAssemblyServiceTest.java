@@ -100,20 +100,20 @@ public class DocAssemblyServiceTest {
     public void shouldCreateGeneralLetter() {
 
         Map<String, Object> data = new HashMap<>();
-        when(docAssemblyTemplateBodyMapper.from(eq(ccdCase), eq(JUDGE), eq(data)))
+        when(docAssemblyTemplateBodyMapper.from(eq(ccdCase), eq(JUDGE)))
             .thenReturn(DocAssemblyTemplateBody.builder().build());
 
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
             .templateId(GENERAL_LETTER_TEMPLATE_ID)
             .outputType(OutputType.PDF)
-            .formPayload(docAssemblyTemplateBodyMapper.from(ccdCase, JUDGE, data))
+            .formPayload(docAssemblyTemplateBodyMapper.from(ccdCase, JUDGE))
             .build();
 
         when(docAssemblyClient
             .generateOrder(eq(BEARER_TOKEN), eq(SERVICE_TOKEN), eq(docAssemblyRequest)))
             .thenReturn(docAssemblyResponse);
 
-        DocAssemblyResponse response = docAssemblyService.createGeneralLetter(ccdCase, BEARER_TOKEN, data);
+        DocAssemblyResponse response = docAssemblyService.createGeneralLetter(ccdCase, BEARER_TOKEN);
 
         assertThat(response.getRenditionOutputLocation()).isEqualTo(DOC_URL);
 
