@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.idam.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Builder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
+@Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserDetails {
 
