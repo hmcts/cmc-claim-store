@@ -51,4 +51,8 @@ public class DocumentTemplates {
         return readBytes("/citizen/templates/document/claimantDirectionsQuestionnaire.html");
     }
 
+    public byte[] getChangeContactDetails() {
+        return readBytes("/citizen/templates/document/claimantDirectionsQuestionnaire.html");
+    }
+
 }

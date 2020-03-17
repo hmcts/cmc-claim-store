@@ -16,6 +16,14 @@ public final class NotificationTemplateParameters {
     public static final String COUNTER_SIGNING_PARTY = "counterSigningParty";
     public static final String NEW_FEATURES = "newFeatures";
     public static final String DQ_DEADLINE = "DQsdeadline";
+    public static final String MAIN_ADDRESS_CHANGED = "MainAddressChanged";
+    public static final String PHONE_NUMBER_CHANGED = "PhoneNumberChanged";
+    public static final String EMAIL_ADDRESS_CHANGED = "EmailAddressChanged";
+    public static final String CORRESPONDENCE_ADDRESS_CHANGED = "CorrespondenceAddressChanged";
+    public static final String PHONE_NUMBER_REMOVED = "PhoneNumberRemoved";
+    public static final String CORRESPONDENCE_ADDRESS_REMOVED = "CorrespondenceAddressRemoved";
+    public static final String EMAIL_ADDRESS_REMOVED = "EmailAddressRemoved";
+
 
     private NotificationTemplateParameters() {
         // Utility class
