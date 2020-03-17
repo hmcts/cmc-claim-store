@@ -42,7 +42,7 @@ public class UserService {
 
     @LogExecutionTime
     public UserDetails getUserDetails(String authorisation) {
-        UserInfo userInfo = idamApi.retrieveUserInfo(authorisation);
+        UserInfo userInfo = getUserInfo(authorisation);
 
         return UserDetails.builder()
             .id(userInfo.getUid())
@@ -101,6 +101,10 @@ public class UserService {
         );
 
         return BEARER + tokenExchangeResponse.getAccessToken();
+    }
+
+    public UserInfo getUserInfo(String bearerToken) {
+        return idamApi.retrieveUserInfo(bearerToken);
     }
 
 }
