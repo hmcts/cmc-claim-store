@@ -8,6 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintablePdf;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintableTemplate;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
+import uk.gov.hmcts.cmc.claimstore.events.GeneralLetterReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.events.legaladvisor.DirectionsOrderReadyToPrintEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -73,6 +74,29 @@ public class BulkPrintHandlerTest {
                     claim.getReferenceNumber() + "-directions-order-cover-sheet"),
                 new PrintablePdf(
                     legalOrder,
+                    claim.getReferenceNumber() + "-directions-order")
+            ));
+    }
+
+    @Test
+    public void notifyForGeneralLetter() {
+        //given
+        BulkPrintHandler bulkPrintHandler = new BulkPrintHandler(bulkPrintService);
+        Claim claim = SampleClaim.getDefault();
+        Document generalLetter = new Document("letter", new HashMap<>());
+
+        GeneralLetterReadyToPrintEvent printEvent
+            = new GeneralLetterReadyToPrintEvent(claim,  generalLetter);
+
+        //when
+        bulkPrintHandler.print(printEvent);
+
+        //verify
+        verify(bulkPrintService).printPdf(
+            claim,
+            ImmutableList.of(
+                new PrintablePdf(
+                    generalLetter,
                     claim.getReferenceNumber() + "-directions-order")
             ));
     }
