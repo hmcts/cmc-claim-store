@@ -103,7 +103,3 @@ variable schedule_state-transition_stay-claim  {
 variable schedule_state-transition_waiting-transfer  {
   default = "0 0 16 ? * MON-FRI *"
 }
-
-variable "enable_ase" {
-  default = false
-}
