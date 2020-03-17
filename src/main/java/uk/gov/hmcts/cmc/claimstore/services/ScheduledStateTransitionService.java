@@ -160,13 +160,14 @@ public class ScheduledStateTransitionService {
 
     private Optional<Claim> updateClaim(User user, Claim claim, StateTransition stateTransition) {
         try {
-            appInsights.trackEvent(stateTransition.getAppInsightsEvent(), REFERENCE_NUMBER, claim.getReferenceNumber());
             caseRepository.saveCaseEvent(user.getAuthorisation(), claim, stateTransition.getCaseEvent());
+            appInsights.trackEvent(stateTransition.getAppInsightsEvent(), REFERENCE_NUMBER, claim.getReferenceNumber());
 
             return Optional.empty();
         } catch (Exception e) {
             logger.error(String.format("Error whilst transitioning claim %s vis caseEvent %s",
                 claim.getReferenceNumber(), stateTransition.getCaseEvent().getValue()), e);
+            appInsights.trackException(e);
             return Optional.of(claim);
         }
     }
