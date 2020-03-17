@@ -101,7 +101,7 @@ allprojects {
     }
     dependencies {
       // CVE-2019-17563
-      dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.31') {
+      dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.33') {
         entry 'tomcat-embed-core'
         entry 'tomcat-embed-el'
         entry 'tomcat-embed-websocket'
@@ -195,7 +195,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '6.0.0'
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.0'
   compile group: 'uk.gov.hmcts.reform', name: 'doc-assembly-client', version: '1.0.4'
-  compile group: 'uk.gov.hmcts.reform', name: 'fees-java-client', version: '0.0.5'
+  compile group: 'uk.gov.hmcts.reform', name: 'fees-java-client', version: '0.0.6'
   compile group: 'uk.gov.hmcts.reform', name: 'payments-client', version: '0.0.4'
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.1'
   compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.3.0'
@@ -233,8 +233,8 @@ dependencies {
   testCompile group: 'org.junit.platform', name: 'junit-platform-commons', version: versions.junitPlatform
   testCompile group: 'org.junit.platform', name: 'junit-platform-engine', version: versions.junitPlatform
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.15.0'
-  testCompile group: 'org.mockito', name: 'mockito-core', version: '3.3.1'
-  testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.3.1'
+  testCompile group: 'org.mockito', name: 'mockito-core', version: '3.3.3'
+  testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.3.3'
   testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.13.0'
 
   testCompile group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
