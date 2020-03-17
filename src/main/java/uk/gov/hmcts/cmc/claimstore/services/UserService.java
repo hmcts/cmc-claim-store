@@ -59,13 +59,13 @@ public class UserService {
 
     @LogExecutionTime
     public User getUser(String authorisation) {
-        return new User(authorisation, idamApi.retrieveUserDetails(authorisation));
+        return new User(authorisation, getUserDetails(authorisation));
     }
 
     public User authenticateUser(String username, String password) {
 
         String authorisation = getIdamOauth2Token(username, password);
-        UserDetails userDetails = idamApi.retrieveUserDetails(authorisation);
+        UserDetails userDetails = getUserDetails(authorisation);
         return new User(authorisation, userDetails);
     }
 
