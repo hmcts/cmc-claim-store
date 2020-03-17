@@ -12,9 +12,8 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.Oauth2;
 import uk.gov.hmcts.cmc.claimstore.idam.models.TokenExchangeResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserInfo;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.util.Base64;
 
@@ -29,24 +28,21 @@ public class UserService {
     private final IdamApi idamApi;
     private final IdamCaseworkerProperties idamCaseworkerProperties;
     private final Oauth2 oauth2;
-    private final IdamClient idamClient;
 
     @Autowired
     public UserService(
         IdamApi idamApi,
         IdamCaseworkerProperties idamCaseworkerProperties,
-        Oauth2 oauth2,
-        IdamClient idamClient
+        Oauth2 oauth2
     ) {
         this.idamApi = idamApi;
         this.idamCaseworkerProperties = idamCaseworkerProperties;
         this.oauth2 = oauth2;
-        this.idamClient = idamClient;
     }
 
     @LogExecutionTime
     public UserDetails getUserDetails(String authorisation) {
-        UserInfo userInfo = idamClient.getUserInfo(authorisation);
+        UserInfo userInfo = idamApi.retrieveUserInfo(authorisation);
 
         return UserDetails.builder()
             .id(userInfo.getUid())
