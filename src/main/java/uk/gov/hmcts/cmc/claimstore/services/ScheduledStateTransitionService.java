@@ -146,7 +146,7 @@ public class ScheduledStateTransitionService {
         caseEventDetails.sort(Comparator.comparing(CaseEventDetail::getCreatedDate).reversed());
 
         for (CaseEventDetail caseEventDetail : caseEventDetails) {
-            CaseEvent event = CaseEvent.fromValue(caseEventDetail.getEventName());
+            CaseEvent event = CaseEvent.fromValue(caseEventDetail.getId());
 
             //Some events do not affect the state transition
             if (stateTransition.getIgnoredEvents().contains(event)) {
