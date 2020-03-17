@@ -25,9 +25,6 @@ public class DocAssemblyTemplateBodyMapper {
     private final Clock clock;
     private final DirectionOrderService directionOrderService;
     private final WorkingDayIndicator workingDayIndicator;
-    private static final String CLAIMANT = "claimant";
-    private static final String CHANGE_CONTACT_PARTY = "changeContactParty";
-    private static final String BODY = "body";
 
     @Autowired
     public DocAssemblyTemplateBodyMapper(

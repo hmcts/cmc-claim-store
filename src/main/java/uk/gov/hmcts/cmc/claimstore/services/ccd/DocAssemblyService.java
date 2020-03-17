@@ -23,8 +23,6 @@ import java.util.Optional;
 @ConditionalOnProperty(prefix = "doc_assembly", name = "url")
 public class DocAssemblyService {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private static final String BODY = "body";
-    private static final String CHANGE_CONTACT_PARTY = "changeContactParty";
 
     private final AuthTokenGenerator authTokenGenerator;
     private final DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
@@ -99,6 +97,5 @@ public class DocAssemblyService {
             .isPresent()
             ? judgeTemplateId
             : legalAdvisorTemplateId;
-
     }
 }

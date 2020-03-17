@@ -19,8 +19,6 @@ import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 import uk.gov.hmcts.reform.docassembly.domain.OutputType;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -99,24 +97,18 @@ public class DocAssemblyServiceTest {
     @Test
     public void shouldCreateGeneralLetter() {
 
-        Map<String, Object> data = new HashMap<>();
         when(docAssemblyTemplateBodyMapper.from(eq(ccdCase), eq(JUDGE)))
             .thenReturn(DocAssemblyTemplateBody.builder().build());
-
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
             .templateId(GENERAL_LETTER_TEMPLATE_ID)
             .outputType(OutputType.PDF)
             .formPayload(docAssemblyTemplateBodyMapper.from(ccdCase, JUDGE))
             .build();
-
         when(docAssemblyClient
             .generateOrder(eq(BEARER_TOKEN), eq(SERVICE_TOKEN), eq(docAssemblyRequest)))
             .thenReturn(docAssemblyResponse);
-
         DocAssemblyResponse response = docAssemblyService.createGeneralLetter(ccdCase, BEARER_TOKEN);
-
         assertThat(response.getRenditionOutputLocation()).isEqualTo(DOC_URL);
-
         verify(docAssemblyClient).generateOrder(eq(BEARER_TOKEN), eq(SERVICE_TOKEN), any(DocAssemblyRequest.class));
     }
 }

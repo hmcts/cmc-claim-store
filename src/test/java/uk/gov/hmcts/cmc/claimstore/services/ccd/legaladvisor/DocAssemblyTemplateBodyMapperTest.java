@@ -14,6 +14,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
@@ -27,8 +28,6 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -61,8 +60,7 @@ class DocAssemblyTemplateBodyMapperTest {
     private CCDCase ccdCase;
     private UserDetails userDetails;
     private DocAssemblyTemplateBody.DocAssemblyTemplateBodyBuilder docAssemblyTemplateBodyBuilder;
-    private static final String CHANGE_CONTACT_PARTY = "changeContactParty";
-    private Map<String, Object> data;
+    private static final String LETTER_CONTENT = "letter content";
 
     @BeforeEach
     void setUp() {
@@ -79,6 +77,7 @@ class DocAssemblyTemplateBodyMapperTest {
                     .value(SampleData.getIndividualRespondentWithDQ())
                     .build()
             ));
+        ccdCase.setLetterContent(LETTER_CONTENT);
         userDetails = SampleUserDetails.builder()
             .withForename("Judge")
             .withSurname("McJudge")
@@ -315,17 +314,10 @@ class DocAssemblyTemplateBodyMapperTest {
     @Nested
     @DisplayName("General Tests for General Letter")
     class GeneralTestsForGeneralLetter {
-
-        @BeforeEach
-        void setUp() {
-            data = new HashMap<>();
-            data.put("body", "body");
-        }
-
         @Test
         void shouldMapTemplateBodyWhenGeneralLetterForDefendant() {
-            data.put(CHANGE_CONTACT_PARTY, "DEFENDANT");
-            DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
+            ccdCase.setIssueLetterContact(CCDContactPartyType.DEFENDANT);
+            DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.generalLetterBody(
                 ccdCase,
                 userDetails
             );
@@ -342,15 +334,15 @@ class DocAssemblyTemplateBodyMapperTest {
                 .referenceNumber("ref no")
                 .caseName("case name")
                 .caseWorkerName("Judge McJudge")
-                .body("body")
+                .body(LETTER_CONTENT)
                 .build();
             assertThat(requestBody).isEqualTo(expectedBody);
         }
 
         @Test
         void shouldMapTemplateBodyWhenGeneralLetterForClaimant() {
-            data.put(CHANGE_CONTACT_PARTY, "CLAIMANT");
-            DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
+            ccdCase.setIssueLetterContact(CCDContactPartyType.CLAIMANT);
+            DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.generalLetterBody(
                 ccdCase,
                 userDetails
             );
@@ -367,7 +359,7 @@ class DocAssemblyTemplateBodyMapperTest {
                 .referenceNumber("ref no")
                 .caseName("case name")
                 .caseWorkerName("Judge McJudge")
-                .body("body")
+                .body(LETTER_CONTENT)
                 .build();
             assertThat(requestBody).isEqualTo(expectedBody);
         }
