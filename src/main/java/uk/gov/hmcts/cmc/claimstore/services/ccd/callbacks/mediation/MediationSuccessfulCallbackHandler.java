@@ -96,8 +96,7 @@ public class MediationSuccessfulCallbackHandler extends CallbackHandler {
             claim.getSubmitterEmail(),
             notificationsProperties.getTemplates().getEmail().getClaimantMediationSuccess(),
             aggregateParams(claim),
-            MediationSuccessful
-                .referenceForClaimant(claim.getReferenceNumber(), "claimant")
+            MediationSuccessful.referenceForClaimant(claim.getReferenceNumber(), "claimant")
         );
     }
 

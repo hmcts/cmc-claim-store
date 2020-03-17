@@ -14,9 +14,9 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-json'
-  compile group: 'org.springframework.retry', name: 'spring-retry', version: '1.2.4.RELEASE'
+  compile group: 'org.springframework.retry', name: 'spring-retry', version: '1.2.5.RELEASE'
 
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
   compile group: 'uk.gov.hmcts.reform', name: 'logging', version: '5.1.1'
   compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: '5.1.1'
@@ -24,6 +24,6 @@ dependencies {
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
   testCompile group: 'commons-io', name: 'commons-io', version: '2.6'
 
-  testCompile group: 'org.mockito', name: 'mockito-core', version: '3.2.0'
+  testCompile group: 'org.mockito', name: 'mockito-core', version: '3.3.3'
 }
 

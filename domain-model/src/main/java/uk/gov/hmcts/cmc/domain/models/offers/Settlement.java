@@ -97,8 +97,11 @@ public class Settlement {
 
     @JsonIgnore
     public boolean isSettlementThroughAdmissions() {
-        return getLastStatementOfType(StatementType.OFFER).getOffer().orElseThrow(IllegalStateException::new)
-            .getPaymentIntention().isPresent();
+        return getLastStatementOfType(StatementType.OFFER)
+            .getOffer()
+            .orElseThrow(() -> new IllegalStateException("Last offer statement is missing an offer"))
+            .getPaymentIntention()
+            .isPresent();
     }
 
     public List<PartyStatement> getPartyStatements() {
