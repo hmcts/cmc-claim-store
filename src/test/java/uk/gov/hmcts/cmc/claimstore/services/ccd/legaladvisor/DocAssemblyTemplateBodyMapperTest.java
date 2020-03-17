@@ -27,6 +27,8 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -59,6 +61,8 @@ class DocAssemblyTemplateBodyMapperTest {
     private CCDCase ccdCase;
     private UserDetails userDetails;
     private DocAssemblyTemplateBody.DocAssemblyTemplateBodyBuilder docAssemblyTemplateBodyBuilder;
+    private static final String CHANGE_CONTACT_PARTY = "changeContactParty";
+    private Map<String, Object> data;
 
     @BeforeEach
     void setUp() {
@@ -68,6 +72,7 @@ class DocAssemblyTemplateBodyMapperTest {
         ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
         ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
         ccdCase.setHearingCourt("BIRMINGHAM");
+        ccdCase.setCaseName("case name");
         ccdCase.setRespondents(
             ImmutableList.of(
                 CCDCollectionElement.<CCDRespondent>builder()
@@ -240,8 +245,8 @@ class DocAssemblyTemplateBodyMapperTest {
     }
 
     @Nested
-    @DisplayName("General Tests")
-    class GeneralTests {
+    @DisplayName("General Tests for General Order")
+    class GeneralTestsForGeneralOrder {
         @BeforeEach
         void setUp() {
             when(directionOrderService.getHearingCourt(any()))
@@ -304,6 +309,69 @@ class DocAssemblyTemplateBodyMapperTest {
 
             assertThat(requestBody).isEqualTo(expectedBody);
             verify(directionOrderService).getHearingCourt(any());
+        }
+    }
+
+    @Nested
+    @DisplayName("General Tests for General Letter")
+    class GeneralTestsForGeneralLetter {
+
+        @BeforeEach
+        void setUp() {
+            data = new HashMap<>();
+            data.put("body", "body");
+        }
+
+        @Test
+        void shouldMapTemplateBodyWhenGeneralLetterForDefendant() {
+            data.put(CHANGE_CONTACT_PARTY, "DEFENDANT");
+            DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
+                ccdCase,
+                userDetails,
+                data
+            );
+            DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
+                .currentDate(LocalDate.parse("2019-04-24"))
+                .partyName("Mary Richards")
+                .partyAddress(CCDAddress.builder()
+                    .addressLine1("line1")
+                    .addressLine2("line2")
+                    .addressLine3("line3")
+                    .postCode("postcode")
+                    .postTown("city")
+                    .build())
+                .referenceNumber("ref no")
+                .caseName("case name")
+                .caseworkerName("Judge McJudge")
+                .body("body")
+                .build();
+            assertThat(requestBody).isEqualTo(expectedBody);
+        }
+
+        @Test
+        void shouldMapTemplateBodyWhenGeneralLetterForClaimant() {
+            data.put(CHANGE_CONTACT_PARTY, "CLAIMANT");
+            DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
+                ccdCase,
+                userDetails,
+                data
+            );
+            DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
+                .currentDate(LocalDate.parse("2019-04-24"))
+                .partyName("Individual")
+                .partyAddress(CCDAddress.builder()
+                    .addressLine1("line1")
+                    .addressLine2("line2")
+                    .addressLine3("line3")
+                    .postCode("postcode")
+                    .postTown("city")
+                    .build())
+                .referenceNumber("ref no")
+                .caseName("case name")
+                .caseworkerName("Judge McJudge")
+                .body("body")
+                .build();
+            assertThat(requestBody).isEqualTo(expectedBody);
         }
     }
 }

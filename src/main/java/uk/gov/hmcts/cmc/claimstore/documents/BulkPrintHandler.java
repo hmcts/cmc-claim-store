@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintablePdf;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintableTemplate;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
+import uk.gov.hmcts.cmc.claimstore.events.GeneralLetterReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.events.legaladvisor.DirectionsOrderReadyToPrintEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
@@ -57,6 +58,20 @@ public class BulkPrintHandler {
                     buildCoverSheetFileBaseName(claim.getReferenceNumber())),
                 new PrintablePdf(
                     event.getDirectionsOrder(),
+                    buildDirectionsOrderFileBaseName(claim.getReferenceNumber()))
+            )
+        );
+    }
+
+    @EventListener
+    public void print(GeneralLetterReadyToPrintEvent event) {
+        requireNonNull(event);
+        Claim claim = event.getClaim();
+        bulkPrintService.printPdf(
+            claim,
+            ImmutableList.of(
+                new PrintablePdf(
+                    event.getGeneralLetterDocument(),
                     buildDirectionsOrderFileBaseName(claim.getReferenceNumber()))
             )
         );

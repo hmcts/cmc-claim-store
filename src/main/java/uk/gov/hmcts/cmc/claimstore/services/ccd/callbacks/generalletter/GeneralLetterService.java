@@ -4,22 +4,31 @@ import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
-import uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService;
+import uk.gov.hmcts.cmc.claimstore.events.GeneralLetterReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
+import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
+import uk.gov.hmcts.reform.sendletter.api.Document;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.Params.BEARER_TOKEN;
 
 @Service
 @ConditionalOnProperty(prefix = "doc_assembly", name = "url")
@@ -33,11 +42,17 @@ public class GeneralLetterService {
 
     private final CaseDetailsConverter caseDetailsConverter;
     private final DocAssemblyService docAssemblyService;
+    private final ApplicationEventPublisher publisher;
+    private final DocumentManagementService documentManagementService;
 
     public GeneralLetterService(CaseDetailsConverter caseDetailsConverter,
-                                DocAssemblyService docAssemblyService) {
+                                DocAssemblyService docAssemblyService,
+                                ApplicationEventPublisher publisher,
+                                DocumentManagementService documentManagementService) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.docAssemblyService = docAssemblyService;
+        this.publisher = publisher;
+        this.documentManagementService = documentManagementService;
     }
 
     public CallbackResponse createAndPreview(CallbackParams callbackParams) {
@@ -46,11 +61,9 @@ public class GeneralLetterService {
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
         AboutToStartOrSubmitCallbackResponse response;
         Map<String, Object> data = new HashMap<>();
-        String body = callbackParams
-            .getRequest().getCaseDetails()
+        String body = callbackRequest.getCaseDetails()
             .getData().get(LETTER_CONTENT).toString();
-        String partyType = callbackParams
-            .getRequest().getCaseDetails()
+        String partyType = callbackRequest.getCaseDetails()
             .getData().get(CHANGE_CONTACT_PARTY).toString();
         if (body != null) {
             data.put(BODY, body);
@@ -73,10 +86,46 @@ public class GeneralLetterService {
     }
 
     public CallbackResponse sendToPrint(CallbackParams callbackParams) {
-        logger.info("General Letter creator: sending to print");
         CallbackRequest callbackRequest = callbackParams.getRequest();
+        String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
+        Map<String, String> documentMap = (Map) callbackRequest.getCaseDetails().getData().get(DRAFT_LETTER_DOC);
+
         Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
-        callbackRequest.getCaseDetails().getData().get(DRAFT_LETTER_DOC);
-        return null;
+        try {
+            GeneralLetterReadyToPrintEvent event = new GeneralLetterReadyToPrintEvent(
+                claim,
+                downloadLetter(authorisation, documentMap)
+            );
+            publisher.publishEvent(event);
+            return AboutToStartOrSubmitCallbackResponse
+                .builder()
+                .data(ImmutableMap.of(
+                    DRAFT_LETTER_DOC,
+                    "printed successfully"
+                ))
+                .build();
+        } catch (URISyntaxException e) {
+
+            return AboutToStartOrSubmitCallbackResponse
+                .builder()
+                .data(ImmutableMap.of(
+                    DRAFT_LETTER_DOC,
+                    "failed to print"
+                ))
+                .build();
+        }
+    }
+
+    private Document downloadLetter(String authorisation, Map<String, String> documentMap) throws URISyntaxException {
+
+        return new Document(Base64.getEncoder().encodeToString(
+            documentManagementService.downloadDocument(
+                authorisation,
+                ClaimDocument.builder()
+                    .documentName(documentMap.get("document_filename"))
+                    .documentManagementUrl(new URI(documentMap.get("document_url")))
+                    .documentManagementBinaryUrl(new URI(documentMap.get("document_binary_url")))
+                    .build())),
+            Collections.emptyMap());
     }
 }

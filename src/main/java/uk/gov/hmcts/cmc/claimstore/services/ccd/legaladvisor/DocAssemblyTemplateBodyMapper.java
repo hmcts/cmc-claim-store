@@ -26,7 +26,7 @@ public class DocAssemblyTemplateBodyMapper {
     private final DirectionOrderService directionOrderService;
     private final WorkingDayIndicator workingDayIndicator;
     private static final String CLAIMANT = "claimant";
-    private static final String PARTY_TYPE = "partyType";
+    private static final String CHANGE_CONTACT_PARTY = "changeContactParty";
     private static final String BODY = "body";
 
     @Autowired
@@ -113,10 +113,10 @@ public class DocAssemblyTemplateBodyMapper {
             .referenceNumber(ccdCase.getPreviousServiceCaseReference())
             .caseworkerName(userDetails.getFullName())
             .caseName(ccdCase.getCaseName())
-            .partyName(String.valueOf(data.get(PARTY_TYPE)).equalsIgnoreCase(CLAIMANT)
+            .partyName(String.valueOf(data.get(CHANGE_CONTACT_PARTY)).equalsIgnoreCase(CLAIMANT)
                 ? ccdCase.getApplicants().get(0).getValue().getPartyName()
                 : ccdCase.getRespondents().get(0).getValue().getPartyName())
-            .partyAddress(String.valueOf(data.get(PARTY_TYPE)).equalsIgnoreCase(CLAIMANT)
+            .partyAddress(String.valueOf(data.get(CHANGE_CONTACT_PARTY)).equalsIgnoreCase(CLAIMANT)
             ? ccdCase.getApplicants().get(0)
                 .getValue().getPartyDetail().getPrimaryAddress()
                 : ccdCase.getRespondents().get(0)

@@ -19,6 +19,8 @@ import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 import uk.gov.hmcts.reform.docassembly.domain.OutputType;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -50,8 +52,12 @@ public class DocAssemblyServiceTest {
     private AuthTokenGenerator authTokenGenerator;
     @Mock
     private DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
+    @Mock
+    private DocAssemblyResponse docAssemblyResponse;
 
     private DocAssemblyService docAssemblyService;
+
+    private  CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
 
     @Before
     public void setup() {
@@ -62,33 +68,52 @@ public class DocAssemblyServiceTest {
             LEGAL_ADVISOR_TEMPLATE_ID,
             JUDGE_TEMPLATE_ID,
             GENERAL_LETTER_TEMPLATE_ID);
-
+        ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
         when(userService.getUserDetails(eq(BEARER_TOKEN))).thenReturn(JUDGE);
+        docAssemblyResponse = Mockito.mock(DocAssemblyResponse.class);
+        when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
+        when(authTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
     }
 
     @Test
     public void shouldCreateOrderOnDocAssembly() {
-        CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
         ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
-
         when(docAssemblyTemplateBodyMapper.from(eq(ccdCase), eq(JUDGE)))
             .thenReturn(DocAssemblyTemplateBody.builder().build());
-
-        when(authTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
-
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
             .templateId(LEGAL_ADVISOR_TEMPLATE_ID)
             .outputType(OutputType.PDF)
             .formPayload(docAssemblyTemplateBodyMapper.from(ccdCase, JUDGE))
             .build();
-
-        DocAssemblyResponse docAssemblyResponse = Mockito.mock(DocAssemblyResponse.class);
-        when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
         when(docAssemblyClient
             .generateOrder(eq(BEARER_TOKEN), eq(SERVICE_TOKEN), eq(docAssemblyRequest)))
             .thenReturn(docAssemblyResponse);
 
         DocAssemblyResponse response = docAssemblyService.createOrder(ccdCase, BEARER_TOKEN);
+
+        assertThat(response.getRenditionOutputLocation()).isEqualTo(DOC_URL);
+
+        verify(docAssemblyClient).generateOrder(eq(BEARER_TOKEN), eq(SERVICE_TOKEN), any(DocAssemblyRequest.class));
+    }
+
+    @Test
+    public void shouldCreateGeneralLetter() {
+
+        Map<String, Object> data = new HashMap<>();
+        when(docAssemblyTemplateBodyMapper.from(eq(ccdCase), eq(JUDGE), eq(data)))
+            .thenReturn(DocAssemblyTemplateBody.builder().build());
+
+        DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
+            .templateId(GENERAL_LETTER_TEMPLATE_ID)
+            .outputType(OutputType.PDF)
+            .formPayload(docAssemblyTemplateBodyMapper.from(ccdCase, JUDGE, data))
+            .build();
+
+        when(docAssemblyClient
+            .generateOrder(eq(BEARER_TOKEN), eq(SERVICE_TOKEN), eq(docAssemblyRequest)))
+            .thenReturn(docAssemblyResponse);
+
+        DocAssemblyResponse response = docAssemblyService.createGeneralLetter(ccdCase, BEARER_TOKEN, data);
 
         assertThat(response.getRenditionOutputLocation()).isEqualTo(DOC_URL);
 
