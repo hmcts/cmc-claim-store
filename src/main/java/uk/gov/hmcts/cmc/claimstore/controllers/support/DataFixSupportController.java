@@ -53,8 +53,8 @@ public class DataFixSupportController {
     private static final String REFERENCE_TEMPLATE = "Notify-Data-Fix-%s-%s";
 
     private static final Predicate<ClaimDocument> filterDocsToRecreate = doc ->
-        doc.getDocumentType().equals(ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT) ||
-            doc.getDocumentType().equals(ClaimDocumentType.SETTLEMENT_AGREEMENT);
+        doc.getDocumentType().equals(ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT)
+            || doc.getDocumentType().equals(ClaimDocumentType.SETTLEMENT_AGREEMENT);
 
     @Autowired
     public DataFixSupportController(SettlementAgreementCopyService settlementAgreementCopyService,
@@ -95,7 +95,6 @@ public class DataFixSupportController {
     private Function<Claim, List<ClaimDocument>> getClaimDocs = claim -> claim.getClaimDocumentCollection()
         .map(ClaimDocumentCollection::getClaimDocuments)
         .orElseThrow(IllegalAccessError::new);
-
 
     private final UnaryOperator<Claim> fixClaimDocs = claim -> {
 
