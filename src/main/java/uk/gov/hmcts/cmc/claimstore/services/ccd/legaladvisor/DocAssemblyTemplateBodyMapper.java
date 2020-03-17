@@ -112,7 +112,7 @@ public class DocAssemblyTemplateBodyMapper {
         return DocAssemblyTemplateBody.builder()
             .currentDate(currentDate)
             .referenceNumber(ccdCase.getPreviousServiceCaseReference())
-            .caseworkerName(userDetails.getFullName())
+            .caseWorkerName(userDetails.getFullName())
             .caseName(ccdCase.getCaseName())
             .partyName(ccdCase.getIssueLetterContact() == CCDContactPartyType.CLAIMANT
                 ? ccdCase.getApplicants().get(0).getValue().getPartyName()

@@ -98,6 +98,6 @@ public class DocAssemblyTemplateBody implements FormPayload {
     private CCDAddress partyAddress;
     private String body;
     private String caseName;
-    private String caseworkerName;
+    private String caseWorkerName;
 
 }
