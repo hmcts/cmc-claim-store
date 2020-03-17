@@ -19,7 +19,7 @@ dependencies {
   compile group: 'org.springframework.retry', name: 'spring-retry'
 
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.0'
-  compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.0.0'
+  compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.1'
   compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '10.8'
 
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
@@ -28,7 +28,7 @@ dependencies {
   compile group: 'org.postgresql', name: 'postgresql', version: '42.2.10'
 }
 
-sourceCompatibility = 1.8
+sourceCompatibility = 11
 
 bootJar {
   mainClassName = 'uk.gov.hmcts.cmc.ccd.migration.App'
