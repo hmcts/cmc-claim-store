@@ -79,7 +79,7 @@ public class DocAssemblyService {
             .formPayload(docAssemblyTemplateBodyMapper.generalLetterBody(ccdCase, userDetails))
             .build();
 
-        logger.info("Doc assembly service: sending request to doc assembly");
+        logger.info("Doc assembly service: sending general letter request to doc assembly");
 
         return docAssemblyClient.generateOrder(
             authorisation,
