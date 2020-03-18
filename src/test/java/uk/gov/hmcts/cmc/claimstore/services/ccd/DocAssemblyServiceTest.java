@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
@@ -65,7 +64,6 @@ public class DocAssemblyServiceTest {
             JUDGE_TEMPLATE_ID);
         ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
         when(userService.getUserDetails(eq(BEARER_TOKEN))).thenReturn(JUDGE);
-        docAssemblyResponse = Mockito.mock(DocAssemblyResponse.class);
         when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
         when(authTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
     }
