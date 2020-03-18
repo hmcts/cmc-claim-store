@@ -30,7 +30,6 @@ public class DocAssemblyService {
     private final UserService userService;
     private final String legalAdvisorTemplateId;
     private final String judgeTemplateId;
-    private final String generalLetterTemplateId;
 
     @Autowired
     public DocAssemblyService(
@@ -39,8 +38,7 @@ public class DocAssemblyService {
         DocAssemblyClient docAssemblyClient,
         UserService userService,
         @Value("${doc_assembly.templateId}") String legalAdvisorTemplateId,
-        @Value("${doc_assembly.judgeTemplateId}") String judgeTemplateId,
-        @Value("${doc_assembly.generalLetterTemplateId}") String generalLetterTemplateId
+        @Value("${doc_assembly.judgeTemplateId}") String judgeTemplateId
     ) {
         this.authTokenGenerator = authTokenGenerator;
         this.docAssemblyTemplateBodyMapper = docAssemblyTemplateBodyMapper;
@@ -48,7 +46,6 @@ public class DocAssemblyService {
         this.userService = userService;
         this.legalAdvisorTemplateId = legalAdvisorTemplateId;
         this.judgeTemplateId = judgeTemplateId;
-        this.generalLetterTemplateId = generalLetterTemplateId;
     }
 
     public DocAssemblyResponse createOrder(CCDCase ccdCase, String authorisation) {
@@ -71,13 +68,13 @@ public class DocAssemblyService {
         );
     }
 
-    public DocAssemblyResponse createGeneralLetter(CCDCase ccdCase, String authorisation) {
+    public DocAssemblyResponse createGeneralLetter(CCDCase ccdCase, String authorisation, String templateId) {
         UserDetails userDetails = userService.getUserDetails(authorisation);
 
         logger.info("Doc assembly service: creating request for doc assembly");
 
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
-            .templateId(generalLetterTemplateId)
+            .templateId(templateId)
             .outputType(OutputType.PDF)
             .formPayload(docAssemblyTemplateBodyMapper.generalLetterBody(ccdCase, userDetails))
             .build();

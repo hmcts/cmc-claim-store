@@ -103,6 +103,7 @@ class GeneralLetterServiceTest {
     private Clock clock;
 
     private GeneralLetterService generalLetterService;
+    public static final String GENERAL_LETTER_TEMPLATE_ID = "generalLetterTemplateId";
 
     @BeforeEach
     void setUp() {
@@ -135,11 +136,13 @@ class GeneralLetterServiceTest {
     void shouldCreateAndPreviewLetter() {
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
         when(docAssemblyService
-            .createGeneralLetter(any(CCDCase.class), anyString())).thenReturn(docAssemblyResponse);
+            .createGeneralLetter(any(CCDCase.class), anyString(), anyString())).thenReturn(docAssemblyResponse);
         when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
-        generalLetterService.createAndPreview(caseDetails, BEARER_TOKEN.name(), DRAFT_LETTER_DOC_KEY);
+        generalLetterService.createAndPreview(caseDetails, BEARER_TOKEN.name(),
+            DRAFT_LETTER_DOC_KEY, GENERAL_LETTER_TEMPLATE_ID);
         verify(caseDetailsConverter, once()).extractCCDCase(eq(caseDetails));
-        verify(docAssemblyService, once()).createGeneralLetter(eq(ccdCase), eq(BEARER_TOKEN.name()));
+        verify(docAssemblyService, once()).createGeneralLetter(eq(ccdCase), eq(BEARER_TOKEN.name()),
+            eq(GENERAL_LETTER_TEMPLATE_ID));
     }
 
     @Test
@@ -147,7 +150,8 @@ class GeneralLetterServiceTest {
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
             .thenThrow(new RuntimeException("exception"));
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
-            generalLetterService.createAndPreview(caseDetails, BEARER_TOKEN.name(), DRAFT_LETTER_DOC_KEY);
+            generalLetterService.createAndPreview(caseDetails, BEARER_TOKEN.name(),
+                DRAFT_LETTER_DOC_KEY, GENERAL_LETTER_TEMPLATE_ID);
         assertThat(response.getErrors().get(0)).isEqualTo(ERROR_MESSAGE);
     }
 

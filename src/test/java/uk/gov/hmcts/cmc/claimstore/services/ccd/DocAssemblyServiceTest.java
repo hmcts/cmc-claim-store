@@ -62,8 +62,7 @@ public class DocAssemblyServiceTest {
             docAssemblyClient,
             userService,
             LEGAL_ADVISOR_TEMPLATE_ID,
-            JUDGE_TEMPLATE_ID,
-            GENERAL_LETTER_TEMPLATE_ID);
+            JUDGE_TEMPLATE_ID);
         ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
         when(userService.getUserDetails(eq(BEARER_TOKEN))).thenReturn(JUDGE);
         docAssemblyResponse = Mockito.mock(DocAssemblyResponse.class);
@@ -104,7 +103,8 @@ public class DocAssemblyServiceTest {
         when(docAssemblyClient
             .generateOrder(eq(BEARER_TOKEN), eq(SERVICE_TOKEN), eq(docAssemblyRequest)))
             .thenReturn(docAssemblyResponse);
-        DocAssemblyResponse response = docAssemblyService.createGeneralLetter(ccdCase, BEARER_TOKEN);
+        DocAssemblyResponse response = docAssemblyService.createGeneralLetter(ccdCase,
+            BEARER_TOKEN, GENERAL_LETTER_TEMPLATE_ID);
         assertThat(response.getRenditionOutputLocation()).isEqualTo(DOC_URL);
         verify(docAssemblyClient).generateOrder(eq(BEARER_TOKEN), eq(SERVICE_TOKEN), any(DocAssemblyRequest.class));
     }

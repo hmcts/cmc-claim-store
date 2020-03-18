@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
@@ -27,11 +28,14 @@ public class GeneralLetterCallbackHandler extends CallbackHandler {
     private static final List<CaseEvent> EVENTS = ImmutableList.of(ISSUE_GENERAL_LETTER);
     private final GeneralLetterService generalLetterService;
     private static final String DRAFT_LETTER_DOC = "draftLetterDoc";
+    private final String generalLetterTemplateId;
 
     @Autowired
     public GeneralLetterCallbackHandler(
-        GeneralLetterService generalLetterService) {
+        GeneralLetterService generalLetterService,
+        @Value("${doc_assembly.generalLetterTemplateId}") String generalLetterTemplateId) {
         this.generalLetterService = generalLetterService;
+        this.generalLetterTemplateId = generalLetterTemplateId;
     }
 
     @Override
@@ -57,7 +61,8 @@ public class GeneralLetterCallbackHandler extends CallbackHandler {
         return generalLetterService.createAndPreview(
             callbackParams.getRequest().getCaseDetails(),
             authorisation,
-            DRAFT_LETTER_DOC);
+            DRAFT_LETTER_DOC,
+            generalLetterTemplateId);
     }
 
     public CallbackResponse printAndUpdateCaseDocuments(CallbackParams callbackParams) {

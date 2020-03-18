@@ -37,16 +37,14 @@ class GeneralLetterCallbackHandlerTest {
     private static final String DATA = "data";
     private CaseDetails caseDetails;
     private Map<String, Object> data;
-    private static final String DOC_URL = "http://success.test";
-    private static final String DOC_URL_BINARY = "http://success.test/binary";
-    private static final String DOC_NAME = "doc-name";
     private static final String LETTER_CONTENT = "letterContent";
     private static final String CHANGE_CONTACT_PARTY = "changeContactParty";
     private static final String DRAFT_LETTER_DOC_KEY = "draftLetterDoc";
+    public static final String GENERAL_LETTER_TEMPLATE_ID = "generalLetterTemplateId";
 
     @BeforeEach
     void setUp() {
-        handler = new GeneralLetterCallbackHandler(generalLetterService);
+        handler = new GeneralLetterCallbackHandler(generalLetterService, GENERAL_LETTER_TEMPLATE_ID);
 
         data = new HashMap<>();
         data.put(CHANGE_CONTACT_PARTY, "claimant");
@@ -78,9 +76,11 @@ class GeneralLetterCallbackHandlerTest {
                 .build();
         when(generalLetterService.createAndPreview(eq(caseDetails),
             eq(BEARER_TOKEN.name()),
-            eq(DRAFT_LETTER_DOC_KEY))).thenReturn(response);
+            eq(DRAFT_LETTER_DOC_KEY),
+            eq(GENERAL_LETTER_TEMPLATE_ID))).thenReturn(response);
         handler.createAndPreview(callbackParams);
-        verify(generalLetterService, once()).createAndPreview(caseDetails, BEARER_TOKEN.name(), DRAFT_LETTER_DOC_KEY);
+        verify(generalLetterService, once()).createAndPreview(caseDetails, BEARER_TOKEN.name(),
+            DRAFT_LETTER_DOC_KEY, GENERAL_LETTER_TEMPLATE_ID);
         assertThat(response.getData().get(DRAFT_LETTER_DOC_KEY)).isEqualTo(EXISTING_DATA);
     }
 

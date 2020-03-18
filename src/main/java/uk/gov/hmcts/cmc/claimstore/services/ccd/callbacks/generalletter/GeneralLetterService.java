@@ -64,11 +64,13 @@ public class GeneralLetterService {
         this.clock = clock;
     }
 
-    public CallbackResponse createAndPreview(CaseDetails caseDetails, String authorisation, String letterType) {
+    public CallbackResponse createAndPreview(CaseDetails caseDetails, String authorisation,
+                                             String letterType, String templateId) {
         try {
             logger.info("General Letter: creating letter");
             CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
-            DocAssemblyResponse docAssemblyResponse = docAssemblyService.createGeneralLetter(ccdCase, authorisation);
+            DocAssemblyResponse docAssemblyResponse = docAssemblyService.createGeneralLetter(ccdCase,
+                authorisation, templateId);
             return AboutToStartOrSubmitCallbackResponse
                 .builder()
                 .data(ImmutableMap.of(
