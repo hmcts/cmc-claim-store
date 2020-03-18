@@ -132,7 +132,7 @@ public class GeneralLetterService {
             .stream()
             .filter(c -> c.getValue().getDocumentType().equals(GENERAL_LETTER))
             .filter(c -> c.getValue().getDocumentName().contains(LocalDate.now().toString()))
-            .collect(Collectors.toList()).size() + 1));
+            .count() + 1));
         return buildLetterFileBaseName(ccdCase.getPreviousServiceCaseReference(),
             LocalDate.now().toString()) + number;
     }
