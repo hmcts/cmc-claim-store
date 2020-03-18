@@ -108,6 +108,8 @@ public class DocumentNameUtils {
     }
 
     public static String buildLetterFileBaseName(String caseReference, String date, String number) {
+        requireNonBlank(caseReference);
+        requireNonBlank(date);
         requireNonBlank(number);
 
         return format("%s-general-letter-%s-%s", caseReference, date, number);

@@ -5,7 +5,6 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -25,14 +24,7 @@ public abstract class CallbackHandler {
 
     public CallbackResponse handle(CallbackParams callbackParams) {
         return Optional.ofNullable(callbacks().get(callbackParams.getType()))
-            .map(callback -> {
-                try {
-                    return callback.execute(callbackParams);
-                } catch (URISyntaxException e) {
-                    e.printStackTrace();
-                    return null;
-                }
-            })
+            .map(callback -> callback.execute(callbackParams))
             .orElseThrow(() -> new CallbackException(
                 String.format("Callback for event %s, type %s not implemented",
                     callbackParams.getRequest().getEventId(),
