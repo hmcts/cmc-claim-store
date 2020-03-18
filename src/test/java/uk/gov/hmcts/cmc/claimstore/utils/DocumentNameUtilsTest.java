@@ -86,7 +86,7 @@ public class DocumentNameUtilsTest {
     @Test
     public void shouldBuildLetterFileBaseName() {
         String date = LocalDate.now().toString();
-        assertThat(buildLetterFileBaseName("000MC001", date, "1"))
-            .isEqualTo("000MC001-general-letter-" + date + "-1");
+        assertThat(buildLetterFileBaseName("000MC001", date))
+            .isEqualTo("000MC001-general-letter-" + date);
     }
 }

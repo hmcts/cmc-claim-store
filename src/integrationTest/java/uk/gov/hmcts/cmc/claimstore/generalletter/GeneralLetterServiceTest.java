@@ -81,7 +81,8 @@ class GeneralLetterServiceTest {
             .value(CCDClaimDocument.builder()
                 .documentLink(DOCUMENT)
                 .createdDatetime(DATE)
-                .documentType(CCDClaimDocumentType.ORDER_DIRECTIONS)
+                .documentName("general-letter-2020-01-01")
+                .documentType(CCDClaimDocumentType.GENERAL_LETTER)
                 .build())
             .build();
     private CCDCase ccdCase;
@@ -113,10 +114,12 @@ class GeneralLetterServiceTest {
         String documentUrl = DOCUMENT_URI.toString();
         CCDDocument document = new CCDDocument(documentUrl, documentUrl, GENERAL_LETTER_PDF);
         ccdCase = CCDCase.builder()
+            .previousServiceCaseReference("000MC001")
             .caseDocuments(ImmutableList.of(CCDCollectionElement.<CCDClaimDocument>builder()
                 .value(CCDClaimDocument.builder()
                     .documentLink(document)
                     .documentType(CCDClaimDocumentType.GENERAL_LETTER)
+                    .documentName("general-letter")
                     .build())
                 .build()))
             .draftLetterDoc(DRAFT_LETTER_DOC).build();
@@ -158,7 +161,7 @@ class GeneralLetterServiceTest {
         doNothing().when(publisher).publishEvent(any(GeneralLetterReadyToPrintEvent.class));
         Map<String, Object> dataMap = ImmutableMap.<String, Object>builder()
             .put("data", "existingData")
-            .put("caseDocuments", ImmutableList.of(CLAIM_DOCUMENT, DOCUMENT))
+            .put("caseDocuments", ImmutableList.of(CLAIM_DOCUMENT))
             .build();
         when(caseDetailsConverter.convertToMap(any(CCDCase.class))).thenReturn(dataMap);
         when(documentManagementService.downloadDocument(anyString(), any(ClaimDocument.class)))

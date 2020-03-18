@@ -76,7 +76,7 @@ public class BulkPrintHandler {
                 new PrintablePdf(
                     event.getGeneralLetterDocument(),
                     buildLetterFileBaseName(claim.getReferenceNumber(),
-                        String.valueOf(LocalDate.now()), event.getLetterNumber()))
+                        String.valueOf(LocalDate.now())))
             )
         );
     }

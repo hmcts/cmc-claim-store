@@ -10,11 +10,9 @@ import uk.gov.hmcts.reform.sendletter.api.Document;
 public class GeneralLetterReadyToPrintEvent {
     private final Claim claim;
     private final Document generalLetterDocument;
-    private final String letterNumber;
 
-    public GeneralLetterReadyToPrintEvent(Claim claim, Document generalLetterDocument, String letterNumber) {
+    public GeneralLetterReadyToPrintEvent(Claim claim, Document generalLetterDocument) {
         this.claim = claim;
         this.generalLetterDocument = generalLetterDocument;
-        this.letterNumber = letterNumber;
     }
 }

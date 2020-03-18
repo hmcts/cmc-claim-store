@@ -85,10 +85,9 @@ public class BulkPrintHandlerTest {
         BulkPrintHandler bulkPrintHandler = new BulkPrintHandler(bulkPrintService);
         Claim claim = SampleClaim.getDefault();
         Document generalLetter = new Document("letter", new HashMap<>());
-        String letterNumber = "1";
 
         GeneralLetterReadyToPrintEvent printEvent
-            = new GeneralLetterReadyToPrintEvent(claim,  generalLetter, letterNumber);
+            = new GeneralLetterReadyToPrintEvent(claim,  generalLetter);
 
         //when
         bulkPrintHandler.print(printEvent);
@@ -100,7 +99,7 @@ public class BulkPrintHandlerTest {
                 new PrintablePdf(
                     generalLetter,
                     claim.getReferenceNumber() + "-general-letter-"
-                        + LocalDate.now() + "-" + letterNumber)
+                        + LocalDate.now())
             ));
     }
 }
