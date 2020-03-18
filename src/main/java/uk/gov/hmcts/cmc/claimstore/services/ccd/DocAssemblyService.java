@@ -71,7 +71,7 @@ public class DocAssemblyService {
     public DocAssemblyResponse createGeneralLetter(CCDCase ccdCase, String authorisation, String templateId) {
         UserDetails userDetails = userService.getUserDetails(authorisation);
 
-        logger.info("Doc assembly service: creating request for doc assembly");
+        logger.info("Doc assembly service: creating general letter request for doc assembly");
 
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
             .templateId(templateId)
