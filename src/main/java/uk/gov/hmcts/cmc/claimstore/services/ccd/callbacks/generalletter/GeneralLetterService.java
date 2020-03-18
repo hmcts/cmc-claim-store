@@ -68,7 +68,7 @@ public class GeneralLetterService {
     public CallbackResponse createAndPreview(CaseDetails caseDetails, String authorisation,
                                              String letterType, String templateId) {
         try {
-            logger.info("General Letter: creating letter");
+            logger.info("General Letter: creating general letter");
             CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
             DocAssemblyResponse docAssemblyResponse = docAssemblyService.createGeneralLetter(ccdCase,
                 authorisation, templateId);
@@ -94,12 +94,14 @@ public class GeneralLetterService {
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
         List<String> errors = new ArrayList<>();
         try {
+
             printLetter(authorisation, draftLetterDoc, claim);
         } catch (Exception e) {
             logger.info("General Letter printing and case documents update failed", e);
             errors = Collections.singletonList(ERROR_MESSAGE);
         }
         if (errors.isEmpty()) {
+            logger.info("General Letter: updating case document with general letter");
             CCDCase updatedCase = ccdCase.toBuilder()
                 .caseDocuments(updateCaseDocumentsWithGeneralLetter(ccdCase, draftLetterDoc))
                 .build();
