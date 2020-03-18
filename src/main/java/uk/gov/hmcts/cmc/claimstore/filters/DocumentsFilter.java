@@ -14,11 +14,11 @@ import java.util.stream.Collectors;
 public class DocumentsFilter {
 
     private static List<ClaimDocumentType> defendantViewableDocsType = Arrays.stream(ClaimDocumentType.values())
-        .filter(ClaimDocumentType.CLAIM_ISSUE_RECEIPT::equals)
+        .filter(type -> !type.equals(ClaimDocumentType.CLAIM_ISSUE_RECEIPT))
         .collect(Collectors.toList());
 
     private static List<ClaimDocumentType> claimantViewableDocsType = Arrays.stream(ClaimDocumentType.values())
-        .filter(ClaimDocumentType.SEALED_CLAIM::equals)
+        .filter(type -> !type.equals(ClaimDocumentType.SEALED_CLAIM))
         .collect(Collectors.toList());
 
     private static Predicate<ClaimDocument> docsForDefendant = claimDocument -> defendantViewableDocsType.stream()
@@ -26,6 +26,10 @@ public class DocumentsFilter {
 
     private static Predicate<ClaimDocument> docsForClaimant = claimDocument -> claimantViewableDocsType.stream()
         .anyMatch(docType -> claimDocument.getDocumentType().equals(docType));
+
+    private DocumentsFilter() {
+        // Do nothing constructor
+    }
 
     public static Claim filterDocuments(Claim claim, UserDetails userDetails) {
 

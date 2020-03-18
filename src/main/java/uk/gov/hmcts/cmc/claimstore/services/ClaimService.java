@@ -110,6 +110,13 @@ public class ClaimService {
         return claim;
     }
 
+    public Claim getFilteredClaimByExternalId(String externalId, String authorisation) {
+        User user = userService.getUser(authorisation);
+        return DocumentsFilter.filterDocuments(
+            getClaimByExternalId(externalId, user), user.getUserDetails()
+        );
+    }
+
     public Claim getClaimByExternalId(String externalId, String authorisation) {
         User user = userService.getUser(authorisation);
         return getClaimByExternalId(externalId, user);
@@ -122,7 +129,7 @@ public class ClaimService {
 
         claimAuthorisationRule.assertClaimCanBeAccessed(claim, user);
 
-        return DocumentsFilter.filterDocuments(claim, user.getUserDetails());
+        return claim;
     }
 
     public Optional<Claim> getClaimByReference(String reference, String authorisation) {
