@@ -28,7 +28,7 @@ public class UserServiceTest {
     private static final String FAMILY_NAME = "IDAM";
     private static final List<String> ROLES = Lists.newArrayList("citizen");
 
-    private final String AUTHORISATION = "Bearer I am a valid token";
+    private static final String AUTHORISATION = "Bearer I am a valid token";
 
     private static final UserInfo userInfo = UserInfo.builder()
         .sub(SUB)

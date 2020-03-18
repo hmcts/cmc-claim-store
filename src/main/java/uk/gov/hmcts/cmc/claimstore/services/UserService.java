@@ -103,6 +103,7 @@ public class UserService {
         return BEARER + tokenExchangeResponse.getAccessToken();
     }
 
+    @LogExecutionTime
     public UserInfo getUserInfo(String bearerToken) {
         return idamApi.retrieveUserInfo(bearerToken);
     }
