@@ -10,3 +10,4 @@ doc_assembly_api_url = "http://dg-docassembly-prod.service.core-compute-prod.int
 milo_csv_schedule = "0 0 8 * * ?"
 fees_url = "https://fees-register-api.platform.hmcts.net"
 payments_url = "https://payment.platform.hmcts.net"
+enable_ase = true
