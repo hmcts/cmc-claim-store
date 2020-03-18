@@ -8,12 +8,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.io.InputStreamSource;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.ReDeterminationNotificationEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.RequestSubmittedNotificationEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailService;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -34,6 +36,8 @@ class CCJStaffNotificationServiceTest {
     private ReDeterminationNotificationEmailContentProvider reDeterminationNotificationEmailContentProvider;
     @Mock
     private StaffPdfCreatorService staffPdfCreatorService;
+    @Mock
+    private InputStreamSource inputStreamSource;
 
     private CCJStaffNotificationService service;
 
@@ -53,8 +57,8 @@ class CCJStaffNotificationServiceTest {
         }
 
         @Test
-        void notifyStaffCCJRequestSubmittedShouldNotSendEmail() {
-            service.notifyStaffCCJRequestSubmitted(claim);
+        void notifyStaffCCJReDeterminationRequestShouldNotSendEmail() {
+            service.notifyStaffCCJReDeterminationRequest(claim, "");
 
             verify(emailService, never()).sendEmail(any(), any());
         }
@@ -80,13 +84,17 @@ class CCJStaffNotificationServiceTest {
             void setUp() {
                 claim = SampleClaim.getDefault();
 
-                when(ccjRequestSubmittedEmailContentProvider.createContent(any()))
+                when(staffPdfCreatorService.createSealedClaimPdfAttachment(claim))
+                    .thenReturn(new EmailAttachment(inputStreamSource, "", "createSealedClaimPdfAttachment"));
+                when(staffPdfCreatorService.createResponsePdfAttachment(claim))
+                    .thenReturn(new EmailAttachment(inputStreamSource, "", "createResponsePdfAttachment"));
+                when(reDeterminationNotificationEmailContentProvider.createContent(any()))
                     .thenReturn(new EmailContent("", ""));
             }
 
             @Test
-            void notifyStaffCCJRequestSubmittedShouldSendEmail() {
-                service.notifyStaffCCJRequestSubmitted(claim);
+            void notifyStaffCCJReDeterminationRequestShouldSendEmail() {
+                service.notifyStaffCCJReDeterminationRequest(claim, "");
 
                 verify(emailService).sendEmail(any(), any());
             }
@@ -98,16 +106,16 @@ class CCJStaffNotificationServiceTest {
         class EmailNotSentTests {
 
             @Test
-            void notifyStaffCCJRequestSubmittedShouldRejectNullClaim() {
+            void notifyStaffCCJReDeterminationRequestShouldRejectNullClaim() {
                 Assertions.assertThrows(NullPointerException.class,
-                    () -> service.notifyStaffCCJRequestSubmitted(null));
+                    () -> service.notifyStaffCCJReDeterminationRequest(null, ""));
             }
 
             @Test
-            void notifyStaffCCJRequestSubmittedShouldRejectNullClaimantRespondedAt() {
+            void notifyStaffCCJReDeterminationRequestShouldRejectNullClaimantRespondedAt() {
                 claim = SampleClaim.builder().build();
                 Assertions.assertThrows(NullPointerException.class,
-                    () -> service.notifyStaffCCJRequestSubmitted(claim));
+                    () -> service.notifyStaffCCJReDeterminationRequest(claim, ""));
             }
         }
     }

@@ -52,10 +52,8 @@ public class CCJStaffNotificationService {
     }
 
     public void notifyStaffCCJRequestSubmitted(Claim claim) {
-        if (staffEmailsEnabled) {
-            requireNonNull(claim);
-            emailService.sendEmail(staffEmailProperties.getSender(), prepareEmailData(claim));
-        }
+        requireNonNull(claim);
+        emailService.sendEmail(staffEmailProperties.getSender(), prepareEmailData(claim));
     }
 
     private EmailData prepareEmailData(Claim claim) {
@@ -87,8 +85,11 @@ public class CCJStaffNotificationService {
     }
 
     public void notifyStaffCCJReDeterminationRequest(Claim claim, String submitterName) {
-        requireNonNull(claim);
-        emailService.sendEmail(staffEmailProperties.getSender(), prepareReDeterminationEmailData(claim, submitterName));
+        if (staffEmailsEnabled) {
+            requireNonNull(claim);
+            emailService.sendEmail(staffEmailProperties.getSender(),
+                prepareReDeterminationEmailData(claim, submitterName));
+        }
     }
 
     private EmailData prepareReDeterminationEmailData(Claim claim, String submitterName) {
