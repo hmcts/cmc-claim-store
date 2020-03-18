@@ -107,6 +107,12 @@ public class DocumentNameUtils {
         return format("%s-directions-order", number);
     }
 
+    public static String buildLetterFileBaseName(String caseReference, String date, String number) {
+        requireNonBlank(number);
+
+        return format("%s-general-letter-%s-%s", caseReference, date, number);
+    }
+
     public static String buildCoverSheetFileBaseName(String number) {
         requireNonBlank(number);
 

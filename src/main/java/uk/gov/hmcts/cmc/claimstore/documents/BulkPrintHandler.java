@@ -12,10 +12,13 @@ import uk.gov.hmcts.cmc.claimstore.events.GeneralLetterReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.events.legaladvisor.DirectionsOrderReadyToPrintEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
+import java.time.LocalDate;
+
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildCoverSheetFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDirectionsOrderFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 
 @Component
@@ -72,7 +75,8 @@ public class BulkPrintHandler {
             ImmutableList.of(
                 new PrintablePdf(
                     event.getGeneralLetterDocument(),
-                    buildDirectionsOrderFileBaseName(claim.getReferenceNumber()))
+                    buildLetterFileBaseName(claim.getReferenceNumber(),
+                        String.valueOf(LocalDate.now()), event.getLetterNumber()))
             )
         );
     }

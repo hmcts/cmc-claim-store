@@ -26,10 +26,12 @@ import uk.gov.hmcts.reform.sendletter.api.Document;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Clock;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.GENERAL_LETTER;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
@@ -73,6 +75,7 @@ public class GeneralLetterService {
                     CCDDocument.builder().documentUrl(docAssemblyResponse.getRenditionOutputLocation())))
                 .build();
         } catch (Exception e) {
+            logger.info("General Letter creating and preview failed", e);
             return AboutToStartOrSubmitCallbackResponse
                 .builder()
                 .errors(Collections.singletonList(ERROR_MESSAGE))
@@ -85,7 +88,7 @@ public class GeneralLetterService {
             CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
             CCDDocument draftLetterDoc = ccdCase.getDraftLetterDoc();
             Claim claim = caseDetailsConverter.extractClaim(caseDetails);
-            printLetter(authorisation, draftLetterDoc, claim);
+            printLetter(authorisation, draftLetterDoc, claim, getDocumentNumber(ccdCase));
             CCDCase updatedCase = ccdCase.toBuilder()
                 .caseDocuments(updateCaseDocumentsWithOrder(ccdCase, draftLetterDoc))
                 .build();
@@ -95,6 +98,7 @@ public class GeneralLetterService {
                 .build();
 
         } catch (Exception e) {
+            logger.info("General Letter printing and case documents update failed", e);
             return AboutToStartOrSubmitCallbackResponse
                 .builder()
                 .errors(Collections.singletonList(ERROR_MESSAGE))
@@ -120,10 +124,21 @@ public class GeneralLetterService {
             .build();
     }
 
-    private void printLetter(String authorisation, CCDDocument document, Claim claim) throws URISyntaxException {
+    private String getDocumentNumber(CCDCase ccdCase) {
+        return String.valueOf((ccdCase.getCaseDocuments()
+            .stream().filter(c ->
+                c.getValue().getDocumentType()
+                    .equals(GENERAL_LETTER) && c.getValue().getDocumentName()
+                    .contains(LocalDate.now().toString())
+            ).collect(Collectors.toList()).size() + 1));
+    }
+
+    private void printLetter(String authorisation, CCDDocument document, Claim claim,
+                             String letterNumber) throws URISyntaxException {
         GeneralLetterReadyToPrintEvent event = new GeneralLetterReadyToPrintEvent(
             claim,
-            downloadLetter(authorisation, document)
+            downloadLetter(authorisation, document),
+            letterNumber
         );
         publisher.publishEvent(event);
     }

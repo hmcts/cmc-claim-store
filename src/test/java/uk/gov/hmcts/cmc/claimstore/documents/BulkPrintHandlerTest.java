@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 
 import static org.mockito.Mockito.verify;
@@ -84,9 +85,10 @@ public class BulkPrintHandlerTest {
         BulkPrintHandler bulkPrintHandler = new BulkPrintHandler(bulkPrintService);
         Claim claim = SampleClaim.getDefault();
         Document generalLetter = new Document("letter", new HashMap<>());
+        String letterNumber = "1";
 
         GeneralLetterReadyToPrintEvent printEvent
-            = new GeneralLetterReadyToPrintEvent(claim,  generalLetter);
+            = new GeneralLetterReadyToPrintEvent(claim,  generalLetter, letterNumber);
 
         //when
         bulkPrintHandler.print(printEvent);
@@ -97,7 +99,8 @@ public class BulkPrintHandlerTest {
             ImmutableList.of(
                 new PrintablePdf(
                     generalLetter,
-                    claim.getReferenceNumber() + "-directions-order")
+                    claim.getReferenceNumber() + "-general-letter-"
+                        + LocalDate.now() + "-" + letterNumber)
             ));
     }
 }
