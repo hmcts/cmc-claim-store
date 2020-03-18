@@ -9,6 +9,7 @@ plugins {
   id 'com.github.ben-manes.versions' version '0.28.0'
   id 'jacoco'
   id 'net.ltgt.apt' version '0.21'
+  id 'idea'
 }
 
 dependencyUpdates.resolutionStrategy = {
@@ -403,3 +404,12 @@ bootRun {
 }
 
 task checkStyle(dependsOn: [checkstyleMain, checkstyleAat, checkstyleTest, checkstyleIntegrationTest]){}
+
+idea {
+  module {
+    testSourceDirs += project.sourceSets.integrationTest.java.srcDirs
+    testSourceDirs += project.sourceSets.integrationTest.resources.srcDirs
+    testSourceDirs += project.sourceSets.aat.java.srcDirs
+    testSourceDirs += project.sourceSets.aat.resources.srcDirs
+  }
+}
