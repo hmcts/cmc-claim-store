@@ -133,6 +133,30 @@ public class BulkPrintServiceTest {
         verify(sendLetterApi).sendLetter(eq(AUTH_VALUE), any(LetterWithPdfsRequest.class));
     }
 
+    @Test
+    public void shouldSendGeneralLetter() {
+        //given
+        when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn(PDF_BYTES);
+        when(sendLetterApi.sendLetter(eq(AUTH_VALUE), any(LetterWithPdfsRequest.class)))
+            .thenReturn(new SendLetterResponse(UUID.randomUUID()));
+
+        Document generalLetter = new Document("generalLetter", Collections.emptyMap());
+
+        bulkPrintService = new BulkPrintService(
+            sendLetterApi,
+            authTokenGenerator,
+            bulkPrintStaffNotificationService,
+            appInsights,
+            pdfServiceClient
+        );
+        //when
+        bulkPrintService.printGeneralLetterPdf(CLAIM, ImmutableList.of(
+            new PrintableTemplate(generalLetter, "filename")
+        ));
+
+        verify(sendLetterApi).sendLetter(eq(AUTH_VALUE), any(LetterWithPdfsRequest.class));
+    }
+
     @Test(expected = RuntimeException.class)
     public void shouldNotifyStaffOnPrintFailure() {
         //given

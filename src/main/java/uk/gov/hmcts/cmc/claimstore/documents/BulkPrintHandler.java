@@ -70,7 +70,7 @@ public class BulkPrintHandler {
     public void print(GeneralLetterReadyToPrintEvent event) {
         requireNonNull(event);
         Claim claim = event.getClaim();
-        bulkPrintService.printPdf(
+        bulkPrintService.printGeneralLetterPdf(
             claim,
             ImmutableList.of(
                 new PrintablePdf(
