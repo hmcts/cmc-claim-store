@@ -111,7 +111,7 @@ public class DefendantResponseStaffNotificationServiceTest extends BaseMockSprin
             .thenReturn(new EmailContent("subject", "body"));
         when(defendantResponseReceiptService.createPdf(any(Claim.class))).thenReturn(new PDF(
             buildClaimIssueReceiptFileBaseName(claimWithFullDefenceAlreadyPaidResponse.getReferenceNumber()),
-            PDF_BYTES,
+            PDF_CONTENT,
             DEFENDANT_RESPONSE_RECEIPT
         ));
 
