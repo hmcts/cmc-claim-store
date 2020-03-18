@@ -39,6 +39,7 @@ import static java.math.BigDecimal.TEN;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.ORDER_DIRECTIONS;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
@@ -69,6 +70,7 @@ public final class SampleClaim {
     public static final String DEFENDANT_EMAIL_VERIFIED = "defendant@mail.com";
     private static final URI DOCUMENT_URI = URI.create("http://localhost/doc.pdf");
     private static final String OCMC = "OCMC";
+    public static final String LEGAL_ADVISOR_ORDER_PDF = "legal-advisor-order.pdf";
 
     private String submitterId = USER_ID;
     private String letterHolderId = LETTER_HOLDER_ID;
@@ -101,7 +103,7 @@ public final class SampleClaim {
     private ClaimState state = ClaimState.OPEN;
     private ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators
         = ClaimSubmissionOperationIndicators.builder().build();
-    private final Long ccdCaseId = 1023467890123456L;
+    private Long ccdCaseId = 1023467890123456L;
     private ReviewOrder reviewOrder;
     private DirectionOrder directionOrder;
     private ChannelType channel;
@@ -492,6 +494,7 @@ public final class SampleClaim {
             .withClaimData(SampleClaimData.submittedByClaimant())
             .withResponse(SampleResponse.FullAdmission.validDefaults())
             .withSettlement(settlement)
+            .withSettlementReachedAt(LocalDateTime.now())
             .build();
     }
 
@@ -597,6 +600,11 @@ public final class SampleClaim {
 
     public SampleClaim withClaimId(Long claimId) {
         this.claimId = claimId;
+        return this;
+    }
+
+    public SampleClaim withCcdCaseId(Long ccdCaseId) {
+        this.ccdCaseId = ccdCaseId;
         return this;
     }
 
@@ -726,9 +734,22 @@ public final class SampleClaim {
         return this;
     }
 
+    public SampleClaim withOrderDocument(URI uri) {
+        ClaimDocument claimDocument = ClaimDocument.builder()
+            .documentManagementUrl(uri)
+            .documentName(LEGAL_ADVISOR_ORDER_PDF)
+            .documentType(ORDER_DIRECTIONS)
+            .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
+            .createdBy(OCMC)
+            .build();
+        this.claimDocumentCollection.addClaimDocument(claimDocument);
+        return this;
+    }
+
     public SampleClaim withCCJRequestDocument(URI uri) {
         ClaimDocument claimDocument = ClaimDocument.builder()
             .documentManagementUrl(uri)
+            .documentManagementBinaryUrl(uri)
             .documentName("county-court-judgment-details.pdf")
             .documentType(CCJ_REQUEST)
             .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
