@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
+import uk.gov.hmcts.reform.docassembly.exception.DocumentGenerationFailedException;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.net.URI;
@@ -28,10 +29,10 @@ import java.net.URISyntaxException;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.GENERAL_LETTER;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildLetterFileBaseName;
@@ -77,7 +78,7 @@ public class GeneralLetterService {
                     letterType,
                     CCDDocument.builder().documentUrl(docAssemblyResponse.getRenditionOutputLocation())))
                 .build();
-        } catch (Exception e) {
+        } catch (DocumentGenerationFailedException e) {
             logger.info("General Letter creating and preview failed", e);
             return AboutToStartOrSubmitCallbackResponse
                 .builder()
@@ -87,21 +88,26 @@ public class GeneralLetterService {
     }
 
     public CallbackResponse printAndUpdateCaseDocuments(CaseDetails caseDetails, String authorisation) {
+
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
+        CCDDocument draftLetterDoc = ccdCase.getDraftLetterDoc();
+        Claim claim = caseDetailsConverter.extractClaim(caseDetails);
+        List<String> errors = new ArrayList<>();
         try {
-            CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
-            CCDDocument draftLetterDoc = ccdCase.getDraftLetterDoc();
-            Claim claim = caseDetailsConverter.extractClaim(caseDetails);
             printLetter(authorisation, draftLetterDoc, claim);
+        } catch (Exception e) {
+            logger.info("General Letter printing and case documents update failed", e);
+            errors = Collections.singletonList(ERROR_MESSAGE);
+        }
+        if (errors.isEmpty()) {
             CCDCase updatedCase = ccdCase.toBuilder()
-                .caseDocuments(updateCaseDocumentsWithOrder(ccdCase, draftLetterDoc))
+                .caseDocuments(updateCaseDocumentsWithGeneralLetter(ccdCase, draftLetterDoc))
                 .build();
             return AboutToStartOrSubmitCallbackResponse
                 .builder()
                 .data(caseDetailsConverter.convertToMap(updatedCase))
                 .build();
-
-        } catch (Exception e) {
-            logger.info("General Letter printing and case documents update failed", e);
+        } else {
             return AboutToStartOrSubmitCallbackResponse
                 .builder()
                 .errors(Collections.singletonList(ERROR_MESSAGE))
@@ -109,7 +115,7 @@ public class GeneralLetterService {
         }
     }
 
-    private List<CCDCollectionElement<CCDClaimDocument>> updateCaseDocumentsWithOrder(
+    private List<CCDCollectionElement<CCDClaimDocument>> updateCaseDocumentsWithGeneralLetter(
         CCDCase ccdCase,
         CCDDocument draftLetterDoc
     ) {

@@ -25,6 +25,7 @@ import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
+import uk.gov.hmcts.reform.docassembly.exception.DocumentGenerationFailedException;
 
 import java.net.URI;
 import java.time.Clock;
@@ -146,9 +147,10 @@ class GeneralLetterServiceTest {
     }
 
     @Test
-    void shouldSendErrorResponseWhenCreateAndPreviewLetterFails() {
-        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
-            .thenThrow(new RuntimeException("exception"));
+    void shouldSendErrorResponseWhenDocAssemblyFails() {
+        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+        when(docAssemblyService.createGeneralLetter(any(CCDCase.class), anyString(), anyString()))
+            .thenThrow(new DocumentGenerationFailedException(new RuntimeException("exception")));
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
             generalLetterService.createAndPreview(caseDetails, BEARER_TOKEN.name(),
                 DRAFT_LETTER_DOC_KEY, GENERAL_LETTER_TEMPLATE_ID);
@@ -181,7 +183,9 @@ class GeneralLetterServiceTest {
 
     @Test
     void shouldSendErrorResponseWhenPrintAndUpdateCaseDocumentFails() {
-        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
+        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+        when(documentManagementService.downloadDocument(anyString(), any(ClaimDocument.class)))
             .thenThrow(new RuntimeException("exception"));
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
             generalLetterService.printAndUpdateCaseDocuments(caseDetails, BEARER_TOKEN.name());
