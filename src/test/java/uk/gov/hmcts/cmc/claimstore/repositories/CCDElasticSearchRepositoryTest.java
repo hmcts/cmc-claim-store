@@ -5,8 +5,6 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
@@ -21,7 +19,6 @@ import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 
 import java.time.LocalDate;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -45,9 +42,6 @@ public class CCDElasticSearchRepositoryTest {
     @Mock
     private CaseDetailsConverter ccdCaseDetailsConverter;
 
-    @Captor
-    private ArgumentCaptor<String> queryStringCaptor;
-
     private CCDElasticSearchRepository ccdElasticSearchRepository;
 
     @Before
@@ -69,11 +63,10 @@ public class CCDElasticSearchRepositoryTest {
             LocalDate.of(2019, 7, 7));
         verify(userService, times(1)).getUser(anyString());
         verify(coreCaseDataApi).searchCases(
-            eq(AUTHORISATION),
-            eq(SERVICE_AUTH),
-            eq(CASE_TYPE_ID),
-            queryStringCaptor.capture());
-        assertEquals(SampleQueryConstants.mediationQuery, queryStringCaptor.getValue());
+            AUTHORISATION,
+            SERVICE_AUTH,
+            CASE_TYPE_ID,
+            SampleQueryConstants.mediationQuery);
     }
 
     @Test
@@ -93,13 +86,12 @@ public class CCDElasticSearchRepositoryTest {
     public void ccjCasesWithDefaultCcjTenDaysPriorQueriesElastic() {
         User user = new User(AUTHORISATION, null);
         ccdElasticSearchRepository.getClaimsWithDefaultCCJ(user,
-            LocalDate.of(2020, 01, 10));
+            LocalDate.of(2020, 1, 10));
         verify(coreCaseDataApi).searchCases(
-            eq(AUTHORISATION),
-            eq(SERVICE_AUTH),
-            eq(CASE_TYPE_ID),
-            queryStringCaptor.capture());
-        assertEquals(SampleQueryConstants.defaultCCJCases10DaysBefore, queryStringCaptor.getValue());
+            AUTHORISATION,
+            SERVICE_AUTH,
+            CASE_TYPE_ID,
+            SampleQueryConstants.defaultCCJCases10DaysBefore);
     }
 
 }

@@ -146,7 +146,7 @@ public class ScheduledStateTransitionService {
         caseEventDetails.sort(Comparator.comparing(CaseEventDetail::getCreatedDate).reversed());
 
         for (CaseEventDetail caseEventDetail : caseEventDetails) {
-            CaseEvent event = CaseEvent.fromValue(caseEventDetail.getEventName());
+            CaseEvent event = CaseEvent.fromValue(caseEventDetail.getId());
 
             //Some events do not affect the state transition
             if (stateTransition.getIgnoredEvents().contains(event)) {
@@ -160,13 +160,14 @@ public class ScheduledStateTransitionService {
 
     private Optional<Claim> updateClaim(User user, Claim claim, StateTransition stateTransition) {
         try {
-            appInsights.trackEvent(stateTransition.getAppInsightsEvent(), REFERENCE_NUMBER, claim.getReferenceNumber());
             caseRepository.saveCaseEvent(user.getAuthorisation(), claim, stateTransition.getCaseEvent());
+            appInsights.trackEvent(stateTransition.getAppInsightsEvent(), REFERENCE_NUMBER, claim.getReferenceNumber());
 
             return Optional.empty();
         } catch (Exception e) {
             logger.error(String.format("Error whilst transitioning claim %s vis caseEvent %s",
                 claim.getReferenceNumber(), stateTransition.getCaseEvent().getValue()), e);
+            appInsights.trackException(e);
             return Optional.of(claim);
         }
     }
