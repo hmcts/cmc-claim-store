@@ -70,6 +70,7 @@ public enum CaseEvent {
     ATTACH_SCANNED_DOCS("attachScannedDocs"),
     UPDATE_CLAIM("UpdateClaim"),
     RESET_PIN("ResetPin"),
+    ISSUE_GENERAL_LETTER("IssueGeneralLetter"),
     CHANGE_CONTACT_DETAILS("ChangeContactDetails");
 
     private final String value;

@@ -68,12 +68,31 @@ public class DocAssemblyService {
         );
     }
 
+    public DocAssemblyResponse createGeneralLetter(CCDCase ccdCase, String authorisation, String templateId) {
+        UserDetails userDetails = userService.getUserDetails(authorisation);
+
+        logger.info("Doc assembly service: creating request for doc assembly");
+
+        DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
+            .templateId(templateId)
+            .outputType(OutputType.PDF)
+            .formPayload(docAssemblyTemplateBodyMapper.generalLetterBody(ccdCase, userDetails))
+            .build();
+
+        logger.info("Doc assembly service: sending request to doc assembly");
+
+        return docAssemblyClient.generateOrder(
+            authorisation,
+            authTokenGenerator.generate(),
+            docAssemblyRequest
+        );
+    }
+
     private String getTemplateId(String state) {
         return Optional.ofNullable(state)
             .filter(input -> ClaimState.fromValue(input).equals(ClaimState.READY_FOR_JUDGE_DIRECTIONS))
             .isPresent()
             ? judgeTemplateId
             : legalAdvisorTemplateId;
-
     }
 }

@@ -8,13 +8,17 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintablePdf;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintableTemplate;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
+import uk.gov.hmcts.cmc.claimstore.events.GeneralLetterReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.events.legaladvisor.DirectionsOrderReadyToPrintEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+
+import java.time.LocalDate;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildCoverSheetFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDirectionsOrderFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 
 @Component
@@ -58,6 +62,21 @@ public class BulkPrintHandler {
                 new PrintablePdf(
                     event.getDirectionsOrder(),
                     buildDirectionsOrderFileBaseName(claim.getReferenceNumber()))
+            )
+        );
+    }
+
+    @EventListener
+    public void print(GeneralLetterReadyToPrintEvent event) {
+        requireNonNull(event);
+        Claim claim = event.getClaim();
+        bulkPrintService.printGeneralLetterPdf(
+            claim,
+            ImmutableList.of(
+                new PrintablePdf(
+                    event.getGeneralLetterDocument(),
+                    buildLetterFileBaseName(claim.getReferenceNumber(),
+                        String.valueOf(LocalDate.now())))
             )
         );
     }
