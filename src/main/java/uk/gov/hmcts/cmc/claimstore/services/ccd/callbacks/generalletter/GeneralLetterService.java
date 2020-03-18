@@ -129,11 +129,10 @@ public class GeneralLetterService {
 
     private String getDocumentNumber(CCDCase ccdCase) {
         String number = String.valueOf((ccdCase.getCaseDocuments()
-            .stream().filter(c ->
-                c.getValue().getDocumentType()
-                    .equals(GENERAL_LETTER) && c.getValue().getDocumentName()
-                    .contains(LocalDate.now().toString())
-            ).collect(Collectors.toList()).size() + 1));
+            .stream()
+            .filter(c -> c.getValue().getDocumentType().equals(GENERAL_LETTER))
+            .filter(c -> c.getValue().getDocumentName().contains(LocalDate.now().toString()))
+            .collect(Collectors.toList()).size() + 1));
         return buildLetterFileBaseName(ccdCase.getPreviousServiceCaseReference(),
             LocalDate.now().toString()) + number;
     }
