@@ -138,6 +138,7 @@ module "claim-store-api" {
   asp_name = "${local.asp_name}"
   asp_rg = "${local.asp_name}"
   instance_size = "${local.sku_size}"
+  enable_ase = "${var.enable_ase}"
 
   app_settings = {
     //    logging vars
