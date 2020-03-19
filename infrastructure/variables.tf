@@ -96,6 +96,14 @@ variable "common_tags" {
   type = "map"
 }
 
-variable claim_stayed_schedule  {
-  default = ""
+variable schedule_state-transition_stay-claim  {
+  default = "0 0 16 ? * MON-FRI *"
+}
+
+variable schedule_state-transition_waiting-transfer  {
+  default = "0 0 16 ? * MON-FRI *"
+}
+
+variable "enable_ase" {
+  default = false
 }

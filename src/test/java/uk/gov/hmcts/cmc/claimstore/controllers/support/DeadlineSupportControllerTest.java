@@ -82,7 +82,7 @@ public class DeadlineSupportControllerTest {
 
     @Test(expected = NotFoundException.class)
     public void testDefineDeadlineOnMissingClaim() {
-        controller.defineDeadline("dq", "000MC001");
+        controller.defineDeadline("dq", "000MC001", false);
     }
 
     @Test
@@ -91,7 +91,7 @@ public class DeadlineSupportControllerTest {
         when(claimService.getClaimByReferenceAnonymous(sampleClaim.getReferenceNumber()))
             .thenReturn(Optional.of(sampleClaim));
 
-        ResponseEntity<String> response = controller.defineDeadline("unknown", sampleClaim.getReferenceNumber());
+        ResponseEntity<String> response = controller.defineDeadline("unknown", sampleClaim.getReferenceNumber(), false);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
         assertThat(response.getBody()).isEqualTo("Unrecognised deadline type: unknown");
@@ -108,7 +108,7 @@ public class DeadlineSupportControllerTest {
             .withDirectionsQuestionnaireDeadline(deadline)
             .build()));
 
-        ResponseEntity<String> response = controller.defineDeadline("dq", reference);
+        ResponseEntity<String> response = controller.defineDeadline("dq", reference, false);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody())
@@ -119,6 +119,34 @@ public class DeadlineSupportControllerTest {
     }
 
     @Test
+    public void testDefineDQDeadlineWhenAlreadyPresentWithOverwriteEnabled() {
+        final String reference = "000MC002";
+        final LocalDate deadline = LocalDate.now();
+        LocalDateTime now = LocalDateTime.now();
+
+        when(claimService.getClaimByReferenceAnonymous(reference)).thenReturn(Optional.of(SampleClaim.builder()
+            .withReferenceNumber(reference)
+            .withCreatedAt(now)
+            .withResponse(SampleResponse.validDefaults())
+            .withClaimantRespondedAt(now)
+            .withClaimantResponse(SampleClaimantResponse.validDefaultRejection())
+            .withDirectionsQuestionnaireDeadline(deadline)
+            .build()));
+
+        when(directionsQuestionnaireDeadlineCalculator.calculateDirectionsQuestionnaireDeadline(eq(now)))
+            .thenReturn(deadline);
+
+        ResponseEntity<String> response = controller.defineDeadline("dq", reference, true);
+
+        verify(caseRepository, once()).updateDirectionsQuestionnaireDeadline(any(Claim.class), any(), anyString());
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(response.getBody())
+            .isEqualTo("Claim %s has been been assigned a "
+                + "directions questionnaire deadline of %s.", reference, deadline);
+    }
+
+    @Test
     public void testDefineDQDeadlineWhenDQFeatureEnabled() {
         final String reference = "000MC011";
         when(claimService.getClaimByReferenceAnonymous(reference)).thenReturn(Optional.of(SampleClaim.builder()
@@ -126,7 +154,7 @@ public class DeadlineSupportControllerTest {
             .withFeatures(Collections.singletonList("directionsQuestionnaire"))
             .build()));
 
-        ResponseEntity<String> response = controller.defineDeadline("dq", reference);
+        ResponseEntity<String> response = controller.defineDeadline("dq", reference, false);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
         assertThat(response.getBody())
@@ -144,7 +172,7 @@ public class DeadlineSupportControllerTest {
             .withResponse(null)
             .build()));
 
-        ResponseEntity<String> response = controller.defineDeadline("dq", reference);
+        ResponseEntity<String> response = controller.defineDeadline("dq", reference, false);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
         assertThat(response.getBody())
@@ -165,7 +193,7 @@ public class DeadlineSupportControllerTest {
                 .build())
             .build()));
 
-        ResponseEntity<String> response = controller.defineDeadline("dq", reference);
+        ResponseEntity<String> response = controller.defineDeadline("dq", reference, false);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
         assertThat(response.getBody())
@@ -186,7 +214,7 @@ public class DeadlineSupportControllerTest {
                 .build())
             .build()));
 
-        ResponseEntity<String> response = controller.defineDeadline("dq", reference);
+        ResponseEntity<String> response = controller.defineDeadline("dq", reference, false);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
         assertThat(response.getBody())
@@ -211,7 +239,7 @@ public class DeadlineSupportControllerTest {
         when(directionsQuestionnaireDeadlineCalculator
             .calculateDirectionsQuestionnaireDeadline(any(LocalDateTime.class))).thenReturn(deadline);
 
-        ResponseEntity<String> response = controller.defineDeadline("dq", reference);
+        ResponseEntity<String> response = controller.defineDeadline("dq", reference, false);
 
         verify(caseRepository, once()).updateDirectionsQuestionnaireDeadline(any(Claim.class), eq(deadline),
             anyString());
@@ -233,7 +261,7 @@ public class DeadlineSupportControllerTest {
             .withClaimantResponse(null)
             .build()));
 
-        ResponseEntity<String> response = controller.defineDeadline("dq", reference);
+        ResponseEntity<String> response = controller.defineDeadline("dq", reference, false);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
         assertThat(response.getBody())
@@ -254,7 +282,7 @@ public class DeadlineSupportControllerTest {
             .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
             .build()));
 
-        ResponseEntity<String> response = controller.defineDeadline("dq", reference);
+        ResponseEntity<String> response = controller.defineDeadline("dq", reference, false);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
         assertThat(response.getBody())
@@ -275,7 +303,7 @@ public class DeadlineSupportControllerTest {
             .withClaimantResponse(SampleClaimantResponse.validRejectionWithFreeMediation())
             .build()));
 
-        ResponseEntity<String> response = controller.defineDeadline("dq", reference);
+        ResponseEntity<String> response = controller.defineDeadline("dq", reference, false);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
         assertThat(response.getBody())
@@ -289,18 +317,19 @@ public class DeadlineSupportControllerTest {
     public void testDefineDQDeadlineOnValidPost500Claim() {
         final String reference = "000MC010";
         final LocalDate deadline = LocalDate.now();
+        LocalDateTime now = LocalDateTime.now();
         when(claimService.getClaimByReferenceAnonymous(reference)).thenReturn(Optional.of(SampleClaim.builder()
             .withReferenceNumber(reference)
-            .withCreatedAt(LocalDateTime.now())
+            .withCreatedAt(now)
             .withResponse(SampleResponse.validDefaults())
-            .withClaimantRespondedAt(LocalDateTime.now())
+            .withClaimantRespondedAt(now)
             .withClaimantResponse(SampleClaimantResponse.validDefaultRejection())
             .build()));
 
-        when(directionsQuestionnaireDeadlineCalculator.calculateDirectionsQuestionnaireDeadline(any()))
+        when(directionsQuestionnaireDeadlineCalculator.calculateDirectionsQuestionnaireDeadline(eq(now)))
             .thenReturn(deadline);
 
-        ResponseEntity<String> response = controller.defineDeadline("dq", reference);
+        ResponseEntity<String> response = controller.defineDeadline("dq", reference, false);
 
         verify(caseRepository, once()).updateDirectionsQuestionnaireDeadline(any(Claim.class), any(), anyString());
 

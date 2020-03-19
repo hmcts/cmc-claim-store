@@ -68,6 +68,8 @@ public enum CaseEvent {
     MEDIATION_FAILED("FailedMediation"),
     MEDIATION_SUCCESSFUL("SuccessfulMediation"),
     RESEND_RPA("ResendRpa"),
+    ATTACH_SCANNED_DOCS("attachScannedDocs"),
+    UPDATE_CLAIM("UpdateClaim"),
     RESET_PIN("ResetPin");
 
     private final String value;
