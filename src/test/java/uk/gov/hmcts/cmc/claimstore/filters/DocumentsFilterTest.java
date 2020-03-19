@@ -30,6 +30,8 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
 public class DocumentsFilterTest {
 
     private Claim claim;
+    private static final UserDetails VALID_DEFENDANT
+        = SampleUserDetails.builder().withUserId(DEFENDANT_ID).withMail("kk@mm.com").build();
 
     @BeforeAll
     public void setup() {
@@ -43,10 +45,8 @@ public class DocumentsFilterTest {
 
     @Test
     public void filterDefendantViewableDocs() {
-        UserDetails validDefendant
-            = SampleUserDetails.builder().withUserId(DEFENDANT_ID).withMail("kk@mm.com").build();
 
-        Claim filteredClaimForDefendant = DocumentsFilter.filterDocuments(claim, validDefendant);
+        Claim filteredClaimForDefendant = DocumentsFilter.filterDocuments(claim, VALID_DEFENDANT);
 
         List<ClaimDocument> claimDocsFromFilter = filteredClaimForDefendant.getClaimDocumentCollection()
             .map(ClaimDocumentCollection::getClaimDocuments)
@@ -109,6 +109,17 @@ public class DocumentsFilterTest {
             = SampleUserDetails.builder().withUserId("18").withMail("unknown@worker.com")
             .build();
         Claim filteredClaimForDefendant = DocumentsFilter.filterDocuments(claim, unrelatedUser);
+
+        assertTrue(filteredClaimForDefendant.getClaimDocumentCollection()
+            .map(ClaimDocumentCollection::getClaimDocuments)
+            .orElse(Collections.emptyList())
+            .isEmpty());
+    }
+
+    @Test
+    public void filterClaimThatHasNoDocuments(){
+        claim = SampleClaim.builder().build();
+        Claim filteredClaimForDefendant = DocumentsFilter.filterDocuments(claim, VALID_DEFENDANT);
 
         assertTrue(filteredClaimForDefendant.getClaimDocumentCollection()
             .map(ClaimDocumentCollection::getClaimDocuments)

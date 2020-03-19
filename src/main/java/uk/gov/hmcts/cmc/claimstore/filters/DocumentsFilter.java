@@ -33,7 +33,7 @@ public class DocumentsFilter {
 
     public static Claim filterDocuments(Claim claim, UserDetails userDetails) {
 
-        if (userDetails.isCaseworker()) {
+        if (userDetails.isCaseworker() || !claim.getClaimDocumentCollection().isPresent()) {
             return claim; // No need to filter.
         }
 
