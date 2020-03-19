@@ -20,6 +20,8 @@ import java.util.Optional;
 
 public class RPAMapperHelper {
 
+    private static final String MISSING_MONEY_RECEIVED_DATE = "Missing money received date";
+
     private RPAMapperHelper() {
         // NO-OP
     }
@@ -35,11 +37,11 @@ public class RPAMapperHelper {
     public static LocalDate claimantPaidOnDate(Claim claim) {
         if (isResponseStatesPaidAccepted(claim)) {
             return statesPaidPaymentDeclarationDate(claim.getResponse()
-                .orElseThrow(() -> new IllegalStateException("Missing money received date"))
+                .orElseThrow(() -> new IllegalStateException(MISSING_MONEY_RECEIVED_DATE))
             );
         }
         return claim.getMoneyReceivedOn()
-            .orElseThrow(() -> new IllegalStateException("Missing money received date"));
+            .orElseThrow(() -> new IllegalStateException(MISSING_MONEY_RECEIVED_DATE));
     }
 
     public static JsonObject toJson(RepaymentPlan repaymentPlan) {
@@ -70,13 +72,13 @@ public class RPAMapperHelper {
             case FULL_DEFENCE:
                 FullDefenceResponse fullDefenceResponse = (FullDefenceResponse) response;
                 return fullDefenceResponse.getPaymentDeclaration()
-                    .orElseThrow((() -> new IllegalStateException("Missing money received date")))
+                    .orElseThrow((() -> new IllegalStateException(MISSING_MONEY_RECEIVED_DATE)))
                     .getPaidDate();
 
             case PART_ADMISSION:
                 PartAdmissionResponse partAdmissionResponse = (PartAdmissionResponse) response;
                 return partAdmissionResponse.getPaymentDeclaration()
-                    .orElseThrow((() -> new IllegalStateException("Missing money received date")))
+                    .orElseThrow((() -> new IllegalStateException(MISSING_MONEY_RECEIVED_DATE)))
                     .getPaidDate();
 
             default:
