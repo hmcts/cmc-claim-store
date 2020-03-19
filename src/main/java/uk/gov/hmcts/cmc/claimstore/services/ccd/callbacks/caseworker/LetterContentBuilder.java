@@ -1,10 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
 import org.springframework.stereotype.Service;
-import springfox.documentation.service.ApiListing;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,6 +12,7 @@ import java.util.stream.Stream;
 
 @Service
 public class LetterContentBuilder {
+
     public static final String MAIN_ADDRESS_CHANGE = "Their address is now:: %s";
     public static final String CONTACT_ADDRESS_CHANGE = "The address they want to use for post about the claim is now:: %s";
     public static final String TELEPHONE_CHANGE = "Their phone number is now:: %s";
@@ -78,10 +77,10 @@ public class LetterContentBuilder {
         return letterContent.toString();
     }
 
-    public String toString(Address address) {
-        return Stream.of(address.getLine1(), address.getLine2(), address.getLine3(), address.getCity(), address.getPostcode())
-                .map(s -> s.replaceAll("\\r\\n|\\r|\\n", ""))
-                .collect(Collectors.joining("\n"));
+    private String toString(Address newAddress) {
+        return Stream.of(newAddress.getLine1(), newAddress.getLine2(), newAddress.getLine3(), newAddress.getCity(), newAddress.getPostcode())
+            .map(s -> s.replaceAll("\\r\\n|\\r|\\n", ""))
+            .collect(Collectors.joining("\n"));
     }
 
     private boolean contentDiffer(Object old, Object latest){
