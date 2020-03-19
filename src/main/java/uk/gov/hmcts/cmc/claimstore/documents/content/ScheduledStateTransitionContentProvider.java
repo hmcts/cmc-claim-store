@@ -11,8 +11,8 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.Validate.notEmpty;
 
 @Component
@@ -48,8 +48,7 @@ public class ScheduledStateTransitionContentProvider implements EmailContentProv
         return ImmutableMap.of(
             "noOfClaims", failedClaims.size(),
             "caseEvent", caseEvent,
-            "claimIds", failedClaims.stream().map(c -> c.getId().toString())
-                .collect(Collectors.joining("\n"))
+            "claimReferences", failedClaims.stream().map(Claim::getReferenceNumber).collect(joining("\n"))
         );
     }
 
