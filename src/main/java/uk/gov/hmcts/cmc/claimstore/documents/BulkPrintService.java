@@ -87,7 +87,7 @@ public class BulkPrintService implements PrintService {
             new Letter(
                 docs,
                 XEROX_TYPE_PARAMETER,
-                wrapInFirstContactDetailsInMap(claim)
+                wrapInDetailsInMap(claim, FIRST_CONTACT_LETTER_TYPE)
             )
         );
 
@@ -117,8 +117,15 @@ public class BulkPrintService implements PrintService {
         backoff = @Backoff(delay = 200)
     )
     @Override
-    public void printPdf(Claim claim, List<Printable> documents) {
+    public void printPdf(Claim claim, List<Printable> documents, String letterType) {
         requireNonNull(claim);
+        String info = "";
+        if (letterType.equals(DIRECTION_ORDER_LETTER_TYPE)) {
+            info = "Direction order pack letter {} created for claim reference {}";
+        }
+        if (letterType.equals(GENERAL_LETTER_TYPE)) {
+            info = "General Letter created for claim reference {}";
+        }
 
         List<String> docs = documents.stream()
             .filter(Objects::nonNull)
@@ -131,36 +138,11 @@ public class BulkPrintService implements PrintService {
             new LetterWithPdfsRequest(
                 docs,
                 XEROX_TYPE_PARAMETER,
-                wrapInOrderDetailsInMap(claim)
+                wrapInDetailsInMap(claim, DIRECTION_ORDER_LETTER_TYPE)
             )
         );
 
-        logger.info("Direction order pack letter {} created for claim reference {}",
-            sendLetterResponse.letterId,
-            claim.getReferenceNumber()
-        );
-    }
-
-    @Override
-    public void printGeneralLetterPdf(Claim claim, List<Printable> documents) {
-        requireNonNull(claim);
-
-        List<String> docs = documents.stream()
-            .filter(Objects::nonNull)
-            .map(Printable::getDocument)
-            .map(this::readDocuments)
-            .collect(Collectors.toList());
-
-        SendLetterResponse sendLetterResponse = sendLetterApi.sendLetter(
-            authTokenGenerator.generate(),
-            new LetterWithPdfsRequest(
-                docs,
-                XEROX_TYPE_PARAMETER,
-                wrapGeneralLetterInMap(claim)
-            )
-        );
-
-        logger.info("General Letter created for claim reference {}",
+        logger.info(info,
             sendLetterResponse.letterId,
             claim.getReferenceNumber()
         );
@@ -177,25 +159,9 @@ public class BulkPrintService implements PrintService {
         return Base64.getEncoder().encodeToString(html);
     }
 
-    private static Map<String, Object> wrapInFirstContactDetailsInMap(Claim claim) {
+    private static Map<String, Object> wrapInDetailsInMap(Claim claim, String letterType) {
         Map<String, Object> additionalData = new HashMap<>();
-        additionalData.put(ADDITIONAL_DATA_LETTER_TYPE_KEY, FIRST_CONTACT_LETTER_TYPE);
-        additionalData.put(ADDITIONAL_DATA_CASE_IDENTIFIER_KEY, claim.getId());
-        additionalData.put(ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY, claim.getReferenceNumber());
-        return additionalData;
-    }
-
-    private Map<String, Object> wrapInOrderDetailsInMap(Claim claim) {
-        Map<String, Object> additionalData = new HashMap<>();
-        additionalData.put(ADDITIONAL_DATA_LETTER_TYPE_KEY, DIRECTION_ORDER_LETTER_TYPE);
-        additionalData.put(ADDITIONAL_DATA_CASE_IDENTIFIER_KEY, claim.getId());
-        additionalData.put(ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY, claim.getReferenceNumber());
-        return additionalData;
-    }
-
-    private Map<String, Object> wrapGeneralLetterInMap(Claim claim) {
-        Map<String, Object> additionalData = new HashMap<>();
-        additionalData.put(ADDITIONAL_DATA_LETTER_TYPE_KEY, GENERAL_LETTER_TYPE);
+        additionalData.put(ADDITIONAL_DATA_LETTER_TYPE_KEY, letterType);
         additionalData.put(ADDITIONAL_DATA_CASE_IDENTIFIER_KEY, claim.getId());
         additionalData.put(ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY, claim.getReferenceNumber());
         return additionalData;

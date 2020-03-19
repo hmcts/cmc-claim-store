@@ -64,7 +64,7 @@ public class BulkPrintHandlerTest {
             = new DirectionsOrderReadyToPrintEvent(claim, coverSheet, legalOrder);
 
         //when
-        bulkPrintHandler.print(printEvent);
+        bulkPrintHandler.print(printEvent, "letter-type");
 
         //verify
         verify(bulkPrintService).printPdf(
@@ -76,7 +76,7 @@ public class BulkPrintHandlerTest {
                 new PrintablePdf(
                     legalOrder,
                     claim.getReferenceNumber() + "-directions-order")
-            ));
+            ), "letter-type");
     }
 
     @Test
@@ -90,16 +90,16 @@ public class BulkPrintHandlerTest {
             = new GeneralLetterReadyToPrintEvent(claim,  generalLetter);
 
         //when
-        bulkPrintHandler.print(printEvent);
+        bulkPrintHandler.print(printEvent, "general-letter-type");
 
         //verify
-        verify(bulkPrintService).printGeneralLetterPdf(
+        verify(bulkPrintService).printPdf(
             claim,
             ImmutableList.of(
                 new PrintablePdf(
                     generalLetter,
                     claim.getReferenceNumber() + "-general-letter-"
                         + LocalDate.now())
-            ));
+            ), "general-letter-type");
     }
 }

@@ -15,6 +15,8 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import java.time.LocalDate;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.DIRECTION_ORDER_LETTER_TYPE;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.GENERAL_LETTER_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildCoverSheetFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDirectionsOrderFileBaseName;
@@ -50,7 +52,7 @@ public class BulkPrintHandler {
     }
 
     @EventListener
-    public void print(DirectionsOrderReadyToPrintEvent event) {
+    public void print(DirectionsOrderReadyToPrintEvent event, String letterType) {
         requireNonNull(event);
         Claim claim = event.getClaim();
         bulkPrintService.printPdf(
@@ -62,22 +64,24 @@ public class BulkPrintHandler {
                 new PrintablePdf(
                     event.getDirectionsOrder(),
                     buildDirectionsOrderFileBaseName(claim.getReferenceNumber()))
-            )
+            ),
+            letterType
         );
     }
 
     @EventListener
-    public void print(GeneralLetterReadyToPrintEvent event) {
+    public void print(GeneralLetterReadyToPrintEvent event, String letterType) {
         requireNonNull(event);
         Claim claim = event.getClaim();
-        bulkPrintService.printGeneralLetterPdf(
+        bulkPrintService.printPdf(
             claim,
             ImmutableList.of(
                 new PrintablePdf(
                     event.getGeneralLetterDocument(),
                     buildLetterFileBaseName(claim.getReferenceNumber(),
                         String.valueOf(LocalDate.now())))
-            )
+            ),
+            letterType
         );
     }
 }
