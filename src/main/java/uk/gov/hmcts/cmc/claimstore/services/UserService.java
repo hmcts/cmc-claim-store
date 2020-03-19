@@ -92,7 +92,7 @@ public class UserService {
             oauth2.getRedirectUrl()
         );
 
-        TokenExchangeResponse tokenExchangeResponse = idamApi.exchangeCode(
+        TokenExchangeResponse tokenExchangeResponse = idamApi.exchangeToken(
             authenticateUserResponse.getCode(),
             AUTHORIZATION_CODE,
             oauth2.getRedirectUrl(),

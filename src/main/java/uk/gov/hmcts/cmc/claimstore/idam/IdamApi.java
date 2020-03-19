@@ -35,19 +35,6 @@ public interface IdamApi {
         @RequestParam("redirect_uri") final String redirectUri
     );
 
-    @RequestMapping(
-        method = RequestMethod.POST,
-        value = "/oauth2/token",
-        consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
-    )
-    TokenExchangeResponse exchangeCode(
-        @RequestParam("code") final String code,
-        @RequestParam("grant_type") final String grantType,
-        @RequestParam("redirect_uri") final String redirectUri,
-        @RequestParam("client_id") final String clientId,
-        @RequestParam("client_secret") final String clientSecret
-    );
-
     @RequestMapping(method = RequestMethod.POST, value = "/oauth2/authorize")
     AuthenticateUserResponse upliftUser(
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
@@ -72,5 +59,18 @@ public interface IdamApi {
     @GetMapping("/o/userinfo")
     UserInfo retrieveUserInfo(
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
+    );
+
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/o/token",
+        consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
+    )
+    TokenExchangeResponse exchangeToken(
+        @RequestParam("code") final String code,
+        @RequestParam("grant_type") final String grantType,
+        @RequestParam("redirect_uri") final String redirectUri,
+        @RequestParam("client_id") final String clientId,
+        @RequestParam("client_secret") final String clientSecret
     );
 }
