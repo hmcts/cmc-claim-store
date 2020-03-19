@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsExceptionLogger;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentGenerator;
+import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
@@ -283,5 +284,39 @@ public class RoboticsSupportControllerTest {
         );
 
         verify(paidInFullNotificationService, times(2)).notifyRobotics(any(PaidInFullEvent.class));
+    }
+
+    @Test
+    public void testRPAStatesPaidNotifications() {
+        when(claimService.getClaimByReference("004MC001", "authorisation"))
+            .thenReturn(Optional.of(SampleClaim.builder()
+                .withReferenceNumber("004MC001")
+                .withMoneyReceivedOn(LocalDate.now())
+                .build()));
+        when(claimService.getClaimByReference("004MC002", "authorisation"))
+            .thenReturn(Optional.of(SampleClaim.builder()
+                .withReferenceNumber("004MC002").build()));
+        when(claimService.getClaimByReference("004MC003", "authorisation"))
+            .thenReturn(Optional.of(SampleClaim.builder()
+                .withReferenceNumber("004MC003")
+                .withMoneyReceivedOn(LocalDate.now())
+                .build()));
+
+        doNothing()
+            .doThrow(new RuntimeException("reason"))
+            .when(paidInFullNotificationService).notifyRobotics(any(PaidInFullEvent.class));
+
+        Map<String, String> results = controller.rpaPIFNotifications(
+            asList("004MC001", "004MC002", "004MC003", "004MC004"));
+
+        assertThat(results).contains(
+            entry("004MC001", "succeeded"),
+            entry("004MC002", "invalid"),
+            entry("004MC003", "failed: reason"),
+            entry("004MC004", "missing")
+        );
+
+        verify(paidInFullNotificationService,
+            times(2)).notifyRobotics(any(ClaimantResponseEvent.class));
     }
 }
