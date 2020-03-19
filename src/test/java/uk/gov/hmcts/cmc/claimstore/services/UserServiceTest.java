@@ -8,15 +8,21 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.config.properties.idam.IdamCaseworkerProperties;
 import uk.gov.hmcts.cmc.claimstore.idam.IdamApi;
+import uk.gov.hmcts.cmc.claimstore.idam.models.AuthenticateUserResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.Oauth2;
+import uk.gov.hmcts.cmc.claimstore.idam.models.TokenExchangeResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserInfo;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.services.UserService.AUTHORIZATION_CODE;
+import static uk.gov.hmcts.cmc.claimstore.services.UserService.CODE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserServiceTest {
@@ -28,6 +34,8 @@ public class UserServiceTest {
     private static final String FAMILY_NAME = "IDAM";
     private static final List<String> ROLES = Lists.newArrayList("citizen");
 
+    private static final String USERNAME = "user@idam.net";
+    private static final String PASSWORD = "I am a strong password";
     private static final String AUTHORISATION = "Bearer I am a valid token";
 
     private static final UserInfo userInfo = UserInfo.builder()
@@ -51,11 +59,11 @@ public class UserServiceTest {
     @Before
     public void setup() {
         userService = new UserService(idamApi, idamCaseworkerProperties, oauth2);
+        when(idamApi.retrieveUserInfo(eq(AUTHORISATION))).thenReturn(userInfo);
     }
 
     @Test
     public void findsUserInfoForAuthToken() {
-        when(idamApi.retrieveUserInfo(eq(AUTHORISATION))).thenReturn(userInfo);
 
         UserInfo found = userService.getUserInfo(AUTHORISATION);
 
@@ -69,7 +77,6 @@ public class UserServiceTest {
 
     @Test
     public void findsUserDetailsForAuthToken() {
-        when(idamApi.retrieveUserInfo(eq(AUTHORISATION))).thenReturn(userInfo);
 
         UserDetails userDetails = userService.getUserDetails(AUTHORISATION);
 
@@ -79,5 +86,18 @@ public class UserServiceTest {
         assertThat(userDetails.getSurname()).hasValue(FAMILY_NAME);
         assertThat(userDetails.getFullName()).isEqualTo(NAME);
         assertThat(userDetails.getRoles()).isEqualTo(ROLES);
+    }
+
+    @Test
+    public void getAuthorisationTokenForGivenUser() {
+
+        when(idamApi.authenticateUser(anyString(), eq(CODE), any(), any()))
+            .thenReturn(new AuthenticateUserResponse(CODE));
+        when(idamApi.exchangeToken(eq(CODE), eq(AUTHORIZATION_CODE), any(), any(), any()))
+            .thenReturn(new TokenExchangeResponse("I am a valid token"));
+
+        String authorisation = userService.getAuthorisationToken(USERNAME, PASSWORD);
+
+        assertThat(authorisation).isEqualTo(AUTHORISATION);
     }
 }

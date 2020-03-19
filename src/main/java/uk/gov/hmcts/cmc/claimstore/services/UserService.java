@@ -60,7 +60,7 @@ public class UserService {
 
     public User authenticateUser(String username, String password) {
 
-        String authorisation = getIdamOauth2Token(username, password);
+        String authorisation = getAuthorisationToken(username, password);
         UserDetails userDetails = getUserDetails(authorisation);
         return new User(authorisation, userDetails);
     }
@@ -81,7 +81,7 @@ public class UserService {
         return BASIC + Base64.getEncoder().encodeToString(authorisation.getBytes());
     }
 
-    public String getIdamOauth2Token(String username, String password) {
+    public String getAuthorisationToken(String username, String password) {
         String authorisation = username + ":" + password;
         String base64Authorisation = Base64.getEncoder().encodeToString(authorisation.getBytes());
 
