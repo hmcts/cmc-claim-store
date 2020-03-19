@@ -49,25 +49,20 @@ import javax.sql.DataSource;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @TestPropertySource("/environment.properties")
 public abstract class BaseMockSpringTest {
 
     protected static final String SUBMITTER_ID = "123";
-    protected static final String DEFENDANT_ID = "555";
-    protected static final String DEFENDANT_EMAIL = "j.smith@example.com";
     protected static final String BEARER_TOKEN = "Bearer let me in";
     protected static final String SERVICE_TOKEN = "S2S token";
-
     protected static final String AUTHORISATION_TOKEN = "Bearer token";
-
-    protected static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
-
     protected static final String USER_ID = "1";
     protected static final String JURISDICTION_ID = "CMC";
     protected static final String CASE_TYPE_ID = "MoneyClaimCase";
     protected static final boolean IGNORE_WARNING = true;
+    
     protected static final UserDetails USER_DETAILS = SampleUserDetails.builder()
         .withUserId(USER_ID)
         .withMail("submitter@example.com")

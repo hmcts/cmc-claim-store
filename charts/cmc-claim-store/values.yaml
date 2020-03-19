@@ -46,14 +46,13 @@ java:
     CMC_DB_PORT: 5432
     FEATURE_TOGGLES_SAVE_CLAIM_STATE_ENABLED: true
     FEATURE_TOGGLES_CTSC_ENABLED: false
-    STAFF_NOTIFICATIONS_RECIPIENT: civilmoneyclaims+staff-int-tests@gmail.com
-    LIVE_SUPPORT_RECIPIENT: civilmoneyclaims+live-support-int-tests@gmail.com
-    LIVE_SUPPORT_SENDER: noreply@reform.hmcts.net
     STAFF_NOTIFICATIONS_SENDER: noreply@reform.hmcts.net
     RPA_NOTIFICATIONS_SENDER: noreply@reform.hmcts.net
     DOCUMENT_MANAGEMENT_USERROLES: caseworker-cmc,citizen
     MILO_CSV_SCHEDULE: '-'
     MILO_CSV_SENDER: noreply@reform.hmcts.net
+    SCHEDULE_STATE_TRANSITION_STAY_CLAIM: '0 0 16 ? * MON-FRI *'
+    SCHEDULE_STATE_TRANSITION_WAITING_TRANSFER: '0 0 16 ? * MON-FRI *'
     CLAIM_STAYED_SCHEDULE: ''
     ASYNC_MAX_THREADPOOL_SIZE: 50
     IDAM_S2S_AUTH_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal

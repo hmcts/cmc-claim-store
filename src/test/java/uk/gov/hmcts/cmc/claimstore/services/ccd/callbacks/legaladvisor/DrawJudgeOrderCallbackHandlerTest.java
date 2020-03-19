@@ -30,6 +30,7 @@ import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionOrderService;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireService;
@@ -132,7 +133,7 @@ class DrawJudgeOrderCallbackHandlerTest {
             docAssemblyService, new GenerateOrderRule(), directionsQuestionnaireService, pilotCourtService);
 
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
-            caseDetailsConverter, legalOrderService, directionOrderService);
+            caseDetailsConverter, legalOrderService, appInsights, directionOrderService);
 
         drawJudgeOrderCallbackHandler = new DrawJudgeOrderCallbackHandler(orderCreator, orderPostProcessor);
 
@@ -219,6 +220,8 @@ class DrawJudgeOrderCallbackHandlerTest {
 
             drawJudgeOrderCallbackHandler.handle(callbackParams);
 
+            verify(appInsights).trackEvent(AppInsightsEvent.DRAW_JUDGES_ORDER, AppInsights.REFERENCE_NUMBER,
+                ccdCase.getPreviousServiceCaseReference());
             verify(orderDrawnNotificationService).notifyDefendant(claim);
             verify(orderDrawnNotificationService).notifyClaimant(claim);
             verify(legalOrderService).print(
