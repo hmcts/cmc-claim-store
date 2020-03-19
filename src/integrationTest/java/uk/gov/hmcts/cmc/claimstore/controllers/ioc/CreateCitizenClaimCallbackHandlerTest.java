@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -27,6 +28,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.math.BigDecimal.TEN;
 import static java.time.LocalDate.now;
@@ -93,7 +95,8 @@ public class CreateCitizenClaimCallbackHandlerTest extends BaseMockSpringTest {
     public void shouldAddFieldsOnCaseWhenCallbackIsSuccessful() throws Exception {
         payment = paymentBuilder.status(SUCCESS).build();
 
-        given(paymentsService.retrievePayment(eq(AUTHORISATION_TOKEN), any(Claim.class))).willReturn(payment);
+        given(paymentsService.retrievePayment(eq(AUTHORISATION_TOKEN), any(ClaimData.class)))
+            .willReturn(Optional.of(payment));
 
         MvcResult mvcResult = makeRequestAndRespondWithSuccess(CallbackType.ABOUT_TO_SUBMIT.getValue())
             .andExpect(status().isOk())
@@ -120,7 +123,8 @@ public class CreateCitizenClaimCallbackHandlerTest extends BaseMockSpringTest {
     public void shouldAddFieldsOnCaseWhenCallbackIsSuccessfulButWithErrors() throws Exception {
         payment = paymentBuilder.status(FAILED).build();
 
-        given(paymentsService.retrievePayment(eq(AUTHORISATION_TOKEN), any(Claim.class))).willReturn(payment);
+        given(paymentsService.retrievePayment(eq(AUTHORISATION_TOKEN), any(ClaimData.class)))
+            .willReturn(Optional.of(payment));
 
         MvcResult mvcResult = makeRequestAndRespondWithError(CallbackType.ABOUT_TO_SUBMIT.getValue())
             .andExpect(status().isOk())
