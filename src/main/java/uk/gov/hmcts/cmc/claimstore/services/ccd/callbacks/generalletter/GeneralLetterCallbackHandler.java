@@ -22,7 +22,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ISSUE_GENERAL_LETTER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
 @Service
-@ConditionalOnProperty(prefix = "doc_assembly", name = "url")
+@ConditionalOnProperty({"doc_assembly.url", "feature_toggles.ctsc_enabled"})
 public class GeneralLetterCallbackHandler extends CallbackHandler {
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
     private static final List<CaseEvent> EVENTS = ImmutableList.of(ISSUE_GENERAL_LETTER);
