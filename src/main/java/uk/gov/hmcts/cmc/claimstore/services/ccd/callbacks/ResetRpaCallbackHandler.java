@@ -43,7 +43,7 @@ public class ResetRpaCallbackHandler extends CallbackHandler {
     @Override
     protected Map<CallbackType, Callback> callbacks() {
         return ImmutableMap.of(
-            CallbackType.ABOUT_TO_SUBMIT, this::requestResetRpa
+            CallbackType.SUBMITTED, this::requestResetRpa
         );
     }
 
@@ -76,7 +76,7 @@ public class ResetRpaCallbackHandler extends CallbackHandler {
     }
 
     private String handleRoboticsNotification(CallbackRequest callbackRequest, String referenceNumber) {
-        switch (RpaEventType.fromValue(String.valueOf(callbackRequest.getCaseDetails()
+        switch (RpaEventType.fromValue((String)(callbackRequest.getCaseDetails()
             .getData().get(RPA_EVENT_TYPE)))) {
             case CLAIM:
                 return roboticsNotificationService.rpaClaimNotification(referenceNumber);

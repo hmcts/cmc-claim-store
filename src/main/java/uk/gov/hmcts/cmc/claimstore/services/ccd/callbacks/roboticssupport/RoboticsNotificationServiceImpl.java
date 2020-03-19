@@ -132,7 +132,6 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
             throw new BadRequestException("Reference number not supplied");
         }
         User user = userService.authenticateAnonymousCaseWorker();
-        String authorisation = user.getAuthorisation();
         return resendRPA(referenceNumber, user.getAuthorisation(),
             claim -> claim.getMoneyReceivedOn().isPresent(),
             claim -> paidInFullNotificationService.notifyRobotics(new PaidInFullEvent(claim)),

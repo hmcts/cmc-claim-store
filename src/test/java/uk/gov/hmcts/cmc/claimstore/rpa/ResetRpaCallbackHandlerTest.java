@@ -152,7 +152,7 @@ public class ResetRpaCallbackHandlerTest {
 
     private CallbackParams getCallbackParams(CallbackRequest callbackRequest) {
         return CallbackParams.builder()
-            .type(CallbackType.ABOUT_TO_SUBMIT)
+            .type(CallbackType.SUBMITTED)
             .request(callbackRequest)
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
             .build();
