@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.PaymentsService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
@@ -23,6 +24,7 @@ import uk.gov.hmcts.reform.payments.client.models.PaymentDto;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.time.OffsetDateTime;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -93,12 +95,12 @@ public class PaymentsServiceTest {
             .dateCreated(PAYMENT_DATE.toLocalDate().toString())
             .build();
 
-        Payment payment = paymentsService.retrievePayment(
+        Optional<Payment> payment = paymentsService.retrievePayment(
             BEARER_TOKEN,
-            claim
+            claim.getClaimData()
         );
 
-        assertThat(payment).isEqualTo(expectedPayment);
+        assertThat(payment).contains(expectedPayment);
     }
 
     @Test
@@ -119,12 +121,12 @@ public class PaymentsServiceTest {
             .dateCreated(PAYMENT_DATE.toLocalDate().toString())
             .build();
 
-        Payment payment = paymentsService.retrievePayment(
+        Optional<Payment> payment = paymentsService.retrievePayment(
             BEARER_TOKEN,
-            claim
+            claim.getClaimData()
         );
 
-        assertThat(payment).isEqualTo(expectedPayment);
+        assertThat(payment).contains(expectedPayment);
     }
 
     @Test
@@ -147,22 +149,20 @@ public class PaymentsServiceTest {
             .dateCreated(null)
             .build();
 
-        Payment payment = paymentsService.retrievePayment(
+        Optional<Payment> payment = paymentsService.retrievePayment(
             BEARER_TOKEN,
-            claim
+            claim.getClaimData()
         );
 
-        assertThat(payment).isEqualTo(expectedPayment);
+        assertThat(payment).contains(expectedPayment);
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void shouldThrowWhenPaymentIsNotPresent() {
-        paymentsService.retrievePayment(
+    @Test
+    public void shouldReturnEmptyWhenPaymentIsNotPresent() {
+        assertThat(paymentsService.retrievePayment(
             BEARER_TOKEN,
-            SampleClaim.builder().withClaimData(
-                SampleClaimData.builder().withPayment(null).build()
-            ).build()
-        );
+            SampleClaimData.builder().withPayment(null).build()
+        )).isEmpty();
     }
 
     @Test
