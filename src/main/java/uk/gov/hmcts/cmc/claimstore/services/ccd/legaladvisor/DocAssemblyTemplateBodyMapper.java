@@ -108,18 +108,25 @@ public class DocAssemblyTemplateBodyMapper {
 
     public DocAssemblyTemplateBody generalLetterBody(CCDCase ccdCase) {
         LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
+        String partyName;
+        CCDAddress partyAddress;
+        if (ccdCase.getApplicants().get(0).getValue()
+            .getPartyName().equals(CCDContactPartyType.CLAIMANT)) {
+            partyName = ccdCase.getApplicants().get(0).getValue().getPartyName();
+            partyAddress = ccdCase.getApplicants().get(0)
+                .getValue().getPartyDetail().getPrimaryAddress();
+        } else {
+            partyName = ccdCase.getRespondents().get(0)
+                .getValue().getClaimantProvidedPartyName();
+            partyAddress = getDefendantAddress(ccdCase.getRespondents().get(0).getValue());
+        }
         return DocAssemblyTemplateBody.builder()
             .currentDate(currentDate)
             .referenceNumber(ccdCase.getPreviousServiceCaseReference())
             .caseWorkerName(ccdCase.getCaseworkerName())
             .caseName(ccdCase.getCaseName())
-            .partyName(ccdCase.getIssueLetterContact() == CCDContactPartyType.CLAIMANT
-                ? ccdCase.getApplicants().get(0).getValue().getPartyName()
-                : ccdCase.getRespondents().get(0).getValue().getClaimantProvidedPartyName())
-            .partyAddress(ccdCase.getIssueLetterContact() == CCDContactPartyType.CLAIMANT
-                ? ccdCase.getApplicants().get(0)
-                .getValue().getPartyDetail().getPrimaryAddress()
-                : getDefendantAddress(ccdCase.getRespondents().get(0).getValue()))
+            .partyName(partyName)
+            .partyAddress(partyAddress)
             .body(ccdCase.getLetterContent())
             .build();
     }
