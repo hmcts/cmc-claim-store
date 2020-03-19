@@ -36,14 +36,6 @@ public class ChangeContactDetailsPostProcessor {
     private final DocAssemblyService docAssemblyService;
     private final ChangeContactDetailsNotificationService changeContactDetailsNotificationService;
     private final LetterContentBuilder letterContentBuilder;
-    boolean address;
-    boolean phone;
-    boolean email;
-    boolean corraddress;
-    boolean phoneRemoved;
-    boolean corrAddressRemoved;
-    boolean emailRemoved;
-
 
     public ChangeContactDetailsPostProcessor(
         CaseDetailsConverter caseDetailsConverter,
