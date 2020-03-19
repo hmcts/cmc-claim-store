@@ -13,10 +13,9 @@ import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 import uk.gov.hmcts.cmc.rpa.DateFormatter;
 import uk.gov.hmcts.cmc.rpa.mapper.json.NullAwareJsonObjectBuilder;
 
-import javax.json.JsonObject;
 import java.time.LocalDate;
 import java.util.Optional;
-
+import javax.json.JsonObject;
 
 public class RPAMapperHelper {
 

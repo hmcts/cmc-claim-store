@@ -15,7 +15,6 @@ public class PaidInFullJsonMapper {
 
     public JsonObject map(Claim claim) {
 
-
         return new NullAwareJsonObjectBuilder()
             .add("caseNumber", claim.getReferenceNumber())
             .add("paidInFullSubmittedOn", DateFormatter.format(LocalDateTime.now()))
