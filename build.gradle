@@ -354,6 +354,7 @@ sonarqube {
       "**/cmc/ccd/sample/data/**," +
       "**/cmc/ccd/mapper/**," +
       "**/cmc/claimstore/idam/models/**," +
+      "**/cmc/claimstore/idam/IdamApi.java," +
       "**/ExceptionForClient.java," +
       "**/config/**," +
       "**/*Exception.java," +
