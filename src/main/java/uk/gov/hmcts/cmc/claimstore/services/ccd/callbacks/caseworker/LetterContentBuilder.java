@@ -39,11 +39,10 @@ public class LetterContentBuilder {
         if (!oldEmail.equals(newEmail)) {
             if (newEmail.isEmpty()) {
                 letterContent.append(EMAIL_REMOVED);
-                letterContent.append(System.lineSeparator());
             } else {
                 letterContent.append(String.format(EMAIL_CHANGE, newEmail));
-                letterContent.append(System.lineSeparator());
             }
+            letterContent.append(System.lineSeparator());
         }
 
         Address oldCorrespondenceAddress = claimBefore.getClaimData().getClaimant()
@@ -54,11 +53,10 @@ public class LetterContentBuilder {
         if (contentDiffer(oldCorrespondenceAddress, newCorrespondenceAddress)) {
             if (!Optional.ofNullable(newCorrespondenceAddress).isPresent()) {
                 letterContent.append(CONTACT_ADDRESS_REMOVED);
-                letterContent.append(System.lineSeparator());
             } else {
                 letterContent.append(String.format(CONTACT_ADDRESS_CHANGE, toString(newCorrespondenceAddress)));
-                letterContent.append(System.lineSeparator());
             }
+            letterContent.append(System.lineSeparator());
         }
 
         String oldPhone = claimBefore.getClaimData().getClaimant().getPhone().orElse(null);
@@ -67,11 +65,10 @@ public class LetterContentBuilder {
         if (contentDiffer(oldPhone, newPhone)) {
             if (!Optional.ofNullable(newPhone).isPresent()) {
                 letterContent.append(PHONE_REMOVED);
-                letterContent.append(System.lineSeparator());
             } else {
                 letterContent.append(String.format(TELEPHONE_CHANGE, newPhone));
-                letterContent.append(System.lineSeparator());
             }
+            letterContent.append(System.lineSeparator());
         }
 
         return letterContent.toString();
