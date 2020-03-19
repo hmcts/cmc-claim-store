@@ -135,4 +135,5 @@ public class CCDCase {
     private CCDChannelType channel;
     private LocalDate intentionToProceedDeadline;
     private LocalDateTime dateReferredForDirections;
+    private CCDLaList assignedTo;
 }
