@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.generalletter;
+package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -14,9 +14,11 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.events.GeneralLetterReadyToPrintEvent;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
@@ -25,6 +27,7 @@ import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
+import uk.gov.hmcts.reform.docassembly.exception.DocumentGenerationFailedException;
 
 import java.net.URI;
 import java.time.Clock;
@@ -65,7 +68,7 @@ class GeneralLetterServiceTest {
     private static final String DOCUMENT_BINARY_URL = "http://bla.binary.test";
     private static final String DOCUMENT_FILE_NAME = "sealed_claim.pdf";
     private static final LocalDateTime DATE = LocalDateTime.parse("2020-11-16T13:15:30");
-    private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
+    private static final byte[] PDF_BYTES = new byte[] {1, 2, 3, 4};
     private static final String ERROR_MESSAGE =
         "There was a technical problem. Nothing has been sent. You need to try again.";
     private static final String DRAFT_LETTER_DOC_KEY = "draftLetterDoc";
@@ -101,9 +104,12 @@ class GeneralLetterServiceTest {
     private DocAssemblyResponse docAssemblyResponse;
     @Mock
     private Clock clock;
+    @Mock
+    private UserService userService;
 
     private GeneralLetterService generalLetterService;
     public static final String GENERAL_LETTER_TEMPLATE_ID = "generalLetterTemplateId";
+    private UserDetails userDetails;
 
     @BeforeEach
     void setUp() {
@@ -111,7 +117,8 @@ class GeneralLetterServiceTest {
             docAssemblyService,
             publisher,
             documentManagementService,
-            clock);
+            clock,
+            userService);
         String documentUrl = DOCUMENT_URI.toString();
         CCDDocument document = new CCDDocument(documentUrl, documentUrl, GENERAL_LETTER_PDF);
         ccdCase = CCDCase.builder()
@@ -130,6 +137,19 @@ class GeneralLetterServiceTest {
         caseDetails = CaseDetails.builder()
             .data(data)
             .build();
+        userDetails = SampleUserDetails.builder()
+            .withForename("Judge")
+            .withSurname("McJudge")
+            .build();
+    }
+
+    @Test
+    void shouldPrepopulate() {
+        when(userService.getUserDetails(eq(BEARER_TOKEN.name()))).thenReturn(userDetails);
+
+        generalLetterService.prepopulateData(BEARER_TOKEN.name());
+
+        verify(userService, once()).getUserDetails(eq(BEARER_TOKEN.name()));
     }
 
     @Test
@@ -146,9 +166,10 @@ class GeneralLetterServiceTest {
     }
 
     @Test
-    void shouldSendErrorResponseWhenCreateAndPreviewLetterFails() {
-        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
-            .thenThrow(new RuntimeException("exception"));
+    void shouldSendErrorResponseWhenDocAssemblyFails() {
+        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+        when(docAssemblyService.createGeneralLetter(any(CCDCase.class), anyString(), anyString()))
+            .thenThrow(new DocumentGenerationFailedException(new RuntimeException("exception")));
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
             generalLetterService.createAndPreview(caseDetails, BEARER_TOKEN.name(),
                 DRAFT_LETTER_DOC_KEY, GENERAL_LETTER_TEMPLATE_ID);
@@ -181,7 +202,9 @@ class GeneralLetterServiceTest {
 
     @Test
     void shouldSendErrorResponseWhenPrintAndUpdateCaseDocumentFails() {
-        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
+        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+        when(documentManagementService.downloadDocument(anyString(), any(ClaimDocument.class)))
             .thenThrow(new RuntimeException("exception"));
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
             generalLetterService.printAndUpdateCaseDocuments(caseDetails, BEARER_TOKEN.name());

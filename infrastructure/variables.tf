@@ -87,6 +87,9 @@ variable "enable_staff_email" {
 variable "save_claim_state_enabled" {
   default = "false"
 }
+variable "ctsc_enabled" {
+  default = "false"
+}
 
 variable milo_csv_schedule  {
   default = "-"
@@ -102,4 +105,8 @@ variable schedule_state-transition_stay-claim  {
 
 variable schedule_state-transition_waiting-transfer  {
   default = "0 0 16 ? * MON-FRI *"
+}
+
+variable "enable_ase" {
+  default = false
 }

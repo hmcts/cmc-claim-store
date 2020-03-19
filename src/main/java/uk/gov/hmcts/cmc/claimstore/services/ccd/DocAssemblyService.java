@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.docassembly.DocAssemblyClient;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyRequest;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 import uk.gov.hmcts.reform.docassembly.domain.OutputType;
+import uk.gov.hmcts.reform.docassembly.exception.DocumentGenerationFailedException;
 
 import java.util.Optional;
 
@@ -68,24 +69,26 @@ public class DocAssemblyService {
         );
     }
 
-    public DocAssemblyResponse createGeneralLetter(CCDCase ccdCase, String authorisation, String templateId) {
-        UserDetails userDetails = userService.getUserDetails(authorisation);
-
-        logger.info("Doc assembly service: creating request for doc assembly");
+    public DocAssemblyResponse  createGeneralLetter(CCDCase ccdCase, String authorisation, String templateId) {
+        logger.info("Doc assembly service: creating general letter request for doc assembly");
 
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
             .templateId(templateId)
             .outputType(OutputType.PDF)
-            .formPayload(docAssemblyTemplateBodyMapper.generalLetterBody(ccdCase, userDetails))
+            .formPayload(docAssemblyTemplateBodyMapper.generalLetterBody(ccdCase))
             .build();
 
-        logger.info("Doc assembly service: sending request to doc assembly");
-
-        return docAssemblyClient.generateOrder(
-            authorisation,
-            authTokenGenerator.generate(),
-            docAssemblyRequest
-        );
+        logger.info("Doc assembly service: sending general letter request to doc assembly");
+        try {
+            return docAssemblyClient.generateOrder(
+                authorisation,
+                authTokenGenerator.generate(),
+                docAssemblyRequest
+            );
+        } catch (Exception e) {
+            logger.error("Error while trying to generate a general letter docAssembly");
+            throw new DocumentGenerationFailedException(e);
+        }
     }
 
     private String getTemplateId(String state) {

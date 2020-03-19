@@ -45,6 +45,7 @@ java:
     CMC_DB_NAME: cmc
     CMC_DB_PORT: 5432
     FEATURE_TOGGLES_SAVE_CLAIM_STATE_ENABLED: true
+    FEATURE_TOGGLES_CTSC_ENABLED: false
     STAFF_NOTIFICATIONS_SENDER: noreply@reform.hmcts.net
     RPA_NOTIFICATIONS_SENDER: noreply@reform.hmcts.net
     DOCUMENT_MANAGEMENT_USERROLES: caseworker-cmc,citizen

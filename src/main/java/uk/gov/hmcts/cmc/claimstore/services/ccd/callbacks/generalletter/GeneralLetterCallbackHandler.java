@@ -22,7 +22,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ISSUE_GENERAL_LETTER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
 @Service
-@ConditionalOnProperty(prefix = "doc_assembly", name = "url")
+@ConditionalOnProperty({"doc_assembly.url", "feature_toggles.ctsc_enabled"})
 public class GeneralLetterCallbackHandler extends CallbackHandler {
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
     private static final List<CaseEvent> EVENTS = ImmutableList.of(ISSUE_GENERAL_LETTER);
@@ -41,6 +41,7 @@ public class GeneralLetterCallbackHandler extends CallbackHandler {
     @Override
     protected Map<CallbackType, Callback> callbacks() {
         return ImmutableMap.of(
+            CallbackType.ABOUT_TO_START, this::prepopulateData,
             CallbackType.MID, this::createAndPreview,
             CallbackType.ABOUT_TO_SUBMIT, this::printAndUpdateCaseDocuments
         );
@@ -54,6 +55,11 @@ public class GeneralLetterCallbackHandler extends CallbackHandler {
     @Override
     public List<Role> getSupportedRoles() {
         return ROLES;
+    }
+
+    private CallbackResponse prepopulateData(CallbackParams callbackParams) {
+        String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
+        return generalLetterService.prepopulateData(authorisation);
     }
 
     public CallbackResponse createAndPreview(CallbackParams callbackParams) {

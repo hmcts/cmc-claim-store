@@ -140,4 +140,5 @@ public class CCDCase {
     private LocalDateTime dateReferredForDirections;
     private String letterContent;
     private CCDContactPartyType issueLetterContact;
+    private String caseworkerName;
 }

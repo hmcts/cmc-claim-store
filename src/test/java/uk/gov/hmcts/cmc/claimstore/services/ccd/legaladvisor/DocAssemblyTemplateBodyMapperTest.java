@@ -78,6 +78,7 @@ class DocAssemblyTemplateBodyMapperTest {
                     .build()
             ));
         ccdCase.setLetterContent(LETTER_CONTENT);
+        ccdCase.setCaseworkerName("Judge McJudge");
         userDetails = SampleUserDetails.builder()
             .withForename("Judge")
             .withSurname("McJudge")
@@ -317,13 +318,10 @@ class DocAssemblyTemplateBodyMapperTest {
         @Test
         void shouldMapTemplateBodyWhenGeneralLetterForDefendant() {
             ccdCase.setIssueLetterContact(CCDContactPartyType.DEFENDANT);
-            DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.generalLetterBody(
-                ccdCase,
-                userDetails
-            );
+            DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.generalLetterBody(ccdCase);
             DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
                 .currentDate(LocalDate.parse("2019-04-24"))
-                .partyName("Mary Richards")
+                .partyName("Individual")
                 .partyAddress(CCDAddress.builder()
                     .addressLine1("line1")
                     .addressLine2("line2")
@@ -342,10 +340,7 @@ class DocAssemblyTemplateBodyMapperTest {
         @Test
         void shouldMapTemplateBodyWhenGeneralLetterForClaimant() {
             ccdCase.setIssueLetterContact(CCDContactPartyType.CLAIMANT);
-            DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.generalLetterBody(
-                ccdCase,
-                userDetails
-            );
+            DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.generalLetterBody(ccdCase);
             DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
                 .currentDate(LocalDate.parse("2019-04-24"))
                 .partyName("Individual")

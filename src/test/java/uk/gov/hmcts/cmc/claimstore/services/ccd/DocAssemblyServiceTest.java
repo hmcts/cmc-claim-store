@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
@@ -65,7 +64,6 @@ public class DocAssemblyServiceTest {
             JUDGE_TEMPLATE_ID);
         ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
         when(userService.getUserDetails(eq(BEARER_TOKEN))).thenReturn(JUDGE);
-        docAssemblyResponse = Mockito.mock(DocAssemblyResponse.class);
         when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
         when(authTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
     }
@@ -93,18 +91,22 @@ public class DocAssemblyServiceTest {
 
     @Test
     public void shouldCreateGeneralLetter() {
-        when(docAssemblyTemplateBodyMapper.generalLetterBody(eq(ccdCase), eq(JUDGE)))
+        when(docAssemblyTemplateBodyMapper.generalLetterBody(eq(ccdCase)))
             .thenReturn(DocAssemblyTemplateBody.builder().build());
+
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
             .templateId(GENERAL_LETTER_TEMPLATE_ID)
             .outputType(OutputType.PDF)
-            .formPayload(docAssemblyTemplateBodyMapper.generalLetterBody(ccdCase, JUDGE))
+            .formPayload(docAssemblyTemplateBodyMapper.generalLetterBody(ccdCase))
             .build();
+
         when(docAssemblyClient
             .generateOrder(eq(BEARER_TOKEN), eq(SERVICE_TOKEN), eq(docAssemblyRequest)))
             .thenReturn(docAssemblyResponse);
+
         DocAssemblyResponse response = docAssemblyService.createGeneralLetter(ccdCase,
             BEARER_TOKEN, GENERAL_LETTER_TEMPLATE_ID);
+
         assertThat(response.getRenditionOutputLocation()).isEqualTo(DOC_URL);
         verify(docAssemblyClient).generateOrder(eq(BEARER_TOKEN), eq(SERVICE_TOKEN), any(DocAssemblyRequest.class));
     }
