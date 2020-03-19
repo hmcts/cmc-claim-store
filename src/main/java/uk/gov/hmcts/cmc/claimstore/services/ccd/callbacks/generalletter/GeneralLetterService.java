@@ -12,6 +12,8 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.events.GeneralLetterReadyToPrintEvent;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -50,19 +52,30 @@ public class GeneralLetterService {
     private final ApplicationEventPublisher publisher;
     private final DocumentManagementService documentManagementService;
     private final Clock clock;
+    private final UserService userService;
 
     public GeneralLetterService(
         CaseDetailsConverter caseDetailsConverter,
         DocAssemblyService docAssemblyService,
         ApplicationEventPublisher publisher,
         DocumentManagementService documentManagementService,
-        Clock clock
+        Clock clock,
+        UserService userService
     ) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.docAssemblyService = docAssemblyService;
         this.publisher = publisher;
         this.documentManagementService = documentManagementService;
         this.clock = clock;
+        this.userService = userService;
+    }
+
+    public CallbackResponse prepopulateData(String authorisation) {
+        UserDetails userDetails = userService.getUserDetails(authorisation);
+        return AboutToStartOrSubmitCallbackResponse
+            .builder()
+            .data(ImmutableMap.of("caseworkerName", userDetails.getFullName()))
+            .build();
     }
 
     public CallbackResponse createAndPreview(CaseDetails caseDetails, String authorisation,
@@ -76,7 +89,8 @@ public class GeneralLetterService {
                 .builder()
                 .data(ImmutableMap.of(
                     letterType,
-                    CCDDocument.builder().documentUrl(docAssemblyResponse.getRenditionOutputLocation())))
+                    CCDDocument.builder().documentUrl(docAssemblyResponse.getRenditionOutputLocation()).build()
+                ))
                 .build();
         } catch (DocumentGenerationFailedException e) {
             logger.info("General Letter creating and preview failed", e);

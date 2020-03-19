@@ -91,18 +91,22 @@ public class DocAssemblyServiceTest {
 
     @Test
     public void shouldCreateGeneralLetter() {
-        when(docAssemblyTemplateBodyMapper.generalLetterBody(eq(ccdCase), eq(JUDGE)))
+        when(docAssemblyTemplateBodyMapper.generalLetterBody(eq(ccdCase)))
             .thenReturn(DocAssemblyTemplateBody.builder().build());
+
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
             .templateId(GENERAL_LETTER_TEMPLATE_ID)
             .outputType(OutputType.PDF)
-            .formPayload(docAssemblyTemplateBodyMapper.generalLetterBody(ccdCase, JUDGE))
+            .formPayload(docAssemblyTemplateBodyMapper.generalLetterBody(ccdCase))
             .build();
+
         when(docAssemblyClient
             .generateOrder(eq(BEARER_TOKEN), eq(SERVICE_TOKEN), eq(docAssemblyRequest)))
             .thenReturn(docAssemblyResponse);
+
         DocAssemblyResponse response = docAssemblyService.createGeneralLetter(ccdCase,
             BEARER_TOKEN, GENERAL_LETTER_TEMPLATE_ID);
+
         assertThat(response.getRenditionOutputLocation()).isEqualTo(DOC_URL);
         verify(docAssemblyClient).generateOrder(eq(BEARER_TOKEN), eq(SERVICE_TOKEN), any(DocAssemblyRequest.class));
     }

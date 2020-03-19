@@ -69,15 +69,13 @@ public class DocAssemblyService {
         );
     }
 
-    public DocAssemblyResponse createGeneralLetter(CCDCase ccdCase, String authorisation, String templateId) {
-        UserDetails userDetails = userService.getUserDetails(authorisation);
-
+    public DocAssemblyResponse  createGeneralLetter(CCDCase ccdCase, String authorisation, String templateId) {
         logger.info("Doc assembly service: creating general letter request for doc assembly");
 
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
             .templateId(templateId)
             .outputType(OutputType.PDF)
-            .formPayload(docAssemblyTemplateBodyMapper.generalLetterBody(ccdCase, userDetails))
+            .formPayload(docAssemblyTemplateBodyMapper.generalLetterBody(ccdCase))
             .build();
 
         logger.info("Doc assembly service: sending general letter request to doc assembly");
