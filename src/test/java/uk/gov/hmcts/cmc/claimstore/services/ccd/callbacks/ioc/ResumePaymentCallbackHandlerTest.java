@@ -21,6 +21,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -30,6 +31,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.MapEntry.entry;
@@ -106,8 +108,8 @@ public class ResumePaymentCallbackHandlerTest {
 
         when(paymentsService.retrievePayment(
             eq(BEARER_TOKEN),
-            any(Claim.class)))
-            .thenReturn(originalPayment);
+            any(ClaimData.class)))
+            .thenReturn(Optional.of(originalPayment));
 
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_SUBMIT)
@@ -134,8 +136,8 @@ public class ResumePaymentCallbackHandlerTest {
 
         when(paymentsService.retrievePayment(
             eq(BEARER_TOKEN),
-            any(Claim.class)))
-            .thenReturn(originalPayment);
+            any(ClaimData.class)))
+            .thenReturn(Optional.of(originalPayment));
 
         Payment newPayment = Payment.builder()
             .reference("reference2")
@@ -169,7 +171,7 @@ public class ResumePaymentCallbackHandlerTest {
     }
 
     @Test
-    public void shouldCreatePaymentIfPaymentIsPending() {
+    public void shouldCancelPaymentIfPaymentIsPending() {
         Payment originalPayment = Payment.builder()
             .reference("reference")
             .status(PENDING)
@@ -179,8 +181,8 @@ public class ResumePaymentCallbackHandlerTest {
 
         when(paymentsService.retrievePayment(
             eq(BEARER_TOKEN),
-            any(Claim.class)))
-            .thenReturn(originalPayment);
+            any(ClaimData.class)))
+            .thenReturn(Optional.of(originalPayment));
 
         Payment newPayment = Payment.builder()
             .reference("reference2")
@@ -219,6 +221,8 @@ public class ResumePaymentCallbackHandlerTest {
 
         Payment payment = toBeSaved.getClaimData().getPayment().orElse(null);
         assertThat(payment).isEqualTo(newPayment);
+
+        verify(paymentsService).cancelPayment(BEARER_TOKEN, originalPayment.getReference());
     }
 
     @Test
