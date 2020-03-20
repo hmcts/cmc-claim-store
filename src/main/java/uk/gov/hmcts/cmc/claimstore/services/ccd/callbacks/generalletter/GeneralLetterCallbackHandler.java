@@ -33,7 +33,8 @@ public class GeneralLetterCallbackHandler extends CallbackHandler {
     @Autowired
     public GeneralLetterCallbackHandler(
         GeneralLetterService generalLetterService,
-        @Value("${doc_assembly.generalLetterTemplateId}") String generalLetterTemplateId) {
+        @Value("${doc_assembly.generalLetterTemplateId}") String generalLetterTemplateId
+    ) {
         this.generalLetterService = generalLetterService;
         this.generalLetterTemplateId = generalLetterTemplateId;
     }
