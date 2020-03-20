@@ -74,8 +74,7 @@ public class PaymentsServiceTest {
             SERVICE,
             SITE_ID,
             CURRENCY,
-            DESCRIPTION,
-            true
+            DESCRIPTION
         );
         claim = SampleClaim.getDefault();
         when(feesClient.lookupFee(eq("online"), eq("issue"), any(BigDecimal.class)))
