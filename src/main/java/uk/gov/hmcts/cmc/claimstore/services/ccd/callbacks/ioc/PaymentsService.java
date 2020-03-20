@@ -35,6 +35,7 @@ public class PaymentsService {
     private final String currency;
     private final String description;
     private final String returnUrlPattern;
+    private final boolean autoCancel;
 
     public PaymentsService(
         PaymentsClient paymentsClient,
@@ -43,7 +44,8 @@ public class PaymentsService {
         @Value("${payments.api.service}") String service,
         @Value("${payments.api.siteId}") String siteId,
         @Value("${payments.api.currency}") String currency,
-        @Value("${payments.api.description}") String description
+        @Value("${payments.api.description}") String description,
+        @Value("${feature_toggles.auto_cancel_payments}") boolean autoCancel
     ) {
         this.paymentsClient = paymentsClient;
         this.feesClient = feesClient;
@@ -52,6 +54,7 @@ public class PaymentsService {
         this.siteId = siteId;
         this.currency = currency;
         this.description = description;
+        this.autoCancel = autoCancel;
     }
 
     public Optional<Payment> retrievePayment(
@@ -110,8 +113,12 @@ public class PaymentsService {
     }
 
     public void cancelPayment(String authorisation, String paymentReference) {
-        logger.info("Cancelling payment {}", paymentReference);
-        paymentsClient.cancelPayment(authorisation, paymentReference);
+        if (autoCancel) {
+            logger.info("Cancelling payment {}", paymentReference);
+            paymentsClient.cancelPayment(authorisation, paymentReference);
+        } else {
+            logger.info("Not cancelling payment {} as the feature is disabled", paymentReference);
+        }
     }
 
     private FeeDto[] buildFees(String ccdCaseId, FeeLookupResponseDto feeOutcome) {

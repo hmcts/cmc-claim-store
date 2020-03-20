@@ -6,7 +6,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.PaymentsService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
@@ -75,7 +74,8 @@ public class PaymentsServiceTest {
             SERVICE,
             SITE_ID,
             CURRENCY,
-            DESCRIPTION
+            DESCRIPTION,
+            true
         );
         claim = SampleClaim.getDefault();
         when(feesClient.lookupFee(eq("online"), eq("issue"), any(BigDecimal.class)))
