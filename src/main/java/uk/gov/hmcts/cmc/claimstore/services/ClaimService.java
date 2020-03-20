@@ -187,7 +187,8 @@ public class ClaimService {
     @LogExecutionTime
     public CreatePaymentResponse initiatePayment(
         String authorisation,
-        ClaimData claimData) {
+        ClaimData claimData
+    ) {
         User user = userService.getUser(authorisation);
 
         Claim claim = buildClaimFrom(user,
@@ -235,7 +236,6 @@ public class ClaimService {
         User user = userService.getUser(authorisation);
         Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), user)
             .toBuilder()
-            .claimData(claimData)
             .features(features)
             .build();
 
