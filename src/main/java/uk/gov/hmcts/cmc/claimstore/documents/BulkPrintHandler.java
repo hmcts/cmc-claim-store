@@ -15,13 +15,13 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import java.time.LocalDate;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.DIRECTION_ORDER_LETTER_TYPE;
-import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.GENERAL_LETTER_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildCoverSheetFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDirectionsOrderFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildLetterFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.DIRECTION_ORDER_LETTER_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.GENERAL_LETTER_TYPE;
 
 @Component
 @ConditionalOnProperty(prefix = "send-letter", name = "url")
@@ -52,7 +52,7 @@ public class BulkPrintHandler {
     }
 
     @EventListener
-    public void print(DirectionsOrderReadyToPrintEvent event, String letterType) {
+    public void print(DirectionsOrderReadyToPrintEvent event) {
         requireNonNull(event);
         Claim claim = event.getClaim();
         bulkPrintService.printPdf(
@@ -65,12 +65,12 @@ public class BulkPrintHandler {
                     event.getDirectionsOrder(),
                     buildDirectionsOrderFileBaseName(claim.getReferenceNumber()))
             ),
-            letterType
+            DIRECTION_ORDER_LETTER_TYPE
         );
     }
 
     @EventListener
-    public void print(GeneralLetterReadyToPrintEvent event, String letterType) {
+    public void print(GeneralLetterReadyToPrintEvent event) {
         requireNonNull(event);
         Claim claim = event.getClaim();
         bulkPrintService.printPdf(
@@ -81,7 +81,7 @@ public class BulkPrintHandler {
                     buildLetterFileBaseName(claim.getReferenceNumber(),
                         String.valueOf(LocalDate.now())))
             ),
-            letterType
+            GENERAL_LETTER_TYPE
         );
     }
 }

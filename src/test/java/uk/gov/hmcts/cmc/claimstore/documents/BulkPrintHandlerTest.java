@@ -13,6 +13,8 @@ import uk.gov.hmcts.cmc.claimstore.events.legaladvisor.DirectionsOrderReadyToPri
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.sendletter.api.Document;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.DIRECTION_ORDER_LETTER_TYPE;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.GENERAL_LETTER_TYPE;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -64,7 +66,7 @@ public class BulkPrintHandlerTest {
             = new DirectionsOrderReadyToPrintEvent(claim, coverSheet, legalOrder);
 
         //when
-        bulkPrintHandler.print(printEvent, "letter-type");
+        bulkPrintHandler.print(printEvent);
 
         //verify
         verify(bulkPrintService).printPdf(
@@ -76,7 +78,7 @@ public class BulkPrintHandlerTest {
                 new PrintablePdf(
                     legalOrder,
                     claim.getReferenceNumber() + "-directions-order")
-            ), "letter-type");
+            ), DIRECTION_ORDER_LETTER_TYPE);
     }
 
     @Test
@@ -90,7 +92,7 @@ public class BulkPrintHandlerTest {
             = new GeneralLetterReadyToPrintEvent(claim,  generalLetter);
 
         //when
-        bulkPrintHandler.print(printEvent, "general-letter-type");
+        bulkPrintHandler.print(printEvent);
 
         //verify
         verify(bulkPrintService).printPdf(
@@ -100,6 +102,6 @@ public class BulkPrintHandlerTest {
                     generalLetter,
                     claim.getReferenceNumber() + "-general-letter-"
                         + LocalDate.now())
-            ), "general-letter-type");
+            ), GENERAL_LETTER_TYPE);
     }
 }

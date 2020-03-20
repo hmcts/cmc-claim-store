@@ -31,7 +31,6 @@ import java.net.URISyntaxException;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
@@ -106,15 +105,15 @@ public class GeneralLetterService {
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         CCDDocument draftLetterDoc = ccdCase.getDraftLetterDoc();
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
-        List<String> errors = new ArrayList<>();
+        boolean errors = false;
         try {
 
             printLetter(authorisation, draftLetterDoc, claim);
         } catch (Exception e) {
             logger.info("General Letter printing and case documents update failed", e);
-            errors = Collections.singletonList(ERROR_MESSAGE);
+            errors = true;
         }
-        if (errors.isEmpty()) {
+        if (errors) {
             logger.info("General Letter: updating case document with general letter");
             CCDCase updatedCase = ccdCase.toBuilder()
                 .caseDocuments(updateCaseDocumentsWithGeneralLetter(ccdCase, draftLetterDoc))
