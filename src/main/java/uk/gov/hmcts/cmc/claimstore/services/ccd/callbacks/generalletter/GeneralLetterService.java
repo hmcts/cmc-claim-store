@@ -152,8 +152,9 @@ public class GeneralLetterService {
     private String getDocumentNumber(CCDCase ccdCase) {
         String number = String.valueOf((ccdCase.getCaseDocuments()
             .stream()
-            .filter(c -> c.getValue().getDocumentType().equals(GENERAL_LETTER))
-            .filter(c -> c.getValue().getDocumentName().contains(LocalDate.now().toString()))
+            .map(CCDCollectionElement::getValue)
+            .filter(c -> c.getDocumentType().equals(GENERAL_LETTER))
+            .filter(c -> c.getDocumentName().contains(LocalDate.now().toString()))
             .count() + 1));
         return buildLetterFileBaseName(ccdCase.getPreviousServiceCaseReference(),
             LocalDate.now().toString()) + number;
