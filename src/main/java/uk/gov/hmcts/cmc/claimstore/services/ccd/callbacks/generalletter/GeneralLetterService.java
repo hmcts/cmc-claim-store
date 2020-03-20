@@ -77,8 +77,12 @@ public class GeneralLetterService {
             .build();
     }
 
-    public CallbackResponse createAndPreview(CaseDetails caseDetails, String authorisation,
-                                             String letterType, String templateId) {
+    public CallbackResponse createAndPreview(
+        CaseDetails caseDetails,
+        String authorisation,
+        String letterType,
+        String templateId
+    ) {
         try {
             logger.info("General Letter: creating general letter");
             CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
