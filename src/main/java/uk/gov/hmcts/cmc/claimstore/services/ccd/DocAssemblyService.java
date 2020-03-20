@@ -70,7 +70,8 @@ public class DocAssemblyService {
     }
 
     public DocAssemblyResponse  createGeneralLetter(CCDCase ccdCase, String authorisation, String templateId) {
-        logger.info("Doc assembly service: creating general letter request for doc assembly");
+        logger.info("Doc assembly service: creating general letter request for doc assembly for external id: {}",
+            ccdCase.getExternalId());
 
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
             .templateId(templateId)
@@ -78,7 +79,8 @@ public class DocAssemblyService {
             .formPayload(docAssemblyTemplateBodyMapper.generalLetterBody(ccdCase))
             .build();
 
-        logger.info("Doc assembly service: sending general letter request to doc assembly");
+        logger.info("Doc assembly service: sending general letter request to doc assembly for external id: {}",
+            ccdCase.getExternalId());
         try {
             return docAssemblyClient.generateOrder(
                 authorisation,
@@ -86,7 +88,8 @@ public class DocAssemblyService {
                 docAssemblyRequest
             );
         } catch (Exception e) {
-            logger.error("Error while trying to generate a general letter docAssembly");
+            logger.error("Error while trying to generate a general letter docAssembly for external id: {}",
+                ccdCase.getExternalId());
             throw new DocumentGenerationFailedException(e);
         }
     }
