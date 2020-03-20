@@ -122,7 +122,7 @@ public class DocAssemblyTemplateBodyMapper {
         return DocAssemblyTemplateBody.builder()
             .currentDate(currentDate)
             .referenceNumber(ccdCase.getPreviousServiceCaseReference())
-            .caseWorkerName(ccdCase.getCaseworkerName())
+            .caseworkerName(ccdCase.getCaseworkerName())
             .caseName(ccdCase.getCaseName())
             .partyName(partyName)
             .partyAddress(partyAddress)
