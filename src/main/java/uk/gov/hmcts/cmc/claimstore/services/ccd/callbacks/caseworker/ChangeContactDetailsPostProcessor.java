@@ -1,17 +1,20 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
+import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.config.LoggerHandler;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
+import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,18 +30,18 @@ public class ChangeContactDetailsPostProcessor {
     private static final String BODY = "body";
 
     private final CaseDetailsConverter caseDetailsConverter;
-    private final DocAssemblyService docAssemblyService;
+    private final LetterGeneratorService letterGeneratorService;
     private final ChangeContactDetailsNotificationService changeContactDetailsNotificationService;
     private final LetterContentBuilder letterContentBuilder;
 
     public ChangeContactDetailsPostProcessor(
         CaseDetailsConverter caseDetailsConverter,
-        DocAssemblyService docAssemblyService,
+        LetterGeneratorService letterGeneratorService,
         ChangeContactDetailsNotificationService changeContactDetailsNotificationService,
         LetterContentBuilder letterContentBuilder
     ) {
         this.caseDetailsConverter = caseDetailsConverter;
-        this.docAssemblyService = docAssemblyService;
+        this.letterGeneratorService = letterGeneratorService;
         this.changeContactDetailsNotificationService = changeContactDetailsNotificationService;
         this.letterContentBuilder = letterContentBuilder;
     }
@@ -47,18 +50,30 @@ public class ChangeContactDetailsPostProcessor {
     public CallbackResponse showNewContactDetails(CallbackParams callbackParams) {
         logger.info("Change Contact Details: create letter (preview)");
 
-        Map<String, Object> data = new HashMap<>();
-
         CallbackRequest callbackRequest = callbackParams.getRequest();
         Claim claimBefore = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetailsBefore());
         Claim claimNow = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
 
-        data.put("contactChanges", letterContentBuilder.letterContent(claimBefore, claimNow));
+        String letterContent = letterContentBuilder.letterContent(claimBefore, claimNow);
+        CCDCase input = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
+        CCDCase ccdCase = input.toBuilder()
+            .issueLetterContact(input.getChangeContactParty())
+            .letterContent(letterContent)
+            .build();
+
+        String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
+
+        DocAssemblyResponse generalLetter = letterGeneratorService.createGeneralLetter(ccdCase, authorisation);
 
         return AboutToStartOrSubmitCallbackResponse
-                .builder()
-                .data(data)
-                .build();
+            .builder()
+            .data(ImmutableMap.of(
+                "contactChanges",
+                letterContent,
+                DRAFT_LETTER_DOC,
+                CCDDocument.builder().documentUrl(generalLetter.getRenditionOutputLocation()).build()
+            ))
+            .build();
     }
 
 

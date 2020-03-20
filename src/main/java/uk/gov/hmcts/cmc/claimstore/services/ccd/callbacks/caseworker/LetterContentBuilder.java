@@ -3,9 +3,8 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.party.Party;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -13,30 +12,32 @@ import java.util.stream.Stream;
 @Service
 public class LetterContentBuilder {
 
-    public static final String MAIN_ADDRESS_CHANGE = "Their address is now:: %s";
-    public static final String CONTACT_ADDRESS_CHANGE = "The address they want to use for post about the claim is now:: %s";
-    public static final String TELEPHONE_CHANGE = "Their phone number is now:: %s";
-    public static final String EMAIL_CHANGE = "Their email address is now:: %s";
-    public static final String EMAIL_REMOVED = "They’ve removed their email address.";
-    public static final String CONTACT_ADDRESS_REMOVED = "They’ve removed the address they want to use for post about the claim.";
-    public static final String PHONE_REMOVED = "They’ve removed their phone number.";
+    public static final String MAIN_ADDRESS_CHANGE = "\nTheir address is now:: %s";
+    public static final String CONTACT_ADDRESS_CHANGE = "\nThe address they want to use for post about the claim is now:: %s";
+    public static final String TELEPHONE_CHANGE = "\nTheir phone number is now:: %s";
+    public static final String EMAIL_CHANGE = "\nTheir email address is now:: %s";
+    public static final String EMAIL_REMOVED = "\nThey’ve removed their email address.";
+    public static final String CONTACT_ADDRESS_REMOVED = "\nThey’ve removed the address they want to use for post about the claim.";
+    public static final String PHONE_REMOVED = "\nThey’ve removed their phone number.";
+    public static final String MAIN_MESSAGE = "\nWe’re contacting you because %s has changed their contact details.";
 
-    public String letterContent(Claim claimBefore, Claim claimNow){
+    public String letterContent(Claim claimBefore, Claim claimNow) {
 
-        StringBuilder letterContent = new StringBuilder("This will be sent to them as a letter or email.");
 
-        Address oldAddress = claimBefore.getClaimData().getClaimant().getAddress();
+        Party claimant = claimBefore.getClaimData().getClaimant();
+        Address oldAddress = claimant.getAddress();
         Address newAddress = claimNow.getClaimData().getClaimant().getAddress();
 
+        StringBuilder letterContent = new StringBuilder(String.format(MAIN_MESSAGE, claimant.getName()));
         if (!oldAddress.equals(newAddress)) {
-            letterContent.append(String.format(MAIN_ADDRESS_CHANGE, newAddress.toString()));
+            letterContent.append(String.format(MAIN_ADDRESS_CHANGE, toString(newAddress)));
             letterContent.append(System.lineSeparator());
         }
 
         String oldEmail = claimBefore.getSubmitterEmail();
         String newEmail = claimNow.getSubmitterEmail();
 
-        if (!oldEmail.equals(newEmail)) {
+        if (contentDiffer(oldEmail, newEmail)) {
             if (newEmail.isEmpty()) {
                 letterContent.append(EMAIL_REMOVED);
             } else {
@@ -45,7 +46,7 @@ public class LetterContentBuilder {
             letterContent.append(System.lineSeparator());
         }
 
-        Address oldCorrespondenceAddress = claimBefore.getClaimData().getClaimant()
+        Address oldCorrespondenceAddress = claimant
             .getCorrespondenceAddress().orElse(null);
         Address newCorrespondenceAddress = claimNow.getClaimData().getClaimant()
             .getCorrespondenceAddress().orElse(null);
@@ -59,7 +60,7 @@ public class LetterContentBuilder {
             letterContent.append(System.lineSeparator());
         }
 
-        String oldPhone = claimBefore.getClaimData().getClaimant().getPhone().orElse(null);
+        String oldPhone = claimant.getPhone().orElse(null);
         String newPhone = claimNow.getClaimData().getClaimant().getPhone().orElse(null);
 
         if (contentDiffer(oldPhone, newPhone)) {
@@ -80,13 +81,13 @@ public class LetterContentBuilder {
             .collect(Collectors.joining("\n"));
     }
 
-    private boolean contentDiffer(Object old, Object latest){
+    private boolean contentDiffer(Object old, Object latest) {
 
-        if(old == null && latest == null){
+        if (old == null && latest == null) {
             return false;
         }
 
-        if(old == null){
+        if (old == null) {
             return true;
         }
 
