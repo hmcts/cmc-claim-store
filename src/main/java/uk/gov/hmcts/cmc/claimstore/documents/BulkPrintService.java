@@ -121,10 +121,10 @@ public class BulkPrintService implements PrintService {
         requireNonNull(claim);
         String info = "";
         if (letterType.equals(DIRECTION_ORDER_LETTER_TYPE)) {
-            info = "Direction order pack letter {} created for claim reference {}";
+            info = "Direction order pack letter {} created for letter type {} claim reference {}";
         }
         if (letterType.equals(GENERAL_LETTER_TYPE)) {
-            info = "General Letter created for claim reference {}";
+            info = "General Letter {} created for letter type {} claim reference {}";
         }
 
         List<String> docs = documents.stream()
@@ -138,12 +138,13 @@ public class BulkPrintService implements PrintService {
             new LetterWithPdfsRequest(
                 docs,
                 XEROX_TYPE_PARAMETER,
-                wrapInDetailsInMap(claim, DIRECTION_ORDER_LETTER_TYPE)
+                wrapInDetailsInMap(claim, letterType)
             )
         );
 
         logger.info(info,
             sendLetterResponse.letterId,
+            letterType,
             claim.getReferenceNumber()
         );
     }
