@@ -13,13 +13,13 @@ import uk.gov.hmcts.cmc.claimstore.events.legaladvisor.DirectionsOrderReadyToPri
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.sendletter.api.Document;
-import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.DIRECTION_ORDER_LETTER_TYPE;
-import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.GENERAL_LETTER_TYPE;
 
 import java.time.LocalDate;
 import java.util.HashMap;
 
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.DIRECTION_ORDER_LETTER_TYPE;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.GENERAL_LETTER_TYPE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BulkPrintHandlerTest {
