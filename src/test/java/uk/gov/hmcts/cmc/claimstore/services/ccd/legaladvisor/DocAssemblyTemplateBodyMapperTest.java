@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
+import uk.gov.hmcts.cmc.ccd.domain.GeneralLetterContent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
@@ -61,6 +62,7 @@ class DocAssemblyTemplateBodyMapperTest {
     private UserDetails userDetails;
     private DocAssemblyTemplateBody.DocAssemblyTemplateBodyBuilder docAssemblyTemplateBodyBuilder;
     private static final String LETTER_CONTENT = "letter content";
+    private GeneralLetterContent.GeneralLetterContentBuilder letterContent;
 
     @BeforeEach
     void setUp() {
@@ -77,8 +79,10 @@ class DocAssemblyTemplateBodyMapperTest {
                     .value(SampleData.getIndividualRespondentWithDQ())
                     .build()
             ));
-        ccdCase.setLetterContent(LETTER_CONTENT);
-        ccdCase.setCaseworkerName("Judge McJudge");
+        letterContent = GeneralLetterContent.builder()
+            .letterContent(LETTER_CONTENT)
+            .caseworkerName("Judge McJudge");
+
         userDetails = SampleUserDetails.builder()
             .withForename("Judge")
             .withSurname("McJudge")
@@ -317,7 +321,8 @@ class DocAssemblyTemplateBodyMapperTest {
     class GeneralTestsForGeneralLetter {
         @Test
         void shouldMapTemplateBodyWhenGeneralLetterForDefendant() {
-            ccdCase.setIssueLetterContact(CCDContactPartyType.DEFENDANT);
+            letterContent.issueLetterContact(CCDContactPartyType.DEFENDANT);
+            ccdCase.setGeneralLetterContent(letterContent.build());
             DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.generalLetterBody(ccdCase);
             DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
                 .currentDate(LocalDate.parse("2019-04-24"))
@@ -331,7 +336,7 @@ class DocAssemblyTemplateBodyMapperTest {
                     .build())
                 .referenceNumber("ref no")
                 .caseName("case name")
-                .caseWorkerName("Judge McJudge")
+                .caseworkerName("Judge McJudge")
                 .body(LETTER_CONTENT)
                 .build();
             assertThat(requestBody).isEqualTo(expectedBody);
@@ -339,7 +344,8 @@ class DocAssemblyTemplateBodyMapperTest {
 
         @Test
         void shouldMapTemplateBodyWhenGeneralLetterForClaimant() {
-            ccdCase.setIssueLetterContact(CCDContactPartyType.CLAIMANT);
+            letterContent.issueLetterContact(CCDContactPartyType.CLAIMANT);
+            ccdCase.setGeneralLetterContent(letterContent.build());
             DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.generalLetterBody(ccdCase);
             DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
                 .currentDate(LocalDate.parse("2019-04-24"))
@@ -353,7 +359,7 @@ class DocAssemblyTemplateBodyMapperTest {
                     .build())
                 .referenceNumber("ref no")
                 .caseName("case name")
-                .caseWorkerName("Judge McJudge")
+                .caseworkerName("Judge McJudge")
                 .body(LETTER_CONTENT)
                 .build();
             assertThat(requestBody).isEqualTo(expectedBody);

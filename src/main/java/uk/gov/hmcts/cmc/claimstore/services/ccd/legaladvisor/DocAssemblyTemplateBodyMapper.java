@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
+import uk.gov.hmcts.cmc.ccd.domain.GeneralLetterContent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -14,7 +15,6 @@ import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 
 import java.time.Clock;
 import java.time.LocalDate;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
@@ -108,24 +108,32 @@ public class DocAssemblyTemplateBodyMapper {
 
     public DocAssemblyTemplateBody generalLetterBody(CCDCase ccdCase) {
         LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
+        GeneralLetterContent generalLetterContent = ccdCase.getGeneralLetterContent();
+        String partyName;
+        CCDAddress partyAddress;
+        if (ccdCase.getApplicants().get(0).getValue()
+            .getPartyName().equals(CCDContactPartyType.CLAIMANT)) {
+            partyName = ccdCase.getApplicants().get(0).getValue().getPartyName();
+            partyAddress = ccdCase.getApplicants().get(0)
+                .getValue().getPartyDetail().getPrimaryAddress();
+        } else {
+            partyName = ccdCase.getRespondents().get(0)
+                .getValue().getClaimantProvidedPartyName();
+            partyAddress = getDefendantAddress(ccdCase.getRespondents().get(0).getValue());
+        }
         return DocAssemblyTemplateBody.builder()
             .currentDate(currentDate)
             .referenceNumber(ccdCase.getPreviousServiceCaseReference())
-            .caseWorkerName(ccdCase.getCaseworkerName())
+            .caseworkerName(generalLetterContent.getCaseworkerName())
             .caseName(ccdCase.getCaseName())
-            .partyName(ccdCase.getIssueLetterContact() == CCDContactPartyType.CLAIMANT
-                ? ccdCase.getApplicants().get(0).getValue().getPartyName()
-                : ccdCase.getRespondents().get(0).getValue().getClaimantProvidedPartyName())
-            .partyAddress(ccdCase.getIssueLetterContact() == CCDContactPartyType.CLAIMANT
-                ? ccdCase.getApplicants().get(0)
-                .getValue().getPartyDetail().getPrimaryAddress()
-                : getDefendantAddress(ccdCase.getRespondents().get(0).getValue()))
-            .body(ccdCase.getLetterContent())
+            .partyName(partyName)
+            .partyAddress(partyAddress)
+            .body(generalLetterContent.getLetterContent())
             .build();
     }
 
     private CCDAddress getDefendantAddress(CCDRespondent respondent) {
-        return Optional.ofNullable(respondent.getPartyDetail()).isPresent()
+        return respondent.getPartyDetail() != null
             ? respondent.getPartyDetail().getPrimaryAddress()
             : respondent.getClaimantProvidedDetail().getPrimaryAddress();
     }

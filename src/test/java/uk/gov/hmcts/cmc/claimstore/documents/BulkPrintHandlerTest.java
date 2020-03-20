@@ -18,6 +18,8 @@ import java.time.LocalDate;
 import java.util.HashMap;
 
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.DIRECTION_ORDER_LETTER_TYPE;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.GENERAL_LETTER_TYPE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BulkPrintHandlerTest {
@@ -76,7 +78,7 @@ public class BulkPrintHandlerTest {
                 new PrintablePdf(
                     legalOrder,
                     claim.getReferenceNumber() + "-directions-order")
-            ));
+            ), DIRECTION_ORDER_LETTER_TYPE);
     }
 
     @Test
@@ -93,13 +95,13 @@ public class BulkPrintHandlerTest {
         bulkPrintHandler.print(printEvent);
 
         //verify
-        verify(bulkPrintService).printGeneralLetterPdf(
+        verify(bulkPrintService).printPdf(
             claim,
             ImmutableList.of(
                 new PrintablePdf(
                     generalLetter,
                     claim.getReferenceNumber() + "-general-letter-"
                         + LocalDate.now())
-            ));
+            ), GENERAL_LETTER_TYPE);
     }
 }

@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.domain.GeneralLetterContent;
 import uk.gov.hmcts.cmc.claimstore.events.GeneralLetterReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -31,12 +32,12 @@ import java.net.URISyntaxException;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.GENERAL_LETTER;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterCallbackHandler.DRAFT_LETTER_DOC;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildLetterFileBaseName;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 
@@ -72,16 +73,26 @@ public class GeneralLetterService {
 
     public CallbackResponse prepopulateData(String authorisation) {
         UserDetails userDetails = userService.getUserDetails(authorisation);
+        String caseworkerName = userDetails.getFullName();
         return AboutToStartOrSubmitCallbackResponse
             .builder()
-            .data(ImmutableMap.of("caseworkerName", userDetails.getFullName()))
+            .data(ImmutableMap.of("generalLetterContent",
+                GeneralLetterContent.builder().caseworkerName(caseworkerName).build()
+            ))
             .build();
     }
 
-    public CallbackResponse createAndPreview(CaseDetails caseDetails, String authorisation,
-                                             String letterType, String templateId) {
+    public CallbackResponse createAndPreview(
+        CaseDetails caseDetails,
+        String authorisation,
+        String letterType,
+        String templateId
+    ) {
         try {
             logger.info("General Letter: creating general letter");
+            if (caseDetails.getData().containsKey(DRAFT_LETTER_DOC)) {
+                caseDetails.getData().remove(DRAFT_LETTER_DOC);
+            }
             CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
             DocAssemblyResponse docAssemblyResponse = docAssemblyService.createGeneralLetter(ccdCase,
                 authorisation, templateId);
@@ -106,15 +117,15 @@ public class GeneralLetterService {
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         CCDDocument draftLetterDoc = ccdCase.getDraftLetterDoc();
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
-        List<String> errors = new ArrayList<>();
+        boolean errors = false;
         try {
 
             printLetter(authorisation, draftLetterDoc, claim);
         } catch (Exception e) {
             logger.info("General Letter printing and case documents update failed", e);
-            errors = Collections.singletonList(ERROR_MESSAGE);
+            errors = true;
         }
-        if (errors.isEmpty()) {
+        if (!errors) {
             logger.info("General Letter: updating case document with general letter");
             CCDCase updatedCase = ccdCase.toBuilder()
                 .caseDocuments(updateCaseDocumentsWithGeneralLetter(ccdCase, draftLetterDoc))
@@ -135,10 +146,15 @@ public class GeneralLetterService {
         CCDCase ccdCase,
         CCDDocument draftLetterDoc
     ) {
+        String documentName = getDocumentName(ccdCase);
         CCDCollectionElement<CCDClaimDocument> claimDocument = CCDCollectionElement.<CCDClaimDocument>builder()
             .value(CCDClaimDocument.builder()
-                .documentLink(draftLetterDoc)
-                .documentName(getDocumentNumber(ccdCase))
+                .documentLink(CCDDocument.builder()
+                .documentFileName(documentName)
+                .documentUrl(draftLetterDoc.getDocumentUrl())
+                .documentBinaryUrl(draftLetterDoc.getDocumentBinaryUrl())
+                .build())
+                .documentName(getDocumentName(ccdCase))
                 .createdDatetime(LocalDateTime.now(clock.withZone(UTC_ZONE)))
                 .documentType(GENERAL_LETTER)
                 .build())
@@ -149,14 +165,15 @@ public class GeneralLetterService {
             .build();
     }
 
-    private String getDocumentNumber(CCDCase ccdCase) {
+    private String getDocumentName(CCDCase ccdCase) {
         String number = String.valueOf((ccdCase.getCaseDocuments()
             .stream()
-            .filter(c -> c.getValue().getDocumentType().equals(GENERAL_LETTER))
-            .filter(c -> c.getValue().getDocumentName().contains(LocalDate.now().toString()))
+            .map(CCDCollectionElement::getValue)
+            .filter(c -> c.getDocumentType().equals(GENERAL_LETTER))
+            .filter(c -> c.getDocumentName().contains(LocalDate.now().toString()))
             .count() + 1));
         return buildLetterFileBaseName(ccdCase.getPreviousServiceCaseReference(),
-            LocalDate.now().toString()) + number;
+            LocalDate.now().toString()) + "-" + number + ".pdf";
     }
 
     private void printLetter(String authorisation, CCDDocument document, Claim claim) throws URISyntaxException {

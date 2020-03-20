@@ -138,7 +138,5 @@ public class CCDCase {
     private CCDChannelType channel;
     private LocalDate intentionToProceedDeadline;
     private LocalDateTime dateReferredForDirections;
-    private String letterContent;
-    private CCDContactPartyType issueLetterContact;
-    private String caseworkerName;
+    private GeneralLetterContent generalLetterContent;
 }
