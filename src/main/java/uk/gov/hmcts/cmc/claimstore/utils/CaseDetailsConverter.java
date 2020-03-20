@@ -67,6 +67,11 @@ public class CaseDetailsConverter {
         return (Map<String, Object>) jsonMapper.convertValue(ccdCase, Map.class);
     }
 
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> convertObjectToMap(Object object) {
+        return (Map<String, Object>) jsonMapper.convertValue(object, Map.class);
+    }
+
     private LocalDate calculateIntentionToProceedDeadline(LocalDateTime respondedDate) {
         LocalDate deadline = respondedDate.toLocalDate().plusDays(this.intentionToProceedDeadline);
         deadline = workingDayIndicator.getNextWorkingDay(deadline);

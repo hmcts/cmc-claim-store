@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
+import uk.gov.hmcts.cmc.ccd.domain.GeneralLetterContent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -108,19 +109,20 @@ public class DocAssemblyTemplateBodyMapper {
 
     public DocAssemblyTemplateBody generalLetterBody(CCDCase ccdCase) {
         LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
+        GeneralLetterContent generalLetterContent = ccdCase.getGeneralLetterContent();
         return DocAssemblyTemplateBody.builder()
             .currentDate(currentDate)
             .referenceNumber(ccdCase.getPreviousServiceCaseReference())
-            .caseWorkerName(ccdCase.getCaseworkerName())
+            .caseWorkerName(generalLetterContent.getCaseworkerName())
             .caseName(ccdCase.getCaseName())
-            .partyName(ccdCase.getIssueLetterContact() == CCDContactPartyType.CLAIMANT
+            .partyName(generalLetterContent.getIssueLetterContact() == CCDContactPartyType.CLAIMANT
                 ? ccdCase.getApplicants().get(0).getValue().getPartyName()
                 : ccdCase.getRespondents().get(0).getValue().getClaimantProvidedPartyName())
-            .partyAddress(ccdCase.getIssueLetterContact() == CCDContactPartyType.CLAIMANT
+            .partyAddress(generalLetterContent.getIssueLetterContact() == CCDContactPartyType.CLAIMANT
                 ? ccdCase.getApplicants().get(0)
                 .getValue().getPartyDetail().getPrimaryAddress()
                 : getDefendantAddress(ccdCase.getRespondents().get(0).getValue()))
-            .body(ccdCase.getLetterContent())
+            .body(generalLetterContent.getLetterContent())
             .build();
     }
 

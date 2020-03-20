@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.domain.GeneralLetterContent;
 import uk.gov.hmcts.cmc.claimstore.events.GeneralLetterReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -72,9 +73,12 @@ public class GeneralLetterService {
 
     public CallbackResponse prepopulateData(String authorisation) {
         UserDetails userDetails = userService.getUserDetails(authorisation);
+        String caseworkerName = userDetails.getFullName();
         return AboutToStartOrSubmitCallbackResponse
             .builder()
-            .data(ImmutableMap.of("caseworkerName", userDetails.getFullName()))
+            .data(ImmutableMap.of("generalLetterContent",
+                GeneralLetterContent.builder().caseworkerName(caseworkerName).build()
+            ))
             .build();
     }
 

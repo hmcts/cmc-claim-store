@@ -136,7 +136,6 @@ public class BulkPrintServiceTest {
     @Test
     public void shouldSendGeneralLetter() {
         //given
-        when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn(PDF_BYTES);
         when(sendLetterApi.sendLetter(eq(AUTH_VALUE), any(LetterWithPdfsRequest.class)))
             .thenReturn(new SendLetterResponse(UUID.randomUUID()));
 
