@@ -11,21 +11,23 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static java.util.function.Predicate.not;
+
 public class DocumentsFilter {
 
     private static List<ClaimDocumentType> defendantViewableDocsType = Arrays.stream(ClaimDocumentType.values())
-        .filter(type -> !type.equals(ClaimDocumentType.CLAIM_ISSUE_RECEIPT))
+        .filter(not(ClaimDocumentType.CLAIM_ISSUE_RECEIPT::equals))
         .collect(Collectors.toList());
 
     private static List<ClaimDocumentType> claimantViewableDocsType = Arrays.stream(ClaimDocumentType.values())
-        .filter(type -> !type.equals(ClaimDocumentType.SEALED_CLAIM))
+        .filter(not(ClaimDocumentType.SEALED_CLAIM::equals))
         .collect(Collectors.toList());
 
-    private static Predicate<ClaimDocument> docsForDefendant = claimDocument -> defendantViewableDocsType.stream()
-        .anyMatch(docType -> claimDocument.getDocumentType().equals(docType));
+    private static Predicate<ClaimDocument> docsForDefendant = claimDocument -> defendantViewableDocsType
+        .contains(claimDocument.getDocumentType());
 
-    private static Predicate<ClaimDocument> docsForClaimant = claimDocument -> claimantViewableDocsType.stream()
-        .anyMatch(docType -> claimDocument.getDocumentType().equals(docType));
+    private static Predicate<ClaimDocument> docsForClaimant = claimDocument -> claimantViewableDocsType
+        .contains(claimDocument.getDocumentType());
 
     private DocumentsFilter() {
         // Do nothing constructor
@@ -33,25 +35,28 @@ public class DocumentsFilter {
 
     public static Claim filterDocuments(Claim claim, UserDetails userDetails) {
 
-        if (userDetails.isCaseworker() || !claim.getClaimDocumentCollection().isPresent()) {
+        if (userDetails.isCaseworker() || claim.getClaimDocumentCollection().isEmpty()) {
             return claim; // No need to filter.
         }
 
         ClaimDocumentCollection claimDocs = claim.getClaimDocumentCollection().orElseThrow(IllegalStateException::new);
 
         ClaimDocumentCollection docsToReturn = new ClaimDocumentCollection();
+        claimDocs.getClaimDocuments().stream()
+            .filter(filterByRole(claim, userDetails))
+            .forEach(docsToReturn::addClaimDocument);
 
-        if (userDetails.getId().equals(claim.getDefendantId())) {
-            claimDocs.getClaimDocuments().stream()
-                .filter(docsForDefendant)
-                .forEach(docsToReturn::addClaimDocument);
-        } else if (userDetails.getId().equals(claim.getSubmitterId())) {
-            claimDocs.getClaimDocuments().stream()
-                .filter(docsForClaimant)
-                .forEach(docsToReturn::addClaimDocument);
-        }
         return claim.toBuilder()
             .claimDocumentCollection(docsToReturn)
             .build();
+    }
+
+    private static Predicate<ClaimDocument> filterByRole(Claim claim, UserDetails userLoggedIn) {
+        if (userLoggedIn.getId().equals(claim.getDefendantId())) {
+            return docsForDefendant;
+        } else if (userLoggedIn.getId().equals(claim.getSubmitterId())) {
+            return docsForClaimant;
+        }
+        return x -> false;
     }
 }
