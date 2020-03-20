@@ -132,7 +132,7 @@ public class DocAssemblyTemplateBodyMapper {
     }
 
     private CCDAddress getDefendantAddress(CCDRespondent respondent) {
-        return Optional.ofNullable(respondent.getPartyDetail()).isPresent()
+        return respondent.getPartyDetail() != null
             ? respondent.getPartyDetail().getPrimaryAddress()
             : respondent.getClaimantProvidedDetail().getPrimaryAddress();
     }
