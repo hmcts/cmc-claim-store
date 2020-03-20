@@ -331,7 +331,7 @@ class DocAssemblyTemplateBodyMapperTest {
                     .build())
                 .referenceNumber("ref no")
                 .caseName("case name")
-                .caseWorkerName("Judge McJudge")
+                .caseworkerName("Judge McJudge")
                 .body(LETTER_CONTENT)
                 .build();
             assertThat(requestBody).isEqualTo(expectedBody);
@@ -353,7 +353,7 @@ class DocAssemblyTemplateBodyMapperTest {
                     .build())
                 .referenceNumber("ref no")
                 .caseName("case name")
-                .caseWorkerName("Judge McJudge")
+                .caseworkerName("Judge McJudge")
                 .body(LETTER_CONTENT)
                 .build();
             assertThat(requestBody).isEqualTo(expectedBody);
