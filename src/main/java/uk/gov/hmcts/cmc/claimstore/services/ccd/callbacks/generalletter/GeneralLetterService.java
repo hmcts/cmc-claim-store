@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.GENERAL_LETTER;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterCallbackHandler.DRAFT_LETTER_DOC;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildLetterFileBaseName;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 
@@ -85,6 +86,9 @@ public class GeneralLetterService {
     ) {
         try {
             logger.info("General Letter: creating general letter");
+            if (caseDetails.getData().containsKey(DRAFT_LETTER_DOC)) {
+                caseDetails.getData().remove(DRAFT_LETTER_DOC);
+            }
             CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
             DocAssemblyResponse docAssemblyResponse = docAssemblyService.createGeneralLetter(ccdCase,
                 authorisation, templateId);
@@ -138,10 +142,15 @@ public class GeneralLetterService {
         CCDCase ccdCase,
         CCDDocument draftLetterDoc
     ) {
+        String documentName = getDocumentName(ccdCase);
         CCDCollectionElement<CCDClaimDocument> claimDocument = CCDCollectionElement.<CCDClaimDocument>builder()
             .value(CCDClaimDocument.builder()
-                .documentLink(draftLetterDoc)
-                .documentName(getDocumentNumber(ccdCase))
+                .documentLink(CCDDocument.builder()
+                .documentFileName(documentName)
+                .documentUrl(draftLetterDoc.getDocumentUrl())
+                .documentBinaryUrl(draftLetterDoc.getDocumentBinaryUrl())
+                .build())
+                .documentName(getDocumentName(ccdCase))
                 .createdDatetime(LocalDateTime.now(clock.withZone(UTC_ZONE)))
                 .documentType(GENERAL_LETTER)
                 .build())
@@ -152,7 +161,7 @@ public class GeneralLetterService {
             .build();
     }
 
-    private String getDocumentNumber(CCDCase ccdCase) {
+    private String getDocumentName(CCDCase ccdCase) {
         String number = String.valueOf((ccdCase.getCaseDocuments()
             .stream()
             .map(CCDCollectionElement::getValue)
@@ -160,7 +169,7 @@ public class GeneralLetterService {
             .filter(c -> c.getDocumentName().contains(LocalDate.now().toString()))
             .count() + 1));
         return buildLetterFileBaseName(ccdCase.getPreviousServiceCaseReference(),
-            LocalDate.now().toString()) + number;
+            LocalDate.now().toString()) + "-" + number + ".pdf";
     }
 
     private void printLetter(String authorisation, CCDDocument document, Claim claim) throws URISyntaxException {

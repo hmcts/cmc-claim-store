@@ -27,7 +27,7 @@ public class GeneralLetterCallbackHandler extends CallbackHandler {
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
     private static final List<CaseEvent> EVENTS = ImmutableList.of(ISSUE_GENERAL_LETTER);
     private final GeneralLetterService generalLetterService;
-    private static final String DRAFT_LETTER_DOC = "draftLetterDoc";
+    protected static final String DRAFT_LETTER_DOC = "draftLetterDoc";
     private final String generalLetterTemplateId;
 
     @Autowired
