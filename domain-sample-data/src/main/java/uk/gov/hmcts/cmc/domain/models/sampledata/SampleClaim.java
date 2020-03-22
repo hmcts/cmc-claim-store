@@ -494,6 +494,7 @@ public final class SampleClaim {
             .withClaimData(SampleClaimData.submittedByClaimant())
             .withResponse(SampleResponse.FullAdmission.validDefaults())
             .withSettlement(settlement)
+            .withSettlementReachedAt(LocalDateTime.now())
             .build();
     }
 

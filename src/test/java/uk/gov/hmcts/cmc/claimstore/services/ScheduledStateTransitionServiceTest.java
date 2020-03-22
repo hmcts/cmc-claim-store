@@ -239,7 +239,7 @@ public class ScheduledStateTransitionServiceTest {
         when(stateTransition.getTriggerEvents()).thenReturn(ImmutableSet.of(caseEvent));
         when(workingDayIndicator.getPreviousWorkingDay(any())).thenReturn(dateTime.toLocalDate());
 
-        List<CaseEventDetail> caseEventDetails = new ArrayList(ImmutableList.of(
+        List<CaseEventDetail> caseEventDetails = new ArrayList<>(ImmutableList.of(
             buildCaseEventDetail(CaseEvent.values()[1], LocalDateTime.now())
         ));
         when(caseEventsApi.findEventDetailsForCase(any(), any(), any(), any(), any(), any()))
@@ -263,7 +263,7 @@ public class ScheduledStateTransitionServiceTest {
 
         LocalDateTime now = LocalDateTime.now();
         List<CaseEventDetail> caseEventDetails =
-            new ArrayList(ImmutableList.of(
+            new ArrayList<>(ImmutableList.of(
                 buildCaseEventDetail(ignoreEvent, now.plusDays(1)),
                 buildCaseEventDetail(caseEvent, now)
             ));
@@ -278,7 +278,7 @@ public class ScheduledStateTransitionServiceTest {
 
     private CaseEventDetail buildCaseEventDetail(CaseEvent value, LocalDateTime createdDate) {
         return CaseEventDetail.builder()
-            .eventName(value.getValue())
+            .id(value.getValue())
             .createdDate(createdDate)
             .build();
     }
