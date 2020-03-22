@@ -7,6 +7,6 @@ dm_url = "http://dm-store-prod.service.core-compute-prod.internal"
 save_claim_state_enabled = "true"
 doc_assembly_api_url = "http://dg-docassembly-prod.service.core-compute-prod.internal"
 milo_csv_schedule = "0 0 8 * * ?"
-claim_stayed_schedule = "0 0 16 ? * MON-FRI *"
 fees_url = "https://fees-register-api.platform.hmcts.net"
 payments_url = "https://payment.platform.hmcts.net"
+enable_ase = true

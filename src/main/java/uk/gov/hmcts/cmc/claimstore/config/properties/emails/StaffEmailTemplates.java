@@ -71,6 +71,14 @@ public class StaffEmailTemplates {
         return readString("/staff/templates/email/settlementAgreement/countersigned/subject.txt");
     }
 
+    public String getBulkPrintEmailBody() {
+        return readString("/staff/templates/email/bulkPrintFailure/body.txt");
+    }
+
+    public String getBulkPrintEmailSubject() {
+        return readString("/staff/templates/email/bulkPrintFailure/subject.txt");
+    }
+
     public String getPaidInFullEmailBody() {
         return readString("/staff/templates/email/paidInFull/body.txt");
     }
@@ -111,11 +119,11 @@ public class StaffEmailTemplates {
         return readString("/staff/templates/email/claimantResponse/rejection/directionsHearing/body.txt");
     }
 
-    public String getIntentionToProceedEmailSubject() {
-        return readString("/staff/templates/email/intentionToProceed/subject.txt");
+    public String getScheduledStateTransitionEmailSubject() {
+        return readString("/staff/templates/email/scheduledStateTransition/subject.txt");
     }
 
-    public String getIntentionToProceedEmailBody() {
-        return readString("/staff/templates/email/intentionToProceed/body.txt");
+    public String getScheduledStateTransitionEmailBody() {
+        return readString("/staff/templates/email/scheduledStateTransition/body.txt");
     }
 }

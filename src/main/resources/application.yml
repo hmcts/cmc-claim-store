@@ -110,8 +110,10 @@ milo:
   recipient: ${MILO_CSV_RECIPIENT:}
   sender: ${MILO_CSV_SENDER:}
 
-claim_stayed:
-  schedule: ""
+schedule:
+  state-transition:
+    waiting-transfer: ""
+    stay-claim: ""
 
 dateCalculations:
   endOfBusinessDayHour: 16
@@ -123,7 +125,8 @@ dateCalculations:
   offerMadeTimeForResponseInDays: 14
   lastResponseReminderDay: 1
   firstResponseReminderDay: 5
-  intentionToProceedDeadlineInDays: 33
+  stayClaimDeadlineInDays: 33
+  waitingTransferDeadlineInDays: 19
   claimantCcjReminderDays: 10
 
 notifications:
@@ -184,10 +187,6 @@ notifications:
       defendantMediationFailureOfflineDQ: "15a38762-2141-4a70-8cc9-22a27db985bc"
 
 staff-notifications:
-  sender:
-  recipient:
-
-live-support:
   sender:
   recipient:
 
