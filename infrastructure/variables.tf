@@ -107,3 +107,7 @@ variable schedule_state-transition_waiting-transfer  {
 variable "enable_ase" {
   default = false
 }
+
+variable "auto_cancel_payments" {
+  default = false
+}
