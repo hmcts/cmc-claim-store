@@ -12,7 +12,10 @@ public class ClaimantResponseUtils {
     private ClaimantResponseUtils() {
     }
 
-    public static boolean isCompanyOrOrganisationWithCCJDetermination(Claim claim, ResponseAcceptation responseAcceptation) {
+    public static boolean isCompanyOrOrganisationWithCCJDetermination(
+        Claim claim,
+        ResponseAcceptation responseAcceptation
+    ) {
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
 
         return PartyUtils.isCompanyOrOrganisation(response.getDefendant())

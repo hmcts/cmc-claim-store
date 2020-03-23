@@ -22,8 +22,8 @@ import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_CLAIMANT_RE
 import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDateTime;
-import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.CCJ;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
+import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.CCJ;
 import static uk.gov.hmcts.cmc.domain.utils.ClaimantResponseUtils.isCompanyOrOrganisationWithCCJDetermination;
 
 @Component
@@ -97,8 +97,8 @@ public class ClaimantResponseContentProvider {
                             selectedOption -> content.put("formaliseOption", selectedOption)
                         );
 
-                    if (claim.getReDeterminationRequestedAt().isPresent() ||
-                        responseAcceptation.getFormaliseOption().equals(FormaliseOption.REFER_TO_JUDGE)) {
+                    if (claim.getReDeterminationRequestedAt().isPresent()
+                        || responseAcceptation.getFormaliseOption().equals(FormaliseOption.REFER_TO_JUDGE)) {
                         admissionStatus = getDefendantAdmissionStatus(defendantResponse);
                     }
                 }

@@ -7,8 +7,9 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
-import uk.gov.hmcts.cmc.domain.models.sampledata.*;
-
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -18,7 +19,6 @@ import static uk.gov.hmcts.cmc.domain.models.PaymentOption.BY_SPECIFIED_DATE;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention.bySetDate;
 
 public class ClaimantResponseUtilsTest {
-
 
     @Test
     public void isCompanyOrOrganisationWithCCJDeterminationShouldBeTrue() {
@@ -48,7 +48,8 @@ public class ClaimantResponseUtilsTest {
         ResponseAcceptation responseAcceptation =
             (ResponseAcceptation) claim.getClaimantResponse().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(ClaimantResponseUtils.isCompanyOrOrganisationWithCCJDetermination(claim, responseAcceptation)).isTrue();
+        assertThat(ClaimantResponseUtils
+            .isCompanyOrOrganisationWithCCJDetermination(claim, responseAcceptation)).isTrue();
     }
 
 }
