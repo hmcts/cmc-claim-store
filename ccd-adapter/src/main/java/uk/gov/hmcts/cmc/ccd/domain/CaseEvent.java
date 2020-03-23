@@ -68,7 +68,7 @@ public enum CaseEvent {
     MEDIATION_FAILED("FailedMediation"),
     MEDIATION_SUCCESSFUL("SuccessfulMediation"),
     RESET_PIN("ResetPin"),
-    PROCEEDS_IN_CASEMAN("CaseProceedsInCaseman");
+    PROCEEDS_IN_CASEMAN("CaseProceedsInCaseman"),
     ATTACH_SCANNED_DOCS("attachScannedDocs"),
     UPDATE_CLAIM("UpdateClaim");
 

@@ -1,10 +1,15 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.documents.CCJByAdmissionOrDeterminationPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
@@ -14,6 +19,7 @@ import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimantCCJRequestService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -37,83 +43,158 @@ class ClaimantCCJRequestServiceTest {
     private CCJByAdmissionOrDeterminationPdfService ccjByAdmissionOrDeterminationPdfService;
     @Mock
     private DocumentsService documentService;
+    @Mock
+    private CaseMapper caseMapper;
     private ClaimantCCJRequestService service;
     private Claim claim;
     private PDF pdf;
     private CountyCourtJudgmentEvent event;
+    private CCDCase ccdCase;
 
     @BeforeEach
     void setUp() {
-
-        service = new ClaimantCCJRequestService(
-            ccjByAdmissionOrDeterminationPdfService,
-            documentService);
+        ccdCase = CCDCase.builder().build();
+        when(caseMapper.to(any(Claim.class))).thenReturn(ccdCase);
     }
 
-    @Test
-    void shouldCallDocumentServiceIfCCJByAdmission() {
-        CountyCourtJudgment ccj = CountyCourtJudgment.builder()
-            .ccjType(CountyCourtJudgmentType.ADMISSIONS).build();
-        claim = SampleClaim.builder()
-            .withCountyCourtJudgment(ccj)
-            .withClaimantResponse(SampleClaimantResponse.ClaimantResponseAcceptation
-                .builder().build())
-            .build();
-        pdf = new PDF(
-            buildClaimIssueReceiptFileBaseName(claim.getReferenceNumber()),
-            PDF_CONTENT,
-            CLAIM_ISSUE_RECEIPT
-        );
-        when(ccjByAdmissionOrDeterminationPdfService.createPdf(claim)).thenReturn(pdf);
-        when(documentService.uploadToDocumentManagement(any(PDF.class),
-            anyString(), any(Claim.class))).thenReturn(claim);
-        event = new CountyCourtJudgmentEvent(claim, "authorisation");
-        service.uploadDocumentToDocumentStore(event);
-        verify(ccjByAdmissionOrDeterminationPdfService)
-            .createPdf(claim);
-        verify(documentService)
-            .uploadToDocumentManagement(pdf, USER.getAuthorisation(), claim);
+    @Nested
+    @DisplayName("feature flag on tests")
+    class FeatureFlagOnTests {
+
+        @BeforeEach
+        void setUp() {
+            service = new ClaimantCCJRequestService(
+                ccjByAdmissionOrDeterminationPdfService,
+                documentService,
+                caseMapper,
+                true);
+        }
+
+        @Test
+        void shouldCallDocumentServiceIfCCJByAdmission() {
+            CountyCourtJudgment ccj = CountyCourtJudgment.builder()
+                .ccjType(CountyCourtJudgmentType.ADMISSIONS).build();
+            claim = SampleClaim.builder()
+                .withCountyCourtJudgment(ccj)
+                .withClaimantResponse(SampleClaimantResponse.ClaimantResponseAcceptation
+                    .builder().build())
+                .build();
+            claim.toBuilder().countyCourtJudgment(ccj);
+            pdf = new PDF(
+                buildClaimIssueReceiptFileBaseName(claim.getReferenceNumber()),
+                PDF_CONTENT,
+                CLAIM_ISSUE_RECEIPT
+            );
+            when(ccjByAdmissionOrDeterminationPdfService.createPdf(claim)).thenReturn(pdf);
+            when(documentService.uploadToDocumentManagement(any(PDF.class),
+                anyString(), any(Claim.class))).thenReturn(claim);
+            event = new CountyCourtJudgmentEvent(claim, "authorisation");
+            service.uploadDocumentToDocumentStore(event);
+            verify(ccjByAdmissionOrDeterminationPdfService)
+                .createPdf(claim);
+            verify(documentService)
+                .uploadToDocumentManagement(pdf, USER.getAuthorisation(), claim);
+        }
+
+        @Test
+        void shouldCallDocumentServiceIfCCJByDetermination() {
+            CountyCourtJudgment ccj = CountyCourtJudgment.builder()
+                .ccjType(CountyCourtJudgmentType.DETERMINATION).build();
+            claim = SampleClaim.builder()
+                .withCountyCourtJudgment(ccj)
+                .withClaimantResponse(SampleClaimantResponse.ClaimantResponseAcceptation
+                    .builder().build())
+                .build();
+            pdf = new PDF(
+                buildClaimIssueReceiptFileBaseName(claim.getReferenceNumber()),
+                PDF_CONTENT,
+                CLAIM_ISSUE_RECEIPT
+            );
+            when(ccjByAdmissionOrDeterminationPdfService.createPdf(claim)).thenReturn(pdf);
+            when(documentService.uploadToDocumentManagement(any(PDF.class),
+                anyString(), any(Claim.class))).thenReturn(claim);
+            event = new CountyCourtJudgmentEvent(claim, "authorisation");
+            service.uploadDocumentToDocumentStore(event);
+            verify(ccjByAdmissionOrDeterminationPdfService)
+                .createPdf(claim);
+            verify(documentService)
+                .uploadToDocumentManagement(pdf, USER.getAuthorisation(), claim);
+        }
+
+        @Test
+        void shouldNotCallDocumentServiceIfCCJByDefault() {
+            CountyCourtJudgment ccj = CountyCourtJudgment.builder()
+                .ccjType(CountyCourtJudgmentType.DEFAULT).build();
+            claim = SampleClaim.builder()
+                .withCountyCourtJudgment(ccj)
+                .withClaimantResponse(SampleClaimantResponse.ClaimantResponseAcceptation
+                    .builder().build())
+                .build();
+            event = new CountyCourtJudgmentEvent(claim, "authorisation");
+            service.uploadDocumentToDocumentStore(event);
+            verify(ccjByAdmissionOrDeterminationPdfService, never())
+                .createPdf(any());
+            verify(documentService, never())
+                .uploadToDocumentManagement(any(), any(), any());
+        }
+
+        @Test
+        void shouldUpdateCCDCaseStateToJudgmentRequested() {
+            CountyCourtJudgment ccj = CountyCourtJudgment.builder()
+                .ccjType(CountyCourtJudgmentType.ADMISSIONS).build();
+            claim = SampleClaim.builder()
+                .withCountyCourtJudgment(ccj)
+                .withClaimantResponse(SampleClaimantResponse.ClaimantResponseAcceptation
+                    .builder().build())
+                .build();
+            pdf = new PDF(
+                buildClaimIssueReceiptFileBaseName(claim.getReferenceNumber()),
+                PDF_CONTENT,
+                CLAIM_ISSUE_RECEIPT
+            );
+            event = new CountyCourtJudgmentEvent(claim, "authorisation");
+            when(ccjByAdmissionOrDeterminationPdfService.createPdf(claim)).thenReturn(pdf);
+            when(documentService.uploadToDocumentManagement(any(PDF.class),
+                anyString(), any(Claim.class))).thenReturn(claim);
+            service.uploadDocumentToDocumentStore(event);
+            Assert.assertEquals(ccdCase.getState(), ClaimState.JUDGMENT_REQUESTED.getValue());
+        }
     }
 
-    @Test
-    void shouldCallDocumentServiceIfCCJByDetermination() {
-        CountyCourtJudgment ccj = CountyCourtJudgment.builder()
-            .ccjType(CountyCourtJudgmentType.DETERMINATION).build();
-        claim = SampleClaim.builder()
-            .withCountyCourtJudgment(ccj)
-            .withClaimantResponse(SampleClaimantResponse.ClaimantResponseAcceptation
-                .builder().build())
-            .build();
-        pdf = new PDF(
-            buildClaimIssueReceiptFileBaseName(claim.getReferenceNumber()),
-            PDF_CONTENT,
-            CLAIM_ISSUE_RECEIPT
-        );
-        when(ccjByAdmissionOrDeterminationPdfService.createPdf(claim)).thenReturn(pdf);
-        when(documentService.uploadToDocumentManagement(any(PDF.class),
-            anyString(), any(Claim.class))).thenReturn(claim);
-        event = new CountyCourtJudgmentEvent(claim, "authorisation");
-        service.uploadDocumentToDocumentStore(event);
-        verify(ccjByAdmissionOrDeterminationPdfService)
-            .createPdf(claim);
-        verify(documentService)
-            .uploadToDocumentManagement(pdf, USER.getAuthorisation(), claim);
-    }
+    @Nested
+    @DisplayName("feature flag off tests")
+    class FeatureFlagOffTests {
 
-    @Test
-    void shouldNotCallDocumentServiceIfCCJByDefault() {
-        CountyCourtJudgment ccj = CountyCourtJudgment.builder()
-            .ccjType(CountyCourtJudgmentType.DEFAULT).build();
-        claim = SampleClaim.builder()
-            .withCountyCourtJudgment(ccj)
-            .withClaimantResponse(SampleClaimantResponse.ClaimantResponseAcceptation
-                .builder().build())
-            .build();
-        event = new CountyCourtJudgmentEvent(claim, "authorisation");
-        service.uploadDocumentToDocumentStore(event);
-        verify(ccjByAdmissionOrDeterminationPdfService, never())
-            .createPdf(any());
-        verify(documentService, never())
-            .uploadToDocumentManagement(any(), any(), any());
+        @BeforeEach
+        void setUp() {
+            service = new ClaimantCCJRequestService(
+                ccjByAdmissionOrDeterminationPdfService,
+                documentService,
+                caseMapper,
+                false);
+            CountyCourtJudgment ccj = CountyCourtJudgment.builder()
+                .ccjType(CountyCourtJudgmentType.ADMISSIONS).build();
+            claim = SampleClaim.builder()
+                .withCountyCourtJudgment(ccj)
+                .withClaimantResponse(SampleClaimantResponse.ClaimantResponseAcceptation
+                    .builder().build())
+                .build();
+            event = new CountyCourtJudgmentEvent(claim, "authorisation");
+            service.uploadDocumentToDocumentStore(event);
+        }
+
+        @Test
+        void shouldNotCallDocumentServiceIfCCJByAdmission() {
+            verify(ccjByAdmissionOrDeterminationPdfService, never())
+                .createPdf(any());
+            verify(documentService, never())
+                .uploadToDocumentManagement(any(), any(), any());
+        }
+
+        @Test
+        void shouldUpdateCCDCaseStateToOpenForIfCCJByAdmissionOrDetermination() {
+            service.uploadDocumentToDocumentStore(event);
+            Assert.assertEquals(ccdCase.getState(), ClaimState.OPEN.getValue());
+        }
     }
 }
