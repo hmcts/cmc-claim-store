@@ -99,5 +99,15 @@ public class DocAssemblyTemplateBody implements FormPayload {
     private String body;
     private String caseName;
     private String caseworkerName;
+    private String claimantName;
+    private String claimantPhone;
+    private String claimantEmail;
+    private boolean hasMainAddressChanged;
+    private CCDAddress claimantAddress;
+    private boolean hasContactAddressChanged;
+    private CCDAddress claimantContactAddress;
+    private boolean claimantPhoneRemoved;
+    private boolean claimantEmailRemoved;
+    private boolean claimantContactAddressRemoved;
 
 }

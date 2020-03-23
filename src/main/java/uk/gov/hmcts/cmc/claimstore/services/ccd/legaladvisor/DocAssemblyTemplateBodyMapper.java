@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
+import uk.gov.hmcts.cmc.ccd.domain.ContactChangeContent;
 import uk.gov.hmcts.cmc.ccd.domain.GeneralLetterContent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
@@ -129,6 +130,41 @@ public class DocAssemblyTemplateBodyMapper {
             .partyName(partyName)
             .partyAddress(partyAddress)
             .body(generalLetterContent.getLetterContent())
+
+            .build();
+    }
+
+    public DocAssemblyTemplateBody changeContactBody(CCDCase ccdCase) {
+        LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
+        ContactChangeContent contactChangeContent = ccdCase.getContactChangeContent();
+        String partyName;
+        CCDAddress partyAddress;
+        if (ccdCase.getContactChangeParty().equals(CCDContactPartyType.CLAIMANT)) {
+            partyName = ccdCase.getApplicants().get(0).getValue().getPartyName();
+            partyAddress = ccdCase.getApplicants().get(0)
+                .getValue().getPartyDetail().getPrimaryAddress();
+        } else {
+            partyName = ccdCase.getRespondents().get(0)
+                .getValue().getClaimantProvidedPartyName();
+            partyAddress = getDefendantAddress(ccdCase.getRespondents().get(0).getValue());
+        }
+        return DocAssemblyTemplateBody.builder()
+            .currentDate(currentDate)
+            .referenceNumber(ccdCase.getPreviousServiceCaseReference())
+            .caseworkerName(contactChangeContent.getCaseworkerName())
+            .caseName(ccdCase.getCaseName())
+            .partyName(partyName)
+            .partyAddress(partyAddress)
+            .claimantName(contactChangeContent.getClaimantName())
+            .claimantAddress(contactChangeContent.getClaimantAddress())
+            .hasMainAddressChanged(contactChangeContent.isHasMainAddressChanged())
+            .claimantEmail(contactChangeContent.getClaimantEmail())
+            .claimantPhone(contactChangeContent.getClaimantPhone())
+            .claimantContactAddress(contactChangeContent.getClaimantContactAddress())
+            .hasContactAddressChanged(contactChangeContent.isHasContactAddressChanged())
+            .claimantEmailRemoved(contactChangeContent.isClaimantEmailRemoved())
+            .claimantPhoneRemoved(contactChangeContent.isClaimantPhoneRemoved())
+            .claimantContactAddressRemoved(contactChangeContent.isClaimantContactAddressRemoved())
             .build();
     }
 

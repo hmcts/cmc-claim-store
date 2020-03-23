@@ -7,17 +7,17 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.domain.ContactChangeContent;
+import uk.gov.hmcts.cmc.ccd.mapper.ContactChangeContentMapper;
 import uk.gov.hmcts.cmc.claimstore.config.LoggerHandler;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
-import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 @ConditionalOnProperty(prefix = "doc_assembly", name = "url")
@@ -33,17 +33,23 @@ public class ChangeContactDetailsPostProcessor {
     private final LetterGeneratorService letterGeneratorService;
     private final ChangeContactDetailsNotificationService changeContactDetailsNotificationService;
     private final LetterContentBuilder letterContentBuilder;
+    private final UserService userService;
+    private final ContactChangeContentMapper changeContactContentMapper;
 
     public ChangeContactDetailsPostProcessor(
         CaseDetailsConverter caseDetailsConverter,
         LetterGeneratorService letterGeneratorService,
         ChangeContactDetailsNotificationService changeContactDetailsNotificationService,
-        LetterContentBuilder letterContentBuilder
+        LetterContentBuilder letterContentBuilder,
+        UserService userService,
+        ContactChangeContentMapper changeContactContentMapper
     ) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.letterGeneratorService = letterGeneratorService;
         this.changeContactDetailsNotificationService = changeContactDetailsNotificationService;
         this.letterContentBuilder = letterContentBuilder;
+        this.userService = userService;
+        this.changeContactContentMapper = changeContactContentMapper;
     }
 
 
@@ -51,25 +57,27 @@ public class ChangeContactDetailsPostProcessor {
         logger.info("Change Contact Details: create letter (preview)");
 
         CallbackRequest callbackRequest = callbackParams.getRequest();
-        Claim claimBefore = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetailsBefore());
-        Claim claimNow = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
+        CCDCase caseBefore = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetailsBefore());
+        CCDCase caseNow = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
 
-        String letterContent = letterContentBuilder.letterContent(claimBefore, claimNow);
+        ContactChangeContent contactChangeContent = letterContentBuilder.letterContent(caseBefore, caseNow);
         CCDCase input = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
-        CCDCase ccdCase = input.toBuilder()
-            .issueLetterContact(input.getChangeContactParty())
-            .letterContent(letterContent)
-            .build();
-
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
+        UserDetails userDetails = userService.getUserDetails(authorisation);
+        String caseworkerName = userDetails.getFullName();
+        CCDCase ccdCase = input.toBuilder()
+            .contactChangeContent(contactChangeContent.toBuilder()
+                .caseworkerName(caseworkerName)
+                .build())
+            .build();
 
         DocAssemblyResponse generalLetter = letterGeneratorService.createGeneralLetter(ccdCase, authorisation);
 
         return AboutToStartOrSubmitCallbackResponse
             .builder()
             .data(ImmutableMap.of(
-                "contactChanges",
-                letterContent,
+                "contactChangeContent",
+                changeContactContentMapper.from(contactChangeContent),
                 DRAFT_LETTER_DOC,
                 CCDDocument.builder().documentUrl(generalLetter.getRenditionOutputLocation()).build()
             ))

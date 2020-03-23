@@ -12,7 +12,7 @@ public class LetterGeneratorService {
     private final DocAssemblyService docAssemblyService;
 
     public LetterGeneratorService(
-        @Value("${doc_assembly.generalLetterTemplateId}") String generalLetterTemplateId,
+        @Value("${doc_assembly.contactChangeTemplateId}") String generalLetterTemplateId,
         DocAssemblyService docAssemblyService
     ) {
         this.generalLetterTemplateId = generalLetterTemplateId;
@@ -20,6 +20,6 @@ public class LetterGeneratorService {
     }
 
     public DocAssemblyResponse createGeneralLetter(CCDCase ccdCase, String authorisation) {
-        return docAssemblyService.createGeneralLetter(ccdCase, authorisation, generalLetterTemplateId);
+        return docAssemblyService.changeContactLetter(ccdCase, authorisation, generalLetterTemplateId);
     }
 }
