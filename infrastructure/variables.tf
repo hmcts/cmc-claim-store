@@ -109,5 +109,5 @@ variable "enable_ase" {
 }
 
 variable "auto_cancel_payments" {
-  default = true
+  default = false
 }
