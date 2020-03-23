@@ -29,7 +29,7 @@ public class ClaimantCCJRequestService {
         CCJByAdmissionOrDeterminationPdfService ccjByAdmissionOrDeterminationPdfService,
         DocumentsService documentService,
         CaseMapper caseMapper,
-        @Value("feature_toggles.ctsc_enabled") boolean ctscEnabled
+        @Value("${feature_toggles.ctsc_enabled}") boolean ctscEnabled
     ) {
         this.ccjByAdmissionOrDeterminationPdfService = ccjByAdmissionOrDeterminationPdfService;
         this.documentService = documentService;
