@@ -12,6 +12,8 @@ public class ContactChangeContentMapper {
             .caseworkerName(contactChangeContent.getCaseworkerName())
             .claimantEmail(contactChangeContent.getClaimantEmail())
             .claimantPhone(contactChangeContent.getClaimantPhone())
+            .hasEmailChanged(CCDYesNoOption.valueOf(contactChangeContent.isHasEmailChanged()))
+            .hasPhoneChanged(CCDYesNoOption.valueOf(contactChangeContent.isHasPhoneChanged()))
             .hasContactAddressChanged(CCDYesNoOption.valueOf(contactChangeContent.isHasContactAddressChanged()))
             .hasMainAddressChanged(CCDYesNoOption.valueOf(contactChangeContent.isHasMainAddressChanged()))
             .claimantAddress(contactChangeContent.getClaimantAddress())

@@ -157,6 +157,8 @@ public class DocAssemblyTemplateBodyMapper {
             .partyAddress(partyAddress)
             .claimantName(contactChangeContent.getClaimantName())
             .claimantAddress(contactChangeContent.getClaimantAddress())
+            .hasEmailChanged(contactChangeContent.isHasEmailChanged())
+            .hasPhoneChanged(contactChangeContent.isHasPhoneChanged())
             .hasMainAddressChanged(contactChangeContent.isHasMainAddressChanged())
             .claimantEmail(contactChangeContent.getClaimantEmail())
             .claimantPhone(contactChangeContent.getClaimantPhone())

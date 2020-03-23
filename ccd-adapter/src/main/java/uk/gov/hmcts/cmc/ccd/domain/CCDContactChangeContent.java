@@ -16,6 +16,8 @@ public class CCDContactChangeContent {
     private String claimantName;
     private String claimantPhone;
     private String claimantEmail;
+    private CCDYesNoOption hasPhoneChanged;
+    private CCDYesNoOption hasEmailChanged;
     private CCDYesNoOption hasMainAddressChanged;
     private CCDAddress claimantAddress;
     private CCDYesNoOption hasContactAddressChanged;

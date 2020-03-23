@@ -16,6 +16,8 @@ public class ContactChangeContent {
     private String claimantName;
     private String claimantPhone;
     private String claimantEmail;
+    private boolean hasPhoneChanged;
+    private boolean hasEmailChanged;
     private boolean hasMainAddressChanged;
     private CCDAddress claimantAddress;
     private boolean hasContactAddressChanged;

@@ -46,6 +46,7 @@ public class LetterContentBuilder {
                 contactChangeContent.claimantEmailRemoved(true);
             } else {
                 contactChangeContent.claimantEmail(newEmail);
+                contactChangeContent.hasEmailChanged(true);
             }
         }
 
@@ -69,6 +70,7 @@ public class LetterContentBuilder {
                 contactChangeContent.claimantPhoneRemoved(true);
             } else {
                 contactChangeContent.claimantPhone(newPhone.getTelephoneNumber());
+                contactChangeContent.hasPhoneChanged(true);
             }
         }
 
