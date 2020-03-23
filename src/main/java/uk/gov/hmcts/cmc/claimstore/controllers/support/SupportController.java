@@ -46,10 +46,11 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimSubmissionOperationIndicatorRule;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
-import uk.gov.hmcts.cmc.claimstore.services.IntentionToProceedService;
 import uk.gov.hmcts.cmc.claimstore.services.MediationReportService;
+import uk.gov.hmcts.cmc.claimstore.services.ScheduledStateTransitionService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
+import uk.gov.hmcts.cmc.claimstore.services.statetransition.StateTransitions;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
@@ -81,7 +82,7 @@ public class SupportController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static final String CLAIM = "Claim ";
-    private static final String CLAIM_DOES_NOT_EXIST = "Claim %s does not exist";
+    public static final String CLAIM_DOES_NOT_EXIST = "Claim %s does not exist";
     private static final String AUTHORISATION_IS_REQUIRED = "Authorisation is required";
 
     private final ClaimService claimService;
@@ -97,24 +98,24 @@ public class SupportController {
     private final PostClaimOrchestrationHandler postClaimOrchestrationHandler;
     private final MediationReportService mediationReportService;
     private final ClaimSubmissionOperationIndicatorRule claimSubmissionOperationIndicatorRule;
-    private final IntentionToProceedService intentionToProceedService;
+    private final ScheduledStateTransitionService scheduledStateTransitionService;
 
     @SuppressWarnings("squid:S00107")
     public SupportController(
-            ClaimService claimService,
-            UserService userService,
-            DocumentGenerator documentGenerator,
-            MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler,
-            DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler,
-            CCJStaffNotificationHandler ccjStaffNotificationHandler,
-            AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler,
-            ClaimantResponseStaffNotificationHandler claimantResponseStaffNotificationHandler,
-            PaidInFullStaffNotificationHandler paidInFullStaffNotificationHandler,
-            DocumentsService documentsService,
-            PostClaimOrchestrationHandler postClaimOrchestrationHandler,
-            MediationReportService mediationReportService,
-            ClaimSubmissionOperationIndicatorRule claimSubmissionOperationIndicatorRule,
-            IntentionToProceedService intentionToProceedService
+        ClaimService claimService,
+        UserService userService,
+        DocumentGenerator documentGenerator,
+        MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler,
+        DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler,
+        CCJStaffNotificationHandler ccjStaffNotificationHandler,
+        AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler,
+        ClaimantResponseStaffNotificationHandler claimantResponseStaffNotificationHandler,
+        PaidInFullStaffNotificationHandler paidInFullStaffNotificationHandler,
+        DocumentsService documentsService,
+         PostClaimOrchestrationHandler postClaimOrchestrationHandler,
+        MediationReportService mediationReportService,
+        ClaimSubmissionOperationIndicatorRule claimSubmissionOperationIndicatorRule,
+        ScheduledStateTransitionService scheduledStateTransitionService
     ) {
         this.claimService = claimService;
         this.userService = userService;
@@ -129,14 +130,14 @@ public class SupportController {
         this.postClaimOrchestrationHandler = postClaimOrchestrationHandler;
         this.mediationReportService = mediationReportService;
         this.claimSubmissionOperationIndicatorRule = claimSubmissionOperationIndicatorRule;
-        this.intentionToProceedService = intentionToProceedService;
+        this.scheduledStateTransitionService = scheduledStateTransitionService;
     }
 
     @PutMapping("/claim/{referenceNumber}/event/{event}/resend-staff-notifications")
     @ApiOperation("Resend staff notifications associated with provided event")
     public void resendStaffNotifications(
-            @PathVariable("referenceNumber") String referenceNumber,
-            @PathVariable("event") String event
+        @PathVariable("referenceNumber") String referenceNumber,
+        @PathVariable("event") String event
     ) {
         User user = userService.authenticateAnonymousCaseWorker();
         String authorisation = user.getAuthorisation();
@@ -177,15 +178,15 @@ public class SupportController {
     @PutMapping("/documents/{referenceNumber}/{documentType}")
     @ApiOperation("Ensure a document is available on CCD")
     @ApiResponses({
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 201, message = "Created"),
-            @ApiResponse(code = 404, message = "Claim not found"),
-            @ApiResponse(code = 500, message = "Unable to upload document")
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 201, message = "Created"),
+        @ApiResponse(code = 404, message = "Claim not found"),
+        @ApiResponse(code = 500, message = "Unable to upload document")
     })
     @SuppressWarnings("squid:S2201") // orElseThrow does not ignore the result
     public ResponseEntity<?> uploadDocumentToDocumentManagement(
-            @PathVariable("referenceNumber") String referenceNumber,
-            @PathVariable("documentType") ClaimDocumentType documentType
+        @PathVariable("referenceNumber") String referenceNumber,
+        @PathVariable("documentType") ClaimDocumentType documentType
     ) {
         User caseworker = userService.authenticateAnonymousCaseWorker();
 
@@ -200,12 +201,12 @@ public class SupportController {
 
         // local claim object is now outdated
         claimService.getClaimByReferenceAnonymous(referenceNumber)
-                .orElseThrow(() -> new IllegalStateException("Missing claim " + referenceNumber))
-                .getClaimDocument(documentType)
-                .orElseThrow(() -> new ServerErrorException(
-                        "Unable to upload the document. Please try again later",
-                        new NotFoundException("Unable to upload the document. Please try again later")
-                ));
+            .orElseThrow(() -> new IllegalStateException("Missing claim " + referenceNumber))
+            .getClaimDocument(documentType)
+            .orElseThrow(() -> new ServerErrorException(
+                "Unable to upload the document. Please try again later",
+                new NotFoundException("Unable to upload the document. Please try again later")
+            ));
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -213,9 +214,9 @@ public class SupportController {
     @PutMapping("/claim/{referenceNumber}/reset-operation")
     @ApiOperation("Redo any failed operation. Use the claim submission indicators to indicate the operation to redo.")
     public void resetOperation(
-            @PathVariable("referenceNumber") String referenceNumber,
-            @RequestBody ClaimSubmissionOperationIndicators indicators,
-            @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation
+        @PathVariable("referenceNumber") String referenceNumber,
+        @RequestBody ClaimSubmissionOperationIndicators indicators,
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation
     ) {
         if (StringUtils.isBlank(authorisation)) {
             throw new BadRequestException(AUTHORISATION_IS_REQUIRED);
@@ -223,9 +224,13 @@ public class SupportController {
         Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
             .orElseThrow(claimNotFoundException(referenceNumber));
 
-        claimSubmissionOperationIndicatorRule.assertOperationIndicatorUpdateIsValid(claim, indicators);
+        claimSubmissionOperationIndicatorRule.assertOperationIndicatorUpdateIsValid(claim,
+            indicators);
 
-        claim = claimService.updateClaimSubmissionOperationIndicators(authorisation, claim, indicators);
+        claim = claimService.updateClaimSubmissionOperationIndicators(
+            authorisation,
+            claim,
+            indicators);
         triggerAsyncOperation(authorisation, claim);
     }
 
@@ -247,48 +252,49 @@ public class SupportController {
                 .orElseThrow(() -> new IllegalArgumentException(MISSING_REPRESENTATIVE))
                 .getOrganisationName();
 
-            this.postClaimOrchestrationHandler.representativeIssueHandler(
-                new RepresentedClaimCreatedEvent(claim, submitterName, authorisation)
-            );
+            this.postClaimOrchestrationHandler
+                .representativeIssueHandler(new RepresentedClaimCreatedEvent(claim, submitterName, authorisation));
         } else {
             String submitterName = claim.getClaimData().getClaimant().getName();
-            this.postClaimOrchestrationHandler.citizenIssueHandler(
-                new CitizenClaimCreatedEvent(claim, submitterName, authorisation)
-            );
+            this.postClaimOrchestrationHandler
+                .citizenIssueHandler(new CitizenClaimCreatedEvent(claim, submitterName, authorisation));
         }
     }
 
     @PostMapping(value = "/sendMediation", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Generate and Send Mediation Report for Telephone Mediation Service")
     public void sendMediation(
-            @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation,
-            @RequestBody MediationRequest mediationRequest
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation,
+        @RequestBody MediationRequest mediationRequest
     ) {
-        mediationReportService.sendMediationReport(authorisation, mediationRequest.getReportDate());
+        mediationReportService
+            .sendMediationReport(authorisation, mediationRequest.getReportDate());
 
     }
 
-    @PostMapping(value = "/claims/checkIntentionToProceedDeadline")
-    @ApiOperation("Stay claims past their intention proceed deadline")
-    public void checkClaimsPastIntentionToProceedDeadline(
+    @PostMapping(value = "/claims/transitionClaimState")
+    @ApiOperation("Trigger scheduled state transition")
+    public void transitionClaimState(
             @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation,
+            @RequestParam StateTransitions stateTransition,
             @RequestParam(required = false)
-            @ApiParam("Optional. If supplied check will run as if triggered at this timestamp. Format is ISO 8601")
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime localDateTime
+            @ApiParam("Optional. If supplied check will run as if triggered at this timestamp. Format is "
+                    + "yyyy-MM-ddThh:mm:ss")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                    LocalDateTime localDateTime
     ) {
-
         LocalDateTime runDateTime = localDateTime == null ? LocalDateTimeFactory.nowInLocalZone() : localDateTime;
 
         User user = userService.getUser(authorisation);
         String format = runDateTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss"));
-        logger.info(format("checkClaimsPastIntentionToProceedDeadline called by %s for date: %s",
+        logger.info(format("transitionClaimState %s called by %s for date: %s", stateTransition,
                 user.getUserDetails().getId(), format));
-        intentionToProceedService.checkClaimsPastIntentionToProceedDeadline(runDateTime, user);
+        scheduledStateTransitionService.transitionClaims(runDateTime, user, stateTransition);
     }
 
     private void resendStaffNotificationCCJRequestSubmitted(Claim claim, String authorisation) {
         this.ccjStaffNotificationHandler.onDefaultJudgmentRequestSubmitted(
-                new CountyCourtJudgmentEvent(claim, authorisation)
+            new CountyCourtJudgmentEvent(claim, authorisation)
         );
     }
 
@@ -304,18 +310,17 @@ public class SupportController {
         String fullName = userDetails.getFullName();
 
         if (!claim.getClaimData().isClaimantRepresented()) {
-            GeneratePinResponse pinResponse = userService.generatePin(
-                claim.getClaimData().getDefendant().getName(),
-                authorisation
+            GeneratePinResponse pinResponse = userService
+                .generatePin(claim.getClaimData().getDefendant().getName(), authorisation
             );
 
             claimService.linkLetterHolder(claim, pinResponse.getUserId(), authorisation);
             documentGenerator.generateForNonRepresentedClaim(
-                    new CitizenClaimIssuedEvent(claim, pinResponse.getPin(), fullName, authorisation)
+                new CitizenClaimIssuedEvent(claim, pinResponse.getPin(), fullName, authorisation)
             );
         } else {
             documentGenerator.generateForRepresentedClaim(
-                    new RepresentedClaimIssuedEvent(claim, fullName, authorisation)
+                new RepresentedClaimIssuedEvent(claim, fullName, authorisation)
             );
         }
     }
@@ -328,9 +333,8 @@ public class SupportController {
             throw new IllegalArgumentException("Rejected Claimant Response is mandatory for 'intent-to-proceed' event");
         }
 
-        claimantResponseStaffNotificationHandler.notifyStaffWithClaimantsIntentionToProceed(
-            new ClaimantResponseEvent(claim, authorization)
-        );
+        claimantResponseStaffNotificationHandler
+            .notifyStaffWithClaimantsIntentionToProceed(new ClaimantResponseEvent(claim, authorization));
     }
 
     private void resendStaffNotificationOnMoreTimeRequested(Claim claim) {
@@ -339,7 +343,8 @@ public class SupportController {
         }
 
         // Defendant email is not available at this point however it is not used in staff notifications
-        MoreTimeRequestedEvent event = new MoreTimeRequestedEvent(claim, claim.getResponseDeadline(), null);
+        MoreTimeRequestedEvent event =
+            new MoreTimeRequestedEvent(claim, claim.getResponseDeadline(), null);
         moreTimeRequestedStaffNotificationHandler.sendNotifications(event);
     }
 
@@ -381,15 +386,15 @@ public class SupportController {
 
         if (shouldFormaliseResponseAcceptance(response, claimantResponse)) {
             return ((ResponseAcceptation) claimantResponse).getFormaliseOption()
-                    .filter(Predicate.isEqual(FormaliseOption.SETTLEMENT)).isPresent();
+                .filter(Predicate.isEqual(FormaliseOption.SETTLEMENT)).isPresent();
         }
         return false;
     }
 
     private boolean shouldFormaliseResponseAcceptance(Response response, ClaimantResponse claimantResponse) {
         return ACCEPTATION == claimantResponse.getType()
-                && !ResponseUtils.isResponseStatesPaid(response)
-                && !ResponseUtils.isResponsePartAdmitPayImmediately(response);
+            && !ResponseUtils.isResponseStatesPaid(response)
+            && !ResponseUtils.isResponsePartAdmitPayImmediately(response);
     }
 
     private Supplier<NotFoundException> claimNotFoundException(String reference) {
