@@ -27,9 +27,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimIssueReceiptFileBaseName;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 
@@ -44,18 +42,11 @@ class ClaimantCCJRequestServiceTest {
     @Mock
     private DocumentsService documentService;
     @Mock
-    private CaseMapper caseMapper;
+    private ClaimService claimService;
     private ClaimantCCJRequestService service;
     private Claim claim;
     private PDF pdf;
     private CountyCourtJudgmentEvent event;
-    private CCDCase ccdCase;
-
-    @BeforeEach
-    void setUp() {
-        ccdCase = CCDCase.builder().build();
-        when(caseMapper.to(any(Claim.class))).thenReturn(ccdCase);
-    }
 
     @Nested
     @DisplayName("feature flag on tests")
@@ -66,8 +57,8 @@ class ClaimantCCJRequestServiceTest {
             service = new ClaimantCCJRequestService(
                 ccjByAdmissionOrDeterminationPdfService,
                 documentService,
-                caseMapper,
-                true);
+                true,
+                claimService);
         }
 
         @Test
@@ -136,10 +127,11 @@ class ClaimantCCJRequestServiceTest {
                 .createPdf(any());
             verify(documentService, never())
                 .uploadToDocumentManagement(any(), any(), any());
+            verify(claimService, never()).updateClaimState(any(), any(), any());
         }
 
         @Test
-        void shouldUpdateCCDCaseStateToJudgmentRequested() {
+        void shouldUpdateCCDCaseStateToJudgmentRequestedIfCCJByAdmissionOrDetermination() {
             CountyCourtJudgment ccj = CountyCourtJudgment.builder()
                 .ccjType(CountyCourtJudgmentType.ADMISSIONS).build();
             claim = SampleClaim.builder()
@@ -157,7 +149,8 @@ class ClaimantCCJRequestServiceTest {
             when(documentService.uploadToDocumentManagement(any(PDF.class),
                 anyString(), any(Claim.class))).thenReturn(claim);
             service.uploadDocumentToDocumentStore(event);
-            Assert.assertEquals(ccdCase.getState(), ClaimState.JUDGMENT_REQUESTED.getValue());
+            verify(claimService).updateClaimState("authorisation",
+                claim, ClaimState.JUDGMENT_REQUESTED);
         }
     }
 
@@ -170,8 +163,8 @@ class ClaimantCCJRequestServiceTest {
             service = new ClaimantCCJRequestService(
                 ccjByAdmissionOrDeterminationPdfService,
                 documentService,
-                caseMapper,
-                false);
+                false,
+                claimService);
             CountyCourtJudgment ccj = CountyCourtJudgment.builder()
                 .ccjType(CountyCourtJudgmentType.ADMISSIONS).build();
             claim = SampleClaim.builder()
@@ -184,17 +177,13 @@ class ClaimantCCJRequestServiceTest {
         }
 
         @Test
-        void shouldNotCallDocumentServiceIfCCJByAdmission() {
+        void shouldNotCallDocumentServiceAndUpdateCCDCaseStateToOpenIfCCJByAdmissionOrDetermination() {
             verify(ccjByAdmissionOrDeterminationPdfService, never())
                 .createPdf(any());
             verify(documentService, never())
                 .uploadToDocumentManagement(any(), any(), any());
-        }
-
-        @Test
-        void shouldUpdateCCDCaseStateToOpenForIfCCJByAdmissionOrDetermination() {
-            service.uploadDocumentToDocumentStore(event);
-            Assert.assertEquals(ccdCase.getState(), ClaimState.OPEN.getValue());
+            verify(claimService).updateClaimState("authorisation",
+                claim, ClaimState.OPEN);
         }
     }
 }
