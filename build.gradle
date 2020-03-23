@@ -9,6 +9,7 @@ plugins {
   id 'com.github.ben-manes.versions' version '0.28.0'
   id 'jacoco'
   id 'net.ltgt.apt' version '0.21'
+  id 'idea'
 }
 
 dependencyUpdates.resolutionStrategy = {
@@ -195,8 +196,8 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '6.0.0'
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.0'
   compile group: 'uk.gov.hmcts.reform', name: 'doc-assembly-client', version: '1.0.4'
-  compile group: 'uk.gov.hmcts.reform', name: 'fees-java-client', version: '0.0.5'
-  compile group: 'uk.gov.hmcts.reform', name: 'payments-client', version: '0.0.4'
+  compile group: 'uk.gov.hmcts.reform', name: 'fees-java-client', version: '0.0.6'
+  compile group: 'uk.gov.hmcts.reform', name: 'payments-client', version: '0.0.5'
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.1'
   compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.3.0'
   compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.5'
@@ -403,3 +404,12 @@ bootRun {
 }
 
 task checkStyle(dependsOn: [checkstyleMain, checkstyleAat, checkstyleTest, checkstyleIntegrationTest]){}
+
+idea {
+  module {
+    testSourceDirs += project.sourceSets.integrationTest.java.srcDirs
+    testSourceDirs += project.sourceSets.integrationTest.resources.srcDirs
+    testSourceDirs += project.sourceSets.aat.java.srcDirs
+    testSourceDirs += project.sourceSets.aat.resources.srcDirs
+  }
+}
