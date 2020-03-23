@@ -2,17 +2,22 @@ package uk.gov.hmcts.cmc.rpa.mapper.helper;
 
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.Address;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAddress;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 
+import java.time.LocalDate;
 import javax.json.JsonObject;
 
+import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 
 public class RPAMapperHelperTest {
 
@@ -48,5 +53,19 @@ public class RPAMapperHelperTest {
         JsonObject toJson = RPAMapperHelper.toJson(repaymentPlan);
         assertThat(toJson).isNotNull();
         assertThat(toJson).containsOnlyKeys("amount", "firstPayment", "frequency");
+    }
+
+    @Test
+    public void shouldReturnClaimantPaidOnDateForStatesPaid() {
+        Claim claim = SampleClaim.getClaimFullDefenceStatesPaidWithAcceptation();
+        assertThat(RPAMapperHelper.claimantPaidOnDate(claim))
+            .isEqualTo((LocalDate.of(2016, 1, 2).toString()));
+    }
+
+    @Test
+    public void shouldReturnClaimantPaidOnDateForPaidInFull() {
+        LocalDate moneyReceivedOn = now();
+        Claim claim = SampleClaim.builder().withMoneyReceivedOn(moneyReceivedOn).build();
+        assertEquals(moneyReceivedOn, RPAMapperHelper.claimantPaidOnDate(claim));
     }
 }
