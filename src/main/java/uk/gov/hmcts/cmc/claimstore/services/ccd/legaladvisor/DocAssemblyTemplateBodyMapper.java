@@ -5,8 +5,8 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDContactChangeContent;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
-import uk.gov.hmcts.cmc.ccd.domain.ContactChangeContent;
 import uk.gov.hmcts.cmc.ccd.domain.GeneralLetterContent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
@@ -136,7 +136,7 @@ public class DocAssemblyTemplateBodyMapper {
 
     public DocAssemblyTemplateBody changeContactBody(CCDCase ccdCase) {
         LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
-        ContactChangeContent contactChangeContent = ccdCase.getContactChangeContent();
+        CCDContactChangeContent contactChangeContent = ccdCase.getContactChangeContent();
         String partyName;
         CCDAddress partyAddress;
         if (ccdCase.getContactChangeParty().equals(CCDContactPartyType.CLAIMANT)) {
@@ -157,14 +157,14 @@ public class DocAssemblyTemplateBodyMapper {
             .partyAddress(partyAddress)
             .claimantName(contactChangeContent.getClaimantName())
             .claimantAddress(contactChangeContent.getClaimantAddress())
-            .hasMainAddressChanged(contactChangeContent.isHasMainAddressChanged())
+            .hasMainAddressChanged(contactChangeContent.getMainAddressChanged() == YES)
             .claimantEmail(contactChangeContent.getClaimantEmail())
             .claimantPhone(contactChangeContent.getClaimantPhone())
             .claimantContactAddress(contactChangeContent.getClaimantContactAddress())
-            .hasContactAddressChanged(contactChangeContent.isHasContactAddressChanged())
-            .claimantEmailRemoved(contactChangeContent.isClaimantEmailRemoved())
-            .claimantPhoneRemoved(contactChangeContent.isClaimantPhoneRemoved())
-            .claimantContactAddressRemoved(contactChangeContent.isClaimantContactAddressRemoved())
+            .hasContactAddressChanged(contactChangeContent.getContactAddressChanged() == YES)
+            .claimantEmailRemoved(contactChangeContent.getClaimantEmailRemoved() == YES)
+            .claimantPhoneRemoved(contactChangeContent.getClaimantPhoneRemoved() == YES)
+            .claimantContactAddressRemoved(contactChangeContent.getClaimantContactAddressRemoved() == YES)
             .build();
     }
 

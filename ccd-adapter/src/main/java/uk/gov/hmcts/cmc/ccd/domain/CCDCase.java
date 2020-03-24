@@ -139,5 +139,5 @@ public class CCDCase {
     private LocalDate intentionToProceedDeadline;
     private LocalDateTime dateReferredForDirections;
     private GeneralLetterContent generalLetterContent;
-    private ContactChangeContent contactChangeContent;
+    private CCDContactChangeContent contactChangeContent;
 }

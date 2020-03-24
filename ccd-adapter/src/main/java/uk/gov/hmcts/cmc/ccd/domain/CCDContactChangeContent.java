@@ -15,11 +15,13 @@ public class CCDContactChangeContent {
     private String caseworkerName;
     private String claimantName;
     private String claimantPhone;
+    private CCDYesNoOption claimantPhoneChanged;
     private String claimantEmail;
-    private CCDYesNoOption hasMainAddressChanged;
+    private CCDYesNoOption claimantEmailChanged;
     private CCDAddress claimantAddress;
-    private CCDYesNoOption hasContactAddressChanged;
+    private CCDYesNoOption mainAddressChanged;
     private CCDAddress claimantContactAddress;
+    private CCDYesNoOption contactAddressChanged;
     private CCDYesNoOption claimantPhoneRemoved;
     private CCDYesNoOption claimantEmailRemoved;
     private CCDYesNoOption claimantContactAddressRemoved;

@@ -6,9 +6,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDContactChangeContent;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
-import uk.gov.hmcts.cmc.ccd.domain.ContactChangeContent;
-import uk.gov.hmcts.cmc.ccd.mapper.ContactChangeContentMapper;
 import uk.gov.hmcts.cmc.claimstore.config.LoggerHandler;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -34,22 +33,19 @@ public class ChangeContactDetailsPostProcessor {
     private final ChangeContactDetailsNotificationService changeContactDetailsNotificationService;
     private final LetterContentBuilder letterContentBuilder;
     private final UserService userService;
-    private final ContactChangeContentMapper changeContactContentMapper;
 
     public ChangeContactDetailsPostProcessor(
         CaseDetailsConverter caseDetailsConverter,
         LetterGeneratorService letterGeneratorService,
         ChangeContactDetailsNotificationService changeContactDetailsNotificationService,
         LetterContentBuilder letterContentBuilder,
-        UserService userService,
-        ContactChangeContentMapper changeContactContentMapper
+        UserService userService
     ) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.letterGeneratorService = letterGeneratorService;
         this.changeContactDetailsNotificationService = changeContactDetailsNotificationService;
         this.letterContentBuilder = letterContentBuilder;
         this.userService = userService;
-        this.changeContactContentMapper = changeContactContentMapper;
     }
 
 
@@ -60,7 +56,7 @@ public class ChangeContactDetailsPostProcessor {
         CCDCase caseBefore = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetailsBefore());
         CCDCase caseNow = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
 
-        ContactChangeContent contactChangeContent = letterContentBuilder.letterContent(caseBefore, caseNow);
+        CCDContactChangeContent contactChangeContent = letterContentBuilder.letterContent(caseBefore, caseNow);
         CCDCase input = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
         UserDetails userDetails = userService.getUserDetails(authorisation);
@@ -77,7 +73,7 @@ public class ChangeContactDetailsPostProcessor {
             .builder()
             .data(ImmutableMap.of(
                 "contactChangeContent",
-                changeContactContentMapper.from(contactChangeContent),
+                contactChangeContent,
                 DRAFT_LETTER_DOC,
                 CCDDocument.builder().documentUrl(generalLetter.getRenditionOutputLocation()).build()
             ))

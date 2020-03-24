@@ -1,16 +1,19 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.domain.CCDTelephone;
-import uk.gov.hmcts.cmc.ccd.domain.ContactChangeContent;
+import uk.gov.hmcts.cmc.ccd.domain.CCDContactChangeContent;
 import uk.gov.hmcts.cmc.domain.models.Address;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 
 @Service
 public class LetterContentBuilder {
@@ -24,7 +27,7 @@ public class LetterContentBuilder {
     public static final String PHONE_REMOVED = "\nThey’ve removed their phone number.";
     public static final String MAIN_MESSAGE = "\nWe’re contacting you because %s has changed their contact details.";
 
-    public ContactChangeContent letterContent(CCDCase caseBefore, CCDCase caseNow) {
+    public CCDContactChangeContent letterContent(CCDCase caseBefore, CCDCase caseNow) {
 
 
         CCDApplicant claimant = caseBefore.getApplicants().get(0).getValue();
@@ -32,21 +35,27 @@ public class LetterContentBuilder {
         CCDAddress oldAddress = claimant.getPartyDetail().getPrimaryAddress();
         CCDAddress newAddress = claimantNow.getPartyDetail().getPrimaryAddress();
 
-        ContactChangeContent.ContactChangeContentBuilder contactChangeContent = ContactChangeContent.builder();
+        CCDContactChangeContent.CCDContactChangeContentBuilder contactChangeContent = CCDContactChangeContent.builder();
         if (!oldAddress.equals(newAddress)) {
             contactChangeContent.claimantAddress(newAddress);
-            contactChangeContent.hasMainAddressChanged(true);
+            contactChangeContent.mainAddressChanged(YES);
+        } else {
+            contactChangeContent.mainAddressChanged(NO);
         }
 
         String oldEmail = claimant.getPartyDetail().getEmailAddress();
         String newEmail = claimantNow.getPartyDetail().getEmailAddress();
 
         if (contentDiffer(oldEmail, newEmail)) {
-            if (newEmail.isEmpty()) {
-                contactChangeContent.claimantEmailRemoved(true);
+            if (StringUtils.isBlank(newEmail)) {
+                contactChangeContent.claimantEmailRemoved(YES);
             } else {
+                contactChangeContent.claimantEmailRemoved(NO);
+                contactChangeContent.claimantEmailChanged(YES);
                 contactChangeContent.claimantEmail(newEmail);
             }
+        } else {
+            contactChangeContent.claimantEmailChanged(NO);
         }
 
         CCDAddress oldCorrespondenceAddress = claimant.getPartyDetail().getCorrespondenceAddress();
@@ -54,22 +63,29 @@ public class LetterContentBuilder {
 
         if (contentDiffer(oldCorrespondenceAddress, newCorrespondenceAddress)) {
             if (!Optional.ofNullable(newCorrespondenceAddress).isPresent()) {
-                contactChangeContent.claimantContactAddressRemoved(true);
+                contactChangeContent.claimantContactAddressRemoved(YES);
             } else {
+                contactChangeContent.claimantContactAddressRemoved(NO);
                 contactChangeContent.claimantContactAddress(newCorrespondenceAddress);
-                contactChangeContent.hasContactAddressChanged(true);
+                contactChangeContent.contactAddressChanged(YES);
             }
+        } else {
+            contactChangeContent.contactAddressChanged(NO);
         }
 
-        CCDTelephone oldPhone = claimant.getPartyDetail().getTelephoneNumber();
-        CCDTelephone newPhone = claimantNow.getPartyDetail().getTelephoneNumber();
+        String oldPhone = claimant.getPartyDetail().getTelephoneNumber().getTelephoneNumber();
+        String newPhone = claimantNow.getPartyDetail().getTelephoneNumber().getTelephoneNumber();
 
         if (contentDiffer(oldPhone, newPhone)) {
             if (!Optional.ofNullable(newPhone).isPresent()) {
-                contactChangeContent.claimantPhoneRemoved(true);
+                contactChangeContent.claimantPhoneRemoved(YES);
             } else {
-                contactChangeContent.claimantPhone(newPhone.getTelephoneNumber());
+                contactChangeContent.claimantPhoneRemoved(NO);
+                contactChangeContent.claimantPhoneChanged(YES);
+                contactChangeContent.claimantPhone(newPhone);
             }
+        } else {
+            contactChangeContent.claimantPhoneChanged(NO);
         }
 
         return contactChangeContent.build();
