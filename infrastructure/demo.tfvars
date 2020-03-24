@@ -10,3 +10,4 @@ doc_assembly_api_url = "http://dg-docassembly-demo.service.core-compute-demo.int
 fees_url = "http://fees-register-api-demo.service.core-compute-demo.internal"
 payments_url = "http://payment-api-demo.service.core-compute-demo.internal"
 auto_cancel_payments = true
+enable_ase = true
