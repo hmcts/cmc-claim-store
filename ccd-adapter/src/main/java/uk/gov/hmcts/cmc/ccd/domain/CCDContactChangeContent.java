@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @NoArgsConstructor
@@ -25,4 +27,11 @@ public class CCDContactChangeContent {
     private CCDYesNoOption telephoneRemoved;
     private CCDYesNoOption primaryEmailRemoved;
     private CCDYesNoOption correspondenceAddressRemoved;
+
+    public boolean noContentChange() {
+        return isTelephoneModified == NO
+            && isEmailModified == NO
+            && isPrimaryAddressModified == NO
+            && isCorrespondenceAddressModified == NO;
+    }
 }

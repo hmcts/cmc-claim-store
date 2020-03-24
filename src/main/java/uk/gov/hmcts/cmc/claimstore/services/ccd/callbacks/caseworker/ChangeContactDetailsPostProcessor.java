@@ -20,6 +20,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 
+import java.util.Collections;
+
 @Service
 @ConditionalOnProperty(prefix = "doc_assembly", name = "url")
 public class ChangeContactDetailsPostProcessor {
@@ -62,10 +64,16 @@ public class ChangeContactDetailsPostProcessor {
         CCDParty partyNow = getPartyDetail(caseNow, contactChangeParty);
 
         CCDContactChangeContent contactChangeContent = letterContentBuilder.letterContent(partyBefore, partyNow);
-        CCDCase input = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
-        String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
 
-        CCDCase ccdCase = input.toBuilder()
+        if(contactChangeContent.noContentChange()){
+            return AboutToStartOrSubmitCallbackResponse
+                .builder()
+                .errors(Collections.singletonList("Please change some content."))
+                .build();
+        }
+
+        String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
+        CCDCase ccdCase = caseNow.toBuilder()
             .contactChangeContent(contactChangeContent.toBuilder()
                 .caseworkerName(getCaseworkerName(authorisation))
                 .build())
