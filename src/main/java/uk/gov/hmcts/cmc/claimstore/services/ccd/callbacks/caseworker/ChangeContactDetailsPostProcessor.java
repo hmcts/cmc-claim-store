@@ -7,7 +7,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactChangeContent;
+import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.claimstore.config.LoggerHandler;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -55,8 +57,10 @@ public class ChangeContactDetailsPostProcessor {
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase caseBefore = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetailsBefore());
         CCDCase caseNow = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
+        CCDParty partyBefore = getPartyDetail(caseBefore);
+        CCDParty partyNow = getPartyDetail(caseNow);
 
-        CCDContactChangeContent contactChangeContent = letterContentBuilder.letterContent(caseBefore, caseNow);
+        CCDContactChangeContent contactChangeContent = letterContentBuilder.letterContent(partyBefore, partyNow);
         CCDCase input = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
         UserDetails userDetails = userService.getUserDetails(authorisation);
@@ -80,6 +84,13 @@ public class ChangeContactDetailsPostProcessor {
             .build();
     }
 
+    private CCDParty getPartyDetail(CCDCase ccdCase) {
+        if (ccdCase.getContactChangeParty() == CCDContactPartyType.CLAIMANT) {
+            return ccdCase.getApplicants().get(0).getValue().getPartyDetail();
+        } else {
+            return ccdCase.getRespondents().get(0).getValue().getPartyDetail();
+        }
+    }
 
 //    public CallbackResponse notifyPartiesViaEmailAndLetter(CallbackParams callbackParams) {
 //        logger.info("Change Contact Details: print letter or send email notifications");
