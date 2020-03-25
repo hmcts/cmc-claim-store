@@ -26,18 +26,18 @@ public class DirectionsQuestionnaireDeadlineCallbackHandler extends CallbackHand
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
     private static final String STATE = "state";
 
-    private final boolean staffEmailsEnabled;
+    private final boolean ctscEnabled;
     private final ImmutableMap<CallbackType, Callback> callbacks = ImmutableMap.of(
         CallbackType.ABOUT_TO_SUBMIT, this::determineState
     );
 
     public DirectionsQuestionnaireDeadlineCallbackHandler(
-        @Value("${feature_toggles.staff_emails_enabled}") boolean staffEmailsEnabled) {
-        this.staffEmailsEnabled = staffEmailsEnabled;
+        @Value("${feature_toggles.ctsc_enabled}") boolean ctscEnabled) {
+        this.ctscEnabled = ctscEnabled;
     }
 
     private CallbackResponse determineState(CallbackParams callbackParams) {
-        ClaimState state = staffEmailsEnabled ? ClaimState.OPEN : ClaimState.READY_FOR_PAPER_DQ;
+        ClaimState state = ctscEnabled ? ClaimState.READY_FOR_PAPER_DQ : ClaimState.OPEN;
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(ImmutableMap.of(STATE, state.getValue()))

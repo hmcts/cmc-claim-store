@@ -15,8 +15,8 @@ class DirectionsQuestionnaireDeadlineCallbackHandlerTest {
     private DirectionsQuestionnaireDeadlineCallbackHandler handler;
 
     @Test
-    void shouldReturnOpenStateIfStaffEmailsEnabled() {
-        handler = new DirectionsQuestionnaireDeadlineCallbackHandler(true);
+    void shouldReturnOpenStateIfCtscNotEnabled() {
+        handler = new DirectionsQuestionnaireDeadlineCallbackHandler(false);
 
         CallbackParams params = CallbackParams.builder().type(CallbackType.ABOUT_TO_SUBMIT).build();
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
@@ -25,8 +25,8 @@ class DirectionsQuestionnaireDeadlineCallbackHandlerTest {
     }
 
     @Test
-    void shouldReturnReadyForPaperDQStateIfStaffEmailsNotEnabled() {
-        handler = new DirectionsQuestionnaireDeadlineCallbackHandler(false);
+    void shouldReturnReadyForPaperDQStateIfCtscEnabled() {
+        handler = new DirectionsQuestionnaireDeadlineCallbackHandler(true);
 
         CallbackParams params = CallbackParams.builder().type(CallbackType.ABOUT_TO_SUBMIT).build();
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
