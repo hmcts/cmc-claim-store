@@ -129,6 +129,7 @@ public class GeneralLetterService {
             logger.info("General Letter: updating case document with general letter");
             CCDCase updatedCase = ccdCase.toBuilder()
                 .caseDocuments(updateCaseDocumentsWithGeneralLetter(ccdCase, draftLetterDoc))
+                .draftLetterDoc(null)
                 .build();
             return AboutToStartOrSubmitCallbackResponse
                 .builder()

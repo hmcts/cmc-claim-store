@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.Params.BEARER_TOKEN;
 import java.util.Collections;
 
+import static uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType.CLAIMANT;
 
 @Service
 @ConditionalOnProperty(prefix = "doc_assembly", name = "url")
@@ -72,7 +73,7 @@ public class ChangeContactDetailsPostProcessor {
 
         CCDContactChangeContent contactChangeContent = letterContentBuilder.letterContent(partyBefore, partyNow);
 
-        if(contactChangeContent.noContentChange()){
+        if (contactChangeContent.noContentChange()) {
             return AboutToStartOrSubmitCallbackResponse
                 .builder()
                 .errors(Collections.singletonList("Please change some content."))
@@ -86,16 +87,18 @@ public class ChangeContactDetailsPostProcessor {
                 .build())
             .build();
 
-        DocAssemblyResponse generalLetter = letterGeneratorService.createGeneralLetter(ccdCase, authorisation);
+        ImmutableMap.Builder<String, Object> data = ImmutableMap.<String, Object>builder()
+            .put("contactChangeContent", contactChangeContent);
+
+        if (contactChangeParty == CLAIMANT) {
+            DocAssemblyResponse generalLetter = letterGeneratorService.createGeneralLetter(ccdCase, authorisation);
+            data.put(DRAFT_LETTER_DOC, CCDDocument.builder()
+                .documentUrl(generalLetter.getRenditionOutputLocation()).build());
+        }
 
         return AboutToStartOrSubmitCallbackResponse
             .builder()
-            .data(ImmutableMap.of(
-                "contactChangeContent",
-                contactChangeContent,
-                DRAFT_LETTER_DOC,
-                CCDDocument.builder().documentUrl(generalLetter.getRenditionOutputLocation()).build()
-            ))
+            .data(data.build())
             .build();
     }
 
@@ -105,7 +108,7 @@ public class ChangeContactDetailsPostProcessor {
     }
 
     private CCDParty getPartyDetail(CCDCase ccdCase, CCDContactPartyType contactPartyType) {
-        if (contactPartyType == CCDContactPartyType.CLAIMANT) {
+        if (contactPartyType == CLAIMANT) {
             return ccdCase.getApplicants().get(0).getValue().getPartyDetail();
         } else {
             return ccdCase.getRespondents().get(0).getValue().getPartyDetail();
@@ -118,7 +121,7 @@ public class ChangeContactDetailsPostProcessor {
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
-        CCDContactChangeContent contactChangeContent = (CCDContactChangeContent) callbackParams.getParams().get("contactChangeContent");
+        CCDContactChangeContent contactChangeContent = ccdCase.getContactChangeContent();
 
         return letterNeeded(ccdCase, claim)
                 ? generalLetterService.printAndUpdateCaseDocuments(caseDetails, authorisation)
