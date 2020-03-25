@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -7,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactChangeContent;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
@@ -76,7 +78,7 @@ public class ChangeContactDetailsPostProcessor {
 
         CCDContactChangeContent contactChangeContent = letterContentBuilder.letterContent(partyBefore, partyNow);
 
-        if (contactChangeContent.noContentChange()) {
+            if (contactChangeContent.noContentChange()) {
             return AboutToStartOrSubmitCallbackResponse
                 .builder()
                 .errors(Collections.singletonList("Please change some content."))
@@ -86,13 +88,14 @@ public class ChangeContactDetailsPostProcessor {
         ImmutableMap.Builder<String, Object> data = ImmutableMap.<String, Object>builder()
             .put("contactChangeContent", contactChangeContent);
 
-        if (letterNeededForDefendant(caseNow)) {
+        if (letterNeededForDefendant(contactChangeParty, caseBefore)) {
             String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
             CCDCase ccdCase = caseNow.toBuilder()
                 .contactChangeContent(contactChangeContent.toBuilder()
                     .letterNeededForDefendant(CCDYesNoOption.YES)
                     .caseworkerName(getCaseworkerName(authorisation))
                     .build())
+                .respondents(caseBefore.getRespondents())
                 .build();
 
             DocAssemblyResponse generalLetter = letterGeneratorService.createGeneralLetter(ccdCase, authorisation);
@@ -128,16 +131,13 @@ public class ChangeContactDetailsPostProcessor {
         String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
         CCDContactChangeContent contactChangeContent = ccdCase.getContactChangeContent();
 
-        return letterNeededForDefendant(ccdCase)
+        return letterNeededForDefendant(ccdCase.getContactChangeParty(), ccdCase)
             ? generalLetterService.printAndUpdateCaseDocuments(caseDetails, authorisation)
             : changeContactDetailsNotificationService.sendEmailToRightRecipient(ccdCase, claim, contactChangeContent);
     }
 
-    public boolean letterNeededForDefendant(CCDCase ccdCase) {
+    public boolean letterNeededForDefendant(CCDContactPartyType contactPartyType, CCDCase ccdCase) {
         CCDRespondent ccdRespondent = ccdCase.getRespondents().get(0).getValue();
-        return ccdCase.getContactChangeParty() == CLAIMANT && StringUtils.isBlank(ccdRespondent.getDefendantId());
+        return contactPartyType == CLAIMANT && StringUtils.isBlank(ccdRespondent.getDefendantId());
     }
 }
-
-
-

@@ -15,7 +15,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 @Service
 public class LetterContentBuilder {
 
-    public CCDContactChangeContent letterContent(CCDParty partyBefore, CCDParty partyNow) {
+    public CCDContactChangeContent letterContent(CCDParty previousPartyDetails, CCDParty latestPartyDetails) {
 
         CCDContactChangeContent.CCDContactChangeContentBuilder contactChangeContent = CCDContactChangeContent.builder()
             .isPrimaryAddressModified(NO)
@@ -26,6 +26,19 @@ public class LetterContentBuilder {
             .primaryEmailRemoved(NO)
             .telephoneRemoved(NO);
 
+        if (previousPartyDetails == null) {
+            updateFlagsBasedOnLatestPartyDetails(latestPartyDetails, contactChangeContent);
+        } else {
+            UpdateFlagsByComparingPartDetails(previousPartyDetails, latestPartyDetails, contactChangeContent);
+        }
+        return contactChangeContent.build();
+    }
+
+    private void UpdateFlagsByComparingPartDetails(
+        CCDParty partyBefore,
+        CCDParty partyNow,
+        CCDContactChangeContent.CCDContactChangeContentBuilder contactChangeContent
+    ) {
         CCDAddress oldAddress = partyBefore.getPrimaryAddress();
         CCDAddress newAddress = partyNow.getPrimaryAddress();
 
@@ -61,16 +74,39 @@ public class LetterContentBuilder {
         CCDTelephone oldPhone = partyBefore.getTelephoneNumber();
         CCDTelephone newPhone = partyNow.getTelephoneNumber();
 
+        contactChangeContent.telephone(newPhone.getTelephoneNumber());
         if (contentDiffer(oldPhone, newPhone)) {
             if (!Optional.ofNullable(newPhone).isPresent()) {
                 contactChangeContent.telephoneRemoved(YES);
             } else {
                 contactChangeContent.isTelephoneModified(YES);
-                contactChangeContent.telephone(newPhone.getTelephoneNumber());
             }
         }
+    }
 
-        return contactChangeContent.build();
+    private void updateFlagsBasedOnLatestPartyDetails(
+        CCDParty partyNow,
+        CCDContactChangeContent.CCDContactChangeContentBuilder contactChangeContent
+    ) {
+        if (partyNow.getCorrespondenceAddress() != null) {
+            contactChangeContent.correspondenceAddress(partyNow.getCorrespondenceAddress())
+                .isCorrespondenceAddressModified(YES);
+        }
+
+        if (partyNow.getPrimaryAddress() != null) {
+            contactChangeContent.primaryAddress(partyNow.getPrimaryAddress())
+                .isPrimaryAddressModified(YES);
+        }
+
+        if (!StringUtils.isBlank(partyNow.getEmailAddress())) {
+            contactChangeContent.isEmailModified(YES)
+                .primaryEmail(partyNow.getEmailAddress());
+        }
+
+        if (partyNow.getTelephoneNumber() != null) {
+            contactChangeContent.telephone(partyNow.getTelephoneNumber().getTelephoneNumber())
+                .isTelephoneModified(YES);
+        }
     }
 
     private boolean contentDiffer(Object old, Object latest) {

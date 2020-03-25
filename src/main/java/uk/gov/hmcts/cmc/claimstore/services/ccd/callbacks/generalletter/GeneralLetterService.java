@@ -130,6 +130,9 @@ public class GeneralLetterService {
             CCDCase updatedCase = ccdCase.toBuilder()
                 .caseDocuments(updateCaseDocumentsWithGeneralLetter(ccdCase, draftLetterDoc))
                 .draftLetterDoc(null)
+                .contactChangeParty(null)
+                .contactChangeContent(null)
+                .generalLetterContent(null)
                 .build();
             return AboutToStartOrSubmitCallbackResponse
                 .builder()
