@@ -30,25 +30,25 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 public abstract class Response {
 
     @NotNull
-    private final ResponseType responseType;
+    protected final ResponseType responseType;
 
-    private final YesNoOption freeMediation;
+    protected final YesNoOption freeMediation;
 
     @Size(max = 30, message = "Mediation phone number may not be longer than {max} characters")
-    private final String mediationPhoneNumber;
+    protected final String mediationPhoneNumber;
 
     @Size(max = 30, message = "Mediation contact person may not be longer than {max} characters")
-    private final String mediationContactPerson;
+    protected final String mediationContactPerson;
 
     @JsonUnwrapped
-    private final YesNoOption moreTimeNeeded;
+    protected final YesNoOption moreTimeNeeded;
 
     @Valid
     @NotNull
-    private final Party defendant;
+    protected final Party defendant;
 
     @Valid
-    private final StatementOfTruth statementOfTruth;
+    protected final StatementOfTruth statementOfTruth;
 
     public Response(
         ResponseType responseType,
