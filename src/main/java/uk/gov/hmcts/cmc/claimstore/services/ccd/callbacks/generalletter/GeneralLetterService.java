@@ -38,6 +38,7 @@ import java.util.List;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.GENERAL_LETTER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterCallbackHandler.DRAFT_LETTER_DOC;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterCallbackHandler.GENERAL_LETTER_CONTENT;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildLetterFileBaseName;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 
@@ -92,6 +93,9 @@ public class GeneralLetterService {
             logger.info("General Letter: creating general letter");
             if (caseDetails.getData().containsKey(DRAFT_LETTER_DOC)) {
                 caseDetails.getData().remove(DRAFT_LETTER_DOC);
+            }
+            if (caseDetails.getData().containsKey(GENERAL_LETTER_CONTENT)) {
+                caseDetails.getData().remove(GENERAL_LETTER_CONTENT);
             }
             CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
             DocAssemblyResponse docAssemblyResponse = docAssemblyService.createGeneralLetter(ccdCase,
