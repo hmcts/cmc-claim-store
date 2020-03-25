@@ -69,13 +69,9 @@ public class ClaimantResponseRule {
         Optional<CourtDetermination> courtDetermination = responseAcceptation.getCourtDetermination();
         Optional<PaymentIntention> claimantPaymentIntention = responseAcceptation.getClaimantPaymentIntention();
 
-        boolean isBothEmpty = !claimantPaymentIntention.isPresent() && !courtDetermination.isPresent();
-        boolean isBothPresent = (claimantPaymentIntention.isPresent() || courtDetermination.isPresent())
-            && (claimantPaymentIntention.isPresent() && courtDetermination.isPresent());
-        if (!isBothEmpty && !isBothPresent) {
+        if (claimantPaymentIntention.isPresent() ^ courtDetermination.isPresent()) {
             throw new BadRequestException(
-                "Court determination should be present when "
-                + "claimant payment intention is present or vice versa"
+                "Court determination should be present when claimant payment intention is present or vice versa"
             );
         }
     }
