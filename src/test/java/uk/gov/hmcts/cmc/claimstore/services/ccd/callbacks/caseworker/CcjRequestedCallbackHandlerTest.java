@@ -15,8 +15,8 @@ class CcjRequestedCallbackHandlerTest {
     private CcjRequestedCallbackHandler handler;
 
     @Test
-    void shouldReturnOpenStateIfStaffEmailsEnabled() {
-        handler = new CcjRequestedCallbackHandler(true);
+    void shouldReturnOpenStateIfCtscNotEnabled() {
+        handler = new CcjRequestedCallbackHandler(false);
 
         CallbackParams params = CallbackParams.builder().type(CallbackType.ABOUT_TO_SUBMIT).build();
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
@@ -25,8 +25,8 @@ class CcjRequestedCallbackHandlerTest {
     }
 
     @Test
-    void shouldReturnJudgmentRequestedStateIfStaffEmailsNotEnabled() {
-        handler = new CcjRequestedCallbackHandler(false);
+    void shouldReturnJudgmentRequestedStateIfCtscEnabled() {
+        handler = new CcjRequestedCallbackHandler(true);
 
         CallbackParams params = CallbackParams.builder().type(CallbackType.ABOUT_TO_SUBMIT).build();
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
