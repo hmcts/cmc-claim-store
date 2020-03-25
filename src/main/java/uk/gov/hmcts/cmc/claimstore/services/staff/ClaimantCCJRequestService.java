@@ -21,33 +21,25 @@ public class ClaimantCCJRequestService {
     private final CCJByAdmissionOrDeterminationPdfService ccjByAdmissionOrDeterminationPdfService;
     private final DocumentsService documentService;
     private final boolean ctscEnabled;
-    private final ClaimService claimService;
 
     @Autowired
     public ClaimantCCJRequestService(
         CCJByAdmissionOrDeterminationPdfService ccjByAdmissionOrDeterminationPdfService,
         DocumentsService documentService,
-        @Value("${feature_toggles.ctsc_enabled}") boolean ctscEnabled,
-        ClaimService claimService
+        @Value("${feature_toggles.ctsc_enabled}") boolean ctscEnabled
     ) {
         this.ccjByAdmissionOrDeterminationPdfService = ccjByAdmissionOrDeterminationPdfService;
         this.documentService = documentService;
         this.ctscEnabled = ctscEnabled;
-        this.claimService = claimService;
     }
 
     @EventListener
     public void uploadDocumentToDocumentStore(CountyCourtJudgmentEvent event) {
         Claim claim = event.getClaim();
-        if (claim.getCountyCourtJudgment().getCcjType() == ADMISSIONS
+        if (ctscEnabled && claim.getCountyCourtJudgment().getCcjType() == ADMISSIONS
             || claim.getCountyCourtJudgment().getCcjType() == DETERMINATION) {
-            if (ctscEnabled) {
-                claimService.updateClaimState(event.getAuthorisation(), claim, ClaimState.JUDGMENT_REQUESTED);
                 PDF document = ccjByAdmissionOrDeterminationPdfService.createPdf(claim);
                 documentService.uploadToDocumentManagement(document, event.getAuthorisation(), claim);
-            } else {
-                claimService.updateClaimState(event.getAuthorisation(), claim, ClaimState.OPEN);
-            }
         }
     }
 }

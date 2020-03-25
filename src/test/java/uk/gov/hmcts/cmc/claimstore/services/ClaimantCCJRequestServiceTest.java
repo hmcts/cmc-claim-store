@@ -56,8 +56,7 @@ class ClaimantCCJRequestServiceTest {
             service = new ClaimantCCJRequestService(
                 ccjByAdmissionOrDeterminationPdfService,
                 documentService,
-                true,
-                claimService);
+                true);
         }
 
         @Test
@@ -128,29 +127,6 @@ class ClaimantCCJRequestServiceTest {
                 .uploadToDocumentManagement(any(), any(), any());
             verify(claimService, never()).updateClaimState(any(), any(), any());
         }
-
-        @Test
-        void shouldUpdateCCDCaseStateToJudgmentRequestedIfCCJByAdmissionOrDetermination() {
-            CountyCourtJudgment ccj = CountyCourtJudgment.builder()
-                .ccjType(CountyCourtJudgmentType.ADMISSIONS).build();
-            claim = SampleClaim.builder()
-                .withCountyCourtJudgment(ccj)
-                .withClaimantResponse(SampleClaimantResponse.ClaimantResponseAcceptation
-                    .builder().build())
-                .build();
-            pdf = new PDF(
-                buildClaimIssueReceiptFileBaseName(claim.getReferenceNumber()),
-                PDF_CONTENT,
-                CLAIM_ISSUE_RECEIPT
-            );
-            event = new CountyCourtJudgmentEvent(claim, "authorisation");
-            when(ccjByAdmissionOrDeterminationPdfService.createPdf(claim)).thenReturn(pdf);
-            when(documentService.uploadToDocumentManagement(any(PDF.class),
-                anyString(), any(Claim.class))).thenReturn(claim);
-            service.uploadDocumentToDocumentStore(event);
-            verify(claimService).updateClaimState("authorisation",
-                claim, ClaimState.JUDGMENT_REQUESTED);
-        }
     }
 
     @Nested
@@ -162,8 +138,7 @@ class ClaimantCCJRequestServiceTest {
             service = new ClaimantCCJRequestService(
                 ccjByAdmissionOrDeterminationPdfService,
                 documentService,
-                false,
-                claimService);
+                false);
             CountyCourtJudgment ccj = CountyCourtJudgment.builder()
                 .ccjType(CountyCourtJudgmentType.ADMISSIONS).build();
             claim = SampleClaim.builder()
@@ -176,13 +151,11 @@ class ClaimantCCJRequestServiceTest {
         }
 
         @Test
-        void shouldNotCallDocumentServiceAndUpdateCCDCaseStateToOpenIfCCJByAdmissionOrDetermination() {
+        void shouldNotCallDocumentServiceIfCCJByAdmissionOrDetermination() {
             verify(ccjByAdmissionOrDeterminationPdfService, never())
                 .createPdf(any());
             verify(documentService, never())
                 .uploadToDocumentManagement(any(), any(), any());
-            verify(claimService).updateClaimState("authorisation",
-                claim, ClaimState.OPEN);
         }
     }
 }
