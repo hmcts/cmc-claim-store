@@ -76,11 +76,6 @@ public class UserService {
         return idamApi.generatePin(new GeneratePinRequest(name), authorisation);
     }
 
-    public String getBasicAuthHeader(String username, String password) {
-        String authorisation = username + ":" + password;
-        return BASIC + Base64.getEncoder().encodeToString(authorisation.getBytes());
-    }
-
     public String getAuthorisationToken(String username, String password) {
         String authorisation = username + ":" + password;
         String base64Authorisation = Base64.getEncoder().encodeToString(authorisation.getBytes());
