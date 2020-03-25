@@ -24,6 +24,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.Params.BEARER_TOKEN;
+import java.util.Collections;
+
 
 @Service
 @ConditionalOnProperty(prefix = "doc_assembly", name = "url")
@@ -64,17 +66,23 @@ public class ChangeContactDetailsPostProcessor {
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase caseBefore = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetailsBefore());
         CCDCase caseNow = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
-        CCDParty partyBefore = getPartyDetail(caseBefore);
-        CCDParty partyNow = getPartyDetail(caseNow);
+        CCDContactPartyType contactChangeParty = caseNow.getContactChangeParty();
+        CCDParty partyBefore = getPartyDetail(caseBefore, contactChangeParty);
+        CCDParty partyNow = getPartyDetail(caseNow, contactChangeParty);
 
         CCDContactChangeContent contactChangeContent = letterContentBuilder.letterContent(partyBefore, partyNow);
-        CCDCase input = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
-        String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
-        UserDetails userDetails = userService.getUserDetails(authorisation);
-        String caseworkerName = userDetails.getFullName();
-        CCDCase ccdCase = input.toBuilder()
+
+        if(contactChangeContent.noContentChange()){
+            return AboutToStartOrSubmitCallbackResponse
+                .builder()
+                .errors(Collections.singletonList("Please change some content."))
+                .build();
+        }
+
+        String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
+        CCDCase ccdCase = caseNow.toBuilder()
             .contactChangeContent(contactChangeContent.toBuilder()
-                .caseworkerName(caseworkerName)
+                .caseworkerName(getCaseworkerName(authorisation))
                 .build())
             .build();
 
@@ -91,8 +99,13 @@ public class ChangeContactDetailsPostProcessor {
             .build();
     }
 
-    private CCDParty getPartyDetail(CCDCase ccdCase) {
-        if (ccdCase.getContactChangeParty() == CCDContactPartyType.CLAIMANT) {
+    private String getCaseworkerName(String authorisation) {
+        UserDetails userDetails = userService.getUserDetails(authorisation);
+        return userDetails.getFullName();
+    }
+
+    private CCDParty getPartyDetail(CCDCase ccdCase, CCDContactPartyType contactPartyType) {
+        if (contactPartyType == CCDContactPartyType.CLAIMANT) {
             return ccdCase.getApplicants().get(0).getValue().getPartyDetail();
         } else {
             return ccdCase.getRespondents().get(0).getValue().getPartyDetail();

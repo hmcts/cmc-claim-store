@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @NoArgsConstructor
@@ -14,15 +16,22 @@ import lombok.NoArgsConstructor;
 public class CCDContactChangeContent {
     private String caseworkerName;
     private String claimantName;
-    private String claimantPhone;
-    private CCDYesNoOption claimantPhoneChanged;
-    private String claimantEmail;
-    private CCDYesNoOption claimantEmailChanged;
-    private CCDAddress claimantAddress;
-    private CCDYesNoOption mainAddressChanged;
-    private CCDAddress claimantContactAddress;
-    private CCDYesNoOption contactAddressChanged;
-    private CCDYesNoOption claimantPhoneRemoved;
-    private CCDYesNoOption claimantEmailRemoved;
-    private CCDYesNoOption claimantContactAddressRemoved;
+    private String telephone;
+    private CCDYesNoOption isTelephoneModified;
+    private String primaryEmail;
+    private CCDYesNoOption isEmailModified;
+    private CCDAddress primaryAddress;
+    private CCDYesNoOption isPrimaryAddressModified;
+    private CCDAddress correspondenceAddress;
+    private CCDYesNoOption isCorrespondenceAddressModified;
+    private CCDYesNoOption telephoneRemoved;
+    private CCDYesNoOption primaryEmailRemoved;
+    private CCDYesNoOption correspondenceAddressRemoved;
+
+    public boolean noContentChange() {
+        return isTelephoneModified == NO
+            && isEmailModified == NO
+            && isPrimaryAddressModified == NO
+            && isCorrespondenceAddressModified == NO;
+    }
 }
