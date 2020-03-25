@@ -203,6 +203,16 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.5'
   compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.0.4'
 
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
+  compile group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '2.7.0'
+
+  compile group: 'org.springframework.security', name: 'spring-security-web'
+  compile group: 'org.springframework.security', name: 'spring-security-config'
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client'
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
+  compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '7.9'
+  compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
+
   compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
   compile group: 'org.apache.commons', name: 'commons-csv', version: '1.8'
 
@@ -403,7 +413,7 @@ bootRun {
   }
 }
 
-task checkStyle(dependsOn: [checkstyleMain, checkstyleAat, checkstyleTest, checkstyleIntegrationTest]){}
+task checkStyle(dependsOn: [checkstyleMain, checkstyleAat, checkstyleTest, checkstyleIntegrationTest]) {}
 
 idea {
   module {

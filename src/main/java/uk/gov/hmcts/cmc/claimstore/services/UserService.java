@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.idam.IdamCaseworker;
 import uk.gov.hmcts.cmc.claimstore.config.properties.idam.IdamCaseworkerProperties;
@@ -104,6 +105,7 @@ public class UserService {
     }
 
     @LogExecutionTime
+    @Cacheable(value = "userInfoCache")
     public UserInfo getUserInfo(String bearerToken) {
         return idamApi.retrieveUserInfo(bearerToken);
     }

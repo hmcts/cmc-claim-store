@@ -32,10 +32,11 @@ import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
 @Api
 @RestController
 @RequestMapping(
-    path = "/claims",
+    path = ClaimController.CLAIMS,
     produces = MediaType.APPLICATION_JSON_VALUE)
 public class ClaimController {
 
+    public static final String CLAIMS = "/claims";
     private final ClaimService claimService;
 
     @Autowired

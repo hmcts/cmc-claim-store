@@ -36,6 +36,23 @@ spring:
     username: ${CMC_DB_USERNAME:-}
     password: ${CMC_DB_PASSWORD:-}
     url: jdbc:postgresql://${CMC_DB_HOST:}:${CMC_DB_PORT:}/${CMC_DB_NAME:cmc}${CMC_DB_CONNECTION_OPTIONS:}
+  cache:
+    cache-names: userInfoCache
+    caffeine:
+      spec: expireAfterAccess=3600s
+  security:
+    oauth2:
+      client:
+        provider:
+          oidc:
+            issuer-uri: ${idam.api.url}/o
+        registration:
+          oidc:
+            client-id: internal
+            client-secret: internal
+
+oidc:
+  issuer: ${OIDC_ISSUER:http://fr-am:8080/openam/oauth2/hmcts}
 
 quartzProperties:
   org.quartz:
