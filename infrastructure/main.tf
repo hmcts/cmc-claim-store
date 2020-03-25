@@ -210,6 +210,7 @@ module "claim-store-api" {
     CLAIM_STORE_TEST_SUPPORT_ENABLED = "${var.env == "prod" ? "false" : "true"}"
     FEATURE_TOGGLES_SAVE_CLAIM_STATE_ENABLED = "${var.save_claim_state_enabled}"
     FEATURE_TOGGLES_CTSC_ENABLED = "${var.ctsc_enabled}"
+    FEATURE_AUTO_CANCEL_PAYMENTS = "${var.auto_cancel_payments}"
 
     //thread pool configs
     ASYNC_MAX_THREADPOOL_SIZE = 50
