@@ -118,7 +118,7 @@ public class ChangeContactDetailsPostProcessor {
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
-        CCDContactChangeContent contactChangeContent = (CCDContactChangeContent) callbackParams.getParams().get("contactChangeContent");
+        CCDContactChangeContent contactChangeContent = ccdCase.getContactChangeContent();
 
         return letterNeeded(ccdCase, claim)
                 ? generalLetterService.printAndUpdateCaseDocuments(caseDetails, authorisation)
