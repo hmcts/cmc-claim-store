@@ -111,14 +111,16 @@ public class DocAssemblyTemplateBodyMapper {
         GeneralLetterContent generalLetterContent = ccdCase.getGeneralLetterContent();
         String partyName;
         CCDAddress partyAddress;
-        if (ccdCase.getApplicants().get(0).getValue()
-            .getPartyName().equals(CCDContactPartyType.CLAIMANT)) {
+        if (ccdCase.getGeneralLetterContent().getIssueLetterContact()
+            .equals(CCDContactPartyType.CLAIMANT)) {
             partyName = ccdCase.getApplicants().get(0).getValue().getPartyName();
             partyAddress = ccdCase.getApplicants().get(0)
                 .getValue().getPartyDetail().getPrimaryAddress();
         } else {
             partyName = ccdCase.getRespondents().get(0)
-                .getValue().getClaimantProvidedPartyName();
+                .getValue().getPartyName() != null ?
+                ccdCase.getRespondents().get(0).getValue().getPartyName() :
+                ccdCase.getRespondents().get(0).getValue().getClaimantProvidedPartyName();
             partyAddress = getDefendantAddress(ccdCase.getRespondents().get(0).getValue());
         }
         return DocAssemblyTemplateBody.builder()
