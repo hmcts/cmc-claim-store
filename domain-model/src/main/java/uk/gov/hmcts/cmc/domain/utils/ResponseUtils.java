@@ -1,6 +1,9 @@
 package uk.gov.hmcts.cmc.domain.utils;
 
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
@@ -8,6 +11,7 @@ import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
@@ -42,6 +46,16 @@ public class ResponseUtils {
             return isResponseStatesPaid(response);
         }
 
+        return false;
+    }
+
+    public static boolean isResponseStatesPaidAccepted(Claim claim) {
+        Optional<Response> response = claim.getResponse();
+        Optional<ClaimantResponse> claimantResponse = claim.getClaimantResponse();
+
+        if (response.filter(ResponseUtils::isResponseStatesPaid).isPresent() && claimantResponse.isPresent()) {
+            return claimantResponse.get().getType() == ClaimantResponseType.ACCEPTATION;
+        }
         return false;
     }
 

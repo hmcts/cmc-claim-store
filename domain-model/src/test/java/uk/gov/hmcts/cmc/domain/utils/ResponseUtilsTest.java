@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.domain.utils;
 
 import org.junit.Test;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
@@ -9,6 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SamplePaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
@@ -69,6 +71,20 @@ public class ResponseUtilsTest {
         Response response = SampleResponse.FullDefence.builder().withDefenceType(DefenceType.DISPUTE).build();
 
         assertThat(ResponseUtils.isResponseFullDefenceStatesPaid(response)).isFalse();
+    }
+
+    @Test
+    public void isResponseStatesPaidAcceptedShouldBeTrue() {
+        Claim claim = SampleClaim.getClaimFullDefenceStatesPaidWithAcceptation();
+
+        assertThat(ResponseUtils.isResponseStatesPaidAccepted(claim)).isTrue();
+    }
+
+    @Test
+    public void isResponseStatesPaidAcceptedShouldBFalse() {
+        Claim claim = SampleClaim.getClaimFullDefenceStatesPaidWithRejection();
+
+        assertThat(ResponseUtils.isResponseStatesPaidAccepted(claim)).isFalse();
     }
 
     @Test
