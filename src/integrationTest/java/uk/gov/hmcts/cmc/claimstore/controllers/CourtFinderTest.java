@@ -33,7 +33,7 @@ public class CourtFinderTest extends BaseMockSpringTest {
         given(courtFinderApi.findMoneyClaimCourtByPostcode(postcode))
             .willReturn(ImmutableList.of(Court.builder().name(courtName).build()));
 
-        MvcResult result = makeGetRequest("/court-finder/search-postcode/" + postcode)
+        MvcResult result = makeGetRequest("/court-finder/search-postcode/{postcode}", postcode)
             .andExpect(status().isOk())
             .andReturn();
 
@@ -52,7 +52,7 @@ public class CourtFinderTest extends BaseMockSpringTest {
         given(courtFinderApi.getCourtDetailsFromNameSlug(courtSlug))
             .willReturn(CourtDetails.builder().name(courtName).build());
 
-        MvcResult result = makeGetRequest("/court-finder/court-details/" + courtSlug)
+        MvcResult result = makeGetRequest("/court-finder/court-details/{slug}", courtSlug)
             .andExpect(status().isOk())
             .andReturn();
 

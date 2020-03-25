@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableMap;
 import com.microsoft.applicationinsights.TelemetryClient;
 import org.flywaydb.core.Flyway;
@@ -62,7 +63,7 @@ public abstract class BaseMockSpringTest {
     protected static final String JURISDICTION_ID = "CMC";
     protected static final String CASE_TYPE_ID = "MoneyClaimCase";
     protected static final boolean IGNORE_WARNING = true;
-    
+
     protected static final UserDetails USER_DETAILS = SampleUserDetails.builder()
         .withUserId(USER_ID)
         .withMail("submitter@example.com")
@@ -141,9 +142,9 @@ public abstract class BaseMockSpringTest {
         );
     }
 
-    protected ResultActions makeGetRequest(String urlTemplate) throws Exception {
+    protected ResultActions makeGetRequest(String urlTemplate, Object... params) throws Exception {
         return webClient.perform(
-            get(urlTemplate)
+            get(urlTemplate, params)
                 .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
         );
     }
