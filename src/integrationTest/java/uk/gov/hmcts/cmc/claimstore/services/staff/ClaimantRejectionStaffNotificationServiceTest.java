@@ -66,12 +66,10 @@ public class ClaimantRejectionStaffNotificationServiceTest extends BaseMockSprin
             claimantDirectionsHearingContentProvider,
             true);
 
-        claimWithIntentionToProceed = Claim.builder()
-            .claimantRespondedAt(LocalDateTimeFactory.nowInLocalZone())
-            .claimantResponse(
-                SampleClaimantResponse.ClaimantResponseRejection.builder()
-                    .buildRejectionWithDirectionsQuestionnaire()
-            )
+        claimWithIntentionToProceed = SampleClaim.builder()
+            .withClaimantResponse(SampleClaimantResponse.ClaimantResponseRejection.builder()
+                .buildRejectionWithDirectionsQuestionnaire())
+            .withClaimantRespondedAt(LocalDateTimeFactory.nowInLocalZone())
             .build();
 
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
