@@ -9,7 +9,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
-import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
@@ -30,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -62,11 +62,11 @@ public class CountersignSettlementAgreementActionsHandlerTest {
     private EmailService emailService;
     @Mock
     private SettlementCountersignedEmailContentProvider settlementCountersignedEmailContentProvider;
-    @Mock
-    private StaffEmailTemplates staffEmailTemplates;
 
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;
+
+    private NotificationService notificationService;
 
     @Before
     public void setUp() {
@@ -81,10 +81,10 @@ public class CountersignSettlementAgreementActionsHandlerTest {
             .createContent(anyMap())).thenReturn(new EmailContent(SETTLEMENT_SIGNED_TO_STAFF_SUBJECT,
             SETTLEMENT_SIGNED_TO_STAFF_BODY));
 
-        NotificationService notificationService = new NotificationService(notificationClient, appInsights);
+        notificationService = new NotificationService(notificationClient, appInsights);
 
         handler = new CountersignSettlementAgreementActionsHandler(notificationService, notificationsProperties,
-            staffEmailProperties, emailService, settlementCountersignedEmailContentProvider);
+            staffEmailProperties, emailService, settlementCountersignedEmailContentProvider, true);
     }
 
     @Test
@@ -116,7 +116,7 @@ public class CountersignSettlementAgreementActionsHandlerTest {
     }
 
     @Test
-    public void shouldSendNotificationsToStaffWhenOfferAccepted() {
+    public void shouldSendNotificationsToStaffWhenOfferAcceptedStaffEmailsEnabled() {
         CountersignSettlementAgreementEvent event = new CountersignSettlementAgreementEvent(claim, AUTHORISATION);
 
         handler.sendNotificationToStaff(event);
@@ -124,5 +124,22 @@ public class CountersignSettlementAgreementActionsHandlerTest {
 
         assertThat(emailDataArgument.getValue().getSubject()).isEqualTo(SETTLEMENT_SIGNED_TO_STAFF_SUBJECT);
         assertThat(emailDataArgument.getValue().getMessage()).isEqualTo(SETTLEMENT_SIGNED_TO_STAFF_BODY);
+    }
+
+    @Test
+    public void shouldNotSendNotificationsToStaffWhenOfferAcceptedStaffEmailsDisabled() {
+        CountersignSettlementAgreementEvent event = new CountersignSettlementAgreementEvent(claim, AUTHORISATION);
+        CountersignSettlementAgreementActionsHandler countersignedHandler;
+        countersignedHandler = new CountersignSettlementAgreementActionsHandler(
+            notificationService,
+            notificationsProperties,
+            staffEmailProperties,
+            emailService,
+            settlementCountersignedEmailContentProvider,
+            false);
+
+        countersignedHandler.sendNotificationToStaff(event);
+        verify(emailService, never()).sendEmail(eq(staffEmailProperties.getSender()), emailDataArgument.capture());
+
     }
 }
