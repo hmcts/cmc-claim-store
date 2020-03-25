@@ -13,6 +13,8 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.content.ClaimantDirectionsHear
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.ClaimantRejectPartAdmissionContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
@@ -29,6 +31,7 @@ import static org.mockito.Mockito.when;
 public class ClaimantRejectionStaffNotificationServiceTest extends BaseMockSpringTest {
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
     private Claim claimWithPartAdmission;
+    private Claim claimWithIntentionToProceed;
 
     @Captor
     private ArgumentCaptor<String> senderArgument;
@@ -63,12 +66,20 @@ public class ClaimantRejectionStaffNotificationServiceTest extends BaseMockSprin
             claimantDirectionsHearingContentProvider,
             true);
 
+        claimWithIntentionToProceed = Claim.builder()
+            .claimantRespondedAt(LocalDateTimeFactory.nowInLocalZone())
+            .claimantResponse(
+                SampleClaimantResponse.ClaimantResponseRejection.builder()
+                    .buildRejectionWithDirectionsQuestionnaire()
+            )
+            .build();
+
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .thenReturn(PDF_CONTENT);
     }
 
     @Test
-    public void shouldSendEmailToExpectedRecipientWhenStaffEmailsEnabled() {
+    public void shouldSendPartAdmissionRejectionEmailWhenStaffEmailsEnabled() {
 
         service.notifyStaffClaimantRejectPartAdmission(claimWithPartAdmission);
 
@@ -78,7 +89,7 @@ public class ClaimantRejectionStaffNotificationServiceTest extends BaseMockSprin
     }
 
     @Test
-    public void shouldNotSendEmailToExpectedRecipientWhenStaffEmailsDisabled() {
+    public void shouldNotSendPartAdmissionRejectionEmailWhenStaffEmailsDisabled() {
         service = new ClaimantRejectionStaffNotificationService(
             emailService,
             emailProperties,
@@ -88,6 +99,31 @@ public class ClaimantRejectionStaffNotificationServiceTest extends BaseMockSprin
             false);
 
         service.notifyStaffClaimantRejectPartAdmission(claimWithPartAdmission);
+
+        verify(emailService, never()).sendEmail(any(), any());
+    }
+
+    @Test
+    public void shouldSendIntentionToProceedEmailWhenStaffEmailsEnabled() {
+
+        service.notifyStaffWithClaimantsIntentionToProceed(claimWithIntentionToProceed);
+
+        verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
+
+        assertThat(senderArgument.getValue()).isEqualTo(emailProperties.getSender());
+    }
+
+    @Test
+    public void shouldNotSendIntentionToProceedEmailWhenStaffEmailsDisabled() {
+        service = new ClaimantRejectionStaffNotificationService(
+            emailService,
+            emailProperties,
+            pdfCreatorService,
+            claimantRejectPartAdmissionContentProvider,
+            claimantDirectionsHearingContentProvider,
+            false);
+
+        service.notifyStaffClaimantRejectPartAdmission(claimWithIntentionToProceed);
 
         verify(emailService, never()).sendEmail(any(), any());
     }

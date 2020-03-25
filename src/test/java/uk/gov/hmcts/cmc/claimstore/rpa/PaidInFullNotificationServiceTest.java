@@ -110,4 +110,25 @@ public class PaidInFullNotificationServiceTest {
             emailDataArgumentCaptor.capture()
         );
     }
+
+    @Test
+    public void doesNotSendsNotificationsWhenStatesPaidRejection() {
+
+        PaidInFullNotificationService notificationService;
+        notificationService = new PaidInFullNotificationService(
+            emailService,
+            emailProperties,
+            new PaidInFullJsonMapper(),
+            true
+        );
+
+        Claim claimStatesPaid = SampleClaim.getClaimFullDefenceStatesPaidWithRejection();
+        notificationService.notifyRobotics(new ClaimantResponseEvent(claimStatesPaid, AUTHORISATION));
+
+        ArgumentCaptor<EmailData> emailDataArgumentCaptor = ArgumentCaptor.forClass(EmailData.class);
+        verify(emailService, never()).sendEmail(
+            eq(SENDER_EMAIL),
+            emailDataArgumentCaptor.capture()
+        );
+    }
 }
