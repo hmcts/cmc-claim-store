@@ -112,8 +112,7 @@ public class DocAssemblyTemplateBodyMapper {
         GeneralLetterContent generalLetterContent = ccdCase.getGeneralLetterContent();
         String partyName;
         CCDAddress partyAddress;
-        if (ccdCase.getApplicants().get(0).getValue()
-            .getPartyName().equals(CCDContactPartyType.CLAIMANT)) {
+        if (generalLetterContent.getIssueLetterContact().equals(CCDContactPartyType.CLAIMANT)) {
             partyName = ccdCase.getApplicants().get(0).getValue().getPartyName();
             partyAddress = ccdCase.getApplicants().get(0)
                 .getValue().getPartyDetail().getPrimaryAddress();
@@ -130,32 +129,24 @@ public class DocAssemblyTemplateBodyMapper {
             .partyName(partyName)
             .partyAddress(partyAddress)
             .body(generalLetterContent.getLetterContent())
-
             .build();
     }
 
     public DocAssemblyTemplateBody changeContactBody(CCDCase ccdCase) {
         LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
         CCDContactChangeContent contactChangeContent = ccdCase.getContactChangeContent();
-        String partyName;
-        CCDAddress partyAddress;
-        if (ccdCase.getContactChangeParty().equals(CCDContactPartyType.CLAIMANT)) {
-            partyName = ccdCase.getApplicants().get(0).getValue().getPartyName();
-            partyAddress = ccdCase.getApplicants().get(0)
-                .getValue().getPartyDetail().getPrimaryAddress();
-        } else {
-            partyName = ccdCase.getRespondents().get(0)
-                .getValue().getClaimantProvidedPartyName();
-            partyAddress = getDefendantAddress(ccdCase.getRespondents().get(0).getValue());
-        }
+        String defendantName = ccdCase.getRespondents().get(0).getValue().getClaimantProvidedPartyName();
+        String claimantName = ccdCase.getApplicants().get(0).getValue().getPartyName();
+        CCDAddress defendantAddress = getDefendantAddress(ccdCase.getRespondents().get(0).getValue());
+
         return DocAssemblyTemplateBody.builder()
             .currentDate(currentDate)
             .referenceNumber(ccdCase.getPreviousServiceCaseReference())
             .caseworkerName(contactChangeContent.getCaseworkerName())
             .caseName(ccdCase.getCaseName())
-            .partyName(partyName)
-            .partyAddress(partyAddress)
-            .claimantName(contactChangeContent.getClaimantName())
+            .partyName(defendantName)
+            .partyAddress(defendantAddress)
+            .claimantName(claimantName)
             .claimantAddress(contactChangeContent.getPrimaryAddress())
             .hasMainAddressChanged(contactChangeContent.getIsPrimaryAddressModified() == YES)
             .claimantEmail(contactChangeContent.getPrimaryEmail())

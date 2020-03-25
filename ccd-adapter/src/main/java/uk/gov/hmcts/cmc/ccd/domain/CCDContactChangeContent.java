@@ -15,7 +15,6 @@ import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 @Builder(toBuilder = true)
 public class CCDContactChangeContent {
     private String caseworkerName;
-    private String claimantName;
     private String telephone;
     private CCDYesNoOption isTelephoneModified;
     private String primaryEmail;
@@ -27,11 +26,15 @@ public class CCDContactChangeContent {
     private CCDYesNoOption telephoneRemoved;
     private CCDYesNoOption primaryEmailRemoved;
     private CCDYesNoOption correspondenceAddressRemoved;
+    private CCDYesNoOption letterNeededForDefendant;
 
     public boolean noContentChange() {
         return isTelephoneModified == NO
             && isEmailModified == NO
             && isPrimaryAddressModified == NO
-            && isCorrespondenceAddressModified == NO;
+            && isCorrespondenceAddressModified == NO
+            && correspondenceAddressRemoved == NO
+            && primaryEmailRemoved == NO
+            && telephoneRemoved == NO;
     }
 }
