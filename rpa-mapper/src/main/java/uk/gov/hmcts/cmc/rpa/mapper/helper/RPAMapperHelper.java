@@ -59,7 +59,7 @@ public class RPAMapperHelper {
         Optional<ClaimantResponse> claimantResponse = claim.getClaimantResponse();
 
         if (response.filter(ResponseUtils::isResponseStatesPaid).isPresent() && claimantResponse.isPresent()) {
-                return claimantResponse.get().getType() == ClaimantResponseType.ACCEPTATION;
+            return claimantResponse.get().getType() == ClaimantResponseType.ACCEPTATION;
         }
         return false;
     }
