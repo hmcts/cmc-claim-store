@@ -107,13 +107,13 @@ public class ChangeContactDetailsNotificationService {
         parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
         parameters.put(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName());
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
-        parameters.put(MAIN_ADDRESS_CHANGED, true ? "false" : "true");
-//        parameters.put(PHONE_NUMBER_CHANGED, contactChangeContent.getClaimantPhoneChanged().toBoolean() ? "false" : "true");
-//        parameters.put(EMAIL_ADDRESS_CHANGED, contactChangeContent.getClaimantEmailChanged().toBoolean()? "false" : "true");
-//        parameters.put(CORRESPONDENCE_ADDRESS_CHANGED, contactChangeContent.getContactAddressChanged().toBoolean() ? "false" : "true");
-//        parameters.put(PHONE_NUMBER_REMOVED, contactChangeContent.getClaimantPhoneRemoved().toBoolean() ? "false" : "true");
-//        parameters.put(CORRESPONDENCE_ADDRESS_REMOVED, contactChangeContent.getClaimantContactAddressRemoved().toBoolean() ? "false" : "true");
-//        parameters.put(EMAIL_ADDRESS_REMOVED, contactChangeContent.getClaimantEmailRemoved().toBoolean() ? "false" : "true");
+        parameters.put(MAIN_ADDRESS_CHANGED, contactChangeContent.getIsPrimaryAddressModified().toBoolean() ? "false" : "true");
+        parameters.put(PHONE_NUMBER_CHANGED, contactChangeContent.getIsTelephoneModified().toBoolean() ? "false" : "true");
+        parameters.put(EMAIL_ADDRESS_CHANGED, contactChangeContent.getIsEmailModified().toBoolean()? "false" : "true");
+        parameters.put(CORRESPONDENCE_ADDRESS_CHANGED, contactChangeContent.getIsCorrespondenceAddressModified().toBoolean() ? "false" : "true");
+        parameters.put(PHONE_NUMBER_REMOVED, contactChangeContent.getTelephoneRemoved().toBoolean() ? "false" : "true");
+        parameters.put(CORRESPONDENCE_ADDRESS_REMOVED, contactChangeContent.getCorrespondenceAddressRemoved().toBoolean() ? "false" : "true");
+        parameters.put(EMAIL_ADDRESS_REMOVED, contactChangeContent.getPrimaryEmailRemoved().toBoolean() ? "false" : "true");
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
         return parameters;
     }
