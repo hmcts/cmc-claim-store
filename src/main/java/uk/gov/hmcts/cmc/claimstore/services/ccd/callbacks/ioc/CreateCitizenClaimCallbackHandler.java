@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.String.format;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
@@ -102,7 +103,11 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
             callbackParams.getType(),
             claim.getExternalId());
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
-        Payment payment = paymentsService.retrievePayment(authorisation, claim);
+        Payment payment = paymentsService.retrievePayment(authorisation, claim.getClaimData())
+            .orElseThrow(() -> new IllegalStateException(format(
+                "Claim with external id %s has no payment record",
+                claim.getExternalId()))
+            );
 
         if (payment.getStatus() != PaymentStatus.SUCCESS) {
             logger.info("Payment not successful for claim with external id {}", claim.getExternalId());
