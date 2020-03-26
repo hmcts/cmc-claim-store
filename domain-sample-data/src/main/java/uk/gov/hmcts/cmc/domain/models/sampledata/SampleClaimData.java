@@ -25,7 +25,7 @@ public class SampleClaimData {
     public static final String FEE_ACCOUNT_NUMBER = "PBA1234567";
     public static final String EXTERNAL_REFERENCE_NUMBER = "CLAIM234324";
 
-    private UUID externalId = UUID.randomUUID();
+    private String externalId = SampleClaim.EXTERNAL_ID;
     private List<Party> claimants;
     private List<TheirDetails> defendants;
     private Payment payment = SamplePayment.builder().build();
@@ -64,7 +64,7 @@ public class SampleClaimData {
     }
 
     public SampleClaimData withExternalId(UUID externalId) {
-        this.externalId = externalId;
+        this.externalId = externalId.toString();
         return this;
     }
 
@@ -190,7 +190,7 @@ public class SampleClaimData {
 
     public ClaimData build() {
         return new ClaimData(
-            externalId,
+            UUID.fromString(externalId),
             claimants,
             defendants,
             payment,

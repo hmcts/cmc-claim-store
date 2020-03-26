@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableMap;
 import com.microsoft.applicationinsights.TelemetryClient;
 import org.flywaydb.core.Flyway;
@@ -12,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
@@ -48,6 +48,8 @@ import uk.gov.service.notify.NotificationClient;
 import javax.sql.DataSource;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -142,10 +144,25 @@ public abstract class BaseMockSpringTest {
         );
     }
 
-    protected ResultActions makeGetRequest(String urlTemplate, Object... params) throws Exception {
+    protected ResultActions doGet(String urlTemplate, Object... uriVars) throws Exception {
         return webClient.perform(
-            get(urlTemplate, params)
-                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
-        );
+            get(urlTemplate, uriVars)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN));
+    }
+
+    protected <T> ResultActions doPost(String auth, T content, String urlTemplate, Object... uriVars) throws Exception {
+        return webClient.perform(
+            post(urlTemplate, uriVars)
+                .header(HttpHeaders.AUTHORIZATION, auth)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonMappingHelper.toJson(content)));
+    }
+
+    protected <T> ResultActions doPut(String auth, T content, String urlTemplate, Object... uriVars) throws Exception {
+        return webClient.perform(
+            put(urlTemplate, uriVars)
+                .header(HttpHeaders.AUTHORIZATION, auth)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonMappingHelper.toJson(content)));
     }
 }

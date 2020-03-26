@@ -60,9 +60,10 @@ public class ClaimQueryTest extends BaseMockSpringTest {
             .thenReturn(List.of(claim));
 
         List<Claim> retrievedClaims = jsonMappingHelper.fromJson(
-            makeGetRequest(ROOT_PATH + "/claimant/{submitterId}", SampleClaim.USER_ID)
+            doGet(ROOT_PATH + "/claimant/{submitterId}", SampleClaim.USER_ID)
                 .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString(), new TypeReference<>() {
+                .andReturn().getResponse().getContentAsString(),
+            new TypeReference<>() {
             });
 
         assertThat(retrievedClaims)
@@ -73,7 +74,7 @@ public class ClaimQueryTest extends BaseMockSpringTest {
 
     @Test
     public void testGetBySubmitterIdRejectedByOtherUser() throws Exception {
-        makeGetRequest(ROOT_PATH + "/claimant/{submitterId}", SampleClaim.USER_ID + "diff")
+        doGet(ROOT_PATH + "/claimant/{submitterId}", SampleClaim.USER_ID + "diff")
             .andExpect(status().isForbidden());
     }
 
@@ -84,9 +85,10 @@ public class ClaimQueryTest extends BaseMockSpringTest {
             .thenReturn(Optional.of(claim));
 
         Claim retrievedClaim = jsonMappingHelper.fromJson(
-            makeGetRequest(ROOT_PATH + "/letter/{letterHolderId}", SampleClaim.LETTER_HOLDER_ID)
+            doGet(ROOT_PATH + "/letter/{letterHolderId}", SampleClaim.LETTER_HOLDER_ID)
                 .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString(), new TypeReference<>() {
+                .andReturn().getResponse().getContentAsString(),
+            new TypeReference<>() {
             });
         assertThat(retrievedClaim).isNotNull();
     }
@@ -96,7 +98,7 @@ public class ClaimQueryTest extends BaseMockSpringTest {
         when(caseRepository.getByLetterHolderId(anyString(), anyString()))
             .thenReturn(Optional.empty());
 
-        makeGetRequest(ROOT_PATH + "/letter/{letterHolderId}", SampleClaim.LETTER_HOLDER_ID)
+        doGet(ROOT_PATH + "/letter/{letterHolderId}", SampleClaim.LETTER_HOLDER_ID)
             .andExpect(status().isNotFound());
     }
 
@@ -109,7 +111,7 @@ public class ClaimQueryTest extends BaseMockSpringTest {
         when(caseRepository.getByLetterHolderId(SampleClaim.LETTER_HOLDER_ID, AUTHORISATION_TOKEN))
             .thenReturn(Optional.of(claim));
 
-        makeGetRequest(ROOT_PATH + "/letter/{letterHolderId}", SampleClaim.LETTER_HOLDER_ID)
+        doGet(ROOT_PATH + "/letter/{letterHolderId}", SampleClaim.LETTER_HOLDER_ID)
             .andExpect(status().isForbidden());
     }
 
@@ -119,9 +121,10 @@ public class ClaimQueryTest extends BaseMockSpringTest {
         when(caseRepository.getClaimByExternalId(SampleClaim.EXTERNAL_ID, USER))
             .thenReturn(Optional.of(claim));
         Claim retrievedClaim = jsonMappingHelper.fromJson(
-            makeGetRequest(ROOT_PATH + "/{externalId}", SampleClaim.EXTERNAL_ID)
+            doGet(ROOT_PATH + "/{externalId}", SampleClaim.EXTERNAL_ID)
                 .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString(), new TypeReference<>() {
+                .andReturn().getResponse().getContentAsString(),
+            new TypeReference<>() {
             });
         assertThat(retrievedClaim).isNotNull();
     }
@@ -130,7 +133,7 @@ public class ClaimQueryTest extends BaseMockSpringTest {
     public void testGetByExternalIdNotFound() throws Exception {
         when(caseRepository.getClaimByExternalId(anyString(), any(User.class)))
             .thenReturn(Optional.empty());
-        makeGetRequest(ROOT_PATH + "/{externalId}", SampleClaim.EXTERNAL_ID)
+        doGet(ROOT_PATH + "/{externalId}", SampleClaim.EXTERNAL_ID)
             .andExpect(status().isNotFound());
     }
 
@@ -143,7 +146,7 @@ public class ClaimQueryTest extends BaseMockSpringTest {
         when(caseRepository.getClaimByExternalId(SampleClaim.EXTERNAL_ID, USER))
             .thenReturn(Optional.of(claim));
 
-        makeGetRequest(ROOT_PATH + "/{externalId}", SampleClaim.EXTERNAL_ID)
+        doGet(ROOT_PATH + "/{externalId}", SampleClaim.EXTERNAL_ID)
             .andExpect(status().isForbidden());
     }
 
@@ -153,9 +156,10 @@ public class ClaimQueryTest extends BaseMockSpringTest {
         when(caseRepository.getByClaimReferenceNumber(SampleClaim.REFERENCE_NUMBER, AUTHORISATION_TOKEN))
             .thenReturn(Optional.of(claim));
         Claim retrievedClaim = jsonMappingHelper.fromJson(
-            makeGetRequest(ROOT_PATH + "/{claimReference}", SampleClaim.REFERENCE_NUMBER)
+            doGet(ROOT_PATH + "/{claimReference}", SampleClaim.REFERENCE_NUMBER)
                 .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString(), new TypeReference<>() {
+                .andReturn().getResponse().getContentAsString(),
+            new TypeReference<>() {
             });
         assertThat(retrievedClaim).isNotNull();
     }
@@ -164,7 +168,7 @@ public class ClaimQueryTest extends BaseMockSpringTest {
     public void testGetByClaimReferenceNotFound() throws Exception {
         when(caseRepository.getByClaimReferenceNumber(anyString(), anyString()))
             .thenReturn(Optional.empty());
-        makeGetRequest(ROOT_PATH + "/{claimReference}", SampleClaim.REFERENCE_NUMBER)
+        doGet(ROOT_PATH + "/{claimReference}", SampleClaim.REFERENCE_NUMBER)
             .andExpect(status().isNotFound());
     }
 
@@ -177,7 +181,7 @@ public class ClaimQueryTest extends BaseMockSpringTest {
         when(caseRepository.getByClaimReferenceNumber(SampleClaim.REFERENCE_NUMBER, AUTHORISATION_TOKEN))
             .thenReturn(Optional.of(claim));
 
-        makeGetRequest(ROOT_PATH + "/{claimReference}", SampleClaim.REFERENCE_NUMBER)
+        doGet(ROOT_PATH + "/{claimReference}", SampleClaim.REFERENCE_NUMBER)
             .andExpect(status().isForbidden());
     }
 
@@ -196,9 +200,10 @@ public class ClaimQueryTest extends BaseMockSpringTest {
             .thenReturn(List.of(otherClaim, claim));
 
         List<Claim> retrievedClaims = jsonMappingHelper.fromJson(
-            makeGetRequest(ROOT_PATH + "/representative/{externalReference}", SampleClaimData.EXTERNAL_REFERENCE_NUMBER)
+            doGet(ROOT_PATH + "/representative/{externalReference}", SampleClaimData.EXTERNAL_REFERENCE_NUMBER)
                 .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString(), new TypeReference<>() {
+                .andReturn().getResponse().getContentAsString(),
+            new TypeReference<>() {
             });
         assertThat(retrievedClaims)
             .hasSize(1)
@@ -224,9 +229,10 @@ public class ClaimQueryTest extends BaseMockSpringTest {
             .thenReturn(List.of(otherClaim));
 
         List<Claim> retrievedClaims = jsonMappingHelper.fromJson(
-            makeGetRequest(ROOT_PATH + "/representative/{externalReference}", SampleClaimData.EXTERNAL_REFERENCE_NUMBER)
+            doGet(ROOT_PATH + "/representative/{externalReference}", SampleClaimData.EXTERNAL_REFERENCE_NUMBER)
                 .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString(), new TypeReference<>() {
+                .andReturn().getResponse().getContentAsString(),
+            new TypeReference<>() {
             });
 
         assertThat(retrievedClaims)
@@ -245,9 +251,10 @@ public class ClaimQueryTest extends BaseMockSpringTest {
             .thenReturn(List.of(claim));
 
         List<Claim> retrievedClaims = jsonMappingHelper.fromJson(
-            makeGetRequest(ROOT_PATH + "/defendant/{defendantId}", defendantId)
+            doGet(ROOT_PATH + "/defendant/{defendantId}", defendantId)
                 .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString(), new TypeReference<>() {
+                .andReturn().getResponse().getContentAsString(),
+            new TypeReference<>() {
             });
         assertThat(retrievedClaims)
             .hasSize(1)
@@ -256,7 +263,7 @@ public class ClaimQueryTest extends BaseMockSpringTest {
 
     @Test
     public void testGetByDefendantIdRejectedByOtherUser() throws Exception {
-        makeGetRequest(ROOT_PATH + "/defendant/{defendantId}", SampleClaim.LETTER_HOLDER_ID)
+        doGet(ROOT_PATH + "/defendant/{defendantId}", SampleClaim.LETTER_HOLDER_ID)
             .andExpect(status().isForbidden());
     }
 
@@ -268,9 +275,10 @@ public class ClaimQueryTest extends BaseMockSpringTest {
         when(caseRepository.getByClaimReferenceNumber(eq(SampleClaim.REFERENCE_NUMBER), any()))
             .thenReturn(Optional.of(SampleClaim.getDefault()));
         DefendantLinkStatus response = jsonMappingHelper.fromJson(
-            makeGetRequest(ROOT_PATH + "/{caseReference}/defendant-link-status", SampleClaim.REFERENCE_NUMBER)
+            doGet(ROOT_PATH + "/{caseReference}/defendant-link-status", SampleClaim.REFERENCE_NUMBER)
                 .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString(), new TypeReference<>() {
+                .andReturn().getResponse().getContentAsString(),
+            new TypeReference<>() {
             });
         assertThat(response)
             .isNotNull()
@@ -285,9 +293,10 @@ public class ClaimQueryTest extends BaseMockSpringTest {
         when(caseRepository.getByClaimReferenceNumber(eq(SampleClaim.REFERENCE_NUMBER), any()))
             .thenReturn(Optional.of(SampleClaim.getDefaultWithoutResponse(SampleClaim.DEFENDANT_EMAIL)));
         DefendantLinkStatus response = jsonMappingHelper.fromJson(
-            makeGetRequest(ROOT_PATH + "/{caseReference}/defendant-link-status", SampleClaim.REFERENCE_NUMBER)
+            doGet(ROOT_PATH + "/{caseReference}/defendant-link-status", SampleClaim.REFERENCE_NUMBER)
                 .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString(), new TypeReference<>() {
+                .andReturn().getResponse().getContentAsString(),
+            new TypeReference<>() {
             });
         assertThat(response)
             .isNotNull()
