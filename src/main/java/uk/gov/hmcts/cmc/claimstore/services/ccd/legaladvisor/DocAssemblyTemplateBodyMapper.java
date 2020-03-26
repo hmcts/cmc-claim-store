@@ -118,8 +118,8 @@ public class DocAssemblyTemplateBodyMapper {
                 .getValue().getPartyDetail().getPrimaryAddress();
         } else {
             partyName = ccdCase.getRespondents().get(0)
-                .getValue().getPartyName() != null ?
-                ccdCase.getRespondents().get(0).getValue().getPartyName() :
+                .getValue().getPartyName() != null
+                ? ccdCase.getRespondents().get(0).getValue().getPartyName() :
                 ccdCase.getRespondents().get(0).getValue().getClaimantProvidedPartyName();
             partyAddress = getDefendantAddress(ccdCase.getRespondents().get(0).getValue());
         }
