@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers.support;
 
 import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -23,8 +24,13 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
+import uk.gov.hmcts.cmc.domain.models.offers.Offer;
+import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
+import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.offers.StatementType;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -51,6 +57,7 @@ public class DataFixSupportController {
     private static final String claimantNotificationEmailTemplateID = "594e64c9-edca-4dc5-bd83-35a44c4e28dc";
     private static final String defendantNotificationEmailTemplateID = "6d0a9f4d-f9e6-4962-b6c6-32c09169e6f2";
     private static final String REFERENCE_TEMPLATE = "Notify-Data-Fix-%s-%s";
+    private static final String WORD_WILL = "will";
 
     private static final Predicate<ClaimDocument> filterDocsToRecreate = doc ->
         doc.getDocumentType().equals(ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT)
@@ -91,6 +98,20 @@ public class DataFixSupportController {
             .apply(claim);
 
     }
+
+    private final UnaryOperator<Claim> fixPartyStatements = claim -> {
+
+        if (claim.getSettlement().isEmpty()) {
+            return claim;
+        }
+
+        Settlement newSettlement = new Settlement();
+        claim.getSettlement().map(Settlement::getPartyStatements)
+            .orElseGet(Collections::emptyList)
+            .forEach(ps -> addPartyStatement(ps, newSettlement, claim.getClaimData().getDefendant().getName()));
+
+        return claim.toBuilder().settlement(newSettlement).build();
+    };
 
     private Function<Claim, List<ClaimDocument>> getClaimDocs = claim -> claim.getClaimDocumentCollection()
         .map(ClaimDocumentCollection::getClaimDocuments)
@@ -166,6 +187,39 @@ public class DataFixSupportController {
             "claimReferenceNumber", claim.getReferenceNumber(),
             "claimantName", claim.getClaimData().getClaimant().getName(),
             "defendantName", claim.getClaimData().getDefendant().getName());
+    }
+
+    private void addPartyStatement(PartyStatement partyStatement, Settlement settlement, String defendant) {
+        if (partyStatement.getType() == StatementType.OFFER) {
+            settlement.addOffer(
+                fixOffer(partyStatement.getOffer().orElse(null), defendant),
+                partyStatement.getMadeBy(),
+                partyStatement.getId()
+            );
+        }
+
+        if (partyStatement.getType() == StatementType.REJECTION) {
+            settlement.addRejection(partyStatement.getMadeBy(), partyStatement.getId());
+        }
+
+        if (partyStatement.getType() == StatementType.ACCEPTATION) {
+            settlement.addAcceptation(partyStatement.getMadeBy(), partyStatement.getId());
+        }
+
+        if (partyStatement.getType() == StatementType.COUNTERSIGNATURE) {
+            settlement.addCounterSignature(partyStatement.getMadeBy(), partyStatement.getId());
+        }
+    }
+
+    private Offer fixOffer(Offer offer, String defendantName) {
+        return offer == null ? offer : Offer.builder()
+            .content(fixOfferContent(offer.getContent(), defendantName))
+            .completionDate(offer.getCompletionDate())
+            .paymentIntention(offer.getPaymentIntention().orElse(null)).build();
+    }
+
+    private String fixOfferContent(String content, String defendantName) {
+        return StringUtils.isEmpty(content) ? content : defendantName + content.substring(content.indexOf(WORD_WILL));
     }
 
 }
