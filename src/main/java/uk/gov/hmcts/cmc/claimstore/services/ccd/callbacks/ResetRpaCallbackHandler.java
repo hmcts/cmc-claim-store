@@ -45,7 +45,7 @@ public class ResetRpaCallbackHandler extends CallbackHandler {
     @Override
     protected Map<CallbackType, Callback> callbacks() {
         return ImmutableMap.of(
-            CallbackType.SUBMITTED, this::requestResetRpa
+            CallbackType.ABOUT_TO_SUBMIT, this::requestResetRpa
         );
     }
 
