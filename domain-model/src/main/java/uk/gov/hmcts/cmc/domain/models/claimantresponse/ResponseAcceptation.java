@@ -26,7 +26,7 @@ public class ResponseAcceptation extends ClaimantResponse {
 
     private final FormaliseOption formaliseOption;
 
-    @Builder
+    @Builder(toBuilder = true)
     @JsonCreator
     public ResponseAcceptation(
         BigDecimal amountPaid,
