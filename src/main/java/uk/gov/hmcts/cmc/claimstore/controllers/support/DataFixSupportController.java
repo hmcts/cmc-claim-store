@@ -92,11 +92,10 @@ public class DataFixSupportController {
         Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
             .orElseThrow(() -> new NotFoundException(referenceNumber));
 
-        fixClaimDocs
+        fixPartyStatements.andThen(fixClaimDocs)
             .andThen(updateClaim)
             .andThen(sendNotifications)
             .apply(claim);
-
     }
 
     private final UnaryOperator<Claim> fixPartyStatements = claim -> {
