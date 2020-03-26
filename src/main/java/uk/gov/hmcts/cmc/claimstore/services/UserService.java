@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.Oauth2;
 import uk.gov.hmcts.cmc.claimstore.idam.models.TokenExchangeResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserInfo;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 
 import java.util.Base64;
@@ -41,18 +42,26 @@ public class UserService {
 
     @LogExecutionTime
     public UserDetails getUserDetails(String authorisation) {
-        return idamApi.retrieveUserDetails(authorisation);
+        UserInfo userInfo = getUserInfo(authorisation);
+
+        return UserDetails.builder()
+            .id(userInfo.getUid())
+            .email(userInfo.getSub())
+            .forename(userInfo.getGivenName())
+            .surname(userInfo.getFamilyName())
+            .roles(userInfo.getRoles())
+            .build();
     }
 
     @LogExecutionTime
     public User getUser(String authorisation) {
-        return new User(authorisation, idamApi.retrieveUserDetails(authorisation));
+        return new User(authorisation, getUserDetails(authorisation));
     }
 
     public User authenticateUser(String username, String password) {
 
         String authorisation = getIdamOauth2Token(username, password);
-        UserDetails userDetails = idamApi.retrieveUserDetails(authorisation);
+        UserDetails userDetails = getUserDetails(authorisation);
         return new User(authorisation, userDetails);
     }
 
@@ -92,6 +101,11 @@ public class UserService {
         );
 
         return BEARER + tokenExchangeResponse.getAccessToken();
+    }
+
+    @LogExecutionTime
+    public UserInfo getUserInfo(String bearerToken) {
+        return idamApi.retrieveUserInfo(bearerToken);
     }
 
 }
