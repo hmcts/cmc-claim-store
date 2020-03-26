@@ -36,7 +36,11 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 public class ChangeContactDetailsNotificationService {
 
     private static final String ERROR_MESSAGE =
-            "There was a technical problem. Nothing has been sent. You need to try again.";
+        "There was a technical problem. Nothing has been sent. You need to try again.";
+    private static final String CORRESPONDENCE_ADDRESS = "CorrespondenceAddress";
+    private static final String MAIN_ADDRESS = "MainAddress";
+    private static final String EMAIL_ADDRESS = "EmailAddress";
+    private static final String PHONE_NUMBER = "PhoneNumber";
     private final NotificationService notificationService;
     private final NotificationsProperties notificationsProperties;
     private final CaseDetailsConverter caseDetailsConverter;
@@ -44,16 +48,16 @@ public class ChangeContactDetailsNotificationService {
 
     @Autowired
     public ChangeContactDetailsNotificationService(
-            CaseDetailsConverter caseDetailsConverter,
-            NotificationService notificationService,
-            NotificationsProperties notificationsProperties) {
+        CaseDetailsConverter caseDetailsConverter,
+        NotificationService notificationService,
+        NotificationsProperties notificationsProperties) {
         this.notificationService = notificationService;
         this.notificationsProperties = notificationsProperties;
         this.caseDetailsConverter = caseDetailsConverter;
     }
 
 
-    public CallbackResponse sendEmailToRightRecipient(CCDCase ccdCase, Claim claim, CCDContactChangeContent contactChangeContent){
+    public CallbackResponse sendEmailToRightRecipient(CCDCase ccdCase, Claim claim, CCDContactChangeContent contactChangeContent) {
         boolean errors = false;
         try {
 
@@ -69,36 +73,39 @@ public class ChangeContactDetailsNotificationService {
         if (!errors) {
             logger.info("Change Contact Details: Email was sent, case is being updated");
             CCDCase updatedCase = ccdCase.toBuilder()
-                    .build();
+                .contactChangeParty(null)
+                .contactChangeContent(null)
+                .generalLetterContent(null)
+                .build();
             return AboutToStartOrSubmitCallbackResponse
-                    .builder()
-                    .data(caseDetailsConverter.convertToMap(updatedCase))
-                    .build();
+                .builder()
+                .data(caseDetailsConverter.convertToMap(updatedCase))
+                .build();
         } else {
             return AboutToStartOrSubmitCallbackResponse
-                    .builder()
-                    .errors(Collections.singletonList(ERROR_MESSAGE))
-                    .build();
+                .builder()
+                .errors(Collections.singletonList(ERROR_MESSAGE))
+                .build();
         }
     }
 
     private void notifyClaimant(Claim claim, CCDContactChangeContent contactChangeContent) {
         notificationService.sendMail(
-                claim.getSubmitterEmail(),
-                notificationsProperties.getTemplates().getEmail().getDefendantContactDetailsChanged(),
-                aggregateParams(claim, contactChangeContent),
-                NotificationReferenceBuilder.ContactDetailsChanged
-                        .referenceForClaimant(claim.getReferenceNumber(), "claimant")
+            claim.getSubmitterEmail(),
+            notificationsProperties.getTemplates().getEmail().getDefendantContactDetailsChanged(),
+            aggregateParams(claim, contactChangeContent),
+            NotificationReferenceBuilder.ContactDetailsChanged
+                .referenceForClaimant(claim.getReferenceNumber(), "claimant")
         );
     }
 
     private void notifyDefendant(Claim claim, CCDContactChangeContent contactChangeContent) {
         notificationService.sendMail(
-                claim.getDefendantEmail(),
-                notificationsProperties.getTemplates().getEmail().getClaimantContactDetailsChanged(),
-                aggregateParams(claim, contactChangeContent),
-                NotificationReferenceBuilder.ContactDetailsChanged
-                        .referenceForDefendant(claim.getReferenceNumber(), "defendant")
+            claim.getDefendantEmail(),
+            notificationsProperties.getTemplates().getEmail().getClaimantContactDetailsChanged(),
+            aggregateParams(claim, contactChangeContent),
+            NotificationReferenceBuilder.ContactDetailsChanged
+                .referenceForDefendant(claim.getReferenceNumber(), "defendant")
         );
     }
 
@@ -107,9 +114,17 @@ public class ChangeContactDetailsNotificationService {
         parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
         parameters.put(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName());
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
+        if(contactChangeContent.getCorrespondenceAddress() != null) {
+            parameters.put(CORRESPONDENCE_ADDRESS, contactChangeContent.getCorrespondenceAddress().toString());
+        }
+        if(contactChangeContent.getPrimaryAddress() != null) {
+            parameters.put(MAIN_ADDRESS, contactChangeContent.getPrimaryAddress().toString());
+        }
+        parameters.put(EMAIL_ADDRESS, contactChangeContent.getPrimaryEmail());
+        parameters.put(PHONE_NUMBER, contactChangeContent.getTelephone());
         parameters.put(MAIN_ADDRESS_CHANGED, contactChangeContent.getIsPrimaryAddressModified().toBoolean() ? "false" : "true");
         parameters.put(PHONE_NUMBER_CHANGED, contactChangeContent.getIsTelephoneModified().toBoolean() ? "false" : "true");
-        parameters.put(EMAIL_ADDRESS_CHANGED, contactChangeContent.getIsEmailModified().toBoolean()? "false" : "true");
+        parameters.put(EMAIL_ADDRESS_CHANGED, contactChangeContent.getIsEmailModified().toBoolean() ? "false" : "true");
         parameters.put(CORRESPONDENCE_ADDRESS_CHANGED, contactChangeContent.getIsCorrespondenceAddressModified().toBoolean() ? "false" : "true");
         parameters.put(PHONE_NUMBER_REMOVED, contactChangeContent.getTelephoneRemoved().toBoolean() ? "false" : "true");
         parameters.put(CORRESPONDENCE_ADDRESS_REMOVED, contactChangeContent.getCorrespondenceAddressRemoved().toBoolean() ? "false" : "true");
