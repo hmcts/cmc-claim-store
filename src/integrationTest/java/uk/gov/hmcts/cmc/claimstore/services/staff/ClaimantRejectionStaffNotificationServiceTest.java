@@ -88,7 +88,8 @@ public class ClaimantRejectionStaffNotificationServiceTest extends BaseMockSprin
 
     @Test
     public void shouldNotSendPartAdmissionRejectionEmailWhenStaffEmailsDisabled() {
-        service = new ClaimantRejectionStaffNotificationService(
+        ClaimantRejectionStaffNotificationService staffNotificationService;
+        staffNotificationService = new ClaimantRejectionStaffNotificationService(
             emailService,
             emailProperties,
             pdfCreatorService,
@@ -96,7 +97,7 @@ public class ClaimantRejectionStaffNotificationServiceTest extends BaseMockSprin
             claimantDirectionsHearingContentProvider,
             false);
 
-        service.notifyStaffClaimantRejectPartAdmission(claimWithPartAdmission);
+        staffNotificationService.notifyStaffClaimantRejectPartAdmission(claimWithPartAdmission);
 
         verify(emailService, never()).sendEmail(any(), any());
     }
@@ -113,7 +114,9 @@ public class ClaimantRejectionStaffNotificationServiceTest extends BaseMockSprin
 
     @Test
     public void shouldNotSendIntentionToProceedEmailWhenStaffEmailsDisabled() {
-        service = new ClaimantRejectionStaffNotificationService(
+        ClaimantRejectionStaffNotificationService staffNotificationService;
+
+        staffNotificationService = new ClaimantRejectionStaffNotificationService(
             emailService,
             emailProperties,
             pdfCreatorService,
@@ -121,7 +124,7 @@ public class ClaimantRejectionStaffNotificationServiceTest extends BaseMockSprin
             claimantDirectionsHearingContentProvider,
             false);
 
-        service.notifyStaffClaimantRejectPartAdmission(claimWithIntentionToProceed);
+        staffNotificationService.notifyStaffClaimantRejectPartAdmission(claimWithIntentionToProceed);
 
         verify(emailService, never()).sendEmail(any(), any());
     }
