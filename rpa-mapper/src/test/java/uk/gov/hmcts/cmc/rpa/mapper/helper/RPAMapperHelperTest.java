@@ -68,4 +68,10 @@ public class RPAMapperHelperTest {
         Claim claim = SampleClaim.builder().withMoneyReceivedOn(moneyReceivedOn).build();
         assertEquals(moneyReceivedOn, RPAMapperHelper.claimantPaidOnDate(claim));
     }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldThrowExceptionOnClaimantPaidOnDateWhenInvalidClaim() {
+        Claim claim = SampleClaim.builder().build();
+        RPAMapperHelper.claimantPaidOnDate(claim);
+    }
 }

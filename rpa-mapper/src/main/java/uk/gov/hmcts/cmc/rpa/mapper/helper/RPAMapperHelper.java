@@ -4,9 +4,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
-import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
-import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
-import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.rpa.DateFormatter;
 import uk.gov.hmcts.cmc.rpa.mapper.json.NullAwareJsonObjectBuilder;
 
@@ -14,6 +11,7 @@ import java.time.LocalDate;
 import javax.json.JsonObject;
 
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseStatesPaidAccepted;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.statesPaidPaymentDeclarationDate;
 
 public class RPAMapperHelper {
 
@@ -50,24 +48,5 @@ public class RPAMapperHelper {
                 .build();
         }
         return null;
-    }
-
-    private static LocalDate statesPaidPaymentDeclarationDate(Response response) {
-        switch (response.getResponseType()) {
-            case FULL_DEFENCE:
-                FullDefenceResponse fullDefenceResponse = (FullDefenceResponse) response;
-                return fullDefenceResponse.getPaymentDeclaration()
-                    .orElseThrow((() -> new IllegalStateException(MISSING_MONEY_RECEIVED_DATE)))
-                    .getPaidDate();
-
-            case PART_ADMISSION:
-                PartAdmissionResponse partAdmissionResponse = (PartAdmissionResponse) response;
-                return partAdmissionResponse.getPaymentDeclaration()
-                    .orElseThrow((() -> new IllegalStateException(MISSING_MONEY_RECEIVED_DATE)))
-                    .getPaidDate();
-
-            default:
-                throw new IllegalStateException("Invalid response type " + response.getResponseType());
-        }
     }
 }

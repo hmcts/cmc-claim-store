@@ -11,12 +11,15 @@ import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
 public class ResponseUtils {
+
+    private static final String MISSING_PAYMENT_DECLARATION_DATE = "Missing payment declaration date";
 
     private ResponseUtils() {
         // utility class, no instances
@@ -101,6 +104,25 @@ public class ResponseUtils {
 
     public static boolean hasDefendantOptedForMediation(Response response) {
         return response.getFreeMediation().filter(Predicate.isEqual(YES)).isPresent();
+    }
+
+    public static LocalDate statesPaidPaymentDeclarationDate(Response response) {
+        switch (response.getResponseType()) {
+            case FULL_DEFENCE:
+                FullDefenceResponse fullDefenceResponse = (FullDefenceResponse) response;
+                return fullDefenceResponse.getPaymentDeclaration()
+                    .orElseThrow((() -> new IllegalStateException(MISSING_PAYMENT_DECLARATION_DATE)))
+                    .getPaidDate();
+
+            case PART_ADMISSION:
+                PartAdmissionResponse partAdmissionResponse = (PartAdmissionResponse) response;
+                return partAdmissionResponse.getPaymentDeclaration()
+                    .orElseThrow((() -> new IllegalStateException(MISSING_PAYMENT_DECLARATION_DATE)))
+                    .getPaidDate();
+
+            default:
+                throw new IllegalStateException("Invalid response type " + response.getResponseType());
+        }
     }
 }
 

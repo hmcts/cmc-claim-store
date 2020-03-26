@@ -11,8 +11,11 @@ import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SamplePaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+
+import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -81,10 +84,33 @@ public class ResponseUtilsTest {
     }
 
     @Test
-    public void isResponseStatesPaidAcceptedShouldBFalse() {
+    public void isResponseStatesPaidAcceptedShouldBeFalse() {
         Claim claim = SampleClaim.getClaimFullDefenceStatesPaidWithRejection();
 
         assertThat(ResponseUtils.isResponseStatesPaidAccepted(claim)).isFalse();
+    }
+
+    @Test
+    public void shouldReturnPaymentDeclarationDateStatesPaidFullDefence() {
+        Response response = SampleResponse.FullDefence.validDefaults();
+
+        assertThat(ResponseUtils.statesPaidPaymentDeclarationDate(response))
+            .isEqualTo((LocalDate.of(2016, 1, 2).toString()));
+    }
+
+    @Test
+    public void shouldReturnPaymentDeclarationDateStatesPaidPartAdmission() {
+        Response response = SampleResponse.PartAdmission.builder()
+            .buildWithStatesPaid(SampleParty.builder().individual());
+
+        assertThat(ResponseUtils.statesPaidPaymentDeclarationDate(response))
+            .isEqualTo((LocalDate.of(2016, 1, 2).toString()));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldReturnExceptionWhenNotStatesPaid() {
+        Response response = SampleResponse.FullAdmission.builder().build();
+        ResponseUtils.statesPaidPaymentDeclarationDate(response);
     }
 
     @Test
