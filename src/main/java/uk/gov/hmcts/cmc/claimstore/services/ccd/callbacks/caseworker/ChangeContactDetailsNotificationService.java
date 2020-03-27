@@ -107,11 +107,11 @@ public class ChangeContactDetailsNotificationService {
 //        if(ccdContactPartyType.equals("DEFENDANT")) {
 //            emailProperties.setResponseRecipient(claim.getDefendantEmail());
 //        } else {
-            emailProperties.setResponseRecipient(claim.getDefendantEmail());
+            emailProperties.setResponseRecipient("j.latzberg@outlook.com");
             emailProperties.setSender("money.claim@notifications.service.gov.uk");
 //        }
         emailService.sendEmail(
-                emailProperties.getSender(),e
+                emailProperties.getSender(),
                 new EmailData(
                         emailProperties.getResponseRecipient(),
                         emailContent.getBody(),

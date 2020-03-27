@@ -6,59 +6,91 @@ We’re contacting you because {{ otherPartyName }} has changed their contact de
 {% if MainAddressChanged %}
     Their address is now:
 
-    {% if MainAddress.getAddressLine1 is not null %}
-        {{ MainAddress.getAddressLine1 }}
-    {% endif %}
-    {% if MainAddress.getAddressLine2 is not null %}
-        {{ MainAddress.getAddressLine2 }}
-    {% endif %}
-    {% if MainAddress.getAddressLine3 is not null %}
-        {{ MainAddress.getAddressLine3 }}
-    {% endif %}
-    {% if MainAddress.getPostTown is not null %}
-        {{ MainAddress.getPostTown }}
-    {% endif %}
-    {% if MainAddress.getPostcode is not null %}
-        {{ MainAddress.getPostcode }}
-    {% endif %}
-    {% if MainAddress.getCountry is not null %}
-        {{ MainAddress.getCountry }}
-    {% endif %}
-    {% if MainAddress.getCounty is not null %}
-        {{ MainAddress.getCounty }}
-    {% endif %}
+    {{ MainAddress.getAddressLine1 }}
+{% endif %}
+
+{% if MainAddressChanged and MainAddress.getAddressLine2 is not null %}
+    {{ MainAddress.getAddressLine2 }}
+{% endif %}
+
+{% if MainAddressChanged and MainAddress.getAddressLine3 is not null %}
+    {{ MainAddress.getAddressLine3 }}
+{% endif %}
+
+{% if MainAddressChanged %}
+    {{ MainAddress.getPostcode }}
+{% endif %}
+
+{% if MainAddressChanged and MainAddress.getPostTown is not null %}
+    {{ MainAddress.getPostTown }}
+{% endif %}
+
+{% if MainAddressChanged and MainAddress.getCounty is not null %}
+    {{ MainAddress.getCounty }}
+{% endif %}
+
+{% if MainAddressChanged and MainAddress.getCountry is not null %}
+    {{ MainAddress.getCountry }}
 {% endif %}
 
 {% if PhoneNumberChanged %}
+
     Their phone number is now: {{ PhoneNumber }}
+
 {% endif %}
 
 {% if EmailAddressChanged %}
+
     Their email address is now: {{ EmailAddress }}
+
 {% endif %}
 
 {% if CorrespondenceAddressChanged %}
     The address they want to use for post about the claim is now:
 
     {{ CorrespondenceAddress.getAddressLine1 }}
+{% endif %}
+
+{% if CorrespondenceAddressChanged and CorrespondenceAddress.getAddressLine2 is not null %}
     {{ CorrespondenceAddress.getAddressLine2 }}
+{% endif %}
+
+{% if CorrespondenceAddressChanged and CorrespondenceAddress.getAddressLine3 is not null %}
     {{ CorrespondenceAddress.getAddressLine3 }}
-    {{ CorrespondenceAddress.getPostTown }}
+{% endif %}
+
+{% if CorrespondenceAddressChanged %}
     {{ CorrespondenceAddress.getPostcode }}
-    {{ CorrespondenceAddress.getCountry }}
+{% endif %}
+
+{% if CorrespondenceAddressChanged and CorrespondenceAddress.getPostTown is not null %}
+    {{ CorrespondenceAddress.getPostTown }}
+{% endif %}
+
+{% if CorrespondenceAddressChanged and CorrespondenceAddress.getCounty is not null %}
     {{ CorrespondenceAddress.getCounty }}
 {% endif %}
 
+{% if CorrespondenceAddressChanged and CorrespondenceAddress.getCountry is not null%}
+    {{ CorrespondenceAddress.getCountry }}
+{% endif %}
+
 {% if PhoneNumberRemoved %}
+
     They’ve removed their phone number.
+
 {% endif %}
 
 {% if CorrespondenceAddressRemoved %}
+
     They’ve removed the address they want to use for post about the claim.
+
 {% endif %}
 
 {% if EmailAddressRemoved %}
+
     They’ve removed their email address.
+
 {% endif %}
 
 This is an automated email – we can’t respond to replies.
