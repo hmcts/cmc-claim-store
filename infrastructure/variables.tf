@@ -87,6 +87,9 @@ variable "enable_staff_email" {
 variable "save_claim_state_enabled" {
   default = "false"
 }
+variable "ctsc_enabled" {
+  default = "false"
+}
 
 variable milo_csv_schedule  {
   default = "-"
