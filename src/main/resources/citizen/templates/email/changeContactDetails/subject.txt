@@ -1,0 +1,4 @@
+{{ otherPartyName }} has changed some contact details
+
+
+

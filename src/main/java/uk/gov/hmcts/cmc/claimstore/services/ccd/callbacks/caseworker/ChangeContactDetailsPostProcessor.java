@@ -38,9 +38,9 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.
 public class ChangeContactDetailsPostProcessor {
 
     private static final Logger logger = LoggerFactory.getLogger(LoggerHandler.class);
-    private static final String NO_DETAILS_CHANGED_ERROR = "Notifications cannot be send if contact details we not changed.";
+    private static final String NO_DETAILS_CHANGED_ERROR =
+            "Notifications cannot be send if contact details we not changed.";
     private static final String DRAFT_LETTER_DOC = "draftLetterDoc";
-    private static final String CHANGE_CONTACT_PARTY = "changeContactParty";
 
     private final CaseDetailsConverter caseDetailsConverter;
     private final LetterGeneratorService letterGeneratorService;
@@ -81,7 +81,7 @@ public class ChangeContactDetailsPostProcessor {
             if (contactChangeContent.noContentChange()) {
             return AboutToStartOrSubmitCallbackResponse
                 .builder()
-                .errors(Collections.singletonList("Please change some content."))
+                .errors(Collections.singletonList(NO_DETAILS_CHANGED_ERROR))
                 .build();
         }
 
@@ -130,10 +130,11 @@ public class ChangeContactDetailsPostProcessor {
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
         CCDContactChangeContent contactChangeContent = ccdCase.getContactChangeContent();
+        CCDContactPartyType contactChangePartyType = ccdCase.getContactChangeParty();
 
         return letterNeededForDefendant(ccdCase.getContactChangeParty(), ccdCase)
             ? generalLetterService.printAndUpdateCaseDocuments(caseDetails, authorisation)
-            : changeContactDetailsNotificationService.sendEmailToRightRecipient(ccdCase, claim, contactChangeContent);
+            : changeContactDetailsNotificationService.sendEmailToRightRecipient(ccdCase, claim, contactChangeContent, contactChangePartyType);
     }
 
     public boolean letterNeededForDefendant(CCDContactPartyType contactPartyType, CCDCase ccdCase) {

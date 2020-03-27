@@ -7,6 +7,8 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotEmpty;
 
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceReader.readString;
+
 @Component
 @Validated
 @Getter
@@ -168,5 +170,13 @@ public class EmailTemplates {
 
     @NotEmpty
     private String defendantContactDetailsChanged;
+
+    public String getContactChangeEmailBody() {
+        return readString("/citizen/templates/email/changeContactDetails/body.txt");
+    }
+
+    public String getContactChangeEmailSubject() {
+        return readString("/citizen/templates/email/changeContactDetails/subject.txt");
+    }
 
 }

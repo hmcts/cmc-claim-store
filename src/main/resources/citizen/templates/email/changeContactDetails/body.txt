@@ -1,0 +1,73 @@
+Dear {{ partyName }},
+
+
+We’re contacting you because {{ otherPartyName }} has changed their contact details.
+
+{% if MainAddressChanged %}
+    Their address is now:
+
+    {% if MainAddress.getAddressLine1 is not null %}
+        {{ MainAddress.getAddressLine1 }}
+    {% endif %}
+    {% if MainAddress.getAddressLine2 is not null %}
+        {{ MainAddress.getAddressLine2 }}
+    {% endif %}
+    {% if MainAddress.getAddressLine3 is not null %}
+        {{ MainAddress.getAddressLine3 }}
+    {% endif %}
+    {% if MainAddress.getPostTown is not null %}
+        {{ MainAddress.getPostTown }}
+    {% endif %}
+    {% if MainAddress.getPostcode is not null %}
+        {{ MainAddress.getPostcode }}
+    {% endif %}
+    {% if MainAddress.getCountry is not null %}
+        {{ MainAddress.getCountry }}
+    {% endif %}
+    {% if MainAddress.getCounty is not null %}
+        {{ MainAddress.getCounty }}
+    {% endif %}
+{% endif %}
+
+{% if PhoneNumberChanged %}
+    Their phone number is now: {{ PhoneNumber }}
+{% endif %}
+
+{% if EmailAddressChanged %}
+    Their email address is now: {{ EmailAddress }}
+{% endif %}
+
+{% if CorrespondenceAddressChanged %}
+    The address they want to use for post about the claim is now:
+
+    {{ CorrespondenceAddress.getAddressLine1 }}
+    {{ CorrespondenceAddress.getAddressLine2 }}
+    {{ CorrespondenceAddress.getAddressLine3 }}
+    {{ CorrespondenceAddress.getPostTown }}
+    {{ CorrespondenceAddress.getPostcode }}
+    {{ CorrespondenceAddress.getCountry }}
+    {{ CorrespondenceAddress.getCounty }}
+{% endif %}
+
+{% if PhoneNumberRemoved %}
+    They’ve removed their phone number.
+{% endif %}
+
+{% if CorrespondenceAddressRemoved %}
+    They’ve removed the address they want to use for post about the claim.
+{% endif %}
+
+{% if EmailAddressRemoved %}
+    They’ve removed their email address.
+{% endif %}
+
+This is an automated email – we can’t respond to replies.
+
+HM Courts & Tribunals Service
+Claim number: {{ claimReferenceNumber }}
+
+Telephone: 0300 123 7050
+Hours: 9am to 5pm, Monday to Friday
+Find out about call charges https://www.gov.uk/call-charges
+
+Email: moneyclaims@justice.gov.uk

@@ -74,11 +74,11 @@ public class LetterContentBuilder {
         CCDTelephone oldPhone = partyBefore.getTelephoneNumber();
         CCDTelephone newPhone = partyNow.getTelephoneNumber();
 
-        contactChangeContent.telephone(newPhone.getTelephoneNumber());
         if (contentDiffer(oldPhone, newPhone)) {
             if (!Optional.ofNullable(newPhone).isPresent()) {
                 contactChangeContent.telephoneRemoved(YES);
             } else {
+                contactChangeContent.telephone(newPhone.getTelephoneNumber());
                 contactChangeContent.isTelephoneModified(YES);
             }
         }
