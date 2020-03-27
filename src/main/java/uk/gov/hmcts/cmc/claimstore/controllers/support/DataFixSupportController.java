@@ -218,7 +218,7 @@ public class DataFixSupportController {
     }
 
     private String fixOfferContent(String content, String defendantName) {
-        return StringUtils.isEmpty(content) ? content : defendantName + content.substring(content.indexOf(WORD_WILL));
+        return StringUtils.isEmpty(content) ? content : defendantName + " " + content.substring(content.indexOf(WORD_WILL));
     }
 
 }
