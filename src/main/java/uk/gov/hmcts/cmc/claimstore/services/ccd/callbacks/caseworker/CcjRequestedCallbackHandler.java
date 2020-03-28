@@ -18,12 +18,12 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_REQUESTED;
-import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
 
 @Service
 public class CcjRequestedCallbackHandler extends CallbackHandler {
     private static final List<CaseEvent> EVENTS = Collections.singletonList(CCJ_REQUESTED);
-    private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
+    private static final List<Role> ROLES = Collections.singletonList(CITIZEN);
     private static final String STATE = "state";
 
     private final boolean ctscEnabled;
