@@ -91,6 +91,32 @@ public class PaidInFullNotificationServiceTest {
     }
 
     @Test
+    public void doesNotSendNotificationsWhenResponseNotStatesPaidAndStaffEmailsNotEnabled() {
+
+        Claim claimStatesPaid = SampleClaim.getWithClaimantResponseRejectionForPartAdmissionAndMediation();
+        service.notifyRobotics(new ClaimantResponseEvent(claimStatesPaid, AUTHORISATION));
+
+        ArgumentCaptor<EmailData> emailDataArgumentCaptor = ArgumentCaptor.forClass(EmailData.class);
+        verify(emailService, never()).sendEmail(
+            eq(SENDER_EMAIL),
+            emailDataArgumentCaptor.capture()
+        );
+    }
+
+    @Test
+    public void doesNotSendNotificationsStatesPaidRejectionWhenStaffEmailsNotEnabled() {
+
+        Claim claimStatesPaid = SampleClaim.getClaimFullDefenceStatesPaidWithRejection();
+        service.notifyRobotics(new ClaimantResponseEvent(claimStatesPaid, AUTHORISATION));
+
+        ArgumentCaptor<EmailData> emailDataArgumentCaptor = ArgumentCaptor.forClass(EmailData.class);
+        verify(emailService, never()).sendEmail(
+            eq(SENDER_EMAIL),
+            emailDataArgumentCaptor.capture()
+        );
+    }
+
+    @Test
     public void doesNotSendsNotificationsStatesPaidAcceptanceWhenStaffEmailsEnabled() {
 
         PaidInFullNotificationService notificationService;

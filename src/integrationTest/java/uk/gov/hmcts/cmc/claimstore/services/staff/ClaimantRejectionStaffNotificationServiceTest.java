@@ -124,7 +124,7 @@ public class ClaimantRejectionStaffNotificationServiceTest extends BaseMockSprin
             claimantDirectionsHearingContentProvider,
             false);
 
-        staffNotificationService.notifyStaffClaimantRejectPartAdmission(claimWithIntentionToProceed);
+        staffNotificationService.notifyStaffWithClaimantsIntentionToProceed(claimWithIntentionToProceed);
 
         verify(emailService, never()).sendEmail(any(), any());
     }
