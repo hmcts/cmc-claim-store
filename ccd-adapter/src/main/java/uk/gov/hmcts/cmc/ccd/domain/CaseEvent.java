@@ -70,7 +70,8 @@ public enum CaseEvent {
     RESET_PIN("ResetPin"),
     PROCEEDS_IN_CASEMAN("CaseProceedsInCaseman"),
     ATTACH_SCANNED_DOCS("attachScannedDocs"),
-    UPDATE_CLAIM("UpdateClaim");
+    UPDATE_CLAIM("UpdateClaim"),
+    CCJ_REQUEST_UPLOAD("CCJRequestUpload");
 
     private final String value;
 

@@ -93,22 +93,23 @@ public class CountyCourtJudgmentService {
 
         Claim claimWithCCJ = claimService.getClaimByExternalId(externalId, authorisation);
 
-        uploadClaimantResponseDocumentToDocumentStore(claimWithCCJ, countyCourtJudgment, authorisation);
+        Claim claimWithCCJDocument = uploadClaimantResponseDocumentToDocumentStore(claimWithCCJ,
+            countyCourtJudgment, authorisation);
 
-        eventProducer.createCountyCourtJudgmentEvent(claimWithCCJ, authorisation);
+        eventProducer.createCountyCourtJudgmentEvent(claimWithCCJDocument, authorisation);
 
         AppInsightsEvent appInsightsEvent = CCJ_REQUESTED;
         if (countyCourtJudgment.getCcjType() == CountyCourtJudgmentType.ADMISSIONS) {
             appInsightsEvent = CCJ_REQUESTED_BY_ADMISSION;
         }
 
-        if (countyCourtJudgmentRule.isCCJDueToSettlementBreach(claimWithCCJ)) {
+        if (countyCourtJudgmentRule.isCCJDueToSettlementBreach(claimWithCCJDocument)) {
             appInsightsEvent = CCJ_REQUESTED_AFTER_SETTLEMENT_BREACH;
         }
 
         appInsights.trackEvent(appInsightsEvent, AppInsights.REFERENCE_NUMBER, claim.getReferenceNumber());
 
-        return claimWithCCJ;
+        return claimWithCCJDocument;
     }
 
     public Claim reDetermination(
@@ -140,14 +141,16 @@ public class CountyCourtJudgmentService {
 
     }
 
-    private void uploadClaimantResponseDocumentToDocumentStore(
+    private Claim uploadClaimantResponseDocumentToDocumentStore(
         Claim claim,
         CountyCourtJudgment countyCourtJudgment,
         String authorisation) {
+        Claim updateClaim = claim;
         if (ctscEnabled && countyCourtJudgment.getCcjType() == ADMISSIONS
             || countyCourtJudgment.getCcjType() == DETERMINATION) {
             PDF document = ccjByAdmissionOrDeterminationPdfService.createPdf(claim);
-            documentService.uploadToDocumentManagement(document, authorisation, claim);
+            updateClaim = documentService.uploadToDocumentManagement(document, authorisation, claim);
         }
+        return updateClaim;
     }
 }
