@@ -18,8 +18,12 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 public class ResponseUtilsTest {
+
+    private static final String MISSING_PAYMENT_DECLARATION_DATE = "Missing payment declaration date";
 
     @Test
     public void isResponseStatesPaidOnFullDefenceAlreadyPaidResponseShouldBeTrue() {
@@ -91,6 +95,20 @@ public class ResponseUtilsTest {
     }
 
     @Test
+    public void isResponseStatesPaidAcceptedShouldBeFalseWhenNoResponse() {
+        Claim claim = SampleClaim.getCitizenClaim();
+
+        assertThat(ResponseUtils.isResponseStatesPaidAccepted(claim)).isFalse();
+    }
+
+    @Test
+    public void isResponseStatesPaidAcceptedShouldBeFalseWhenNoClaimantResponse() {
+        Claim claim = SampleClaim.getClaimWithFullDefenceAlreadyPaid();
+
+        assertThat(ResponseUtils.isResponseStatesPaidAccepted(claim)).isFalse();
+    }
+
+    @Test
     public void shouldReturnPaymentDeclarationDateStatesPaidFullDefence() {
         Response response = SampleResponse.FullDefence.validDefaults();
 
@@ -107,10 +125,37 @@ public class ResponseUtilsTest {
             .isEqualTo((LocalDate.of(2016, 1, 2).toString()));
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void shouldReturnExceptionWhenNotStatesPaid() {
+    @Test
+    public void shouldReturnExceptionWhenInvalidResponseType() {
         Response response = SampleResponse.FullAdmission.builder().build();
-        ResponseUtils.statesPaidPaymentDeclarationDate(response);
+        Exception exception = assertThrows(IllegalStateException.class,
+            () -> ResponseUtils.statesPaidPaymentDeclarationDate(response)
+        );
+
+        assertTrue(exception.getMessage().contains("Invalid response type "));
+    }
+
+    @Test
+    public void shouldReturnExceptionWhenNotFullDefenceStatesPaid() {
+        Response response = SampleResponse.FullDefence.builder()
+            .withDefenceType(DefenceType.DISPUTE)
+            .withPaymentDeclaration(null)
+            .build();
+        Exception exception = assertThrows(IllegalStateException.class,
+            () -> ResponseUtils.statesPaidPaymentDeclarationDate(response)
+        );
+
+        assertTrue(exception.getMessage().contains(MISSING_PAYMENT_DECLARATION_DATE));
+    }
+
+    @Test
+    public void shouldReturnExceptionWhenNotPartAdmissionStatesPaid() {
+        Response response = SampleResponse.PartAdmission.builder().buildWithPaymentOptionImmediately();
+        Exception exception = assertThrows(IllegalStateException.class,
+            () -> ResponseUtils.statesPaidPaymentDeclarationDate(response)
+        );
+
+        assertTrue(exception.getMessage().contains(MISSING_PAYMENT_DECLARATION_DATE));
     }
 
     @Test
@@ -250,5 +295,20 @@ public class ResponseUtilsTest {
 
         assertThat(ResponseUtils.isFullDefenceDisputeAndNoMediation(response)).isFalse();
     }
+
+    @Test
+    public void shouldReturnFalseWhenDefendantHasNotOptedForMediation() {
+        Response response = SampleResponse.FullDefence.builder().withMediation(YesNoOption.NO).build();
+
+        assertThat(ResponseUtils.hasDefendantOptedForMediation(response)).isFalse();
+    }
+
+    @Test
+    public void shouldReturnTrueWhenDefendantHaOptedForMediation() {
+        Response response = SampleResponse.FullDefence.builder().withMediation(YesNoOption.YES).build();
+
+        assertThat(ResponseUtils.hasDefendantOptedForMediation(response)).isTrue();
+    }
 }
+
 
