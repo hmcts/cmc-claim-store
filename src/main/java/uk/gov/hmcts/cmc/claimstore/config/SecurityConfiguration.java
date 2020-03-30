@@ -16,7 +16,6 @@ import org.springframework.security.oauth2.jwt.JwtIssuerValidator;
 import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
-import uk.gov.hmcts.cmc.claimstore.controllers.ClaimController;
 import uk.gov.hmcts.cmc.claimstore.security.JwtGrantedAuthoritiesConverter;
 
 import javax.inject.Inject;
@@ -24,7 +23,7 @@ import javax.inject.Inject;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
 public class SecurityConfiguration
     extends WebSecurityConfigurerAdapter {
 
@@ -51,6 +50,12 @@ public class SecurityConfiguration
             "/health/liveness",
             "/status/health",
             "/",
+            "/testing-support",
+            "/calendar",
+            "/deadline/**",
+            "/interest/**",
+            "/court-finder",
+            "/cases/callbacks",
             "/loggers/**");
     }
 
@@ -62,7 +67,7 @@ public class SecurityConfiguration
             .formLogin().disable()
             .logout().disable()
             .authorizeRequests()
-            .antMatchers(ClaimController.CLAIMS).hasAnyAuthority("citizen", "solicitor")
+            .antMatchers("/claims/**").hasAnyAuthority("citizen", "solicitor")
             .anyRequest()
             .authenticated()
             .and()

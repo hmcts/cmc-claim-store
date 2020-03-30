@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.ACCESS_TOKEN;
+import static uk.gov.hmcts.cmc.claimstore.services.UserService.BEARER;
 
 @Component
 public class JwtGrantedAuthoritiesConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
@@ -32,7 +33,7 @@ public class JwtGrantedAuthoritiesConverter implements Converter<Jwt, Collection
     public Collection<GrantedAuthority> convert(Jwt jwt) {
         List<GrantedAuthority> authorities = new ArrayList<>();
         if (jwt.containsClaim(TOKEN_NAME) && jwt.getClaim(TOKEN_NAME).equals(ACCESS_TOKEN)) {
-            UserInfo userInfo = userService.getUserInfo(jwt.getTokenValue());
+            UserInfo userInfo = userService.getUserInfo(BEARER + jwt.getTokenValue());
             authorities = extractAuthorityFromClaims(userInfo.getRoles());
         }
         return authorities;
