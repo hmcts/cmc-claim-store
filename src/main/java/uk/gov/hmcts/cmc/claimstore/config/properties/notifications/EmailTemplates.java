@@ -170,13 +170,4 @@ public class EmailTemplates {
 
     @NotEmpty
     private String defendantContactDetailsChanged;
-
-    public String getContactChangeEmailBody() {
-        return readString("/citizen/templates/email/changeContactDetails/body.txt");
-    }
-
-    public String getContactChangeEmailSubject() {
-        return readString("/citizen/templates/email/changeContactDetails/subject.txt");
-    }
-
 }
