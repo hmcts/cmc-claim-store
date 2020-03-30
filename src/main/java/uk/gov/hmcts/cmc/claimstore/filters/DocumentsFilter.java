@@ -4,24 +4,13 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
-import static java.util.function.Predicate.not;
+import static uk.gov.hmcts.cmc.claimstore.rules.ClaimDocumentsAccessRule.claimantViewableDocsType;
+import static uk.gov.hmcts.cmc.claimstore.rules.ClaimDocumentsAccessRule.defendantViewableDocsType;
 
 public class DocumentsFilter {
-
-    private static List<ClaimDocumentType> defendantViewableDocsType = Arrays.stream(ClaimDocumentType.values())
-        .filter(not(ClaimDocumentType.CLAIM_ISSUE_RECEIPT::equals))
-        .collect(Collectors.toList());
-
-    private static List<ClaimDocumentType> claimantViewableDocsType = Arrays.stream(ClaimDocumentType.values())
-        .filter(not(ClaimDocumentType.SEALED_CLAIM::equals))
-        .collect(Collectors.toList());
 
     private static Predicate<ClaimDocument> docsForDefendant = claimDocument -> defendantViewableDocsType
         .contains(claimDocument.getDocumentType());
