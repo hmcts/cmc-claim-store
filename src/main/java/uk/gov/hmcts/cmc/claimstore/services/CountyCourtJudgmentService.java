@@ -13,10 +13,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
-import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
-
-import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LIFT_STAY;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED;
@@ -66,11 +63,11 @@ public class CountyCourtJudgmentService {
 
         authorisationService.assertIsSubmitterOnClaim(claim, userDetails.getId());
 
-        countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, countyCourtJudgment.getCcjType());
+        countyCourtJudgmentRule.assertCountyCourtJudgmentCanBeRequested(claim, countyCourtJudgment.getCcjType());
 
-        Optional<Response> response = claim.getResponse();
-        if (claim.getState().equals(ClaimState.STAYED)
-            && response.filter(ResponseUtils::isAdmissionResponse).isPresent()) {
+        if (claim.getState() == ClaimState.STAYED
+            && claim.getResponse().filter(ResponseUtils::isAdmissionResponse).isPresent()
+        ) {
             claim = caseRepository.saveCaseEvent(authorisation, claim, LIFT_STAY);
         }
 
@@ -104,7 +101,7 @@ public class CountyCourtJudgmentService {
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
 
         authorisationService.assertIsParticipantOnClaim(claim, userDetails.getId());
-        countyCourtJudgmentRule.assertRedeterminationCanBeRequestedOnCountyCourtJudgement(claim);
+        countyCourtJudgmentRule.assertRedeterminationCanBeRequestedOnCountyCourtJudgment(claim);
 
         claimService.saveReDetermination(authorisation, claim, redetermination);
 
