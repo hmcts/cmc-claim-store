@@ -71,6 +71,7 @@ public final class SampleClaim {
     private static final URI DOCUMENT_URI = URI.create("http://localhost/doc.pdf");
     private static final String OCMC = "OCMC";
     public static final String LEGAL_ADVISOR_ORDER_PDF = "legal-advisor-order.pdf";
+    public static final String GENERAL_LETTER_PDF = "general-letter.pdf";
 
     private String submitterId = USER_ID;
     private String letterHolderId = LETTER_HOLDER_ID;

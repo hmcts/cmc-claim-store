@@ -12,8 +12,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.skyscreamer.jsonassert.JSONAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
+import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
+import uk.gov.hmcts.cmc.ccd.domain.GeneralLetterContent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
@@ -59,6 +62,8 @@ class DocAssemblyTemplateBodyMapperTest {
     private CCDCase ccdCase;
     private UserDetails userDetails;
     private DocAssemblyTemplateBody.DocAssemblyTemplateBodyBuilder docAssemblyTemplateBodyBuilder;
+    private static final String LETTER_CONTENT = "letter content";
+    private GeneralLetterContent.GeneralLetterContentBuilder letterContent;
 
     @BeforeEach
     void setUp() {
@@ -68,12 +73,23 @@ class DocAssemblyTemplateBodyMapperTest {
         ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
         ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
         ccdCase.setHearingCourt("BIRMINGHAM");
+        ccdCase.setCaseName("case name");
         ccdCase.setRespondents(
             ImmutableList.of(
                 CCDCollectionElement.<CCDRespondent>builder()
                     .value(SampleData.getIndividualRespondentWithDQ())
                     .build()
             ));
+        ccdCase.setApplicants(
+            ImmutableList.of(
+                CCDCollectionElement.<CCDApplicant>builder()
+                    .value(SampleData.getCCDApplicantIndividual())
+                    .build()
+            ));
+        letterContent = GeneralLetterContent.builder()
+            .letterContent(LETTER_CONTENT)
+            .caseworkerName("Judge McJudge");
+
         userDetails = SampleUserDetails.builder()
             .withForename("Judge")
             .withSurname("McJudge")
@@ -240,8 +256,8 @@ class DocAssemblyTemplateBodyMapperTest {
     }
 
     @Nested
-    @DisplayName("General Tests")
-    class GeneralTests {
+    @DisplayName("General Tests for General Order")
+    class GeneralTestsForGeneralOrder {
         @BeforeEach
         void setUp() {
             when(directionOrderService.getHearingCourt(any()))
@@ -304,6 +320,56 @@ class DocAssemblyTemplateBodyMapperTest {
 
             assertThat(requestBody).isEqualTo(expectedBody);
             verify(directionOrderService).getHearingCourt(any());
+        }
+    }
+
+    @Nested
+    @DisplayName("General Tests for General Letter")
+    class GeneralTestsForGeneralLetter {
+        @Test
+        void shouldMapTemplateBodyWhenGeneralLetterForDefendant() {
+            letterContent.issueLetterContact(CCDContactPartyType.DEFENDANT);
+            ccdCase.setGeneralLetterContent(letterContent.build());
+            DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.generalLetterBody(ccdCase);
+            DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
+                .currentDate(LocalDate.parse("2019-04-24"))
+                .partyName("Mary Richards")
+                .partyAddress(CCDAddress.builder()
+                    .addressLine1("line1")
+                    .addressLine2("line2")
+                    .addressLine3("line3")
+                    .postCode("postcode")
+                    .postTown("city")
+                    .build())
+                .referenceNumber("ref no")
+                .caseName("case name")
+                .caseworkerName("Judge McJudge")
+                .body(LETTER_CONTENT)
+                .build();
+            assertThat(requestBody).isEqualTo(expectedBody);
+        }
+
+        @Test
+        void shouldMapTemplateBodyWhenGeneralLetterForClaimant() {
+            letterContent.issueLetterContact(CCDContactPartyType.CLAIMANT);
+            ccdCase.setGeneralLetterContent(letterContent.build());
+            DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.generalLetterBody(ccdCase);
+            DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
+                .currentDate(LocalDate.parse("2019-04-24"))
+                .partyName("Individual")
+                .partyAddress(CCDAddress.builder()
+                    .addressLine1("line1")
+                    .addressLine2("line2")
+                    .addressLine3("line3")
+                    .postCode("postcode")
+                    .postTown("city")
+                    .build())
+                .referenceNumber("ref no")
+                .caseName("case name")
+                .caseworkerName("Judge McJudge")
+                .body(LETTER_CONTENT)
+                .build();
+            assertThat(requestBody).isEqualTo(expectedBody);
         }
     }
 }
