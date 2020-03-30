@@ -72,7 +72,7 @@ public class AgreementCounterSignedCitizenActionsHandlerTest {
             eq(EVENT_BY_CLAIMANT.getClaim().getDefendantEmail()),
             eq(OTHER_PARTY_TEMPLATE_ID),
             paramsCaptor.capture(),
-            eq("to-defendant-agreement-counter-signed-by-claimant-notification-000CM001")
+            eq("to-defendant-agreement-counter-signed-by-claimant-notification-000MC001")
         );
 
         verifyParameters();
@@ -86,7 +86,7 @@ public class AgreementCounterSignedCitizenActionsHandlerTest {
             eq(EVENT_BY_CLAIMANT.getClaim().getSubmitterEmail()),
             eq(OTHER_PARTY_TEMPLATE_ID),
             paramsCaptor.capture(),
-            eq("to-claimant-agreement-counter-signed-by-defendant-notification-000CM001")
+            eq("to-claimant-agreement-counter-signed-by-defendant-notification-000MC001")
         );
 
         verifyParameters();
@@ -100,7 +100,7 @@ public class AgreementCounterSignedCitizenActionsHandlerTest {
             eq(EVENT_BY_CLAIMANT.getClaim().getSubmitterEmail()),
             eq(ORIGINATOR_TEMPLATE_ID),
             paramsCaptor.capture(),
-            eq("to-claimant-agreement-counter-signed-by-claimant-notification-000CM001")
+            eq("to-claimant-agreement-counter-signed-by-claimant-notification-000MC001")
         );
 
         verifyParameters();
@@ -114,7 +114,7 @@ public class AgreementCounterSignedCitizenActionsHandlerTest {
             eq(EVENT_BY_CLAIMANT.getClaim().getDefendantEmail()),
             eq(ORIGINATOR_TEMPLATE_ID),
             paramsCaptor.capture(),
-            eq("to-defendant-agreement-counter-signed-by-defendant-notification-000CM001")
+            eq("to-defendant-agreement-counter-signed-by-defendant-notification-000MC001")
         );
 
         verifyParameters();

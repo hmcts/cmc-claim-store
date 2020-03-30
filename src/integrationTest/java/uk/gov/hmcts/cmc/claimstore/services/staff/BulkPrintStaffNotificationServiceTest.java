@@ -55,11 +55,11 @@ public class BulkPrintStaffNotificationServiceTest extends BaseMockSpringTest {
         defendantLetterDocument =
             new PrintableTemplate(
                 new Document("defendantPinTemplate", new HashMap<>()),
-                "000CM001-defendant-pin-letter"
+                "000MC001-defendant-pin-letter"
             );
         sealedClaimDocument = new PrintableTemplate(
             new Document("sealedClaimTemplate", new HashMap<>()),
-            "000CM001-claim-form"
+            "000MC001-claim-form"
         );
         claim = SampleClaim
             .builder()
@@ -112,7 +112,7 @@ public class BulkPrintStaffNotificationServiceTest extends BaseMockSpringTest {
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
         assertThat(emailDataArgument.getValue()
-            .getSubject()).startsWith("Print for claim 000CM001 failed");
+            .getSubject()).startsWith("Print for claim 000MC001 failed");
         assertThat(emailDataArgument.getValue()
             .getMessage()).startsWith(
             "The bulk print for this claim failed, please print and post the attached documents"

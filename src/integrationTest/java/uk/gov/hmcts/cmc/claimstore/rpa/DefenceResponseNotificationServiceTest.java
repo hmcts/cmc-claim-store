@@ -77,7 +77,7 @@ public class DefenceResponseNotificationServiceTest extends BaseMockSpringTest {
 
         assertThat(senderArgument.getValue()).isEqualTo(emailProperties.getSender());
         assertThat(emailDataArgument.getValue().getTo()).isEqualTo(emailProperties.getResponseRecipient());
-        assertThat(emailDataArgument.getValue().getSubject()).isEqualToIgnoringNewLines("J defence response 000CM001");
+        assertThat(emailDataArgument.getValue().getSubject()).isEqualToIgnoringNewLines("J defence response 000MC001");
         assertThat(emailDataArgument.getValue().getMessage()).isEmpty();
     }
 
