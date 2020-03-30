@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,8 +40,10 @@ public class CcjRequestedCallbackHandler extends CallbackHandler {
     private CallbackResponse determineState(CallbackParams callbackParams) {
         ClaimState state = ctscEnabled ? ClaimState.JUDGMENT_REQUESTED : ClaimState.OPEN;
 
+        Map<String, Object> data = new HashMap<>(callbackParams.getRequest().getCaseDetails().getData());
+        data.put(STATE, state.getValue());
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(ImmutableMap.of(STATE, state.getValue()))
+            .data(data)
             .build();
     }
 
