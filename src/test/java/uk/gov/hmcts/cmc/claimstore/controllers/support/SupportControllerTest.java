@@ -74,7 +74,7 @@ import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 class SupportControllerTest {
 
     private static final String AUTHORISATION = "Bearer: aaa";
-    private static final String CLAIM_REFERENCE = "000CM001";
+    private static final String CLAIM_REFERENCE = "000MC001";
     private static final String RESPONSE_SUBMITTED = "response";
     private static final UserDetails USER_DETAILS = SampleUserDetails.builder().build();
     private static final User USER = new User(AUTHORISATION, USER_DETAILS);
