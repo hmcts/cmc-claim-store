@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.skyscreamer.jsonassert.JSONAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
+import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
@@ -77,6 +78,12 @@ class DocAssemblyTemplateBodyMapperTest {
             ImmutableList.of(
                 CCDCollectionElement.<CCDRespondent>builder()
                     .value(SampleData.getIndividualRespondentWithDQ())
+                    .build()
+            ));
+        ccdCase.setApplicants(
+            ImmutableList.of(
+                CCDCollectionElement.<CCDApplicant>builder()
+                    .value(SampleData.getCCDApplicantIndividual())
                     .build()
             ));
         letterContent = GeneralLetterContent.builder()
@@ -326,7 +333,7 @@ class DocAssemblyTemplateBodyMapperTest {
             DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.generalLetterBody(ccdCase);
             DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
                 .currentDate(LocalDate.parse("2019-04-24"))
-                .partyName("Individual")
+                .partyName("Mary Richards")
                 .partyAddress(CCDAddress.builder()
                     .addressLine1("line1")
                     .addressLine2("line2")

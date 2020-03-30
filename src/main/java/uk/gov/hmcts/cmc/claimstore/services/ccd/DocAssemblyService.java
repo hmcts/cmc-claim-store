@@ -125,5 +125,6 @@ public class DocAssemblyService {
             .isPresent()
             ? judgeTemplateId
             : legalAdvisorTemplateId;
+
     }
 }
