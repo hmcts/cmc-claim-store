@@ -76,7 +76,7 @@ variable "capacity" {
   default = "1"
 }
 
-variable "enable_staff_email" {
+variable "staff_emails_enabled" {
   default = "true"
 }
 

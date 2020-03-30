@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
@@ -32,34 +33,38 @@ public class StatesPaidStaffNotificationService {
     private final StaffEmailProperties emailProperties;
     private final StatesPaidEmailContentProvider emailContentProvider;
     private final DefendantResponseReceiptService defendantResponseReceiptService;
+    private final boolean staffEmailsEnabled;
 
     @Autowired
     public StatesPaidStaffNotificationService(
         EmailService emailService,
         StaffEmailProperties emailProperties,
         StatesPaidEmailContentProvider emailContentProvider,
-        DefendantResponseReceiptService defendantResponseReceiptService
+        DefendantResponseReceiptService defendantResponseReceiptService,
+        @Value("${feature_toggles.staff_emails_enabled}") boolean staffEmailsEnabled
     ) {
         this.emailService = emailService;
         this.emailProperties = emailProperties;
         this.emailContentProvider = emailContentProvider;
         this.defendantResponseReceiptService = defendantResponseReceiptService;
+        this.staffEmailsEnabled = staffEmailsEnabled;
     }
 
     public void notifyStaffClaimantResponseStatesPaidSubmittedFor(Claim claim) {
-        EmailContent emailContent;
-        emailContent = emailContentProvider.createContent(wrapInMap(claim));
+        if (staffEmailsEnabled) {
+            EmailContent emailContent;
+            emailContent = emailContentProvider.createContent(wrapInMap(claim));
 
-        emailService.sendEmail(
-            emailProperties.getSender(),
-            new EmailData(
-                emailProperties.getRecipient(),
-                emailContent.getSubject(),
-                emailContent.getBody(),
-                singletonList(createResponsePdfAttachment(claim))
-            )
-        );
-
+            emailService.sendEmail(
+                emailProperties.getSender(),
+                new EmailData(
+                    emailProperties.getRecipient(),
+                    emailContent.getSubject(),
+                    emailContent.getBody(),
+                    singletonList(createResponsePdfAttachment(claim))
+                )
+            );
+        }
     }
 
     public static Map<String, Object> wrapInMap(Claim claim) {
