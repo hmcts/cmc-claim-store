@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
@@ -46,7 +45,6 @@ public class ResumePaymentCallbackHandler extends CallbackHandler {
     private final CaseMapper caseMapper;
     private final IssueDateCalculator issueDateCalculator;
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
-    private final boolean autoCancel;
 
     @Autowired
     public ResumePaymentCallbackHandler(
@@ -54,15 +52,13 @@ public class ResumePaymentCallbackHandler extends CallbackHandler {
         CaseDetailsConverter caseDetailsConverter,
         CaseMapper caseMapper,
         IssueDateCalculator issueDateCalculator,
-        ResponseDeadlineCalculator responseDeadlineCalculator,
-        @Value("${feature_toggles.auto_cancel_payments}") boolean autoCancel
+        ResponseDeadlineCalculator responseDeadlineCalculator
     ) {
         this.paymentsService = paymentsService;
         this.caseDetailsConverter = caseDetailsConverter;
         this.caseMapper = caseMapper;
         this.issueDateCalculator = issueDateCalculator;
         this.responseDeadlineCalculator = responseDeadlineCalculator;
-        this.autoCancel = autoCancel;
     }
 
     @Override
@@ -121,11 +117,7 @@ public class ResumePaymentCallbackHandler extends CallbackHandler {
             case INITIATED:
             case PENDING:
                 String paymentReference = originalPayment.getReference();
-                if (autoCancel) {
-                    paymentsService.cancelPayment(authorisation, paymentReference);
-                } else {
-                    logger.info("Not cancelling payment {} as the feature is disabled", paymentReference);
-                }
+                paymentsService.cancelPayment(authorisation, paymentReference);
                 // fall through
 
             default:

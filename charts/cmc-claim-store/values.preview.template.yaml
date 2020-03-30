@@ -52,7 +52,6 @@ java:
     CMC_DB_PASSWORD: hmcts
     CMC_DB_CONNECTION_OPTIONS: '?sslmode=allow'
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-ccd-data-store-api
-    FEATURE_AUTO_CANCEL_PAYMENTS: true
 
 ccd:
   enabled: true
