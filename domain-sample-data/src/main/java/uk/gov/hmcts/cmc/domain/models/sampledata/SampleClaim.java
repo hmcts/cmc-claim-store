@@ -60,7 +60,7 @@ public final class SampleClaim {
     public static final String LETTER_HOLDER_ID = "2";
     public static final String DEFENDANT_ID = "4";
     public static final Long CLAIM_ID = 3L;
-    public static final String REFERENCE_NUMBER = "000CM001";
+    public static final String REFERENCE_NUMBER = "000MC001";
     public static final UUID RAND_UUID = UUID.randomUUID();
     public static final String EXTERNAL_ID = RAND_UUID.toString();
     public static final boolean NOT_REQUESTED_FOR_MORE_TIME = false;
@@ -71,6 +71,7 @@ public final class SampleClaim {
     private static final URI DOCUMENT_URI = URI.create("http://localhost/doc.pdf");
     private static final String OCMC = "OCMC";
     public static final String LEGAL_ADVISOR_ORDER_PDF = "legal-advisor-order.pdf";
+    public static final String GENERAL_LETTER_PDF = "general-letter.pdf";
 
     private String submitterId = USER_ID;
     private String letterHolderId = LETTER_HOLDER_ID;

@@ -71,7 +71,7 @@ public class SignSettlementAgreementActionsHandlerTest {
             eq(SETTLEMENT_SIGNED_TO_CLAIMANT),
             eq(event.getClaim().getSubmitterEmail()),
             anyMap(),
-            eq("to-claimant-claimant’s-response-submitted-notification-000CM001")
+            eq("to-claimant-claimant’s-response-submitted-notification-000MC001")
         );
     }
 
@@ -85,7 +85,7 @@ public class SignSettlementAgreementActionsHandlerTest {
             eq(SETTLEMENT_SIGNED_TO_DEFENDANT),
             eq(event.getClaim().getDefendantEmail()),
             anyMap(),
-            eq("to-defendant-claimant’s-response-submitted-notification-000CM001")
+            eq("to-defendant-claimant’s-response-submitted-notification-000MC001")
         );
     }
 }
