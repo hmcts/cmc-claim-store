@@ -97,7 +97,7 @@ public class CountersignSettlementAgreementActionsHandlerTest {
             eq(SETTLEMENT_SIGNED_TO_CLAIMANT),
             eq(event.getClaim().getSubmitterEmail()),
             anyMap(),
-            eq("to-claimant-agreement-counter-signed-by-defendant-notification-000CM001")
+            eq("to-claimant-agreement-counter-signed-by-defendant-notification-000MC001")
         );
     }
 
@@ -111,7 +111,7 @@ public class CountersignSettlementAgreementActionsHandlerTest {
             eq(SETTLEMENT_SIGNED_TO_DEFENDANT),
             eq(event.getClaim().getDefendantEmail()),
             anyMap(),
-            eq("to-defendant-agreement-counter-signed-by-defendant-notification-000CM001")
+            eq("to-defendant-agreement-counter-signed-by-defendant-notification-000MC001")
         );
     }
 
