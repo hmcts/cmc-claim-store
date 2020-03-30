@@ -36,9 +36,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.MapEntry.entry;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
@@ -89,8 +87,7 @@ public class ResumePaymentCallbackHandlerTest {
             caseDetailsConverter,
             caseMapper,
             issueDateCalculator,
-            responseDeadlineCalculator,
-            true);
+            responseDeadlineCalculator);
 
         callbackRequest = CallbackRequest
             .builder()
@@ -228,69 +225,6 @@ public class ResumePaymentCallbackHandlerTest {
         assertThat(payment).isEqualTo(newPayment);
 
         verify(paymentsService).cancelPayment(BEARER_TOKEN, originalPayment.getReference());
-    }
-
-    @Test
-    public void shouldNotCancelPaymentIfPaymentIsPendingButFeatureIsDisabled() {
-        handler = new ResumePaymentCallbackHandler(
-            paymentsService,
-            caseDetailsConverter,
-            caseMapper,
-            issueDateCalculator,
-            responseDeadlineCalculator,
-            false);
-
-        Payment originalPayment = Payment.builder()
-            .reference("reference")
-            .status(PENDING)
-            .dateCreated("2017-02-03T10:15:30+01:00")
-            .nextUrl(NEXT_URL)
-            .build();
-
-        when(paymentsService.retrievePayment(
-            eq(BEARER_TOKEN),
-            any(ClaimData.class)))
-            .thenReturn(Optional.of(originalPayment));
-
-        Payment newPayment = Payment.builder()
-            .reference("reference2")
-            .status(SUCCESS)
-            .amount(BigDecimal.TEN)
-            .dateCreated("2017-02-03T10:15:30+01:00")
-            .nextUrl(NEXT_URL)
-            .build();
-
-        when(paymentsService.createPayment(
-            eq(BEARER_TOKEN),
-            any(Claim.class)))
-            .thenReturn(newPayment);
-
-        LocalDate date = LocalDate.now();
-        when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(date);
-        when(responseDeadlineCalculator.calculateResponseDeadline(any(LocalDate.class))).thenReturn(date);
-
-        CallbackParams callbackParams = CallbackParams.builder()
-            .type(CallbackType.ABOUT_TO_SUBMIT)
-            .request(callbackRequest)
-            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse response =
-            (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
-
-        assertThat(response.getData()).contains(entry("feeAmountInPennies", "1000"));
-
-        verify(caseMapper).to(claimArgumentCaptor.capture());
-
-        Claim toBeSaved = claimArgumentCaptor.getValue();
-        assertThat(toBeSaved.getIssuedOn()).isEqualTo(date);
-        assertThat(toBeSaved.getServiceDate()).isEqualTo(date.plusDays(5));
-        assertThat(toBeSaved.getResponseDeadline()).isEqualTo(date);
-
-        Payment payment = toBeSaved.getClaimData().getPayment().orElse(null);
-        assertThat(payment).isEqualTo(newPayment);
-
-        verify(paymentsService, never()).cancelPayment(anyString(), anyString());
     }
 
     @Test
