@@ -156,7 +156,14 @@ public class CountyCourtJudgmentServiceTest {
             .build();
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
-
+        pdf = new PDF(
+            buildClaimIssueReceiptFileBaseName(claim.getReferenceNumber()),
+            PDF_CONTENT,
+            CLAIM_ISSUE_RECEIPT
+        );
+        when(ccjByAdmissionOrDeterminationPdfService.createPdf(claim)).thenReturn(pdf);
+        when(documentService.uploadToDocumentManagement(any(PDF.class),
+            anyString(), any(Claim.class))).thenReturn(claim);
         CountyCourtJudgment ccjByAdmission = SampleCountyCourtJudgment.builder().ccjType(ADMISSIONS).build();
         countyCourtJudgmentService.save(ccjByAdmission, EXTERNAL_ID, AUTHORISATION);
 
@@ -182,6 +189,14 @@ public class CountyCourtJudgmentServiceTest {
             .build();
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
+        pdf = new PDF(
+            buildClaimIssueReceiptFileBaseName(claim.getReferenceNumber()),
+            PDF_CONTENT,
+            CLAIM_ISSUE_RECEIPT
+        );
+        when(ccjByAdmissionOrDeterminationPdfService.createPdf(claim)).thenReturn(pdf);
+        when(documentService.uploadToDocumentManagement(any(PDF.class),
+            anyString(), any(Claim.class))).thenReturn(claim);
 
         CountyCourtJudgment ccjByAdmission = SampleCountyCourtJudgment.builder().ccjType(ADMISSIONS).build();
         countyCourtJudgmentService.save(ccjByAdmission, EXTERNAL_ID, AUTHORISATION);

@@ -15,8 +15,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 @ExtendWith(MockitoExtension.class)
 class CcjRequestedCallbackHandlerTest {
