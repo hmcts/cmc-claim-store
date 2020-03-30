@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.reform.fees.client.FeesClient;
@@ -19,7 +20,6 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 import static java.lang.String.format;
-import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_PAYMENT;
 
 @Service
 @Conditional(FeesAndPaymentsConfiguration.class)
@@ -54,20 +54,20 @@ public class PaymentsService {
         this.description = description;
     }
 
-    public Payment retrievePayment(
+    public Optional<Payment> retrievePayment(
         String authorisation,
-        Claim claim
+        ClaimData claimData
     ) {
 
-        logger.info("Retrieving payment amount for claim with external id {}",
-            claim.getExternalId());
+        Optional<Payment> optionalPayment = claimData.getPayment();
+        if (!optionalPayment.isPresent()) {
+            return Optional.empty();
+        }
+        Payment claimPayment = optionalPayment.get();
+        logger.info("Retrieving payment with reference {}", claimPayment.getReference());
 
-        Payment claimPayment = claim.getClaimData().getPayment()
-            .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT));
-
-        return from(paymentsClient.retrievePayment(authorisation, claimPayment.getReference()),
-            claimPayment.getNextUrl()
-        );
+        PaymentDto paymentDto = paymentsClient.retrievePayment(authorisation, claimPayment.getReference());
+        return Optional.of(from(paymentDto, claimPayment.getNextUrl()));
     }
 
     public Payment createPayment(
@@ -75,8 +75,7 @@ public class PaymentsService {
         Claim claim
     ) {
 
-        logger.info("Calculating interest amount for claim with external id {}",
-            claim.getExternalId());
+        logger.info("Calculating interest amount for claim with external id {}", claim.getExternalId());
 
         BigDecimal amount = claim.getTotalClaimAmount()
             .orElseThrow(() -> new IllegalStateException("Missing total claim amount"));
@@ -104,13 +103,19 @@ public class PaymentsService {
             paymentRequest,
             format(returnUrlPattern, claim.getExternalId())
         );
+        logger.info("Created payment for claim with external id {}: {}", claim.getExternalId(), payment);
 
         payment.setAmount(feeOutcome.getFeeAmount());
         return from(payment, null);
     }
 
+    public void cancelPayment(String authorisation, String paymentReference) {
+        logger.info("Cancelling payment {}", paymentReference);
+        paymentsClient.cancelPayment(authorisation, paymentReference);
+    }
+
     private FeeDto[] buildFees(String ccdCaseId, FeeLookupResponseDto feeOutcome) {
-        return new FeeDto[]{
+        return new FeeDto[] {
             FeeDto.builder()
                 .ccdCaseNumber(ccdCaseId)
                 .calculatedAmount(feeOutcome.getFeeAmount())

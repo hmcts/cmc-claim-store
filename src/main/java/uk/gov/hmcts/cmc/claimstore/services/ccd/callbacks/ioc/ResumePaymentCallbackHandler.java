@@ -4,10 +4,12 @@ import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
@@ -30,7 +32,6 @@ import java.util.Map;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
-import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
 @Service
@@ -45,6 +46,7 @@ public class ResumePaymentCallbackHandler extends CallbackHandler {
     private final CaseMapper caseMapper;
     private final IssueDateCalculator issueDateCalculator;
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
+    private final boolean autoCancel;
 
     @Autowired
     public ResumePaymentCallbackHandler(
@@ -52,12 +54,15 @@ public class ResumePaymentCallbackHandler extends CallbackHandler {
         CaseDetailsConverter caseDetailsConverter,
         CaseMapper caseMapper,
         IssueDateCalculator issueDateCalculator,
-        ResponseDeadlineCalculator responseDeadlineCalculator) {
+        ResponseDeadlineCalculator responseDeadlineCalculator,
+        @Value("${feature_toggles.auto_cancel_payments}") boolean autoCancel
+    ) {
         this.paymentsService = paymentsService;
         this.caseDetailsConverter = caseDetailsConverter;
         this.caseMapper = caseMapper;
         this.issueDateCalculator = issueDateCalculator;
         this.responseDeadlineCalculator = responseDeadlineCalculator;
+        this.autoCancel = autoCancel;
     }
 
     @Override
@@ -97,43 +102,57 @@ public class ResumePaymentCallbackHandler extends CallbackHandler {
     }
 
     private Claim withPayment(String authorisation, Claim claim) {
-        Payment originalPayment = paymentsService.retrievePayment(authorisation, claim);
+        Payment originalPayment = paymentsService.retrievePayment(authorisation, claim.getClaimData()).orElseThrow(
+            () -> new NotFoundException("No payment found in claim with external id " + claim.getExternalId())
+        );
 
         logger.info("Retrieved payment from pay hub with status {}, claim with external id {}",
             originalPayment.getStatus().toString(),
             claim.getExternalId());
 
-        if (originalPayment.getStatus().equals(SUCCESS)) {
-            return claim.toBuilder()
-                .claimData(claim.getClaimData().toBuilder()
-                    .payment(originalPayment)
-                    .build())
-                .build();
+        switch (originalPayment.getStatus()) {
+            case SUCCESS:
+                return claim.toBuilder()
+                    .claimData(claim.getClaimData().toBuilder()
+                        .payment(originalPayment)
+                        .build())
+                    .build();
+
+            case INITIATED:
+            case PENDING:
+                String paymentReference = originalPayment.getReference();
+                if (autoCancel) {
+                    paymentsService.cancelPayment(authorisation, paymentReference);
+                } else {
+                    logger.info("Not cancelling payment {} as the feature is disabled", paymentReference);
+                }
+                // fall through
+
+            default:
+                LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
+                LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
+
+                Claim updatedClaim = claim.toBuilder()
+                    .issuedOn(issuedOn)
+                    .serviceDate(issuedOn.plusDays(5))
+                    .responseDeadline(responseDeadline)
+                    .build();
+
+                logger.info("Creating payment for claim with external id {}",
+                    updatedClaim.getExternalId());
+
+                Payment newPayment = paymentsService.createPayment(
+                    authorisation,
+                    updatedClaim
+                );
+
+                return updatedClaim.toBuilder()
+                    .claimData(updatedClaim.getClaimData().toBuilder()
+                        .payment(newPayment)
+                        .feeAmountInPennies(MonetaryConversions.poundsToPennies(newPayment.getAmount()))
+                        .build())
+                    .build();
         }
-
-        LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
-        LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
-
-        Claim updatedClaim = claim.toBuilder()
-            .issuedOn(issuedOn)
-            .serviceDate(issuedOn.plusDays(5))
-            .responseDeadline(responseDeadline)
-            .build();
-
-        logger.info("Creating payment for claim with external id {}",
-            updatedClaim.getExternalId());
-
-        Payment newPayment = paymentsService.createPayment(
-            authorisation,
-            updatedClaim
-        );
-
-        return updatedClaim.toBuilder()
-            .claimData(updatedClaim.getClaimData().toBuilder()
-                .payment(newPayment)
-                .feeAmountInPennies(MonetaryConversions.poundsToPennies(newPayment.getAmount()))
-                .build())
-            .build();
 
     }
 }
