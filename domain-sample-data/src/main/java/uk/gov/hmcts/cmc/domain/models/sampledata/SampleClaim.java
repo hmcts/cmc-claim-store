@@ -470,6 +470,27 @@ public final class SampleClaim {
             .build();
     }
 
+    public static Claim getClaimFullDefenceStatesPaidWithRejection() {
+        return builder()
+            .withDefendantEmail(DEFENDANT_EMAIL)
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withResponse(
+                SampleResponse.FullDefence
+                    .builder()
+                    .withDefenceType(DefenceType.ALREADY_PAID)
+                    .withMediation(NO)
+                    .build())
+            .withRespondedAt(LocalDateTime.now())
+            .withClaimantResponse(SampleClaimantResponse.validDefaultRejection())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .paymentOption(IMMEDIATELY)
+                    .ccjType(DEFAULT)
+                    .build()
+            ).withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
+            .build();
+    }
+
     public static Claim getClaimWithSettlementAgreementRejected() {
 
         Settlement settlement = new Settlement();
