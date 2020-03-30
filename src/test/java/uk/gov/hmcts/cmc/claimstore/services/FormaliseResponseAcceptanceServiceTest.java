@@ -7,8 +7,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.claimstore.documents.ClaimantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
+import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
@@ -22,20 +25,27 @@ import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SampleCourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
+import uk.gov.hmcts.cmc.domain.models.sampledata.statementofmeans.SampleStatementOfMeans;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCUTORY_JUDGMENT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REJECT_ORGANISATION_PAYMENT_PLAN;
 import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_OFFER;
 import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_PAYMENT_DATE;
 import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_PAYMENT_INTENTION;
@@ -66,6 +76,15 @@ public class FormaliseResponseAcceptanceServiceTest {
     @Mock
     private CaseRepository caseRepository;
 
+    @Mock
+    private DocumentsService documentService;
+
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private ClaimantResponseReceiptService claimantResponseReceiptService;
+
     @Captor
     private ArgumentCaptor<CountyCourtJudgment> countyCourtJudgmentArgumentCaptor;
 
@@ -78,7 +97,10 @@ public class FormaliseResponseAcceptanceServiceTest {
             countyCourtJudgmentService,
             settlementAgreementService,
             eventProducer,
-            caseRepository
+            caseRepository,
+            userService,
+            claimantResponseReceiptService,
+            documentService
         );
     }
 
@@ -587,6 +609,36 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         verify(eventProducer, once()).createInterlocutoryJudgmentEvent(eq(claim));
         verify(caseRepository, once()).saveCaseEvent(anyString(), eq(claim), eq(INTERLOCUTORY_JUDGMENT));
+        verifyNoInteractions(countyCourtJudgmentService);
+        verifyNoInteractions(settlementAgreementService);
+    }
+
+    @Test
+    public void createRejectOrganisationPaymentPlanEventWhenReferredToJudge() {
+        Claim claim = SampleClaim.builder()
+            .withResponse(FullAdmissionResponse.builder()
+                .moreTimeNeeded(YesNoOption.NO)
+                .defendant(SampleParty.builder().company())
+                .paymentIntention(SamplePaymentIntention.bySetDate())
+                .statementOfMeans(SampleStatementOfMeans.builder().build())
+                .build()
+            )
+            .withRespondedAt(LocalDateTime.now())
+            .build();
+
+        ResponseAcceptation responseAcceptation = ResponseAcceptation
+            .builder()
+            .formaliseOption(FormaliseOption.REFER_TO_JUDGE)
+            .build();
+
+        String auth = "auth";
+        when(userService.authenticateAnonymousCaseWorker()).thenReturn(new User(auth, null));
+
+        assertThatCode(() -> formaliseResponseAcceptanceService
+            .formalise(claim, responseAcceptation, AUTH)).doesNotThrowAnyException();
+
+        verify(documentService, once()).uploadToDocumentManagement(any(), eq(auth), eq(claim));
+        verify(caseRepository, once()).saveCaseEvent(anyString(), eq(claim), eq(REJECT_ORGANISATION_PAYMENT_PLAN));
         verifyNoInteractions(countyCourtJudgmentService);
         verifyNoInteractions(settlementAgreementService);
     }

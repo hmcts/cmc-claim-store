@@ -3,8 +3,12 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.claimstore.documents.ClaimantResponseReceiptService;
+import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
+import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
@@ -44,18 +48,27 @@ public class FormaliseResponseAcceptanceService {
     private final SettlementAgreementService settlementAgreementService;
     private final EventProducer eventProducer;
     private final CaseRepository caseRepository;
+    private final UserService userService;
+    private final ClaimantResponseReceiptService claimantResponseReceiptService;
+    private final DocumentsService documentService;
 
     @Autowired
     public FormaliseResponseAcceptanceService(
         CountyCourtJudgmentService countyCourtJudgmentService,
         SettlementAgreementService settlementAgreementService,
         EventProducer eventProducer,
-        CaseRepository caseRepository
+        CaseRepository caseRepository,
+        UserService userService,
+        ClaimantResponseReceiptService claimantResponseReceiptService,
+        DocumentsService documentService
     ) {
         this.countyCourtJudgmentService = countyCourtJudgmentService;
         this.settlementAgreementService = settlementAgreementService;
         this.eventProducer = eventProducer;
         this.caseRepository = caseRepository;
+        this.userService = userService;
+        this.claimantResponseReceiptService = claimantResponseReceiptService;
+        this.documentService = documentService;
     }
 
     public void formalise(Claim claim, ResponseAcceptation responseAcceptation, String authorisation) {
@@ -82,6 +95,10 @@ public class FormaliseResponseAcceptanceService {
         CaseEvent caseEvent;
         if (isCompanyOrOrganisation(response.getDefendant())) {
             eventProducer.createRejectOrganisationPaymentPlanEvent(claim);
+            User user = userService.authenticateAnonymousCaseWorker();
+
+            PDF document = claimantResponseReceiptService.createPdf(claim);
+            documentService.uploadToDocumentManagement(document, user.getAuthorisation(), claim);
             caseEvent = REJECT_ORGANISATION_PAYMENT_PLAN;
         } else {
             eventProducer.createInterlocutoryJudgmentEvent(claim);

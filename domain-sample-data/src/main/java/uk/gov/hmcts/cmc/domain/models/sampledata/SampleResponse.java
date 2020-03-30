@@ -256,6 +256,12 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
             return this;
         }
 
+
+        public FullDefence withDefendantDetails(Party defendantDetails) {
+            this.defendantDetails = defendantDetails;
+            return this;
+        }
+
         public FullDefence withPaymentDeclaration(PaymentDeclaration paymentDeclaration) {
             this.paymentDeclaration = paymentDeclaration;
             return this;
