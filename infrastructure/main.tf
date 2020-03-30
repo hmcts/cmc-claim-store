@@ -1,3 +1,13 @@
+provider "vault" {
+  //  # It is strongly recommended to configure this provider through the
+  //  # environment variables described above, so that each user can have
+  //  # separate credentials set in the environment.
+  //  #
+  //  # This will default to using $VAULT_ADDR
+  //  # But can be set explicitly
+  address = "https://vault.reform.hmcts.net:6200"
+}
+
 locals {
   aseName = "core-compute-${var.env}"
 
@@ -25,88 +35,88 @@ data "azurerm_key_vault" "cmc_key_vault" {
 
 data "azurerm_key_vault_secret" "notify_api_key" {
   name = "notify-api-key"
-  vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
+  key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
 }
 
 data "azurerm_key_vault_secret" "s2s_secret" {
   name = "claim-store-s2s-secret"
-  vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
+  key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
 }
 
 data "azurerm_key_vault_secret" "db_password" {
   name = "claim-store-db-password"
-  vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
+  key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
 }
 
 data "azurerm_key_vault_secret" "staff_email" {
   name = "staff-email"
-  vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
+  key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
 }
 
 data "azurerm_key_vault_secret" "live_support_email" {
   name = "live-support-email"
-  vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
+  key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
 }
 
 data "azurerm_key_vault_secret" "milo_recipient" {
   name = "milo-recipient"
-  vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
+  key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
 }
 
 data "azurerm_key_vault_secret" "rpa_email_sealed_claim" {
   name = "rpa-email-sealed-claim"
-  vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
+  key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
 }
 
 data "azurerm_key_vault_secret" "rpa_email_more_time_requested" {
   name = "rpa-email-more-time-requested"
-  vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
+  key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
 }
 
 data "azurerm_key_vault_secret" "rpa_email_defence_response" {
   name = "rpa-email-response"
-  vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
+  key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
 }
 
 data "azurerm_key_vault_secret" "rpa_email_ccj" {
   name = "rpa-email-ccj"
-  vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
+  key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
 }
 
 data "azurerm_key_vault_secret" "rpa_email_paid_in_full" {
   name = "rpa-email-paid-in-full"
-  vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
+  key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
 }
 
 data "azurerm_key_vault_secret" "anonymous_caseworker_username" {
   name = "anonymous-caseworker-username"
-  vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
+  key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
 }
 
 data "azurerm_key_vault_secret" "anonymous_caseworker_password" {
   name = "anonymous-caseworker-password"
-  vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
+  key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
 }
 
 data "azurerm_key_vault_secret" "system_update_username" {
   name = "system-update-username"
-  vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
+  key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
 }
 
 data "azurerm_key_vault_secret" "system_update_password" {
   name = "system-update-password"
-  vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
+  key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
 }
 
 data "azurerm_key_vault_secret" "oauth_client_secret" {
   name = "citizen-oauth-client-secret"
-  vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
+  key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
 }
 
 resource "azurerm_key_vault_secret" "cmc-db-password" {
   name      = "cmc-db-password"
   value     = "${module.database.postgresql_password}"
-  vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
+  key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
 }
 
 module "database" {
