@@ -27,6 +27,14 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 public class SecurityConfiguration
     extends WebSecurityConfigurerAdapter {
 
+    private static final String[] AUTHORITIES = {
+        "citizen",
+        "solicitor",
+        "letter-holder",
+        "anonymous",
+        "caseworker"
+    };
+
     @Value("${spring.security.oauth2.client.provider.oidc.issuer-uri}")
     private String issuerUri;
 
@@ -50,12 +58,13 @@ public class SecurityConfiguration
             "/health/liveness",
             "/status/health",
             "/",
-            "/testing-support",
-            "/calendar",
+            "/support/**",
+            "/calendar/**",
             "/deadline/**",
             "/interest/**",
-            "/court-finder",
-            "/cases/callbacks",
+            "/court-finder/**",
+            "/cases/callbacks/**",
+            "/testing-support/**",
             "/loggers/**");
     }
 
@@ -67,7 +76,8 @@ public class SecurityConfiguration
             .formLogin().disable()
             .logout().disable()
             .authorizeRequests()
-            .antMatchers("/claims/**").hasAnyAuthority("citizen", "solicitor")
+            .antMatchers("/claims/**", "/responses/**", "/documents/**")
+            .hasAnyAuthority(AUTHORITIES)
             .anyRequest()
             .authenticated()
             .and()
