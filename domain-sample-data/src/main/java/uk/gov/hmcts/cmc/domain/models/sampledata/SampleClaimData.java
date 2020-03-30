@@ -22,7 +22,6 @@ import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.noInterestBuilder;
 
 public class SampleClaimData {
-    public static final String FEE_ACCOUNT_NUMBER = "PBA1234567";
     public static final String EXTERNAL_REFERENCE_NUMBER = "CLAIM234324";
 
     private String externalId = SampleClaim.EXTERNAL_ID;
@@ -33,7 +32,7 @@ public class SampleClaimData {
     private Interest interest = SampleInterest.standard();
     private String reason = "reason";
     private BigInteger feeAmount = BigInteger.valueOf(4000);
-    private String feeAccountNumber = FEE_ACCOUNT_NUMBER;
+    private String feeAccountNumber = "PBA1234567";
     private StatementOfTruth statementOfTruth;
     private PersonalInjury personalInjury = new PersonalInjury(DamagesExpectation.MORE_THAN_THOUSAND_POUNDS);
     private String externalReferenceNumber = EXTERNAL_REFERENCE_NUMBER;
