@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import com.google.common.collect.ImmutableList;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.ReDeterminationNotificationEmailContentProvider;
@@ -31,6 +32,7 @@ public class CCJStaffNotificationService {
     private final RequestSubmittedNotificationEmailContentProvider ccjRequestSubmittedEmailContentProvider;
     private final ReDeterminationNotificationEmailContentProvider reDeterminationNotificationEmailContentProvider;
     private final StaffPdfCreatorService staffPdfCreatorService;
+    private final boolean staffEmailsEnabled;
 
     @Autowired
     public CCJStaffNotificationService(
@@ -38,13 +40,15 @@ public class CCJStaffNotificationService {
         StaffEmailProperties staffEmailProperties,
         RequestSubmittedNotificationEmailContentProvider ccjRequestSubmittedEmailContentProvider,
         ReDeterminationNotificationEmailContentProvider reDeterminationNotificationEmailContentProvider,
-        StaffPdfCreatorService staffPdfCreatorService
+        StaffPdfCreatorService staffPdfCreatorService,
+        @Value("${feature_toggles.staff_emails_enabled}") boolean staffEmailsEnabled
     ) {
         this.emailService = emailService;
         this.staffEmailProperties = staffEmailProperties;
         this.ccjRequestSubmittedEmailContentProvider = ccjRequestSubmittedEmailContentProvider;
         this.reDeterminationNotificationEmailContentProvider = reDeterminationNotificationEmailContentProvider;
         this.staffPdfCreatorService = staffPdfCreatorService;
+        this.staffEmailsEnabled = staffEmailsEnabled;
     }
 
     public void notifyStaffCCJRequestSubmitted(Claim claim) {
@@ -81,8 +85,11 @@ public class CCJStaffNotificationService {
     }
 
     public void notifyStaffCCJReDeterminationRequest(Claim claim, String submitterName) {
-        requireNonNull(claim);
-        emailService.sendEmail(staffEmailProperties.getSender(), prepareReDeterminationEmailData(claim, submitterName));
+        if (staffEmailsEnabled) {
+            requireNonNull(claim);
+            emailService.sendEmail(staffEmailProperties.getSender(),
+                prepareReDeterminationEmailData(claim, submitterName));
+        }
     }
 
     private EmailData prepareReDeterminationEmailData(Claim claim, String submitterName) {

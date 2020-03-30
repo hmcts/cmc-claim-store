@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.events.settlement;
 
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
@@ -29,6 +30,7 @@ public class CountersignSettlementAgreementActionsHandler {
     private final StaffEmailProperties staffEmailProperties;
     private final EmailService emailService;
     private final SettlementCountersignedEmailContentProvider settlementCountersignedEmailContentProvider;
+    private final boolean staffEmailsEnabled;
 
     @Autowired
     public CountersignSettlementAgreementActionsHandler(
@@ -36,13 +38,15 @@ public class CountersignSettlementAgreementActionsHandler {
         NotificationsProperties notificationsProperties,
         StaffEmailProperties staffEmailProperties,
         EmailService emailService,
-        SettlementCountersignedEmailContentProvider settlementCountersignedEmailContentProvider
+        SettlementCountersignedEmailContentProvider settlementCountersignedEmailContentProvider,
+        @Value("${feature_toggles.staff_emails_enabled}") boolean staffEmailsEnabled
     ) {
         this.notificationService = notificationService;
         this.notificationsProperties = notificationsProperties;
         this.staffEmailProperties = staffEmailProperties;
         this.emailService = emailService;
         this.settlementCountersignedEmailContentProvider = settlementCountersignedEmailContentProvider;
+        this.staffEmailsEnabled = staffEmailsEnabled;
     }
 
     @EventListener
@@ -75,13 +79,15 @@ public class CountersignSettlementAgreementActionsHandler {
 
     @EventListener
     public void sendNotificationToStaff(CountersignSettlementAgreementEvent event) {
-        final Claim claim = event.getClaim();
-        final Map<String, Object> parameters = aggregateParameters(claim);
-        EmailContent emailcontent = settlementCountersignedEmailContentProvider.createContent(parameters);
-        this.emailService.sendEmail(
-            staffEmailProperties.getSender(),
-            new EmailData(staffEmailProperties.getRecipient(), emailcontent.getSubject(), emailcontent.getBody(),
-                Collections.emptyList()));
+        if (staffEmailsEnabled) {
+            final Claim claim = event.getClaim();
+            final Map<String, Object> parameters = aggregateParameters(claim);
+            EmailContent emailcontent = settlementCountersignedEmailContentProvider.createContent(parameters);
+            this.emailService.sendEmail(
+                staffEmailProperties.getSender(),
+                new EmailData(staffEmailProperties.getRecipient(), emailcontent.getSubject(), emailcontent.getBody(),
+                    Collections.emptyList()));
+        }
     }
 
     private Map<String, Object> aggregateParameters(Claim claim) {
