@@ -71,7 +71,8 @@ public enum CaseEvent {
     UPDATE_CLAIM("UpdateClaim"),
     RESET_PIN("ResetPin"),
     ISSUE_GENERAL_LETTER("IssueGeneralLetter"),
-    REDETERMINATION_RECEIPT_UPLOAD("RedeterminationReceiptUpload");
+    REDETERMINATION_RECEIPT_UPLOAD("RedeterminationReceiptUpload"),
+    CLAIMANT_RESPONSE_RECEIPT_UPLOAD("ClaimantResponseReceiptUpload");
 
     private final String value;
 

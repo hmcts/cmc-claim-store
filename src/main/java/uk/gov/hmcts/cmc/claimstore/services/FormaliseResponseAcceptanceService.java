@@ -1,14 +1,15 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.claimstore.documents.InterlocutoryReceiptService;
+import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
-import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
-import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
+import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
+import uk.gov.hmcts.cmc.domain.models.*;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
@@ -44,18 +45,27 @@ public class FormaliseResponseAcceptanceService {
     private final SettlementAgreementService settlementAgreementService;
     private final EventProducer eventProducer;
     private final CaseRepository caseRepository;
+    private final DocumentsService documentService;
+    private final boolean ctscEnabled;
+    private final InterlocutoryReceiptService interlocutoryReceiptService;
 
     @Autowired
     public FormaliseResponseAcceptanceService(
         CountyCourtJudgmentService countyCourtJudgmentService,
         SettlementAgreementService settlementAgreementService,
         EventProducer eventProducer,
-        CaseRepository caseRepository
+        CaseRepository caseRepository,
+        DocumentsService documentService,
+        InterlocutoryReceiptService interlocutoryReceiptService,
+        @Value("${feature_toggles.ctsc_enabled}") boolean ctscEnabled
     ) {
         this.countyCourtJudgmentService = countyCourtJudgmentService;
         this.settlementAgreementService = settlementAgreementService;
         this.eventProducer = eventProducer;
         this.caseRepository = caseRepository;
+        this.documentService = documentService;
+        this.interlocutoryReceiptService = interlocutoryReceiptService;
+        this.ctscEnabled = ctscEnabled;
     }
 
     public void formalise(Claim claim, ResponseAcceptation responseAcceptation, String authorisation) {
@@ -84,6 +94,7 @@ public class FormaliseResponseAcceptanceService {
             eventProducer.createRejectOrganisationPaymentPlanEvent(claim);
             caseEvent = REJECT_ORGANISATION_PAYMENT_PLAN;
         } else {
+            claim = uploadInterlocutoryJudgmentDocumentToDocumentStore(claim, authorisation);
             eventProducer.createInterlocutoryJudgmentEvent(claim);
             caseEvent = INTERLOCUTORY_JUDGMENT;
         }
@@ -233,5 +244,16 @@ public class FormaliseResponseAcceptanceService {
             default:
                 throw new IllegalStateException("Invalid response type " + response.getResponseType());
         }
+    }
+
+    private Claim uploadInterlocutoryJudgmentDocumentToDocumentStore(
+        Claim claim,
+        String authorisation) {
+        Claim updateClaim = claim;
+        if (ctscEnabled) {
+            PDF document = interlocutoryReceiptService.createPdf(claim);
+            updateClaim = documentService.uploadToDocumentManagement(document, authorisation, claim);
+        }
+        return updateClaim;
     }
 }

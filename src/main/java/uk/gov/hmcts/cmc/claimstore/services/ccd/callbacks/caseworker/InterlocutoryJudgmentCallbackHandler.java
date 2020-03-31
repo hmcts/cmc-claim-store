@@ -1,6 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
 import com.google.common.collect.ImmutableMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
@@ -8,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
@@ -27,6 +30,8 @@ public class InterlocutoryJudgmentCallbackHandler extends CallbackHandler {
 
     private final boolean ctscEnabled;
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     private final ImmutableMap<CallbackType, Callback> callbacks = ImmutableMap.of(
         CallbackType.ABOUT_TO_SUBMIT, this::determineState
     );
@@ -35,7 +40,9 @@ public class InterlocutoryJudgmentCallbackHandler extends CallbackHandler {
         this.ctscEnabled = ctscEnabled;
     }
 
+    @LogExecutionTime
     private CallbackResponse determineState(CallbackParams callbackParams) {
+        logger.info("akriti callback from CCD, eventId: {}", INTERLOCUTORY_JUDGMENT);
         ClaimState state = ctscEnabled ? ClaimState.JUDGMENT_DECIDE_AMOUNT : ClaimState.OPEN;
 
         Map<String, Object> data = new HashMap<>(callbackParams.getRequest().getCaseDetails().getData());

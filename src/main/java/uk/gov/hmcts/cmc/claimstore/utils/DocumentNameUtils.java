@@ -119,4 +119,17 @@ public class DocumentNameUtils {
 
         return format("%s-directions-order-cover-sheet", number);
     }
+
+    public static String buildRequestForInterlocutoryJudgment(String caseRef) {
+        requireNonBlank(caseRef);
+
+        return format("%s-request-interloc-judgment", caseRef);
+    }
+
+    public static String buildRequestForReferToJugdeFileBaseName(String caseRef, String partyType) {
+        requireNonBlank(caseRef);
+        requireNonBlank(partyType);
+
+        return format("%s-request-redeterm-%s", caseRef, partyType);
+    }
 }

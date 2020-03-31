@@ -1,13 +1,19 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
+import uk.gov.hmcts.cmc.claimstore.documents.ClaimantResponseReceiptService;
+import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
+import uk.gov.hmcts.cmc.claimstore.documents.RedeterminationReceiptService;
+import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.CountyCourtJudgmentRule;
+import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
@@ -23,6 +29,8 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUE
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED_AFTER_SETTLEMENT_BREACH;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED_BY_ADMISSION;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.REDETERMINATION_REQUESTED;
+import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.CLAIMANT;
+import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.DEFENDANT;
 
 @Component
 public class CountyCourtJudgmentService {
@@ -34,6 +42,9 @@ public class CountyCourtJudgmentService {
     private final UserService userService;
     private final AppInsights appInsights;
     private final CaseRepository caseRepository;
+    private final DocumentsService documentService;
+    private final boolean ctscEnabled;
+    private final RedeterminationReceiptService redeterminationReceiptService;
 
     @Autowired
     public CountyCourtJudgmentService(
@@ -43,7 +54,10 @@ public class CountyCourtJudgmentService {
         CountyCourtJudgmentRule countyCourtJudgmentRule,
         UserService userService,
         AppInsights appInsights,
-        CaseRepository caseRepository
+        CaseRepository caseRepository,
+        DocumentsService documentService,
+        @Value("${feature_toggles.ctsc_enabled}") boolean ctscEnabled,
+        RedeterminationReceiptService redeterminationReceiptService
     ) {
         this.claimService = claimService;
         this.authorisationService = authorisationService;
@@ -52,6 +66,9 @@ public class CountyCourtJudgmentService {
         this.userService = userService;
         this.appInsights = appInsights;
         this.caseRepository = caseRepository;
+        this.documentService = documentService;
+        this.ctscEnabled = ctscEnabled;
+        this.redeterminationReceiptService = redeterminationReceiptService;
     }
 
     public Claim save(
@@ -110,8 +127,11 @@ public class CountyCourtJudgmentService {
 
         Claim claimWithReDetermination = claimService.getClaimByExternalId(externalId, authorisation);
 
+        Claim claimWithReDeterminationDoc = uploadRedeterminationDocumentToDocumentStore(claimWithReDetermination,
+            redetermination, authorisation);
+
         eventProducer.createRedeterminationEvent(
-            claimWithReDetermination,
+            claimWithReDeterminationDoc,
             authorisation,
             userDetails.getFullName(),
             redetermination.getPartyType()
@@ -119,7 +139,19 @@ public class CountyCourtJudgmentService {
 
         appInsights.trackEvent(REDETERMINATION_REQUESTED, AppInsights.REFERENCE_NUMBER, claim.getReferenceNumber());
 
-        return claimWithReDetermination;
+        return claimWithReDeterminationDoc;
 
+    }
+
+    private Claim uploadRedeterminationDocumentToDocumentStore(
+        Claim claim,
+        ReDetermination reDetermination,
+        String authorisation) {
+        Claim updateClaim = claim;
+        if (ctscEnabled) {
+        PDF document = redeterminationReceiptService.createPdf(claim, reDetermination.getPartyType());
+            updateClaim = documentService.uploadToDocumentManagement(document, authorisation, claim);
+        }
+        return updateClaim;
     }
 }
