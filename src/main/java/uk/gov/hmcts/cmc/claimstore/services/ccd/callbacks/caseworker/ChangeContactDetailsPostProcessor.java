@@ -120,7 +120,7 @@ public class ChangeContactDetailsPostProcessor {
         }
     }
 
-    public CallbackResponse notifyPartiesViaEmailAndLetter(CallbackParams callbackParams) {
+    public CallbackResponse notifyPartiesViaEmailOrLetter(CallbackParams callbackParams) {
         logger.info("Change Contact Details: print letter or send email notifications");
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);

@@ -45,7 +45,7 @@ public class ChangeContactDetailsCallbackHandler extends CallbackHandler {
     protected Map<CallbackType, Callback> callbacks() {
         return ImmutableMap.of(
                 CallbackType.MID, changeContactDetailsPostProcessor::showNewContactDetails,
-                CallbackType.ABOUT_TO_SUBMIT, changeContactDetailsPostProcessor::notifyPartiesViaEmailAndLetter
+                CallbackType.ABOUT_TO_SUBMIT, changeContactDetailsPostProcessor::notifyPartiesViaEmailOrLetter
         );
     }
 }
