@@ -7,8 +7,6 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotEmpty;
 
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceReader.readString;
-
 @Component
 @Validated
 @Getter

@@ -29,12 +29,12 @@ public class LetterContentBuilder {
         if (previousPartyDetails == null) {
             updateFlagsBasedOnLatestPartyDetails(latestPartyDetails, contactChangeContent);
         } else {
-            UpdateFlagsByComparingPartDetails(previousPartyDetails, latestPartyDetails, contactChangeContent);
+            updateFlagsByComparingPartDetails(previousPartyDetails, latestPartyDetails, contactChangeContent);
         }
         return contactChangeContent.build();
     }
 
-    private void UpdateFlagsByComparingPartDetails(
+    private void updateFlagsByComparingPartDetails(
         CCDParty partyBefore,
         CCDParty partyNow,
         CCDContactChangeContent.CCDContactChangeContentBuilder contactChangeContent

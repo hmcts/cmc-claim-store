@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -8,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactChangeContent;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
@@ -65,7 +63,6 @@ public class ChangeContactDetailsPostProcessor {
         this.generalLetterService = generalLetterService;
     }
 
-
     public CallbackResponse showNewContactDetails(CallbackParams callbackParams) {
         logger.info("Change Contact Details: create letter (preview)");
 
@@ -78,7 +75,7 @@ public class ChangeContactDetailsPostProcessor {
 
         CCDContactChangeContent contactChangeContent = letterContentBuilder.letterContent(partyBefore, partyNow);
 
-            if (contactChangeContent.noContentChange()) {
+        if (contactChangeContent.noContentChange()) {
             return AboutToStartOrSubmitCallbackResponse
                 .builder()
                 .errors(Collections.singletonList(NO_DETAILS_CHANGED_ERROR))
@@ -129,12 +126,10 @@ public class ChangeContactDetailsPostProcessor {
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
-        CCDContactChangeContent contactChangeContent = ccdCase.getContactChangeContent();
-        CCDContactPartyType contactChangePartyType = ccdCase.getContactChangeParty();
 
         return letterNeededForDefendant(ccdCase.getContactChangeParty(), ccdCase)
             ? generalLetterService.printAndUpdateCaseDocuments(caseDetails, authorisation)
-            : changeContactDetailsNotificationService.sendEmailToRightRecipient(ccdCase, claim, contactChangeContent, contactChangePartyType);
+            : changeContactDetailsNotificationService.sendEmailToRightRecipient(ccdCase, claim);
     }
 
     public boolean letterNeededForDefendant(CCDContactPartyType contactPartyType, CCDCase ccdCase) {

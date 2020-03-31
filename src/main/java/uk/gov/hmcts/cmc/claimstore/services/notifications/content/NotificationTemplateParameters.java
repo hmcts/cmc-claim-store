@@ -17,7 +17,6 @@ public final class NotificationTemplateParameters {
     public static final String NEW_FEATURES = "newFeatures";
     public static final String DQ_DEADLINE = "DQsdeadline";
 
-
     private NotificationTemplateParameters() {
         // Utility class
     }

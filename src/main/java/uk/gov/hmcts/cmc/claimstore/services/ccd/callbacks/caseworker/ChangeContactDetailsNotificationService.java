@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.domain.CCDContactChangeContent;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
 import uk.gov.hmcts.cmc.claimstore.config.LoggerHandler;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
@@ -46,16 +45,16 @@ public class ChangeContactDetailsNotificationService {
         this.caseDetailsConverter = caseDetailsConverter;
     }
 
-
-    public CallbackResponse sendEmailToRightRecipient(CCDCase ccdCase, Claim claim, CCDContactChangeContent contactChangeContent, CCDContactPartyType ccdContactPartyType) {
+    public CallbackResponse sendEmailToRightRecipient(CCDCase ccdCase, Claim claim) {
         boolean errors = false;
         try {
 
             if (ccdCase.getContactChangeParty() == CCDContactPartyType.CLAIMANT) {
-                notifyDefendant(claim, contactChangeContent);
+                notifyDefendant(claim);
             } else {
-                notifyClaimant(claim, contactChangeContent);
-            }        } catch (Exception e) {
+                notifyClaimant(claim);
+            }
+        } catch (Exception e) {
             logger.info("Sending email to party failed", e);
             errors = true;
         }
@@ -78,7 +77,7 @@ public class ChangeContactDetailsNotificationService {
         }
     }
 
-    private void notifyClaimant(Claim claim, CCDContactChangeContent contactChangeContent) {
+    private void notifyClaimant(Claim claim) {
         notificationService.sendMail(
                 claim.getSubmitterEmail(),
                 notificationsProperties.getTemplates().getEmail().getDefendantContactDetailsChanged(),
@@ -88,7 +87,7 @@ public class ChangeContactDetailsNotificationService {
         );
     }
 
-    private void notifyDefendant(Claim claim, CCDContactChangeContent contactChangeContent) {
+    private void notifyDefendant(Claim claim) {
         notificationService.sendMail(
                 claim.getDefendantEmail(),
                 notificationsProperties.getTemplates().getEmail().getClaimantContactDetailsChanged(),
