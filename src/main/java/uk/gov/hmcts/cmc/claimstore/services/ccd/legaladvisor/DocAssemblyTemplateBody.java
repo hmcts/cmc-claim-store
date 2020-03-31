@@ -94,4 +94,10 @@ public class DocAssemblyTemplateBody implements FormPayload {
     private boolean expertReportPermissionPartyGivenToDefendant;
     private List<CCDCollectionElement<String>> expertReportInstructionClaimant;
     private List<CCDCollectionElement<String>> expertReportInstructionDefendant;
+    private String partyName;
+    private CCDAddress partyAddress;
+    private String body;
+    private String caseName;
+    private String caseworkerName;
+
 }

@@ -79,12 +79,12 @@ public class MediationFailedNotificationServiceTest {
         verify(notificationService).sendMail(eq(claim.getSubmitterEmail()),
             eq(TRANSFER_CLAIMANT),
             any(),
-            eq("transfer-claimant-mediation-unsuccessful-000CM001"));
+            eq("transfer-claimant-mediation-unsuccessful-000MC001"));
 
         verify(notificationService).sendMail(eq(claim.getDefendantEmail()),
             eq(TRANSFER_DEFENDANT),
             any(),
-            eq("transfer-defendant-mediation-unsuccessful-000CM001"));
+            eq("transfer-defendant-mediation-unsuccessful-000MC001"));
     }
 
     @Test
@@ -99,7 +99,7 @@ public class MediationFailedNotificationServiceTest {
         verify(notificationService).sendMail(eq(claim.getSubmitterEmail()),
             eq(OFFLINE_MEDIATION_FAILED),
             emailParamterCaptor.capture(),
-            eq("offlineDQ-claimant-mediation-unsuccessful-000CM001"));
+            eq("offlineDQ-claimant-mediation-unsuccessful-000MC001"));
 
         Map<String, String> parameter = emailParamterCaptor.getValue();
 
@@ -108,6 +108,6 @@ public class MediationFailedNotificationServiceTest {
         verify(notificationService).sendMail(eq(claim.getDefendantEmail()),
             eq(OFFLINE_MEDIATION_FAILED),
             any(),
-            eq("offlineDQ-defendant-mediation-unsuccessful-000CM001"));
+            eq("offlineDQ-defendant-mediation-unsuccessful-000MC001"));
     }
 }
