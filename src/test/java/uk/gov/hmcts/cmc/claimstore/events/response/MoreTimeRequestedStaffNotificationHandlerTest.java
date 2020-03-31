@@ -13,7 +13,9 @@ import uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleMoreTimeRequest
 import uk.gov.hmcts.cmc.claimstore.services.notifications.MoreTimeRequestedNotificationService;
 
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
@@ -45,16 +47,16 @@ public class MoreTimeRequestedStaffNotificationHandlerTest {
         when(notificationsProperties.getTemplates()).thenReturn(templates);
         when(templates.getEmail()).thenReturn(emailTemplates);
         when(emailTemplates.getStaffMoreTimeRequested()).thenReturn(STAFF_TEMPLATE_ID);
-
-        handler = new MoreTimeRequestedStaffNotificationHandler(
-            moreTimeRequestedNotificationService,
-            notificationsProperties,
-            staffEmailProperties
-        );
     }
 
     @Test
     public void sendNotificationsSendsNotificationsToStaff() {
+        handler = new MoreTimeRequestedStaffNotificationHandler(
+            moreTimeRequestedNotificationService,
+            notificationsProperties,
+            staffEmailProperties,
+            true
+        );
 
         MoreTimeRequestedEvent event = SampleMoreTimeRequestedEvent.getDefault();
 
@@ -65,6 +67,27 @@ public class MoreTimeRequestedStaffNotificationHandlerTest {
             eq(STAFF_TEMPLATE_ID),
             anyMap(),
             eq(SampleMoreTimeRequestedEvent.getReference("staff", event.getClaim().getReferenceNumber()))
+        );
+    }
+
+    @Test
+    public void shouldNotSendNotificationsSendsNotificationsToStaffWhenStaffEmailsDisabled() {
+        handler = new MoreTimeRequestedStaffNotificationHandler(
+            moreTimeRequestedNotificationService,
+            notificationsProperties,
+            staffEmailProperties,
+            false
+        );
+
+        MoreTimeRequestedEvent event = SampleMoreTimeRequestedEvent.getDefault();
+
+        handler.sendNotifications(event);
+
+        verify(moreTimeRequestedNotificationService, never()).sendMail(
+            anyString(),
+            anyString(),
+            anyMap(),
+            anyString()
         );
     }
 }

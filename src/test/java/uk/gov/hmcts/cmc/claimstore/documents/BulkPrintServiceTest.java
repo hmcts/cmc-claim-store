@@ -128,7 +128,30 @@ public class BulkPrintServiceTest {
         bulkPrintService.printPdf(CLAIM, ImmutableList.of(
             new PrintableTemplate(coversheetForClaimant, "filename"),
             new PrintableTemplate(legalOrderDocument, "filename")
-        ));
+        ), "general-order");
+
+        verify(sendLetterApi).sendLetter(eq(AUTH_VALUE), any(LetterWithPdfsRequest.class));
+    }
+
+    @Test
+    public void shouldSendGeneralLetter() {
+        //given
+        when(sendLetterApi.sendLetter(eq(AUTH_VALUE), any(LetterWithPdfsRequest.class)))
+            .thenReturn(new SendLetterResponse(UUID.randomUUID()));
+
+        Document generalLetter = new Document("generalLetter", Collections.emptyMap());
+
+        bulkPrintService = new BulkPrintService(
+            sendLetterApi,
+            authTokenGenerator,
+            bulkPrintStaffNotificationService,
+            appInsights,
+            pdfServiceClient
+        );
+        //when
+        bulkPrintService.printPdf(CLAIM, ImmutableList.of(
+            new PrintableTemplate(generalLetter, "filename")
+        ), "general-letter");
 
         verify(sendLetterApi).sendLetter(eq(AUTH_VALUE), any(LetterWithPdfsRequest.class));
     }

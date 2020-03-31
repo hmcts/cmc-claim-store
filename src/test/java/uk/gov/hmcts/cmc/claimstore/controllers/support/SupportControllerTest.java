@@ -74,7 +74,7 @@ import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 class SupportControllerTest {
 
     private static final String AUTHORISATION = "Bearer: aaa";
-    private static final String CLAIM_REFERENCE = "000CM001";
+    private static final String CLAIM_REFERENCE = "000MC001";
     private static final String RESPONSE_SUBMITTED = "response";
     private static final UserDetails USER_DETAILS = SampleUserDetails.builder().build();
     private static final User USER = new User(AUTHORISATION, USER_DETAILS);
@@ -192,7 +192,7 @@ class SupportControllerTest {
                     ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
                     claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
                     postClaimOrchestrationHandler, mediationReportService, new ClaimSubmissionOperationIndicatorRule(),
-            scheduledStateTransitionService
+                    scheduledStateTransitionService
                 );
 
                 when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE)))
@@ -503,18 +503,21 @@ class SupportControllerTest {
     }
 
     @Nested
-    @DisplayName("Intention to proceed deadline")
-    class IntentionToProceedDeadlineTests {
+    @DisplayName("Transition state service tests")
+    class TransitionStateServiceTests {
+        private final String auth = "auth";
+        private final UserDetails userDetails = new UserDetails("id", null, null, null, null);
+        private final User user = new User(null, userDetails);
+
+        @BeforeEach
+        void setUpAnonymousCaseworker() {
+            when(userService.getUser(auth)).thenReturn(user);
+        }
 
         @Test
         void shouldPerformIntentionToProceedCheckWithDatetime() {
             final LocalDateTime localDateTime
                 = LocalDateTime.of(2019, 1, 1, 1, 1, 1);
-            final String auth = "auth";
-            final UserDetails userDetails
-                = new UserDetails("id", null, null, null, null);
-            final User user = new User(null, userDetails);
-            when(userService.getUser(auth)).thenReturn(user);
 
             controller.transitionClaimState(auth, StateTransitions.STAY_CLAIM, localDateTime);
 
@@ -524,12 +527,6 @@ class SupportControllerTest {
 
         @Test
         void shouldPerformIntentionToProceedCheckWithNullDatetime() {
-            final String auth = "auth";
-            final UserDetails userDetails
-                = new UserDetails("id", null, null, null, null);
-            final User user = new User(null, userDetails);
-            when(userService.getUser(auth)).thenReturn(user);
-
             controller.transitionClaimState(auth, StateTransitions.STAY_CLAIM, null);
 
             verify(scheduledStateTransitionService).transitionClaims(notNull(), eq(user),
@@ -622,12 +619,12 @@ class SupportControllerTest {
         @Test
         void shouldSendAppInsightIfMediationReportFails() {
             LocalDate mediationSearchDate = LocalDate.of(2019, 7, 7);
-            MediationRequest mediationRequest = new MediationRequest(mediationSearchDate, "Holly@cow.com");
             doNothing().when(mediationReportService).sendMediationReport(eq(AUTHORISATION), any());
-
-            controller.sendMediation(AUTHORISATION, mediationRequest);
-
-            verify(mediationReportService).sendMediationReport(AUTHORISATION, mediationSearchDate);
+            controller.sendMediation(
+                AUTHORISATION,
+                new MediationRequest(mediationSearchDate, "Holly@cow.com"));
+            verify(mediationReportService)
+                .sendMediationReport(eq(AUTHORISATION), eq(mediationSearchDate));
         }
     }
 }

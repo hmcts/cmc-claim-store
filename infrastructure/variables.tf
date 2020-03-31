@@ -56,10 +56,6 @@ variable "tenant_id" {
   description = "(Required) The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. This is usually sourced from environemnt variables and not normally required to be specified."
 }
 
-variable "client_id" {
-  description = "(Required) The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies. This is usually sourced from environment variables and not normally required to be specified."
-}
-
 variable "subscription" {}
 
 variable "jenkins_AAD_objectId" {
@@ -80,11 +76,14 @@ variable "capacity" {
   default = "1"
 }
 
-variable "enable_staff_email" {
+variable "staff_emails_enabled" {
   default = "true"
 }
 
 variable "save_claim_state_enabled" {
+  default = "false"
+}
+variable "ctsc_enabled" {
   default = "false"
 }
 
@@ -102,4 +101,8 @@ variable schedule_state-transition_stay-claim  {
 
 variable schedule_state-transition_waiting-transfer  {
   default = "0 0 16 ? * MON-FRI *"
+}
+
+variable "enable_ase" {
+  default = false
 }
