@@ -24,7 +24,7 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.noInteres
 public class SampleClaimData {
     public static final String EXTERNAL_REFERENCE_NUMBER = "CLAIM234324";
 
-    private String externalId = SampleClaim.EXTERNAL_ID;
+    private UUID externalId = UUID.fromString(SampleClaim.EXTERNAL_ID);
     private List<Party> claimants;
     private List<TheirDetails> defendants;
     private Payment payment = SamplePayment.builder().build();
@@ -63,7 +63,7 @@ public class SampleClaimData {
     }
 
     public SampleClaimData withExternalId(UUID externalId) {
-        this.externalId = externalId.toString();
+        this.externalId = externalId;
         return this;
     }
 
@@ -189,7 +189,7 @@ public class SampleClaimData {
 
     public ClaimData build() {
         return new ClaimData(
-            UUID.fromString(externalId),
+            externalId,
             claimants,
             defendants,
             payment,
