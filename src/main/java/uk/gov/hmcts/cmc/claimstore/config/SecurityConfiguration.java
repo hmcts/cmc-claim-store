@@ -31,7 +31,6 @@ public class SecurityConfiguration
         "citizen",
         "solicitor",
         "letter-holder",
-        "anonymous",
         "caseworker"
     };
 
@@ -65,6 +64,8 @@ public class SecurityConfiguration
             "/court-finder/**",
             "/cases/callbacks/**",
             "/testing-support/**",
+            "/user/roles/**",
+            "/claims/*/defendant-link-status",
             "/loggers/**");
     }
 
