@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.staff;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.ClaimantRejectOrgPaymentPlanStaffEmailContentProvider;
@@ -25,29 +26,35 @@ public class ClaimantRejectOrgPaymentPlanStaffNotificationService {
     private final StaffPdfCreatorService staffPdfCreatorService;
     private final ClaimantRejectOrgPaymentPlanStaffEmailContentProvider
         claimantRejectOrgPaymentPlanStaffEmailContentProvider;
+    private final boolean staffEmailsEnabled;
 
     @Autowired
     public ClaimantRejectOrgPaymentPlanStaffNotificationService(
         EmailService emailService,
         StaffEmailProperties staffEmailProperties,
         StaffPdfCreatorService staffPdfCreatorService,
-        ClaimantRejectOrgPaymentPlanStaffEmailContentProvider claimantRejectOrgPaymentPlanStaffEmailContentProvider
+        ClaimantRejectOrgPaymentPlanStaffEmailContentProvider claimantRejectOrgPaymentPlanStaffEmailContentProvider,
+        @Value("${feature_toggles.staff_emails_enabled}") boolean staffEmailsEnabled
     ) {
         this.emailService = emailService;
         this.staffEmailProperties = staffEmailProperties;
         this.staffPdfCreatorService = staffPdfCreatorService;
         this.claimantRejectOrgPaymentPlanStaffEmailContentProvider =
             claimantRejectOrgPaymentPlanStaffEmailContentProvider;
+        this.staffEmailsEnabled = staffEmailsEnabled;
     }
 
     public void notifyStaffClaimantRejectOrganisationPaymentPlan(Claim claim) {
-        requireNonNull(claim);
-        requireNonNull(claim.getClaimantRespondedAt());
+        if (staffEmailsEnabled) {
 
-        emailService.sendEmail(
-            staffEmailProperties.getSender(),
-            prepareClaimantRejectOrganisationPaymentPlanEmailData(claim)
-        );
+            requireNonNull(claim);
+            requireNonNull(claim.getClaimantRespondedAt());
+
+            emailService.sendEmail(
+                staffEmailProperties.getSender(),
+                prepareClaimantRejectOrganisationPaymentPlanEmailData(claim)
+            );
+        }
     }
 
     private EmailData prepareClaimantRejectOrganisationPaymentPlanEmailData(Claim claim) {
