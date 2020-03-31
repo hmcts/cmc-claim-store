@@ -141,8 +141,7 @@ public class ClaimService {
             authorisation = user.getAuthorisation();
         }
 
-        Optional<Claim> byClaimReferenceNumber = caseRepository.getByClaimReferenceNumber(reference, authorisation);
-        return byClaimReferenceNumber;
+        return caseRepository.getByClaimReferenceNumber(reference, authorisation);
     }
 
     public List<Claim> getClaimByExternalReference(String externalReference, String authorisation) {
