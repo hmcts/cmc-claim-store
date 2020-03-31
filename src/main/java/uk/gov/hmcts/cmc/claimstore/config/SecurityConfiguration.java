@@ -66,6 +66,7 @@ public class SecurityConfiguration
             "/testing-support/**",
             "/user/roles/**",
             "/claims/*/defendant-link-status",
+            "/claims/letter/*",
             "/loggers/**");
     }
 
