@@ -14,40 +14,16 @@ variable "location" {
 
 variable "env" {}
 
-variable "idam_api_url" {
-  default = "http://betaDevBccidamAppLB.reform.hmcts.net"
-}
-
-variable "frontend_url" {
-  default = "https://cmc-citizen-frontend-aat.service.core-compute-aat.internal"
-}
-
-variable "respond_to_claim_url" {
-  default = "https://cmc-citizen-frontend-aat.service.core-compute-aat.internal/first-contact/start"
-}
-
 variable "database-name" {
   default = "cmc"
 }
 
+variable "common_tags" {
+  type = "map"
+}
+
 variable "mail-host" {
   default = "mta.reform.hmcts.net"
-}
-
-variable "dm_url" {
-  default = "false"
-}
-
-variable "doc_assembly_api_url" {
-  default = "false"
-}
-
-variable "fees_url" {
-  default = "false"
-}
-
-variable "payments_url" {
-  default = "false"
 }
 
 variable "ilbIp" {}
@@ -68,41 +44,3 @@ variable "appinsights_instrumentation_key" {
   default = ""
 }
 
-variable "db_host" {
-  default = "test-data-lb.moneyclaim.reform.hmcts.net"
-}
-
-variable "capacity" {
-  default = "1"
-}
-
-variable "staff_emails_enabled" {
-  default = "true"
-}
-
-variable "save_claim_state_enabled" {
-  default = "false"
-}
-variable "ctsc_enabled" {
-  default = "false"
-}
-
-variable milo_csv_schedule  {
-  default = "-"
-}
-
-variable "common_tags" {
-  type = "map"
-}
-
-variable schedule_state-transition_stay-claim  {
-  default = "0 0 16 ? * MON-FRI *"
-}
-
-variable schedule_state-transition_waiting-transfer  {
-  default = "0 0 16 ? * MON-FRI *"
-}
-
-variable "enable_ase" {
-  default = false
-}
