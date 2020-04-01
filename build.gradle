@@ -374,7 +374,8 @@ sonarqube {
       "**/DBCaseRepository.java," +
       "**/MapperUtil.java," +
       "**/CCDCaseApi.java," +
-      "rpa-mapper/**"
+      "rpa-mapper/**" +
+      "**/DataFixSupportController.java"
   }
 }
 
