@@ -4,9 +4,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserInfo;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
@@ -48,6 +50,9 @@ public class ClaimQueryTest extends BaseMockSpringTest {
 
     @Before
     public void setup() {
+        given(userService.getUserInfo(anyString())).willReturn(UserInfo.builder()
+            .roles(ImmutableList.of("citizen"))
+            .build());
         given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(USER_DETAILS);
         given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(USER);
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
