@@ -28,18 +28,18 @@ public class ClaimAuthorisationRule {
     public void assertClaimCanBeAccessed(Claim claim, String authorisation) {
         if (claim != null) {
             UserDetails userDetails = userService.getUserDetails(authorisation);
-            assertClaimCanbeAccessed(claim, userDetails);
+            assertClaimCanBeAccessed(claim, userDetails);
         }
     }
 
     public void assertClaimCanBeAccessed(Claim claim, User user) {
         if (claim != null) {
             UserDetails userDetails = user.getUserDetails();
-            assertClaimCanbeAccessed(claim, userDetails);
+            assertClaimCanBeAccessed(claim, userDetails);
         }
     }
 
-    private void assertClaimCanbeAccessed(Claim claim, UserDetails userDetails) {
+    private void assertClaimCanBeAccessed(Claim claim, UserDetails userDetails) {
         if (!userDetails.isCaseworker()
             && !userDetails.getId().equals(claim.getDefendantId())
             && !userDetails.getId().equals(claim.getSubmitterId())
@@ -49,7 +49,7 @@ public class ClaimAuthorisationRule {
         }
     }
 
-    public void assertSubmitterIdMatchesAuthorisation(String userId, String authorisation) {
+    public void assertUserIdMatchesAuthorisation(String userId, String authorisation) {
         UserDetails userDetails = userService.getUserDetails(authorisation);
 
         if (!userDetails.getId().equals(userId) && !userDetails.isCaseworker()) {
