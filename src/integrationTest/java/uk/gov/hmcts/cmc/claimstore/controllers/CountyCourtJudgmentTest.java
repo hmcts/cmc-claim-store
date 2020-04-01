@@ -44,7 +44,7 @@ public class CountyCourtJudgmentTest extends BaseMockSpringTest {
         .build();
     private static final User USER = SampleUser.builder()
         .withUserDetails(USER_DETAILS)
-        .withAuthorisation(AUTHORISATION_TOKEN)
+        .withAuthorisation(BEARER_TOKEN)
         .build();
 
     @MockBean
@@ -55,8 +55,8 @@ public class CountyCourtJudgmentTest extends BaseMockSpringTest {
 
     @Before
     public void setUp() {
-        given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(USER_DETAILS);
-        given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(USER);
+        given(userService.getUserDetails(BEARER_TOKEN)).willReturn(USER_DETAILS);
+        given(userService.getUser(BEARER_TOKEN)).willReturn(USER);
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
     }
 
@@ -74,14 +74,14 @@ public class CountyCourtJudgmentTest extends BaseMockSpringTest {
             .thenReturn(Optional.of(claim));
 
         Claim result = jsonMappingHelper.deserializeObjectFrom(
-            doPost(AUTHORISATION_TOKEN, ccj,
+            doPost(BEARER_TOKEN, ccj,
                 ROOT_URL + "/{externalId}/county-court-judgment", SampleClaim.EXTERNAL_ID)
                 .andExpect(status().isOk())
                 .andReturn(),
             Claim.class);
 
-        verify(caseRepository).saveCountyCourtJudgment(AUTHORISATION_TOKEN, claim, ccj);
-        verify(eventProducer).createCountyCourtJudgmentEvent(claim, AUTHORISATION_TOKEN);
+        verify(caseRepository).saveCountyCourtJudgment(BEARER_TOKEN, claim, ccj);
+        verify(eventProducer).createCountyCourtJudgmentEvent(claim, BEARER_TOKEN);
         verify(caseRepository, never()).saveCaseEvent(anyString(), any(Claim.class), eq(CaseEvent.LIFT_STAY));
 
         assertThat(result).isNotNull();
@@ -96,7 +96,7 @@ public class CountyCourtJudgmentTest extends BaseMockSpringTest {
         when(caseRepository.getClaimByExternalId(anyString(), any(User.class)))
             .thenReturn(Optional.empty());
 
-        doPost(AUTHORISATION_TOKEN, ccj,
+        doPost(BEARER_TOKEN, ccj,
             ROOT_URL + "/{externalId}/county-court-judgment", SampleClaim.EXTERNAL_ID)
             .andExpect(status().isNotFound());
     }
@@ -111,7 +111,7 @@ public class CountyCourtJudgmentTest extends BaseMockSpringTest {
         when(caseRepository.getClaimByExternalId(SampleClaim.EXTERNAL_ID, USER))
             .thenReturn(Optional.of(claim));
 
-        doPost(AUTHORISATION_TOKEN, ccj,
+        doPost(BEARER_TOKEN, ccj,
             ROOT_URL + "/{externalId}/county-court-judgment", SampleClaim.EXTERNAL_ID)
             .andExpect(status().isForbidden());
     }
@@ -130,14 +130,14 @@ public class CountyCourtJudgmentTest extends BaseMockSpringTest {
 
         when(caseRepository.getClaimByExternalId(SampleClaim.EXTERNAL_ID, USER))
             .thenReturn(Optional.of(claim));
-        when(caseRepository.saveCaseEvent(AUTHORISATION_TOKEN, claim, CaseEvent.LIFT_STAY))
+        when(caseRepository.saveCaseEvent(BEARER_TOKEN, claim, CaseEvent.LIFT_STAY))
             .thenReturn(claim);
 
-        doPost(AUTHORISATION_TOKEN, ccj,
+        doPost(BEARER_TOKEN, ccj,
             ROOT_URL + "/{externalId}/county-court-judgment", SampleClaim.EXTERNAL_ID)
             .andExpect(status().isOk());
 
-        verify(caseRepository).saveCaseEvent(AUTHORISATION_TOKEN, claim, CaseEvent.LIFT_STAY);
+        verify(caseRepository).saveCaseEvent(BEARER_TOKEN, claim, CaseEvent.LIFT_STAY);
     }
 
     @Test
@@ -154,7 +154,7 @@ public class CountyCourtJudgmentTest extends BaseMockSpringTest {
             .thenReturn(Optional.of(claim));
 
         Claim result = jsonMappingHelper.deserializeObjectFrom(
-            doPost(AUTHORISATION_TOKEN, redetermination,
+            doPost(BEARER_TOKEN, redetermination,
                 ROOT_URL + "/{externalId}/re-determination", SampleClaim.EXTERNAL_ID)
                 .andExpect(status().isOk())
                 .andReturn(),
@@ -164,7 +164,7 @@ public class CountyCourtJudgmentTest extends BaseMockSpringTest {
             .isNotNull();
 
         verify(eventProducer)
-            .createRedeterminationEvent(claim, AUTHORISATION_TOKEN, USER_DETAILS.getFullName(), MadeBy.CLAIMANT);
+            .createRedeterminationEvent(claim, BEARER_TOKEN, USER_DETAILS.getFullName(), MadeBy.CLAIMANT);
     }
 
     @Test
@@ -176,7 +176,7 @@ public class CountyCourtJudgmentTest extends BaseMockSpringTest {
         when(caseRepository.getClaimByExternalId(anyString(), any(User.class)))
             .thenReturn(Optional.empty());
 
-        doPost(AUTHORISATION_TOKEN, redetermination,
+        doPost(BEARER_TOKEN, redetermination,
             ROOT_URL + "/{externalId}/re-determination", SampleClaim.EXTERNAL_ID)
             .andExpect(status().isNotFound());
     }
@@ -193,7 +193,7 @@ public class CountyCourtJudgmentTest extends BaseMockSpringTest {
         when(caseRepository.getClaimByExternalId(SampleClaim.EXTERNAL_ID, USER))
             .thenReturn(Optional.of(claim));
 
-        doPost(AUTHORISATION_TOKEN, redetermination,
+        doPost(BEARER_TOKEN, redetermination,
             ROOT_URL + "/{externalId}/re-determination", SampleClaim.EXTERNAL_ID)
             .andExpect(status().isForbidden());
     }
@@ -213,7 +213,7 @@ public class CountyCourtJudgmentTest extends BaseMockSpringTest {
         when(caseRepository.getClaimByExternalId(SampleClaim.EXTERNAL_ID, USER))
             .thenReturn(Optional.of(claim));
 
-        doPost(AUTHORISATION_TOKEN, redetermination,
+        doPost(BEARER_TOKEN, redetermination,
             ROOT_URL + "/{externalId}/re-determination", SampleClaim.EXTERNAL_ID)
             .andExpect(status().isForbidden());
     }
@@ -233,7 +233,7 @@ public class CountyCourtJudgmentTest extends BaseMockSpringTest {
         when(caseRepository.getClaimByExternalId(SampleClaim.EXTERNAL_ID, USER))
             .thenReturn(Optional.of(claim));
 
-        doPost(AUTHORISATION_TOKEN, redetermination,
+        doPost(BEARER_TOKEN, redetermination,
             ROOT_URL + "/{externalId}/re-determination", SampleClaim.EXTERNAL_ID)
             .andExpect(status().isForbidden());
     }
