@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore;
 
-import java.util.HashMap;
-import java.util.Map;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -9,6 +7,9 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.web.context.ContextCleanupListener;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 public class TestIdamConfiguration extends ContextCleanupListener {
