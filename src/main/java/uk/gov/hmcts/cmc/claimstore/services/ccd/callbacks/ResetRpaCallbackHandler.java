@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -62,13 +63,10 @@ public class ResetRpaCallbackHandler extends CallbackHandler {
     private AboutToStartOrSubmitCallbackResponse requestResetRpa(CallbackParams callbackParams) {
         CallbackRequest callbackRequest = callbackParams.getRequest();
         Claim claim = convertCallbackToClaim(callbackRequest);
-        claim.toBuilder()
-            .referenceNumber(handleRoboticsNotification(callbackRequest, claim.getReferenceNumber()))
-            .build();
-        AboutToStartOrSubmitCallbackResponse.AboutToStartOrSubmitCallbackResponseBuilder builder
-            = AboutToStartOrSubmitCallbackResponse.builder();
-        AboutToStartOrSubmitCallbackResponse response = builder
-            .data(caseDetailsConverter.convertToMap(caseMapper.to(claim)))
+        handleRoboticsNotification(callbackRequest, claim.getReferenceNumber());
+        Map<String, Object> map = new HashMap<>(caseDetailsConverter.convertToMap(caseMapper.to(claim)));
+        AboutToStartOrSubmitCallbackResponse response = AboutToStartOrSubmitCallbackResponse.builder()
+            .data(map)
             .build();
         return response;
     }
