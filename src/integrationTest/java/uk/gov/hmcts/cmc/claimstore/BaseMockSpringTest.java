@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -151,6 +152,8 @@ public abstract class BaseMockSpringTest {
     private TransactionAwareDataSourceProxy transactionAwareDataSourceProxy;
     @MockBean(name = "transactionManager")
     private PlatformTransactionManager transactionManager;
+    @MockBean
+    private JwtDecoder jwtDecoder;
 
     protected ImmutableMap<String, String> searchCriteria(String externalId) {
         return ImmutableMap.of(
