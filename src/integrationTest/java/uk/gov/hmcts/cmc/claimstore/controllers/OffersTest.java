@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -7,7 +8,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserInfo;
@@ -48,10 +48,12 @@ public class OffersTest extends BaseMockSpringTest {
     @Before
     public void setup() {
         given(userService.getUserInfo(anyString())).willReturn(UserInfo.builder()
-            .roles(ImmutableList.of("citizen"))
+            .roles(ImmutableList.of(Role.CITIZEN.getRole()))
+            .uid(SampleClaim.USER_ID)
+            .sub(SampleClaim.SUBMITTER_EMAIL)
             .build());
 
-        given(userService.getUserDetails(AUTHORISATION_TOKEN))
+        given(userService.getUserDetails(BEARER_TOKEN))
             .willReturn(SampleUserDetails.builder().withRoles(Role.CITIZEN.getRole()).build());
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
     }
@@ -183,14 +185,14 @@ public class OffersTest extends BaseMockSpringTest {
                 .build())
             .build();
 
-        when(claimService.getClaimByExternalId(claim.getExternalId(), AUTHORISATION_TOKEN))
+        when(claimService.getClaimByExternalId(claim.getExternalId(), BEARER_TOKEN))
             .thenReturn(claim);
         when(coreCaseDataApi.startEventForCitizen(anyString(), anyString(), anyString(), anyString(), anyString(),
             anyString(), anyString())).thenReturn(startEventResponse);
 
         MockHttpServletRequestBuilder requestBuilder = post(url, claim.getExternalId(), party.name())
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN);
+            .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN);
         if (offer != null) {
             requestBuilder.content(jsonMappingHelper.toJson(offer));
         }

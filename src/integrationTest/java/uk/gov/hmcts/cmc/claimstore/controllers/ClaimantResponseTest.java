@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.ResultActions;
-import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserInfo;
@@ -58,10 +58,12 @@ public class ClaimantResponseTest extends BaseMockSpringTest {
     @Before
     public void setup() {
         given(userService.getUserInfo(anyString())).willReturn(UserInfo.builder()
-            .roles(ImmutableList.of("citizen"))
+            .roles(ImmutableList.of(Role.CITIZEN.getRole()))
+            .uid(SampleClaim.USER_ID)
+            .sub(SampleClaim.SUBMITTER_EMAIL)
             .build());
 
-        given(userService.getUserDetails(AUTHORISATION_TOKEN))
+        given(userService.getUserDetails(BEARER_TOKEN))
             .willReturn(SampleUserDetails.builder()
                 .withUserId(SampleClaim.USER_ID)
                 .withMail(SampleClaim.SUBMITTER_EMAIL)
@@ -116,20 +118,20 @@ public class ClaimantResponseTest extends BaseMockSpringTest {
             .claimantResponse(claimantResponse)
             .claimantRespondedAt(LocalDateTime.now()).build();
 
-        when(caseRepository.saveCaseEvent(AUTHORISATION_TOKEN, stayedClaim, CaseEvent.LIFT_STAY))
+        when(caseRepository.saveCaseEvent(BEARER_TOKEN, stayedClaim, CaseEvent.LIFT_STAY))
             .thenReturn(liftedClaim);
 
-        when(claimService.getClaimByExternalId(stayedClaim.getExternalId(), AUTHORISATION_TOKEN))
+        when(claimService.getClaimByExternalId(stayedClaim.getExternalId(), BEARER_TOKEN))
             .thenReturn(stayedClaim, liftedClaim);
 
-        when(caseRepository.saveClaimantResponse(liftedClaim, claimantResponse, AUTHORISATION_TOKEN))
+        when(caseRepository.saveClaimantResponse(liftedClaim, claimantResponse, BEARER_TOKEN))
             .thenReturn(updatedClaim);
 
-        doPost(AUTHORISATION_TOKEN, claimantResponse, RESPONSE_URL, SampleClaim.EXTERNAL_ID, SampleClaim.USER_ID)
+        doPost(BEARER_TOKEN, claimantResponse, RESPONSE_URL, SampleClaim.EXTERNAL_ID, SampleClaim.USER_ID)
             .andExpect(status().isCreated());
 
         verify(caseRepository)
-            .saveCaseEvent(AUTHORISATION_TOKEN, stayedClaim, CaseEvent.LIFT_STAY);
+            .saveCaseEvent(BEARER_TOKEN, stayedClaim, CaseEvent.LIFT_STAY);
     }
 
     @Test
@@ -139,7 +141,7 @@ public class ClaimantResponseTest extends BaseMockSpringTest {
         verify(caseRepository).updateSettlement(
             eq(updatedClaim),
             any(Settlement.class),
-            eq(AUTHORISATION_TOKEN),
+            eq(BEARER_TOKEN),
             eq(AGREEMENT_SIGNED_BY_CLAIMANT)
         );
     }
@@ -149,7 +151,7 @@ public class ClaimantResponseTest extends BaseMockSpringTest {
         Claim updatedClaim = testFormaliseRepaymentPlan(FormaliseOption.CCJ);
 
         verify(claimService).saveCountyCourtJudgment(
-            eq(AUTHORISATION_TOKEN),
+            eq(BEARER_TOKEN),
             eq(updatedClaim),
             any(CountyCourtJudgment.class)
         );
@@ -160,7 +162,7 @@ public class ClaimantResponseTest extends BaseMockSpringTest {
         Claim updatedClaim = testFormaliseRepaymentPlan(FormaliseOption.REFER_TO_JUDGE);
 
         verify(caseRepository).saveCaseEvent(
-            AUTHORISATION_TOKEN,
+            BEARER_TOKEN,
             updatedClaim,
             INTERLOCUTORY_JUDGMENT
         );
@@ -183,7 +185,7 @@ public class ClaimantResponseTest extends BaseMockSpringTest {
         );
 
         verify(caseRepository)
-            .saveCaseEvent(AUTHORISATION_TOKEN, updatedClaim, CaseEvent.STAY_CLAIM);
+            .saveCaseEvent(BEARER_TOKEN, updatedClaim, CaseEvent.STAY_CLAIM);
     }
 
     @Test
@@ -207,7 +209,7 @@ public class ClaimantResponseTest extends BaseMockSpringTest {
         verify(caseRepository).updateDirectionsQuestionnaireDeadline(
             eq(claim),
             any(LocalDate.class),
-            eq(AUTHORISATION_TOKEN)
+            eq(BEARER_TOKEN)
         );
     }
 
@@ -233,7 +235,7 @@ public class ClaimantResponseTest extends BaseMockSpringTest {
         );
 
         verify(caseRepository)
-            .saveCaseEvent(AUTHORISATION_TOKEN, updatedClaim, CaseEvent.SETTLED_PRE_JUDGMENT);
+            .saveCaseEvent(BEARER_TOKEN, updatedClaim, CaseEvent.SETTLED_PRE_JUDGMENT);
     }
 
     @Test
@@ -254,7 +256,7 @@ public class ClaimantResponseTest extends BaseMockSpringTest {
         );
 
         verify(caseRepository)
-            .saveCaseEvent(AUTHORISATION_TOKEN, updatedClaim, CaseEvent.REFERRED_TO_MEDIATION);
+            .saveCaseEvent(BEARER_TOKEN, updatedClaim, CaseEvent.REFERRED_TO_MEDIATION);
     }
 
     private Claim testFormaliseRepaymentPlan(FormaliseOption formaliseOption) throws Exception {
@@ -281,13 +283,13 @@ public class ClaimantResponseTest extends BaseMockSpringTest {
         Claim firstClaim,
         Claim updatedClaim
     ) throws Exception {
-        when(claimService.getClaimByExternalId(firstClaim.getExternalId(), AUTHORISATION_TOKEN))
+        when(claimService.getClaimByExternalId(firstClaim.getExternalId(), BEARER_TOKEN))
             .thenReturn(firstClaim, updatedClaim);
 
-        when(caseRepository.saveClaimantResponse(firstClaim, claimantResponse, AUTHORISATION_TOKEN))
+        when(caseRepository.saveClaimantResponse(firstClaim, claimantResponse, BEARER_TOKEN))
             .thenReturn(updatedClaim);
 
-        return doPost(AUTHORISATION_TOKEN, claimantResponse,
+        return doPost(BEARER_TOKEN, claimantResponse,
             RESPONSE_URL, SampleClaim.EXTERNAL_ID, SampleClaim.USER_ID);
     }
 }

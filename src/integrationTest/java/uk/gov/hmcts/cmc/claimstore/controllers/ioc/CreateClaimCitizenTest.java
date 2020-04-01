@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserInfo;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -60,7 +61,9 @@ public class CreateClaimCitizenTest extends BaseMockSpringTest {
         User user = new User(BEARER_TOKEN, userDetails);
 
         given(userService.getUserInfo(anyString())).willReturn(UserInfo.builder()
-            .roles(org.testcontainers.shaded.com.google.common.collect.ImmutableList.of("citizen"))
+            .roles(ImmutableList.of(Role.CITIZEN.getRole()))
+            .uid(SampleClaim.USER_ID)
+            .sub(SampleClaim.SUBMITTER_EMAIL)
             .build());
 
         given(userService.getUserDetails(BEARER_TOKEN)).willReturn(userDetails);

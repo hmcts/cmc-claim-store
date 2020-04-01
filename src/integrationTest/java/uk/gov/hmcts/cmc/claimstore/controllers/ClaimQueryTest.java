@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -37,9 +37,9 @@ public class ClaimQueryTest extends BaseMockSpringTest {
     private static final UserDetails USER_DETAILS = SampleUserDetails.builder()
         .withRoles(Role.CITIZEN.getRole())
         .withUserId(SampleClaim.USER_ID).build();
-    private static final User USER = new User(AUTHORISATION_TOKEN, USER_DETAILS);
+    private static final User USER = new User(BEARER_TOKEN, USER_DETAILS);
 
-    private static final User CASEWORKER = new User(AUTHORISATION_TOKEN, SampleUserDetails.builder()
+    private static final User CASEWORKER = new User(BEARER_TOKEN, SampleUserDetails.builder()
         .withRoles(Role.CASEWORKER.getRole()).build());
 
     @MockBean
@@ -51,17 +51,19 @@ public class ClaimQueryTest extends BaseMockSpringTest {
     @Before
     public void setup() {
         given(userService.getUserInfo(anyString())).willReturn(UserInfo.builder()
-            .roles(ImmutableList.of("citizen"))
+            .roles(ImmutableList.of(Role.CITIZEN.getRole()))
+            .uid(SampleClaim.USER_ID)
+            .sub(SampleClaim.SUBMITTER_EMAIL)
             .build());
-        given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(USER_DETAILS);
-        given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(USER);
+        given(userService.getUserDetails(BEARER_TOKEN)).willReturn(USER_DETAILS);
+        given(userService.getUser(BEARER_TOKEN)).willReturn(USER);
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
     }
 
     @Test
     public void testGetBySubmitterId() throws Exception {
         Claim claim = SampleClaim.getDefault();
-        when(caseRepository.getBySubmitterId(SampleClaim.USER_ID, AUTHORISATION_TOKEN))
+        when(caseRepository.getBySubmitterId(SampleClaim.USER_ID, BEARER_TOKEN))
             .thenReturn(List.of(claim));
 
         List<Claim> retrievedClaims = jsonMappingHelper.fromJson(
@@ -86,7 +88,7 @@ public class ClaimQueryTest extends BaseMockSpringTest {
     @Test
     public void testGetByLetterHolderID() throws Exception {
         Claim claim = SampleClaim.getDefault();
-        when(caseRepository.getByLetterHolderId(SampleClaim.LETTER_HOLDER_ID, AUTHORISATION_TOKEN))
+        when(caseRepository.getByLetterHolderId(SampleClaim.LETTER_HOLDER_ID, BEARER_TOKEN))
             .thenReturn(Optional.of(claim));
 
         Claim retrievedClaim = jsonMappingHelper.fromJson(
@@ -113,7 +115,7 @@ public class ClaimQueryTest extends BaseMockSpringTest {
         Claim claim = SampleClaim.getDefault().toBuilder()
             .submitterId(submitterId)
             .build();
-        when(caseRepository.getByLetterHolderId(SampleClaim.LETTER_HOLDER_ID, AUTHORISATION_TOKEN))
+        when(caseRepository.getByLetterHolderId(SampleClaim.LETTER_HOLDER_ID, BEARER_TOKEN))
             .thenReturn(Optional.of(claim));
 
         doGet(ROOT_PATH + "/letter/{letterHolderId}", SampleClaim.LETTER_HOLDER_ID)
@@ -158,7 +160,7 @@ public class ClaimQueryTest extends BaseMockSpringTest {
     @Test
     public void testGetByClaimReference() throws Exception {
         Claim claim = SampleClaim.getDefault();
-        when(caseRepository.getByClaimReferenceNumber(SampleClaim.REFERENCE_NUMBER, AUTHORISATION_TOKEN))
+        when(caseRepository.getByClaimReferenceNumber(SampleClaim.REFERENCE_NUMBER, BEARER_TOKEN))
             .thenReturn(Optional.of(claim));
         Claim retrievedClaim = jsonMappingHelper.fromJson(
             doGet(ROOT_PATH + "/{claimReference}", SampleClaim.REFERENCE_NUMBER)
@@ -183,7 +185,7 @@ public class ClaimQueryTest extends BaseMockSpringTest {
         Claim claim = SampleClaim.getDefault().toBuilder()
             .submitterId(submitterId)
             .build();
-        when(caseRepository.getByClaimReferenceNumber(SampleClaim.REFERENCE_NUMBER, AUTHORISATION_TOKEN))
+        when(caseRepository.getByClaimReferenceNumber(SampleClaim.REFERENCE_NUMBER, BEARER_TOKEN))
             .thenReturn(Optional.of(claim));
 
         doGet(ROOT_PATH + "/{claimReference}", SampleClaim.REFERENCE_NUMBER)
@@ -201,7 +203,7 @@ public class ClaimQueryTest extends BaseMockSpringTest {
                 .build())
             .build();
 
-        when(caseRepository.getBySubmitterId(SampleClaim.USER_ID, AUTHORISATION_TOKEN))
+        when(caseRepository.getBySubmitterId(SampleClaim.USER_ID, BEARER_TOKEN))
             .thenReturn(List.of(otherClaim, claim));
 
         List<Claim> retrievedClaims = jsonMappingHelper.fromJson(
@@ -230,7 +232,7 @@ public class ClaimQueryTest extends BaseMockSpringTest {
                 .build())
             .build();
 
-        when(caseRepository.getBySubmitterId(SampleClaim.USER_ID, AUTHORISATION_TOKEN))
+        when(caseRepository.getBySubmitterId(SampleClaim.USER_ID, BEARER_TOKEN))
             .thenReturn(List.of(otherClaim));
 
         List<Claim> retrievedClaims = jsonMappingHelper.fromJson(
@@ -252,7 +254,7 @@ public class ClaimQueryTest extends BaseMockSpringTest {
             .submitterId(SampleClaim.USER_ID + "claimant")
             .defendantId(defendantId)
             .build();
-        when(caseRepository.getByDefendantId(defendantId, AUTHORISATION_TOKEN))
+        when(caseRepository.getByDefendantId(defendantId, BEARER_TOKEN))
             .thenReturn(List.of(claim));
 
         List<Claim> retrievedClaims = jsonMappingHelper.fromJson(

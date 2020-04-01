@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 
+import com.google.common.collect.ImmutableList;
 import feign.FeignException;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,15 +11,16 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserInfo;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -57,15 +59,17 @@ public class InitiatePaymentTest extends BaseMockSpringTest {
     @Before
     public void setup() {
         given(userService.getUserInfo(anyString())).willReturn(UserInfo.builder()
-            .roles(ImmutableList.of("citizen"))
+            .roles(ImmutableList.of(Role.CITIZEN.getRole()))
+            .uid(SampleClaim.USER_ID)
+            .sub(SampleClaim.SUBMITTER_EMAIL)
             .build());
-        given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(new User(AUTHORISATION_TOKEN, USER_DETAILS));
+        given(userService.getUser(BEARER_TOKEN)).willReturn(new User(BEARER_TOKEN, USER_DETAILS));
     }
 
     @Test
     public void shouldReturnNewlyCreatedClaim() throws Exception {
         given(coreCaseDataApi.startForCitizen(
-            eq(AUTHORISATION_TOKEN),
+            eq(BEARER_TOKEN),
             eq(SERVICE_TOKEN),
             eq(USER_ID),
             eq(JURISDICTION_ID),
@@ -78,7 +82,7 @@ public class InitiatePaymentTest extends BaseMockSpringTest {
         data.setPaymentNextUrl("http://nexturl.test");
 
         given(coreCaseDataApi.submitForCitizen(
-            eq(AUTHORISATION_TOKEN),
+            eq(BEARER_TOKEN),
             eq(SERVICE_TOKEN),
             eq(USER_ID),
             eq(JURISDICTION_ID),
@@ -94,13 +98,13 @@ public class InitiatePaymentTest extends BaseMockSpringTest {
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
 
-        MvcResult result = makeInitiatePaymentRequest(SampleClaimData.submittedByClaimant(), AUTHORISATION_TOKEN)
+        MvcResult result = makeInitiatePaymentRequest(SampleClaimData.submittedByClaimant(), BEARER_TOKEN)
             .andExpect(status().isOk())
             .andReturn();
 
         verify(coreCaseDataApi)
             .startForCitizen(
-                eq(AUTHORISATION_TOKEN),
+                eq(BEARER_TOKEN),
                 eq(SERVICE_TOKEN),
                 eq(USER_ID),
                 eq(JURISDICTION_ID),
@@ -110,7 +114,7 @@ public class InitiatePaymentTest extends BaseMockSpringTest {
 
         verify(coreCaseDataApi)
             .submitForCitizen(
-                eq(AUTHORISATION_TOKEN),
+                eq(BEARER_TOKEN),
                 eq(SERVICE_TOKEN),
                 eq(USER_ID),
                 eq(JURISDICTION_ID),
@@ -129,7 +133,7 @@ public class InitiatePaymentTest extends BaseMockSpringTest {
         ClaimData claimData = SampleClaimData.submittedByClaimant();
 
         given(coreCaseDataApi.startForCitizen(
-            eq(AUTHORISATION_TOKEN),
+            eq(BEARER_TOKEN),
             eq(SERVICE_TOKEN),
             eq(USER_ID),
             eq(JURISDICTION_ID),
@@ -140,7 +144,7 @@ public class InitiatePaymentTest extends BaseMockSpringTest {
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
 
-        MvcResult result = makeInitiatePaymentRequest(claimData, AUTHORISATION_TOKEN)
+        MvcResult result = makeInitiatePaymentRequest(claimData, BEARER_TOKEN)
             .andExpect(status().isInternalServerError())
             .andReturn();
 
@@ -154,7 +158,7 @@ public class InitiatePaymentTest extends BaseMockSpringTest {
         ClaimData claimData = SampleClaimData.submittedByClaimant();
 
         given(coreCaseDataApi.startForCitizen(
-            eq(AUTHORISATION_TOKEN),
+            eq(BEARER_TOKEN),
             eq(SERVICE_TOKEN),
             eq(USER_ID),
             eq(JURISDICTION_ID),
@@ -164,7 +168,7 @@ public class InitiatePaymentTest extends BaseMockSpringTest {
         ).willReturn(successfulCoreCaseDataStoreStartResponse());
 
         given(coreCaseDataApi.submitForCitizen(
-            eq(AUTHORISATION_TOKEN),
+            eq(BEARER_TOKEN),
             eq(SERVICE_TOKEN),
             eq(USER_ID),
             eq(JURISDICTION_ID),
@@ -176,7 +180,7 @@ public class InitiatePaymentTest extends BaseMockSpringTest {
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
 
-        MvcResult result = makeInitiatePaymentRequest(claimData, AUTHORISATION_TOKEN)
+        MvcResult result = makeInitiatePaymentRequest(claimData, BEARER_TOKEN)
             .andExpect(status().isInternalServerError())
             .andReturn();
 

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -7,7 +8,6 @@ import org.mockito.Captor;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -50,17 +50,39 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN
 public class ClaimModificationTest extends BaseMockSpringTest {
     private static final String ROOT_PATH = "/claims";
 
-    private static final String AUTHORISATION_TOKEN_CITIZEN = "Bearer eyJ0eXAiOiJKV1QiLCJ6aXAiOiJOT05FIiwia2lkIjoiYi9PNk92VnYxK3krV2dySDVVaTlXVGlvTHQwPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJjaXZpbG1vbmV5Y2xhaW1zK2xlZ2FsQGdtYWlsLmNvbSIsImF1dGhfbGV2ZWwiOjAsImF1ZGl0VHJhY2tpbmdJZCI6ImU3NWI4N2MzLTQzODYtNDI4Zi04ZTk3LWNkYmVkYmI4MzAzOSIsImlzcyI6Imh0dHA6Ly9mci1hbTo4MDgwL29wZW5hbS9vYXV0aDIvaG1jdHMiLCJ0b2tlbk5hbWUiOiJhY2Nlc3NfdG9rZW4iLCJ0b2tlbl90eXBlIjoiQmVhcmVyIiwiYXV0aEdyYW50SWQiOiJhM2Q4NmVjZi0zY2Y1LTQ2ZWItYTBjZC03Yzk5NjY0MzdlOWIiLCJhdWQiOiJjbWNfbGVnYWwiLCJuYmYiOjE1ODU3MzQ0MTYsImdyYW50X3R5cGUiOiJhdXRob3JpemF0aW9uX2NvZGUiLCJzY29wZSI6WyJvcGVuaWQiLCJwcm9maWxlIiwicm9sZXMiXSwiYXV0aF90aW1lIjoxNTg1NzM0NDE2MDAwLCJyZWFsbSI6Ii9obWN0cyIsImV4cCI6MTU4NTc2MzIxNiwiaWF0IjoxNTg1NzM0NDE2LCJleHBpcmVzX2luIjoyODgwMCwianRpIjoiYTYyYmVhNDMtMTIwNy00OGU4LWJmNGUtMjU4ZWU4MDIxNmE1In0.fia1wyFalkktZZ_Uf6Yx2Jw76pxEdPm3OXog0M9dOvANXn86AGJxF2EPWaj9BOLSHRP1L7CXs3m8lry-_TlfXRvpZ_hwYOaBRMO0YvI_CfP9j9oaJzZ_QnPVqziYP-F2cd-x-jUEe94IuqwVhkwB25J5DHYt-xbTxiqOHpcOMzmmmsSSjFB2B7akYshEMwd646VUSzvjSjbcXXE5zIhgRoOg0iiQFq5qezc0Hj5_KTIEHLs1-hiQxjbGCKD2bFkv7YcuxWQGSyOAyoQIExvuBWLFz_zk36ZiegeAONuB0MTwA9b3TX4ENAhFWl4lBR4zcBsAhnISDiOj3hV-Va7MRw";
+    private static final String AUTHORISATION_TOKEN_CITIZEN = "Bearer eyJ0eXAiOiJKV1QiLCJ6aXAiOiJOT05FIiwia2lkIjoiYi9"
+        + "PNk92VnYxK3krV2dySDVVaTlXVGlvTHQwPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJjaXZpbG1vbmV5Y2xhaW1zK2xlZ2FsQGdtYWlsLmN"
+        + "vbSIsImF1dGhfbGV2ZWwiOjAsImF1ZGl0VHJhY2tpbmdJZCI6ImU3NWI4N2MzLTQzODYtNDI4Zi04ZTk3LWNkYmVkYmI4MzAzOSIsImlzcyI"
+        + "6Imh0dHA6Ly9mci1hbTo4MDgwL29wZW5hbS9vYXV0aDIvaG1jdHMiLCJ0b2tlbk5hbWUiOiJhY2Nlc3NfdG9rZW4iLCJ0b2tlbl90eXBlIjo"
+        + "iQmVhcmVyIiwiYXV0aEdyYW50SWQiOiJhM2Q4NmVjZi0zY2Y1LTQ2ZWItYTBjZC03Yzk5NjY0MzdlOWIiLCJhdWQiOiJjbWNfbGVnYWwiLCJ"
+        + "uYmYiOjE1ODU3MzQ0MTYsImdyYW50X3R5cGUiOiJhdXRob3JpemF0aW9uX2NvZGUiLCJzY29wZSI6WyJvcGVuaWQiLCJwcm9maWxlIiwicm9"
+        + "sZXMiXSwiYXV0aF90aW1lIjoxNTg1NzM0NDE2MDAwLCJyZWFsbSI6Ii9obWN0cyIsImV4cCI6MTU4NTc2MzIxNiwiaWF0IjoxNTg1NzM0NDE"
+        + "2LCJleHBpcmVzX2luIjoyODgwMCwianRpIjoiYTYyYmVhNDMtMTIwNy00OGU4LWJmNGUtMjU4ZWU4MDIxNmE1In0.fia1wyFalkktZZ_Uf6Y"
+        + "x2Jw76pxEdPm3OXog0M9dOvANXn86AGJxF2EPWaj9BOLSHRP1L7CXs3m8lry-_TlfXRvpZ_hwYOaBRMO0YvI_CfP9j9oaJzZ_QnPVqziYP-F"
+        + "2cd-x-jUEe94IuqwVhkwB25J5DHYt-xbTxiqOHpcOMzmmmsSSjFB2B7akYshEMwd646VUSzvjSjbcXXE5zIhgRoOg0iiQFq5qezc0Hj5_KTI"
+        + "EHLs1-hiQxjbGCKD2bFkv7YcuxWQGSyOAyoQIExvuBWLFz_zk36ZiegeAONuB0MTwA9b3TX4ENAhFWl4lBR4zcBsAhnISDiOj3hV-Va7MRw";
     private static final UserDetails CITIZEN_DETAILS = SampleUserDetails.builder()
         .withRoles(Role.CITIZEN.getRole())
         .withUserId(SampleClaim.USER_ID).build();
-    private static final User CITIZEN = new User(AUTHORISATION_TOKEN, CITIZEN_DETAILS);
+    private static final User CITIZEN = new User(BEARER_TOKEN, CITIZEN_DETAILS);
 
-    private static final String AUTHORISATION_TOKEN_LEGAL_REP = "Bearer eyJ0eXAiOiJKV1QiLCJ6aXAiOiJOT05FIiwia2lkIjoiYi9PNk92VnYxK3krV2dySDVVaTlXVGlvTHQwPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJjaXZpbG1vbmV5Y2xhaW1zK2xlZ2FsQGdtYWlsLmNvbSIsImF1dGhfbGV2ZWwiOjAsImF1ZGl0VHJhY2tpbmdJZCI6ImU3NWI4N2MzLTQzODYtNDI4Zi04ZTk3LWNkYmVkYmI4MzAzOSIsImlzcyI6Imh0dHA6Ly9mci1hbTo4MDgwL29wZW5hbS9vYXV0aDIvaG1jdHMiLCJ0b2tlbk5hbWUiOiJhY2Nlc3NfdG9rZW4iLCJ0b2tlbl90eXBlIjoiQmVhcmVyIiwiYXV0aEdyYW50SWQiOiJhM2Q4NmVjZi0zY2Y1LTQ2ZWItYTBjZC03Yzk5NjY0MzdlOWIiLCJhdWQiOiJjbWNfbGVnYWwiLCJuYmYiOjE1ODU3MzQ0MTYsImdyYW50X3R5cGUiOiJhdXRob3JpemF0aW9uX2NvZGUiLCJzY29wZSI6WyJvcGVuaWQiLCJwcm9maWxlIiwicm9sZXMiXSwiYXV0aF90aW1lIjoxNTg1NzM0NDE2MDAwLCJyZWFsbSI6Ii9obWN0cyIsImV4cCI6MTU4NTc2MzIxNiwiaWF0IjoxNTg1NzM0NDE2LCJleHBpcmVzX2luIjoyODgwMCwianRpIjoiYTYyYmVhNDMtMTIwNy00OGU4LWJmNGUtMjU4ZWU4MDIxNmE1In0.fia1wyFalkktZZ_Uf6Yx2Jw76pxEdPm3OXog0M9dOvANXn86AGJxF2EPWaj9BOLSHRP1L7CXs3m8lry-_TlfXRvpZ_hwYOaBRMO0YvI_CfP9j9oaJzZ_QnPVqziYP-F2cd-x-jUEe94IuqwVhkwB25J5DHYt-xbTxiqOHpcOMzmmmsSSjFB2B7akYshEMwd646VUSzvjSjbcXXE5zIhgRoOg0iiQFq5qezc0Hj5_KTIEHLs1-hiQxjbGCKD2bFkv7YcuxWQGSyOAyoQIExvuBWLFz_zk36ZiegeAONuB0MTwA9b3TX4ENAhFWl4lBR4zcBsAhnISDiOj3hV-Va7MRw";
+    private static final String AUTHORISATION_TOKEN_LEGAL_REP = "Bearer eyJ0eXAiOiJKV1QiLCJ6aXAiOiJOT05FIiwia2lkIjoi"
+        + "Yi9PNk92VnYxK3krV2dySDVVaTlXVGlvTHQwPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJjaXZpbG1vbmV5Y2xhaW1zK2xlZ2FsQGdtYWl"
+        + "sLmNvbSIsImF1dGhfbGV2ZWwiOjAsImF1ZGl0VHJhY2tpbmdJZCI6ImU3NWI4N2MzLTQzODYtNDI4Zi04ZTk3LWNkYmVkYmI4MzAzOSIsIm"
+        + "lzcyI6Imh0dHA6Ly9mci1hbTo4MDgwL29wZW5hbS9vYXV0aDIvaG1jdHMiLCJ0b2tlbk5hbWUiOiJhY2Nlc3NfdG9rZW4iLCJ0b2tlbl90e"
+        + "XBlIjoiQmVhcmVyIiwiYXV0aEdyYW50SWQiOiJhM2Q4NmVjZi0zY2Y1LTQ2ZWItYTBjZC03Yzk5NjY0MzdlOWIiLCJhdWQiOiJjbWNfbGVn"
+        + "YWwiLCJuYmYiOjE1ODU3MzQ0MTYsImdyYW50X3R5cGUiOiJhdXRob3JpemF0aW9uX2NvZGUiLCJzY29wZSI6WyJvcGVuaWQiLCJwcm9maWx"
+        + "lIiwicm9sZXMiXSwiYXV0aF90aW1lIjoxNTg1NzM0NDE2MDAwLCJyZWFsbSI6Ii9obWN0cyIsImV4cCI6MTU4NTc2MzIxNiwiaWF0IjoxNT"
+        + "g1NzM0NDE2LCJleHBpcmVzX2luIjoyODgwMCwianRpIjoiYTYyYmVhNDMtMTIwNy00OGU4LWJmNGUtMjU4ZWU4MDIxNmE1In0.fia1wyFal"
+        + "kktZZ_Uf6Yx2Jw76pxEdPm3OXog0M9dOvANXn86AGJxF2EPWaj9BOLSHRP1L7CXs3m8lry-_TlfXRvpZ_hwYOaBRMO0YvI_CfP9j9oaJzZ_"
+        + "QnPVqziYP-F2cd-x-jUEe94IuqwVhkwB25J5DHYt-xbTxiqOHpcOMzmmmsSSjFB2B7akYshEMwd646VUSzvjSjbcXXE5zIhgRoOg0iiQFq"
+        + "5qezc0Hj5_KTIEHLs1-hiQxjbGCKD2bFkv7YcuxWQGSyOAyoQIExvuBWLFz_zk36ZiegeAONuB0MTwA9b3TX4ENAhFWl4lBR4zcBsAhnIS"
+        + "DiOj3hV-Va7MRw";
     private static final UserDetails LEGAL_REP_DETAILS = SampleUserDetails.builder()
         .withRoles(Role.LEGAL_ADVISOR.getRole())
         .withUserId(SampleClaim.USER_ID).build();
-    private static final User LEGAL_REP = new User(AUTHORISATION_TOKEN, CITIZEN_DETAILS);
+    private static final User LEGAL_REP = new User(BEARER_TOKEN, CITIZEN_DETAILS);
+    private static final String REASON = "blah".repeat(4);
 
     @MockBean
     protected EmailService emailService;
@@ -74,7 +96,9 @@ public class ClaimModificationTest extends BaseMockSpringTest {
     @Before
     public void setup() {
         given(userService.getUserInfo(anyString())).willReturn(UserInfo.builder()
-            .roles(ImmutableList.of("citizen"))
+            .roles(ImmutableList.of(Role.CITIZEN.getRole()))
+            .uid(SampleClaim.USER_ID)
+            .sub(SampleClaim.SUBMITTER_EMAIL)
             .build());
         given(userService.getUser(AUTHORISATION_TOKEN_CITIZEN)).willReturn(CITIZEN);
         given(userService.getUserDetails(AUTHORISATION_TOKEN_CITIZEN)).willReturn(CITIZEN_DETAILS);
@@ -219,7 +243,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
             .payment(Payment.builder()
                 .amount(BigDecimal.TEN)
                 .nextUrl("http://next.url")
-                .reference("blah".repeat(4))
+                .reference(REASON)
                 .status(PaymentStatus.INITIATED)
                 .build())
             .build();
@@ -231,7 +255,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
             .payment(Payment.builder()
                 .nextUrl("http://redirect.to.ocmc")
                 .amount(BigDecimal.TEN)
-                .reference("blah".repeat(4))
+                .reference(REASON)
                 .status(PaymentStatus.SUCCESS)
                 .build())
             .build();
@@ -270,7 +294,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
             .payment(Payment.builder()
                 .amount(BigDecimal.TEN)
                 .nextUrl("http://next.url")
-                .reference("blah".repeat(4))
+                .reference(REASON)
                 .status(PaymentStatus.INITIATED)
                 .build())
             .build();
@@ -282,7 +306,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
             .payment(Payment.builder()
                 .nextUrl("http://redirect.to.ocmc")
                 .amount(BigDecimal.TEN)
-                .reference("blah".repeat(4))
+                .reference(REASON)
                 .status(PaymentStatus.DECLINED)
                 .build())
             .build();
@@ -402,9 +426,9 @@ public class ClaimModificationTest extends BaseMockSpringTest {
 
     @Test
     public void testLinkDefendantToClaim() throws Exception {
-        doPut(AUTHORISATION_TOKEN, null, ROOT_PATH + "/defendant/link")
+        doPut(BEARER_TOKEN, null, ROOT_PATH + "/defendant/link")
             .andExpect(status().isOk());
-        verify(caseRepository).linkDefendant(AUTHORISATION_TOKEN);
+        verify(caseRepository).linkDefendant(BEARER_TOKEN);
     }
 
     @Test
@@ -507,7 +531,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
     public void testSaveReviewOrder() throws Exception {
         Claim claim = SampleClaim.getDefault();
         ReviewOrder reviewOrder = ReviewOrder.builder()
-            .reason("blah".repeat(4))
+            .reason(REASON)
             .requestedAt(LocalDateTime.now())
             .requestedBy(ReviewOrder.RequestedBy.CLAIMANT).build();
 
@@ -535,7 +559,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
     @Test
     public void testSaveReviewOrderMissingClaim() throws Exception {
         ReviewOrder reviewOrder = ReviewOrder.builder()
-            .reason("blah".repeat(4))
+            .reason(REASON)
             .requestedAt(LocalDateTime.now())
             .requestedBy(ReviewOrder.RequestedBy.CLAIMANT).build();
         when(caseRepository.getClaimByExternalId(anyString(), any(User.class)))
@@ -549,7 +573,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
     @Test
     public void testSaveReviewOrderAlreadyPresent() throws Exception {
         ReviewOrder reviewOrder = ReviewOrder.builder()
-            .reason("blah".repeat(4))
+            .reason(REASON)
             .requestedAt(LocalDateTime.now())
             .requestedBy(ReviewOrder.RequestedBy.CLAIMANT).build();
         Claim claim = SampleClaim.getDefault().toBuilder()
