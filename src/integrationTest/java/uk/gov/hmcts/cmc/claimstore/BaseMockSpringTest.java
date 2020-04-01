@@ -52,7 +52,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+    classes = {
+        ClaimStoreApplication.class,
+        TestIdamConfiguration.class
+    }
+)
 @AutoConfigureMockMvc
 @TestPropertySource("/environment.properties")
 public abstract class BaseMockSpringTest {
