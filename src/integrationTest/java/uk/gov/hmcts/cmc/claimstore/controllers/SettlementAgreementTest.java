@@ -7,8 +7,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserInfo;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
@@ -45,6 +47,10 @@ public class SettlementAgreementTest extends BaseMockSpringTest {
 
     @Before
     public void setUp() {
+        given(userService.getUserInfo(anyString())).willReturn(UserInfo.builder()
+            .roles(ImmutableList.of("citizen"))
+            .build());
+
         given(userService.getUserDetails(AUTHORISATION_TOKEN))
             .willReturn(SampleUserDetails.builder().withRoles(Role.CITIZEN.getRole()).build());
         given(authTokenGenerator.generate())

@@ -16,23 +16,19 @@ import org.springframework.http.MediaType;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.helper.JsonMappingHelper;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserInfo;
 import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.TestingSupportRepository;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionOrderService;
@@ -53,30 +49,23 @@ import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.service.notify.NotificationClient;
 
 import javax.sql.DataSource;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-    classes = {ClaimStoreApplication.class, TestIdamConfiguration.class}
-)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @TestPropertySource("/environment.properties")
 public abstract class BaseMockSpringTest {
 
     protected static final String SUBMITTER_ID = "123";
-    protected static final String BEARER_TOKEN = "Bearer let me in";
+    protected static final String BEARER_TOKEN = "Bearer eyJ0eXAiOiJKV1QiLCJ6aXAiOiJOT05FIiwia2lkIjoiYi9PNk92VnYxK3krV2dySDVVaTlXVGlvTHQwPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJjaXZpbG1vbmV5Y2xhaW1zK2xlZ2FsQGdtYWlsLmNvbSIsImF1dGhfbGV2ZWwiOjAsImF1ZGl0VHJhY2tpbmdJZCI6ImU3NWI4N2MzLTQzODYtNDI4Zi04ZTk3LWNkYmVkYmI4MzAzOSIsImlzcyI6Imh0dHA6Ly9mci1hbTo4MDgwL29wZW5hbS9vYXV0aDIvaG1jdHMiLCJ0b2tlbk5hbWUiOiJhY2Nlc3NfdG9rZW4iLCJ0b2tlbl90eXBlIjoiQmVhcmVyIiwiYXV0aEdyYW50SWQiOiJhM2Q4NmVjZi0zY2Y1LTQ2ZWItYTBjZC03Yzk5NjY0MzdlOWIiLCJhdWQiOiJjbWNfbGVnYWwiLCJuYmYiOjE1ODU3MzQ0MTYsImdyYW50X3R5cGUiOiJhdXRob3JpemF0aW9uX2NvZGUiLCJzY29wZSI6WyJvcGVuaWQiLCJwcm9maWxlIiwicm9sZXMiXSwiYXV0aF90aW1lIjoxNTg1NzM0NDE2MDAwLCJyZWFsbSI6Ii9obWN0cyIsImV4cCI6MTU4NTc2MzIxNiwiaWF0IjoxNTg1NzM0NDE2LCJleHBpcmVzX2luIjoyODgwMCwianRpIjoiYTYyYmVhNDMtMTIwNy00OGU4LWJmNGUtMjU4ZWU4MDIxNmE1In0.fia1wyFalkktZZ_Uf6Yx2Jw76pxEdPm3OXog0M9dOvANXn86AGJxF2EPWaj9BOLSHRP1L7CXs3m8lry-_TlfXRvpZ_hwYOaBRMO0YvI_CfP9j9oaJzZ_QnPVqziYP-F2cd-x-jUEe94IuqwVhkwB25J5DHYt-xbTxiqOHpcOMzmmmsSSjFB2B7akYshEMwd646VUSzvjSjbcXXE5zIhgRoOg0iiQFq5qezc0Hj5_KTIEHLs1-hiQxjbGCKD2bFkv7YcuxWQGSyOAyoQIExvuBWLFz_zk36ZiegeAONuB0MTwA9b3TX4ENAhFWl4lBR4zcBsAhnISDiOj3hV-Va7MRw";
     protected static final String SERVICE_TOKEN = "S2S token";
-    protected static final String AUTHORISATION_TOKEN = "Bearer token";
+    protected static final String AUTHORISATION_TOKEN = "Bearer eyJ0eXAiOiJKV1QiLCJ6aXAiOiJOT05FIiwia2lkIjoiYi9PNk92VnYxK3krV2dySDVVaTlXVGlvTHQwPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJjaXZpbG1vbmV5Y2xhaW1zK2xlZ2FsQGdtYWlsLmNvbSIsImF1dGhfbGV2ZWwiOjAsImF1ZGl0VHJhY2tpbmdJZCI6ImU3NWI4N2MzLTQzODYtNDI4Zi04ZTk3LWNkYmVkYmI4MzAzOSIsImlzcyI6Imh0dHA6Ly9mci1hbTo4MDgwL29wZW5hbS9vYXV0aDIvaG1jdHMiLCJ0b2tlbk5hbWUiOiJhY2Nlc3NfdG9rZW4iLCJ0b2tlbl90eXBlIjoiQmVhcmVyIiwiYXV0aEdyYW50SWQiOiJhM2Q4NmVjZi0zY2Y1LTQ2ZWItYTBjZC03Yzk5NjY0MzdlOWIiLCJhdWQiOiJjbWNfbGVnYWwiLCJuYmYiOjE1ODU3MzQ0MTYsImdyYW50X3R5cGUiOiJhdXRob3JpemF0aW9uX2NvZGUiLCJzY29wZSI6WyJvcGVuaWQiLCJwcm9maWxlIiwicm9sZXMiXSwiYXV0aF90aW1lIjoxNTg1NzM0NDE2MDAwLCJyZWFsbSI6Ii9obWN0cyIsImV4cCI6MTU4NTc2MzIxNiwiaWF0IjoxNTg1NzM0NDE2LCJleHBpcmVzX2luIjoyODgwMCwianRpIjoiYTYyYmVhNDMtMTIwNy00OGU4LWJmNGUtMjU4ZWU4MDIxNmE1In0.fia1wyFalkktZZ_Uf6Yx2Jw76pxEdPm3OXog0M9dOvANXn86AGJxF2EPWaj9BOLSHRP1L7CXs3m8lry-_TlfXRvpZ_hwYOaBRMO0YvI_CfP9j9oaJzZ_QnPVqziYP-F2cd-x-jUEe94IuqwVhkwB25J5DHYt-xbTxiqOHpcOMzmmmsSSjFB2B7akYshEMwd646VUSzvjSjbcXXE5zIhgRoOg0iiQFq5qezc0Hj5_KTIEHLs1-hiQxjbGCKD2bFkv7YcuxWQGSyOAyoQIExvuBWLFz_zk36ZiegeAONuB0MTwA9b3TX4ENAhFWl4lBR4zcBsAhnISDiOj3hV-Va7MRw";
     protected static final String USER_ID = "1";
     protected static final String JURISDICTION_ID = "CMC";
     protected static final String CASE_TYPE_ID = "MoneyClaimCase";
@@ -86,11 +75,6 @@ public abstract class BaseMockSpringTest {
         .withUserId(USER_ID)
         .withMail("submitter@example.com")
         .build();
-
-    @MockBean
-    protected Authentication authentication;
-    @MockBean
-    protected SecurityContext securityContext;
 
     @Autowired
     protected CaseMapper caseMapper;
@@ -157,13 +141,6 @@ public abstract class BaseMockSpringTest {
     @MockBean(name = "transactionManager")
     private PlatformTransactionManager transactionManager;
 
-    @Before
-    public void setUp() {
-        doReturn(authentication).when(securityContext).getAuthentication();
-        SecurityContextHolder.setContext(securityContext);
-        setSecurityAuthorities(authentication);
-    }
-
     protected ImmutableMap<String, String> searchCriteria(String externalId) {
         return ImmutableMap.of(
             "page", "1",
@@ -194,19 +171,4 @@ public abstract class BaseMockSpringTest {
                 .content(jsonMappingHelper.toJson(content)));
     }
 
-    protected void setSecurityAuthorities(Authentication authenticationMock, String... authorities) {
-
-        Jwt jwt = Jwt.withTokenValue("Bearer a jwt token")
-            .claim("aClaim", "aClaim")
-            .header("aHeader", "aHeader")
-            .build();
-        when(authenticationMock.getPrincipal()).thenReturn(jwt);
-
-        Collection<? extends GrantedAuthority> authorityCollection = Stream.of(authorities)
-            .map(a -> new SimpleGrantedAuthority(a))
-            .collect(Collectors.toCollection(ArrayList::new));
-
-        when(authenticationMock.getAuthorities()).thenAnswer(invocationOnMock -> authorityCollection);
-
-    }
 }

@@ -4,8 +4,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.ResultActions;
+import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserInfo;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
@@ -32,6 +34,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -54,6 +57,10 @@ public class ClaimantResponseTest extends BaseMockSpringTest {
 
     @Before
     public void setup() {
+        given(userService.getUserInfo(anyString())).willReturn(UserInfo.builder()
+            .roles(ImmutableList.of("citizen"))
+            .build());
+
         given(userService.getUserDetails(AUTHORISATION_TOKEN))
             .willReturn(SampleUserDetails.builder()
                 .withUserId(SampleClaim.USER_ID)

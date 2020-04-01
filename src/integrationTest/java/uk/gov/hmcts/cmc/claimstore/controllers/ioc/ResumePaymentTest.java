@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserInfo;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -29,6 +30,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
@@ -67,6 +69,11 @@ public class ResumePaymentTest extends BaseMockSpringTest {
             .build();
 
         User user = new User(BEARER_TOKEN, userDetails);
+
+        given(userService.getUserInfo(anyString())).willReturn(UserInfo.builder()
+            .roles(org.testcontainers.shaded.com.google.common.collect.ImmutableList.of("citizen"))
+            .build());
+
         given(userService.getUserDetails(BEARER_TOKEN)).willReturn(userDetails);
         given(userService.getUser(BEARER_TOKEN)).willReturn(user);
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
