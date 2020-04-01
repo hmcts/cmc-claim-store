@@ -65,7 +65,7 @@ public class CountyCourtJudgmentService {
 
         countyCourtJudgmentRule.assertCountyCourtJudgmentCanBeRequested(claim, countyCourtJudgment.getCcjType());
 
-        if (claim.getState() == ClaimState.STAYED
+        if (ClaimState.STAYED.equals(claim.getState())
             && claim.getResponse().filter(ResponseUtils::isAdmissionResponse).isPresent()
         ) {
             claim = caseRepository.saveCaseEvent(authorisation, claim, LIFT_STAY);
