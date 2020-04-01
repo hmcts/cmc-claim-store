@@ -6,8 +6,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsExceptionLogger;
+import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
+import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
-import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentGenerator;
 import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUser;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
@@ -31,8 +33,8 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -57,7 +59,9 @@ public class RoboticsNotificationServiceTest {
     @Mock
     private AppInsightsExceptionLogger appInsightsExceptionLogger;
     @Mock
-    private DocumentGenerator documentGenerator;
+    private ClaimIssuedNotificationService rpaNotificationService;
+    @Mock
+    private SealedClaimPdfService sealedClaimPdfService;
     @Mock
     private PaidInFullNotificationService paidInFullNotificationService;
 
@@ -71,15 +75,20 @@ public class RoboticsNotificationServiceTest {
     private static final GeneratePinResponse PIN_RESPONSE = new GeneratePinResponse("pin", "userid");
     private static final String RPA_STATE_SUCCEEDED = "succeeded";
     private static final String RPA_STATE_FAILED = "failed: reason";
+    private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
 
     @Before
     public void setup() {
         roboticsNotificationService = new RoboticsNotificationServiceImpl(claimService,
             userService, moreTimeRequestedNotificationService, defenceResponseNotificationService,
             ccjNotificationService, paidInFullNotificationService,
-            responseDeadlineCalculator, appInsightsExceptionLogger, documentGenerator);
+            responseDeadlineCalculator, appInsightsExceptionLogger, rpaNotificationService,
+            sealedClaimPdfService);
 
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(SampleUser.getDefault());
+        doNothing().when(rpaNotificationService).notifyRobotics(any(Claim.class), anyList());
+        when(sealedClaimPdfService.createPdf(any(Claim.class)))
+            .thenReturn(new PDF("name", PDF_CONTENT, ClaimDocumentType.SEALED_CLAIM));
     }
 
     @Test
@@ -91,19 +100,6 @@ public class RoboticsNotificationServiceTest {
             .thenReturn(Optional.of(claim2));
         String response = roboticsNotificationService.rpaClaimNotification(REFERENCE_NUMBER);
         assertThat(response, is(RPA_STATE_SUCCEEDED));
-    }
-
-    @Test
-    public void shouldThrowExceptionWhenLinkLetterHolderCallFails() {
-        when(userService.generatePin(anyString(), anyString())).thenReturn(PIN_RESPONSE);
-        when(userService.getUserDetails(anyString())).thenReturn(USER_DETAILS);
-        Claim claim2 = SampleClaim.builder().withReferenceNumber(REFERENCE_NUMBER).build();
-        when(claimService.getClaimByReference(anyString(), anyString()))
-            .thenReturn(Optional.of(claim2));
-        when(claimService.linkLetterHolder(eq(claim2), anyString(), anyString())).thenThrow(new RuntimeException(
-            "reason"));
-        String response = roboticsNotificationService.rpaClaimNotification(REFERENCE_NUMBER);
-        assertThat(response, is(RPA_STATE_FAILED));
     }
 
     @Test

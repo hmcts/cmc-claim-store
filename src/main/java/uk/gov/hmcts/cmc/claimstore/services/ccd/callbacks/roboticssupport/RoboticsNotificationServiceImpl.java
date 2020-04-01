@@ -4,14 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsExceptionLogger;
+import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
+import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
+import uk.gov.hmcts.cmc.claimstore.events.DocumentGeneratedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
-import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentGenerator;
 import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.claimstore.rpa.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.rpa.DefenceResponseNotificationService;
 import uk.gov.hmcts.cmc.claimstore.rpa.MoreTimeRequestedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.rpa.PaidInFullNotificationService;
@@ -37,9 +40,10 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
     private final RequestForJudgementNotificationService ccjNotificationService;
     private final PaidInFullNotificationService paidInFullNotificationService;
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
+    private final ClaimIssuedNotificationService rpaNotificationService;
+    private final SealedClaimPdfService sealedClaimPdfService;
 
     private final AppInsightsExceptionLogger appInsightsExceptionLogger;
-    private final DocumentGenerator documentGenerator;
 
     @Autowired
     public RoboticsNotificationServiceImpl(
@@ -50,7 +54,8 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
         PaidInFullNotificationService paidInFullNotificationService,
         ResponseDeadlineCalculator responseDeadlineCalculator,
         AppInsightsExceptionLogger appInsightsExceptionLogger,
-        DocumentGenerator documentGenerator
+        ClaimIssuedNotificationService rpaNotificationService,
+        SealedClaimPdfService sealedClaimPdfService
     ) {
         this.claimService = claimService;
         this.userService = userService;
@@ -60,7 +65,8 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
         this.paidInFullNotificationService = paidInFullNotificationService;
         this.responseDeadlineCalculator = responseDeadlineCalculator;
         this.appInsightsExceptionLogger = appInsightsExceptionLogger;
-        this.documentGenerator = documentGenerator;
+        this.rpaNotificationService = rpaNotificationService;
+        this.sealedClaimPdfService = sealedClaimPdfService;
 
     }
 
@@ -76,11 +82,13 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
                     .generatePin(claim.getClaimData().getDefendant().getName(), authorisation);
 
             String fullName = userService.getUserDetails(authorisation).getFullName();
-            String userId = pinResponse.getUserId();
-            claimService.linkLetterHolder(claim, userId, authorisation);
-            documentGenerator.generateForCitizenRPA(
-                    new CitizenClaimIssuedEvent(claim, pinResponse.getPin(), fullName, authorisation)
-            );
+            CitizenClaimIssuedEvent event =
+                new CitizenClaimIssuedEvent(claim, pinResponse.getPin(), fullName, authorisation);
+            PDF sealedClaim = sealedClaimPdfService.createPdf(event.getClaim());
+            DocumentGeneratedEvent documentGeneratedEvent =
+                new DocumentGeneratedEvent(event.getClaim(), event.getAuthorisation(),
+                    sealedClaim);
+            rpaNotificationService.notifyRobotics(event.getClaim(), documentGeneratedEvent.getDocuments());
         },
             "Failed to send claim to RPA");
     }
