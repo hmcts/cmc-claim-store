@@ -85,6 +85,10 @@ public class NotificationReferenceBuilder {
         public static String referenceForClaimant(String claimReferenceNumber) {
             return reference("%s-ccj-requested-notification-%s", CLAIMANT, claimReferenceNumber);
         }
+
+        public static String reminderForClaimant(String claimReferenceNumber) {
+            return reference("%s-ccj-reminder-notification-%s", CLAIMANT, claimReferenceNumber);
+        }
     }
 
     public static class CCJIssued {
@@ -221,18 +225,18 @@ public class NotificationReferenceBuilder {
 
     public static class MediationSuccessful {
 
-        public static final String TEMPLATE = "to-%s-mediation-successful";
+        public static final String TEMPLATE = "to-%s-mediation-successful-%s";
 
         private MediationSuccessful() {
             // do not instantiate
         }
 
         public static String referenceForClaimant(String claimReferenceNumber, String otherParty) {
-            return reference(TEMPLATE, CLAIMANT, otherParty.toLowerCase(), claimReferenceNumber);
+            return reference(TEMPLATE, otherParty.toLowerCase(), claimReferenceNumber);
         }
 
         public static String referenceForDefendant(String claimReferenceNumber, String otherParty) {
-            return reference(TEMPLATE, DEFENDANT, otherParty.toLowerCase(), claimReferenceNumber);
+            return reference(TEMPLATE, otherParty.toLowerCase(), claimReferenceNumber);
         }
     }
 

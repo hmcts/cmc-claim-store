@@ -96,19 +96,25 @@ bankHolidays:
 
 doc_assembly:
   url: ${DOC_ASSEMBLY_URL:false}
-  templateId: "CV-CMC-GOR-ENG-0004.docx"
-  judgeTemplateId: "CV-CMC-GOR-ENG-00219.docx"
+  templateId: "CV-CMC-GOR-ENG-0004-1.docx"
+  judgeTemplateId: "CV-CMC-GOR-ENG-00219-1.docx"
+  generalLetterTemplateId: "CV-CMC-GOR-ENG-0005.docx"
 
 nonworking-days:
   datafile: ${NONWORKINGDAYS_DATAFILE:/data/non-working_days.dat}
+
+pilot-courts:
+  datafile: "/data/pilot-courts.csv"
 
 milo:
   schedule: "${MILO_CSV_SCHEDULE:-}"
   recipient: ${MILO_CSV_RECIPIENT:}
   sender: ${MILO_CSV_SENDER:}
 
-claim_stayed:
-  schedule: ""
+schedule:
+  state-transition:
+    waiting-transfer: ""
+    stay-claim: ""
 
 dateCalculations:
   endOfBusinessDayHour: 16
@@ -120,7 +126,9 @@ dateCalculations:
   offerMadeTimeForResponseInDays: 14
   lastResponseReminderDay: 1
   firstResponseReminderDay: 5
-  intentionToProceedDeadlineInDays: 33
+  stayClaimDeadlineInDays: 33
+  waitingTransferDeadlineInDays: 19
+  claimantCcjReminderDays: 10
 
 notifications:
   govNotifyApiKey: ${GOV_NOTIFY_API_KEY:}
@@ -138,6 +146,7 @@ notifications:
       defendantMoreTimeRequested: "07ffde84-b1d7-4ec0-b2db-406b73cd9080"
       representativeClaimIssued: "f2b21b9c-fc4a-4589-807b-3156dbf5bf01"
       claimantCCJRequested: "5f4d1c44-1e56-48fd-afe1-f1bd2e575819"
+      claimantCCJReminder: "3b0090ec-c94d-4a54-a04a-2d8999da258d"
       defendantOfferMade: "c65b9a5a-6e18-4f74-ba5e-4e49a3683153"
       claimantOfferMade: "b5e007a9-1f8b-48f5-bb5b-00b3a099d416"
       offerAcceptedByClaimantEmailToClaimant: "f1e66067-0ccf-441d-bad4-69fe8d5c4121"
@@ -182,14 +191,13 @@ staff-notifications:
   sender:
   recipient:
 
-live-support:
-  sender:
-  recipient:
-
 feature_toggles:
   watermark_pdf: false
   reminderEmails: false
   save_claim_state_enabled: false
+  ctsc_enabled: false
+  staff_emails_enabled: true
+  auto_cancel_payments: "${FEATURE_AUTO_CANCEL_PAYMENTS:false}"
 
 feign:
   httpclient:

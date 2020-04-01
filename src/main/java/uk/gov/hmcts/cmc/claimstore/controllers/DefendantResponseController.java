@@ -24,7 +24,7 @@ import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
 @RestController
 @RequestMapping(
     path = "/responses",
-    produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    produces = MediaType.APPLICATION_JSON_VALUE)
 public class DefendantResponseController {
     private final DefendantResponseService defendantResponseService;
 
@@ -35,7 +35,7 @@ public class DefendantResponseController {
 
     @PostMapping(
         value = "/claim/{externalId:" + UUID_PATTERN + "}/defendant/{defendantId}",
-        consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Creates a new defendant response")
     public Claim save(
         @Valid @NotNull @RequestBody Response response,

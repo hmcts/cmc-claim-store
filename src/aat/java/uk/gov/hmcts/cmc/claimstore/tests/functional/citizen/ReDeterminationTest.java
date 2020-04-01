@@ -55,7 +55,7 @@ public class ReDeterminationTest extends BaseTest {
 
         assertThat(claimWithReDetermination.getReDeterminationRequestedAt()).isNotEmpty();
         ReDetermination reDetermination = claimWithReDetermination.getReDetermination()
-            .orElseThrow(AssertionError::new);
+            .orElseThrow(() -> new AssertionError("Missing redetermination"));
 
         assertThat(reDetermination.getExplanation()).isEqualTo(explanation);
     }
@@ -92,7 +92,7 @@ public class ReDeterminationTest extends BaseTest {
 
         assertThat(claimWithReDetermination.getReDeterminationRequestedAt()).isNotEmpty();
         ReDetermination reDetermination = claimWithReDetermination.getReDetermination()
-            .orElseThrow(AssertionError::new);
+            .orElseThrow(() -> new AssertionError("Missing redetermination"));
 
         assertThat(reDetermination.getExplanation()).isEqualTo(explanation);
     }

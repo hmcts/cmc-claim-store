@@ -28,6 +28,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED_INSTALMENTS;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED_SET_DATE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED_STATES_PAID;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_PAYMENT_INTENTION;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.hasDefendantOptedForMediation;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseStatesPaid;
 
@@ -115,7 +116,7 @@ public class DefendantResponseService {
                 }
 
                 paymentOption = ((PartAdmissionResponse) response).getPaymentIntention()
-                    .orElseThrow(IllegalStateException::new)
+                    .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT_INTENTION))
                     .getPaymentOption();
                 switch (paymentOption) {
                     case IMMEDIATELY:

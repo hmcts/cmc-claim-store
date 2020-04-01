@@ -1,19 +1,14 @@
 dependencies:
   - name: java
-    version: ~2.13.1
+    version: ~2.17.0
     repository: '@hmctspublic'
 
   - name: postgresql
-    version: ~2.6.5
+    version: ~6.3.5
     repository: '@stable'
     condition: postgresql.enabled
 
-  - name: cmc-citizen-frontend
-    version: ~1.1.0
-    repository: '@hmctspublic'
-    condition: cmc-citizen-frontend.enabled
-
   - name: ccd
-    version: ~3.3.1
+    version: ~4.2.0
     repository: '@hmctspublic'
     condition: ccd.enabled

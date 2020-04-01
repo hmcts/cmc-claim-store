@@ -19,7 +19,7 @@ import javax.validation.constraints.NotNull;
 @RestController
 @RequestMapping(
     path = "/court-finder",
-    produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    produces = MediaType.APPLICATION_JSON_VALUE
 )
 public class CourtFinderController {
 

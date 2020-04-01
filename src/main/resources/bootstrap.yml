@@ -13,3 +13,12 @@ spring:
         anonymous-caseworker-password: idam.caseworker.anonymous.password
         system-update-username: idam.caseworker.system.username
         system-update-password: idam.caseworker.system.password
+        AppInsightsInstrumentationKey: azure.application-insights.instrumentation-key
+        milo-recipient: MILO_CSV_RECIPIENT
+        staff-email: staff-notifications.recipient
+        live-support-email: live-support.recipient
+        rpa-email-sealed-claim: rpa.notifications.sealedClaimRecipient
+        rpa-email-more-time-requested: rpa.notifications.moreTimeRequestedRecipient
+        rpa-email-response: rpa.notifications.responseRecipient
+        rpa-email-ccj: rpa.notifications.countyCourtJudgementRecipient
+        rpa-email-paid-in-full: rpa.notifications.paidInFullRecipient

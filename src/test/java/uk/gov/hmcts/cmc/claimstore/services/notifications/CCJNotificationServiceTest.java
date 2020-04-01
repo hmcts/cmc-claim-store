@@ -128,4 +128,23 @@ public class CCJNotificationServiceTest extends BaseNotificationServiceTest {
         verify(appInsights)
             .trackEvent(eq(NOTIFICATION_FAILURE), eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
+
+    @Test
+    public void remindClaimantForCCJShouldCallNotify() throws Exception {
+        when(emailTemplates.getClaimantCCJReminder()).thenReturn(CLAIMANT_CCJ_REMINDER_TEMPLATE);
+
+        Claim claim = SampleClaim.builder()
+            .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
+            .build();
+
+        ccjNotificationService.notifyClaimantAboutCCJReminder(claim);
+
+        verify(notificationClient)
+            .sendEmail(
+                eq(CLAIMANT_CCJ_REMINDER_TEMPLATE),
+                eq(claim.getSubmitterEmail()),
+                anyMap(),
+                eq(NotificationReferenceBuilder.CCJRequested.reminderForClaimant(claim.getReferenceNumber()))
+            );
+    }
 }

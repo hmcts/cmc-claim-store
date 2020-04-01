@@ -37,7 +37,6 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMean
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingCourtType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
@@ -381,6 +380,11 @@ public class SampleData {
                     .dateOfBirth(LocalDate.of(1950, 1, 1))
                     .correspondenceAddress(ccdAddress)
                     .build())
+            .partyDetail(
+                CCDParty.builder()
+                    .primaryAddress(ccdAddress)
+                    .correspondenceAddress(ccdAddress)
+                    .build())
             .claimantProvidedPartyName("Individual")
             .claimantProvidedRepresentativeOrganisationAddress(ccdAddress)
             .claimantProvidedRepresentativeOrganisationName("My Org")
@@ -613,7 +617,7 @@ public class SampleData {
             .paperDetermination(NO)
             .docUploadDeadline(LocalDate.parse("2020-10-11"))
             .eyewitnessUploadDeadline(LocalDate.parse("2020-10-11"))
-            .hearingCourt(CCDHearingCourtType.BIRMINGHAM)
+            .hearingCourt("BIRMINGHAM")
             .preferredCourtObjectingReason("I like this court more")
             .newRequestedCourt("Another court")
             .docUploadForParty(CCDDirectionPartyType.CLAIMANT)
@@ -629,12 +633,8 @@ public class SampleData {
             .estimatedHearingDuration(CCDHearingDurationType.FOUR_HOURS)
             .expertReportPermissionPartyAskedByClaimant(YES)
             .expertReportPermissionPartyAskedByDefendant(YES)
-            .expertReportPermissionPartyGivenToClaimant(YES)
-            .expertReportPermissionPartyGivenToDefendant(YES)
-            .expertReportInstructionClaimant(ImmutableList.of(CCDCollectionElement.<String>builder()
-                .value(SUBMIT_MORE_DOCS_INSTRUCTION).build()))
-            .expertReportInstructionDefendant(ImmutableList.of(CCDCollectionElement.<String>builder()
-                .value(SUBMIT_MORE_DOCS_INSTRUCTION).build()))
+            .grantExpertReportPermission(YES)
+            .expertReportInstruction(SUBMIT_MORE_DOCS_INSTRUCTION)
             .build();
     }
 

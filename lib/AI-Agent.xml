@@ -11,7 +11,8 @@
                 signature="(Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Ljava/lang/String;)Luk/gov/service/notify/SendEmailResponse;"/>
     </Class>
     <Class name="uk.gov.hmcts.cmc.email.EmailService">
-        <Method name="sendEmail"/>
+        <Method name="sendEmail"
+                signature="(Ljava/lang/String;Luk/gov/hmcts/cmc/email/EmailData;)V"/>
     </Class>
 </Instrumentation>
 </ApplicationInsightsAgent>

@@ -8,9 +8,14 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.offers.StatementType;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 
+import java.time.LocalDate;
 import javax.validation.constraints.NotNull;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_OFFER;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_PAYMENT_INTENTION;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_REPAYMENT_PLAN;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_SETTLEMENT;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
 @Service
@@ -93,19 +98,23 @@ public class CountyCourtJudgmentRule {
         requireNonNull(claim, CLAIM_OBJECT_CANNOT_BE_NULL);
 
         if (claim.getSettlement().isPresent()) {
-            PaymentIntention paymentIntention = claim.getSettlement().orElseThrow(IllegalArgumentException::new)
-                .getLastStatementOfType(StatementType.OFFER).getOffer().orElseThrow(IllegalArgumentException::new)
-                .getPaymentIntention().orElseThrow(IllegalArgumentException::new);
+            PaymentIntention paymentIntention = claim.getSettlement()
+                .orElseThrow(() -> new IllegalArgumentException(MISSING_SETTLEMENT))
+                .getLastStatementOfType(StatementType.OFFER).getOffer()
+                .orElseThrow(() -> new IllegalArgumentException(MISSING_OFFER))
+                .getPaymentIntention()
+                .orElseThrow(() -> new IllegalArgumentException(MISSING_PAYMENT_INTENTION));
 
             switch (paymentIntention.getPaymentOption()) {
                 case IMMEDIATELY:
                 case BY_SPECIFIED_DATE:
-                    return nowInLocalZone().toLocalDate().isAfter(
-                        paymentIntention.getPaymentDate().orElse(nowInLocalZone().toLocalDate()));
+                    LocalDate paymentDate = paymentIntention.getPaymentDate().orElse(nowInLocalZone().toLocalDate());
+                    return nowInLocalZone().toLocalDate().isAfter(paymentDate);
                 case INSTALMENTS:
-                    return nowInLocalZone().toLocalDate().isAfter(
-                        paymentIntention.getRepaymentPlan()
-                        .orElseThrow(IllegalArgumentException::new).getFirstPaymentDate());
+                    LocalDate firstPaymentDate = paymentIntention.getRepaymentPlan()
+                        .orElseThrow(() -> new IllegalArgumentException(MISSING_REPAYMENT_PLAN))
+                        .getFirstPaymentDate();
+                    return nowInLocalZone().toLocalDate().isAfter(firstPaymentDate);
                 default:
                     throw new IllegalArgumentException("Invalid payment option");
             }

@@ -11,6 +11,8 @@ import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -20,9 +22,12 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 import static java.math.BigDecimal.TEN;
+import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
@@ -46,9 +51,15 @@ public class InitiatePaymentCallbackHandlerTest extends BaseMockSpringTest {
     private static final String AUTHORISATION_TOKEN = "Bearer let me in";
     private static final long CASE_ID = 42L;
     private static final String NEXT_URL = "http://nexturl.test";
+    private static final LocalDate ISSUE_DATE = now();
+    private static final LocalDate RESPONSE_DEADLINE = ISSUE_DATE.plusDays(14);
 
     @MockBean
     protected EmailService emailService;
+    @MockBean
+    private ResponseDeadlineCalculator responseDeadlineCalculator;
+    @MockBean
+    private IssueDateCalculator issueDateCalculator;
 
     private Payment payment;
 
@@ -69,6 +80,8 @@ public class InitiatePaymentCallbackHandlerTest extends BaseMockSpringTest {
 
         UserDetails userDetails = SampleUserDetails.builder().withRoles("citizen").build();
         given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
+        given(responseDeadlineCalculator.calculateResponseDeadline(any())).willReturn(RESPONSE_DEADLINE);
+        given(issueDateCalculator.calculateIssueDay(any())).willReturn(ISSUE_DATE);
     }
 
     @Test
@@ -90,6 +103,12 @@ public class InitiatePaymentCallbackHandlerTest extends BaseMockSpringTest {
             entry("paymentDateCreated", payment.getDateCreated()),
             entry("paymentNextUrl", NEXT_URL)
         );
+
+        List<Map<String, Object>> respondents = (List<Map<String, Object>>) responseData.get("respondents");
+        Map<String, Object> defendant = (Map<String, Object>) respondents.get(0).get("value");
+
+        assertThat(defendant).contains(entry("servedDate", ISSUE_DATE.plusDays(5).toString()));
+        assertThat(defendant).contains(entry("responseDeadline", RESPONSE_DEADLINE.toString()));
     }
 
     private ResultActions makeRequest(String callbackType) throws Exception {

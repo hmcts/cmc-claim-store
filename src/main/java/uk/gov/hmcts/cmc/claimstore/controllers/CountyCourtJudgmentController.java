@@ -25,7 +25,7 @@ import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
 @RestController
 @RequestMapping(
     path = "/claims",
-    produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    produces = MediaType.APPLICATION_JSON_VALUE)
 public class CountyCourtJudgmentController {
 
     private final CountyCourtJudgmentService countyCourtJudgmentService;

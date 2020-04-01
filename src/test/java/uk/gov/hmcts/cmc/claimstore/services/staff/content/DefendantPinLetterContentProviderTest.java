@@ -82,8 +82,10 @@ public class DefendantPinLetterContentProviderTest {
 
         Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
 
-        String expected = String.format("%s T/A %s", claimant.getName(),
-            claimant.getBusinessName().orElseThrow(IllegalStateException::new));
+        String expected = String.format("%s T/A %s",
+            claimant.getName(),
+            claimant.getBusinessName()
+                .orElseThrow(() -> new IllegalStateException("Missing business name")));
 
         assertThat(content).containsEntry("claimantFullName", expected);
 
@@ -114,7 +116,7 @@ public class DefendantPinLetterContentProviderTest {
     public void shouldProvideClaimReferenceNumber() {
         Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
 
-        assertThat(content).containsEntry("claimReferenceNumber", "000CM001");
+        assertThat(content).containsEntry("claimReferenceNumber", "000MC001");
     }
 
     @Test

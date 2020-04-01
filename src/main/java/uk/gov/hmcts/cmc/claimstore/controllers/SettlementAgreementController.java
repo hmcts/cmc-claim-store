@@ -22,7 +22,7 @@ import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
 @RestController
 @RequestMapping(
     path = "/claims",
-    produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    produces = MediaType.APPLICATION_JSON_VALUE
 )
 public class SettlementAgreementController {
 
@@ -38,7 +38,7 @@ public class SettlementAgreementController {
     }
 
     @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/settlement-agreement/reject",
-        consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation("Rejects a settlement agreement as a defendant")
     public Claim reject(
@@ -50,7 +50,7 @@ public class SettlementAgreementController {
     }
 
     @PostMapping(value = "{externalId:" + UUID_PATTERN + "}/settlement-agreement/countersign",
-        consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation("Countersigns a settlement agreement as a defendant")
     public Claim counterSign(

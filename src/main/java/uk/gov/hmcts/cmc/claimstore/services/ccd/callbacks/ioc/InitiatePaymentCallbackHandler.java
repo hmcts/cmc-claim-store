@@ -94,6 +94,7 @@ public class InitiatePaymentCallbackHandler extends CallbackHandler {
         Claim updatedClaim = claim.toBuilder()
             .ccdCaseId(caseDetails.getId())
             .issuedOn(issuedOn)
+            .serviceDate(issuedOn.plusDays(5))
             .responseDeadline(responseDeadline)
             .channel(CITIZEN)
             .build();

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
@@ -24,6 +25,7 @@ import java.util.Optional;
 
 import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_ADMISSION;
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.PART_ADMISSION;
 import static uk.gov.hmcts.cmc.domain.utils.PartyUtils.isCompanyOrOrganisation;
@@ -37,6 +39,7 @@ public class DefendantResponseStaffNotificationService {
     private final FullDefenceStaffEmailContentProvider fullDefenceStaffEmailContentProvider;
     private final DefendantAdmissionStaffEmailContentProvider defendantAdmissionStaffEmailContentProvider;
     private final DefendantResponseReceiptService defendantResponseReceiptService;
+    private final boolean staffEmailsEnabled;
 
     @Autowired
     public DefendantResponseStaffNotificationService(
@@ -44,35 +47,41 @@ public class DefendantResponseStaffNotificationService {
         StaffEmailProperties emailProperties,
         FullDefenceStaffEmailContentProvider fullDefenceStaffEmailContentProvider,
         DefendantAdmissionStaffEmailContentProvider defendantAdmissionStaffEmailContentProvider,
-        DefendantResponseReceiptService defendantResponseReceiptService
+        DefendantResponseReceiptService defendantResponseReceiptService,
+        @Value("${feature_toggles.staff_emails_enabled}") boolean staffEmailsEnabled
     ) {
         this.emailService = emailService;
         this.emailProperties = emailProperties;
         this.fullDefenceStaffEmailContentProvider = fullDefenceStaffEmailContentProvider;
         this.defendantAdmissionStaffEmailContentProvider = defendantAdmissionStaffEmailContentProvider;
         this.defendantResponseReceiptService = defendantResponseReceiptService;
+        this.staffEmailsEnabled = staffEmailsEnabled;
     }
 
     public void notifyStaffDefenceSubmittedFor(
         Claim claim,
         String defendantEmail
     ) {
-        ResponseType responseType = claim.getResponse().orElseThrow(IllegalArgumentException::new).getResponseType();
-        EmailContent emailContent;
+        if (staffEmailsEnabled) {
+            ResponseType responseType = claim.getResponse()
+                .orElseThrow(() -> new IllegalArgumentException(MISSING_RESPONSE))
+                .getResponseType();
+            EmailContent emailContent;
 
-        emailContent = isFullAdmission(responseType) || isPartAdmission(responseType)
-            ? defendantAdmissionStaffEmailContentProvider.createContent(wrapInMap(claim, defendantEmail))
-            : fullDefenceStaffEmailContentProvider.createContent(wrapInMap(claim, defendantEmail));
+            emailContent = isFullAdmission(responseType) || isPartAdmission(responseType)
+                ? defendantAdmissionStaffEmailContentProvider.createContent(wrapInMap(claim, defendantEmail))
+                : fullDefenceStaffEmailContentProvider.createContent(wrapInMap(claim, defendantEmail));
 
-        emailService.sendEmail(
-            emailProperties.getSender(),
-            new EmailData(
-                emailProperties.getRecipient(),
-                emailContent.getSubject(),
-                emailContent.getBody(),
-                singletonList(createResponsePdfAttachment(claim))
-            )
-        );
+            emailService.sendEmail(
+                emailProperties.getSender(),
+                new EmailData(
+                    emailProperties.getRecipient(),
+                    emailContent.getSubject(),
+                    emailContent.getBody(),
+                    singletonList(createResponsePdfAttachment(claim))
+                )
+            );
+        }
     }
 
     private static boolean isPartAdmission(ResponseType responseType) {
@@ -89,7 +98,8 @@ public class DefendantResponseStaffNotificationService {
     ) {
         Map<String, Object> map = new HashMap<>();
 
-        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+        Response response = claim.getResponse()
+            .orElseThrow(() -> new IllegalStateException(MISSING_RESPONSE));
         map.put("claim", claim);
         map.put("response", response);
         map.put("defendantEmail", defendantEmail);

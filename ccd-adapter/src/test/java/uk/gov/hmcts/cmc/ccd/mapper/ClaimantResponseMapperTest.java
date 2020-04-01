@@ -99,13 +99,13 @@ public class ClaimantResponseMapperTest {
 
     @Test
     public void shouldMapClaimantRejectionSettlePreJudgementToCCDClaimantAcceptance() {
-        ClaimantResponse response = SampleClaimantResponse.ClaimantResponseRejection.builder()
+        ResponseRejection response = SampleClaimantResponse.ClaimantResponseRejection.builder()
             .buildRejectionSettlePreJudgement();
         Claim claim = Claim.builder().claimantResponse(response)
             .claimantRespondedAt(LocalDateTimeFactory.nowInLocalZone())
             .build();
         CCDClaimantResponse ccdResponse = mapper.to(claim);
-        assertThat((ResponseAcceptation) response).isEqualTo((CCDResponseAcceptation) ccdResponse);
+        assertThat(response).isEqualTo((CCDResponseRejection) ccdResponse);
         assertNotNull(ccdResponse.getSubmittedOn());
     }
 
@@ -145,7 +145,8 @@ public class ClaimantResponseMapperTest {
         Claim claim = claimBuilder.build();
 
         assertThat(claim.getClaimantResponse()).isPresent();
-        assertThat((ResponseAcceptation) claim.getClaimantResponse().orElseThrow(AssertionError::new))
+        assertThat((ResponseAcceptation) claim.getClaimantResponse()
+            .orElseThrow(() -> new AssertionError("Missing claimant response")))
             .isEqualTo(ccdResponse);
         assertThat(claim.getClaimantRespondedAt()).isPresent();
     }
@@ -160,7 +161,8 @@ public class ClaimantResponseMapperTest {
         Claim claim = claimBuilder.build();
 
         assertThat(claim.getClaimantResponse()).isPresent();
-        assertThat((ResponseAcceptation) claim.getClaimantResponse().orElseThrow(AssertionError::new))
+        assertThat((ResponseAcceptation) claim.getClaimantResponse()
+            .orElseThrow(() -> new AssertionError("Missing claimant response")))
             .isEqualTo(ccdResponse);
         assertThat(claim.getClaimantRespondedAt()).isPresent();
     }
@@ -179,7 +181,8 @@ public class ClaimantResponseMapperTest {
         Claim claim = claimBuilder.build();
 
         assertThat(claim.getClaimantResponse()).isPresent();
-        assertThat((ResponseRejection) claim.getClaimantResponse().orElseThrow(AssertionError::new))
+        assertThat((ResponseRejection) claim.getClaimantResponse()
+            .orElseThrow(() -> new AssertionError("Missing claimant response")))
             .isEqualTo(ccdResponse);
         assertThat(claim.getClaimantRespondedAt()).isPresent();
     }
@@ -211,7 +214,8 @@ public class ClaimantResponseMapperTest {
         Claim claim = claimBuilder.build();
 
         assertThat(claim.getClaimantResponse()).isPresent();
-        assertThat((ResponseAcceptation) claim.getClaimantResponse().orElseThrow(AssertionError::new))
+        assertThat((ResponseAcceptation) claim.getClaimantResponse()
+            .orElseThrow(() -> new AssertionError("Missing claimant response")))
             .isEqualTo(ccdResponse);
         assertThat(claim.getClaimantRespondedAt()).isPresent();
     }
@@ -229,7 +233,8 @@ public class ClaimantResponseMapperTest {
         Claim claim = claimBuilder.build();
 
         assertThat(claim.getClaimantResponse()).isPresent();
-        assertThat((ResponseRejection) claim.getClaimantResponse().orElseThrow(AssertionError::new))
+        assertThat((ResponseRejection) claim.getClaimantResponse()
+            .orElseThrow(() -> new AssertionError("Missing claimant response")))
             .isEqualTo(ccdResponse);
         assertThat(claim.getClaimantRespondedAt()).isPresent();
     }

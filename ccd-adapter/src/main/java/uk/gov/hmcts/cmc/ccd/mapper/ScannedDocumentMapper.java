@@ -25,8 +25,8 @@ public class ScannedDocumentMapper {
             .subtype(scannedDocument.getSubtype())
             .url(CCDDocument
                 .builder()
-                .documentUrl(scannedDocument.getDocumentManagementUrl().getPath())
-                .documentBinaryUrl(scannedDocument.getDocumentManagementBinaryUrl().getPath())
+                .documentUrl(scannedDocument.getDocumentManagementUrl().toString())
+                .documentBinaryUrl(scannedDocument.getDocumentManagementBinaryUrl().toString())
                 .documentFileName(scannedDocument.getFileName())
                 .build()
             );

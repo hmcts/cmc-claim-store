@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.ClaimantDirectionsHearingContentProvider;
@@ -22,6 +23,8 @@ import java.util.Map;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_CLAIMANT_RESPONSE;
+import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
 
 @Service
 public class ClaimantRejectionStaffNotificationService {
@@ -37,6 +40,7 @@ public class ClaimantRejectionStaffNotificationService {
     private final StaffPdfCreatorService pdfCreatorService;
     private final ClaimantRejectPartAdmissionContentProvider claimantRejectPartAdmissionContentProvider;
     private final ClaimantDirectionsHearingContentProvider claimantDirectionsHearingContentProvider;
+    private final boolean staffEmailsEnabled;
 
     @Autowired
     public ClaimantRejectionStaffNotificationService(
@@ -44,46 +48,52 @@ public class ClaimantRejectionStaffNotificationService {
         StaffEmailProperties staffEmailProperties,
         StaffPdfCreatorService pdfCreatorService,
         ClaimantRejectPartAdmissionContentProvider claimantRejectPartAdmissionContentProvider,
-        ClaimantDirectionsHearingContentProvider claimantDirectionsHearingContentProvider
+        ClaimantDirectionsHearingContentProvider claimantDirectionsHearingContentProvider,
+        @Value("${feature_toggles.staff_emails_enabled}") boolean staffEmailsEnabled
     ) {
         this.emailService = emailService;
         this.staffEmailProperties = staffEmailProperties;
         this.pdfCreatorService = pdfCreatorService;
         this.claimantRejectPartAdmissionContentProvider = claimantRejectPartAdmissionContentProvider;
         this.claimantDirectionsHearingContentProvider = claimantDirectionsHearingContentProvider;
+        this.staffEmailsEnabled = staffEmailsEnabled;
     }
 
     public void notifyStaffClaimantRejectPartAdmission(Claim claim) {
-        requireNonNull(claim);
-        requireNonNull(claim.getClaimantRespondedAt());
+        if (staffEmailsEnabled) {
+            requireNonNull(claim);
+            requireNonNull(claim.getClaimantRespondedAt());
 
-        EmailContent emailContent = claimantRejectPartAdmissionContentProvider.createContent(wrapInMap(claim));
+            EmailContent emailContent = claimantRejectPartAdmissionContentProvider.createContent(wrapInMap(claim));
 
-        emailService.sendEmail(
-            staffEmailProperties.getSender(),
-            new EmailData(
-                staffEmailProperties.getRecipient(),
-                emailContent.getSubject(),
-                emailContent.getBody(),
-                singletonList(createResponsePdfAttachment(claim))
-            )
-        );
+            emailService.sendEmail(
+                staffEmailProperties.getSender(),
+                new EmailData(
+                    staffEmailProperties.getRecipient(),
+                    emailContent.getSubject(),
+                    emailContent.getBody(),
+                    singletonList(createResponsePdfAttachment(claim))
+                )
+            );
+        }
     }
 
     public void notifyStaffWithClaimantsIntentionToProceed(Claim claim) {
-        requireNonNull(claim);
+        if (staffEmailsEnabled) {
+            requireNonNull(claim);
 
-        EmailContent emailContent = claimantDirectionsHearingContentProvider.createContent(getParameters(claim));
+            EmailContent emailContent = claimantDirectionsHearingContentProvider.createContent(getParameters(claim));
 
-        emailService.sendEmail(
-            staffEmailProperties.getSender(),
-            EmailData.builder()
-                .to(staffEmailProperties.getRecipient())
-                .subject(emailContent.getSubject())
-                .message(emailContent.getBody())
-                .attachments(emptyList())
-                .build()
-        );
+            emailService.sendEmail(
+                staffEmailProperties.getSender(),
+                EmailData.builder()
+                    .to(staffEmailProperties.getRecipient())
+                    .subject(emailContent.getSubject())
+                    .message(emailContent.getBody())
+                    .attachments(emptyList())
+                    .build()
+            );
+        }
     }
 
     public static Map<String, Object> getParameters(Claim claim) {
@@ -96,8 +106,10 @@ public class ClaimantRejectionStaffNotificationService {
 
     public static Map<String, Object> wrapInMap(Claim claim) {
         Map<String, Object> map = new HashMap<>();
-        Response defendantResponse = claim.getResponse().orElseThrow(IllegalStateException::new);
-        ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
+        Response defendantResponse = claim.getResponse()
+            .orElseThrow(() -> new IllegalStateException(MISSING_RESPONSE));
+        ClaimantResponse claimantResponse = claim.getClaimantResponse()
+            .orElseThrow(() -> new IllegalStateException(MISSING_CLAIMANT_RESPONSE));
 
         map.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
         map.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());

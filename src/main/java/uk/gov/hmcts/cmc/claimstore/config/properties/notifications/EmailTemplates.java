@@ -59,6 +59,9 @@ public class EmailTemplates {
     private String claimantCCJRequested;
 
     @NotEmpty
+    private String claimantCCJReminder;
+
+    @NotEmpty
     private String defendantOfferMade;
 
     @NotEmpty

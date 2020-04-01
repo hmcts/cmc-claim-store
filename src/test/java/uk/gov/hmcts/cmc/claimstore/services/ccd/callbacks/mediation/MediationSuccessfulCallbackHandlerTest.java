@@ -123,7 +123,7 @@ public class MediationSuccessfulCallbackHandlerTest {
         verify(notificationService).sendMail(eq(claim.getDefendantEmail()),
             eq(MEDIATION_SUCCESSFUL_DEFENDANT),
             any(),
-            eq("to-defendant-mediation-successful"));
+            eq(String.format("to-defendant-mediation-successful-%s", claim.getReferenceNumber())));
     }
 
     @Test
@@ -143,7 +143,7 @@ public class MediationSuccessfulCallbackHandlerTest {
         verify(notificationService).sendMail(eq(claim.getSubmitterEmail()),
             eq(MEDIATION_SUCCESSFUL_CLAIMANT),
             any(),
-            eq("to-claimant-mediation-successful"));
+            eq(String.format("to-claimant-mediation-successful-%s", claim.getReferenceNumber())));
     }
 
     @Test

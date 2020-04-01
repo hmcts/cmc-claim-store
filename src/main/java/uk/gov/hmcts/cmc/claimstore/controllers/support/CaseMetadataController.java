@@ -27,7 +27,7 @@ import static uk.gov.hmcts.cmc.domain.models.metadata.CaseMetadata.fromClaim;
 @RestController
 @RequestMapping(
     path = "/claims",
-    produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    produces = MediaType.APPLICATION_JSON_VALUE)
 public class CaseMetadataController {
 
     private final ClaimService claimService;

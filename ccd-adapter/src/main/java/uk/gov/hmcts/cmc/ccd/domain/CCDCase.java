@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingCourtType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
@@ -107,26 +106,35 @@ public class CCDCase {
     private String preferredCourtObjectingParty;
     private String preferredCourtObjectingReason;
 
-    private CCDHearingCourtType hearingCourt;
+    private String hearingCourt;
+
+    private String hearingCourtName;
+
+    private CCDAddress hearingCourtAddress;
 
     private CCDHearingDurationType estimatedHearingDuration;
 
     private CCDDocument draftOrderDoc;
+    private CCDDocument draftLetterDoc;
 
     private CCDYesNoOption expertReportPermissionPartyAskedByClaimant;
     private CCDYesNoOption expertReportPermissionPartyAskedByDefendant;
+    private CCDYesNoOption grantExpertReportPermission;
+
+    //TODO - Remove once CCD 1.5.9 released
     private CCDYesNoOption expertReportPermissionPartyGivenToClaimant;
     private CCDYesNoOption expertReportPermissionPartyGivenToDefendant;
-
     @Builder.Default
     private List<CCDCollectionElement<String>> expertReportInstructionClaimant = Collections.emptyList();
-
     @Builder.Default
     private List<CCDCollectionElement<String>> expertReportInstructionDefendant = Collections.emptyList();
+
+    private String expertReportInstruction;
 
     private CCDDirectionOrder directionOrder;
     private CCDReviewOrder reviewOrder;
     private CCDChannelType channel;
     private LocalDate intentionToProceedDeadline;
     private LocalDateTime dateReferredForDirections;
+    private GeneralLetterContent generalLetterContent;
 }
