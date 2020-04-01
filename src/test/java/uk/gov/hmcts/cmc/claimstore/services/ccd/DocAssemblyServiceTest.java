@@ -16,6 +16,8 @@ import uk.gov.hmcts.reform.docassembly.DocAssemblyClient;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyRequest;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 import uk.gov.hmcts.reform.docassembly.domain.OutputType;
+import uk.gov.hmcts.reform.docassembly.exception.DocumentGenerationFailedException;
+
 import java.util.Collections;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -30,6 +32,7 @@ public class DocAssemblyServiceTest {
     private static final String DOC_URL = "http://success.test";
     public static final String LEGAL_ADVISOR_TEMPLATE_ID = "legalAdvisorTemplateId";
     public static final String GENERAL_LETTER_TEMPLATE_ID = "generalLetterTemplateId";
+    public static final String CONTACT_CHANGE_LETTER_TEMPLATE_ID = "ContactChangeLetterTemplateId";
 
     private static final UserDetails JUDGE = new UserDetails(
         "1",
@@ -86,6 +89,28 @@ public class DocAssemblyServiceTest {
 
         assertThat(response.getRenditionOutputLocation()).isEqualTo(DOC_URL);
 
+        verify(docAssemblyClient).generateOrder(eq(BEARER_TOKEN), eq(SERVICE_TOKEN), any(DocAssemblyRequest.class));
+    }
+
+    @Test
+    public void shouldCreateChangeContactLetter() {
+        when(docAssemblyTemplateBodyMapper.changeContactBody(eq(ccdCase)))
+                .thenReturn(DocAssemblyTemplateBody.builder().build());
+
+        DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
+                .templateId(CONTACT_CHANGE_LETTER_TEMPLATE_ID)
+                .outputType(OutputType.PDF)
+                .formPayload(docAssemblyTemplateBodyMapper.changeContactBody(ccdCase))
+                .build();
+
+        when(docAssemblyClient
+                .generateOrder(eq(BEARER_TOKEN), eq(SERVICE_TOKEN), eq(docAssemblyRequest)))
+                .thenReturn(docAssemblyResponse);
+
+        DocAssemblyResponse response = docAssemblyService.createGeneralLetter(ccdCase,
+                BEARER_TOKEN, CONTACT_CHANGE_LETTER_TEMPLATE_ID);
+
+        assertThat(response.getRenditionOutputLocation()).isEqualTo(DOC_URL);
         verify(docAssemblyClient).generateOrder(eq(BEARER_TOKEN), eq(SERVICE_TOKEN), any(DocAssemblyRequest.class));
     }
 
