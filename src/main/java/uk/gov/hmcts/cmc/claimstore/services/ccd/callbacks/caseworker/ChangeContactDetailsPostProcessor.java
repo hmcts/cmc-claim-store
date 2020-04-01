@@ -37,7 +37,7 @@ public class ChangeContactDetailsPostProcessor {
 
     private static final Logger logger = LoggerFactory.getLogger(LoggerHandler.class);
     private static final String NO_DETAILS_CHANGED_ERROR =
-            "Notifications cannot be send if contact details we not changed.";
+            "You need to change contact details to continue.";
     private static final String DRAFT_LETTER_DOC = "draftLetterDoc";
 
     private final CaseDetailsConverter caseDetailsConverter;

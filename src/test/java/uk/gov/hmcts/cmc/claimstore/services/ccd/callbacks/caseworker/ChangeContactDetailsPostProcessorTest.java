@@ -119,28 +119,7 @@ public class ChangeContactDetailsPostProcessorTest {
                     letterContentBuilder,
                     userService,
                     generalLetterService);
-//        String documentUrl = DOCUMENT_URI.toString();
-//        CCDDocument document = new CCDDocument(documentUrl, documentUrl, GENERAL_LETTER_PDF);
-//        ccdCase = CCDCase.builder()
-//                .previousServiceCaseReference("000MC001")
-//                .caseDocuments(ImmutableList.of(CCDCollectionElement.<CCDClaimDocument>builder()
-//                        .value(CCDClaimDocument.builder()
-//                                .documentLink(document)
-//                                .documentType(CCDClaimDocumentType.GENERAL_LETTER)
-//                                .documentName("general-letter")
-//                                .build())
-//                        .build()))
-//                .draftLetterDoc(DRAFT_LETTER_DOC).build();
-//        data = new HashMap<>();
-//        data.put(CHANGE_CONTACT_PARTY, "claimant");
-//        data.put(LETTER_CONTENT, "content");
-//        caseDetails = CaseDetails.builder()
-//                .data(data)
-//                .build();
-//        userDetails = SampleUserDetails.builder()
-//                .withForename("Judge")
-//                .withSurname("McJudge")
-//                .build();
+
         data = new HashMap<>();
         CCDContactChangeContent contactChangeContent = CCDContactChangeContent.builder()
                 .isEmailModified(CCDYesNoOption.YES)
@@ -200,6 +179,7 @@ public class ChangeContactDetailsPostProcessorTest {
 
         @Test
         public void shouldReturnErrorIfNoContactDetailsWereChanged() {
+            //this probably should be in set up might not work for all test cases
             data = new HashMap<>();
             CCDContactChangeContent contactChangeContent = CCDContactChangeContent.builder()
                     .isEmailModified(CCDYesNoOption.YES)
