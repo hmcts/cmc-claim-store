@@ -44,14 +44,6 @@ public class CalendarTest extends BaseMockSpringTest {
     }
 
     protected ResultActions makeRequest(String date) throws Exception {
-        return webClient
-            .perform(
-                get(
-                    String.format(
-                        "/calendar/next-working-day?date=%s",
-                        date
-                    )
-                )
-            );
+        return webClient.perform(get("/calendar/next-working-day?date={date}", date));
     }
 }
