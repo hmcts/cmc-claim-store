@@ -1,55 +1,10 @@
 package uk.gov.hmcts.cmc.ccd.sample.data;
 
-import com.google.common.collect.ImmutableList;
-import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
-import uk.gov.hmcts.cmc.ccd.domain.CCDAmountRow;
-import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
-import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
-import uk.gov.hmcts.cmc.ccd.domain.CCDClaimSubmissionOperationIndicators;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.CCDContactChangeContent;
-import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
-import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
-import uk.gov.hmcts.cmc.ccd.domain.CCDInterestDateType;
-import uk.gov.hmcts.cmc.ccd.domain.CCDInterestEndDateType;
-import uk.gov.hmcts.cmc.ccd.domain.CCDInterestType;
-import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
-import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentIntention;
-import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption;
-import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentSchedule;
-import uk.gov.hmcts.cmc.ccd.domain.CCDTelephone;
-import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
-import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
-import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDCourtDetermination;
-import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDFormaliseOption;
-import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseAcceptation;
-import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDBankAccount;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDChildCategory;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDCourtOrder;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDebt;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDisabilityStatus;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDExpense;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDIncome;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDLivingPartner;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriorityDebt;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
-import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
-import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
-import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-
 import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.BREAK_DOWN;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.RANGE;
@@ -81,6 +36,48 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOUSAND_POUNDS_OR_LESS;
+import com.google.common.collect.ImmutableList;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAmountRow;
+import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
+import uk.gov.hmcts.cmc.ccd.domain.CCDClaimSubmissionOperationIndicators;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDContactChangeContent;
+import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CCDInterestDateType;
+import uk.gov.hmcts.cmc.ccd.domain.CCDInterestEndDateType;
+import uk.gov.hmcts.cmc.ccd.domain.CCDInterestType;
+import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentIntention;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentSchedule;
+import uk.gov.hmcts.cmc.ccd.domain.CCDTelephone;
+import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
+import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDCourtDetermination;
+import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDFormaliseOption;
+import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseAcceptation;
+import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDBankAccount;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDChildCategory;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDCourtOrder;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDebt;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDisabilityStatus;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDExpense;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDIncome;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDLivingPartner;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriorityDebt;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
+import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
+import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 public class SampleData {
 
@@ -153,7 +150,6 @@ public class SampleData {
                 .build())
             );
     }
-
 
 
     public static CCDResponseAcceptation getResponseAcceptation(CCDFormaliseOption formaliseOption) {
@@ -259,23 +255,23 @@ public class SampleData {
 
     public static CCDAddress getCCDAddress() {
         return CCDAddress.builder()
-                .addressLine1("line1")
-                .addressLine2("line2")
-                .addressLine3("line3")
-                .postTown("city")
-                .postCode("postcode")
-                .build();
+            .addressLine1("line1")
+            .addressLine2("line2")
+            .addressLine3("line3")
+            .postTown("city")
+            .postCode("postcode")
+            .build();
     }
 
-    public static CCDParty getCCDPartyWithEmail(String email){
+    public static CCDParty getCCDPartyWithEmail(String email) {
         return CCDParty.builder()
-                .type(INDIVIDUAL)
-                .primaryAddress(getCCDAddress())
-                .dateOfBirth(LocalDate.of(1950, 1, 1))
-                .correspondenceAddress(getCCDAddress())
-                .telephoneNumber(withDefaultPhoneNumber())
-                .emailAddress(email)
-                .build();
+            .type(INDIVIDUAL)
+            .primaryAddress(getCCDAddress())
+            .dateOfBirth(LocalDate.of(1950, 1, 1))
+            .correspondenceAddress(getCCDAddress())
+            .telephoneNumber(withDefaultPhoneNumber())
+            .emailAddress(email)
+            .build();
     }
 
     public static CCDRespondent getCCDRespondentIndividual() {
@@ -584,40 +580,40 @@ public class SampleData {
     public static CCDCase addContactChanges(CCDCase ccdCase) {
         CCDContactChangeContent contactChangeContent = CCDContactChangeContent.builder().isEmailModified(YES).build();
         return ccdBuilderWithDefault()
-                .contactChangeParty(CCDContactPartyType.CLAIMANT)
-                .contactChangeContent(contactChangeContent)
-                .build();
+            .contactChangeParty(CCDContactPartyType.CLAIMANT)
+            .contactChangeContent(contactChangeContent)
+            .build();
     }
 
     public static CCDCase addContactChangePartyClaimant(CCDCase ccdCase) {
-        return ccdBuilderWithDefault()
+        return ccdCase.toBuilder()
             .contactChangeParty(CCDContactPartyType.CLAIMANT)
             .build();
     }
 
     public static CCDCase addContactChangePartyDefendant(CCDCase ccdCase) {
-        return ccdBuilderWithDefault()
-                .contactChangeParty(CCDContactPartyType.CLAIMANT)
-                .build();
+        return ccdCase.toBuilder()
+            .contactChangeParty(CCDContactPartyType.DEFENDANT)
+            .build();
     }
 
     public static CCDCase getCCDCitizenCaseWithoutPayment() {
         List<CCDCollectionElement<CCDApplicant>> applicants
-                = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
+            = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
         List<CCDCollectionElement<CCDRespondent>> respondents
-                = singletonList(CCDCollectionElement.<CCDRespondent>builder().value(getCCDRespondentIndividual()).build());
+            = singletonList(CCDCollectionElement.<CCDRespondent>builder().value(getCCDRespondentIndividual()).build());
 
         return ccdBuilderWithDefault()
-                .amountBreakDown(getAmountBreakDown())
-                .paymentAmount(null)
-                .paymentDateCreated(null)
-                .paymentId(null)
-                .paymentStatus(null)
-                .paymentNextUrl(null)
-                .paymentReference(null)
-                .applicants(applicants)
-                .respondents(respondents)
-                .build();
+            .amountBreakDown(getAmountBreakDown())
+            .paymentAmount(null)
+            .paymentDateCreated(null)
+            .paymentId(null)
+            .paymentStatus(null)
+            .paymentNextUrl(null)
+            .paymentReference(null)
+            .applicants(applicants)
+            .respondents(respondents)
+            .build();
     }
 
     public static CCDCase addCCDOrderGenerationData(CCDCase ccdCase) {

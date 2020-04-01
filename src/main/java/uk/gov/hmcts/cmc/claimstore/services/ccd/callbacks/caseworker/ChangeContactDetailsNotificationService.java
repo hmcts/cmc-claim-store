@@ -1,5 +1,13 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.DEFENDANT_NAME;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.EXTERNAL_ID;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,16 +23,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
-import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER;
-import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.DEFENDANT_NAME;
-import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.EXTERNAL_ID;
-import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
-
 @Service
 public class ChangeContactDetailsNotificationService {
 
@@ -37,9 +35,10 @@ public class ChangeContactDetailsNotificationService {
 
     @Autowired
     public ChangeContactDetailsNotificationService(
-            CaseDetailsConverter caseDetailsConverter,
-            NotificationService notificationService,
-            NotificationsProperties notificationsProperties) {
+        CaseDetailsConverter caseDetailsConverter,
+        NotificationService notificationService,
+        NotificationsProperties notificationsProperties
+    ) {
         this.notificationService = notificationService;
         this.notificationsProperties = notificationsProperties;
         this.caseDetailsConverter = caseDetailsConverter;
@@ -79,21 +78,21 @@ public class ChangeContactDetailsNotificationService {
 
     private void notifyClaimant(Claim claim) {
         notificationService.sendMail(
-                claim.getSubmitterEmail(),
-                notificationsProperties.getTemplates().getEmail().getDefendantContactDetailsChanged(),
-                aggregateParams(claim),
-                NotificationReferenceBuilder.ContactDetailsChanged
-                        .referenceForClaimant(claim.getReferenceNumber(), "claimant")
+            claim.getSubmitterEmail(),
+            notificationsProperties.getTemplates().getEmail().getDefendantContactDetailsChanged(),
+            aggregateParams(claim),
+            NotificationReferenceBuilder.ContactDetailsChanged
+                .referenceForClaimant(claim.getReferenceNumber(), "claimant")
         );
     }
 
     private void notifyDefendant(Claim claim) {
         notificationService.sendMail(
-                claim.getDefendantEmail(),
-                notificationsProperties.getTemplates().getEmail().getClaimantContactDetailsChanged(),
-                aggregateParams(claim),
-                NotificationReferenceBuilder.ContactDetailsChanged
-                        .referenceForDefendant(claim.getReferenceNumber(), "defendant")
+            claim.getDefendantEmail(),
+            notificationsProperties.getTemplates().getEmail().getClaimantContactDetailsChanged(),
+            aggregateParams(claim),
+            NotificationReferenceBuilder.ContactDetailsChanged
+                .referenceForDefendant(claim.getReferenceNumber(), "defendant")
         );
     }
 
