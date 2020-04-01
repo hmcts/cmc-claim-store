@@ -70,7 +70,8 @@ public enum CaseEvent {
     RESEND_RPA("ResendRpa"),
     ATTACH_SCANNED_DOCS("attachScannedDocs"),
     UPDATE_CLAIM("UpdateClaim"),
-    RESET_PIN("ResetPin");
+    RESET_PIN("ResetPin"),
+    ISSUE_GENERAL_LETTER("IssueGeneralLetter");
 
     private final String value;
 
