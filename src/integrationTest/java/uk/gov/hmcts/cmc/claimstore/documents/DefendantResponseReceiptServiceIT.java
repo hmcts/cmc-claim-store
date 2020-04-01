@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
 import uk.gov.hmcts.cmc.claimstore.documents.content.DefendantResponseContentProvider;
+import uk.gov.hmcts.cmc.claimstore.helper.DocumentComparisonHelper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -13,8 +14,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import java.time.LocalDateTime;
 
-import static uk.gov.hmcts.cmc.claimstore.helper.DocumentComparisonHelper.provideLocalPdfService;
-import static uk.gov.hmcts.cmc.claimstore.helper.DocumentComparisonHelper.replaceTimestamp;
 import static uk.gov.hmcts.cmc.claimstore.helper.FileUtils.readFile;
 import static uk.gov.hmcts.cmc.claimstore.helper.FileUtils.writeFile;
 import static wiremock.org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
@@ -29,11 +28,14 @@ public class DefendantResponseReceiptServiceIT extends BaseMockSpringTest {
     @Autowired
     private DocumentTemplates documentTemplates;
 
+    @Autowired
+    private DocumentComparisonHelper documentComparisonHelper;
+
     @Before
     public void beforeEachTest() {
 
         defendantResponseReceiptService = new DefendantResponseReceiptService(
-            contentProvider, documentTemplates, provideLocalPdfService());
+            contentProvider, documentTemplates, documentComparisonHelper.provideLocalPdfService());
     }
 
     @Test
@@ -52,7 +54,8 @@ public class DefendantResponseReceiptServiceIT extends BaseMockSpringTest {
 
         byte[] actualHtmlBytes = defendantResponseReceiptService.createHtml(claim);
 
-        String actualHtml = replaceTimestamp("defenceSubmittedOn", new String(actualHtmlBytes));
+        String actualHtml = documentComparisonHelper.replaceTimestamp("defenceSubmittedOn",
+            new String(actualHtmlBytes));
 
         writeFile("build/tmp/actual.html", actualHtml); // Useful file for debugging test
 
