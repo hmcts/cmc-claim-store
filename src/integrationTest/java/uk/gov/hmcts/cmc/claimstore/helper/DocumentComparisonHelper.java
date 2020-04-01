@@ -1,6 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.helper;
 
 import org.mockito.stubbing.Answer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 
 import java.util.Map;
@@ -10,13 +12,15 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@Component
 public class DocumentComparisonHelper {
 
-    public static PDFServiceClient provideLocalPdfService() {
+    @Autowired
+    private HTMLTemplateProcessor htmlTemplateProcessor;
+
+    public PDFServiceClient provideLocalPdfService() {
 
         PDFServiceClient pdfServiceClient = mock(PDFServiceClient.class);
-
-        HTMLTemplateProcessor htmlTemplateProcessor = new HTMLTemplateProcessor();
 
         when(pdfServiceClient.generateFromHtml(any(), any()))
             .thenAnswer((Answer<byte[]>) invocation -> {
@@ -31,7 +35,7 @@ public class DocumentComparisonHelper {
         return pdfServiceClient;
     }
 
-    public static String replaceTimestamp(String timestampElementId, String html) {
+    public String replaceTimestamp(String timestampElementId, String html) {
 
         final String timestampElement = String.format("span id=\"%s\"", timestampElementId);
         final String regex = format("%s\\>.*\\<", timestampElement);
