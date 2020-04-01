@@ -1,4 +1,3 @@
-
-output "vaultName" {
+output "env" {
   value = "${var.env}"
 }

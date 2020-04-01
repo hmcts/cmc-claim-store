@@ -18,6 +18,18 @@ variable "database-name" {
   default = "cmc"
 }
 
+variable "database_sku_name" {
+  default = "GP_Gen5_2"
+}
+
+variable "database_storage_mb" {
+  default = "51200"
+}
+
+variable "postgresql_version" {
+  default = "10"
+}
+
 variable "common_tags" {
   type = "map"
 }
