@@ -6,6 +6,7 @@ import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -13,6 +14,7 @@ import java.io.Writer;
 import java.util.Map;
 
 @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
+@Component
 public class HTMLTemplateProcessor {
 
     private static final Logger log = LoggerFactory.getLogger(HTMLTemplateProcessor.class);
