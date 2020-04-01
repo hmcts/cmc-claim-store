@@ -7,6 +7,9 @@ import java.nio.file.Paths;
 
 public class FileUtils {
 
+    private FileUtils() {
+    }
+
     public static String readFile(String filename) throws IOException {
         Path path = Paths.get(filename);
 
