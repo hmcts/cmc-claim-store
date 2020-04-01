@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore;
 import com.google.common.collect.ImmutableMap;
 import com.microsoft.applicationinsights.TelemetryClient;
 import org.flywaydb.core.Flyway;
+import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.quartz.Scheduler;
@@ -15,7 +16,12 @@ import org.springframework.http.MediaType;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -48,6 +54,7 @@ import uk.gov.service.notify.NotificationClient;
 
 import javax.sql.DataSource;
 
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -152,8 +159,34 @@ public abstract class BaseMockSpringTest {
     private TransactionAwareDataSourceProxy transactionAwareDataSourceProxy;
     @MockBean(name = "transactionManager")
     private PlatformTransactionManager transactionManager;
+
     @MockBean
-    private JwtDecoder jwtDecoder;
+    protected Authentication authentication;
+    @MockBean
+    protected SecurityContext securityContext;
+
+    @Before
+    public void setUpBase() {
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        setSecurityAuthorities(authentication);
+    }
+
+    protected void setSecurityAuthorities(Authentication authenticationMock, String... authorities) {
+
+        Jwt jwt = Jwt.withTokenValue("Bearer a jwt token")
+            .claim("aClaim", "aClaim")
+            .header("aHeader", "aHeader")
+            .build();
+        when(authenticationMock.getPrincipal()).thenReturn(jwt);
+
+        Collection<? extends GrantedAuthority> authorityCollection = Stream.of(authorities)
+            .map(a -> new SimpleGrantedAuthority(a))
+            .collect(Collectors.toCollection(ArrayList::new));
+
+        when(authenticationMock.getAuthorities()).thenAnswer(invocationOnMock -> authorityCollection);
+
+    }
 
     protected ImmutableMap<String, String> searchCriteria(String externalId) {
         return ImmutableMap.of(
