@@ -86,6 +86,7 @@ public class FormaliseResponseAcceptanceServiceTest {
 
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
     private PDF pdf;
+    private static final Claim CLAIM = SampleClaim.builder().build();
 
     @Before
     public void before() {
@@ -95,7 +96,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             ClaimDocumentType.CLAIMANT_RESPONSE_RECEIPT
         );
         when(documentService.uploadToDocumentManagement(any(PDF.class),
-            anyString(), any(Claim.class))).thenReturn(SampleClaim.builder().build());
+            anyString(), any(Claim.class))).thenReturn(CLAIM);
         when(interlocutoryReceiptService.createPdf(any(Claim.class))).thenReturn(pdf);
         formaliseResponseAcceptanceService = new FormaliseResponseAcceptanceService(
             countyCourtJudgmentService,
@@ -612,7 +613,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .formalise(claim, responseAcceptation, AUTH)).doesNotThrowAnyException();
 
         verify(eventProducer, once()).createInterlocutoryJudgmentEvent(eq(claim));
-        verify(caseRepository, once()).saveCaseEvent(anyString(), eq(claim), eq(INTERLOCUTORY_JUDGMENT));
+        verify(caseRepository, once()).saveCaseEvent(anyString(), eq(CLAIM), eq(INTERLOCUTORY_JUDGMENT));
         verifyNoInteractions(countyCourtJudgmentService);
         verifyNoInteractions(settlementAgreementService);
     }

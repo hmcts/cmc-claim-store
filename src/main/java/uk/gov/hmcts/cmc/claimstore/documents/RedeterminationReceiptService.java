@@ -7,15 +7,12 @@ import uk.gov.hmcts.cmc.claimstore.documents.content.ClaimantResponseContentProv
 import uk.gov.hmcts.cmc.claimstore.documents.content.DefendantResponseContentProvider;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForReferToJugdeFileBaseName;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.REDETERMINATION_RECEIPT;
 
 @Service
 public class RedeterminationReceiptService {
@@ -40,20 +37,29 @@ public class RedeterminationReceiptService {
 
     public PDF createPdf(Claim claim, MadeBy partyType) {
         requireNonNull(claim);
-        Map<String, Object> content = new HashMap<>();
+        PDF pdf = null;
         if (partyType == MadeBy.CLAIMANT) {
-            content = claimantResponseContentProvider.createContent(claim);
+            pdf = new PDF(
+                buildRequestForReferToJugdeFileBaseName(
+                    claim.getReferenceNumber(),
+                    partyType.name().toLowerCase()),
+                pdfServiceClient.generateFromHtml(
+                    documentTemplates.getClaimantResponseReceipt(),
+                    claimantResponseContentProvider.createContent(claim)),
+                ClaimDocumentType.CLAIMANT_RESPONSE_RECEIPT
+            );
         }
         if (partyType == MadeBy.DEFENDANT) {
-            content = defendantResponseContentProvider.createContent(claim);
+            pdf = new PDF(
+                buildRequestForReferToJugdeFileBaseName(
+                    claim.getReferenceNumber(),
+                    partyType.name().toLowerCase()),
+                pdfServiceClient.generateFromHtml(
+                    documentTemplates.getDefendantResponseReceipt(),
+                    defendantResponseContentProvider.createContent(claim)),
+                ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT
+            );
         }
-        return new PDF(
-            buildRequestForReferToJugdeFileBaseName(claim.getReferenceNumber(), partyType.name()),
-            pdfServiceClient.generateFromHtml(
-                documentTemplates.getClaimantResponseReceipt(),
-                content),
-            REDETERMINATION_RECEIPT
-        );
+        return pdf;
     }
-
 }
