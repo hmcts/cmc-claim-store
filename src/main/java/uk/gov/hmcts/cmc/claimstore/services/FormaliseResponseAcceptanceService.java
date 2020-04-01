@@ -9,7 +9,10 @@ import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
-import uk.gov.hmcts.cmc.domain.models.*;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
+import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
@@ -90,15 +93,16 @@ public class FormaliseResponseAcceptanceService {
         Response response = claim.getResponse()
             .orElseThrow(() -> new IllegalArgumentException(MISSING_RESPONSE));
         CaseEvent caseEvent;
+        Claim updatedClaim = claim;
         if (isCompanyOrOrganisation(response.getDefendant())) {
             eventProducer.createRejectOrganisationPaymentPlanEvent(claim);
             caseEvent = REJECT_ORGANISATION_PAYMENT_PLAN;
         } else {
-            claim = uploadInterlocutoryJudgmentDocumentToDocumentStore(claim, authorisation);
+            updatedClaim = uploadInterlocutoryJudgmentDocumentToDocumentStore(claim, authorisation);
             eventProducer.createInterlocutoryJudgmentEvent(claim);
             caseEvent = INTERLOCUTORY_JUDGMENT;
         }
-        caseRepository.saveCaseEvent(authorisation, claim, caseEvent);
+        caseRepository.saveCaseEvent(authorisation, updatedClaim, caseEvent);
     }
 
     private void formaliseSettlement(Claim claim, ResponseAcceptation responseAcceptation, String authorisation) {

@@ -120,7 +120,7 @@ public class DocumentNameUtils {
         return format("%s-directions-order-cover-sheet", number);
     }
 
-    public static String buildRequestForInterlocutoryJudgment(String caseRef) {
+    public static String buildRequestForInterlocutoryJudgmentFileBaseName(String caseRef) {
         requireNonBlank(caseRef);
 
         return format("%s-request-interloc-judgment", caseRef);

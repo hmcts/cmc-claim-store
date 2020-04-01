@@ -9,7 +9,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForInterlocutoryJudgment;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForInterlocutoryJudgmentFileBaseName;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIMANT_RESPONSE_RECEIPT;
 
 @Service
@@ -33,7 +33,7 @@ public class InterlocutoryReceiptService {
     public PDF createPdf(Claim claim) {
         requireNonNull(claim);
         return new PDF(
-            buildRequestForInterlocutoryJudgment(claim.getReferenceNumber()),
+            buildRequestForInterlocutoryJudgmentFileBaseName(claim.getReferenceNumber()),
             pdfServiceClient.generateFromHtml(
                 documentTemplates.getClaimantResponseReceipt(),
                 contentProvider.createContent(claim)),
