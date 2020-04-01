@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
@@ -23,6 +24,7 @@ import java.util.Map;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCUTORY_JUDGMENT;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
 
+@Service
 public class InterlocutoryJudgmentCallbackHandler extends CallbackHandler {
     private static final List<CaseEvent> EVENTS = Collections.singletonList(INTERLOCUTORY_JUDGMENT);
     private static final List<Role> ROLES = Collections.singletonList(CITIZEN);
@@ -40,7 +42,6 @@ public class InterlocutoryJudgmentCallbackHandler extends CallbackHandler {
         this.ctscEnabled = ctscEnabled;
     }
 
-    @LogExecutionTime
     private CallbackResponse determineState(CallbackParams callbackParams) {
         logger.info("akriti callback from CCD, eventId: {}", INTERLOCUTORY_JUDGMENT);
         ClaimState state = ctscEnabled ? ClaimState.JUDGMENT_DECIDE_AMOUNT : ClaimState.OPEN;

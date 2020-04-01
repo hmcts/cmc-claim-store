@@ -99,7 +99,7 @@ public class FormaliseResponseAcceptanceService {
             caseEvent = REJECT_ORGANISATION_PAYMENT_PLAN;
         } else {
             updatedClaim = uploadInterlocutoryJudgmentDocumentToDocumentStore(claim, authorisation);
-            eventProducer.createInterlocutoryJudgmentEvent(claim);
+            eventProducer.createInterlocutoryJudgmentEvent(updatedClaim);
             caseEvent = INTERLOCUTORY_JUDGMENT;
         }
         caseRepository.saveCaseEvent(authorisation, updatedClaim, caseEvent);
