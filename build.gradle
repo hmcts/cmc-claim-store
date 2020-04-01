@@ -292,6 +292,7 @@ task apiTest(type: Test) {
   description = 'Runs the api tests'
   setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
   setClasspath(sourceSets.integrationTest.runtimeClasspath)
+  testLogging.showStandardStreams = true
 }
 
 task migrateClaims() {

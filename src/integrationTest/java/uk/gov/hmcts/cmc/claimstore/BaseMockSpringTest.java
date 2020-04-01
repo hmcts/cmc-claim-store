@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore;
 import com.google.common.collect.ImmutableMap;
 import com.microsoft.applicationinsights.TelemetryClient;
 import org.flywaydb.core.Flyway;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
@@ -22,6 +23,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -54,6 +56,12 @@ import uk.gov.service.notify.NotificationClient;
 
 import javax.sql.DataSource;
 
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -164,20 +172,20 @@ public abstract class BaseMockSpringTest {
     protected Authentication authentication;
     @MockBean
     protected SecurityContext securityContext;
+    @MockBean
+    protected JwtDecoder jwtDecoder;
 
     @Before
     public void setUpBase() {
         when(securityContext.getAuthentication()).thenReturn(authentication);
         SecurityContextHolder.setContext(securityContext);
         setSecurityAuthorities(authentication);
+        when(jwtDecoder.decode(anyString())).thenReturn(getJwt());
     }
 
     protected void setSecurityAuthorities(Authentication authenticationMock, String... authorities) {
 
-        Jwt jwt = Jwt.withTokenValue("Bearer a jwt token")
-            .claim("aClaim", "aClaim")
-            .header("aHeader", "aHeader")
-            .build();
+        Jwt jwt = getJwt();
         when(authenticationMock.getPrincipal()).thenReturn(jwt);
 
         Collection<? extends GrantedAuthority> authorityCollection = Stream.of(authorities)
@@ -186,6 +194,20 @@ public abstract class BaseMockSpringTest {
 
         when(authenticationMock.getAuthorities()).thenAnswer(invocationOnMock -> authorityCollection);
 
+    }
+
+    @NotNull
+    private Jwt getJwt() {
+        return Jwt.withTokenValue(BEARER_TOKEN)
+            .claim("exp", Instant.ofEpochSecond(1585763216))
+            .claim("iat", Instant.ofEpochSecond(1585734416))
+            .claim("token_type", "Bearer")
+            .claim("tokenName", "access_token")
+            .claim("expires_in", 28800)
+            .header("kid", "b/O6OvVv1+y+WgrH5Ui9WTioLt0=")
+            .header("typ", "RS256")
+            .header("alg", "RS256")
+            .build();
     }
 
     protected ImmutableMap<String, String> searchCriteria(String externalId) {
