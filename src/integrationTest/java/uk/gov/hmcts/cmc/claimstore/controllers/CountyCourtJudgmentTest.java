@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -7,6 +8,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserInfo;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUser;
@@ -55,6 +57,11 @@ public class CountyCourtJudgmentTest extends BaseMockSpringTest {
 
     @Before
     public void setUp() {
+        given(userService.getUserInfo(anyString())).willReturn(UserInfo.builder()
+            .roles(ImmutableList.of(Role.CITIZEN.getRole()))
+            .uid(SampleClaim.USER_ID)
+            .sub(SampleClaim.SUBMITTER_EMAIL)
+            .build());
         given(userService.getUserDetails(BEARER_TOKEN)).willReturn(USER_DETAILS);
         given(userService.getUser(BEARER_TOKEN)).willReturn(USER);
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
