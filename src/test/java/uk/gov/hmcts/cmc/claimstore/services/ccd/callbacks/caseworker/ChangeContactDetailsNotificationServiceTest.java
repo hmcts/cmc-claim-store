@@ -1,12 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
-import java.util.Collections;
-import java.util.Map;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.cmc.claimstore.events.operations.ClaimantOperationServiceTest.CLAIMANT_EMAIL_TEMPLATE;
-import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,8 +14,21 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.Notifications
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
+import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+
+import java.util.Collections;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.cmc.claimstore.events.operations.ClaimantOperationServiceTest.CLAIMANT_EMAIL_TEMPLATE;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ChangeContactDetailsNotificationServiceTest {
@@ -57,6 +63,37 @@ public class ChangeContactDetailsNotificationServiceTest {
     }
 
     @Test
+    public void shouldHandleErrorsInNotifications() {
+        Claim claim = SampleClaim.builder().withSubmitterEmail("claimant@mail.com").build();
+        CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
+        ccdCase = SampleData.addContactChangePartyDefendant(ccdCase);
+        Map<String, String> expectedParams = ImmutableMap.of(
+            "claimReferenceNumber", claim.getReferenceNumber(),
+            "claimantName", claim.getClaimData().getClaimant().getName(),
+            "defendantName", claim.getClaimData().getDefendant().getName(),
+            "frontendBaseUrl", FRONTEND_BASE_URL,
+            "externalId", claim.getExternalId()
+        );
+
+        NotificationException exception = new NotificationException("error occurred while sending mail");
+
+        doThrow(exception)
+            .when(notificationService).sendMail(eq(claim.getSubmitterEmail()),
+            eq(DEFENDANT_EMAIL_TEMPLATE),
+            eq(expectedParams),
+            eq(NotificationReferenceBuilder.ContactDetailsChanged
+                .referenceForClaimant(claim.getReferenceNumber(), "claimant")));
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse
+            = (AboutToStartOrSubmitCallbackResponse) changeContactDetailsNotificationService
+            .sendEmailToRightRecipient(ccdCase, claim);
+
+        assertThat(callbackResponse.getErrors()).isNotEmpty()
+            .contains("There was a technical problem. Nothing has been sent. You need to try again.");
+
+    }
+
+    @Test
     public void shouldSendEmailToClaimantUsingPredefinedTemplate() {
         Claim claim = SampleClaim.builder().withSubmitterEmail("claimant@mail.com").build();
         CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
@@ -68,7 +105,10 @@ public class ChangeContactDetailsNotificationServiceTest {
             "frontendBaseUrl", FRONTEND_BASE_URL,
             "externalId", claim.getExternalId()
         );
-        changeContactDetailsNotificationService.sendEmailToRightRecipient(ccdCase, claim);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse
+            = (AboutToStartOrSubmitCallbackResponse) changeContactDetailsNotificationService
+            .sendEmailToRightRecipient(ccdCase, claim);
 
         verify(notificationService).sendMail(
             eq(claim.getSubmitterEmail()),
@@ -76,6 +116,7 @@ public class ChangeContactDetailsNotificationServiceTest {
             eq(expectedParams),
             eq(NotificationReferenceBuilder.ContactDetailsChanged
                 .referenceForClaimant(claim.getReferenceNumber(), "claimant")));
+
     }
 
     @Test
@@ -90,7 +131,10 @@ public class ChangeContactDetailsNotificationServiceTest {
             "frontendBaseUrl", FRONTEND_BASE_URL,
             "externalId", claim.getExternalId()
         );
-        changeContactDetailsNotificationService.sendEmailToRightRecipient(ccdCase, claim);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse
+            = (AboutToStartOrSubmitCallbackResponse) changeContactDetailsNotificationService
+            .sendEmailToRightRecipient(ccdCase, claim);
 
         verify(notificationService).sendMail(
             eq(claim.getDefendantEmail()),

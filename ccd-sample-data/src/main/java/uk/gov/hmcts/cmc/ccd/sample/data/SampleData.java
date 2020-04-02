@@ -579,7 +579,7 @@ public class SampleData {
 
     public static CCDCase addContactChanges(CCDCase ccdCase) {
         CCDContactChangeContent contactChangeContent = CCDContactChangeContent.builder().isEmailModified(YES).build();
-        return ccdBuilderWithDefault()
+        return ccdCase.toBuilder()
             .contactChangeParty(CCDContactPartyType.CLAIMANT)
             .contactChangeContent(contactChangeContent)
             .build();
