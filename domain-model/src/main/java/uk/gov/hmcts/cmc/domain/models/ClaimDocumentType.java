@@ -22,8 +22,7 @@ public enum ClaimDocumentType {
     PAPER_RESPONSE_STATES_PAID,
     PAPER_RESPONSE_MORE_TIME,
     PAPER_RESPONSE_DISPUTES_ALL,
-    GENERAL_LETTER,
-    REDETERMINATION_RECEIPT("redeterminationReceipt");
+    GENERAL_LETTER;
 
     private final List<String> values;
 

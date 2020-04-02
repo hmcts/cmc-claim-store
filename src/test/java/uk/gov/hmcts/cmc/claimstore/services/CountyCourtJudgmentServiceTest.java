@@ -100,7 +100,7 @@ public class CountyCourtJudgmentServiceTest {
         pdf = new PDF(
             "name",
             PDF_CONTENT,
-            ClaimDocumentType.REDETERMINATION_RECEIPT
+            ClaimDocumentType.CLAIMANT_RESPONSE_RECEIPT
         );
         when(documentService.uploadToDocumentManagement(any(PDF.class),
             anyString(), any(Claim.class))).thenReturn(SampleClaim.builder().build());
