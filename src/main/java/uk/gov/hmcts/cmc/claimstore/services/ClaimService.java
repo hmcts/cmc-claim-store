@@ -96,7 +96,7 @@ public class ClaimService {
     }
 
     public List<Claim> getClaimBySubmitterId(String submitterId, String authorisation) {
-        claimAuthorisationRule.assertSubmitterIdMatchesAuthorisation(submitterId, authorisation);
+        claimAuthorisationRule.assertUserIdMatchesAuthorisation(submitterId, authorisation);
         return caseRepository.getBySubmitterId(submitterId, authorisation);
     }
 
@@ -156,14 +156,13 @@ public class ClaimService {
         String submitterId = userService.getUserDetails(authorisation).getId();
 
         return asStream(caseRepository.getBySubmitterId(submitterId, authorisation))
-            .filter(claim -> externalReference.equals(
-                claim.getClaimData().getExternalReferenceNumber().orElse("")
-            ))
+            .filter(claim ->
+                claim.getClaimData().getExternalReferenceNumber().filter(externalReference::equals).isPresent())
             .collect(Collectors.toList());
     }
 
     public List<Claim> getClaimByDefendantId(String id, String authorisation) {
-        claimAuthorisationRule.assertSubmitterIdMatchesAuthorisation(id, authorisation);
+        claimAuthorisationRule.assertUserIdMatchesAuthorisation(id, authorisation);
 
         return caseRepository.getByDefendantId(id, authorisation);
     }

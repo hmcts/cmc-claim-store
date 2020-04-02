@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.domain.models.claimantresponse;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -21,26 +22,17 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 })
 @Getter
 @EqualsAndHashCode
+@AllArgsConstructor
 public abstract class ClaimantResponse {
     @NotNull
-    private final ClaimantResponseType type;
+    protected final ClaimantResponseType type;
 
     @Min(value = 0)
-    private final BigDecimal amountPaid;
+    protected final BigDecimal amountPaid;
 
-    private final YesNoOption paymentReceived;
+    protected final YesNoOption paymentReceived;
 
-    private final YesNoOption settleForAmount;
-
-    public ClaimantResponse(ClaimantResponseType type,
-                            BigDecimal amountPaid,
-                            YesNoOption paymentReceived,
-                            YesNoOption settleForAmount) {
-        this.amountPaid = amountPaid;
-        this.type = type;
-        this.paymentReceived = paymentReceived;
-        this.settleForAmount = settleForAmount;
-    }
+    protected final YesNoOption settleForAmount;
 
     public Optional<BigDecimal> getAmountPaid() {
         return Optional.ofNullable(amountPaid);

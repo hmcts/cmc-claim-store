@@ -380,6 +380,11 @@ public class SampleData {
                     .dateOfBirth(LocalDate.of(1950, 1, 1))
                     .correspondenceAddress(ccdAddress)
                     .build())
+            .partyDetail(
+                CCDParty.builder()
+                    .primaryAddress(ccdAddress)
+                    .correspondenceAddress(ccdAddress)
+                    .build())
             .claimantProvidedPartyName("Individual")
             .claimantProvidedRepresentativeOrganisationAddress(ccdAddress)
             .claimantProvidedRepresentativeOrganisationName("My Org")

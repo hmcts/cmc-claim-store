@@ -197,7 +197,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.0'
   compile group: 'uk.gov.hmcts.reform', name: 'doc-assembly-client', version: '1.0.4'
   compile group: 'uk.gov.hmcts.reform', name: 'fees-java-client', version: '0.0.6'
-  compile group: 'uk.gov.hmcts.reform', name: 'payments-client', version: '0.0.5'
+  compile group: 'uk.gov.hmcts.reform', name: 'payments-client', version: '0.0.6'
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.1'
   compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.3.0'
   compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.5'
@@ -373,7 +373,8 @@ sonarqube {
       "**/GeneratedDocuments.java," +
       "**/DBCaseRepository.java," +
       "**/MapperUtil.java," +
-      "**/CCDCaseApi.java"
+      "**/CCDCaseApi.java," +
+      "**/DataFixSupportController.java"
   }
 }
 
