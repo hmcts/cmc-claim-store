@@ -72,7 +72,7 @@ public class MapperUtil {
             .map(CCDCollectionElement::getValue)
             .orElse(null);
 
-        if(defendant == null){
+        if (defendant == null) {
             return null;
         }
 

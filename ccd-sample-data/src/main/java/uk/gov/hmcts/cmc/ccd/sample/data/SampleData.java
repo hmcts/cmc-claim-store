@@ -1,41 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.sample.data;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
-import static java.util.Collections.singletonList;
-import static uk.gov.hmcts.cmc.ccd.domain.AmountType.BREAK_DOWN;
-import static uk.gov.hmcts.cmc.ccd.domain.AmountType.RANGE;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.COMPANY;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.INDIVIDUAL;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.ORGANISATION;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.SOLE_TRADER;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
-import static uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDDecisionType.COURT;
-import static uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDFormaliseOption.SETTLEMENT;
-import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDAgeGroupType.UNDER_11;
-import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDBankAccountType.SAVINGS_ACCOUNT;
-import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDisabilityStatus.SEVERE;
-import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDExpenseType.COUNCIL_TAX;
-import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDIncomeType.JOB;
-import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPaymentFrequency.MONTH;
-import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriorityDebtType.ELECTRICITY;
-import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDResidenceType.JOINT_OWN_HOME;
-import static uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceType.EXPERT_WITNESS;
-import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.DOCUMENTS;
-import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EXPERT_REPORT_PERMISSION;
-import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EYEWITNESS;
-import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.OTHER;
-import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOtherDirectionHeaderType.UPLOAD;
-import static uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDClaimSubmissionOperationIndicators.defaultCCDClaimSubmissionOperationIndicators;
-import static uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDTelephone.withDefaultPhoneNumber;
-import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
-import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
-import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
-import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOUSAND_POUNDS_OR_LESS;
 import com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAmountRow;
@@ -78,6 +42,44 @@ import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+import static java.util.Collections.singletonList;
+import static uk.gov.hmcts.cmc.ccd.domain.AmountType.BREAK_DOWN;
+import static uk.gov.hmcts.cmc.ccd.domain.AmountType.RANGE;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.COMPANY;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.INDIVIDUAL;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.ORGANISATION;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.SOLE_TRADER;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
+import static uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDDecisionType.COURT;
+import static uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDFormaliseOption.SETTLEMENT;
+import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDAgeGroupType.UNDER_11;
+import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDBankAccountType.SAVINGS_ACCOUNT;
+import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDisabilityStatus.SEVERE;
+import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDExpenseType.COUNCIL_TAX;
+import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDIncomeType.JOB;
+import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPaymentFrequency.MONTH;
+import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriorityDebtType.ELECTRICITY;
+import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDResidenceType.JOINT_OWN_HOME;
+import static uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceType.EXPERT_WITNESS;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.DOCUMENTS;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EXPERT_REPORT_PERMISSION;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EYEWITNESS;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.OTHER;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOtherDirectionHeaderType.UPLOAD;
+import static uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDClaimSubmissionOperationIndicators.defaultCCDClaimSubmissionOperationIndicators;
+import static uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDTelephone.withDefaultPhoneNumber;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
+import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
+import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOUSAND_POUNDS_OR_LESS;
 
 public class SampleData {
 
@@ -150,8 +152,7 @@ public class SampleData {
                 .build())
             );
     }
-
-
+    
     public static CCDResponseAcceptation getResponseAcceptation(CCDFormaliseOption formaliseOption) {
         return CCDResponseAcceptation.builder()
             .amountPaid(AMOUNT)
@@ -563,19 +564,21 @@ public class SampleData {
             .build();
     }
 
-//    public static CCDCase getCCDCaseWithoutDefendant(List<CCDCollectionElement<CCDAmountRow>> amountBreakDown) {
-//        List<CCDCollectionElement<CCDApplicant>> applicants
-//                = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
-//        List<CCDCollectionElement<CCDRespondent>> respondents
-//                = singletonList(CCDCollectionElement.<CCDRespondent>builder().value(getCCDRespondentIndividual()).build());
-//
-//        return ccdBuilderWithDefault()
-//                .amountBreakDown(amountBreakDown)
-//                .applicants(applicants)
-//                .respondents(respondents)
-//                .state(OPEN.getValue())
-//                .build();
-//    }
+    //public static CCDCase getCCDCaseWithoutDefendant(List<CCDCollectionElement<CCDAmountRow>> amountBreakDown) {
+    //    List<CCDCollectionElement<CCDApplicant>> applicants
+    //            = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual())
+    //        .build());
+    //    List<CCDCollectionElement<CCDRespondent>> respondents
+    //            = singletonList(CCDCollectionElement.<CCDRespondent>builder().value(getCCDRespondentIndividual())
+    //        .build());
+    //
+    //    return ccdBuilderWithDefault()
+    //            .amountBreakDown(amountBreakDown)
+    //            .applicants(applicants)
+    //            .respondents(respondents)
+    //            .state(OPEN.getValue())
+    //            .build();
+    //}
 
     public static CCDCase addContactChanges(CCDCase ccdCase) {
         CCDContactChangeContent contactChangeContent = CCDContactChangeContent.builder().isEmailModified(YES).build();
