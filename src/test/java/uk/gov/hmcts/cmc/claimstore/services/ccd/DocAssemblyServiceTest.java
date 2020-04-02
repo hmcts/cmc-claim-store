@@ -94,20 +94,24 @@ public class DocAssemblyServiceTest {
 
     @Test
     public void shouldCreateChangeContactLetter() {
+        DocAssemblyTemplateBody docAssemblyTemplateBody = DocAssemblyTemplateBody.builder().build();
+
         when(docAssemblyTemplateBodyMapper.changeContactBody(eq(ccdCase)))
-            .thenReturn(DocAssemblyTemplateBody.builder().build());
+            .thenReturn(docAssemblyTemplateBody);
 
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
             .templateId(CONTACT_CHANGE_LETTER_TEMPLATE_ID)
             .outputType(OutputType.PDF)
-            .formPayload(docAssemblyTemplateBodyMapper.changeContactBody(ccdCase))
+            .formPayload(docAssemblyTemplateBody)
             .build();
 
         when(docAssemblyClient
             .generateOrder(eq(BEARER_TOKEN), eq(SERVICE_TOKEN), eq(docAssemblyRequest)))
             .thenReturn(docAssemblyResponse);
 
-        DocAssemblyResponse response = docAssemblyService.createGeneralLetter(ccdCase,
+        when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
+
+        DocAssemblyResponse response = docAssemblyService.changeContactLetter(ccdCase,
             BEARER_TOKEN, CONTACT_CHANGE_LETTER_TEMPLATE_ID);
 
         assertThat(response.getRenditionOutputLocation()).isEqualTo(DOC_URL);
