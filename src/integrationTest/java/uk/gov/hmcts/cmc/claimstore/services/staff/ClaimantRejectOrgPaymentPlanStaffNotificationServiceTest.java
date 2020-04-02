@@ -84,7 +84,7 @@ public class ClaimantRejectOrgPaymentPlanStaffNotificationServiceTest extends Ba
                     claim.getClaimData().getClaimant().getName()
                 )
         );
-        assertThat(emailBodyContent).endsWith("This email has been sent from the "
+        assertThat(emailBodyContent.trim()).endsWith("This email has been sent from the "
             + "HMCTS Civil Money Claims online court.");
     }
 
