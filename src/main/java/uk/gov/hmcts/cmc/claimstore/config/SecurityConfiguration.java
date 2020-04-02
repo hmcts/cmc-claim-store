@@ -23,7 +23,7 @@ import javax.inject.Inject;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity
 public class SecurityConfiguration
     extends WebSecurityConfigurerAdapter {
 
