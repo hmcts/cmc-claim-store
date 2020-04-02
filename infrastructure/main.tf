@@ -104,10 +104,10 @@ module "database" {
   env = "${var.env}"
   postgresql_user = "cmc"
   database_name = "${var.database-name}"
-  postgresql_version = "${var.postgresql_version}}"
+  postgresql_version = "${var.postgresql_version}"
   sku_name = "${var.database_sku_name}"
   sku_tier = "GeneralPurpose"
-  storage_mb = "${var.database_storage_mb}}"
+  storage_mb = "${var.database_storage_mb}"
   common_tags = "${var.common_tags}"
   subscription = "${var.subscription}"
 }
