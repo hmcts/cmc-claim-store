@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
 import uk.gov.hmcts.cmc.claimstore.documents.content.ClaimantResponseContentProvider;
-import uk.gov.hmcts.cmc.claimstore.documents.content.DefendantResponseContentProvider;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
@@ -21,8 +20,6 @@ public class RedeterminationReceiptServiceTest {
     @Mock
     private ClaimantResponseContentProvider claimantResponseContentProvider;
     @Mock
-    private DefendantResponseContentProvider defendantResponseContentProvider;
-    @Mock
     private DocumentTemplates documentTemplates;
     @Mock
     private  PDFServiceClient pdfServiceClient;
@@ -33,7 +30,6 @@ public class RedeterminationReceiptServiceTest {
     void setUp() {
         redeterminationReceiptService = new RedeterminationReceiptService(
             claimantResponseContentProvider,
-            defendantResponseContentProvider,
             documentTemplates,
             pdfServiceClient
         );
@@ -54,6 +50,6 @@ public class RedeterminationReceiptServiceTest {
     @Test
     void shouldUseCorrectTemplateForRedeterminationByDefendant() {
         redeterminationReceiptService.createPdf(SampleClaim.getDefault(), MadeBy.DEFENDANT);
-        verify(documentTemplates).getDefendantResponseReceipt();
+        verify(documentTemplates).getClaimantResponseReceipt();
     }
 }
