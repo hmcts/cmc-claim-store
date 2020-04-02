@@ -71,20 +71,20 @@ public class ClaimAuthorisationRuleTest {
 
     @Test
     public void shouldNotThrowExceptionWhenUserIdMatchesAuthorisation() {
-        assertThatCode(() -> claimAuthorisationRule.assertSubmitterIdMatchesAuthorisation(MATCHING_USER_ID,
+        assertThatCode(() -> claimAuthorisationRule.assertUserIdMatchesAuthorisation(MATCHING_USER_ID,
             AUTHORISATION_TOKEN)).doesNotThrowAnyException();
     }
 
     @Test(expected = ForbiddenActionException.class)
     public void shouldThrowForbiddenActionExceptionWhenUserIdDoesNotMatchAuthorisation() {
-        claimAuthorisationRule.assertSubmitterIdMatchesAuthorisation(FAILING_USER_ID, AUTHORISATION_TOKEN);
+        claimAuthorisationRule.assertUserIdMatchesAuthorisation(FAILING_USER_ID, AUTHORISATION_TOKEN);
     }
 
     @Test
     public void shouldNotThrowExceptionWhenCaseworkerAccessesClaim() {
         UserDetails details = SampleUserDetails.builder().withRoles("caseworker-cmc").build();
         when(userService.getUserDetails("2")).thenReturn(details);
-        assertThatCode(() -> claimAuthorisationRule.assertSubmitterIdMatchesAuthorisation(FAILING_USER_ID, "2"))
+        assertThatCode(() -> claimAuthorisationRule.assertUserIdMatchesAuthorisation(FAILING_USER_ID, "2"))
             .doesNotThrowAnyException();
     }
 
