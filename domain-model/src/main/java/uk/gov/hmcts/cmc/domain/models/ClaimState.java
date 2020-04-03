@@ -20,7 +20,8 @@ public enum ClaimState {
     REFERRED_MEDIATION("referredMediation"),
     AWAITING_CITIZEN_PAYMENT("awaitingCitizenPayment"),
     PROCEEDS_IN_CASE_MAN("proceedsInCaseman"),
-    JUDGMENT_DECIDE_AMOUNT("judgmentDecideAmount");
+    JUDGMENT_DECIDE_AMOUNT("judgmentDecideAmount"),
+    REDETERMINATION_REQUESTED("redeterminationRequested");
 
     private final String state;
 

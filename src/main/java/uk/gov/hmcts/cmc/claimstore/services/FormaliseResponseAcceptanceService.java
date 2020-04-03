@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimantResponseReceiptService;
@@ -37,6 +38,8 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REJECT_ORGANISATION_PAYMENT_
 import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_PAYMENT_DATE;
 import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_PAYMENT_INTENTION;
 import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForInterlocutoryJudgmentFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestOrgRepaymentFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 import static uk.gov.hmcts.cmc.domain.utils.PartyUtils.isCompanyOrOrganisation;
@@ -51,6 +54,7 @@ public class FormaliseResponseAcceptanceService {
     private final UserService userService;
     private final ClaimantResponseReceiptService claimantResponseReceiptService;
     private final DocumentsService documentService;
+    private final boolean ctscEnabled;
 
     @Autowired
     public FormaliseResponseAcceptanceService(
@@ -58,9 +62,10 @@ public class FormaliseResponseAcceptanceService {
         SettlementAgreementService settlementAgreementService,
         EventProducer eventProducer,
         CaseRepository caseRepository,
+        DocumentsService documentService,
+        @Value("${feature_toggles.ctsc_enabled}") boolean ctscEnabled,
         UserService userService,
-        ClaimantResponseReceiptService claimantResponseReceiptService,
-        DocumentsService documentService
+        ClaimantResponseReceiptService claimantResponseReceiptService
     ) {
         this.countyCourtJudgmentService = countyCourtJudgmentService;
         this.settlementAgreementService = settlementAgreementService;
@@ -69,6 +74,7 @@ public class FormaliseResponseAcceptanceService {
         this.userService = userService;
         this.claimantResponseReceiptService = claimantResponseReceiptService;
         this.documentService = documentService;
+        this.ctscEnabled = ctscEnabled;
     }
 
     public void formalise(Claim claim, ResponseAcceptation responseAcceptation, String authorisation) {
@@ -93,18 +99,20 @@ public class FormaliseResponseAcceptanceService {
         Response response = claim.getResponse()
             .orElseThrow(() -> new IllegalArgumentException(MISSING_RESPONSE));
         CaseEvent caseEvent;
+        Claim updatedClaim = claim;
         if (isCompanyOrOrganisation(response.getDefendant())) {
             eventProducer.createRejectOrganisationPaymentPlanEvent(claim);
             User user = userService.authenticateAnonymousCaseWorker();
-
-            PDF document = claimantResponseReceiptService.createPdf(claim);
+            PDF document = claimantResponseReceiptService.createPdf(claim,
+                buildRequestOrgRepaymentFileBaseName(claim.getReferenceNumber()));
             documentService.uploadToDocumentManagement(document, user.getAuthorisation(), claim);
             caseEvent = REJECT_ORGANISATION_PAYMENT_PLAN;
         } else {
-            eventProducer.createInterlocutoryJudgmentEvent(claim);
+            updatedClaim = uploadInterlocutoryJudgmentDocumentToDocumentStore(claim, authorisation);
+            eventProducer.createInterlocutoryJudgmentEvent(updatedClaim);
             caseEvent = INTERLOCUTORY_JUDGMENT;
         }
-        caseRepository.saveCaseEvent(authorisation, claim, caseEvent);
+        caseRepository.saveCaseEvent(authorisation, updatedClaim, caseEvent);
     }
 
     private void formaliseSettlement(Claim claim, ResponseAcceptation responseAcceptation, String authorisation) {
@@ -250,5 +258,17 @@ public class FormaliseResponseAcceptanceService {
             default:
                 throw new IllegalStateException("Invalid response type " + response.getResponseType());
         }
+    }
+
+    private Claim uploadInterlocutoryJudgmentDocumentToDocumentStore(
+        Claim claim,
+        String authorisation) {
+        Claim updateClaim = claim;
+        if (ctscEnabled) {
+            PDF document = claimantResponseReceiptService.createPdf(claim,
+                buildRequestForInterlocutoryJudgmentFileBaseName(claim.getReferenceNumber()));
+            updateClaim = documentService.uploadToDocumentManagement(document, authorisation, claim);
+        }
+        return updateClaim;
     }
 }

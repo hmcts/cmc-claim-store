@@ -8,11 +8,13 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimantResponseReceiptService;
+import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
@@ -41,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -91,16 +94,29 @@ public class FormaliseResponseAcceptanceServiceTest {
     @Captor
     private ArgumentCaptor<Settlement> settlementArgumentCaptor;
 
+    private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
+    private PDF pdf;
+    private static final Claim CLAIM = SampleClaim.builder().build();
+
     @Before
     public void before() {
+        pdf = new PDF(
+            "name",
+            PDF_CONTENT,
+            ClaimDocumentType.CLAIMANT_RESPONSE_RECEIPT
+        );
+        when(documentService.uploadToDocumentManagement(any(PDF.class),
+            anyString(), any(Claim.class))).thenReturn(CLAIM);
+        when(claimantResponseReceiptService.createPdf(any(Claim.class), any())).thenReturn(pdf);
         formaliseResponseAcceptanceService = new FormaliseResponseAcceptanceService(
             countyCourtJudgmentService,
             settlementAgreementService,
             eventProducer,
             caseRepository,
+            documentService,
+            true,
             userService,
-            claimantResponseReceiptService,
-            documentService
+            claimantResponseReceiptService
         );
     }
 
@@ -607,10 +623,48 @@ public class FormaliseResponseAcceptanceServiceTest {
         assertThatCode(() -> formaliseResponseAcceptanceService
             .formalise(claim, responseAcceptation, AUTH)).doesNotThrowAnyException();
 
-        verify(eventProducer, once()).createInterlocutoryJudgmentEvent(eq(claim));
-        verify(caseRepository, once()).saveCaseEvent(anyString(), eq(claim), eq(INTERLOCUTORY_JUDGMENT));
+        verify(eventProducer, once()).createInterlocutoryJudgmentEvent(eq(CLAIM));
+        verify(caseRepository, once()).saveCaseEvent(anyString(), eq(CLAIM), eq(INTERLOCUTORY_JUDGMENT));
         verifyNoInteractions(countyCourtJudgmentService);
         verifyNoInteractions(settlementAgreementService);
+    }
+
+    @Test
+    public void shouldCallDocumentServiceIfInterlocutoryJudgmentAndFeatureFlagEnabled() {
+        Claim claim = SampleClaim.getWithDefaultResponse();
+        ResponseAcceptation responseAcceptation = ResponseAcceptation
+            .builder()
+            .formaliseOption(FormaliseOption.REFER_TO_JUDGE)
+            .build();
+        formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
+        verify(claimantResponseReceiptService)
+            .createPdf(eq(claim), any());
+        verify(documentService)
+            .uploadToDocumentManagement(pdf, AUTH, claim);
+    }
+
+    @Test
+    public void shouldCallDocumentServiceIfInterlocutoryJudgmentAndFeatureFlagDisabled() {
+        Claim claim = SampleClaim.getWithDefaultResponse();
+        ResponseAcceptation responseAcceptation = ResponseAcceptation
+            .builder()
+            .formaliseOption(FormaliseOption.REFER_TO_JUDGE)
+            .build();
+        formaliseResponseAcceptanceService = new FormaliseResponseAcceptanceService(
+            countyCourtJudgmentService,
+            settlementAgreementService,
+            eventProducer,
+            caseRepository,
+            documentService,
+            false,
+            userService,
+            claimantResponseReceiptService
+        );
+        formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
+        verify(claimantResponseReceiptService, never())
+            .createPdf(eq(claim), any());
+        verify(documentService, never())
+            .uploadToDocumentManagement(pdf, AUTH, claim);
     }
 
     @Test
