@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
-import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionException;
@@ -69,9 +68,6 @@ class MockedDatabaseConfiguration {
 
     @MockBean(name = "transactionManager")
     private PlatformTransactionManager transactionManager;
-
-    @MockBean
-    private InMemoryClientRegistrationRepository inMemoryClientRegistrationRepository;
 
     @Bean
     protected PlatformTransactionManager transactionManager() {
