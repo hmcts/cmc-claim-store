@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.rules;
 
 import org.apache.commons.lang3.ObjectUtils;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentDownloadForbiddenException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
@@ -34,12 +34,12 @@ public class ClaimDocumentsAccessRule {
 
     public static void assertDocumentCanBeAccessedByUser(Claim claim, ClaimDocumentType docToDownload, User user) {
         if (!ObjectUtils.allNotNull(claim, user)) {
-            throw new ForbiddenActionException(FORBIDDEN_ACTION_MESSAGE);
+            throw new DocumentDownloadForbiddenException(FORBIDDEN_ACTION_MESSAGE);
         }
 
         if (!findViewableDocsList(claim, user)
             .contains(docToDownload)) {
-            throw new ForbiddenActionException(FORBIDDEN_ACTION_MESSAGE);
+            throw new DocumentDownloadForbiddenException(FORBIDDEN_ACTION_MESSAGE);
         }
     }
 
