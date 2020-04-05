@@ -152,7 +152,7 @@ public class SampleData {
                 .build())
             );
     }
-    
+
     public static CCDResponseAcceptation getResponseAcceptation(CCDFormaliseOption formaliseOption) {
         return CCDResponseAcceptation.builder()
             .amountPaid(AMOUNT)
