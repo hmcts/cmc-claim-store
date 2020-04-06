@@ -9,7 +9,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.CCDContactChangeContent;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestDateType;
@@ -563,31 +562,7 @@ public class SampleData {
             .state(OPEN.getValue())
             .build();
     }
-
-    //public static CCDCase getCCDCaseWithoutDefendant(List<CCDCollectionElement<CCDAmountRow>> amountBreakDown) {
-    //    List<CCDCollectionElement<CCDApplicant>> applicants
-    //            = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual())
-    //        .build());
-    //    List<CCDCollectionElement<CCDRespondent>> respondents
-    //            = singletonList(CCDCollectionElement.<CCDRespondent>builder().value(getCCDRespondentIndividual())
-    //        .build());
-    //
-    //    return ccdBuilderWithDefault()
-    //            .amountBreakDown(amountBreakDown)
-    //            .applicants(applicants)
-    //            .respondents(respondents)
-    //            .state(OPEN.getValue())
-    //            .build();
-    //}
-
-    public static CCDCase addContactChanges(CCDCase ccdCase) {
-        CCDContactChangeContent contactChangeContent = CCDContactChangeContent.builder().isEmailModified(YES).build();
-        return ccdCase.toBuilder()
-            .contactChangeParty(CCDContactPartyType.CLAIMANT)
-            .contactChangeContent(contactChangeContent)
-            .build();
-    }
-
+    
     public static CCDCase addContactChangePartyClaimant(CCDCase ccdCase) {
         return ccdCase.toBuilder()
             .contactChangeParty(CCDContactPartyType.CLAIMANT)
