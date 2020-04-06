@@ -239,8 +239,7 @@
       <td colspan="2"><p><strong>Issued on: </strong> {{ claim.issuedOn }}</p></td>
     </tr>
     <tr>
-      <td colspan="2" class="spacing-bottom"><strong>Response received on: </strong>
-        <span id="defenceSubmittedOn">{{ defenceSubmittedOn }}</span>
+      <td colspan="2" class="spacing-bottom"><p><strong>Response received on: </strong> {{ defenceSubmittedOn }}</p>
       </td>
     </tr>
   </table>
@@ -924,8 +923,7 @@
         <td colspan="2"><p><strong>Issued on: </strong> {{ claim.issuedOn }}</p></td>
       </tr>
       <tr>
-        <td colspan="2" class="spacing-bottom"><strong>Response received on: </strong>
-          <span id="defenceSubmittedOn">{{ defenceSubmittedOn }}</span>
+        <td colspan="2" class="spacing-bottom"><p><strong>Response received on: </strong> {{ defenceSubmittedOn }}</p>
         </td>
       </tr>
     </table>
@@ -1189,7 +1187,7 @@
       </td>
       <td>
         <div>
-          {{ hearingContent.witness.selfWitness.toString | capitalize }}
+          {{ hearingContent.witness.selfWitness | capitalize }}
         </div>
       </td>
 
@@ -1257,7 +1255,7 @@
           <strong>Role:</strong> {{ signerRole }}
           {% endif %}
 
-          <br/><span id="defenceSubmittedOn">{{ defenceSubmittedOn }}</span>
+          <br/>{{ defenceSubmittedOn }}
         </div>
       </td>
     </tr>
