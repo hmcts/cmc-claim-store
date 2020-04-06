@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.caseworker;
 
 import com.google.common.collect.ImmutableList;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -45,7 +46,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType.ABOUT_TO_START;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType.MID;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponse;
@@ -144,7 +144,7 @@ public class ContactDetailsChangeCallbackHandlerTest extends BaseMockSpringTest 
     @Test
     public void shouldReturnErrorForUnsupportedRole() throws Exception {
         UserDetails userDetails = SampleUserDetails.builder()
-            .withRoles("cmc-caseworker")
+            .withRoles("wrong-role")
             .build();
 
         given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
@@ -183,16 +183,8 @@ public class ContactDetailsChangeCallbackHandlerTest extends BaseMockSpringTest 
                     .documentUrl(DOCUMENT_URL)
                     .documentFileName(DOCUMENT_FILE_NAME)
                     .build())
-                .applicants(ImmutableList.of(CCDCollectionElement.<CCDApplicant>builder()
-                    .value(ccdCase.getApplicants().get(0).getValue().toBuilder()
-                        .partyDetail(SampleData.getCCDPartyWithEmail("some@mail.com"))
-                        .build())
-                    .build()))
-                .respondents(ImmutableList.of(CCDCollectionElement.<CCDRespondent>builder()
-                    .value(ccdCase.getRespondents().get(0).getValue().toBuilder()
-                        .defendantId(null)
-                        .build())
-                    .build()))
+                .applicants(getApplicantWithContactDetailsModified(ccdCase))
+                .respondents(getUnlinkedRespondent(ccdCase))
                 .build()))
             .build();
 
@@ -215,22 +207,14 @@ public class ContactDetailsChangeCallbackHandlerTest extends BaseMockSpringTest 
 
         CaseDetails caseDetailsBefore = caseDetailsTemp.toBuilder()
             .data(caseDetailsConverter.convertToMap(ccdCase.toBuilder()
-                .respondents(ImmutableList.of(CCDCollectionElement.<CCDRespondent>builder()
-                    .value(ccdCase.getRespondents().get(0).getValue().toBuilder()
-                        .defendantId(null)
-                        .build())
-                    .build()))
+                .respondents(getUnlinkedRespondent(ccdCase))
                 .build()))
             .build();
 
         CaseDetails caseDetails = caseDetailsBefore.toBuilder()
             .data(caseDetailsConverter.convertToMap(ccdCase.toBuilder()
                 .contactChangeParty(CCDContactPartyType.CLAIMANT)
-                .applicants(ImmutableList.of(CCDCollectionElement.<CCDApplicant>builder()
-                    .value(ccdCase.getApplicants().get(0).getValue().toBuilder()
-                        .partyDetail(SampleData.getCCDPartyWithEmail("some@mail.com"))
-                        .build())
-                    .build()))
+                .applicants(getApplicantWithContactDetailsModified(ccdCase))
                 .build()))
             .build();
 
@@ -247,4 +231,23 @@ public class ContactDetailsChangeCallbackHandlerTest extends BaseMockSpringTest 
                 .content(jsonMappingHelper.toJson(callbackRequest))
             );
     }
+
+    @NotNull
+    private ImmutableList<CCDCollectionElement<CCDApplicant>> getApplicantWithContactDetailsModified(CCDCase ccdCase) {
+        return ImmutableList.of(CCDCollectionElement.<CCDApplicant>builder()
+            .value(ccdCase.getApplicants().get(0).getValue().toBuilder()
+                .partyDetail(SampleData.getCCDPartyWithEmail("some@mail.com"))
+                .build())
+            .build());
+    }
+
+    @NotNull
+    private ImmutableList<CCDCollectionElement<CCDRespondent>> getUnlinkedRespondent(CCDCase ccdCase) {
+        return ImmutableList.of(CCDCollectionElement.<CCDRespondent>builder()
+            .value(ccdCase.getRespondents().get(0).getValue().toBuilder()
+                .defendantId(null)
+                .build())
+            .build());
+    }
+
 }

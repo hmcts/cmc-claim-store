@@ -50,7 +50,7 @@ public class Bootstrap {
             );
         RestAssured.useRelaxedHTTPSValidation();
         RestAssured.filters(new RequestLoggingFilter(), new ResponseLoggingFilter(), new ErrorLoggingFilter());
-            smokeTestCitizen = userService.authenticateUser(
+        smokeTestCitizen = userService.authenticateUser(
             aatConfiguration.getSmokeTestCitizen().getUsername(),
             aatConfiguration.getSmokeTestCitizen().getPassword()
         );
