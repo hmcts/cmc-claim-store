@@ -90,6 +90,7 @@ public class DocumentNameUtilsTest {
         assertThat(buildLetterFileBaseName("000MC001", date))
             .isEqualTo("000MC001-general-letter-" + date);
     }
+
     @Test
     public void shouldBuildJudgmentByAdmissionOrDeterminationFileBaseName() {
         assertThat(buildRequestForJudgmentByAdmissionOrDeterminationFileBaseName("000MC001", "admissions"))

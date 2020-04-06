@@ -143,10 +143,8 @@ public class CountyCourtJudgmentService {
         CountyCourtJudgment countyCourtJudgment,
         String authorisation) {
         Claim updateClaim = claim;
-        if (ctscEnabled 
-        && (countyCourtJudgment.getCcjType() == ADMISSIONS
-                || countyCourtJudgment.getCcjType() == DETERMINATION)
-            ) {
+        if (ctscEnabled && (countyCourtJudgment.getCcjType() == ADMISSIONS
+            || countyCourtJudgment.getCcjType() == DETERMINATION)) {
             PDF document = ccjByAdmissionOrDeterminationPdfService.createPdf(claim);
             updateClaim = documentService.uploadToDocumentManagement(document, authorisation, claim);
         }
