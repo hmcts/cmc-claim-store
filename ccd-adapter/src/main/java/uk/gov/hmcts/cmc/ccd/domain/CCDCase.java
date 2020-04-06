@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDLAList;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 
@@ -137,4 +138,7 @@ public class CCDCase {
     private LocalDate intentionToProceedDeadline;
     private LocalDateTime dateReferredForDirections;
     private GeneralLetterContent generalLetterContent;
+
+    private List<CCDCollectionElement<CCDLAList>> LAList;
+    private String assignedTo;
 }
