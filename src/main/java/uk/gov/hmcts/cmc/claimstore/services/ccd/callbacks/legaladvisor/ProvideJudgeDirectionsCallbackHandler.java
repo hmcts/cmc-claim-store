@@ -31,7 +31,6 @@ public class ProvideJudgeDirectionsCallbackHandler extends CallbackHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final List<Role> ROLES = ImmutableList.of(JUDGE);
     private static final List<CaseEvent> EVENTS = Collections.singletonList(PROVIDE_DIRECTIONS);
-    private  static final String ASSIGNED_TO = "assignedTo";
     private final CaseDetailsConverter caseDetailsConverter;
 
     @Autowired
@@ -60,11 +59,11 @@ public class ProvideJudgeDirectionsCallbackHandler extends CallbackHandler {
         logger.info("Provide Directions callback: case now being assigned to 'From Judge with Directions'");
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
-        Map<String, Object> data = caseDetailsConverter.convertToMap(ccdCase);
-                data.put(ASSIGNED_TO, FROM_JUDGE_WITH_DIRECTION);
+        ccdCase.setAssignedTo(FROM_JUDGE_WITH_DIRECTION);
+        Map<String, Object> dataMap = caseDetailsConverter.convertToMap(ccdCase);
         return AboutToStartOrSubmitCallbackResponse
                 .builder()
-                .data(data)
+                .data(dataMap)
                 .build();
     }
 }

@@ -139,5 +139,5 @@ public class CCDCase {
     private LocalDateTime dateReferredForDirections;
     private GeneralLetterContent generalLetterContent;
 
-    private List<CCDCollectionElement<CCDLAList>> LAList;
+    private CCDLAList assignedTo;
 }
