@@ -20,7 +20,8 @@ public enum CCDLaList {
     J6("Judge Margaret Langley"),
     J7("Judge Lynda Nightingale"),
     J8("Judge Stuart Hammond"),
-    J9("Judge Marshall Phillips");
+    J9("Judge Marshall Phillips"),
+    OCMC_BOXWORK("OCMC boxwork");
 
     private final String value;
 
