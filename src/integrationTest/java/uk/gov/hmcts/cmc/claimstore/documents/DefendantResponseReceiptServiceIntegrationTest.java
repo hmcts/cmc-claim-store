@@ -71,7 +71,7 @@ public class DefendantResponseReceiptServiceIntegrationTest extends BaseMockSpri
 
         byte[] actualHtmlBytes = defendantResponseReceiptService.createHtml(claim);
 
-        String actualHtml = documentComparisonHelper.replaceTimestamp("defenceSubmittedOn",
+        String actualHtml = documentComparisonHelper.replaceTimestamp("timestamp",
             new String(actualHtmlBytes));
 
         writeFile("build/tmp/actual.html", actualHtml); // Useful file for debugging test
