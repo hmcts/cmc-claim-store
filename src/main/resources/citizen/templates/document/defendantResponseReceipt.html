@@ -236,10 +236,13 @@
       <td colspan="2"><p><strong>Claim number: </strong>{{ claim.referenceNumber }}</p></td>
     </tr>
     <tr>
-      <td colspan="2"><p><strong>Issued on: </strong> {{ claim.issuedOn }}</p></td>
+      <td colspan="2"><p><strong>Issued on: </strong>
+        <span id="defenceSubmittedOn">{{ claim.issuedOn }}</span>
+      </p></td>
     </tr>
     <tr>
-      <td colspan="2" class="spacing-bottom"><p><strong>Response received on: </strong> {{ defenceSubmittedOn }}</p>
+      <td colspan="2" class="spacing-bottom"><strong>Response received on: </strong>
+        <span id="defenceSubmittedOn">{{ defenceSubmittedOn }}</span>
       </td>
     </tr>
   </table>
@@ -868,7 +871,9 @@
       {% endif %}
       <tr class="no-border">
         <td class="no-border"></td>
-        <td class="no-border">{{ defenceSubmittedDate }}</td>
+        <td class="no-border">
+          <span id="defenceSubmittedOn">{{ defenceSubmittedDate }}</span>
+        </td>
       </tr>
     </table>
   </div>
@@ -920,10 +925,13 @@
         <td colspan="2"><p><strong>Claim number: </strong>{{ claim.referenceNumber }}</p></td>
       </tr>
       <tr>
-        <td colspan="2"><p><strong>Issued on: </strong> {{ claim.issuedOn }}</p></td>
+        <td colspan="2"><p><strong>Issued on: </strong>
+          <span id="defenceSubmittedOn">{{ claim.issuedOn }}</span>
+        </p></td>
       </tr>
       <tr>
-        <td colspan="2" class="spacing-bottom"><p><strong>Response received on: </strong> {{ defenceSubmittedOn }}</p>
+        <td colspan="2" class="spacing-bottom"><strong>Response received on: </strong>
+          <span id="defenceSubmittedOn">{{ defenceSubmittedOn }}</span>
         </td>
       </tr>
     </table>
@@ -1187,7 +1195,7 @@
       </td>
       <td>
         <div>
-          {{ hearingContent.witness.selfWitness | capitalize }}
+          {{ hearingContent.witness.selfWitness.toString | capitalize }}
         </div>
       </td>
 
@@ -1255,7 +1263,8 @@
           <strong>Role:</strong> {{ signerRole }}
           {% endif %}
 
-          <br/>{{ defenceSubmittedOn }}
+          <br/>
+          <span id="defenceSubmittedOn">{{ defenceSubmittedOn }}</span>
         </div>
       </td>
     </tr>
