@@ -18,7 +18,7 @@ import static uk.gov.hmcts.cmc.claimstore.helper.FileUtils.readFile;
 import static uk.gov.hmcts.cmc.claimstore.helper.FileUtils.writeFile;
 import static wiremock.org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 
-public class DefendantResponseReceiptServiceIT extends BaseMockSpringTest {
+public class DefendantResponseReceiptServiceIntegrationTest extends BaseMockSpringTest {
 
     private DefendantResponseReceiptService defendantResponseReceiptService;
 
