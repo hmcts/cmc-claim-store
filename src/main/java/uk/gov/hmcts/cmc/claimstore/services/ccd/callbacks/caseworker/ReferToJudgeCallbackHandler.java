@@ -60,7 +60,6 @@ public class ReferToJudgeCallbackHandler extends CallbackHandler {
     }
 
     private CallbackResponse assignToJudge(CallbackParams callbackParams) {
-        logger.info("Mediation failure about-to-submit callback: refer to judge");
         CallbackRequest callbackRequest = callbackParams.getRequest();
 
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
