@@ -38,7 +38,7 @@ public class FullDefenceResponse extends Response {
     @Valid
     private final DirectionsQuestionnaire directionsQuestionnaire;
 
-    @Builder
+    @Builder(toBuilder = true)
     public FullDefenceResponse(
         YesNoOption freeMediation,
         String mediationPhoneNumber,

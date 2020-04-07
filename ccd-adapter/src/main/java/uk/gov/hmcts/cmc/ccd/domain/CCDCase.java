@@ -115,6 +115,7 @@ public class CCDCase {
     private CCDHearingDurationType estimatedHearingDuration;
 
     private CCDDocument draftOrderDoc;
+    private CCDDocument draftLetterDoc;
 
     private CCDYesNoOption expertReportPermissionPartyAskedByClaimant;
     private CCDYesNoOption expertReportPermissionPartyAskedByDefendant;
@@ -135,5 +136,6 @@ public class CCDCase {
     private CCDChannelType channel;
     private LocalDate intentionToProceedDeadline;
     private LocalDateTime dateReferredForDirections;
+    private GeneralLetterContent generalLetterContent;
     private CCDLaList assignedTo;
 }

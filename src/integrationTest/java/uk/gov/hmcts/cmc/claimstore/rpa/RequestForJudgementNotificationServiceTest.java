@@ -97,7 +97,7 @@ public class RequestForJudgementNotificationServiceTest extends BaseMockSpringTe
         assertThat(senderArgument.getValue()).isEqualTo(emailProperties.getSender());
         assertThat(emailDataArgument.getValue().getTo()).isEqualTo(emailProperties.getResponseRecipient());
         assertThat(emailDataArgument.getValue().getSubject())
-            .isEqualToIgnoringNewLines("J default judgement request 000CM001");
+            .isEqualToIgnoringNewLines("J default judgement request 000MC001");
         assertThat(emailDataArgument.getValue().getMessage()).isEmpty();
     }
 

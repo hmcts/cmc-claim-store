@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationToDefendantServiceTest extends BaseNotificationServiceTest {
 
-    private static final String REFERENCE = "to-defendant-claimant’s-response-submitted-notification-000CM001";
+    private static final String REFERENCE = "to-defendant-claimant’s-response-submitted-notification-000MC001";
     private static final String CLAIMANT_RESPONSE_TEMPLATE = "templateId";
     private static final String DEFENDANT_EMAIL = "defendant@email.com";
     private static final String INTERLOCUTORY_JUDGEMENT_TEMPLATE = "interlocutoryJudgementTemplateId";

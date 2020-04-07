@@ -44,7 +44,7 @@ public class FullDefenceStaffEmailContentProviderTest {
         assertThat(content.getSubject())
             .contains("Civil Money Claim defence submitted:")
             .contains("John Rambo v Dr. John Smith")
-            .contains("000CM001");
+            .contains("000MC001");
     }
 
     @Test

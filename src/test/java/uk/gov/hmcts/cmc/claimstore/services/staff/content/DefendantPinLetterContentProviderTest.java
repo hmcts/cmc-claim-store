@@ -116,7 +116,7 @@ public class DefendantPinLetterContentProviderTest {
     public void shouldProvideClaimReferenceNumber() {
         Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
 
-        assertThat(content).containsEntry("claimReferenceNumber", "000CM001");
+        assertThat(content).containsEntry("claimReferenceNumber", "000MC001");
     }
 
     @Test
