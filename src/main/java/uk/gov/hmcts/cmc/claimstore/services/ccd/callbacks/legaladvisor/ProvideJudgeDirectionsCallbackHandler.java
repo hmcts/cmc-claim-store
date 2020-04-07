@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDLaList;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
@@ -23,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.PROVIDE_DIRECTIONS;
-import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDLAList.FROM_JUDGE_WITH_DIRECTION;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.JUDGE;
 
 @Service
@@ -34,7 +34,7 @@ public class ProvideJudgeDirectionsCallbackHandler extends CallbackHandler {
     private final CaseDetailsConverter caseDetailsConverter;
 
     @Autowired
-    public ProvideJudgeDirectionsCallbackHandler(CaseDetailsConverter caseDetailsConverter){
+    public ProvideJudgeDirectionsCallbackHandler (CaseDetailsConverter caseDetailsConverter) {
         this.caseDetailsConverter = caseDetailsConverter;
     }
 
@@ -56,10 +56,11 @@ public class ProvideJudgeDirectionsCallbackHandler extends CallbackHandler {
     }
 
     private CallbackResponse changeAssignment(CallbackParams callbackParams) {
-        logger.info("Provide Directions callback: case now being assigned to 'From Judge with Directions'");
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
-        ccdCase.setAssignedTo(FROM_JUDGE_WITH_DIRECTION);
+        logger.info("Provide Directions callback: case {} now being assigned to 'From judge with directions'",
+                ccdCase.getExternalId());
+        ccdCase.setAssignedTo(CCDLaList.FROM_JUDGE_WITH_DIRECTION);
         Map<String, Object> dataMap = caseDetailsConverter.convertToMap(ccdCase);
         return AboutToStartOrSubmitCallbackResponse
                 .builder()
