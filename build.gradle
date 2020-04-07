@@ -373,8 +373,7 @@ sonarqube {
       "**/GeneratedDocuments.java," +
       "**/DBCaseRepository.java," +
       "**/MapperUtil.java," +
-      "**/CCDCaseApi.java," +
-      "**/DataFixSupportController.java"
+      "**/CCDCaseApi.java,"
   }
 }
 
