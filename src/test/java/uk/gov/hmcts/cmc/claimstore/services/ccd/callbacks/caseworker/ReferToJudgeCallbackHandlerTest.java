@@ -1,14 +1,20 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
+import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
@@ -16,14 +22,26 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.util.Collections;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFER_TO_JUDGE_BY_CLAIMANT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFER_TO_JUDGE_BY_DEFENDANT;
 
 @ExtendWith(MockitoExtension.class)
-public class ReferToJudgeCallbackHandlerTest {
+class ReferToJudgeCallbackHandlerTest {
+
+    @Mock
+    private CaseDetailsConverter caseDetailsConverter;
+
+    @Captor
+    private ArgumentCaptor<CCDCase> ccdCaseArgumentCaptor;
+
     private ReferToJudgeCallbackHandler handler;
 
     private CallbackParams params;
+
+    private CCDCase ccdCase;
 
     @Nested
     @DisplayName("State Change for referred to judge by claimant")
@@ -39,29 +57,48 @@ public class ReferToJudgeCallbackHandlerTest {
             params = CallbackParams.builder()
                 .request(callbackRequest)
                 .type(CallbackType.ABOUT_TO_SUBMIT).build();
+
+            ccdCase = CCDCase.builder()
+                .build();
+            when(caseDetailsConverter.extractCCDCase(any())).thenReturn(ccdCase);
         }
 
         @Test
         void shouldReturnOpenStateForReferToJudgeByClaimantIfCtscDisabled() {
 
-            handler = new ReferToJudgeCallbackHandler(false);
+            handler = new ReferToJudgeCallbackHandler(caseDetailsConverter, false);
+
+            String state = ClaimState.OPEN.getValue();
+            when(caseDetailsConverter.convertToMap(ccdCase)).thenReturn(ImmutableMap.of("state", state));
 
             AboutToStartOrSubmitCallbackResponse response =
                 (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
 
-            Assertions.assertEquals(ClaimState.OPEN.getValue(), response.getData().get("state"));
+            verify(caseDetailsConverter).convertToMap(ccdCaseArgumentCaptor.capture());
+            CCDCase updatedCcdCase = CCDCase.builder()
+                .state(state)
+                .build();
+            Assertions.assertEquals(updatedCcdCase, ccdCaseArgumentCaptor.getValue());
+            Assertions.assertEquals(state, response.getData().get("state"));
         }
 
         @Test
         void shouldReturnRedeterminationRequestedStateForReferToJudgeByClaimantIfCtscEnabled() {
 
-            handler = new ReferToJudgeCallbackHandler(true);
+            handler = new ReferToJudgeCallbackHandler(caseDetailsConverter, true);
+
+            String state = ClaimState.REDETERMINATION_REQUESTED.getValue();
+            when(caseDetailsConverter.convertToMap(ccdCase)).thenReturn(ImmutableMap.of("state", state));
 
             AboutToStartOrSubmitCallbackResponse response =
                 (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
 
-            Assertions.assertEquals(ClaimState.REDETERMINATION_REQUESTED.getValue(),
-                response.getData().get("state"));
+            verify(caseDetailsConverter).convertToMap(ccdCaseArgumentCaptor.capture());
+            CCDCase updatedCcdCase = CCDCase.builder()
+                .state(state)
+                .build();
+            Assertions.assertEquals(updatedCcdCase, ccdCaseArgumentCaptor.getValue());
+            Assertions.assertEquals(state, response.getData().get("state"));
         }
     }
 
@@ -79,29 +116,48 @@ public class ReferToJudgeCallbackHandlerTest {
             params = CallbackParams.builder()
                 .request(callbackRequest)
                 .type(CallbackType.ABOUT_TO_SUBMIT).build();
+
+            ccdCase = CCDCase.builder()
+                .build();
+            when(caseDetailsConverter.extractCCDCase(any())).thenReturn(ccdCase);
         }
 
         @Test
         void shouldReturnOpenStateForReferToJudgeByDefendantIfCtscDisabled() {
 
-            handler = new ReferToJudgeCallbackHandler(false);
+            handler = new ReferToJudgeCallbackHandler(caseDetailsConverter, false);
+
+            String state = ClaimState.OPEN.getValue();
+            when(caseDetailsConverter.convertToMap(ccdCase)).thenReturn(ImmutableMap.of("state", state));
 
             AboutToStartOrSubmitCallbackResponse response =
                 (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
 
-            Assertions.assertEquals(ClaimState.OPEN.getValue(), response.getData().get("state"));
+            verify(caseDetailsConverter).convertToMap(ccdCaseArgumentCaptor.capture());
+            CCDCase updatedCcdCase = CCDCase.builder()
+                .state(state)
+                .build();
+            Assertions.assertEquals(updatedCcdCase, ccdCaseArgumentCaptor.getValue());
+            Assertions.assertEquals(state, response.getData().get("state"));
         }
 
         @Test
         void shouldReturnRedeterminationRequestedStateForReferToJudgeByDefendantIfCtscEnabled() {
 
-            handler = new ReferToJudgeCallbackHandler(true);
+            handler = new ReferToJudgeCallbackHandler(caseDetailsConverter, true);
+
+            String state = ClaimState.REDETERMINATION_REQUESTED.getValue();
+            when(caseDetailsConverter.convertToMap(ccdCase)).thenReturn(ImmutableMap.of("state", state));
 
             AboutToStartOrSubmitCallbackResponse response =
                 (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
 
-            Assertions.assertEquals(ClaimState.REDETERMINATION_REQUESTED.getValue(),
-                response.getData().get("state"));
+            verify(caseDetailsConverter).convertToMap(ccdCaseArgumentCaptor.capture());
+            CCDCase updatedCcdCase = CCDCase.builder()
+                .state(state)
+                .build();
+            Assertions.assertEquals(updatedCcdCase, ccdCaseArgumentCaptor.getValue());
+            Assertions.assertEquals(state, response.getData().get("state"));
         }
     }
 }

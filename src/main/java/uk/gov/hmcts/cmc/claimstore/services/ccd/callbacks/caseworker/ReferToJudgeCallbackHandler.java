@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
+import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
@@ -27,6 +28,7 @@ public class ReferToJudgeCallbackHandler extends AbstractStateChangeCallbackHand
         Arrays.asList(REFER_TO_JUDGE_BY_CLAIMANT, REFER_TO_JUDGE_BY_DEFENDANT);
     private static final List<Role> ROLES = Collections.singletonList(CITIZEN);
 
+    private final CaseDetailsConverter caseDetailsConverter;
     private final boolean ctscEnabled;
 
     private final ImmutableMap<CallbackType, Callback> callbacks = ImmutableMap.of(
@@ -34,8 +36,11 @@ public class ReferToJudgeCallbackHandler extends AbstractStateChangeCallbackHand
     );
 
     public ReferToJudgeCallbackHandler(
+        CaseDetailsConverter caseDetailsConverter,
         @Value("${feature_toggles.ctsc_enabled}") boolean ctscEnabled) {
+
         this.ctscEnabled = ctscEnabled;
+        this.caseDetailsConverter = caseDetailsConverter;
     }
 
     private CallbackResponse determineState(CallbackParams callbackParams) {
@@ -58,5 +63,10 @@ public class ReferToJudgeCallbackHandler extends AbstractStateChangeCallbackHand
     @Override
     protected Map<CallbackType, Callback> callbacks() {
         return callbacks;
+    }
+
+    @Override
+    protected CaseDetailsConverter getCaseDetailsConverter() {
+        return caseDetailsConverter;
     }
 }

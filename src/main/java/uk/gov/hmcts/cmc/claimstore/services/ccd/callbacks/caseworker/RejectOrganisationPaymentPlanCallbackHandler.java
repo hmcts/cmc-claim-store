@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
+import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
@@ -24,14 +25,19 @@ public class RejectOrganisationPaymentPlanCallbackHandler extends AbstractStateC
     private static final List<CaseEvent> EVENTS = Collections.singletonList(REJECT_ORGANISATION_PAYMENT_PLAN);
     private static final List<Role> ROLES = Collections.singletonList(CITIZEN);
 
+    private final CaseDetailsConverter caseDetailsConverter;
     private final boolean ctscEnabled;
 
     private final ImmutableMap<CallbackType, Callback> callbacks = ImmutableMap.of(
         CallbackType.ABOUT_TO_SUBMIT, this::determineState
     );
 
-    public RejectOrganisationPaymentPlanCallbackHandler(@Value("${feature_toggles.ctsc_enabled}") boolean ctscEnabled) {
+    public RejectOrganisationPaymentPlanCallbackHandler(
+        CaseDetailsConverter caseDetailsConverter,
+        @Value("${feature_toggles.ctsc_enabled}") boolean ctscEnabled) {
+
         this.ctscEnabled = ctscEnabled;
+        this.caseDetailsConverter = caseDetailsConverter;
     }
 
     private CallbackResponse determineState(CallbackParams callbackParams) {
@@ -54,5 +60,10 @@ public class RejectOrganisationPaymentPlanCallbackHandler extends AbstractStateC
     @Override
     public List<Role> getSupportedRoles() {
         return ROLES;
+    }
+
+    @Override
+    protected CaseDetailsConverter getCaseDetailsConverter() {
+        return caseDetailsConverter;
     }
 }
