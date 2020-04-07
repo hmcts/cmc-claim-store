@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.ccd.domain;
 public enum CCDLaList {
 
     REFER_TO_JUDGE("OCMC boxwork"),
-    REFER_TO_COURT_STAFF("Any courtstaff with direction"),
     L1("Legal Advisor Helen Fox"),
     L2("Legal Advisor Sandra Hutchinson"),
     L3("Legal Advisor Bushra Tabassum"),
