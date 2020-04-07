@@ -61,7 +61,7 @@ public class ReferToJudgeCallbackHandler extends CallbackHandler {
         CallbackRequest callbackRequest = callbackParams.getRequest();
 
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
-        ccdCase.setAssignedTo(CCDLaList.REFER_TO_JUDGE);
+        ccdCase.setAssignedTo(CCDLaList.OCMC_BOXWORK);
         Map<String, Object> dataMap = caseDetailsConverter.convertToMap(ccdCase);
 
         return AboutToStartOrSubmitCallbackResponse
