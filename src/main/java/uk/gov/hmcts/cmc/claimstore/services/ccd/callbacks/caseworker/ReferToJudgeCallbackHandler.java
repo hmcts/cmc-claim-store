@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDLaList;
@@ -24,12 +25,14 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFER_TO_JUDGE;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
 @Service
+@ConditionalOnProperty("feature_toggles.ctsc_enabled")
 public class ReferToJudgeCallbackHandler extends CallbackHandler {
 
     private static final List<CaseEvent> EVENTS = Collections.singletonList(REFER_TO_JUDGE);
-    private static final List<Role> ROLES = ImmutableList.of();
+    private static final List<Role> ROLES = ImmutableList.of(CASEWORKER);
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final CaseDetailsConverter caseDetailsConverter;
@@ -68,6 +71,5 @@ public class ReferToJudgeCallbackHandler extends CallbackHandler {
             .builder()
             .data(dataMap)
             .build();
-
     }
 }
