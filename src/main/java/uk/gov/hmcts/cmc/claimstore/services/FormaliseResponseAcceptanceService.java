@@ -7,7 +7,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
-import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -51,7 +50,6 @@ public class FormaliseResponseAcceptanceService {
     private final SettlementAgreementService settlementAgreementService;
     private final EventProducer eventProducer;
     private final CaseRepository caseRepository;
-    private final UserService userService;
     private final ClaimantResponseReceiptService claimantResponseReceiptService;
     private final DocumentsService documentService;
     private final boolean ctscEnabled;
@@ -64,14 +62,12 @@ public class FormaliseResponseAcceptanceService {
         CaseRepository caseRepository,
         DocumentsService documentService,
         @Value("${feature_toggles.ctsc_enabled}") boolean ctscEnabled,
-        UserService userService,
         ClaimantResponseReceiptService claimantResponseReceiptService
     ) {
         this.countyCourtJudgmentService = countyCourtJudgmentService;
         this.settlementAgreementService = settlementAgreementService;
         this.eventProducer = eventProducer;
         this.caseRepository = caseRepository;
-        this.userService = userService;
         this.claimantResponseReceiptService = claimantResponseReceiptService;
         this.documentService = documentService;
         this.ctscEnabled = ctscEnabled;
@@ -98,20 +94,21 @@ public class FormaliseResponseAcceptanceService {
     private void createEventForReferToJudge(Claim claim, String authorisation) {
         Response response = claim.getResponse()
             .orElseThrow(() -> new IllegalArgumentException(MISSING_RESPONSE));
+
         CaseEvent caseEvent;
-        Claim updatedClaim = claim;
+        Claim updatedClaim;
         if (isCompanyOrOrganisation(response.getDefendant())) {
-            eventProducer.createRejectOrganisationPaymentPlanEvent(claim);
-            User user = userService.authenticateAnonymousCaseWorker();
-            PDF document = claimantResponseReceiptService.createPdf(claim,
+            updatedClaim = uploadClaimantResponseToDocumentStore(claim, authorisation,
                 buildRequestOrgRepaymentFileBaseName(claim.getReferenceNumber()));
-            documentService.uploadToDocumentManagement(document, user.getAuthorisation(), claim);
+            eventProducer.createRejectOrganisationPaymentPlanEvent(updatedClaim);
             caseEvent = REJECT_ORGANISATION_PAYMENT_PLAN;
         } else {
-            updatedClaim = uploadInterlocutoryJudgmentDocumentToDocumentStore(claim, authorisation);
+            updatedClaim = uploadClaimantResponseToDocumentStore(claim, authorisation,
+                buildRequestForInterlocutoryJudgmentFileBaseName(claim.getReferenceNumber()));
             eventProducer.createInterlocutoryJudgmentEvent(updatedClaim);
             caseEvent = INTERLOCUTORY_JUDGMENT;
         }
+
         caseRepository.saveCaseEvent(authorisation, updatedClaim, caseEvent);
     }
 
@@ -260,15 +257,12 @@ public class FormaliseResponseAcceptanceService {
         }
     }
 
-    private Claim uploadInterlocutoryJudgmentDocumentToDocumentStore(
-        Claim claim,
-        String authorisation) {
-        Claim updateClaim = claim;
-        if (ctscEnabled) {
-            PDF document = claimantResponseReceiptService.createPdf(claim,
-                buildRequestForInterlocutoryJudgmentFileBaseName(claim.getReferenceNumber()));
-            updateClaim = documentService.uploadToDocumentManagement(document, authorisation, claim);
+    private Claim uploadClaimantResponseToDocumentStore(Claim claim, String authorisation, String filename) {
+        if (!ctscEnabled) {
+            return claim;
         }
-        return updateClaim;
+
+        PDF document = claimantResponseReceiptService.createPdf(claim, filename);
+        return documentService.uploadToDocumentManagement(document, authorisation, claim);
     }
 }

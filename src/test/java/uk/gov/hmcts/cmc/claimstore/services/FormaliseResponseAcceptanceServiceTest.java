@@ -10,7 +10,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
-import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -83,9 +82,6 @@ public class FormaliseResponseAcceptanceServiceTest {
     private DocumentsService documentService;
 
     @Mock
-    private UserService userService;
-
-    @Mock
     private ClaimantResponseReceiptService claimantResponseReceiptService;
 
     @Captor
@@ -115,7 +111,6 @@ public class FormaliseResponseAcceptanceServiceTest {
             caseRepository,
             documentService,
             true,
-            userService,
             claimantResponseReceiptService
         );
     }
@@ -657,7 +652,6 @@ public class FormaliseResponseAcceptanceServiceTest {
             caseRepository,
             documentService,
             false,
-            userService,
             claimantResponseReceiptService
         );
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
@@ -685,14 +679,11 @@ public class FormaliseResponseAcceptanceServiceTest {
             .formaliseOption(FormaliseOption.REFER_TO_JUDGE)
             .build();
 
-        String auth = "auth";
-        when(userService.authenticateAnonymousCaseWorker()).thenReturn(new User(auth, null));
-
         assertThatCode(() -> formaliseResponseAcceptanceService
             .formalise(claim, responseAcceptation, AUTH)).doesNotThrowAnyException();
 
-        verify(documentService, once()).uploadToDocumentManagement(any(), eq(auth), eq(claim));
-        verify(caseRepository, once()).saveCaseEvent(anyString(), eq(claim), eq(REJECT_ORGANISATION_PAYMENT_PLAN));
+        verify(documentService, once()).uploadToDocumentManagement(any(), eq(AUTH), eq(claim));
+        verify(caseRepository, once()).saveCaseEvent(anyString(), eq(CLAIM), eq(REJECT_ORGANISATION_PAYMENT_PLAN));
         verifyNoInteractions(countyCourtJudgmentService);
         verifyNoInteractions(settlementAgreementService);
     }
