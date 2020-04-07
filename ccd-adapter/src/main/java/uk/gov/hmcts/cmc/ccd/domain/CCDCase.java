@@ -140,5 +140,4 @@ public class CCDCase {
     private GeneralLetterContent generalLetterContent;
 
     private List<CCDCollectionElement<CCDLAList>> LAList;
-    private String assignedTo;
 }
