@@ -67,11 +67,14 @@ public enum CaseEvent {
     REVIEWED_PAPER_RESPONSE("ReviewedPaperResponse"),
     MEDIATION_FAILED("FailedMediation"),
     MEDIATION_SUCCESSFUL("SuccessfulMediation"),
+    RESEND_RPA("ResendRpa"),
+    PROCEEDS_IN_CASEMAN("CaseProceedsInCaseman"),
     ATTACH_SCANNED_DOCS("attachScannedDocs"),
     UPDATE_CLAIM("UpdateClaim"),
     RESET_PIN("ResetPin"),
     ISSUE_GENERAL_LETTER("IssueGeneralLetter"),
-    MANAGE_DOCUMENTS("ManageDocuments");
+    MANAGE_DOCUMENTS("ManageDocuments"),
+    CCJ_REQUEST_UPLOAD("CCJRequestUpload");
 
     private final String value;
 
