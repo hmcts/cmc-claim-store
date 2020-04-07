@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.ccd.domain;
 
 public enum CCDLaList {
 
-    REFER_TO_JUDGE("Any judge for direction"),
+    REFER_TO_JUDGE("OCMC boxwork"),
     REFER_TO_COURT_STAFF("Any courtstaff with direction"),
     L1("Legal Advisor Helen Fox"),
     L2("Legal Advisor Sandra Hutchinson"),
@@ -20,8 +20,7 @@ public enum CCDLaList {
     J6("Judge Margaret Langley"),
     J7("Judge Lynda Nightingale"),
     J8("Judge Stuart Hammond"),
-    J9("Judge Marshall Phillips"),
-    OCMC_BOXWORK("OCMC boxwork");
+    J9("Judge Marshall Phillips");
 
     private final String value;
 
