@@ -1,13 +1,17 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
+import uk.gov.hmcts.cmc.claimstore.documents.CCJByAdmissionOrDeterminationPdfService;
+import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.CountyCourtJudgmentRule;
+import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
@@ -20,6 +24,8 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUE
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED_AFTER_SETTLEMENT_BREACH;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED_BY_ADMISSION;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.REDETERMINATION_REQUESTED;
+import static uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType.ADMISSIONS;
+import static uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType.DETERMINATION;
 
 @Component
 public class CountyCourtJudgmentService {
@@ -31,6 +37,9 @@ public class CountyCourtJudgmentService {
     private final UserService userService;
     private final AppInsights appInsights;
     private final CaseRepository caseRepository;
+    private final CCJByAdmissionOrDeterminationPdfService ccjByAdmissionOrDeterminationPdfService;
+    private final DocumentsService documentService;
+    private final boolean ctscEnabled;
 
     @Autowired
     public CountyCourtJudgmentService(
@@ -40,7 +49,10 @@ public class CountyCourtJudgmentService {
         CountyCourtJudgmentRule countyCourtJudgmentRule,
         UserService userService,
         AppInsights appInsights,
-        CaseRepository caseRepository
+        CaseRepository caseRepository,
+        CCJByAdmissionOrDeterminationPdfService ccjByAdmissionOrDeterminationPdfService,
+        DocumentsService documentService,
+        @Value("${feature_toggles.ctsc_enabled}") boolean ctscEnabled
     ) {
         this.claimService = claimService;
         this.authorisationService = authorisationService;
@@ -49,6 +61,9 @@ public class CountyCourtJudgmentService {
         this.userService = userService;
         this.appInsights = appInsights;
         this.caseRepository = caseRepository;
+        this.ccjByAdmissionOrDeterminationPdfService = ccjByAdmissionOrDeterminationPdfService;
+        this.documentService = documentService;
+        this.ctscEnabled = ctscEnabled;
     }
 
     public Claim save(
@@ -75,20 +90,23 @@ public class CountyCourtJudgmentService {
 
         Claim claimWithCCJ = claimService.getClaimByExternalId(externalId, authorisation);
 
-        eventProducer.createCountyCourtJudgmentEvent(claimWithCCJ, authorisation);
+        Claim claimWithCCJDocument = uploadClaimantResponseDocumentToDocumentStore(claimWithCCJ,
+            countyCourtJudgment, authorisation);
+
+        eventProducer.createCountyCourtJudgmentEvent(claimWithCCJDocument, authorisation);
 
         AppInsightsEvent appInsightsEvent = CCJ_REQUESTED;
         if (countyCourtJudgment.getCcjType() == CountyCourtJudgmentType.ADMISSIONS) {
             appInsightsEvent = CCJ_REQUESTED_BY_ADMISSION;
         }
 
-        if (countyCourtJudgmentRule.isCCJDueToSettlementBreach(claimWithCCJ)) {
+        if (countyCourtJudgmentRule.isCCJDueToSettlementBreach(claimWithCCJDocument)) {
             appInsightsEvent = CCJ_REQUESTED_AFTER_SETTLEMENT_BREACH;
         }
 
         appInsights.trackEvent(appInsightsEvent, AppInsights.REFERENCE_NUMBER, claim.getReferenceNumber());
 
-        return claimWithCCJ;
+        return claimWithCCJDocument;
     }
 
     public Claim reDetermination(
@@ -118,5 +136,18 @@ public class CountyCourtJudgmentService {
 
         return claimWithReDetermination;
 
+    }
+
+    private Claim uploadClaimantResponseDocumentToDocumentStore(
+        Claim claim,
+        CountyCourtJudgment countyCourtJudgment,
+        String authorisation) {
+        Claim updateClaim = claim;
+        if (ctscEnabled && (countyCourtJudgment.getCcjType() == ADMISSIONS
+            || countyCourtJudgment.getCcjType() == DETERMINATION)) {
+            PDF document = ccjByAdmissionOrDeterminationPdfService.createPdf(claim);
+            updateClaim = documentService.uploadToDocumentManagement(document, authorisation, claim);
+        }
+        return updateClaim;
     }
 }

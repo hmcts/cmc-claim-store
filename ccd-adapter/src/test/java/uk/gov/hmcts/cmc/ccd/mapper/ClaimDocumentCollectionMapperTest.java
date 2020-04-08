@@ -26,7 +26,7 @@ public class ClaimDocumentCollectionMapperTest {
         new ScannedDocumentMapper());
 
     @Test
-    public void shouldFilterOutPinAndCCJDocuments() {
+    public void shouldFilterOutPinDocuments() {
 
         CCDCase.CCDCaseBuilder builder = CCDCase.builder();
         ClaimDocumentCollection collection = new ClaimDocumentCollection();
@@ -35,6 +35,12 @@ public class ClaimDocumentCollectionMapperTest {
             .documentManagementUrl(URI.create("someurl"))
             .documentManagementBinaryUrl(URI.create("someBinaryUrl"))
             .documentType(ClaimDocumentType.CCJ_REQUEST)
+            .build());
+
+        collection.addClaimDocument(ClaimDocument.builder()
+            .documentManagementUrl(URI.create("someurl"))
+            .documentManagementBinaryUrl(URI.create("someBinaryUrl"))
+            .documentType(ClaimDocumentType.DEFENDANT_PIN_LETTER)
             .build());
 
         collection.addClaimDocument(ClaimDocument.builder()
@@ -59,7 +65,7 @@ public class ClaimDocumentCollectionMapperTest {
 
         CCDCase build = builder.build();
         List<CCDCollectionElement<CCDClaimDocument>> caseDocuments = build.getCaseDocuments();
-        assertThat(caseDocuments.size()).isEqualTo(3);
+        assertThat(caseDocuments.size()).isEqualTo(4);
     }
 
     @Test
