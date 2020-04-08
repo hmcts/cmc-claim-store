@@ -7,8 +7,9 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
 import uk.gov.hmcts.cmc.claimstore.config.LoggerHandler;
+import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
-import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.ContactDetailsChanged;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -47,54 +48,43 @@ public class ChangeContactDetailsNotificationService {
     }
 
     public CallbackResponse sendEmailToRightRecipient(CCDCase ccdCase, Claim claim) {
-        boolean errors = false;
         try {
 
+            EmailTemplates templates = notificationsProperties.getTemplates().getEmail();
             if (ccdCase.getContactChangeParty() == CCDContactPartyType.CLAIMANT) {
-                notifyDefendant(claim);
+                notifyParty(claim, claim.getDefendantEmail(),
+                    templates.getClaimantContactDetailsChanged(), "defendant");
             } else {
-                notifyClaimant(claim);
+                notifyParty(claim, claim.getSubmitterEmail(),
+                    templates.getDefendantContactDetailsChanged(), "claimant");
             }
         } catch (Exception e) {
             logger.info("Sending email to party failed", e);
-            errors = true;
-        }
-        if (!errors) {
-            logger.info("Change Contact Details: Email was sent, case is being updated");
-            CCDCase updatedCase = ccdCase.toBuilder()
-                .contactChangeParty(null)
-                .contactChangeContent(null)
-                .generalLetterContent(null)
-                .build();
-            return AboutToStartOrSubmitCallbackResponse
-                .builder()
-                .data(caseDetailsConverter.convertToMap(updatedCase))
-                .build();
-        } else {
             return AboutToStartOrSubmitCallbackResponse
                 .builder()
                 .errors(Collections.singletonList(ERROR_MESSAGE))
                 .build();
         }
+
+        CCDCase updatedCase = ccdCase.toBuilder()
+            .contactChangeParty(null)
+            .contactChangeContent(null)
+            .generalLetterContent(null)
+            .build();
+
+        logger.info("Change Contact Details: Email was sent, case is being updated");
+        return AboutToStartOrSubmitCallbackResponse
+            .builder()
+            .data(caseDetailsConverter.convertToMap(updatedCase))
+            .build();
     }
 
-    private void notifyClaimant(Claim claim) {
+    private void notifyParty(Claim claim, String partyEmail, String partyEmailTemplateId, String party) {
         notificationService.sendMail(
-            claim.getSubmitterEmail(),
-            notificationsProperties.getTemplates().getEmail().getDefendantContactDetailsChanged(),
+            partyEmail,
+            partyEmailTemplateId,
             aggregateParams(claim),
-            NotificationReferenceBuilder.ContactDetailsChanged
-                .referenceForClaimant(claim.getReferenceNumber(), "claimant")
-        );
-    }
-
-    private void notifyDefendant(Claim claim) {
-        notificationService.sendMail(
-            claim.getDefendantEmail(),
-            notificationsProperties.getTemplates().getEmail().getClaimantContactDetailsChanged(),
-            aggregateParams(claim),
-            NotificationReferenceBuilder.ContactDetailsChanged
-                .referenceForDefendant(claim.getReferenceNumber(), "defendant")
+            ContactDetailsChanged.referenceForContactChanges(claim.getReferenceNumber(), party)
         );
     }
 

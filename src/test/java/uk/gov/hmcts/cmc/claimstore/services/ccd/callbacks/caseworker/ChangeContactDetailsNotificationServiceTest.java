@@ -82,7 +82,7 @@ public class ChangeContactDetailsNotificationServiceTest {
             eq(DEFENDANT_EMAIL_TEMPLATE),
             eq(expectedParams),
             eq(NotificationReferenceBuilder.ContactDetailsChanged
-                .referenceForClaimant(claim.getReferenceNumber(), "claimant")));
+                .referenceForContactChanges(claim.getReferenceNumber(), "claimant")));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse
             = (AboutToStartOrSubmitCallbackResponse) changeContactDetailsNotificationService
@@ -115,7 +115,7 @@ public class ChangeContactDetailsNotificationServiceTest {
             eq(DEFENDANT_EMAIL_TEMPLATE),
             eq(expectedParams),
             eq(NotificationReferenceBuilder.ContactDetailsChanged
-                .referenceForClaimant(claim.getReferenceNumber(), "claimant")));
+                .referenceForContactChanges(claim.getReferenceNumber(), "claimant")));
 
     }
 
@@ -141,6 +141,6 @@ public class ChangeContactDetailsNotificationServiceTest {
             eq(CLAIMANT_EMAIL_TEMPLATE),
             eq(expectedParams),
             eq(NotificationReferenceBuilder.ContactDetailsChanged
-                .referenceForDefendant(claim.getReferenceNumber(), "defendant")));
+                .referenceForContactChanges(claim.getReferenceNumber(), "defendant")));
     }
 }

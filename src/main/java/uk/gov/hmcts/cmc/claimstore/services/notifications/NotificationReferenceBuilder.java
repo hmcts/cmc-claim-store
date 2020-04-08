@@ -262,11 +262,7 @@ public class NotificationReferenceBuilder {
             // do not instantiate
         }
 
-        public static String referenceForClaimant(String claimReferenceNumber, String otherParty) {
-            return reference(TEMPLATE, otherParty.toLowerCase(), claimReferenceNumber);
-        }
-
-        public static String referenceForDefendant(String claimReferenceNumber, String otherParty) {
+        public static String referenceForContactChanges(String claimReferenceNumber, String otherParty) {
             return reference(TEMPLATE, otherParty.toLowerCase(), claimReferenceNumber);
         }
     }

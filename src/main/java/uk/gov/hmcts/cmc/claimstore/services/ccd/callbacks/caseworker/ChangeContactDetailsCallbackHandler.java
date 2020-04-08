@@ -19,7 +19,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CHANGE_CONTACT_DETAILS;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
 @Service
-@ConditionalOnProperty(prefix = "doc_assembly", name = "url")
+@ConditionalOnProperty({"doc_assembly.url", "feature_toggles.ctsc_enabled"})
 public class ChangeContactDetailsCallbackHandler extends CallbackHandler {
     private final ChangeContactDetailsPostProcessor changeContactDetailsPostProcessor;
 
