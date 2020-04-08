@@ -34,7 +34,7 @@ public class ProvideJudgeDirectionsCallbackHandler extends CallbackHandler {
     private final CaseDetailsConverter caseDetailsConverter;
 
     @Autowired
-    public ProvideJudgeDirectionsCallbackHandler (CaseDetailsConverter caseDetailsConverter) {
+    public ProvideJudgeDirectionsCallbackHandler(CaseDetailsConverter caseDetailsConverter) {
         this.caseDetailsConverter = caseDetailsConverter;
     }
 
