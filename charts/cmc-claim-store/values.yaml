@@ -46,9 +46,6 @@ java:
     CMC_DB_PORT: 5432
     FEATURE_TOGGLES_SAVE_CLAIM_STATE_ENABLED: true
     FEATURE_TOGGLES_CTSC_ENABLED: false
-    STAFF_NOTIFICATIONS_RECIPIENT: civilmoneyclaims+staff-int-tests@gmail.com
-    LIVE_SUPPORT_RECIPIENT: civilmoneyclaims+live-support-int-tests@gmail.com
-    LIVE_SUPPORT_SENDER: noreply@reform.hmcts.net
     FEATURE_TOGGLES_STAFF_EMAIL_ENABLED: true
     FEATURE_AUTO_CANCEL_PAYMENTS: false
     STAFF_NOTIFICATIONS_SENDER: noreply@reform.hmcts.net
