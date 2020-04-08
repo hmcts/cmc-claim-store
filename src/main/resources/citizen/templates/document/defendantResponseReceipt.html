@@ -237,12 +237,12 @@
     </tr>
     <tr>
       <td colspan="2"><p><strong>Issued on: </strong>
-        <span id="timestamp">{{ claim.issuedOn }}</span>
+        <span data-type="timestamp">{{ claim.issuedOn }}</span>
       </p></td>
     </tr>
     <tr>
       <td colspan="2" class="spacing-bottom"><strong>Response received on: </strong>
-        <span id="timestamp">{{ defenceSubmittedOn }}</span>
+        <span data-type="timestamp">{{ defenceSubmittedOn }}</span>
       </td>
     </tr>
   </table>
@@ -875,7 +875,7 @@
       <tr class="no-border">
         <td class="no-border"></td>
         <td class="no-border">
-          <span id="timestamp">{{ defenceSubmittedDate }}</span>
+          <span data-type="timestamp">{{ defenceSubmittedDate }}</span>
         </td>
       </tr>
     </table>
@@ -929,12 +929,12 @@
       </tr>
       <tr>
         <td colspan="2"><p><strong>Issued on: </strong>
-          <span id="timestamp">{{ claim.issuedOn }}</span>
+          <span data-type="timestamp">{{ claim.issuedOn }}</span>
         </p></td>
       </tr>
       <tr>
         <td colspan="2" class="spacing-bottom"><strong>Response received on: </strong>
-          <span id="timestamp">{{ defenceSubmittedOn }}</span>
+          <span data-type="timestamp">{{ defenceSubmittedOn }}</span>
         </td>
       </tr>
     </table>
@@ -1228,7 +1228,7 @@
         {% if hearingContent.unavailableDates is not empty  %}
         <div>
           {% for unavailableDate in hearingContent.unavailableDates %}
-            <span id="timestamp">{{ unavailableDate }}</span>
+            <span data-type="timestamp">{{ unavailableDate }}</span>
             <br/>
           {% endfor %}
         </div>
@@ -1268,7 +1268,7 @@
           {% endif %}
 
           <br/>
-          <span id="timestamp">{{ defenceSubmittedOn }}</span>
+          <span data-type="timestamp">{{ defenceSubmittedOn }}</span>
         </div>
       </td>
     </tr>

@@ -9,7 +9,7 @@ public class DocumentComparisonHelper {
 
     public String replaceTimestamp(String timestampElementId, String html) {
 
-        final String timestampElement = String.format("span id=\"%s\"", timestampElementId);
+        final String timestampElement = String.format("data-type=\"%s\"", timestampElementId);
         final String regex = format("%s\\>.*\\<", timestampElement);
         final String replacement = format("%s\\>%s\\<", timestampElement, "TIMESTAMP");
 
