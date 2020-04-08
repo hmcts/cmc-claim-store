@@ -51,14 +51,14 @@ public class CallbackController {
         @NotNull @RequestBody CallbackRequest callback,
         @PathVariable("version") Optional<String> version
     ) {
-        logger.info("Received callback from CCD, eventId: {}", callback.getEventId());
+        logger.info("Received callback from CCD, eventId: {}, type :{}", callback.getEventId(), callbackType);
         CallbackParams callbackParams = CallbackParams.builder()
             .request(callback)
             .type(CallbackType.fromValue(callbackType))
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, authorisation))
             .version(version.map(String::toUpperCase).map(CallbackVersion::valueOf).orElse(null))
             .build();
-        return callbackHandlerFactory
-            .dispatch(callbackParams);
+
+        return callbackHandlerFactory.dispatch(callbackParams);
     }
 }
