@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
@@ -21,6 +22,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MANAGE_DOCUMENTS;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
 @Service
+@ConditionalOnProperty("feature_toggles.ctsc_enabled")
 public class ManageDocumentsCallbackHandler  extends CallbackHandler {
     private static final List<Role> ROLES = ImmutableList.of(CASEWORKER);
     private static final List<CaseEvent> EVENTS = Collections.singletonList(MANAGE_DOCUMENTS);
