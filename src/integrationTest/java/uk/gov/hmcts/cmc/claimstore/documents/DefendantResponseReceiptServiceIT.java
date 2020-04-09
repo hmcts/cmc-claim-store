@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.documents;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.stubbing.Answer;
@@ -8,9 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
-import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
-import uk.gov.hmcts.cmc.claimstore.documents.content.DefendantResponseContentProvider;
-import uk.gov.hmcts.cmc.claimstore.helper.DocumentComparisonHelper;
 import uk.gov.hmcts.cmc.claimstore.helper.HTMLTemplateProcessor;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
@@ -22,6 +18,7 @@ import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+import static java.lang.String.format;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.helper.FileUtils.readFile;
@@ -29,19 +26,13 @@ import static uk.gov.hmcts.cmc.claimstore.helper.FileUtils.writeFile;
 import static wiremock.org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 
 @RunWith(SpringRunner.class)
-public class DefendantResponseReceiptServiceIntegrationTest extends BaseMockSpringTest {
+public class DefendantResponseReceiptServiceIT extends BaseMockSpringTest {
+
+    private static final String TIMESTAMP_ATTRIBUTE_VALUE = "timestamp";
+    private static final String DUMMY_TIMESTAMP = "TIMESTAMP";
 
     @Autowired
     private DefendantResponseReceiptService defendantResponseReceiptService;
-
-    @Autowired
-    protected DefendantResponseContentProvider contentProvider;
-
-    @Autowired
-    protected DocumentTemplates documentTemplates;
-
-    @Autowired
-    protected DocumentComparisonHelper documentComparisonHelper;
 
     @Autowired
     protected HTMLTemplateProcessor htmlTemplateProcessor;
@@ -49,14 +40,10 @@ public class DefendantResponseReceiptServiceIntegrationTest extends BaseMockSpri
     @MockBean
     protected EmailService emailService;
 
-    @Before
-    public void beforeEachTest() {
-
-        provideLocalPdfService();
-    }
-
     @Test
     public void shouldGenerateDefenceResponseForClaimWithFullDefenceAlreadyPaid() throws Exception {
+
+        provideLocalPdfService();
 
         Claim claim = SampleClaim.builder()
             .withResponse(
@@ -71,10 +58,10 @@ public class DefendantResponseReceiptServiceIntegrationTest extends BaseMockSpri
 
         byte[] actualHtmlBytes = defendantResponseReceiptService.createHtml(claim);
 
-        String actualHtml = documentComparisonHelper.replaceTimestamp("timestamp",
-            new String(actualHtmlBytes));
+        String actualHtml = replaceTimestampsWithFixedValues(new String(actualHtmlBytes));
 
-        writeFile("build/tmp/actual.html", actualHtml); // Useful file for debugging test
+        // Useful for debugging test ie diff comparison of actual with expected HTML file
+        writeFile("build/tmp/actual.html", actualHtml);
 
         String expectedHtml = readFile("src/integrationTest/resources/documents/expectedDefendantResponseReceipt.html");
 
@@ -94,5 +81,14 @@ public class DefendantResponseReceiptServiceIntegrationTest extends BaseMockSpri
             });
 
         return pdfServiceClient;
+    }
+
+    public String replaceTimestampsWithFixedValues(String html) {
+
+        final String timestampElement = String.format("data-type=\"%s\"", TIMESTAMP_ATTRIBUTE_VALUE);
+        final String regex = format("%s\\>.*\\<", timestampElement);
+        final String replacement = format("%s\\>%s\\<", timestampElement, DUMMY_TIMESTAMP);
+
+        return html.replaceAll(regex, replacement);
     }
 }
