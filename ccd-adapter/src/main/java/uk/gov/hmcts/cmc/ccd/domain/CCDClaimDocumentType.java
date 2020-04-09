@@ -18,5 +18,5 @@ public enum CCDClaimDocumentType {
     PAPER_RESPONSE_DISPUTES_ALL,
     GENERAL_LETTER,
     OTHER,
-    CORRESPONDENCE;
+    CORRESPONDENCE
 }
