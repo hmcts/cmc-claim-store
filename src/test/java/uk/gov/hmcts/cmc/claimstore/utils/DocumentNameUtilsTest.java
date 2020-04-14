@@ -11,6 +11,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildLetterFil
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForInterlocutoryJudgmentFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForReferToJudgeFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestOrgRepaymentFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForJudgmentByAdmissionOrDeterminationFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildReviewOrderFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.isSealedClaim;
@@ -77,7 +78,7 @@ public class DocumentNameUtilsTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowErrorWhenReferenceIsEmptyWhileBuildingReviewOrderileBaseName() {
+    public void shouldThrowErrorWhenReferenceIsEmptyWhileBuildingReviewOrderFileBaseName() {
         buildReviewOrderFileBaseName("");
     }
 
@@ -92,6 +93,12 @@ public class DocumentNameUtilsTest {
         String date = LocalDate.now().toString();
         assertThat(buildLetterFileBaseName("000MC001", date))
             .isEqualTo("000MC001-general-letter-" + date);
+    }
+
+    @Test
+    public void shouldBuildJudgmentByAdmissionOrDeterminationFileBaseName() {
+        assertThat(buildRequestForJudgmentByAdmissionOrDeterminationFileBaseName("000MC001", "admissions"))
+            .isEqualTo("000MC001-ccj-request-admissions");
     }
 
     @Test

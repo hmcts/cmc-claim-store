@@ -9,6 +9,7 @@ public enum ClaimDocumentType {
     SEALED_CLAIM("legalSealedClaim", "sealedClaim"),
     CLAIM_ISSUE_RECEIPT("claimIssueReceipt"),
     DEFENDANT_RESPONSE_RECEIPT("defendantResponseReceipt"),
+    CCJ_REQUEST("ccjRequest"),
     CLAIMANT_RESPONSE_RECEIPT("claimantResponseReceipt"),
     CCJ_REQUEST,
     SETTLEMENT_AGREEMENT("settlementAgreement"),

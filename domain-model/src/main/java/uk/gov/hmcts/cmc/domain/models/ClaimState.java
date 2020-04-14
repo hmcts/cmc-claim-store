@@ -21,7 +21,8 @@ public enum ClaimState {
     AWAITING_CITIZEN_PAYMENT("awaitingCitizenPayment"),
     PROCEEDS_IN_CASE_MAN("proceedsInCaseman"),
     JUDGMENT_DECIDE_AMOUNT("judgmentDecideAmount"),
-    REDETERMINATION_REQUESTED("redeterminationRequested");
+    REDETERMINATION_REQUESTED("redeterminationRequested"),
+    JUDGMENT_REQUESTED("judgmentRequested");
 
     private final String state;
 
