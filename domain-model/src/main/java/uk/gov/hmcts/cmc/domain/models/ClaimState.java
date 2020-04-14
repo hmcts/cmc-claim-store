@@ -20,6 +20,7 @@ public enum ClaimState {
     REFERRED_MEDIATION("referredMediation"),
     AWAITING_CITIZEN_PAYMENT("awaitingCitizenPayment"),
     PROCEEDS_IN_CASE_MAN("proceedsInCaseman"),
+    READY_FOR_PAPER_DQ("readyForPaperDQ"),
     JUDGMENT_DECIDE_AMOUNT("judgmentDecideAmount"),
     REDETERMINATION_REQUESTED("redeterminationRequested"),
     JUDGMENT_REQUESTED("judgmentRequested");

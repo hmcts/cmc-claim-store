@@ -22,7 +22,9 @@ public enum ClaimDocumentType {
     PAPER_RESPONSE_STATES_PAID,
     PAPER_RESPONSE_MORE_TIME,
     PAPER_RESPONSE_DISPUTES_ALL,
-    GENERAL_LETTER;
+    GENERAL_LETTER,
+    OTHER,
+    CORRESPONDENCE;
 
     private final List<String> values;
 
