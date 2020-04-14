@@ -30,8 +30,8 @@ public class CountyCourtJudgmentRule {
         this.claimDeadlineService = claimDeadlineService;
     }
 
-    public void assertCountyCourtJudgementCanBeRequested(@NotNull Claim claim,
-                                                         CountyCourtJudgmentType countyCourtJudgmentType) {
+    public void assertCountyCourtJudgmentCanBeRequested(@NotNull Claim claim,
+                                                        CountyCourtJudgmentType countyCourtJudgmentType) {
         requireNonNull(claim, CLAIM_OBJECT_CANNOT_BE_NULL);
         String externalId = claim.getExternalId();
 
@@ -78,7 +78,7 @@ public class CountyCourtJudgmentRule {
         return claim.getReDeterminationRequestedAt().isPresent();
     }
 
-    public void assertRedeterminationCanBeRequestedOnCountyCourtJudgement(Claim claim) {
+    public void assertRedeterminationCanBeRequestedOnCountyCourtJudgment(Claim claim) {
         requireNonNull(claim, CLAIM_OBJECT_CANNOT_BE_NULL);
 
         String externalId = claim.getExternalId();

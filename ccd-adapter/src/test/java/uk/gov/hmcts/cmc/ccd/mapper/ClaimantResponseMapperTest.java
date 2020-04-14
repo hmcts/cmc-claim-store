@@ -99,13 +99,13 @@ public class ClaimantResponseMapperTest {
 
     @Test
     public void shouldMapClaimantRejectionSettlePreJudgementToCCDClaimantAcceptance() {
-        ClaimantResponse response = SampleClaimantResponse.ClaimantResponseRejection.builder()
+        ResponseRejection response = SampleClaimantResponse.ClaimantResponseRejection.builder()
             .buildRejectionSettlePreJudgement();
         Claim claim = Claim.builder().claimantResponse(response)
             .claimantRespondedAt(LocalDateTimeFactory.nowInLocalZone())
             .build();
         CCDClaimantResponse ccdResponse = mapper.to(claim);
-        assertThat((ResponseAcceptation) response).isEqualTo((CCDResponseAcceptation) ccdResponse);
+        assertThat(response).isEqualTo((CCDResponseRejection) ccdResponse);
         assertNotNull(ccdResponse.getSubmittedOn());
     }
 

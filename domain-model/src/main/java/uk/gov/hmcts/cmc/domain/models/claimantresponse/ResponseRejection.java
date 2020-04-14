@@ -33,16 +33,18 @@ public class ResponseRejection extends ClaimantResponse {
     @Valid
     private final DirectionsQuestionnaire directionsQuestionnaire;
 
-    @Builder
+    @Builder(toBuilder = true)
     @JsonCreator
-    public ResponseRejection(BigDecimal amountPaid,
-                             YesNoOption paymentReceived,
-                             YesNoOption settleForAmount,
-                             YesNoOption freeMediation,
-                             String mediationPhoneNumber,
-                             String mediationContactPerson,
-                             String reason,
-                             DirectionsQuestionnaire directionsQuestionnaire) {
+    public ResponseRejection(
+        BigDecimal amountPaid,
+        YesNoOption paymentReceived,
+        YesNoOption settleForAmount,
+        YesNoOption freeMediation,
+        String mediationPhoneNumber,
+        String mediationContactPerson,
+        String reason,
+        DirectionsQuestionnaire directionsQuestionnaire
+    ) {
         super(ClaimantResponseType.REJECTION, amountPaid, paymentReceived, settleForAmount);
         this.freeMediation = freeMediation;
         this.mediationPhoneNumber = mediationPhoneNumber;
