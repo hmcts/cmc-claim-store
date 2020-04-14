@@ -22,7 +22,6 @@ import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import static java.util.function.Predicate.isEqual;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LIFT_STAY;
@@ -125,18 +124,16 @@ public class ClaimantResponseService {
             caseRepository.saveCaseEvent(authorization, updatedClaim, SETTLED_PRE_JUDGMENT);
         }
 
-        Optional<CaseEvent> caseEvent = Optional.empty();
+        CaseEvent caseEvent = null;
         if (claimantResponse.getType() == REJECTION) {
             caseEvent = directionsQuestionnaireService.prepareCaseEvent(
                 (ResponseRejection) claimantResponse,
                 updatedClaim
             );
-            if (caseEvent.isPresent()) {
-                caseRepository.saveCaseEvent(authorization, updatedClaim, caseEvent.get());
-            }
+            caseRepository.saveCaseEvent(authorization, updatedClaim, caseEvent);
         }
 
-        raiseAppInsightEvents(updatedClaim, response, claimantResponse, caseEvent.orElseGet(() -> null));
+        raiseAppInsightEvents(updatedClaim, response, claimantResponse, caseEvent);
     }
 
     private boolean isSettlementAgreement(Response response, ClaimantResponse claimantResponse) {
