@@ -74,6 +74,7 @@ public enum CaseEvent {
     UPDATE_CLAIM("UpdateClaim"),
     RESET_PIN("ResetPin"),
     ISSUE_GENERAL_LETTER("IssueGeneralLetter"),
+    PROVIDE_DIRECTIONS("ProvideDirections"),
     MANAGE_DOCUMENTS("ManageDocuments"),
     CLAIMANT_RESPONSE_RECEIPT_UPLOAD("ClaimantResponseReceiptUpload"),
     CCJ_REQUEST_UPLOAD("CCJRequestUpload");
