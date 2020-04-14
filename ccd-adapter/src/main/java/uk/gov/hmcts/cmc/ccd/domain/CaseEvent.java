@@ -58,6 +58,7 @@ public enum CaseEvent {
     ORDER_REVIEW_REQUESTED("OrderReviewRequested"),
     WAITING_TRANSFER("WaitingTransfer"),
     LIFT_STAY("LiftStay"),
+    REFER_TO_JUDGE("ReferToJudge"),
     //inversion of control
     INITIATE_CLAIM_PAYMENT_CITIZEN("InitiateClaimPaymentCitizen"),
     RESUME_CLAIM_PAYMENT_CITIZEN("ResumeClaimPaymentCitizen"),
