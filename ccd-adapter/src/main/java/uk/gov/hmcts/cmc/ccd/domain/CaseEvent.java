@@ -77,6 +77,7 @@ public enum CaseEvent {
     PROVIDE_DIRECTIONS("ProvideDirections"),
     MANAGE_DOCUMENTS("ManageDocuments"),
     CLAIMANT_RESPONSE_RECEIPT_UPLOAD("ClaimantResponseReceiptUpload"),
+    REVIEW_JUDGE_COMMENTS("ReviewJudgeComments"),
     CCJ_REQUEST_UPLOAD("CCJRequestUpload");
 
     private final String value;
