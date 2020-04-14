@@ -10,3 +10,4 @@ description: Helm chart for the HMCTS CMC Claim-Store service
 maintainers:
   - name: HMCTS CMC Dev Team
     email: cmc-developers@HMCTS.NET
+
