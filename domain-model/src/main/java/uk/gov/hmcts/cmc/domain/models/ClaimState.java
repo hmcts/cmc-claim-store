@@ -7,6 +7,7 @@ public enum ClaimState {
     OPEN("open"),
     CLOSED("closed"),
     SETTLED("settled"),
+    SETTLEMENT_AGREEMENT_MADE("settlementAgreementMade"),
     READY_FOR_LEGAL_ADVISOR_DIRECTIONS("readyForDirections"),
     READY_FOR_JUDGE_DIRECTIONS("readyForJudgeDirections"),
     STAYED("stayed"),
