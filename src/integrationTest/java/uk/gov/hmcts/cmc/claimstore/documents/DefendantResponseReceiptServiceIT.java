@@ -19,10 +19,12 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 import static java.lang.String.format;
+import static java.nio.file.Files.readString;
+import static java.nio.file.Files.write;
+import static java.nio.file.Path.of;
+import static java.nio.file.Paths.get;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.claimstore.helper.FileUtils.readFile;
-import static uk.gov.hmcts.cmc.claimstore.helper.FileUtils.writeFile;
 import static wiremock.org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 
 @RunWith(SpringRunner.class)
@@ -61,9 +63,9 @@ public class DefendantResponseReceiptServiceIT extends BaseMockSpringTest {
         String actualHtml = replaceTimestampsWithFixedValues(new String(actualHtmlBytes));
 
         // Useful for debugging test ie diff comparison of actual with expected HTML file
-        writeFile("build/tmp/actual.html", actualHtml);
+        write(get("build", "tmp", "actual.html"), actualHtml.getBytes());
 
-        String expectedHtml = readFile("src/integrationTest/resources/documents/expectedDefendantResponseReceipt.html");
+        String expectedHtml = readString(of("src/integrationTest/resources/documents/expectedDefendantResponseReceipt.html"));
 
         assertXMLEqual(actualHtml, expectedHtml);
     }
