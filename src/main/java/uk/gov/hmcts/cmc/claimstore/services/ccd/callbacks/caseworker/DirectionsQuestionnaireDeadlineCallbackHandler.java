@@ -25,7 +25,6 @@ public class DirectionsQuestionnaireDeadlineCallbackHandler extends AbstractStat
     private static final List<CaseEvent> EVENTS = Collections.singletonList(DIRECTIONS_QUESTIONNAIRE_DEADLINE);
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
 
-    private final CaseDetailsConverter caseDetailsConverter;
     private final boolean ctscEnabled;
 
     private final ImmutableMap<CallbackType, Callback> callbacks = ImmutableMap.of(
@@ -35,7 +34,8 @@ public class DirectionsQuestionnaireDeadlineCallbackHandler extends AbstractStat
     public DirectionsQuestionnaireDeadlineCallbackHandler(
         CaseDetailsConverter caseDetailsConverter,
         @Value("${feature_toggles.ctsc_enabled}") boolean ctscEnabled) {
-        this.caseDetailsConverter = caseDetailsConverter;
+
+        super(EVENTS, ROLES, caseDetailsConverter);
         this.ctscEnabled = ctscEnabled;
     }
 
@@ -45,21 +45,6 @@ public class DirectionsQuestionnaireDeadlineCallbackHandler extends AbstractStat
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(updateState(callbackParams, state))
             .build();
-    }
-
-    @Override
-    public List<CaseEvent> handledEvents() {
-        return EVENTS;
-    }
-
-    @Override
-    protected CaseDetailsConverter getCaseDetailsConverter() {
-        return caseDetailsConverter;
-    }
-
-    @Override
-    public List<Role> getSupportedRoles() {
-        return ROLES;
     }
 
     @Override

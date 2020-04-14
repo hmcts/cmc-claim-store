@@ -28,7 +28,6 @@ public class ReferToJudgeCallbackHandler extends AbstractStateChangeCallbackHand
         Arrays.asList(REFER_TO_JUDGE_BY_CLAIMANT, REFER_TO_JUDGE_BY_DEFENDANT);
     private static final List<Role> ROLES = Collections.singletonList(CITIZEN);
 
-    private final CaseDetailsConverter caseDetailsConverter;
     private final boolean ctscEnabled;
 
     private final ImmutableMap<CallbackType, Callback> callbacks = ImmutableMap.of(
@@ -39,8 +38,8 @@ public class ReferToJudgeCallbackHandler extends AbstractStateChangeCallbackHand
         CaseDetailsConverter caseDetailsConverter,
         @Value("${feature_toggles.ctsc_enabled}") boolean ctscEnabled) {
 
+        super(EVENTS, ROLES, caseDetailsConverter);
         this.ctscEnabled = ctscEnabled;
-        this.caseDetailsConverter = caseDetailsConverter;
     }
 
     private CallbackResponse determineState(CallbackParams callbackParams) {
@@ -51,22 +50,8 @@ public class ReferToJudgeCallbackHandler extends AbstractStateChangeCallbackHand
     }
 
     @Override
-    public List<Role> getSupportedRoles() {
-        return ROLES;
-    }
-
-    @Override
-    public List<CaseEvent> handledEvents() {
-        return EVENTS;
-    }
-
-    @Override
     protected Map<CallbackType, Callback> callbacks() {
         return callbacks;
     }
 
-    @Override
-    protected CaseDetailsConverter getCaseDetailsConverter() {
-        return caseDetailsConverter;
-    }
 }

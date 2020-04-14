@@ -25,7 +25,6 @@ public class InterlocutoryJudgmentCallbackHandler extends AbstractStateChangeCal
     private static final List<CaseEvent> EVENTS = Collections.singletonList(INTERLOCUTORY_JUDGMENT);
     private static final List<Role> ROLES = Collections.singletonList(CITIZEN);
 
-    private final CaseDetailsConverter caseDetailsConverter;
     private final boolean ctscEnabled;
 
     private final ImmutableMap<CallbackType, Callback> callbacks = ImmutableMap.of(
@@ -36,8 +35,8 @@ public class InterlocutoryJudgmentCallbackHandler extends AbstractStateChangeCal
         CaseDetailsConverter caseDetailsConverter,
         @Value("${feature_toggles.ctsc_enabled}") boolean ctscEnabled) {
 
+        super(EVENTS, ROLES, caseDetailsConverter);
         this.ctscEnabled = ctscEnabled;
-        this.caseDetailsConverter = caseDetailsConverter;
     }
 
     private CallbackResponse determineState(CallbackParams callbackParams) {
@@ -48,22 +47,8 @@ public class InterlocutoryJudgmentCallbackHandler extends AbstractStateChangeCal
     }
 
     @Override
-    public List<CaseEvent> handledEvents() {
-        return EVENTS;
-    }
-
-    @Override
     protected Map<CallbackType, Callback> callbacks() {
         return callbacks;
     }
 
-    @Override
-    public List<Role> getSupportedRoles() {
-        return ROLES;
-    }
-
-    @Override
-    protected CaseDetailsConverter getCaseDetailsConverter() {
-        return caseDetailsConverter;
-    }
 }
