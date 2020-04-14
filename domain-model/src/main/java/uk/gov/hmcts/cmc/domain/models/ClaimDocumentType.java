@@ -11,7 +11,6 @@ public enum ClaimDocumentType {
     DEFENDANT_RESPONSE_RECEIPT("defendantResponseReceipt"),
     CCJ_REQUEST("ccjRequest"),
     CLAIMANT_RESPONSE_RECEIPT("claimantResponseReceipt"),
-    CCJ_REQUEST,
     SETTLEMENT_AGREEMENT("settlementAgreement"),
     DEFENDANT_PIN_LETTER,
     CLAIMANT_DIRECTIONS_QUESTIONNAIRE("claimantHearingRequirement"),
