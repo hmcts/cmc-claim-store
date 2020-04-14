@@ -13,10 +13,9 @@ import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 
-import java.util.Optional;
-
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_JUDGE_DIRECTIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFERRED_TO_MEDIATION;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.WAITING_TRANSFER;
 import static uk.gov.hmcts.cmc.claimstore.services.pilotcourt.Pilot.JDDO;
@@ -41,25 +40,26 @@ public class DirectionsQuestionnaireService {
         this.pilotCourtService = pilotCourtService;
     }
 
-    public Optional<CaseEvent> prepareCaseEvent(ResponseRejection responseRejection, Claim claim) {
+    public CaseEvent prepareCaseEvent(ResponseRejection responseRejection, Claim claim) {
         if (isOptedForMediation(responseRejection)) {
-            return Optional.of(REFERRED_TO_MEDIATION);
+            return REFERRED_TO_MEDIATION;
         }
+
         if (!isOnlineDQ(claim)) {
-            return Optional.empty();
+            return DIRECTIONS_QUESTIONNAIRE_DEADLINE;
         }
 
         String preferredCourt = getPreferredCourt(claim);
 
         if (isLegalAdvisorPilot(claim) && pilotCourtService.isPilotCourt(preferredCourt, LA, claim.getCreatedAt())) {
-            return Optional.of(ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS);
+            return ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS;
         }
 
         if (isJudgePilot(claim)  && pilotCourtService.isPilotCourt(preferredCourt, JDDO, claim.getCreatedAt())) {
-            return Optional.of(ASSIGNING_FOR_JUDGE_DIRECTIONS);
+            return ASSIGNING_FOR_JUDGE_DIRECTIONS;
         }
 
-        return Optional.of(WAITING_TRANSFER);
+        return WAITING_TRANSFER;
     }
 
     public String getDirectionsCaseState(Claim claim) {
