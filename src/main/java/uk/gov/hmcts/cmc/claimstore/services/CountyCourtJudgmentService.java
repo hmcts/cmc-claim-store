@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
+import uk.gov.hmcts.cmc.claimstore.documents.CCJByAdmissionOrDeterminationPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
-import uk.gov.hmcts.cmc.claimstore.documents.CCJByAdmissionOrDeterminationPdfService;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
@@ -25,9 +25,9 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUE
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED_AFTER_SETTLEMENT_BREACH;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED_BY_ADMISSION;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.REDETERMINATION_REQUESTED;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForReferToJudgeFileBaseName;
 import static uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType.ADMISSIONS;
 import static uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType.DETERMINATION;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForReferToJudgeFileBaseName;
 
 @Component
 public class CountyCourtJudgmentService {

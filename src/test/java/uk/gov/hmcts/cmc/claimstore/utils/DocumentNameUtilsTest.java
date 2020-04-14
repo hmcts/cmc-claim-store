@@ -9,9 +9,9 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimantR
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForInterlocutoryJudgmentFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForJudgmentByAdmissionOrDeterminationFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForReferToJudgeFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestOrgRepaymentFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForJudgmentByAdmissionOrDeterminationFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildReviewOrderFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.isSealedClaim;
