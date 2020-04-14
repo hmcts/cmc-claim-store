@@ -11,7 +11,6 @@ import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.documents.CCJByAdmissionOrDeterminationPdfService;
-import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
@@ -83,13 +82,7 @@ public class CountyCourtJudgmentServiceTest {
     private PDF pdf;
 
     @Mock
-    private DocumentsService documentService;
-
-    @Mock
     private ClaimantResponseReceiptService claimantResponseReceiptService;
-
-    private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
-    private PDF pdf;
 
     private final ReDetermination reDetermination = ReDetermination.builder()
         .explanation("I feel defendant can pay")
@@ -438,7 +431,8 @@ public class CountyCourtJudgmentServiceTest {
             caseRepository,
             ccjByAdmissionOrDeterminationPdfService,
             documentService,
-            false);
+            false,
+            claimantResponseReceiptService);
         Claim claim = SampleClaim
             .builder()
             .withResponseDeadline(LocalDate.now().minusMonths(2))
@@ -483,6 +477,7 @@ public class CountyCourtJudgmentServiceTest {
             userService,
             appInsights,
             caseRepository,
+            ccjByAdmissionOrDeterminationPdfService,
             documentService,
             false,
             claimantResponseReceiptService);
