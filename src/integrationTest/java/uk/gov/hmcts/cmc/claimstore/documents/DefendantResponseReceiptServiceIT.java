@@ -1,11 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.documents;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.helper.HTMLTemplateProcessor;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -27,7 +25,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static wiremock.org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 
-@RunWith(SpringRunner.class)
 public class DefendantResponseReceiptServiceIT extends BaseMockSpringTest {
 
     private static final String TIMESTAMP_ATTRIBUTE_VALUE = "timestamp";
