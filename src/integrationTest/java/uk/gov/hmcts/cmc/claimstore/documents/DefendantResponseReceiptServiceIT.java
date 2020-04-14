@@ -62,7 +62,8 @@ public class DefendantResponseReceiptServiceIT extends BaseMockSpringTest {
         // Useful for debugging test ie diff comparison of actual with expected HTML file
         write(get("build", "tmp", "actual.html"), actualHtml.getBytes());
 
-        String expectedHtml = readString(of("src/integrationTest/resources/documents/expectedDefendantResponseReceipt.html"));
+        String expectedHtml = readString(of(
+            "src/integrationTest/resources/documents/expectedDefendantResponseReceipt.html"));
 
         assertXMLEqual(actualHtml, expectedHtml);
     }
