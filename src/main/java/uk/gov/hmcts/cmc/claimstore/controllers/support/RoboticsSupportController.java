@@ -18,7 +18,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.rpa.DefenceResponseNotificationService;
 import uk.gov.hmcts.cmc.claimstore.rpa.MoreTimeRequestedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.rpa.PaidInFullNotificationService;
-import uk.gov.hmcts.cmc.claimstore.rpa.RequestForJudgementNotificationService;
+import uk.gov.hmcts.cmc.claimstore.rpa.RequestForJudgmentNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -46,7 +46,7 @@ public class RoboticsSupportController {
     private final ClaimService claimService;
     private final MoreTimeRequestedNotificationService moreTimeRequestedNotificationService;
     private final DefenceResponseNotificationService defenceResponseNotificationService;
-    private final RequestForJudgementNotificationService ccjNotificationService;
+    private final RequestForJudgmentNotificationService ccjNotificationService;
     private final PaidInFullNotificationService paidInFullNotificationService;
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
 
@@ -59,7 +59,7 @@ public class RoboticsSupportController {
         UserService userService,
         MoreTimeRequestedNotificationService moreTimeRequestedNotificationService,
         DefenceResponseNotificationService defenceResponseNotificationService,
-        RequestForJudgementNotificationService ccjNotificationService,
+        RequestForJudgmentNotificationService ccjNotificationService,
         PaidInFullNotificationService paidInFullNotificationService,
         ResponseDeadlineCalculator responseDeadlineCalculator,
         AppInsightsExceptionLogger appInsightsExceptionLogger,
