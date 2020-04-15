@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.config.JacksonConfiguration;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.otherparty.CompanyDetails;
@@ -27,6 +28,7 @@ public class CountyCourtJudgmentSerializationTest {
         //given
         CompanyDetails defendant = SampleTheirDetails.builder().companyDetails();
         CountyCourtJudgment expected = SampleCountyCourtJudgment.builder()
+            .ccjType(CountyCourtJudgmentType.DEFAULT)
             .paymentOption(PaymentOption.INSTALMENTS)
             .paidAmount(BigDecimal.ZERO)
             .repaymentPlan(SampleRepaymentPlan.builder().build())
@@ -37,7 +39,7 @@ public class CountyCourtJudgmentSerializationTest {
         CountyCourtJudgment other = jsonToModel("/county-court-judgment/by-instalments.json");
 
         //then
-        assertThat(expected).isEqualTo(other);
+        assertThat(other).isEqualTo(expected);
     }
 
     private static CountyCourtJudgment jsonToModel(String path) throws IOException {

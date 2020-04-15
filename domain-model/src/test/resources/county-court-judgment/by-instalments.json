@@ -1,5 +1,6 @@
 {
   "paymentOption": "INSTALMENTS",
+  "ccjType": "DEFAULT",
   "paidAmount": 0,
   "repaymentPlan": {
     "instalmentAmount": 100.99,

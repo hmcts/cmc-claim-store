@@ -14,25 +14,25 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
-import uk.gov.hmcts.cmc.rpa.mapper.RequestForJudgementJsonMapper;
+import uk.gov.hmcts.cmc.rpa.mapper.RequestForJudgmentJsonMapper;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.JSON_EXTENSION;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service("rpa/request-judgement-notification-service")
-public class RequestForJudgementNotificationService {
+public class RequestForJudgmentNotificationService {
 
     private final EmailService emailService;
     private final EmailProperties emailProperties;
-    private final RequestForJudgementJsonMapper jsonMapper;
+    private final RequestForJudgmentJsonMapper jsonMapper;
     private final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
 
     @Autowired
-    public RequestForJudgementNotificationService(
+    public RequestForJudgmentNotificationService(
         EmailService emailService,
         EmailProperties emailProperties,
-        RequestForJudgementJsonMapper jsonMapper,
+        RequestForJudgmentJsonMapper jsonMapper,
         CountyCourtJudgmentPdfService countyCourtJudgmentPdfService
     ) {
         this.emailService = emailService;
@@ -47,11 +47,11 @@ public class RequestForJudgementNotificationService {
         CountyCourtJudgmentType countyCourtJudgmentType = event.getClaim().getCountyCourtJudgment().getCcjType();
         switch (countyCourtJudgmentType) {
             case DEFAULT:
+            case ADMISSIONS:
                 EmailData emailData = prepareEmailData(event.getClaim());
                 emailService.sendEmail(emailProperties.getSender(), emailData);
                 break;
             case DETERMINATION:
-            case ADMISSIONS:
                 //No RPA email sent
                 break;
             default:
@@ -64,7 +64,7 @@ public class RequestForJudgementNotificationService {
         EmailAttachment ccjPdfAttachment = generateCountyCourtJudgmentPdf(claim);
 
         return new EmailData(emailProperties.getCountyCourtJudgementRecipient(),
-            "J default judgement request " + claim.getReferenceNumber(),
+            "J judgment request " + claim.getReferenceNumber(),
             "",
             Lists.newArrayList(ccjPdfAttachment, createRequestForJudgementJsonAttachment(claim))
         );
