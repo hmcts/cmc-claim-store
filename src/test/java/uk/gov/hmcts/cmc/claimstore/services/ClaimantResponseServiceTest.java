@@ -32,7 +32,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -192,7 +191,7 @@ public class ClaimantResponseServiceTest {
         when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseRejection.class), eq(AUTHORISATION)))
             .thenReturn(claim);
         when(directionsQuestionnaireService.prepareCaseEvent(any(), any()))
-            .thenReturn(Optional.of(REFERRED_TO_MEDIATION));
+            .thenReturn(REFERRED_TO_MEDIATION);
 
         claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
 
@@ -628,7 +627,7 @@ public class ClaimantResponseServiceTest {
         when(caseRepository.saveClaimantResponse(any(Claim.class), any(), eq(AUTHORISATION)))
             .thenReturn(claim);
         when(directionsQuestionnaireService.prepareCaseEvent(any(), any()))
-            .thenReturn(Optional.of(ASSIGNING_FOR_JUDGE_DIRECTIONS));
+            .thenReturn(ASSIGNING_FOR_JUDGE_DIRECTIONS);
 
         claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
         verify(appInsights).trackEvent(eq(JDDO_PILOT_ELIGIBLE), eq(REFERENCE_NUMBER),
@@ -661,7 +660,7 @@ public class ClaimantResponseServiceTest {
         when(caseRepository.saveClaimantResponse(any(Claim.class), any(), eq(AUTHORISATION)))
             .thenReturn(claim);
         when(directionsQuestionnaireService.prepareCaseEvent(any(), any()))
-            .thenReturn(Optional.of(ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS));
+            .thenReturn(ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS);
 
         claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
         verify(appInsights).trackEvent(eq(LA_PILOT_ELIGIBLE), eq(REFERENCE_NUMBER),
