@@ -4,9 +4,11 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.util.function.Predicate;
 
+import static java.util.function.Predicate.isEqual;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.REJECTION;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
@@ -47,5 +49,9 @@ public class ClaimantResponseHelper {
     public static boolean isIntentToProceed(ClaimantResponse claimantResponse) {
         return claimantResponse.getType() == REJECTION
             && ((ResponseRejection) claimantResponse).getDirectionsQuestionnaire().isPresent();
+    }
+
+    public static boolean hasNotOptedForMediation(ResponseRejection responseRejection) {
+        return responseRejection.getFreeMediation().filter(isEqual(YesNoOption.NO)).isPresent();
     }
 }
