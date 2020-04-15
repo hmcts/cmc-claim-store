@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.MoreTimeRequestedCallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -56,7 +57,6 @@ public class MoreTimeRequestedCallbackHandlerTest {
     public void setUp() {
         moreTimeRequestedCallbackHandler = new MoreTimeRequestedCallbackHandler(
             eventProducer,
-            appInsights,
             responseDeadlineCalculator,
             moreTimeRequestRule,
             caseDetailsConverter
@@ -64,7 +64,7 @@ public class MoreTimeRequestedCallbackHandlerTest {
         claim = SampleClaim.getDefault();
         callbackRequest =
             CallbackRequest.builder()
-                .eventId(CaseEvent.MORE_TIME_REQUESTED_PAPER.getValue())
+                .eventId(CaseEvent.RESPONSE_MORE_TIME.getValue())
                 .caseDetails(CaseDetails
                     .builder()
                     .id(10L)
@@ -110,7 +110,6 @@ public class MoreTimeRequestedCallbackHandlerTest {
                 .handle(callbackParams);
 
         assertThat(response.getData()).containsExactly(
-            entry("moreTimeRequested", CCDYesNoOption.YES),
             entry("responseDeadline", deadline)
         );
     }

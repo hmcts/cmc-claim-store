@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.ccd.domain.defendant;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Value;
+import lombok.experimental.NonFinal;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
@@ -27,7 +28,10 @@ public class CCDRespondent {
     private String partyName;
     private String letterHolderId;
     private String defendantId;
+
+    @NonFinal
     private LocalDate responseDeadline;
+
     private LocalDate servedDate;
 
     private CCDParty claimantProvidedDetail;
@@ -111,5 +115,9 @@ public class CCDRespondent {
     public boolean hasStatementOfTruth() {
         return responseDefendantSOTSignerName != null
             || responseDefendantSOTSignerRole != null;
+    }
+
+    public void setResponseDeadline(LocalDate responseDeadline) {
+        this.responseDeadline = responseDeadline;
     }
 }

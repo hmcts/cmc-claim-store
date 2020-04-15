@@ -15,7 +15,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CallbackHandlerFactory;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.MoreTimeRequestedCallbackHandler;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.MoreTimeRequestedCallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legaladvisor.DrawOrderCallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legaladvisor.GenerateOrderCallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
@@ -30,6 +30,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DRAW_ORDER;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.GENERATE_ORDER;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED_PAPER;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESPONSE_MORE_TIME;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SEALED_CLAIM_UPLOAD;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.LEGAL_ADVISOR;
@@ -80,7 +81,7 @@ public class CallbackHandlerFactoryTest {
 
         CallbackRequest callbackRequest = CallbackRequest
             .builder()
-            .eventId(MORE_TIME_REQUESTED_PAPER.getValue())
+            .eventId(RESPONSE_MORE_TIME.getValue())
             .build();
         CallbackParams params = CallbackParams.builder()
             .request(callbackRequest)
