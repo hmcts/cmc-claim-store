@@ -349,32 +349,35 @@ sonarqube {
   properties {
     property "sonar.projectName", "CMC :: Claim Store"
     property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
-    property "sonar.exclusions", "**/ccd/domain/**," +
-      "**/cmc/domain/models/**," +
-      "**/cmc/ccd/sample/data/**," +
-      "**/cmc/ccd/mapper/**," +
-      "**/cmc/claimstore/idam/models/**," +
-      "**/ExceptionForClient.java," +
-      "**/config/**," +
-      "**/*Exception.java," +
-      "**/*Event.java," +
-      "**/PathPatterns.java," +
-      "**/ClaimRepository.java," +
-      "**/CCDCaseRepository.java," +
-      "**/cmc/claimstore/appinsights/**," +
-      "**/cmc/claimstore/services/ccd/legaladvisor/**," +
-      "**/cmc/claimstore/services/ccd/callbacks/ioc/FeesAndPaymentsConfiguration.java," +
-      "**/cmc/claimstore/courtfinder/models/**," +
-      "**/ccd/migration/**," +
-      "**/EmailData.java," +
-      "**/CCDCaseHandler.java," +
-      "**/CCDReDetermination.java," +
-      "**/CCDEventProducer.java," +
-      "**/GeneratedDocuments.java," +
-      "**/DBCaseRepository.java," +
-      "**/MapperUtil.java," +
-      "**/CCDCaseApi.java," +
-      "**/DataFixSupportController.java"
+    property "sonar.exclusions", [
+        "**/ccd/domain/**",
+        "**/cmc/domain/models/**",
+        "**/cmc/ccd/sample/data/**",
+        "**/cmc/ccd/mapper/**",
+        "**/cmc/claimstore/idam/models/**",
+        "**/ExceptionForClient.java",
+        "**/config/**",
+        "**/*Exception.java",
+        "**/*Event.java",
+        "**/PathPatterns.java",
+        "**/ClaimRepository.java",
+        "**/CCDCaseRepository.java",
+        "**/cmc/claimstore/appinsights/**",
+        "**/cmc/claimstore/services/ccd/legaladvisor/**",
+        "**/cmc/claimstore/services/ccd/callbacks/ioc/FeesAndPaymentsConfiguration.java",
+        "**/cmc/claimstore/courtfinder/models/**",
+        "**/ccd/migration/**",
+        "**/EmailData.java",
+        "**/CCDCaseHandler.java",
+        "**/CCDReDetermination.java",
+        "**/CCDEventProducer.java",
+        "**/GeneratedDocuments.java",
+        "**/DBCaseRepository.java",
+        "**/MapperUtil.java",
+        "**/CCDCaseApi.java",
+        "rpa-mapper/**",
+        "**/DataFixSupportController.java"
+      ].join(",")
   }
 }
 
