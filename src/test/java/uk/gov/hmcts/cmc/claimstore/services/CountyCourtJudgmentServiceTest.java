@@ -9,6 +9,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.documents.CCJByAdmissionOrDeterminationPdfService;
+import uk.gov.hmcts.cmc.claimstore.documents.ClaimantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.cmc.claimstore.rules.CountyCourtJudgmentRule;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
@@ -66,8 +68,10 @@ public class CountyCourtJudgmentServiceTest {
 
     @Mock
     private EventProducer eventProducer;
+
     @Mock
     private AppInsights appInsights;
+
     @Mock
     private CaseRepository caseRepository;
     @Mock
@@ -76,6 +80,9 @@ public class CountyCourtJudgmentServiceTest {
     private DocumentsService documentService;
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
     private PDF pdf;
+
+    @Mock
+    private ClaimantResponseReceiptService claimantResponseReceiptService;
 
     private final ReDetermination reDetermination = ReDetermination.builder()
         .explanation("I feel defendant can pay")
@@ -97,9 +104,18 @@ public class CountyCourtJudgmentServiceTest {
             caseRepository,
             ccjByAdmissionOrDeterminationPdfService,
             documentService,
-            true);
+            true,
+            claimantResponseReceiptService);
 
         when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetails);
+        pdf = new PDF(
+            "name",
+            PDF_CONTENT,
+            ClaimDocumentType.CLAIMANT_RESPONSE_RECEIPT
+        );
+        when(documentService.uploadToDocumentManagement(any(PDF.class),
+            anyString(), any(Claim.class))).thenReturn(SampleClaim.builder().build());
+        when(claimantResponseReceiptService.createPdf(any(Claim.class), any())).thenReturn(pdf);
     }
 
     @Test
@@ -415,7 +431,8 @@ public class CountyCourtJudgmentServiceTest {
             caseRepository,
             ccjByAdmissionOrDeterminationPdfService,
             documentService,
-            false);
+            false,
+            claimantResponseReceiptService);
         Claim claim = SampleClaim
             .builder()
             .withResponseDeadline(LocalDate.now().minusMonths(2))
@@ -428,5 +445,57 @@ public class CountyCourtJudgmentServiceTest {
             .createPdf(any());
         verify(documentService, never())
             .uploadToDocumentManagement(any(), any(), any());
+    }
+
+    @Test
+    public void shouldCallDocumentServiceIfRedeterminationByClaimantOrDefendantAndFeatureFlagEnabled() {
+
+        Claim claim = SampleClaim
+            .builder()
+            .withResponseDeadline(LocalDate.now().minusMonths(2))
+            .withCountyCourtJudgment(SampleCountyCourtJudgment.builder().build())
+            .withCountyCourtJudgmentRequestedAt(LocalDate.of(2018, 4, 26).atStartOfDay())
+            .build();
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
+
+        countyCourtJudgmentService.reDetermination(reDetermination, EXTERNAL_ID, AUTHORISATION);
+
+        verify(claimantResponseReceiptService)
+            .createPdf(eq(claim), any());
+        verify(documentService)
+            .uploadToDocumentManagement(pdf, AUTHORISATION, claim);
+    }
+
+    @Test
+    public void shouldNotCallDocumentServiceIfRedeterminationByDefendantAndFeatureFlagDisabled() {
+        countyCourtJudgmentService = new CountyCourtJudgmentService(
+            claimService,
+            new AuthorisationService(),
+            eventProducer,
+            new CountyCourtJudgmentRule(new ClaimDeadlineService()),
+            userService,
+            appInsights,
+            caseRepository,
+            ccjByAdmissionOrDeterminationPdfService,
+            documentService,
+            false,
+            claimantResponseReceiptService);
+
+        Claim claim = SampleClaim
+            .builder()
+            .withResponseDeadline(LocalDate.now().minusMonths(2))
+            .withCountyCourtJudgment(SampleCountyCourtJudgment.builder().build())
+            .withCountyCourtJudgmentRequestedAt(LocalDate.of(2018, 4, 26).atStartOfDay())
+            .build();
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
+
+        countyCourtJudgmentService.reDetermination(reDetermination, EXTERNAL_ID, AUTHORISATION);
+
+        verify(claimantResponseReceiptService, never())
+            .createPdf(eq(claim), any());
+        verify(documentService, never())
+            .uploadToDocumentManagement(pdf, AUTHORISATION, claim);
     }
 }
