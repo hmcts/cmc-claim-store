@@ -7,6 +7,7 @@ public enum ClaimState {
     OPEN("open"),
     CLOSED("closed"),
     SETTLED("settled"),
+    SETTLEMENT_AGREEMENT_MADE("settlementAgreementMade"),
     READY_FOR_LEGAL_ADVISOR_DIRECTIONS("readyForDirections"),
     READY_FOR_JUDGE_DIRECTIONS("readyForJudgeDirections"),
     STAYED("stayed"),
@@ -20,6 +21,9 @@ public enum ClaimState {
     REFERRED_MEDIATION("referredMediation"),
     AWAITING_CITIZEN_PAYMENT("awaitingCitizenPayment"),
     PROCEEDS_IN_CASE_MAN("proceedsInCaseman"),
+    READY_FOR_PAPER_DQ("readyForPaperDQ"),
+    JUDGMENT_DECIDE_AMOUNT("judgmentDecideAmount"),
+    REDETERMINATION_REQUESTED("redeterminationRequested"),
     JUDGMENT_REQUESTED("judgmentRequested");
 
     private final String state;
