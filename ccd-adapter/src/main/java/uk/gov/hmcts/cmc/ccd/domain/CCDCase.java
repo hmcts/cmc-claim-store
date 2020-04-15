@@ -137,4 +137,5 @@ public class CCDCase {
     private LocalDate intentionToProceedDeadline;
     private LocalDateTime dateReferredForDirections;
     private GeneralLetterContent generalLetterContent;
+    private CCDLaList assignedTo;
 }

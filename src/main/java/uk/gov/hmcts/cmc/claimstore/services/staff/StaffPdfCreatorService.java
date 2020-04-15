@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimantResponseFileBaseName;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Component
@@ -38,7 +39,8 @@ public class StaffPdfCreatorService {
     }
 
     public EmailAttachment createClaimantResponsePdfAttachment(Claim claim) {
-        PDF claimantResponse = claimantResponseReceiptService.createPdf(claim);
+        PDF claimantResponse = claimantResponseReceiptService.createPdf(claim,
+            buildClaimantResponseFileBaseName(claim.getReferenceNumber()));
         requireNonNull(claimantResponse);
 
         return pdf(
