@@ -133,8 +133,7 @@ public class DeadlineSupportControllerTest {
             .withDirectionsQuestionnaireDeadline(deadline)
             .build()));
 
-        when(directionsQuestionnaireDeadlineCalculator.calculateDirectionsQuestionnaireDeadline(eq(now)))
-            .thenReturn(deadline);
+        when(directionsQuestionnaireDeadlineCalculator.calculate(eq(now))).thenReturn(deadline);
 
         ResponseEntity<String> response = controller.defineDeadline("dq", reference, true);
 
@@ -237,7 +236,7 @@ public class DeadlineSupportControllerTest {
             .withRespondedAt(LocalDateTime.now())
             .build()));
         when(directionsQuestionnaireDeadlineCalculator
-            .calculateDirectionsQuestionnaireDeadline(any(LocalDateTime.class))).thenReturn(deadline);
+            .calculate(any(LocalDateTime.class))).thenReturn(deadline);
 
         ResponseEntity<String> response = controller.defineDeadline("dq", reference, false);
 
@@ -326,7 +325,7 @@ public class DeadlineSupportControllerTest {
             .withClaimantResponse(SampleClaimantResponse.validDefaultRejection())
             .build()));
 
-        when(directionsQuestionnaireDeadlineCalculator.calculateDirectionsQuestionnaireDeadline(eq(now)))
+        when(directionsQuestionnaireDeadlineCalculator.calculate(eq(now)))
             .thenReturn(deadline);
 
         ResponseEntity<String> response = controller.defineDeadline("dq", reference, false);
