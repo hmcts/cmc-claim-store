@@ -29,7 +29,7 @@ public class DirectionsQuestionnaireDeadlineCalculator {
         this.endOfBusinessDayHour = endOfBusinessDayHour;
     }
 
-    public LocalDate calculateDirectionsQuestionnaireDeadline(LocalDateTime respondedAt) {
+    public LocalDate calculate(LocalDateTime respondedAt) {
         LocalDate date = respondedAt.toLocalDate().plusDays(serviceDays + timeForResponseInDays);
 
         if (isTooLateForToday(respondedAt.getHour())) {
