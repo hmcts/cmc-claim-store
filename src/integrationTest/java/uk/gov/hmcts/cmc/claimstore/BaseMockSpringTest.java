@@ -39,6 +39,8 @@ import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.TestingSupportRepository;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionOrderService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.bankholidays.BankHolidays;
+import uk.gov.hmcts.cmc.claimstore.services.bankholidays.BankHolidaysApi;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.PaymentsService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
@@ -46,6 +48,7 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDraw
 import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
+import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 import uk.gov.hmcts.cmc.scheduler.services.JobService;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
@@ -62,6 +65,7 @@ import java.util.stream.Stream;
 import javax.sql.DataSource;
 
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -93,6 +97,7 @@ public abstract class BaseMockSpringTest {
         + "EHLs1-hiQxjbGCKD2bFkv7YcuxWQGSyOAyoQIExvuBWLFz_zk36ZiegeAONuB0MTwA9b3TX4ENAhFWl4lBR4zcBsAhnISDiOj3hV-Va7MRw";
 
     protected static final String SERVICE_TOKEN = "S2S token";
+    protected static final String AUTHORISATION_TOKEN = "Bearer token";
     protected static final String USER_ID = "1";
     protected static final String JURISDICTION_ID = "CMC";
     protected static final String CASE_TYPE_ID = "MoneyClaimCase";
@@ -150,7 +155,8 @@ public abstract class BaseMockSpringTest {
     protected PilotCourtService pilotCourtService;
     @MockBean
     protected DirectionOrderService directionOrderService;
-
+    @MockBean
+    protected BankHolidaysApi bankHolidaysApi;
     @MockBean
     private Flyway flyway;
     @MockBean
@@ -177,10 +183,19 @@ public abstract class BaseMockSpringTest {
 
     @Before
     public void setUpBase() {
+
+        bankHolidaysSetup();
+
         when(securityContext.getAuthentication()).thenReturn(authentication);
         SecurityContextHolder.setContext(securityContext);
         setSecurityAuthorities(authentication);
         when(jwtDecoder.decode(anyString())).thenReturn(getJwt());
+    }
+
+    private void bankHolidaysSetup() {
+        String input = new ResourceReader().read("/bank-holidays.json");
+        BankHolidays bankHolidays = jsonMappingHelper.fromJson(input, BankHolidays.class);
+        given(bankHolidaysApi.retrieveAll()).willReturn(bankHolidays);
     }
 
     protected void setSecurityAuthorities(Authentication authenticationMock, String... authorities) {

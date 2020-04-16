@@ -118,7 +118,7 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
         Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
 
         if (!FeaturesUtils.isOnlineDQ(claim)) {
-            LocalDate deadline = deadlineCalculator.calculateDirectionsQuestionnaireDeadline(LocalDateTime.now());
+            LocalDate deadline = deadlineCalculator.calculate(LocalDateTime.now());
             claim = claim.toBuilder().directionsQuestionnaireDeadline(deadline).build();
         }
 
