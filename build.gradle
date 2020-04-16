@@ -186,7 +186,7 @@ dependencies {
   compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
 
   compile group: 'org.elasticsearch', name: 'elasticsearch', version: '7.6.2'
-  compile group: 'org.postgresql', name: 'postgresql', version: '42.2.10'
+  compile group: 'org.postgresql', name: 'postgresql', version: '42.2.12'
 
   compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.15.1-RELEASE'
 
@@ -212,7 +212,7 @@ dependencies {
   compile group: 'org.springframework.retry', name: 'spring-retry'
   compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign'
 
-  compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '10.8'
+  compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '10.9'
 
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
