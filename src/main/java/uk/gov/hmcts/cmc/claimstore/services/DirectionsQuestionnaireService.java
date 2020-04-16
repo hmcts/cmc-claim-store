@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
-import uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
@@ -46,7 +45,7 @@ public class DirectionsQuestionnaireService {
             return REFERRED_TO_MEDIATION;
         }
 
-        if (!isOnlineDQ(claim) && ClaimantResponseHelper.hasNotOptedForMediation(responseRejection)) {
+        if (!isOnlineDQ(claim)) {
             return DIRECTIONS_QUESTIONNAIRE_DEADLINE;
         }
 

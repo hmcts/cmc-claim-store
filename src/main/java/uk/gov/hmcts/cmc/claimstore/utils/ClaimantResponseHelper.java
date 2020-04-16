@@ -50,8 +50,4 @@ public class ClaimantResponseHelper {
         return claimantResponse.getType() == REJECTION
             && ((ResponseRejection) claimantResponse).getDirectionsQuestionnaire().isPresent();
     }
-
-    public static boolean hasNotOptedForMediation(ResponseRejection responseRejection) {
-        return responseRejection.getFreeMediation().filter(isEqual(YesNoOption.NO)).isPresent();
-    }
 }
