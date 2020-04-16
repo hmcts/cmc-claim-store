@@ -155,8 +155,7 @@ public class DeadlineSupportController {
     }
 
     private LocalDate updateDeadline(Claim claim, String authorisation, LocalDateTime respondedDate) {
-        LocalDate deadline = directionsQuestionnaireDeadlineCalculator
-            .calculate(respondedDate);
+        LocalDate deadline = directionsQuestionnaireDeadlineCalculator.calculate(respondedDate);
         caseRepository.updateDirectionsQuestionnaireDeadline(claim, deadline, authorisation);
         return deadline;
     }

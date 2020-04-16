@@ -133,8 +133,7 @@ public class DeadlineSupportControllerTest {
             .withDirectionsQuestionnaireDeadline(deadline)
             .build()));
 
-        when(directionsQuestionnaireDeadlineCalculator.calculate(eq(now)))
-            .thenReturn(deadline);
+        when(directionsQuestionnaireDeadlineCalculator.calculate(eq(now))).thenReturn(deadline);
 
         ResponseEntity<String> response = controller.defineDeadline("dq", reference, true);
 
