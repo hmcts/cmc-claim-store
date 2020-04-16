@@ -5,9 +5,13 @@ import org.junit.Test;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimantResponseFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildLetterFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForInterlocutoryJudgmentFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForJudgmentByAdmissionOrDeterminationFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForReferToJudgeFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestOrgRepaymentFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildReviewOrderFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.isSealedClaim;
@@ -95,5 +99,29 @@ public class DocumentNameUtilsTest {
     public void shouldBuildJudgmentByAdmissionOrDeterminationFileBaseName() {
         assertThat(buildRequestForJudgmentByAdmissionOrDeterminationFileBaseName("000MC001", "admissions"))
             .isEqualTo("000MC001-ccj-request-admissions");
+    }
+
+    @Test
+    public void shouldBuildInterlocutoryJudgmentFileBaseName() {
+        assertThat(buildRequestForInterlocutoryJudgmentFileBaseName("000MC001"))
+            .isEqualTo("000MC001-request-interloc-judgment");
+    }
+
+    @Test
+    public void shouldBuildReferToJugdeBaseName() {
+        assertThat(buildRequestForReferToJudgeFileBaseName("000MC001", "claimant"))
+            .isEqualTo("000MC001-request-redeterm-claimant");
+    }
+
+    @Test
+    public void shouldBuildClaimantResponseFileBaseName() {
+        assertThat(buildClaimantResponseFileBaseName("000MC001"))
+            .isEqualTo("000MC001-claimant-response");
+    }
+
+    @Test
+    public void shouldBuildRequestOrgRepaymentFileBaseName() {
+        assertThat(buildRequestOrgRepaymentFileBaseName("000MC001"))
+            .isEqualTo("000MC001-request-org-repayment-amount");
     }
 }
