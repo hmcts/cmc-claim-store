@@ -61,7 +61,7 @@ public class PaymentsService {
         ClaimData claimData
     ) {
 
-        if (claimData.getPayment().isEmpty()) {
+        if (!claimData.getPayment().isPresent()) {
             return Optional.empty();
         }
 
