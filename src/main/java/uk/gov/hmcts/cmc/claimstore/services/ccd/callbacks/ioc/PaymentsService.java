@@ -61,11 +61,12 @@ public class PaymentsService {
         ClaimData claimData
     ) {
 
-        if (!claimData.getPayment().isPresent()) {
+        Optional<Payment> payment = claimData.getPayment();
+        if (!payment.isPresent()) {
             return Optional.empty();
         }
 
-        Payment claimPayment = claimData.getPayment().get();
+        Payment claimPayment = payment.get();
         logger.info("Retrieving payment with reference {}", claimPayment.getReference());
 
         PaymentDto paymentDto = paymentsClient.retrievePayment(authorisation, claimPayment.getReference());
