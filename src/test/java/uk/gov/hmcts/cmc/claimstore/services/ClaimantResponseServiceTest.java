@@ -112,8 +112,6 @@ public class ClaimantResponseServiceTest {
             directionsQuestionnaireDeadlineCalculator,
             clock
         );
-        when(clock.instant()).thenReturn(TODAY_ZONED.toInstant());
-        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
     }
 
     @Test
@@ -138,7 +136,7 @@ public class ClaimantResponseServiceTest {
         inOrder.verify(caseRepository, once()).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
         inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class), anyString());
         verify(appInsights, once()).trackEvent(eq(BOTH_PARTIES_OFFLINE_DQ),
-                eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+            eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
 
         verify(formaliseResponseAcceptanceService, never()).formalise(any(), any(), anyString());
 
@@ -317,13 +315,10 @@ public class ClaimantResponseServiceTest {
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
         when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseRejection.class), eq(AUTHORISATION)))
             .thenReturn(claim);
-        when(directionsQuestionnaireDeadlineCalculator.calculateDirectionsQuestionnaireDeadline(eq(TODAY)))
-            .thenReturn(dqDeadline);
 
         claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
 
         verify(caseRepository).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
-        verify(directionsQuestionnaireDeadlineCalculator).calculateDirectionsQuestionnaireDeadline(eq(TODAY));
         verify(eventProducer).createClaimantResponseEvent(any(Claim.class), anyString());
         verify(appInsights).trackEvent(eq(BOTH_PARTIES_OFFLINE_DQ), eq(REFERENCE_NUMBER),
             eq(claim.getReferenceNumber()));
@@ -352,7 +347,7 @@ public class ClaimantResponseServiceTest {
 
         verify(caseRepository).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
         verify(directionsQuestionnaireDeadlineCalculator, never())
-            .calculateDirectionsQuestionnaireDeadline(any(LocalDateTime.class));
+            .calculate(any(LocalDateTime.class));
         verify(caseRepository, never())
             .updateDirectionsQuestionnaireDeadline(any(Claim.class), any(LocalDate.class), anyString());
         verify(eventProducer).createClaimantResponseEvent(any(Claim.class), eq(AUTHORISATION));
@@ -378,13 +373,10 @@ public class ClaimantResponseServiceTest {
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
         when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseRejection.class), eq(AUTHORISATION)))
             .thenReturn(claim);
-        when(directionsQuestionnaireDeadlineCalculator.calculateDirectionsQuestionnaireDeadline(eq(TODAY)))
-            .thenReturn(dqDeadline);
 
         claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
 
         verify(caseRepository).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
-        verify(directionsQuestionnaireDeadlineCalculator).calculateDirectionsQuestionnaireDeadline(eq(TODAY));
         verify(eventProducer).createClaimantResponseEvent(any(Claim.class), eq(AUTHORISATION));
         verify(appInsights).trackEvent(eq(BOTH_PARTIES_OFFLINE_DQ),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
@@ -415,7 +407,7 @@ public class ClaimantResponseServiceTest {
 
         verify(caseRepository).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
         verify(directionsQuestionnaireDeadlineCalculator, never())
-            .calculateDirectionsQuestionnaireDeadline(any(LocalDateTime.class));
+            .calculate(any(LocalDateTime.class));
         verify(caseRepository, never())
             .updateDirectionsQuestionnaireDeadline(any(Claim.class), any(LocalDate.class), anyString());
         verify(eventProducer).createClaimantResponseEvent(any(Claim.class), eq(AUTHORISATION));
