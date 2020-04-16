@@ -46,7 +46,9 @@
     "amount": 40.99,
     "reference": "RC-1524-6488-1670-7520",
     "status": "SUCCESS",
-    "date_created": "2019-01-01"
+    "date_created": "2019-01-01",
+    "transaction_id": "transactionId",
+    "fee_id": "feeId"
   },
   "amount": {
     "type": "breakdown",
