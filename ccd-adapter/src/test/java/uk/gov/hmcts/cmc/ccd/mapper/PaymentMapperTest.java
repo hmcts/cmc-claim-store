@@ -92,7 +92,6 @@ public class PaymentMapperTest {
         assertThat(payment.getFeeId()).isEqualTo(ccdCase.getPaymentFeeId());
     }
 
-
     @Test
     public void toShouldNotBuildPaymentIfPaymentIsNull() {
         CCDCase.CCDCaseBuilder caseBuilder = CCDCase.builder();
