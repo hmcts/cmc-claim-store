@@ -58,7 +58,7 @@ public class CallbackController {
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, authorisation))
             .version(version.map(String::toUpperCase).map(CallbackVersion::valueOf).orElse(null))
             .build();
-        return callbackHandlerFactory
-            .dispatch(callbackParams);
+
+        return callbackHandlerFactory.dispatch(callbackParams);
     }
 }
