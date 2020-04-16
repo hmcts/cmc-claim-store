@@ -1,12 +1,17 @@
 {
   "caseNumber": "000MC001",
   "ccjRequestedOn": "26-Apr-2018",
+  "judgmentType":"DEFAULT",
   "amountWithInterest": 40.99,
   "courtFee": 40.00,
   "alreadyPaid": 10.00,
-  "paymentType": "BY_SPECIFIED_DATE",
-  "fullPaymentDeadline": "12-Mar-2200",
-  "instalments": null,
+  "paymentType": "INSTALMENTS",
+  "fullPaymentDeadline": null,
+  "instalments": {
+    "amount": 100.99,
+    "firstPayment": "12-Mar-2200",
+    "frequency": "EVERY_MONTH"
+  },
   "claimantEmailAddress": "claimant@mail.com",
   "defendantEmailAddress": null
 }
