@@ -1,0 +1,13 @@
+{
+  "caseNumber": "000MC001",
+  "ccjRequestedOn": "26-Apr-2018",
+  "judgmentType":"DEFAULT",
+  "amountWithInterest": 40.99,
+  "courtFee": 40.00,
+  "alreadyPaid": null,
+  "paymentType": "IMMEDIATELY",
+  "fullPaymentDeadline": null,
+  "instalments": null,
+  "claimantEmailAddress": "claimant@mail.com",
+  "defendantEmailAddress": null
+}
