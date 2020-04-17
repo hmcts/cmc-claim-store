@@ -15,9 +15,16 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.PAPER_RESPONSE_COUNTER_CLAIM;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.PAPER_RESPONSE_DISPUTES_ALL;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.PAPER_RESPONSE_FULL_ADMIT;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.PAPER_RESPONSE_MORE_TIME;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.PAPER_RESPONSE_PART_ADMIT;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.PAPER_RESPONSE_STATES_PAID;
 import static uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDClaimSubmissionOperationIndicators.CCDClaimSubmissionOperationIndicatorsWithPinSuccess;
 import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.getMediationOutcome;
 import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.hasPaperResponse;
@@ -202,13 +209,24 @@ public class MapperUtilTest {
     }
 
     @Test
-    public void cantContinueOnlineIfStaffUploadedDocumentPresent() {
-        CCDCase ccdCase =
-            SampleData.withPaperResponseFromStaffUploadedDoc();
+    public void cantContinueOnlineIfAnyPaperResponseDocumentPresent() {
 
-        YesNoOption result = hasPaperResponse.apply(ccdCase);
-        assertThat(result).isEqualTo(YesNoOption.YES);
+        for (var ccdClaimDocumentType : List.of(
+            PAPER_RESPONSE_FULL_ADMIT,
+            PAPER_RESPONSE_PART_ADMIT,
+            PAPER_RESPONSE_STATES_PAID,
+            PAPER_RESPONSE_MORE_TIME,
+            PAPER_RESPONSE_DISPUTES_ALL,
+            PAPER_RESPONSE_COUNTER_CLAIM)) {
 
+            CCDCase ccdCase =
+                SampleData.withPaperResponseFromStaffUploadedDoc(ccdClaimDocumentType);
+
+            YesNoOption result = hasPaperResponse.apply(ccdCase);
+            assertThat(result)
+                .as(ccdClaimDocumentType.name())
+                .isEqualTo(YesNoOption.YES);
+        }
     }
 
     @Test

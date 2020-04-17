@@ -18,6 +18,7 @@ import java.net.URI;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.PAPER_RESPONSE_DISPUTES_ALL;
 
 public class ClaimDocumentCollectionMapperTest {
 
@@ -134,7 +135,7 @@ public class ClaimDocumentCollectionMapperTest {
 
     @Test
     public void shouldMapFromStaffUploadedDocuments() {
-        CCDCase ccdCase = SampleData.withPaperResponseFromStaffUploadedDoc();
+        CCDCase ccdCase = SampleData.withPaperResponseFromStaffUploadedDoc(PAPER_RESPONSE_DISPUTES_ALL);
         Claim.ClaimBuilder builder = Claim.builder();
 
         mapper.from(ccdCase, builder);
