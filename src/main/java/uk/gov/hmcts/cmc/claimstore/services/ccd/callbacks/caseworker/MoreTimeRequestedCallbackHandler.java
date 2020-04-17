@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedCitizenNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
@@ -27,6 +28,7 @@ import java.util.Map;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESPONSE_MORE_TIME;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
+import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 
 @Service
 @ConditionalOnProperty("feature_toggles.ctsc_enabled")
@@ -40,19 +42,22 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
     private final MoreTimeRequestRule moreTimeRequestRule;
     private final CaseDetailsConverter caseDetailsConverter;
+    private final MoreTimeRequestedCitizenNotificationHandler moreTimeRequestedCitizenNotificationHandler;
 
     private static final String PREVIEW_SENTENCE = "The response deadline will be %s .";
 
     @Autowired
     public MoreTimeRequestedCallbackHandler(
-        EventProducer eventProducer,
-        ResponseDeadlineCalculator responseDeadlineCalculator,
-        MoreTimeRequestRule moreTimeRequestRule,
-        CaseDetailsConverter caseDetailsConverter) {
+            EventProducer eventProducer,
+            ResponseDeadlineCalculator responseDeadlineCalculator,
+            MoreTimeRequestRule moreTimeRequestRule,
+            CaseDetailsConverter caseDetailsConverter,
+            MoreTimeRequestedCitizenNotificationHandler moreTimeRequestedCitizenNotificationHandler) {
         this.eventProducer = eventProducer;
         this.responseDeadlineCalculator = responseDeadlineCalculator;
         this.moreTimeRequestRule = moreTimeRequestRule;
         this.caseDetailsConverter = caseDetailsConverter;
+        this.moreTimeRequestedCitizenNotificationHandler = moreTimeRequestedCitizenNotificationHandler;
     }
 
     @Override
@@ -82,9 +87,7 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
                 claim.getClaimData().getDefendant().getEmail().orElse(null)
         );
 
-        return AboutToStartOrSubmitCallbackResponse
-                .builder()
-                .build();
+        return moreTimeRequestedCitizenNotificationHandler.sendNotifications(callbackParams);
     }
 
     private AboutToStartOrSubmitCallbackResponse requestMoreTimeViaCaseworker(CallbackParams callbackParams) {
@@ -92,18 +95,19 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
         Claim claim = convertCallbackToClaim(callbackRequest);
         LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
 
-      //  List<String> validationResult = this.moreTimeRequestRule.validateMoreTimeCanBeRequested(claim, newDeadline);
+        List<String> validationResult = this.moreTimeRequestRule.validateMoreTimeCanBeRequested(claim);
         AboutToStartOrSubmitCallbackResponseBuilder builder = AboutToStartOrSubmitCallbackResponse
             .builder();
 
-//        if (!validationResult.isEmpty()) {
-//            return builder
-//                .errors(validationResult)
-//                .build();
-//        }
+        if (!validationResult.isEmpty()) {
+            return builder
+                .errors(validationResult)
+                .build();
+        }
 
         Map<String, Object> data = new HashMap<>(callbackRequest.getCaseDetails().getData());
-        data.put("responseDeadlinePreview", String.format(PREVIEW_SENTENCE, newDeadline));
+        data.put("responseDeadlinePreview", String.format(PREVIEW_SENTENCE, formatDate(newDeadline)));
+        data.put("responseDeadline", newDeadline);
 
         return builder
                 .data(data)
