@@ -29,7 +29,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
 @Service
 @ConditionalOnProperty("feature_toggles.ctsc_enabled")
-public class ReferToJudgeCallbackHandler extends CallbackHandler {
+public class ReferToJudgeCallbackHandler1 extends CallbackHandler {
 
     private static final List<CaseEvent> EVENTS = Collections.singletonList(REFER_TO_JUDGE);
     private static final List<Role> ROLES = ImmutableList.of(CASEWORKER);
@@ -38,7 +38,7 @@ public class ReferToJudgeCallbackHandler extends CallbackHandler {
     private final CaseDetailsConverter caseDetailsConverter;
 
     @Autowired
-    public ReferToJudgeCallbackHandler(
+    public ReferToJudgeCallbackHandler1(
         CaseDetailsConverter caseDetailsConverter
     ) {
         this.caseDetailsConverter = caseDetailsConverter;

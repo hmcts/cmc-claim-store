@@ -23,9 +23,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class ReferToJudgeCallbackHandlerTest {
+public class ReferToJudgeCallbackHandler1Test {
 
-    private ReferToJudgeCallbackHandler handler;
+    private ReferToJudgeCallbackHandler1 handler;
     private CallbackParams callbackParams;
     private CallbackRequest callbackRequest;
     private static final String AUTHORISATION = "Bearer: aaaa";
@@ -36,7 +36,7 @@ public class ReferToJudgeCallbackHandlerTest {
     @BeforeEach
     public void setUp() {
 
-        handler = new ReferToJudgeCallbackHandler(caseDetailsConverter);
+        handler = new ReferToJudgeCallbackHandler1(caseDetailsConverter);
         callbackRequest = CallbackRequest
             .builder()
             .caseDetails(CaseDetails.builder().data(Collections.EMPTY_MAP).build())
