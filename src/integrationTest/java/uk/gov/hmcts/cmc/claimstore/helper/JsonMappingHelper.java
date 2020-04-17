@@ -20,6 +20,10 @@ public class JsonMappingHelper {
         return jsonMapper.toJson(input);
     }
 
+    public <T> T fromJson(String value, Class<T> clazz) {
+        return jsonMapper.fromJson(value, clazz);
+    }
+
     public <T> T fromJson(String value, TypeReference<T> typeReference) {
         return jsonMapper.fromJson(value, typeReference);
     }

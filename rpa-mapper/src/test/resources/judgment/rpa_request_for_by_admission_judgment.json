@@ -1,6 +1,7 @@
 {
   "caseNumber": "000MC001",
   "ccjRequestedOn": "26-Apr-2018",
+  "judgmentType":"BY_ADMISSION",
   "amountWithInterest": 40.99,
   "courtFee": 40.00,
   "alreadyPaid": null,

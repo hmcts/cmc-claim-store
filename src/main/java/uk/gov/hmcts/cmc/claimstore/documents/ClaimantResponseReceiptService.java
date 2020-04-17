@@ -9,7 +9,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimantResponseFileBaseName;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIMANT_RESPONSE_RECEIPT;
 
 @Service
@@ -30,10 +29,10 @@ public class ClaimantResponseReceiptService {
         this.pdfServiceClient = pdfServiceClient;
     }
 
-    public PDF createPdf(Claim claim) {
+    public PDF createPdf(Claim claim, String filename) {
         requireNonNull(claim);
         return new PDF(
-            buildClaimantResponseFileBaseName(claim.getReferenceNumber()),
+            filename,
             pdfServiceClient.generateFromHtml(
                 documentTemplates.getClaimantResponseReceipt(),
                 contentProvider.createContent(claim)),

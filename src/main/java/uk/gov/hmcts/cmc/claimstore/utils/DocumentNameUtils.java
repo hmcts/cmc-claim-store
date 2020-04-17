@@ -71,6 +71,12 @@ public class DocumentNameUtils {
         return format("%s-claimant-response", caseRef);
     }
 
+    public static String buildRequestOrgRepaymentFileBaseName(String caseRef) {
+        requireNonBlank(caseRef);
+
+        return format("%s-request-org-repayment-amount", caseRef);
+    }
+
     public static String buildClaimantHearingFileBaseName(String caseRef) {
         requireNonBlank(caseRef);
 
@@ -125,5 +131,18 @@ public class DocumentNameUtils {
         requireNonBlank(ccjType);
 
         return format("%s-ccj-request-%s", caseRef, ccjType);
+    }
+
+    public static String buildRequestForInterlocutoryJudgmentFileBaseName(String caseRef) {
+        requireNonBlank(caseRef);
+
+        return format("%s-request-interloc-judgment", caseRef);
+    }
+
+    public static String buildRequestForReferToJudgeFileBaseName(String caseRef, String partyType) {
+        requireNonBlank(caseRef);
+        requireNonBlank(partyType);
+
+        return format("%s-request-redeterm-%s", caseRef, partyType);
     }
 }
