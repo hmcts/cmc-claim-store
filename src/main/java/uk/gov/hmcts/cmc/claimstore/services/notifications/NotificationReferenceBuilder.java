@@ -254,4 +254,14 @@ public class NotificationReferenceBuilder {
             return reference("offlineDQ-%s-mediation-unsuccessful-%s", party, claimReferenceNumber);
         }
     }
+
+    public static class PaperResponse {
+        private PaperResponse() {
+            // do not instantiate
+        }
+
+        public static String notifyClaimantPaperResponseSubmitted(String claimReferenceNumber, String party) {
+            return reference("paper-response-submitted-%s-%s", party, claimReferenceNumber);
+        }
+    }
 }
