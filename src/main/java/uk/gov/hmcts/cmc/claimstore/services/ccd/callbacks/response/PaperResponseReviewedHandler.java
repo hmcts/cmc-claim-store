@@ -34,20 +34,20 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
 import static uk.gov.hmcts.cmc.claimstore.utils.Lazy.lazily;
 
-public class PaperResponseReviewedHandler {
-    private static final List<ClaimDocumentType> paperResponseStaffUploadedTypes = List.of(
+class PaperResponseReviewedHandler {
+    private static final List<ClaimDocumentType> PAPER_RESPONSE_STAFF_UPLOADED_TYPES = List.of(
         ClaimDocumentType.PAPER_RESPONSE_FULL_ADMIT,
         ClaimDocumentType.PAPER_RESPONSE_DISPUTES_ALL,
         ClaimDocumentType.PAPER_RESPONSE_PART_ADMIT,
         ClaimDocumentType.PAPER_RESPONSE_STATES_PAID);
 
-    private static final List<String> paperResponseScannedTypes = List.of("N9a", "N9b", "N11", "N225", "N180");
+    private static final List<String> PAPER_RESPONSE_SCANNED_TYPES = List.of("N9a", "N9b", "N11", "N225", "N180");
 
-    private static final Predicate<ClaimDocument> filterClaimDocumentPaperResponseDoc = doc ->
-        paperResponseStaffUploadedTypes.stream().anyMatch(isEqual(doc.getDocumentType()));
+    private static final Predicate<ClaimDocument> isPaperResponseClaimDoc = doc ->
+        PAPER_RESPONSE_STAFF_UPLOADED_TYPES.stream().anyMatch(isEqual(doc.getDocumentType()));
 
-    private static final Predicate<ScannedDocument> filterScannedDocumentPaperResponseDoc = doc ->
-        paperResponseScannedTypes.stream().anyMatch(type -> type.equalsIgnoreCase(doc.getSubtype()));
+    private static final Predicate<ScannedDocument> isPaperResponseScannedDoc = doc ->
+        PAPER_RESPONSE_SCANNED_TYPES.stream().anyMatch(type -> type.equalsIgnoreCase(doc.getSubtype()));
 
     private static final Predicate<ClaimDocument> isClaimDocumentMoreTimeRequested = doc ->
         ClaimDocumentType.PAPER_RESPONSE_MORE_TIME.equals(doc.getDocumentType());
@@ -66,7 +66,7 @@ public class PaperResponseReviewedHandler {
     private final Lazy<Claim> claimBeforeEvent;
     private final Lazy<Claim> claimAfterEvent;
 
-    public PaperResponseReviewedHandler(
+    PaperResponseReviewedHandler(
         CaseDetailsConverter caseDetailsConverter,
         CaseMapper caseMapper,
         ResponseDeadlineCalculator responseDeadlineCalculator,
@@ -87,7 +87,7 @@ public class PaperResponseReviewedHandler {
         claimAfterEvent = lazily(() -> toClaimAfterEvent(callbackRequest));
     }
 
-    public AboutToStartOrSubmitCallbackResponse handle() {
+    AboutToStartOrSubmitCallbackResponse handle() {
         Claim claim = claimAfterEvent.get();
 
         var responseBuilder = AboutToStartOrSubmitCallbackResponse.builder();
@@ -193,7 +193,7 @@ public class PaperResponseReviewedHandler {
     private static Optional<LocalDateTime> getResponseTimeFromPaperResponse(Claim claim) {
         return Optional.ofNullable(getStaffUploadedPaperResponseDoc(claim)
             .map(ClaimDocument::getReceivedDateTime)
-            .orElseGet(() -> getScannedTimeForScannedPaperResponseDoc(claim)
+            .orElseGet(() -> getScannedPaperResponseDoc(claim)
                 .map(ScannedDocument::getDeliveryDate)
                 .orElse(null)
             ));
@@ -213,13 +213,13 @@ public class PaperResponseReviewedHandler {
 
     private static Optional<ClaimDocument> getStaffUploadedPaperResponseDoc(Claim claim) {
         return getStaffUploadedDocuments(claim)
-            .filter(filterClaimDocumentPaperResponseDoc)
+            .filter(isPaperResponseClaimDoc)
             .findFirst();
     }
 
-    private static Optional<ScannedDocument> getScannedTimeForScannedPaperResponseDoc(Claim claim) {
+    private static Optional<ScannedDocument> getScannedPaperResponseDoc(Claim claim) {
         return getBulkScannedDocuments(claim)
-            .filter(filterScannedDocumentPaperResponseDoc)
+            .filter(isPaperResponseScannedDoc)
             .findFirst();
     }
 
