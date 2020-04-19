@@ -1,8 +1,15 @@
 package uk.gov.hmcts.cmc.claimstore.events.response;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
+import uk.gov.hmcts.cmc.ccd.domain.GeneralLetterContent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
@@ -13,6 +20,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,26 +38,41 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 public class MoreTimeRequestedCitizenNotificationHandler {
 
     private static final String REFERENCE_TEMPLATE = "more-time-requested-notification-to-%s-%s";
+    private static final String STANDARD_DEADLINE_TEXT = "You’ve been given an extra 14 days to respond " +
+            "to the claim made against you by s%.\n" +
+            "You now need to respond to the claim before 4pm on d%.\n" +
+            "If you don’t respond, you could get a County Court Judgment (CCJ). " +
+            "This may make it harder to get credit, such as a mobile phone contract, credit card or mortgage.";
+
+    private final String generalLetterTemplateId;
 
     private final NotificationService notificationService;
     private final NotificationsProperties notificationsProperties;
     private final GeneralLetterService generalLetterService;
     private final CaseDetailsConverter caseDetailsConverter;
+    private final DocAssemblyService docAssemblyService;
+    private final UserService userService;
 
     @Autowired
     public MoreTimeRequestedCitizenNotificationHandler(
         NotificationService notificationService,
         NotificationsProperties notificationsProperties,
         GeneralLetterService generalLetterService,
-        CaseDetailsConverter caseDetailsConverter
+        CaseDetailsConverter caseDetailsConverter,
+        DocAssemblyService docAssemblyService,
+        UserService userService,
+        @Value("${doc_assembly.generalLetterTemplateId}") String generalLetterTemplateId
     ) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.generalLetterService = generalLetterService;
         this.notificationService = notificationService;
         this.notificationsProperties = notificationsProperties;
+        this.docAssemblyService = docAssemblyService;
+        this.userService = userService;
+        this.generalLetterTemplateId = generalLetterTemplateId;
     }
 
-    public AboutToStartOrSubmitCallbackResponse sendNotifications(CallbackParams callbackParams) {
+    public CallbackResponse sendNotifications(CallbackParams callbackParams) {
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
@@ -57,7 +80,7 @@ public class MoreTimeRequestedCitizenNotificationHandler {
         if (claim.getDefendantEmail() != null && claim.getDefendantId() != null) {
             sendEmailNotificationToDefendant(claim);
         } else {
-            return createAndPrintLetter();
+            return createAndPrintLetter(callbackParams);
         }
         return AboutToStartOrSubmitCallbackResponse.builder().build();
     }
@@ -80,9 +103,25 @@ public class MoreTimeRequestedCitizenNotificationHandler {
         );
     }
 
-    private AboutToStartOrSubmitCallbackResponse createAndPrintLetter(CallbackParams callbackParams) {
+    private CallbackResponse createAndPrintLetter(CallbackParams callbackParams) {
+        String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
+        UserDetails userDetails = userService.getUserDetails(authorisation);
+        String caseworkerName = userDetails.getFullName();
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackParams.getRequest().getCaseDetails());
+        Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
 
-        return
+        ccdCase = CCDCase.builder()
+                .generalLetterContent(GeneralLetterContent.builder()
+                        .caseworkerName(caseworkerName)
+                        .letterContent(String.format(STANDARD_DEADLINE_TEXT, claim.getClaimData().getClaimant().getName(), claim.getResponseDeadline()))
+                        .issueLetterContact(CCDContactPartyType.DEFENDANT)
+                        .build())
+                .build();
+        DocAssemblyResponse docAssemblyResponse = docAssemblyService.createGeneralLetter(ccdCase,
+                authorisation, generalLetterTemplateId);
+        return generalLetterService.printAndUpdateCaseDocuments(
+                callbackParams.getRequest().getCaseDetails(),
+                authorisation);
     }
 
     private Map<String, String> prepareNotificationParameters(Claim claim) {
