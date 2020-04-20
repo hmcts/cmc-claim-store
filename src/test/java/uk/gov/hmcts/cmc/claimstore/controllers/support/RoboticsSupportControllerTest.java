@@ -18,7 +18,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.rpa.DefenceResponseNotificationService;
 import uk.gov.hmcts.cmc.claimstore.rpa.MoreTimeRequestedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.rpa.PaidInFullNotificationService;
-import uk.gov.hmcts.cmc.claimstore.rpa.RequestForJudgementNotificationService;
+import uk.gov.hmcts.cmc.claimstore.rpa.RequestForJudgmentNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -58,7 +58,7 @@ public class RoboticsSupportControllerTest {
     @Mock
     private DefenceResponseNotificationService defenceResponseNotificationService;
     @Mock
-    private RequestForJudgementNotificationService ccjNotificationService;
+    private RequestForJudgmentNotificationService ccjNotificationService;
     @Mock
     private PaidInFullNotificationService paidInFullNotificationService;
     @Mock
