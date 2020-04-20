@@ -4,8 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.GeneralLetterContent;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -23,8 +25,10 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.MoreTimeRequested.referenceForClaimant;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.MoreTimeRequested.referenceForDefendant;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_TYPE;
@@ -37,13 +41,6 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 @Service
 public class MoreTimeRequestedCitizenNotificationHandler {
 
-    private static final String REFERENCE_TEMPLATE = "more-time-requested-notification-to-%s-%s";
-    private static final String STANDARD_DEADLINE_TEXT = "You’ve been given an extra 14 days to respond " +
-            "to the claim made against you by s%.\n" +
-            "You now need to respond to the claim before 4pm on d%.\n" +
-            "If you don’t respond, you could get a County Court Judgment (CCJ). " +
-            "This may make it harder to get credit, such as a mobile phone contract, credit card or mortgage.";
-
     private final String generalLetterTemplateId;
 
     private final NotificationService notificationService;
@@ -52,6 +49,12 @@ public class MoreTimeRequestedCitizenNotificationHandler {
     private final CaseDetailsConverter caseDetailsConverter;
     private final DocAssemblyService docAssemblyService;
     private final UserService userService;
+
+    private static final String STANDARD_DEADLINE_TEXT = "You’ve been given an extra 14 days to respond " +
+            "to the claim made against you by %s.\n" +
+            "You now need to respond to the claim before 4pm on %s.\n" +
+            "If you don’t respond, you could get a County Court Judgment (CCJ). " +
+            "This may make it harder to get credit, such as a mobile phone contract, credit card or mortgage.";
 
     @Autowired
     public MoreTimeRequestedCitizenNotificationHandler(
@@ -73,6 +76,7 @@ public class MoreTimeRequestedCitizenNotificationHandler {
     }
 
     public CallbackResponse sendNotifications(CallbackParams callbackParams) {
+        System.out.println("SEND NOTIFICATIONS");
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
@@ -86,20 +90,21 @@ public class MoreTimeRequestedCitizenNotificationHandler {
     }
 
     private void sendEmailNotificationToDefendant(Claim claim) {
-            notificationService.sendMail(
-                    claim.getDefendantEmail(),
-                    notificationsProperties.getTemplates().getEmail().getDefendantMoreTimeRequested(),
-                    prepareNotificationParameters(claim),
-                    referenceForDefendant(claim.getReferenceNumber())
-            );
+        notificationService.sendMail(
+                claim.getDefendantEmail(),
+                notificationsProperties.getTemplates().getEmail().getDefendantMoreTimeRequested(),
+                prepareNotificationParameters(claim),
+                referenceForDefendant(claim.getReferenceNumber())
+        );
     }
 
     private void sendNotificationToClaimant(Claim claim) {
+        //sends it 3 times with wrong formatting
         notificationService.sendMail(
             claim.getSubmitterEmail(),
             notificationsProperties.getTemplates().getEmail().getClaimantMoreTimeRequested(),
             prepareNotificationParameters(claim),
-            String.format(REFERENCE_TEMPLATE, "claimant", claim.getReferenceNumber())
+            referenceForClaimant(claim.getReferenceNumber())
         );
     }
 
@@ -109,16 +114,19 @@ public class MoreTimeRequestedCitizenNotificationHandler {
         String caseworkerName = userDetails.getFullName();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackParams.getRequest().getCaseDetails());
         Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
+        System.out.println("CREATE AND PRINT LETTER");
 
-        ccdCase = CCDCase.builder()
-                .generalLetterContent(GeneralLetterContent.builder()
-                        .caseworkerName(caseworkerName)
-                        .letterContent(String.format(STANDARD_DEADLINE_TEXT, claim.getClaimData().getClaimant().getName(), claim.getResponseDeadline()))
-                        .issueLetterContact(CCDContactPartyType.DEFENDANT)
-                        .build())
+        GeneralLetterContent generalLetterContent = GeneralLetterContent.builder()
+                .caseworkerName(caseworkerName)
+                .letterContent(String.format(STANDARD_DEADLINE_TEXT, claim.getClaimData().getClaimant().getName(),
+                        claim.getResponseDeadline()))
+                .issueLetterContact(CCDContactPartyType.DEFENDANT)
                 .build();
-        DocAssemblyResponse docAssemblyResponse = docAssemblyService.createGeneralLetter(ccdCase,
-                authorisation, generalLetterTemplateId);
+        CCDCase updatedCCDCase = ccdCase.toBuilder()
+                .generalLetterContent(generalLetterContent)
+                .build();
+
+        docAssemblyService.createGeneralLetter(updatedCCDCase, authorisation, generalLetterTemplateId);
         return generalLetterService.printAndUpdateCaseDocuments(
                 callbackParams.getRequest().getCaseDetails(),
                 authorisation);

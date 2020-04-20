@@ -23,13 +23,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Value
-@Builder
+@Builder(toBuilder = true)
 public class CCDRespondent {
     private String partyName;
     private String letterHolderId;
     private String defendantId;
 
-    @NonFinal
     private LocalDate responseDeadline;
 
     private LocalDate servedDate;
@@ -115,9 +114,5 @@ public class CCDRespondent {
     public boolean hasStatementOfTruth() {
         return responseDefendantSOTSignerName != null
             || responseDefendantSOTSignerRole != null;
-    }
-
-    public void setResponseDeadline(LocalDate responseDeadline) {
-        this.responseDeadline = responseDeadline;
     }
 }
