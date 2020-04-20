@@ -46,7 +46,15 @@ public class UserService {
 
     @LogExecutionTime
     public UserDetails getUserDetails(String authorisation) {
-        return idamApi.retrieveUserDetails(authorisation);
+        UserInfo userInfo = getUserInfo(authorisation);
+
+        return UserDetails.builder()
+            .id(userInfo.getUid())
+            .email(userInfo.getSub())
+            .forename(userInfo.getGivenName())
+            .surname(userInfo.getFamilyName())
+            .roles(userInfo.getRoles())
+            .build();
     }
 
     @LogExecutionTime
