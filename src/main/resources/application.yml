@@ -45,7 +45,7 @@ spring:
       client:
         provider:
           oidc:
-            issuer-uri: ${idam.api.url}/o
+            issuer-uri: ${idam.web.url}/o
         registration:
           oidc:
             client-id: internal
@@ -69,6 +69,8 @@ quartzProperties:
       threadCount: 8
 
 idam:
+  web:
+    url: "http://localhost:9002"
   api:
     url: "http://localhost:8080"
   s2s-auth:
