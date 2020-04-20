@@ -18,6 +18,7 @@ class ClaimDocumentsAccessRuleTest {
 
     private static final User DEFENDANT = SampleUser.getDefaultDefendant();
     private static final User CLAIMANT = SampleUser.getDefaultClaimant();
+    private static final User SOLICITOR = SampleUser.getDefaultSolicitor();
     private static final Claim CLAIM = SampleClaim.getDefault();
     private static final User UNRELATED = SampleUser.builder()
         .withUserDetails(SampleUserDetails.builder().withUserId("10001").withMail("kk@mm.com").build())
@@ -72,6 +73,28 @@ class ClaimDocumentsAccessRuleTest {
     void allowsAllDefendantAccessableDocuments(ClaimDocumentType documentType) {
         Claim claimWithDefendant = CLAIM.toBuilder().submitterId(DEFENDANT.getUserDetails().getId()).build();
         ClaimDocumentsAccessRule.assertDocumentCanBeAccessedByUser(claimWithDefendant, documentType, DEFENDANT);
+    }
+
+    @ParameterizedTest
+    @EnumSource(
+        value = ClaimDocumentType.class,
+        names = {"SEALED_CLAIM"},
+        mode = EnumSource.Mode.INCLUDE)
+    void allowsSealedClaimAccessableToSolicitor(ClaimDocumentType documentType) {
+        Claim claimWithDefendant = CLAIM.toBuilder().submitterId(SOLICITOR.getUserDetails().getId()).build();
+        ClaimDocumentsAccessRule.assertDocumentCanBeAccessedByUser(claimWithDefendant, documentType, SOLICITOR);
+    }
+
+    @ParameterizedTest
+    @EnumSource(
+        value = ClaimDocumentType.class,
+        names = {"SEALED_CLAIM"},
+        mode = EnumSource.Mode.EXCLUDE)
+    void blockDocsOtherThanSealedClaimForSolicitor(ClaimDocumentType documentType) {
+        Claim claimWithDefendant = CLAIM.toBuilder().submitterId(SOLICITOR.getUserDetails().getId()).build();
+        assertThrows(ForbiddenActionException.class, () ->
+            ClaimDocumentsAccessRule.assertDocumentCanBeAccessedByUser(claimWithDefendant, documentType, SOLICITOR)
+        );
     }
 
     @ParameterizedTest

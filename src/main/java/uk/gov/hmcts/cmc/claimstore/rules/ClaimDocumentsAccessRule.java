@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.rules;
 import org.apache.commons.lang3.ObjectUtils;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentDownloadForbiddenException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 
@@ -15,6 +16,8 @@ import java.util.stream.Collectors;
 import static java.util.function.Predicate.not;
 
 public class ClaimDocumentsAccessRule {
+
+    private static final List<ClaimDocumentType> solicitortViewableDocsType = List.of(ClaimDocumentType.SEALED_CLAIM);
 
     public static final Supplier<List<ClaimDocumentType>> defendantViewableDocsType = () ->
         Arrays.stream(ClaimDocumentType.values())
@@ -45,9 +48,14 @@ public class ClaimDocumentsAccessRule {
 
     private static List<ClaimDocumentType> findViewableDocsList(Claim claim, User user) {
 
-        if (user.getUserDetails().getId().equals(claim.getDefendantId())) {
+        UserDetails userDetails = user.getUserDetails();
+        if (userDetails.isSolicitor()) {
+            return solicitortViewableDocsType;
+        }
+
+        if (userDetails.getId().equals(claim.getDefendantId())) {
             return defendantViewableDocsType.get();
-        } else if (user.getUserDetails().getId().equals(claim.getSubmitterId())) {
+        } else if (userDetails.getId().equals(claim.getSubmitterId())) {
             return claimantViewableDocsType.get();
         }
         return Collections.emptyList();
