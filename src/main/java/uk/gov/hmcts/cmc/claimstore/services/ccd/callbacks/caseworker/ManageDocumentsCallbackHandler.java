@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.PAPER_RESPONSE_DISPUTES_ALL;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.PAPER_RESPONSE_FULL_ADMIT;
@@ -34,13 +35,12 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
 @Service
 @ConditionalOnProperty("feature_toggles.ctsc_enabled")
-public class ManageDocumentsCallbackHandler  extends CallbackHandler {
+public class ManageDocumentsCallbackHandler extends CallbackHandler {
     static final String NO_CHANGES_ERROR_MESSAGE = "You need to upload, edit or delete a document to continue.";
     static final String PAPER_RESPONSE_ERROR_MESSAGE = "Error as uploaded document type is paper response";
 
     private static final List<Role> ROLES = ImmutableList.of(CASEWORKER);
     private static final List<CaseEvent> EVENTS = Collections.singletonList(MANAGE_DOCUMENTS);
-    static final String ERROR_MESSAGE = "You need to upload, edit or delete a document to continue.";
     private static final List<CCDClaimDocumentType> paperResponseDocumentTypes
         = ImmutableList.of(PAPER_RESPONSE_FULL_ADMIT, PAPER_RESPONSE_PART_ADMIT, PAPER_RESPONSE_STATES_PAID,
         PAPER_RESPONSE_MORE_TIME, PAPER_RESPONSE_DISPUTES_ALL);
@@ -73,7 +73,9 @@ public class ManageDocumentsCallbackHandler  extends CallbackHandler {
 
         List<String> errors = new ArrayList<>();
 
-        if (paperResponseSelected(caseDetailsConverter.extractCCDCase(request.getCaseDetails()))) {
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(request.getCaseDetails());
+        CCDCase ccdCaseBefore = caseDetailsConverter.extractCCDCase(request.getCaseDetailsBefore());
+        if (paperResponseSelected(ccdCase, ccdCaseBefore)) {
             errors.add(PAPER_RESPONSE_ERROR_MESSAGE);
         }
 
@@ -91,11 +93,28 @@ public class ManageDocumentsCallbackHandler  extends CallbackHandler {
         return builder.build();
     }
 
-    private boolean paperResponseSelected(CCDCase ccdCase) {
+    private boolean paperResponseSelected(CCDCase ccdCase, CCDCase ccdCaseBefore) {
+        List<CCDCollectionElement<CCDClaimDocument>> staffUploadedDocumentsBefore =
+            ccdCaseBefore.getStaffUploadedDocuments() == null ? List.of() : ccdCaseBefore.getStaffUploadedDocuments();
+
+        Map<String, CCDClaimDocumentType> paperResponseDocumentTypesById = staffUploadedDocumentsBefore
+            .stream()
+            .filter(d -> paperResponseDocumentTypes.contains(d.getValue().getDocumentType()))
+            .collect(Collectors.toMap(CCDCollectionElement::getId, d -> d.getValue().getDocumentType()));
+
         List<CCDCollectionElement<CCDClaimDocument>> staffUploadedDocuments = ccdCase.getStaffUploadedDocuments();
         return staffUploadedDocuments != null && staffUploadedDocuments
             .stream()
-            .map(d -> d.getValue().getDocumentType())
+            .filter(e -> !isUnmodifiedExistingPaperResponses(e, paperResponseDocumentTypesById))
+            .map(e -> e.getValue().getDocumentType())
             .anyMatch(paperResponseDocumentTypes::contains);
+    }
+
+    private boolean isUnmodifiedExistingPaperResponses(
+        CCDCollectionElement<CCDClaimDocument> element,
+        Map<String, CCDClaimDocumentType> paperResponseDocumentTypesById) {
+
+        return paperResponseDocumentTypesById.containsKey(element.getId())
+            && paperResponseDocumentTypesById.get(element.getId()).equals(element.getValue().getDocumentType());
     }
 }
