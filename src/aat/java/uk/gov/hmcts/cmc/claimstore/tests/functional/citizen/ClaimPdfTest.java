@@ -27,8 +27,8 @@ public class ClaimPdfTest extends BasePdfTest {
 
     @Test
     public void shouldBeAbleToFindTestClaimDataInSealedClaimPdf() throws IOException {
+        user = bootstrap.getSolicitor();
         Claim createdCase = createCase();
-        user = bootstrap.getDefendant();
         String pdfAsText = textContentOf(retrievePdf("sealedClaim", createdCase.getExternalId()));
         assertionsOnPdf(createdCase, pdfAsText);
     }
