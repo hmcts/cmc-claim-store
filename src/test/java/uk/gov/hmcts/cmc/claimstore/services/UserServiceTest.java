@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.services;
 
 import com.google.common.collect.Lists;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -69,7 +68,6 @@ public class UserServiceTest {
     }
 
     @Test
-    @Ignore("Enable this when using /o/userinfo")
     public void findsUserDetailsForAuthToken() {
         when(idamApi.retrieveUserInfo(eq(AUTHORISATION))).thenReturn(userInfo);
 
