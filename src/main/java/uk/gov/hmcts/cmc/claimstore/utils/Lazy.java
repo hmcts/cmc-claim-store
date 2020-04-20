@@ -15,7 +15,7 @@ public class Lazy<T> {
         return new Lazy<>(supplier);
     }
 
-    public T get() {
+    public synchronized T get() {
         if (!supplied) {
             instance = supplier.get();
             supplied = true;
