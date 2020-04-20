@@ -80,7 +80,7 @@ public class UserService {
     public String getIdamOauth2Token(String username, String password) {
         String authorisation = username + ":" + password;
         String base64Authorisation = Base64.getEncoder().encodeToString(authorisation.getBytes());
-        logger.info("idam details are as {}", idamApi.toString() );
+        logger.info("idam details are as {}", idamApi.toString());
         AuthenticateUserResponse authenticateUserResponse = idamApi.authenticateUser(
             BASIC + base64Authorisation,
             CODE,
