@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,7 +77,7 @@ public class MoreTimeRequestedCitizenNotificationHandler {
         this.generalLetterTemplateId = generalLetterTemplateId;
     }
 
-    public CallbackResponse sendNotifications(CallbackParams callbackParams) {
+    public CallbackResponse sendNotifications(CallbackParams callbackParams) throws URISyntaxException {
         System.out.println("SEND NOTIFICATIONS");
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
@@ -109,7 +110,7 @@ public class MoreTimeRequestedCitizenNotificationHandler {
         );
     }
 
-    private CallbackResponse createAndPrintLetter(CallbackParams callbackParams) {
+    private CallbackResponse createAndPrintLetter(CallbackParams callbackParams) throws URISyntaxException {
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
         UserDetails userDetails = userService.getUserDetails(authorisation);
         String caseworkerName = userDetails.getFullName();
@@ -132,13 +133,16 @@ public class MoreTimeRequestedCitizenNotificationHandler {
 
         CCDDocument ccdDocument = CCDDocument.builder().documentUrl(docAssemblyResponse.getRenditionOutputLocation()).build();
 
-        updatedCCDCase = ccdCase.toBuilder()
-                .
-                .build();
+        updatedCCDCase.setDraftLetterDoc(ccdDocument);
 
-        return generalLetterService.printAndUpdateCaseDocuments(
-                updatedCCDCase.getCa,
-                authorisation);
+        generalLetterService.printLetter(authorisation, ccdDocument, claim);
+        generalLetterService.updateCaseDocumentsWithGeneralLetter(updatedCCDCase, ccdDocument);
+
+
+        return AboutToStartOrSubmitCallbackResponse
+            .builder()
+            .data(caseDetailsConverter.convertToMap(updatedCCDCase))
+            .build();
     }
 
     private Map<String, String> prepareNotificationParameters(Claim claim) {

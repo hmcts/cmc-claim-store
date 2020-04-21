@@ -141,7 +141,7 @@ public class GeneralLetterService {
         }
     }
 
-    private List<CCDCollectionElement<CCDClaimDocument>> updateCaseDocumentsWithGeneralLetter(
+    public List<CCDCollectionElement<CCDClaimDocument>> updateCaseDocumentsWithGeneralLetter(
         CCDCase ccdCase,
         CCDDocument draftLetterDoc
     ) {
@@ -175,7 +175,7 @@ public class GeneralLetterService {
             LocalDate.now().toString()) + "-" + number + ".pdf";
     }
 
-    private void printLetter(String authorisation, CCDDocument document, Claim claim) throws URISyntaxException {
+    public void printLetter(String authorisation, CCDDocument document, Claim claim) throws URISyntaxException {
         GeneralLetterReadyToPrintEvent event = new GeneralLetterReadyToPrintEvent(
             claim,
             downloadLetter(authorisation, document)
