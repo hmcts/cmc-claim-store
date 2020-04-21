@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.GeneralLetterContent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
@@ -122,13 +123,21 @@ public class MoreTimeRequestedCitizenNotificationHandler {
                         claim.getResponseDeadline()))
                 .issueLetterContact(CCDContactPartyType.DEFENDANT)
                 .build();
+
         CCDCase updatedCCDCase = ccdCase.toBuilder()
                 .generalLetterContent(generalLetterContent)
                 .build();
 
-        docAssemblyService.createGeneralLetter(updatedCCDCase, authorisation, generalLetterTemplateId);
+        DocAssemblyResponse docAssemblyResponse = docAssemblyService.createGeneralLetter(updatedCCDCase, authorisation, generalLetterTemplateId);
+
+        CCDDocument ccdDocument = CCDDocument.builder().documentUrl(docAssemblyResponse.getRenditionOutputLocation()).build();
+
+        updatedCCDCase = ccdCase.toBuilder()
+                .
+                .build();
+
         return generalLetterService.printAndUpdateCaseDocuments(
-                callbackParams.getRequest().getCaseDetails(),
+                updatedCCDCase.getCa,
                 authorisation);
     }
 
