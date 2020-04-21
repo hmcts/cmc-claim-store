@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
+import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashMap;
@@ -47,6 +48,8 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
     private final MoreTimeRequestedCitizenNotificationHandler moreTimeRequestedCitizenNotificationHandler;
 
     private static final String PREVIEW_SENTENCE = "The response deadline will be %s .";
+    private static final String ERROR_MESSAGE =
+        "There was a technical problem. Nothing has been sent. You need to try again.";
 
     @Autowired
     public MoreTimeRequestedCallbackHandler(
@@ -88,8 +91,15 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
                 claim.getResponseDeadline(),
                 claim.getClaimData().getDefendant().getEmail().orElse(null)
         );
+        try {
+            return moreTimeRequestedCitizenNotificationHandler.sendNotifications(callbackParams);
+        } catch (URISyntaxException e) {
+            return AboutToStartOrSubmitCallbackResponse
+               .builder()
+                .errors(Collections.singletonList(ERROR_MESSAGE))
+                .build();
+        }
 
-        return moreTimeRequestedCitizenNotificationHandler.sendNotifications(callbackParams);
     }
 
     private AboutToStartOrSubmitCallbackResponse requestMoreTimeViaCaseworker(CallbackParams callbackParams) {

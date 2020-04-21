@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 
+import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashMap;
@@ -64,9 +65,6 @@ public class MoreTimeRequestedCitizenNotificationHandler {
             + "If you don’t respond, you could get a County Court Judgment (CCJ). This may make it harder to get "
             + "credit, such as a mobile phone contract, credit card or mortgage.";
 
-    private static final String ERROR_MESSAGE =
-            "There was a technical problem. Nothing has been sent. You need to try again.";
-
     @Autowired
     public MoreTimeRequestedCitizenNotificationHandler(
         NotificationService notificationService,
@@ -88,39 +86,41 @@ public class MoreTimeRequestedCitizenNotificationHandler {
         this.generalLetterTemplateId = generalLetterTemplateId;
     }
 
-    public CallbackResponse sendNotifications(CallbackParams callbackParams) {
+    public CallbackResponse sendNotifications(CallbackParams callbackParams) throws URISyntaxException {
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
-        sendNotificationToClaimant(claim);
+        LocalDate responseDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
+        CallbackResponse response = AboutToStartOrSubmitCallbackResponse.builder().build();
         if (claim.getDefendantEmail() != null && claim.getDefendantId() != null) {
-            sendEmailNotificationToDefendant(claim);
+            sendEmailNotificationToDefendant(claim, responseDeadline);
         } else {
-            return createAndPrintLetter(callbackParams);
+            response = createAndPrintLetter(callbackParams);
         }
-        return AboutToStartOrSubmitCallbackResponse.builder().build();
+        sendNotificationToClaimant(claim, responseDeadline);
+        return response;
     }
 
-    private void sendEmailNotificationToDefendant(Claim claim) {
+    private void sendEmailNotificationToDefendant(Claim claim, LocalDate deadline) {
         notificationService.sendMail(
                 claim.getDefendantEmail(),
                 notificationsProperties.getTemplates().getEmail().getDefendantMoreTimeRequested(),
-                prepareNotificationParameters(claim),
+                prepareNotificationParameters(claim,deadline),
                 referenceForDefendant(claim.getReferenceNumber())
         );
     }
 
-    private void sendNotificationToClaimant(Claim claim) {
+    private void sendNotificationToClaimant(Claim claim, LocalDate deadline) {
         notificationService.sendMail(
             claim.getSubmitterEmail(),
             notificationsProperties.getTemplates().getEmail().getClaimantMoreTimeRequested(),
-            prepareNotificationParameters(claim),
+            prepareNotificationParameters(claim, deadline),
             referenceForClaimant(claim.getReferenceNumber())
         );
     }
 
-    private CallbackResponse createAndPrintLetter(CallbackParams callbackParams)  {
-        try {
+    private CallbackResponse createAndPrintLetter(CallbackParams callbackParams) throws URISyntaxException {
+
             String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
             UserDetails userDetails = userService.getUserDetails(authorisation);
             String caseworkerName = userDetails.getFullName();
@@ -171,22 +171,22 @@ public class MoreTimeRequestedCitizenNotificationHandler {
                 .builder()
                 .data(caseDetailsConverter.convertToMap(updatedCase))
                 .build();
-        } catch (Exception e) {
-            e.getStackTrace();
-            return AboutToStartOrSubmitCallbackResponse
-                .builder()
-                .errors(Collections.singletonList(ERROR_MESSAGE))
-                .build();
-        }
+//        } catch (Exception e) {
+//            e.getStackTrace();
+//            return AboutToStartOrSubmitCallbackResponse
+//                .builder()
+//                .errors(Collections.singletonList(ERROR_MESSAGE))
+//                .build();
+//        }
     }
 
-    private Map<String, String> prepareNotificationParameters(Claim claim) {
+    private Map<String, String> prepareNotificationParameters(Claim claim, LocalDate deadline) {
         Map<String, String> parameters = new HashMap<>();
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
         parameters.put(CLAIMANT_TYPE, PartyUtils.getType(claim.getClaimData().getClaimant()));
         parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
         parameters.put(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName());
-        parameters.put(RESPONSE_DEADLINE, formatDate(claim.getResponseDeadline()));
+        parameters.put(RESPONSE_DEADLINE, formatDate(deadline));
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
         return parameters;
     }
