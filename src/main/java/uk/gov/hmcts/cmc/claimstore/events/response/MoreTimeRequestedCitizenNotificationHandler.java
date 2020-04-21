@@ -130,19 +130,15 @@ public class MoreTimeRequestedCitizenNotificationHandler {
         CCDCase updatedCCDCase = ccdCase.toBuilder()
                 .generalLetterContent(generalLetterContent)
                 .build();
-
-        DocAssemblyResponse docAssemblyResponse = docAssemblyService.createGeneralLetter(updatedCCDCase, authorisation, generalLetterTemplateId);
-
-        CCDDocument ccdDocument = CCDDocument.builder().documentUrl(docAssemblyResponse.getRenditionOutputLocation()).build();
-
-        updatedCCDCase.setDraftLetterDoc(ccdDocument);
-
-
-            generalLetterService.printLetter(authorisation, ccdDocument, claim);
-
+        docAssemblyService.createGeneralLetter(updatedCCDCase, authorisation, generalLetterTemplateId);
+        generalLetterService.printLetter(authorisation, updatedCCDCase.getDraftLetterDoc(), claim);
         CCDCase updatedCase = ccdCase.toBuilder()
-            .caseDocuments(generalLetterService.updateCaseDocumentsWithGeneralLetter(updatedCCDCase, ccdDocument))
+            .caseDocuments(generalLetterService
+                .updateCaseDocumentsWithGeneralLetter(
+                    updatedCCDCase,
+                    updatedCCDCase.getDraftLetterDoc()))
             .generalLetterContent(null)
+            .draftLetterDoc(null)
             .build();
 
         return AboutToStartOrSubmitCallbackResponse
@@ -150,6 +146,7 @@ public class MoreTimeRequestedCitizenNotificationHandler {
             .data(caseDetailsConverter.convertToMap(updatedCase))
             .build();
         } catch (Exception e) {
+            e.getStackTrace();
             return AboutToStartOrSubmitCallbackResponse
                 .builder()
                 .errors(Collections.singletonList("ERROR_MESSAGE"))
