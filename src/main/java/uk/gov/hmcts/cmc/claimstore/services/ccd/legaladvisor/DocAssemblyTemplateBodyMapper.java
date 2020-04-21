@@ -121,9 +121,7 @@ public class DocAssemblyTemplateBodyMapper {
                 .getValue().getPartyName() != null
                 ? ccdCase.getRespondents().get(0).getValue().getPartyName() :
                 ccdCase.getRespondents().get(0).getValue().getClaimantProvidedPartyName();
-            System.out.println(partyName);
             partyAddress = getDefendantAddress(ccdCase.getRespondents().get(0).getValue());
-            System.out.println(partyAddress);
         }
         return DocAssemblyTemplateBody.builder()
             .currentDate(currentDate)

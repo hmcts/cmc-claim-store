@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplate
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleMoreTimeRequestedEvent;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -28,7 +29,7 @@ public class MoreTimeRequestedStaffNotificationHandlerTest {
     private MoreTimeRequestedStaffNotificationHandler handler;
 
     @Mock
-    private MoreTimeRequestedNotificationService moreTimeRequestedNotificationService;
+    private NotificationService notificationService;
 
     @Mock
     private StaffEmailProperties staffEmailProperties;
@@ -51,7 +52,7 @@ public class MoreTimeRequestedStaffNotificationHandlerTest {
     @Test
     public void sendNotificationsSendsNotificationsToStaff() {
         handler = new MoreTimeRequestedStaffNotificationHandler(
-            moreTimeRequestedNotificationService,
+                notificationService,
             notificationsProperties,
             staffEmailProperties,
             true
@@ -61,7 +62,7 @@ public class MoreTimeRequestedStaffNotificationHandlerTest {
 
         handler.sendNotifications(event);
 
-        verify(moreTimeRequestedNotificationService, once()).sendMail(
+        verify(notificationService, once()).sendMail(
             eq(STAFF_EMAIL_ADDRESS),
             eq(STAFF_TEMPLATE_ID),
             anyMap(),
@@ -72,7 +73,7 @@ public class MoreTimeRequestedStaffNotificationHandlerTest {
     @Test
     public void shouldNotSendNotificationsSendsNotificationsToStaffWhenStaffEmailsDisabled() {
         handler = new MoreTimeRequestedStaffNotificationHandler(
-            moreTimeRequestedNotificationService,
+                notificationService,
             notificationsProperties,
             staffEmailProperties,
             false
@@ -82,7 +83,7 @@ public class MoreTimeRequestedStaffNotificationHandlerTest {
 
         handler.sendNotifications(event);
 
-        verify(moreTimeRequestedNotificationService, never()).sendMail(
+        verify(notificationService, never()).sendMail(
             anyString(),
             anyString(),
             anyMap(),

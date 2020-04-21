@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.GeneralLetterContent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
@@ -25,7 +26,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 
-import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -53,11 +53,16 @@ public class MoreTimeRequestedCitizenNotificationHandler {
     private final DocAssemblyService docAssemblyService;
     private final UserService userService;
 
-    private static final String STANDARD_DEADLINE_TEXT = "You’ve been given an extra 14 days to respond " +
-            "to the claim made against you by %s.\n" +
-            "You now need to respond to the claim before 4pm on %s.\n" +
-            "If you don’t respond, you could get a County Court Judgment (CCJ). " +
-            "This may make it harder to get credit, such as a mobile phone contract, credit card or mortgage.";
+    private static final String STANDARD_DEADLINE_TEXT = "You’ve been given an extra 14 days to respond to the"
+            + " claim made against you by %s.\n"
+            + "\n"
+            + "You now need to respond to the claim before 4pm on %s.\n"
+            + "\n"
+            + "If you don’t respond, you could get a County Court Judgment (CCJ). This may make it harder to get "
+            + "credit, such as a mobile phone contract, credit card or mortgage.";
+
+    private static final String ERROR_MESSAGE =
+            "There was a technical problem. Nothing has been sent. You need to try again.";
 
     @Autowired
     public MoreTimeRequestedCitizenNotificationHandler(
@@ -79,7 +84,6 @@ public class MoreTimeRequestedCitizenNotificationHandler {
     }
 
     public CallbackResponse sendNotifications(CallbackParams callbackParams) {
-        System.out.println("SEND NOTIFICATIONS");
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
@@ -102,7 +106,6 @@ public class MoreTimeRequestedCitizenNotificationHandler {
     }
 
     private void sendNotificationToClaimant(Claim claim) {
-        //sends it 3 times with wrong formatting
         notificationService.sendMail(
             claim.getSubmitterEmail(),
             notificationsProperties.getTemplates().getEmail().getClaimantMoreTimeRequested(),
@@ -113,43 +116,51 @@ public class MoreTimeRequestedCitizenNotificationHandler {
 
     private CallbackResponse createAndPrintLetter(CallbackParams callbackParams)  {
         try {
-        String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
-        UserDetails userDetails = userService.getUserDetails(authorisation);
-        String caseworkerName = userDetails.getFullName();
-        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackParams.getRequest().getCaseDetails());
-        Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
-        System.out.println("CREATE AND PRINT LETTER");
+            String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
+            UserDetails userDetails = userService.getUserDetails(authorisation);
+            String caseworkerName = userDetails.getFullName();
+            CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackParams.getRequest().getCaseDetails());
+            Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
 
-        GeneralLetterContent generalLetterContent = GeneralLetterContent.builder()
-                .caseworkerName(caseworkerName)
-                .letterContent(String.format(STANDARD_DEADLINE_TEXT, claim.getClaimData().getClaimant().getName(),
-                        claim.getResponseDeadline()))
-                .issueLetterContact(CCDContactPartyType.DEFENDANT)
+            GeneralLetterContent generalLetterContent = GeneralLetterContent.builder()
+                    .caseworkerName(caseworkerName)
+                    .letterContent(String.format(STANDARD_DEADLINE_TEXT, claim.getClaimData().getClaimant().getName(),
+                            formatDate(claim.getResponseDeadline())))
+                    .issueLetterContact(CCDContactPartyType.DEFENDANT)
+                    .build();
+
+            CCDCase updatedCCDCase = ccdCase.toBuilder()
+                    .generalLetterContent(generalLetterContent)
+                    .build();
+
+            CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue().toBuilder()
+                    .responseMoreTimeNeededOption(CCDYesNoOption.YES)
+                    .build();
+
+            generalLetterService.printLetter(authorisation, updatedCCDCase.getDraftLetterDoc(), claim);
+            CCDCase updatedCase = ccdCase.toBuilder()
+                    .caseDocuments(generalLetterService
+                    .updateCaseDocumentsWithGeneralLetter(
+                            updatedCCDCase,
+                            updatedCCDCase.getDraftLetterDoc(),
+                            String.format("%s-response-deadline-extended.pdf",
+                                    claim.getReferenceNumber())))
+                    .generalLetterContent(null)
+                    .draftLetterDoc(null)
+                    .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
+                            .value(respondent)
+                            .build()))
+                    .build();
+
+            return AboutToStartOrSubmitCallbackResponse
+                .builder()
+                .data(caseDetailsConverter.convertToMap(updatedCase))
                 .build();
-
-        CCDCase updatedCCDCase = ccdCase.toBuilder()
-                .generalLetterContent(generalLetterContent)
-                .build();
-        docAssemblyService.createGeneralLetter(updatedCCDCase, authorisation, generalLetterTemplateId);
-        generalLetterService.printLetter(authorisation, updatedCCDCase.getDraftLetterDoc(), claim);
-        CCDCase updatedCase = ccdCase.toBuilder()
-            .caseDocuments(generalLetterService
-                .updateCaseDocumentsWithGeneralLetter(
-                    updatedCCDCase,
-                    updatedCCDCase.getDraftLetterDoc()))
-            .generalLetterContent(null)
-            .draftLetterDoc(null)
-            .build();
-
-        return AboutToStartOrSubmitCallbackResponse
-            .builder()
-            .data(caseDetailsConverter.convertToMap(updatedCase))
-            .build();
         } catch (Exception e) {
             e.getStackTrace();
             return AboutToStartOrSubmitCallbackResponse
                 .builder()
-                .errors(Collections.singletonList("ERROR_MESSAGE"))
+                .errors(Collections.singletonList(ERROR_MESSAGE))
                 .build();
         }
     }

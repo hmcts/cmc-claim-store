@@ -35,6 +35,7 @@ import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.GENERAL_LETTER;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildLetterFileBaseName;
@@ -125,7 +126,7 @@ public class GeneralLetterService {
         if (!errors) {
             logger.info("General Letter: updating case document with general letter");
             CCDCase updatedCase = ccdCase.toBuilder()
-                .caseDocuments(updateCaseDocumentsWithGeneralLetter(ccdCase, draftLetterDoc))
+                .caseDocuments(updateCaseDocumentsWithGeneralLetter(ccdCase, draftLetterDoc, getDocumentName(ccdCase)))
                 .draftLetterDoc(null)
                 .generalLetterContent(null)
                 .build();
@@ -143,9 +144,9 @@ public class GeneralLetterService {
 
     public List<CCDCollectionElement<CCDClaimDocument>> updateCaseDocumentsWithGeneralLetter(
         CCDCase ccdCase,
-        CCDDocument draftLetterDoc
+        CCDDocument draftLetterDoc,
+        String documentName
     ) {
-        String documentName = getDocumentName(ccdCase);
         CCDCollectionElement<CCDClaimDocument> claimDocument = CCDCollectionElement.<CCDClaimDocument>builder()
             .value(CCDClaimDocument.builder()
                 .documentLink(CCDDocument.builder()
