@@ -154,7 +154,7 @@ public class GeneralLetterService {
                 .documentUrl(draftLetterDoc.getDocumentUrl())
                 .documentBinaryUrl(draftLetterDoc.getDocumentBinaryUrl())
                 .build())
-                .documentName(getDocumentName(ccdCase))
+                .documentName(documentName)
                 .createdDatetime(LocalDateTime.now(clock.withZone(UTC_ZONE)))
                 .documentType(GENERAL_LETTER)
                 .build())

@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplate
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleMoreTimeRequestedEvent;
+import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
@@ -53,10 +54,13 @@ public class MoreTimeRequestedCitizenNotificationHandlerTest {
     private DocAssemblyService docAssemblyService;
     @Mock
     private UserService userService;
+    @Mock
+    private ResponseDeadlineCalculator responseDeadlineCalculator;
+    private Claim claim;
 
     @Before
     public void setup() {
-        Claim claim = SampleClaim.builder().build();
+        claim = SampleClaim.builder().build();
         when(notificationsProperties.getTemplates()).thenReturn(templates);
         when(notificationsProperties.getFrontendBaseUrl()).thenReturn(FRONTEND_URL);
         when(templates.getEmail()).thenReturn(emailTemplates);
@@ -70,6 +74,7 @@ public class MoreTimeRequestedCitizenNotificationHandlerTest {
                 caseDetailsConverter,
                 docAssemblyService,
                 userService,
+                responseDeadlineCalculator,
                 generalLetterTemplateId
         );
     }
@@ -87,7 +92,7 @@ public class MoreTimeRequestedCitizenNotificationHandlerTest {
     @Test
     public void sendEmailToClaimant() {
         verify(notificationService, once()).sendMail(
-                eq(claim.getClaimant()),
+                eq(claim.getSubmitterEmail()),
                 eq(CLAIMANT_TEMPLATE_ID),
                 anyMap(),
                 eq(SampleMoreTimeRequestedEvent.getReference("claimant", claim.getReferenceNumber()))

@@ -5,9 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedCitizenNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
@@ -102,16 +100,6 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
 
         LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
 
-        CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue().toBuilder()
-                .responseDeadline(newDeadline)
-                .build();
-
-        CCDCase updatedCCDCase = ccdCase.toBuilder()
-                .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
-                        .value(respondent)
-                        .build()))
-                .build();
-
         List<String> validationResult = this.moreTimeRequestRule.validateMoreTimeCanBeRequested(claim);
         AboutToStartOrSubmitCallbackResponseBuilder builder = AboutToStartOrSubmitCallbackResponse
             .builder();
@@ -122,7 +110,7 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
                 .build();
         }
 
-        Map<String, Object> data = new HashMap<>(caseDetailsConverter.convertToMap(updatedCCDCase));
+        Map<String, Object> data = new HashMap<>(caseDetailsConverter.convertToMap(ccdCase));
         data.put("responseDeadlinePreview", String.format(PREVIEW_SENTENCE, formatDate(newDeadline)));
 
         return builder

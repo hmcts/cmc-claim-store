@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.ccd.domain.GeneralLetterContent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
@@ -31,8 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.MoreTimeRequested.referenceForClaimant;
-import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.MoreTimeRequested.referenceForDefendant;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER;
@@ -52,6 +51,7 @@ public class MoreTimeRequestedCitizenNotificationHandler {
     private final CaseDetailsConverter caseDetailsConverter;
     private final DocAssemblyService docAssemblyService;
     private final UserService userService;
+    private final ResponseDeadlineCalculator responseDeadlineCalculator;
 
     private static final String STANDARD_DEADLINE_TEXT = "You’ve been given an extra 14 days to respond to the"
             + " claim made against you by %s.\n"
@@ -72,6 +72,7 @@ public class MoreTimeRequestedCitizenNotificationHandler {
         CaseDetailsConverter caseDetailsConverter,
         DocAssemblyService docAssemblyService,
         UserService userService,
+        ResponseDeadlineCalculator responseDeadlineCalculator,
         @Value("${doc_assembly.generalLetterTemplateId}") String generalLetterTemplateId
     ) {
         this.caseDetailsConverter = caseDetailsConverter;
@@ -80,6 +81,7 @@ public class MoreTimeRequestedCitizenNotificationHandler {
         this.notificationsProperties = notificationsProperties;
         this.docAssemblyService = docAssemblyService;
         this.userService = userService;
+        this.responseDeadlineCalculator = responseDeadlineCalculator;
         this.generalLetterTemplateId = generalLetterTemplateId;
     }
 
@@ -97,21 +99,21 @@ public class MoreTimeRequestedCitizenNotificationHandler {
     }
 
     private void sendEmailNotificationToDefendant(Claim claim) {
-        notificationService.sendMail(
-                claim.getDefendantEmail(),
-                notificationsProperties.getTemplates().getEmail().getDefendantMoreTimeRequested(),
-                prepareNotificationParameters(claim),
-                referenceForDefendant(claim.getReferenceNumber())
-        );
+//        notificationService.sendMail(
+//                claim.getDefendantEmail(),
+//                notificationsProperties.getTemplates().getEmail().getDefendantMoreTimeRequested(),
+//                prepareNotificationParameters(claim),
+//                referenceForDefendant(claim.getReferenceNumber())
+//        );
     }
 
     private void sendNotificationToClaimant(Claim claim) {
-        notificationService.sendMail(
-            claim.getSubmitterEmail(),
-            notificationsProperties.getTemplates().getEmail().getClaimantMoreTimeRequested(),
-            prepareNotificationParameters(claim),
-            referenceForClaimant(claim.getReferenceNumber())
-        );
+//        notificationService.sendMail(
+//            claim.getSubmitterEmail(),
+//            notificationsProperties.getTemplates().getEmail().getClaimantMoreTimeRequested(),
+//            prepareNotificationParameters(claim),
+//            referenceForClaimant(claim.getReferenceNumber())
+//        );
     }
 
     private CallbackResponse createAndPrintLetter(CallbackParams callbackParams)  {
@@ -125,7 +127,7 @@ public class MoreTimeRequestedCitizenNotificationHandler {
             GeneralLetterContent generalLetterContent = GeneralLetterContent.builder()
                     .caseworkerName(caseworkerName)
                     .letterContent(String.format(STANDARD_DEADLINE_TEXT, claim.getClaimData().getClaimant().getName(),
-                            formatDate(claim.getResponseDeadline())))
+                            formatDate(responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn()))))
                     .issueLetterContact(CCDContactPartyType.DEFENDANT)
                     .build();
 
@@ -137,6 +139,14 @@ public class MoreTimeRequestedCitizenNotificationHandler {
                     .responseMoreTimeNeededOption(CCDYesNoOption.YES)
                     .build();
 
+            DocAssemblyResponse docAssemblyResponse = docAssemblyService
+                .createGeneralLetter(updatedCCDCase, authorisation, generalLetterTemplateId);
+            CCDDocument ccdDocument = CCDDocument.builder()
+                .documentUrl(docAssemblyResponse.getRenditionOutputLocation())
+                .documentBinaryUrl(docAssemblyResponse.getRenditionOutputLocation() + "/binary")
+                .documentFileName("")
+                .build();
+            updatedCCDCase.setDraftLetterDoc(ccdDocument);
             generalLetterService.printLetter(authorisation, updatedCCDCase.getDraftLetterDoc(), claim);
             CCDCase updatedCase = ccdCase.toBuilder()
                     .caseDocuments(generalLetterService

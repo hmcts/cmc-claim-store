@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedCitizenNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
@@ -46,6 +47,8 @@ public class MoreTimeRequestedCallbackHandlerTest {
     private MoreTimeRequestRule moreTimeRequestRule;
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
+    @Mock
+    private MoreTimeRequestedCitizenNotificationHandler moreTimeRequestedCitizenNotificationHandler;
 
     private Claim claim;
 
@@ -59,7 +62,8 @@ public class MoreTimeRequestedCallbackHandlerTest {
             eventProducer,
             responseDeadlineCalculator,
             moreTimeRequestRule,
-            caseDetailsConverter
+            caseDetailsConverter,
+            moreTimeRequestedCitizenNotificationHandler
         );
         claim = SampleClaim.getDefault();
         callbackRequest =
@@ -87,7 +91,7 @@ public class MoreTimeRequestedCallbackHandlerTest {
             .request(callbackRequest)
             .build();
         List<String> validationResults = ImmutableList.of("a", "b", "c");
-        when(moreTimeRequestRule.validateMoreTimeCanBeRequested(claim, newDeadline))
+        when(moreTimeRequestRule.validateMoreTimeCanBeRequested(claim))
             .thenReturn(validationResults);
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
             moreTimeRequestedCallbackHandler
@@ -123,7 +127,7 @@ public class MoreTimeRequestedCallbackHandlerTest {
             .request(callbackRequest)
             .build();
         List<String> validationResults = ImmutableList.of("a", "b", "c");
-        when(moreTimeRequestRule.validateMoreTimeCanBeRequested(claim, newDeadline))
+        when(moreTimeRequestRule.validateMoreTimeCanBeRequested(claim))
             .thenReturn(validationResults);
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
             moreTimeRequestedCallbackHandler
