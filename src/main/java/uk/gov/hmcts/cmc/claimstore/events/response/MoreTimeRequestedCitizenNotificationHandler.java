@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 
 import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,7 +78,7 @@ public class MoreTimeRequestedCitizenNotificationHandler {
         this.generalLetterTemplateId = generalLetterTemplateId;
     }
 
-    public CallbackResponse sendNotifications(CallbackParams callbackParams) throws URISyntaxException {
+    public CallbackResponse sendNotifications(CallbackParams callbackParams) {
         System.out.println("SEND NOTIFICATIONS");
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
@@ -110,7 +111,8 @@ public class MoreTimeRequestedCitizenNotificationHandler {
         );
     }
 
-    private CallbackResponse createAndPrintLetter(CallbackParams callbackParams) throws URISyntaxException {
+    private CallbackResponse createAndPrintLetter(CallbackParams callbackParams)  {
+        try {
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
         UserDetails userDetails = userService.getUserDetails(authorisation);
         String caseworkerName = userDetails.getFullName();
@@ -135,14 +137,24 @@ public class MoreTimeRequestedCitizenNotificationHandler {
 
         updatedCCDCase.setDraftLetterDoc(ccdDocument);
 
-        generalLetterService.printLetter(authorisation, ccdDocument, claim);
-        generalLetterService.updateCaseDocumentsWithGeneralLetter(updatedCCDCase, ccdDocument);
 
+            generalLetterService.printLetter(authorisation, ccdDocument, claim);
+
+        CCDCase updatedCase = ccdCase.toBuilder()
+            .caseDocuments(generalLetterService.updateCaseDocumentsWithGeneralLetter(updatedCCDCase, ccdDocument))
+            .generalLetterContent(null)
+            .build();
 
         return AboutToStartOrSubmitCallbackResponse
             .builder()
-            .data(caseDetailsConverter.convertToMap(updatedCCDCase))
+            .data(caseDetailsConverter.convertToMap(updatedCase))
             .build();
+        } catch (Exception e) {
+            return AboutToStartOrSubmitCallbackResponse
+                .builder()
+                .errors(Collections.singletonList("ERROR_MESSAGE"))
+                .build();
+        }
     }
 
     private Map<String, String> prepareNotificationParameters(Claim claim) {
