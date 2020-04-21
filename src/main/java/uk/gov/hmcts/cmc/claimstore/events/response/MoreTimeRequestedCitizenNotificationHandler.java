@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -123,11 +124,12 @@ public class MoreTimeRequestedCitizenNotificationHandler {
             String caseworkerName = userDetails.getFullName();
             CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackParams.getRequest().getCaseDetails());
             Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
+            LocalDate responseDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
 
             GeneralLetterContent generalLetterContent = GeneralLetterContent.builder()
                     .caseworkerName(caseworkerName)
                     .letterContent(String.format(STANDARD_DEADLINE_TEXT, claim.getClaimData().getClaimant().getName(),
-                            formatDate(responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn()))))
+                            formatDate(responseDeadline)))
                     .issueLetterContact(CCDContactPartyType.DEFENDANT)
                     .build();
 
@@ -137,6 +139,7 @@ public class MoreTimeRequestedCitizenNotificationHandler {
 
             CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue().toBuilder()
                     .responseMoreTimeNeededOption(CCDYesNoOption.YES)
+                    .responseDeadline(responseDeadline)
                     .build();
 
             DocAssemblyResponse docAssemblyResponse = docAssemblyService
