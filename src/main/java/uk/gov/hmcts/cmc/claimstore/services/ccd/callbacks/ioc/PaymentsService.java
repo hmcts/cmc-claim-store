@@ -19,8 +19,6 @@ import uk.gov.hmcts.reform.payments.client.models.PaymentDto;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-import static java.lang.String.format;
-
 @Service
 @Conditional(FeesAndPaymentsConfiguration.class)
 public class PaymentsService {
@@ -34,12 +32,10 @@ public class PaymentsService {
     private final String siteId;
     private final String currency;
     private final String description;
-    private final String returnUrlPattern;
 
     public PaymentsService(
         PaymentsClient paymentsClient,
         FeesClient feesClient,
-        @Value("${payments.returnUrlPattern}") String returnUrlPattern,
         @Value("${payments.api.service}") String service,
         @Value("${payments.api.siteId}") String siteId,
         @Value("${payments.api.currency}") String currency,
@@ -47,7 +43,6 @@ public class PaymentsService {
     ) {
         this.paymentsClient = paymentsClient;
         this.feesClient = feesClient;
-        this.returnUrlPattern = returnUrlPattern;
         this.service = service;
         this.siteId = siteId;
         this.currency = currency;
@@ -67,7 +62,9 @@ public class PaymentsService {
         logger.info("Retrieving payment with reference {}", claimPayment.getReference());
 
         PaymentDto paymentDto = paymentsClient.retrievePayment(authorisation, claimPayment.getReference());
-        return Optional.of(from(paymentDto, claimPayment.getNextUrl()));
+        String returnUrl = claimData.getPayment()
+            .orElseThrow(IllegalStateException::new).getReturnUrl();
+        return Optional.of(from(paymentDto, claimPayment.getNextUrl(), returnUrl));
     }
 
     public Payment createPayment(
@@ -97,16 +94,18 @@ public class PaymentsService {
 
         logger.info("Creating payment in pay hub for claim with external id {}",
             claim.getExternalId());
-        logger.info("Next URL: {}", format(returnUrlPattern, claim.getExternalId()));
+        String returnUrl = claim.getClaimData().getPayment()
+            .orElseThrow(IllegalStateException::new).getReturnUrl();
+        logger.info("Return URL: {}", returnUrl);
         PaymentDto payment = paymentsClient.createPayment(
             authorisation,
             paymentRequest,
-            format(returnUrlPattern, claim.getExternalId())
+            returnUrl
         );
         logger.info("Created payment for claim with external id {}: {}", claim.getExternalId(), payment);
 
         payment.setAmount(feeOutcome.getFeeAmount());
-        return from(payment, null);
+        return from(payment, null, returnUrl);
     }
 
     public void cancelPayment(String authorisation, String paymentReference) {
@@ -143,7 +142,7 @@ public class PaymentsService {
             .build();
     }
 
-    private Payment from(PaymentDto paymentDto, String nextUrlCurrent) {
+    private Payment from(PaymentDto paymentDto, String nextUrlCurrent, String returnUrl) {
         String dateCreated = Optional.ofNullable(paymentDto.getDateCreated())
             .map(date -> date.toLocalDate().toString())
             .orElse(null);
@@ -156,6 +155,7 @@ public class PaymentsService {
             .status(PaymentStatus.fromValue(paymentDto.getStatus()))
             .dateCreated(dateCreated)
             .nextUrl(nextUrl)
+            .returnUrl(returnUrl)
             .build();
     }
 }

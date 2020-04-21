@@ -53,7 +53,7 @@ public class ResumePaymentTest extends BaseMockSpringTest {
 
     private static final Long CASE_ID = 42L;
     private static final String NEXT_URL = "http://nexturl.test";
-    private static final String RETURN_URL = "http://returnUrl.test/blah/%s/test";
+    private static final String RETURN_URL = "http://returnUrl.test";
     private static final String PAYMENT_REFERENCE = "reference";
 
     @MockBean
@@ -85,7 +85,7 @@ public class ResumePaymentTest extends BaseMockSpringTest {
 
         assertThat(jsonMappingHelper.deserializeObjectFrom(result, CreatePaymentResponse.class))
             .extracting(CreatePaymentResponse::getNextUrl)
-            .isEqualTo(String.format(RETURN_URL, claim.getExternalId()));
+            .isEqualTo(RETURN_URL);
     }
 
     @Test
@@ -158,6 +158,7 @@ public class ResumePaymentTest extends BaseMockSpringTest {
             .status(status)
             .dateCreated("2017-12-03+01:00")
             .nextUrl(NEXT_URL)
+            .returnUrl(RETURN_URL)
             .build();
         return SampleClaim.getDefault()
             .toBuilder()

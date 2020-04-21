@@ -45,6 +45,7 @@ public class PaymentMapperTest {
         assertThat(payment.getReference()).isEqualTo(ccdCase.getPaymentReference());
         assertThat(payment.getStatus()).isEqualTo(PaymentStatus.fromValue(ccdCase.getPaymentStatus()));
         assertThat(payment.getNextUrl()).isEqualTo(ccdCase.getPaymentNextUrl());
+        assertThat(payment.getReturnUrl()).isEqualTo(ccdCase.getPaymentReturnUrl());
     }
 
     @Test
@@ -94,6 +95,7 @@ public class PaymentMapperTest {
             .paymentReference("RC-1524-6488-1670-7520")
             .paymentId("PaymentId")
             .paymentNextUrl("http://nexturl.test")
+            .paymentReturnUrl("http://returnurl.test")
             .paymentStatus("success")
             .paymentDateCreated(LocalDate.of(2019, 1, 1))
             .build();
@@ -109,6 +111,7 @@ public class PaymentMapperTest {
         assertThat(payment.getReference()).isEqualTo(ccdCase.getPaymentReference());
         assertThat(payment.getStatus()).isEqualTo(PaymentStatus.fromValue(ccdCase.getPaymentStatus()));
         assertThat(payment.getNextUrl()).isEqualTo(ccdCase.getPaymentNextUrl());
+        assertThat(payment.getReturnUrl()).isEqualTo(ccdCase.getPaymentReturnUrl());
     }
 
     @Test
@@ -119,6 +122,7 @@ public class PaymentMapperTest {
             .paymentReference("RC-1524-6488-1670-7520")
             .paymentId("PaymentId")
             .paymentNextUrl("http://nexturl.test")
+            .paymentReturnUrl("http://returnurl.test")
             .paymentStatus(null)
             .paymentDateCreated(LocalDate.of(2019, 1, 1))
             .build();
@@ -134,6 +138,7 @@ public class PaymentMapperTest {
         assertThat(payment.getReference()).isEqualTo(ccdCase.getPaymentReference());
         assertThat(payment.getStatus()).isNull();
         assertThat(payment.getNextUrl()).isEqualTo(ccdCase.getPaymentNextUrl());
+        assertThat(payment.getReturnUrl()).isEqualTo(ccdCase.getPaymentReturnUrl());
     }
 
     @Test

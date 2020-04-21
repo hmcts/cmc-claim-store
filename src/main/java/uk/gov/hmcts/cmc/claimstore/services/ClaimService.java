@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
@@ -64,7 +63,6 @@ public class ClaimService {
     private final PaidInFullRule paidInFullRule;
     private final ClaimAuthorisationRule claimAuthorisationRule;
     private final ReviewOrderRule reviewOrderRule;
-    private final String returnUrlPattern;
 
     @SuppressWarnings("squid:S00107")
     @Autowired
@@ -78,8 +76,7 @@ public class ClaimService {
         AppInsights appInsights,
         PaidInFullRule paidInFullRule,
         ClaimAuthorisationRule claimAuthorisationRule,
-        ReviewOrderRule reviewOrderRule,
-        @Value("${payments.returnUrlPattern}") String returnUrlPattern
+        ReviewOrderRule reviewOrderRule
     ) {
         this.userService = userService;
         this.issueDateCalculator = issueDateCalculator;
@@ -91,7 +88,6 @@ public class ClaimService {
         this.paidInFullRule = paidInFullRule;
         this.claimAuthorisationRule = claimAuthorisationRule;
         this.reviewOrderRule = reviewOrderRule;
-        this.returnUrlPattern = returnUrlPattern;
     }
 
     public List<Claim> getClaimBySubmitterId(String submitterId, String authorisation) {
@@ -208,11 +204,12 @@ public class ClaimService {
 
         Payment payment = resumedClaim.getClaimData().getPayment()
             .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT));
-
+        String returnUrl = resumedClaim.getClaimData().getPayment()
+            .orElseThrow(IllegalStateException::new).getReturnUrl();
         return CreatePaymentResponse.builder()
             .nextUrl(
                 payment.getStatus().equals(PaymentStatus.SUCCESS)
-                    ? String.format(returnUrlPattern, claim.getExternalId())
+                    ? returnUrl
                     : payment.getNextUrl()
             )
             .build();

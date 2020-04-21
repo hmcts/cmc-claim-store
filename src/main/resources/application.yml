@@ -71,7 +71,6 @@ fees:
     jurisdiction2: "county court"
 
 payments:
-  returnUrlPattern: "${FRONTEND_BASE_URL:}/claim/%s/finish-payment"
   api:
     url: ${PAY_URL:}
     service: "CMC"
