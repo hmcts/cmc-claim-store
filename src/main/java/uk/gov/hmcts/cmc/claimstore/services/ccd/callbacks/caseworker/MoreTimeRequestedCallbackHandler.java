@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
-import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashMap;
@@ -93,7 +92,7 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
         );
         try {
             return moreTimeRequestedCitizenNotificationHandler.sendNotifications(callbackParams);
-        } catch (URISyntaxException e) {
+        } catch (Exception e) {
             return AboutToStartOrSubmitCallbackResponse
                .builder()
                 .errors(Collections.singletonList(ERROR_MESSAGE))
