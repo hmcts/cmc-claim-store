@@ -33,6 +33,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.MoreTimeRequested.referenceForClaimant;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.MoreTimeRequested.referenceForDefendant;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER;
@@ -100,21 +102,21 @@ public class MoreTimeRequestedCitizenNotificationHandler {
     }
 
     private void sendEmailNotificationToDefendant(Claim claim) {
-//        notificationService.sendMail(
-//                claim.getDefendantEmail(),
-//                notificationsProperties.getTemplates().getEmail().getDefendantMoreTimeRequested(),
-//                prepareNotificationParameters(claim),
-//                referenceForDefendant(claim.getReferenceNumber())
-//        );
+        notificationService.sendMail(
+                claim.getDefendantEmail(),
+                notificationsProperties.getTemplates().getEmail().getDefendantMoreTimeRequested(),
+                prepareNotificationParameters(claim),
+                referenceForDefendant(claim.getReferenceNumber())
+        );
     }
 
     private void sendNotificationToClaimant(Claim claim) {
-//        notificationService.sendMail(
-//            claim.getSubmitterEmail(),
-//            notificationsProperties.getTemplates().getEmail().getClaimantMoreTimeRequested(),
-//            prepareNotificationParameters(claim),
-//            referenceForClaimant(claim.getReferenceNumber())
-//        );
+        notificationService.sendMail(
+            claim.getSubmitterEmail(),
+            notificationsProperties.getTemplates().getEmail().getClaimantMoreTimeRequested(),
+            prepareNotificationParameters(claim),
+            referenceForClaimant(claim.getReferenceNumber())
+        );
     }
 
     private CallbackResponse createAndPrintLetter(CallbackParams callbackParams)  {
