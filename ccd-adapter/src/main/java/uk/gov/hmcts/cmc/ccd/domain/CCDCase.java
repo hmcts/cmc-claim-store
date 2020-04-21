@@ -138,5 +138,4 @@ public class CCDCase {
     private LocalDateTime dateReferredForDirections;
     private GeneralLetterContent generalLetterContent;
     private CCDLaList assignedTo;
-    private boolean moreTimeRequested;
 }
