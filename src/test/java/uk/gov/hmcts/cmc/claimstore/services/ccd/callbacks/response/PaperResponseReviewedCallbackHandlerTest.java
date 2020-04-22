@@ -157,6 +157,7 @@ class PaperResponseReviewedCallbackHandlerTest {
                 .claimDocumentCollection(documentCollectionAfter)
                 .build();
 
+            when(caseDetailsConverter.extractClaim(detailsBeforeEvent)).thenReturn(claim);
             when(caseDetailsConverter.extractClaim(detailsAfterEvent)).thenReturn(claimAfterEvent);
 
             callbackRequest = CallbackRequest.builder()
@@ -188,6 +189,7 @@ class PaperResponseReviewedCallbackHandlerTest {
             Claim claimAfterEvent = SampleClaim.withFullClaimData().toBuilder()
                 .claimDocumentCollection(documentCollectionAfter).build();
 
+            when(caseDetailsConverter.extractClaim(detailsBeforeEvent)).thenReturn(claim);
             when(caseDetailsConverter.extractClaim(detailsAfterEvent)).thenReturn(claimAfterEvent);
 
             callbackRequest = CallbackRequest.builder()
@@ -209,6 +211,11 @@ class PaperResponseReviewedCallbackHandlerTest {
         @Test
         @DisplayName("more time request is handled by scanned document upload")
         void verifyMoreTimeRequestedIsHandledByScannedDocumentUpload() {
+            when(notificationsProperties.getFrontendBaseUrl()).thenReturn("http://frontend.url");
+            when(notificationsProperties.getTemplates()).thenReturn(notificationTemplates);
+            when(notificationTemplates.getEmail()).thenReturn(emailTemplates);
+            when(emailTemplates.getClaimantPaperResponseReceived()).thenReturn("TEMPLATE");
+
             documentCollection.addStaffUploadedDocument(
                 ClaimDocument.builder().documentType(ClaimDocumentType.PAPER_RESPONSE_STATES_PAID).build());
 
@@ -249,8 +256,8 @@ class PaperResponseReviewedCallbackHandlerTest {
         @Test
         @DisplayName("response by staff uploaded document is handled")
         void verifyResponseByStaffUploadedDocumentIsHandled() {
-            when(notificationsProperties.getTemplates()).thenReturn(notificationTemplates);
             when(notificationsProperties.getFrontendBaseUrl()).thenReturn("http://frontend.url");
+            when(notificationsProperties.getTemplates()).thenReturn(notificationTemplates);
             when(notificationTemplates.getEmail()).thenReturn(emailTemplates);
             when(emailTemplates.getClaimantPaperResponseReceived()).thenReturn("TEMPLATE");
 
