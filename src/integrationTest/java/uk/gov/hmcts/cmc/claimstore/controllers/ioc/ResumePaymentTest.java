@@ -44,7 +44,6 @@ import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
 @TestPropertySource(
     properties = {
         "document_management.url=false",
-        "payments.returnUrlPattern=http://returnUrl.test/blah/%s/test",
         "payments.api.url=http://payments-api",
         "fees.api.url=http://fees-api"
     }
