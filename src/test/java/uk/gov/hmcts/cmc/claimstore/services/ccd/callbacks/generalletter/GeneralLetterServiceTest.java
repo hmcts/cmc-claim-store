@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -143,27 +142,22 @@ class GeneralLetterServiceTest {
     @Test
     void shouldPrepopulate() {
         when(userService.getUserDetails(eq(BEARER_TOKEN.name()))).thenReturn(userDetails);
-
         generalLetterService.prepopulateData(BEARER_TOKEN.name());
-
         verify(userService, once()).getUserDetails(eq(BEARER_TOKEN.name()));
     }
 
     @Test
     void shouldCreateAndPreviewLetter() {
-//        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
         when(docAssemblyService
             .createGeneralLetter(any(CCDCase.class), anyString(), anyString())).thenReturn(docAssemblyResponse);
         when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
         generalLetterService.createAndPreview(ccdCase, BEARER_TOKEN.name(), GENERAL_LETTER_TEMPLATE_ID);
-        //verify(caseDetailsConverter, once()).extractCCDCase(eq(caseDetails));
         verify(docAssemblyService, once()).createGeneralLetter(eq(ccdCase), eq(BEARER_TOKEN.name()),
             eq(GENERAL_LETTER_TEMPLATE_ID));
     }
 
     @Test
     void shouldThrowExceptionWhenDocAssemblyFails() {
-        //when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
         when(docAssemblyService.createGeneralLetter(any(CCDCase.class), anyString(), anyString()))
             .thenThrow(new DocumentGenerationFailedException(new RuntimeException("exception")));
         assertThrows(DocumentGenerationFailedException.class,
@@ -173,16 +167,10 @@ class GeneralLetterServiceTest {
 
     @Test
     void shouldPrintAndUpdateCaseDocument() throws Exception {
-//        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
-//        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
         when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
         when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);
         doNothing().when(publisher).publishEvent(any(GeneralLetterReadyToPrintEvent.class));
-//        Map<String, Object> dataMap = ImmutableMap.<String, Object>builder()
-//            .put("data", "existingData")
-//            .put("caseDocuments", ImmutableList.of(CLAIM_DOCUMENT))
-//            .build();
         CCDCase expected = ccdCase.toBuilder()
             .caseDocuments(ImmutableList.<CCDCollectionElement<CCDClaimDocument>>builder()
                 .addAll(ccdCase.getCaseDocuments())
@@ -191,23 +179,17 @@ class GeneralLetterServiceTest {
             .draftLetterDoc(null)
             .generalLetterContent(null)
             .build();
-        //when(caseDetailsConverter.convertToMap(any(CCDCase.class))).thenReturn(dataMap);
         when(documentManagementService.downloadDocument(anyString(), any(ClaimDocument.class)))
             .thenReturn(PDF_BYTES);
 
         CCDCase updatedCase = generalLetterService
             .printAndUpdateCaseDocuments(ccdCase, claim, BEARER_TOKEN.name(), GENERAL_DOCUMENT_NAME);
-//        verify(caseDetailsConverter, once()).extractCCDCase(eq(caseDetails));
-//        verify(caseDetailsConverter, once()).extractClaim(eq(caseDetails));
-//        verify(caseDetailsConverter, once()).convertToMap(any(CCDCase.class));
         verify(documentManagementService, once()).downloadDocument(eq(BEARER_TOKEN.name()), any(ClaimDocument.class));
         assertThat(updatedCase).isEqualTo(expected);
     }
 
     @Test
     void shouldThrowExceptionWhenPrintAndUpdateCaseDocumentFails() {
-//        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-//        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
         when(docAssemblyService.createGeneralLetter(any(CCDCase.class), anyString(), anyString()))
             .thenThrow(new RuntimeException("exception"));
         assertThrows(RuntimeException.class,

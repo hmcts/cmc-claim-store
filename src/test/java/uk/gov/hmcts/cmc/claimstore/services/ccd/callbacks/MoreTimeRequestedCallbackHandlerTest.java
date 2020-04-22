@@ -136,8 +136,6 @@ public class MoreTimeRequestedCallbackHandlerTest {
     @Mock
     private GeneralLetterService generalLetterService;
     @Mock
-    private DocAssemblyService docAssemblyService;
-    @Mock
     private ApplicationEventPublisher publisher;
     @Mock
     private DocumentManagementService documentManagementService;
@@ -170,7 +168,6 @@ public class MoreTimeRequestedCallbackHandlerTest {
                 notificationService,
                 notificationsProperties,
                 generalLetterService,
-                docAssemblyService,
                 userService,
                 GENERAL_LETTER_TEMPLATE_ID
         );
@@ -309,15 +306,11 @@ public class MoreTimeRequestedCallbackHandlerTest {
         moreTimeRequestedCallbackHandler.sendNotifications(callbackParams);
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
-        when(docAssemblyService
-                .createGeneralLetter(any(CCDCase.class), anyString(), anyString())).thenReturn(docAssemblyResponse);
         when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
-        verify(docAssemblyService, once()).createGeneralLetter(eq(ccdCase), eq(BEARER_TOKEN.name()),
-                eq(GENERAL_LETTER_TEMPLATE_ID));
         doNothing().when(publisher).publishEvent(any(GeneralLetterReadyToPrintEvent.class));
         when(documentManagementService.downloadDocument(anyString(), any(ClaimDocument.class)))
                 .thenReturn(PDF_BYTES);
-        verify(generalLetterService, once()).printAndUpdateCaseDocuments(eq(ccdCase), eq(claim), eq(authorization), eq());
+        verify(generalLetterService, once()).printAndUpdateCaseDocuments(eq(ccdCase), eq(claim), eq(BEARER_TOKEN.name()));
 
     }
 
