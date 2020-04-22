@@ -21,38 +21,25 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class MoreTimeRequestRuleTest {
 
-    @Mock
-    private ClaimDeadlineService claimDeadlineService = new ClaimDeadlineService();
-
     private MoreTimeRequestRule moreTimeRequestRule;
 
     @Before
     public void beforeEachTest() {
-        moreTimeRequestRule = new MoreTimeRequestRule(claimDeadlineService);
+        moreTimeRequestRule = new MoreTimeRequestRule();
     }
 
     @Test
-    public void noExceptionThrownWhenMoreTimeRequestedFirstTimeAndDeadlineHasNotPassed() {
+    public void noExceptionThrownWhenMoreTimeRequestedFirstTimeAnDefendantNotResponded() {
         Claim claim = SampleClaim.builder()
-            .withResponseDeadline(LocalDate.now().plusDays(2))
+            .withClaimantRespondedAt(null)
             .withMoreTimeRequested(false)
             .build();
-        assertThatCode(() -> moreTimeRequestRule.assertMoreTimeCanBeRequested(claim)).doesNotThrowAnyException();
-    }
-
-    @Test
-    public void noExceptionThrownWhenMoreTimeRequestedFirstTimeAndDeadlineHasPassed() {
-        Claim claim = SampleClaim.builder()
-                .withResponseDeadline(LocalDate.now().minusDays(2))
-                .withMoreTimeRequested(false)
-                .build();
         assertThatCode(() -> moreTimeRequestRule.assertMoreTimeCanBeRequested(claim)).doesNotThrowAnyException();
     }
 
     @Test(expected = MoreTimeAlreadyRequestedException.class)
     public void shouldThrowExceptionWhenMoreTimeWasAlreadyRequested() {
         Claim claim = SampleClaim.builder()
-            .withResponseDeadline(LocalDate.now().plusDays(2))
             .withMoreTimeRequested(true)
             .build();
         moreTimeRequestRule.assertMoreTimeCanBeRequested(claim);
@@ -60,40 +47,22 @@ public class MoreTimeRequestRuleTest {
 
     @Test
     public void shouldReturnValidationErrorWhenAlreadyRequestedMoreTime() {
-        LocalDate deadlineDay = LocalDate.now().plusDays(2);
         Claim claim = SampleClaim.builder()
-                .withResponseDeadline(deadlineDay)
                 .withMoreTimeRequested(true)
                 .build();
-        List<String> errors = moreTimeRequestRule.validateMoreTimeCanBeRequested(claim, deadlineDay);
+        List<String> errors = moreTimeRequestRule.validateMoreTimeCanBeRequested(claim);
         assertThat(errors.size()).isEqualTo(1);
         assertThat(errors).contains(MoreTimeRequestRule.ALREADY_REQUESTED_MORE_TIME_ERROR);
     }
 
     @Test
     public void shouldReturnValidationErrorWhenAlreadyResponded() {
-        LocalDate deadlineDay = LocalDate.now().plusDays(2);
         Claim claim = SampleClaim.builder()
-                .withResponseDeadline(deadlineDay)
                 .withMoreTimeRequested(false)
                 .withRespondedAt(LocalDateTime.now().minusDays(2))
                 .build();
-        List<String> errors = moreTimeRequestRule.validateMoreTimeCanBeRequested(claim, deadlineDay);
+        List<String> errors = moreTimeRequestRule.validateMoreTimeCanBeRequested(claim);
         assertThat(errors.size()).isEqualTo(1);
         assertThat(errors).contains(MoreTimeRequestRule.ALREADY_RESPONDED_ERROR);
     }
-
-    @Test
-    public void shouldReturnValidationErrorWhenPastDeadlineError() {
-        LocalDate deadlineDay = LocalDate.now().minusDays(2);
-        Claim claim = SampleClaim.builder()
-                .withResponseDeadline(deadlineDay)
-                .withMoreTimeRequested(false)
-                .build();
-        when(claimDeadlineService.isPastDeadline(any(), eq(deadlineDay))).thenReturn(true);
-        List<String> errors = moreTimeRequestRule.validateMoreTimeCanBeRequested(claim, deadlineDay);
-        assertThat(errors.size()).isEqualTo(1);
-        assertThat(errors).contains(MoreTimeRequestRule.PAST_DEADLINE_ERROR);
-    }
-
 }
