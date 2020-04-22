@@ -87,10 +87,6 @@ class GeneralLetterServiceTest {
             .build();
     private CCDCase ccdCase;
 
-    private CaseDetails caseDetails;
-
-    @Mock
-    private CaseDetailsConverter caseDetailsConverter;
     @Mock
     private DocAssemblyService docAssemblyService;
     @Mock
@@ -130,9 +126,6 @@ class GeneralLetterServiceTest {
         data = new HashMap<>();
         data.put(CHANGE_CONTACT_PARTY, "claimant");
         data.put(LETTER_CONTENT, "content");
-        caseDetails = CaseDetails.builder()
-            .data(data)
-            .build();
         userDetails = SampleUserDetails.builder()
             .withForename("Judge")
             .withSurname("McJudge")

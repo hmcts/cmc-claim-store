@@ -91,7 +91,10 @@ class GeneralLetterCallbackHandlerTest {
 
     @BeforeEach
     void setUp() {
-        handler = new GeneralLetterCallbackHandler(generalLetterService, GENERAL_LETTER_TEMPLATE_ID, caseDetailsConverter);
+        handler = new GeneralLetterCallbackHandler(
+            generalLetterService,
+            GENERAL_LETTER_TEMPLATE_ID,
+            caseDetailsConverter);
         String documentUrl = DOCUMENT_URI.toString();
         CCDDocument document = new CCDDocument(documentUrl, documentUrl, GENERAL_LETTER_PDF);
         ccdCase = CCDCase.builder()
@@ -128,10 +131,12 @@ class GeneralLetterCallbackHandlerTest {
         when(generalLetterService.createAndPreview(eq(ccdCase),
             eq(BEARER_TOKEN.name()),
             eq(GENERAL_LETTER_TEMPLATE_ID))).thenReturn(DOC_URL);
-        AboutToStartOrSubmitCallbackResponse actualResponse = (AboutToStartOrSubmitCallbackResponse) handler.createAndPreview(callbackParams);
+        AboutToStartOrSubmitCallbackResponse actualResponse =
+            (AboutToStartOrSubmitCallbackResponse) handler.createAndPreview(callbackParams);
         verify(generalLetterService, once()).createAndPreview(ccdCase, BEARER_TOKEN.name(),
             GENERAL_LETTER_TEMPLATE_ID);
-        assertThat(actualResponse.getData().get(DRAFT_LETTER_DOC_KEY)).isEqualTo(CCDDocument.builder().documentUrl(DOC_URL).build());
+        assertThat(actualResponse.getData().get(DRAFT_LETTER_DOC_KEY))
+            .isEqualTo(CCDDocument.builder().documentUrl(DOC_URL).build());
     }
 
     @Test
@@ -139,7 +144,8 @@ class GeneralLetterCallbackHandlerTest {
         when(generalLetterService.createAndPreview(eq(ccdCase),
             eq(BEARER_TOKEN.name()),
             eq(GENERAL_LETTER_TEMPLATE_ID))).thenThrow(DocumentGenerationFailedException.class);
-        AboutToStartOrSubmitCallbackResponse actualResponse = (AboutToStartOrSubmitCallbackResponse) handler.createAndPreview(callbackParams);
+        AboutToStartOrSubmitCallbackResponse actualResponse =
+            (AboutToStartOrSubmitCallbackResponse) handler.createAndPreview(callbackParams);
         verify(generalLetterService, once()).createAndPreview(ccdCase, BEARER_TOKEN.name(),
             GENERAL_LETTER_TEMPLATE_ID);
         assertThat(actualResponse.getErrors().get(0)).isEqualTo(ERROR_MESSAGE);

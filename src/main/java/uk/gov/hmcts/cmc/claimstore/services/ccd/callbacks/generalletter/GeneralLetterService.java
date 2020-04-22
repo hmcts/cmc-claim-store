@@ -95,7 +95,7 @@ public class GeneralLetterService {
             .build();
     }
 
-    public List<CCDCollectionElement<CCDClaimDocument>> updateCaseDocumentsWithGeneralLetter(
+    private List<CCDCollectionElement<CCDClaimDocument>> updateCaseDocumentsWithGeneralLetter(
         CCDCase ccdCase,
         CCDDocument draftLetterDoc,
         String documentName
@@ -118,7 +118,7 @@ public class GeneralLetterService {
             .build();
     }
 
-    public void printLetter(String authorisation, CCDDocument document, Claim claim) throws URISyntaxException {
+    private void printLetter(String authorisation, CCDDocument document, Claim claim) throws URISyntaxException {
         GeneralLetterReadyToPrintEvent event = new GeneralLetterReadyToPrintEvent(
             claim,
             downloadLetter(authorisation, document)
