@@ -53,7 +53,7 @@ public class RoboticsNotificationServiceTest {
     @Mock
     private DefenceResponseNotificationService defenceResponseNotificationService;
     @Mock
-    private RequestForJudgementNotificationService ccjNotificationService;
+    private RequestForJudgmentNotificationService ccjNotificationService;
     @Mock
     private ResponseDeadlineCalculator responseDeadlineCalculator;
     @Mock
