@@ -771,7 +771,7 @@ public class SampleData {
             .build();
     }
 
-    public static CCDCase withPaperResponseFromStaffUploadedDoc(CCDClaimDocumentType ccdClaimDocumentType) {
+    public static CCDCase withStaffUploadedDoc(CCDClaimDocumentType ccdClaimDocumentType) {
         List<CCDCollectionElement<CCDApplicant>> applicants
             = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
 

@@ -135,7 +135,7 @@ public class ClaimDocumentCollectionMapperTest {
 
     @Test
     public void shouldMapFromStaffUploadedDocuments() {
-        CCDCase ccdCase = SampleData.withPaperResponseFromStaffUploadedDoc(PAPER_RESPONSE_DISPUTES_ALL);
+        CCDCase ccdCase = SampleData.withStaffUploadedDoc(PAPER_RESPONSE_DISPUTES_ALL);
         Claim.ClaimBuilder builder = Claim.builder();
 
         mapper.from(ccdCase, builder);

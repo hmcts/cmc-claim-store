@@ -1,7 +1,10 @@
 package uk.gov.hmcts.cmc.ccd.util;
 
 import org.junit.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDDefendant;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -15,16 +18,9 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.List;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.PAPER_RESPONSE_COUNTER_CLAIM;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.PAPER_RESPONSE_DISPUTES_ALL;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.PAPER_RESPONSE_FULL_ADMIT;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.PAPER_RESPONSE_MORE_TIME;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.PAPER_RESPONSE_PART_ADMIT;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.PAPER_RESPONSE_STATES_PAID;
 import static uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDClaimSubmissionOperationIndicators.CCDClaimSubmissionOperationIndicatorsWithPinSuccess;
 import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.getMediationOutcome;
 import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.hasPaperResponse;
@@ -208,25 +204,20 @@ public class MapperUtilTest {
 
     }
 
-    @Test
-    public void cantContinueOnlineIfAnyPaperResponseDocumentPresent() {
+    @ParameterizedTest
+    @EnumSource(CCDClaimDocumentType.class)
+    public void shouldMarkClaimsWithPaperResponseDocuments(CCDClaimDocumentType ccdClaimDocumentType) {
 
-        for (var ccdClaimDocumentType : List.of(
-            PAPER_RESPONSE_FULL_ADMIT,
-            PAPER_RESPONSE_PART_ADMIT,
-            PAPER_RESPONSE_STATES_PAID,
-            PAPER_RESPONSE_MORE_TIME,
-            PAPER_RESPONSE_DISPUTES_ALL,
-            PAPER_RESPONSE_COUNTER_CLAIM)) {
+        CCDCase ccdCase =
+            SampleData.withStaffUploadedDoc(ccdClaimDocumentType);
 
-            CCDCase ccdCase =
-                SampleData.withPaperResponseFromStaffUploadedDoc(ccdClaimDocumentType);
+        YesNoOption result = hasPaperResponse.apply(ccdCase);
 
-            YesNoOption result = hasPaperResponse.apply(ccdCase);
-            assertThat(result)
-                .as(ccdClaimDocumentType.name())
-                .isEqualTo(YesNoOption.YES);
-        }
+        YesNoOption expectedResult = ccdClaimDocumentType.name().startsWith("PAPER") ? YesNoOption.YES : YesNoOption.NO;
+
+        assertThat(result)
+            .as(ccdClaimDocumentType.name())
+            .isEqualTo(expectedResult);
     }
 
     @Test
