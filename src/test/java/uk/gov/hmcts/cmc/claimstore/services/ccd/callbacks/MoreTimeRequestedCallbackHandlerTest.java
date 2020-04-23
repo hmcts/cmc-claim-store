@@ -9,7 +9,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.cmc.ccd.domain.*;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
@@ -32,6 +37,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.Collections;
@@ -61,13 +67,14 @@ class MoreTimeRequestedCallbackHandlerTest {
     private static final String DOC_NAME = "doc-name";
     private static final String LETTER_CONTENT = "letterContent";
     private static final String CHANGE_CONTACT_PARTY = "changeContactParty";
+
     private static final CCDDocument DRAFT_LETTER_DOC = CCDDocument.builder()
             .documentFileName(DOC_NAME)
             .documentBinaryUrl(DOC_URL_BINARY)
             .documentUrl(DOC_URL).build();
-    private static final URI DOCUMENT_URI = URI.create("http://localhost/doc.pdf");;
-    private static final String ERROR_MESSAGE =
-            "There was a technical problem. Nothing has been sent. You need to try again.";
+    private static final URI DOCUMENT_URI = URI.create("http://localhost/doc.pdf");
+    private static final String ERROR_MESSAGE = "There was a technical problem. Nothing has been sent."
+            + " You need to try again.";
     private static final String GENERAL_DOCUMENT_NAME = "reference-response-deadline-extended.pdf";
     private static final String AUTHORISATION = "auth";
     private static final LocalDate deadline = LocalDate.now();
@@ -107,7 +114,7 @@ class MoreTimeRequestedCallbackHandlerTest {
 
     @BeforeEach
     void setUp() {
-        moreTimeRequestedCallbackHandler = new MoreTimeRequestedCallbackHandler (
+        moreTimeRequestedCallbackHandler = new MoreTimeRequestedCallbackHandler(
                 eventProducer,
                 responseDeadlineCalculator,
                 moreTimeRequestRule,
@@ -169,12 +176,14 @@ class MoreTimeRequestedCallbackHandlerTest {
         @BeforeEach
         void setUp() {
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-            when(responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn())).thenReturn(LocalDate.now());
+            when(responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn()))
+                    .thenReturn(LocalDate.now());
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
             List<String> validationResults = ImmutableList.of("a", "b", "c");
             when(moreTimeRequestRule.validateMoreTimeCanBeRequested(any(Claim.class)))
                 .thenReturn(validationResults);
         }
+
         @Test
         void shouldValidateRequestOnAboutToStartEvent() {
 
@@ -191,7 +200,8 @@ class MoreTimeRequestedCallbackHandlerTest {
         void setUp() {
             claim = claim.toBuilder().responseDeadline(deadline).build();
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
-            when(responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn())).thenReturn(LocalDate.now());
+            when(responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn()))
+                    .thenReturn(LocalDate.now());
         }
 
         @Test
@@ -215,7 +225,8 @@ class MoreTimeRequestedCallbackHandlerTest {
         @BeforeEach
         void setUp() {
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
-            when(responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn())).thenReturn(LocalDate.now());
+            when(responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn()))
+                    .thenReturn(LocalDate.now());
             when(notificationsProperties.getTemplates()).thenReturn(templates);
             when(templates.getEmail()).thenReturn(emailTemplates);
         }
@@ -266,7 +277,8 @@ class MoreTimeRequestedCallbackHandlerTest {
         @Test
         void sendLetterToNotLinkedDefendant() throws Exception {
             when(caseDetailsConverter.convertToMap(any(CCDCase.class))).thenReturn(Collections.emptyMap());
-            when(generalLetterService.createAndPreview(any(CCDCase.class), anyString(), anyString())).thenReturn(DOC_URL);
+            when(generalLetterService.createAndPreview(any(CCDCase.class), anyString(), anyString()))
+                    .thenReturn(DOC_URL);
             when(generalLetterService.printAndUpdateCaseDocuments(
                 any(CCDCase.class),
                 any(Claim.class),
@@ -274,14 +286,16 @@ class MoreTimeRequestedCallbackHandlerTest {
                 anyString())).thenReturn(ccdCase);
             moreTimeRequestedCallbackHandler.sendNotifications(callbackParams);
             verify(generalLetterService, once())
-                .printAndUpdateCaseDocuments(any(CCDCase.class), eq(claim), eq(AUTHORISATION), eq(GENERAL_DOCUMENT_NAME));
+                .printAndUpdateCaseDocuments(any(CCDCase.class), eq(claim), eq(AUTHORISATION),
+                        eq(GENERAL_DOCUMENT_NAME));
             verify(generalLetterService, once())
                 .createAndPreview(any(CCDCase.class), eq(AUTHORISATION), eq(GENERAL_LETTER_TEMPLATE_ID));
         }
 
         @Test
         void shouldReturnWithErrorsWhenFailsToCreateDoc() {
-            when(generalLetterService.createAndPreview(any(CCDCase.class), anyString(), anyString())).thenThrow(RuntimeException.class);
+            when(generalLetterService.createAndPreview(any(CCDCase.class), anyString(), anyString()))
+                    .thenThrow(RuntimeException.class);
             AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
                 moreTimeRequestedCallbackHandler.sendNotifications(callbackParams);
             assertThat(response.getErrors().get(0)).isEqualTo(ERROR_MESSAGE);
