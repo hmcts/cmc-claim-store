@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.docassembly.exception.DocumentGenerationFailedException;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -69,7 +70,7 @@ class GeneralLetterCallbackHandlerTest {
     private static final Claim claim = SampleClaim
         .builder()
         .build();
-    public static final String GENERAL_DOCUMENT_NAME = "000MC001-general-letter-2020-04-22-1.pdf";
+    public static final String GENERAL_DOCUMENT_NAME = "000MC001-general-letter-" + LocalDate.now() + "-1.pdf";
     private static final CCDDocument DOCUMENT = CCDDocument
         .builder()
         .documentUrl(DOC_URL)
