@@ -133,7 +133,7 @@ public class GeneralLetterCallbackHandler extends CallbackHandler {
     }
 
     private String getDocumentName(CCDCase ccdCase) {
-        Integer number = Math.toIntExact(ccdCase.getCaseDocuments()
+        long number = ccdCase.getCaseDocuments()
                 .stream()
                 .map(CCDCollectionElement::getValue)
                 .filter(c -> c.getDocumentType().equals(GENERAL_LETTER))
