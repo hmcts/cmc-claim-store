@@ -69,8 +69,6 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
     private final UserService userService;
     private final String generalLetterTemplateId;
 
-    private static final String newLine = System.getProperty("line.separator");
-
     private static final String PREVIEW_SENTENCE = "The response deadline will be %s .";
     private static final String ERROR_MESSAGE =
         "There was a technical problem. Nothing has been sent. You need to try again.";
