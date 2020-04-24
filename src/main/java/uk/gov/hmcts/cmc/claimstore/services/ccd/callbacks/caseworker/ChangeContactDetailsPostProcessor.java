@@ -13,7 +13,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
-import uk.gov.hmcts.cmc.claimstore.config.LoggerHandler;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
@@ -35,9 +34,8 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.
 @ConditionalOnProperty(prefix = "doc_assembly", name = "url")
 public class ChangeContactDetailsPostProcessor {
 
-    private static final Logger logger = LoggerFactory.getLogger(LoggerHandler.class);
-    public static final String NO_DETAILS_CHANGED_ERROR =
-            "You need to change contact details to continue.";
+    private static final Logger logger = LoggerFactory.getLogger(ChangeContactDetailsPostProcessor.class);
+    public static final String NO_DETAILS_CHANGED_ERROR = "You need to change contact details to continue.";
     private static final String DRAFT_LETTER_DOC = "draftLetterDoc";
 
     private final CaseDetailsConverter caseDetailsConverter;

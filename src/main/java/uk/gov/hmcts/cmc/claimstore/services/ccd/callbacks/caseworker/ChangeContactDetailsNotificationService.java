@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
-import uk.gov.hmcts.cmc.claimstore.config.LoggerHandler;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.ContactDetailsChanged;
@@ -34,7 +33,7 @@ public class ChangeContactDetailsNotificationService {
     private final NotificationService notificationService;
     private final NotificationsProperties notificationsProperties;
     private final CaseDetailsConverter caseDetailsConverter;
-    private static final Logger logger = LoggerFactory.getLogger(LoggerHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(ChangeContactDetailsNotificationService.class);
 
     @Autowired
     public ChangeContactDetailsNotificationService(
