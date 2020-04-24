@@ -139,8 +139,7 @@ public class GeneralLetterCallbackHandler extends CallbackHandler {
             .filter(c -> c.getDocumentType().equals(GENERAL_LETTER))
             .filter(c -> c.getDocumentName().contains(LocalDate.now().toString()))
             .count() + 1));
-        String a =  buildLetterFileBaseName(ccdCase.getPreviousServiceCaseReference(),
+        return buildLetterFileBaseName(ccdCase.getPreviousServiceCaseReference(),
             LocalDate.now().toString()) + "-" + number + ".pdf";
-        return a;
     }
 }
