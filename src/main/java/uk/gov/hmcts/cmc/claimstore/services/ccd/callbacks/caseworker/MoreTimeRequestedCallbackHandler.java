@@ -74,7 +74,7 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
     private static final String PREVIEW_SENTENCE = "The response deadline will be %s .";
     private static final String ERROR_MESSAGE =
         "There was a technical problem. Nothing has been sent. You need to try again.";
-    private static final String STANDARD_DEADLINE_TEXT = String.join(newLine,
+    private static final String STANDARD_DEADLINE_TEXT = String.join("%n",
             "You’ve been given an extra 14 days to respond to the claim made against you by %s.",
             "",
             "You now need to respond to the claim before 4pm on %s.",
