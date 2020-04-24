@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
-import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -30,7 +29,6 @@ import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse.AboutToStartOrSubmitCallbackResponseBuilder;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -107,7 +105,7 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
-        return ImmutableMap.of(
+        return Map.of(
             CallbackType.ABOUT_TO_START, this::requestMoreTimeViaCaseworker,
             CallbackType.ABOUT_TO_SUBMIT, this::sendNotifications
         );
@@ -130,7 +128,7 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
         LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
 
         List<String> validationResult = this.moreTimeRequestRule.validateMoreTimeCanBeRequested(claim);
-        AboutToStartOrSubmitCallbackResponseBuilder builder = AboutToStartOrSubmitCallbackResponse
+        var builder = AboutToStartOrSubmitCallbackResponse
             .builder();
         if (!validationResult.isEmpty()) {
             return builder
@@ -190,14 +188,14 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
     }
 
     private Map<String, String> prepareNotificationParameters(Claim claim, LocalDate deadline) {
-        Map<String, String> parameters = new HashMap<>();
-        parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
-        parameters.put(CLAIMANT_TYPE, PartyUtils.getType(claim.getClaimData().getClaimant()));
-        parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
-        parameters.put(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName());
-        parameters.put(RESPONSE_DEADLINE, formatDate(deadline));
-        parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
-        return parameters;
+        return Map.of(
+                CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber(),
+                CLAIMANT_TYPE, PartyUtils.getType(claim.getClaimData().getClaimant()),
+                CLAIMANT_NAME, claim.getClaimData().getClaimant().getName(),
+                DEFENDANT_NAME, claim.getClaimData().getDefendant().getName(),
+                RESPONSE_DEADLINE, formatDate(deadline),
+                FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl()
+        );
     }
 
     private CallbackResponse createAndPrintLetter(CallbackParams callbackParams) throws Exception {

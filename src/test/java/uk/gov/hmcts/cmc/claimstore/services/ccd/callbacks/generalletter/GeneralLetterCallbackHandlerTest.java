@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -58,7 +59,7 @@ class GeneralLetterCallbackHandlerTest {
     private static final String LETTER_CONTENT = "letterContent";
     private static final String CHANGE_CONTACT_PARTY = "changeContactParty";
     private static final String DRAFT_LETTER_DOC_KEY = "draftLetterDoc";
-    public static final String GENERAL_LETTER_TEMPLATE_ID = "generalLetterTemplateId";
+    private static final String GENERAL_LETTER_TEMPLATE_ID = "generalLetterTemplateId";
     private static final String DOC_URL = "http://success.test";
     private static final String DOC_URL_BINARY = "http://success.test/binary";
     private static final String DOC_NAME = "doc-name";

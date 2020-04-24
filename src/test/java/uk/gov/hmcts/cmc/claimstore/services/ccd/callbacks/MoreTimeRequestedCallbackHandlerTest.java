@@ -60,7 +60,7 @@ class MoreTimeRequestedCallbackHandlerTest {
 
     private static final String DEFENDANT_TEMPLATE_ID = "defendant template id";
     private static final String CLAIMANT_TEMPLATE_ID = "claimant template id";
-    public static final String GENERAL_LETTER_TEMPLATE_ID = "generalLetterTemplateId";
+    private static final String GENERAL_LETTER_TEMPLATE_ID = "generalLetterTemplateId";
     private Map<String, Object> data;
     private static final String DOC_URL = "http://success.test";
     private static final String DOC_URL_BINARY = "http://success.test/binary";
@@ -179,7 +179,7 @@ class MoreTimeRequestedCallbackHandlerTest {
             when(responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn()))
                     .thenReturn(LocalDate.now());
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
-            List<String> validationResults = ImmutableList.of("a", "b", "c");
+            List<String> validationResults = List.of("a", "b", "c");
             when(moreTimeRequestRule.validateMoreTimeCanBeRequested(any(Claim.class)))
                 .thenReturn(validationResults);
         }
