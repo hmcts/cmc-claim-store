@@ -165,4 +165,10 @@ public class EmailTemplates {
 
     @NotEmpty
     private String claimantPaperResponseReceived;
+
+    @NotEmpty
+    private String claimantContactDetailsChanged;
+
+    @NotEmpty
+    private String defendantContactDetailsChanged;
 }
