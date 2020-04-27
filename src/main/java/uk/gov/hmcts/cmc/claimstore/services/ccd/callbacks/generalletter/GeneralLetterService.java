@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.GENERAL_LETTER;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterCallbackHandler.DRAFT_LETTER_DOC;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildLetterFileBaseName;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 
@@ -89,7 +90,9 @@ public class GeneralLetterService {
     ) {
         try {
             logger.info("General Letter: creating general letter");
-
+            if (caseDetails.getData().containsKey(DRAFT_LETTER_DOC)) {
+                caseDetails.getData().remove(DRAFT_LETTER_DOC);
+            }
             CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
             DocAssemblyResponse docAssemblyResponse = docAssemblyService.createGeneralLetter(ccdCase,
                 authorisation, templateId);
@@ -127,6 +130,8 @@ public class GeneralLetterService {
             CCDCase updatedCase = ccdCase.toBuilder()
                 .caseDocuments(updateCaseDocumentsWithGeneralLetter(ccdCase, draftLetterDoc))
                 .draftLetterDoc(null)
+                .contactChangeParty(null)
+                .contactChangeContent(null)
                 .generalLetterContent(null)
                 .build();
             return AboutToStartOrSubmitCallbackResponse
