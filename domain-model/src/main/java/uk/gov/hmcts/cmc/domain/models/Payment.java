@@ -13,7 +13,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Builder
 @Data
-@JsonIgnoreProperties(value = {"description", "state"})
+@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(value = PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Payment {
     private final String id;
