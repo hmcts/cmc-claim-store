@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
@@ -204,8 +205,6 @@ class MoreTimeRequestedCallbackHandlerTest {
         void setUp() {
             claim = claim.toBuilder().responseDeadline(deadline).build();
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
-            when(responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn()))
-                    .thenReturn(LocalDate.now());
         }
 
         @Test
@@ -229,8 +228,6 @@ class MoreTimeRequestedCallbackHandlerTest {
         @BeforeEach
         void setUp() {
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
-            when(responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn()))
-                    .thenReturn(LocalDate.now());
             when(notificationsProperties.getTemplates()).thenReturn(templates);
             when(templates.getEmail()).thenReturn(emailTemplates);
         }
@@ -281,19 +278,28 @@ class MoreTimeRequestedCallbackHandlerTest {
         @Test
         void sendLetterToNotLinkedDefendant() throws Exception {
             when(caseDetailsConverter.convertToMap(any(CCDCase.class))).thenReturn(Collections.emptyMap());
+            when(generalLetterService.setLetterContent(
+                    any(CCDCase.class),
+                    anyString(),
+                    any(UserDetails.class),
+                    any(CCDContactPartyType.class))).thenReturn(ccdCase);
             when(generalLetterService.createAndPreview(any(CCDCase.class), anyString(), anyString()))
                     .thenReturn(DOC_URL);
             when(generalLetterService.printAndUpdateCaseDocuments(
                 any(CCDCase.class),
                 any(Claim.class),
                 anyString(),
+                anyString(),
                 anyString())).thenReturn(ccdCase);
             moreTimeRequestedCallbackHandler.sendNotifications(callbackParams);
             verify(generalLetterService, once())
                 .printAndUpdateCaseDocuments(any(CCDCase.class), eq(claim), eq(AUTHORISATION),
-                        eq(GENERAL_DOCUMENT_NAME));
+                        eq(GENERAL_DOCUMENT_NAME), eq(DOC_URL));
             verify(generalLetterService, once())
                 .createAndPreview(any(CCDCase.class), eq(AUTHORISATION), eq(GENERAL_LETTER_TEMPLATE_ID));
+            verify(generalLetterService, once())
+                    .setLetterContent(any(CCDCase.class), eq(LETTER_CONTENT), any(UserDetails.class), eq(CCDContactPartyType.DEFENDANT));
+
         }
 
         @Test

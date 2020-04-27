@@ -11,7 +11,9 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.domain.GeneralLetterContent;
 import uk.gov.hmcts.cmc.claimstore.events.GeneralLetterReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -174,7 +176,7 @@ class GeneralLetterServiceTest {
             .thenReturn(PDF_BYTES);
 
         CCDCase updatedCase = generalLetterService
-            .printAndUpdateCaseDocuments(ccdCase, claim, BEARER_TOKEN.name(), GENERAL_DOCUMENT_NAME);
+            .printAndUpdateCaseDocuments(ccdCase, claim, BEARER_TOKEN.name(), GENERAL_DOCUMENT_NAME, DOC_URL);
         verify(documentManagementService, once()).downloadDocument(eq(BEARER_TOKEN.name()), any(ClaimDocument.class));
         assertThat(updatedCase).isEqualTo(expected);
     }
@@ -186,5 +188,21 @@ class GeneralLetterServiceTest {
         assertThrows(RuntimeException.class,
             () -> generalLetterService.createAndPreview(ccdCase, BEARER_TOKEN.name(),
                 GENERAL_LETTER_TEMPLATE_ID));
+    }
+
+    @Test
+    void shouldSetLetterContent() {
+        CCDCase expected = ccdCase.toBuilder()
+                .generalLetterContent(
+                        GeneralLetterContent.builder()
+                                .caseworkerName(userDetails.getFullName())
+                                .letterContent(LETTER_CONTENT)
+                                .issueLetterContact(CCDContactPartyType.DEFENDANT)
+                                .build()
+                )
+                .build();
+        CCDCase updatedCase = generalLetterService
+                .setLetterContent(ccdCase, LETTER_CONTENT, userDetails, CCDContactPartyType.DEFENDANT);
+        assertThat(updatedCase).isEqualTo(expected);
     }
 }

@@ -171,11 +171,12 @@ class GeneralLetterCallbackHandlerTest {
         when(generalLetterService.printAndUpdateCaseDocuments(eq(ccdCase),
             eq(claim),
             eq(BEARER_TOKEN.name()),
-                eq(GENERAL_DOCUMENT_NAME))).thenReturn(updateCCDCase);
+            eq(GENERAL_DOCUMENT_NAME),
+            eq(DOC_URL))).thenReturn(updateCCDCase);
         AboutToStartOrSubmitCallbackResponse actualResponse = (AboutToStartOrSubmitCallbackResponse)
             handler.printAndUpdateCaseDocuments(callbackParams);
         verify(generalLetterService, once())
-            .printAndUpdateCaseDocuments(ccdCase, claim, BEARER_TOKEN.name(), GENERAL_DOCUMENT_NAME);
+            .printAndUpdateCaseDocuments(ccdCase, claim, BEARER_TOKEN.name(), GENERAL_DOCUMENT_NAME, DOC_URL);
         assertThat(actualResponse.getData()).isEqualTo(dataMap);
     }
 
@@ -185,11 +186,12 @@ class GeneralLetterCallbackHandlerTest {
         when(generalLetterService.printAndUpdateCaseDocuments(eq(ccdCase),
             eq(claim),
             eq(BEARER_TOKEN.name()),
-            eq(GENERAL_DOCUMENT_NAME))).thenThrow(Exception.class);
+            eq(GENERAL_DOCUMENT_NAME),
+            eq(DOC_URL))).thenThrow(Exception.class);
         AboutToStartOrSubmitCallbackResponse actualResponse = (AboutToStartOrSubmitCallbackResponse)
             handler.printAndUpdateCaseDocuments(callbackParams);
         verify(generalLetterService, once())
-            .printAndUpdateCaseDocuments(ccdCase, claim, BEARER_TOKEN.name(), GENERAL_DOCUMENT_NAME);
+            .printAndUpdateCaseDocuments(ccdCase, claim, BEARER_TOKEN.name(), GENERAL_DOCUMENT_NAME, DOC_URL);
         assertThat(actualResponse.getErrors().get(0)).isEqualTo(ERROR_MESSAGE);
     }
 }
