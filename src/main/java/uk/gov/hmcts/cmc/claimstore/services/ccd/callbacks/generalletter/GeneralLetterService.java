@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,9 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.GeneralLetterContent;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.claimstore.events.GeneralLetterReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -35,6 +38,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.GENERAL_LETTER;
+import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 
 @Service
@@ -46,19 +50,22 @@ public class GeneralLetterService {
     private final DocumentManagementService documentManagementService;
     private final Clock clock;
     private final UserService userService;
+    private final String generalLetterTemplateId;
 
     public GeneralLetterService(
             DocAssemblyService docAssemblyService,
             ApplicationEventPublisher publisher,
             DocumentManagementService documentManagementService,
             Clock clock,
-            UserService userService
+            UserService userService,
+            @Value("${doc_assembly.generalLetterTemplateId}") String generalLetterTemplateId
     ) {
         this.docAssemblyService = docAssemblyService;
         this.publisher = publisher;
         this.documentManagementService = documentManagementService;
         this.clock = clock;
         this.userService = userService;
+        this.generalLetterTemplateId = generalLetterTemplateId;
     }
 
     public CallbackResponse prepopulateData(String authorisation) {
@@ -151,7 +158,7 @@ public class GeneralLetterService {
                 Collections.emptyMap());
     }
 
-    public CCDCase setLetterContent(CCDCase ccdCase, String content, UserDetails userDetails,
+    private CCDCase setLetterContent(CCDCase ccdCase, String content, UserDetails userDetails,
                                     CCDContactPartyType ccdContactPartyType) {
         String caseworkerName = userDetails.getFullName();
         GeneralLetterContent generalLetterContent = GeneralLetterContent.builder()
@@ -159,10 +166,23 @@ public class GeneralLetterService {
                 .letterContent(content)
                 .issueLetterContact(ccdContactPartyType)
                 .build();
-        CCDCase updatedCase = ccdCase.toBuilder()
+
+        return ccdCase.toBuilder()
                 .generalLetterContent(generalLetterContent)
                 .build();
-        return updatedCase;
+    }
 
+    public CCDCase createAndPrintLetter(CCDCase ccdCase, Claim claim, String authorisation, String content,
+                                                  String filename) throws Exception {
+        UserDetails userDetails = userService.getUserDetails(authorisation);
+        CCDCase updatedCCDCase = setLetterContent(ccdCase, content, userDetails, CCDContactPartyType.DEFENDANT);
+        String docUrl =         createAndPreview(updatedCCDCase, authorisation, generalLetterTemplateId);
+
+      return printAndUpdateCaseDocuments(
+                updatedCCDCase,
+                claim,
+                authorisation,
+               filename,
+                docUrl);
     }
 }
