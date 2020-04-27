@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.GeneralLetterContent;
 import uk.gov.hmcts.cmc.claimstore.events.GeneralLetterReadyToPrintEvent;
@@ -32,6 +33,7 @@ import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
+
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.GENERAL_LETTER;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 
@@ -46,11 +48,11 @@ public class GeneralLetterService {
     private final UserService userService;
 
     public GeneralLetterService(
-        DocAssemblyService docAssemblyService,
-        ApplicationEventPublisher publisher,
-        DocumentManagementService documentManagementService,
-        Clock clock,
-        UserService userService
+            DocAssemblyService docAssemblyService,
+            ApplicationEventPublisher publisher,
+            DocumentManagementService documentManagementService,
+            Clock clock,
+            UserService userService
     ) {
         this.docAssemblyService = docAssemblyService;
         this.publisher = publisher;
@@ -63,78 +65,104 @@ public class GeneralLetterService {
         UserDetails userDetails = userService.getUserDetails(authorisation);
         String caseworkerName = userDetails.getFullName();
         return AboutToStartOrSubmitCallbackResponse
-            .builder()
-            .data(ImmutableMap.of("generalLetterContent",
-                GeneralLetterContent.builder().caseworkerName(caseworkerName).build()
-            ))
-            .build();
+                .builder()
+                .data(ImmutableMap.of("generalLetterContent",
+                        GeneralLetterContent.builder().caseworkerName(caseworkerName).build()
+                ))
+                .build();
     }
 
     public String createAndPreview(
-        CCDCase ccdCase,
-        String authorisation,
-        String templateId
+            CCDCase ccdCase,
+            String authorisation,
+            String templateId
     ) throws DocumentGenerationFailedException {
         logger.info("General Letter: creating general letter");
         DocAssemblyResponse docAssemblyResponse = docAssemblyService.createGeneralLetter(ccdCase,
-            authorisation, templateId);
+                authorisation, templateId);
         return docAssemblyResponse.getRenditionOutputLocation();
     }
 
     public CCDCase printAndUpdateCaseDocuments(
-        CCDCase ccdCase,
-        Claim claim,
-        String authorisation,
-        String documentName) throws Exception {
-        CCDDocument draftLetterDoc = ccdCase.getDraftLetterDoc();
+            CCDCase ccdCase,
+            Claim claim,
+            String authorisation,
+            String documentName,
+            String docUrl) throws Exception {
+        CCDDocument draftLetterDoc;
+        if (ccdCase.getDraftLetterDoc() == null) {
+            draftLetterDoc = CCDDocument.builder()
+                    .documentUrl(docUrl)
+                    .documentBinaryUrl(docUrl + "/binary")
+                    .documentFileName("")
+                    .build();
+            ;
+        } else {
+            draftLetterDoc = ccdCase.getDraftLetterDoc();
+        }
         printLetter(authorisation, draftLetterDoc, claim);
         return ccdCase.toBuilder()
-            .caseDocuments(updateCaseDocumentsWithGeneralLetter(ccdCase, draftLetterDoc, documentName))
-            .draftLetterDoc(null)
-            .generalLetterContent(null)
-            .build();
+                .caseDocuments(updateCaseDocumentsWithGeneralLetter(ccdCase, draftLetterDoc, documentName))
+                .draftLetterDoc(null)
+                .generalLetterContent(null)
+                .build();
     }
 
     private List<CCDCollectionElement<CCDClaimDocument>> updateCaseDocumentsWithGeneralLetter(
-        CCDCase ccdCase,
-        CCDDocument draftLetterDoc,
-        String documentName
+            CCDCase ccdCase,
+            CCDDocument draftLetterDoc,
+            String documentName
     ) {
         CCDCollectionElement<CCDClaimDocument> claimDocument = CCDCollectionElement.<CCDClaimDocument>builder()
-            .value(CCDClaimDocument.builder()
-                .documentLink(CCDDocument.builder()
-                .documentFileName(documentName)
-                .documentUrl(draftLetterDoc.getDocumentUrl())
-                .documentBinaryUrl(draftLetterDoc.getDocumentBinaryUrl())
-                .build())
-                .documentName(documentName)
-                .createdDatetime(LocalDateTime.now(clock.withZone(UTC_ZONE)))
-                .documentType(GENERAL_LETTER)
-                .build())
-            .build();
+                .value(CCDClaimDocument.builder()
+                        .documentLink(CCDDocument.builder()
+                                .documentFileName(documentName)
+                                .documentUrl(draftLetterDoc.getDocumentUrl())
+                                .documentBinaryUrl(draftLetterDoc.getDocumentBinaryUrl())
+                                .build())
+                        .documentName(documentName)
+                        .createdDatetime(LocalDateTime.now(clock.withZone(UTC_ZONE)))
+                        .documentType(GENERAL_LETTER)
+                        .build())
+                .build();
         return ImmutableList.<CCDCollectionElement<CCDClaimDocument>>builder()
-            .addAll(ccdCase.getCaseDocuments())
-            .add(claimDocument)
-            .build();
+                .addAll(ccdCase.getCaseDocuments())
+                .add(claimDocument)
+                .build();
     }
 
     private void printLetter(String authorisation, CCDDocument document, Claim claim) throws URISyntaxException {
         GeneralLetterReadyToPrintEvent event = new GeneralLetterReadyToPrintEvent(
-            claim,
-            downloadLetter(authorisation, document)
+                claim,
+                downloadLetter(authorisation, document)
         );
         publisher.publishEvent(event);
     }
 
     private Document downloadLetter(String authorisation, CCDDocument document) throws URISyntaxException {
         return new Document(Base64.getEncoder().encodeToString(
-            documentManagementService.downloadDocument(
-                authorisation,
-                ClaimDocument.builder()
-                    .documentName(document.getDocumentFileName())
-                    .documentManagementUrl(new URI(document.getDocumentUrl()))
-                    .documentManagementBinaryUrl(new URI(document.getDocumentBinaryUrl()))
-                    .build())),
-            Collections.emptyMap());
+                documentManagementService.downloadDocument(
+                        authorisation,
+                        ClaimDocument.builder()
+                                .documentName(document.getDocumentFileName())
+                                .documentManagementUrl(new URI(document.getDocumentUrl()))
+                                .documentManagementBinaryUrl(new URI(document.getDocumentBinaryUrl()))
+                                .build())),
+                Collections.emptyMap());
+    }
+
+    public CCDCase setLetterContent(CCDCase ccdCase, String content, UserDetails userDetails,
+                                    CCDContactPartyType ccdContactPartyType) {
+        String caseworkerName = userDetails.getFullName();
+        GeneralLetterContent generalLetterContent = GeneralLetterContent.builder()
+                .caseworkerName(caseworkerName)
+                .letterContent(content)
+                .issueLetterContact(ccdContactPartyType)
+                .build();
+        CCDCase updatedCase = ccdCase.toBuilder()
+                .generalLetterContent(generalLetterContent)
+                .build();
+        return updatedCase;
+
     }
 }

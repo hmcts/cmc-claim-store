@@ -7,10 +7,8 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
-import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.ccd.domain.GeneralLetterContent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
@@ -31,7 +29,6 @@ import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -143,10 +140,9 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
     }
 
     public CallbackResponse sendNotifications(CallbackParams callbackParams) {
-        CallbackRequest callbackRequest = callbackParams.getRequest();
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        Claim claim = caseDetailsConverter.extractClaim(caseDetails);
-        LocalDate responseDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
+        String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackParams.getRequest().getCaseDetails());
+        Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
         CallbackResponse response = AboutToStartOrSubmitCallbackResponse.builder().build();
         try {
             eventProducer.createMoreTimeForResponseRequestedEvent(
@@ -155,11 +151,11 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
                     claim.getClaimData().getDefendant().getEmail().orElse(null)
             );
             if (claim.getDefendantEmail() != null && claim.getDefendantId() != null) {
-                sendEmailNotificationToDefendant(claim, responseDeadline);
+                sendEmailNotificationToDefendant(claim);
             } else {
-                response = createAndPrintLetter(callbackParams);
+                response = createAndPrintLetter(ccdCase, claim, authorisation);
             }
-            sendNotificationToClaimant(claim, responseDeadline);
+            sendNotificationToClaimant(claim);
             return response;
         } catch (Exception e) {
             return AboutToStartOrSubmitCallbackResponse
@@ -169,95 +165,61 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
         }
     }
 
-    private void sendEmailNotificationToDefendant(Claim claim, LocalDate deadline) {
+    private void sendEmailNotificationToDefendant(Claim claim) {
         notificationService.sendMail(
                 claim.getDefendantEmail(),
                 notificationsProperties.getTemplates().getEmail().getDefendantMoreTimeRequested(),
-                prepareNotificationParameters(claim, deadline),
+                prepareNotificationParameters(claim),
                 referenceForDefendant(claim.getReferenceNumber())
         );
     }
 
-    private void sendNotificationToClaimant(Claim claim, LocalDate deadline) {
+    private void sendNotificationToClaimant(Claim claim) {
         notificationService.sendMail(
                 claim.getSubmitterEmail(),
                 notificationsProperties.getTemplates().getEmail().getClaimantMoreTimeRequested(),
-                prepareNotificationParameters(claim, deadline),
+                prepareNotificationParameters(claim),
                 referenceForClaimant(claim.getReferenceNumber())
         );
     }
 
-    private Map<String, String> prepareNotificationParameters(Claim claim, LocalDate deadline) {
+    private Map<String, String> prepareNotificationParameters(Claim claim) {
         return Map.of(
                 CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber(),
                 CLAIMANT_TYPE, PartyUtils.getType(claim.getClaimData().getClaimant()),
                 CLAIMANT_NAME, claim.getClaimData().getClaimant().getName(),
                 DEFENDANT_NAME, claim.getClaimData().getDefendant().getName(),
-                RESPONSE_DEADLINE, formatDate(deadline),
+                RESPONSE_DEADLINE, formatDate(claim.getResponseDeadline()),
                 FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl()
         );
     }
 
-    private CallbackResponse createAndPrintLetter(CallbackParams callbackParams) throws Exception {
-        String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
-        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackParams.getRequest().getCaseDetails());
-        Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
-        LocalDate responseDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
-
-        CCDCase updatedCCDCase = getCCDCaseWithLetterContent(ccdCase, claim, authorisation, responseDeadline);
+    private CallbackResponse createAndPrintLetter(CCDCase ccdCase, Claim claim, String authorisation) throws Exception {
+        String content = String.format(STANDARD_DEADLINE_TEXT, claim.getClaimData().getClaimant().getName(),
+                formatDate(claim.getResponseDeadline()));
+        UserDetails userDetails = userService.getUserDetails(authorisation);
+        CCDCase updatedCCDCase = generalLetterService.setLetterContent(ccdCase, content, userDetails, CCDContactPartyType.DEFENDANT);
         String docUrl = generalLetterService
             .createAndPreview(updatedCCDCase, authorisation, generalLetterTemplateId);
-        updatedCCDCase = getUpdatedCCDCaseWithDraftDoc(updatedCCDCase, docUrl);
-        updatedCCDCase = printAndUpdateCaseDocuments(updatedCCDCase, claim, authorisation);
+        updatedCCDCase = generalLetterService
+                .printAndUpdateCaseDocuments(
+                        updatedCCDCase,
+                        claim,
+                        authorisation,
+                        String.format("%s-response-deadline-extended.pdf",
+                                claim.getReferenceNumber()),
+                        docUrl);
+
         return AboutToStartOrSubmitCallbackResponse
             .builder()
-            .data(caseDetailsConverter.convertToMap(getFinalUpdatedCCDCase(updatedCCDCase, responseDeadline)))
+            .data(caseDetailsConverter.convertToMap(updateMoreTimeNeededOption(updatedCCDCase)))
             .build();
     }
 
-    private CCDCase getCCDCaseWithLetterContent(
-        CCDCase ccdCase,
-        Claim claim,
-        String authorisation,
-        LocalDate responseDeadline) {
-        UserDetails userDetails = userService.getUserDetails(authorisation);
-        String caseworkerName = userDetails.getFullName();
-        GeneralLetterContent generalLetterContent = GeneralLetterContent.builder()
-            .caseworkerName(caseworkerName)
-            .letterContent(String.format(STANDARD_DEADLINE_TEXT, claim.getClaimData().getClaimant().getName(),
-                formatDate(responseDeadline)))
-            .issueLetterContact(CCDContactPartyType.DEFENDANT)
-            .build();
-        CCDCase updatedCase = ccdCase.toBuilder()
-            .generalLetterContent(generalLetterContent)
-            .build();
-        return updatedCase;
-    }
 
-    private CCDCase getUpdatedCCDCaseWithDraftDoc(CCDCase updatedCCDCaseWithLetterContent, String docUrl) {
-        CCDDocument ccdDocument = CCDDocument.builder()
-            .documentUrl(docUrl)
-            .documentBinaryUrl(docUrl + "/binary")
-            .documentFileName("")
-            .build();
-        CCDCase updatedCase = updatedCCDCaseWithLetterContent;
-        updatedCase.setDraftLetterDoc(ccdDocument);
-        return updatedCase;
-    }
-
-    private CCDCase printAndUpdateCaseDocuments(CCDCase ccdCase, Claim claim, String authorisation) throws Exception {
-        return generalLetterService
-            .printAndUpdateCaseDocuments(
-                ccdCase,
-                claim,
-                authorisation,
-                String.format("%s-response-deadline-extended.pdf", claim.getReferenceNumber()));
-    }
-
-    private CCDCase getFinalUpdatedCCDCase(CCDCase ccdCase, LocalDate responseDeadline) {
+    private CCDCase updateMoreTimeNeededOption(CCDCase ccdCase) {
         CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue().toBuilder()
             .responseMoreTimeNeededOption(CCDYesNoOption.YES)
-            .responseDeadline(responseDeadline)
             .build();
         CCDCase updatedCCdCase = ccdCase.toBuilder()
             .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()

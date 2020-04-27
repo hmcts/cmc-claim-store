@@ -102,6 +102,7 @@ public class CaseMapper {
             .issuedOn(ccdCase.getIssuedOn())
             .submitterEmail(ccdCase.getSubmitterEmail())
             .state(ClaimState.fromValue(ccdCase.getState()))
+            .responseDeadline(ccdCase.getRespondents().get(0).getValue().getResponseDeadline())
             .claimSubmissionOperationIndicators(
                 mapFromCCDClaimSubmissionOperationIndicators.apply(ccdCase.getClaimSubmissionOperationIndicators()))
             .intentionToProceedDeadline(ccdCase.getIntentionToProceedDeadline())

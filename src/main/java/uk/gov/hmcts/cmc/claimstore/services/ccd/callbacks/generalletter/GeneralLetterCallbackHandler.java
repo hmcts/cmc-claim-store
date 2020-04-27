@@ -112,7 +112,8 @@ public class GeneralLetterCallbackHandler extends CallbackHandler {
                 ccdCase,
                 caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails()),
                 authorisation,
-                getDocumentName(ccdCase)
+                getDocumentName(ccdCase),
+                ccdCase.getDraftLetterDoc().getDocumentUrl()
             );
         } catch (Exception e) {
             logger.info("General Letter printing and case documents update failed", e);

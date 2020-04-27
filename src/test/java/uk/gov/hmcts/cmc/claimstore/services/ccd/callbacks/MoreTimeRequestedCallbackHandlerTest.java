@@ -127,8 +127,12 @@ class MoreTimeRequestedCallbackHandlerTest {
         );
         claim = SampleClaim.getDefault();
         claim = Claim.builder()
-            .claimData(SampleClaimData.builder().build())
-            .defendantEmail("email@email.com").defendantId("id").build();
+                .claimData(SampleClaimData.builder().build())
+                .defendantEmail("email@email.com")
+                .defendantId("id")
+                .submitterEmail("email@email.com")
+                .referenceNumber("ref. number")
+                .build();
         String documentUrl = DOCUMENT_URI.toString();
         CCDDocument document = new CCDDocument(documentUrl, documentUrl, GENERAL_LETTER_PDF);
         ccdCase = CCDCase.builder()
