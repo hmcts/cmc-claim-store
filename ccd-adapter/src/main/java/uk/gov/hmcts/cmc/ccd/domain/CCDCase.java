@@ -121,7 +121,6 @@ public class CCDCase {
     private CCDYesNoOption expertReportPermissionPartyAskedByClaimant;
     private CCDYesNoOption expertReportPermissionPartyAskedByDefendant;
     private CCDYesNoOption grantExpertReportPermission;
-
     //TODO - Remove once CCD 1.5.9 released
     private CCDYesNoOption expertReportPermissionPartyGivenToClaimant;
     private CCDYesNoOption expertReportPermissionPartyGivenToDefendant;
@@ -139,4 +138,6 @@ public class CCDCase {
     private LocalDateTime dateReferredForDirections;
     private GeneralLetterContent generalLetterContent;
     private CCDLaList assignedTo;
+    private CCDContactPartyType contactChangeParty;
+    private CCDContactChangeContent contactChangeContent;
 }
