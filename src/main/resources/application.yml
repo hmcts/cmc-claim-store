@@ -98,6 +98,8 @@ doc_assembly:
   url: ${DOC_ASSEMBLY_URL:false}
   templateId: "CV-CMC-GOR-ENG-0004-1.docx"
   judgeTemplateId: "CV-CMC-GOR-ENG-00219-1.docx"
+  generalLetterTemplateId: "CV-CMC-GOR-ENG-0005.docx"
+  contactChangeTemplateId: "CV-CMC-GOR-ENG-0006.docx"
 
 nonworking-days:
   datafile: ${NONWORKINGDAYS_DATAFILE:/data/non-working_days.dat}
@@ -185,6 +187,8 @@ notifications:
       defendantReadyForTransfer: "487fdd65-131e-4547-a3ed-f632872fe957"
       claimantMediationFailureOfflineDQ: "55d06073-0b81-4daf-a3b4-1698c7810189"
       defendantMediationFailureOfflineDQ: "15a38762-2141-4a70-8cc9-22a27db985bc"
+      defendantContactDetailsChanged: "39b8c7a0-6d8a-4bee-8b79-e0f1df73d249"
+      claimantContactDetailsChanged: "bc227831-a2f5-4399-bfa4-06a392bc5a80"
 
 staff-notifications:
   sender:
@@ -194,6 +198,8 @@ feature_toggles:
   watermark_pdf: false
   reminderEmails: false
   save_claim_state_enabled: false
+  ctsc_enabled: false
+  staff_emails_enabled: true
   auto_cancel_payments: "${FEATURE_AUTO_CANCEL_PAYMENTS:false}"
 
 feign:

@@ -32,11 +32,12 @@ import static uk.gov.hmcts.cmc.claimstore.rpa.ClaimIssuedNotificationService.JSO
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildJsonRequestForJudgementFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForJudgementFileBaseName;
 
-public class RequestForJudgementNotificationServiceTest extends BaseMockSpringTest {
+public class RequestForJudgmentNotificationServiceTest extends BaseMockSpringTest {
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
 
     @Autowired
-    private RequestForJudgementNotificationService service;
+    private RequestForJudgmentNotificationService service;
+
     @Autowired
     private EmailProperties emailProperties;
 
@@ -97,7 +98,7 @@ public class RequestForJudgementNotificationServiceTest extends BaseMockSpringTe
         assertThat(senderArgument.getValue()).isEqualTo(emailProperties.getSender());
         assertThat(emailDataArgument.getValue().getTo()).isEqualTo(emailProperties.getResponseRecipient());
         assertThat(emailDataArgument.getValue().getSubject())
-            .isEqualToIgnoringNewLines("J default judgement request 000CM001");
+            .isEqualToIgnoringNewLines("J judgment request 000MC001");
         assertThat(emailDataArgument.getValue().getMessage()).isEmpty();
     }
 
@@ -106,31 +107,11 @@ public class RequestForJudgementNotificationServiceTest extends BaseMockSpringTe
 
         service.notifyRobotics(event);
 
-        verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
-
-        EmailAttachment ccjPdfAttachment = emailDataArgument.getValue()
-            .getAttachments()
-            .get(0);
-
-        String expectedPdfFilename = buildRequestForJudgementFileBaseName(claim.getReferenceNumber(),
-            claim.getClaimData().getDefendant().getName()) + EXTENSION;
-
-        assertThat(ccjPdfAttachment.getContentType()).isEqualTo(MediaType.APPLICATION_PDF_VALUE);
-        assertThat(ccjPdfAttachment.getFilename()).isEqualTo(expectedPdfFilename);
-
-        EmailAttachment ccjJsonAttachment = emailDataArgument.getValue()
-            .getAttachments()
-            .get(1);
-
-        String expectedCcjJsonFilename = buildJsonRequestForJudgementFileBaseName(claim.getReferenceNumber())
-            + JSON_EXTENSION;
-
-        assertThat(ccjJsonAttachment.getContentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
-        assertThat(ccjJsonAttachment.getFilename()).isEqualTo(expectedCcjJsonFilename);
+        verifyEmailSent();
     }
 
     @Test
-    public void shouldNotSendRoboticsEmailWhenCCJByAdmission() {
+    public void shouldSendRoboticsEmailWhenCCJByAdmission() {
         Claim claimWithCCJByAdmission = SampleClaim.builder()
             .withCountyCourtJudgmentRequestedAt(LocalDate.of(2018, 4, 26).atStartOfDay())
             .withCountyCourtJudgment(CCJ_BY_ADMISSION)
@@ -140,7 +121,7 @@ public class RequestForJudgementNotificationServiceTest extends BaseMockSpringTe
 
         service.notifyRobotics(event);
 
-        verifyNoInteractions(emailService);
+        verifyEmailSent();
     }
 
     @Test
@@ -156,5 +137,30 @@ public class RequestForJudgementNotificationServiceTest extends BaseMockSpringTe
         service.notifyRobotics(event);
 
         verifyNoInteractions(emailService);
+    }
+
+    private void verifyEmailSent() {
+        verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
+
+        EmailAttachment ccjPdfAttachment = emailDataArgument.getValue()
+            .getAttachments()
+            .get(0);
+
+        String expectedPdfFilename = buildRequestForJudgementFileBaseName(claim.getReferenceNumber(),
+            claim.getClaimData().getDefendant().getName()) + EXTENSION;
+
+        assertThat(senderArgument.getValue()).isEqualTo(emailProperties.getSender());
+        assertThat(ccjPdfAttachment.getContentType()).isEqualTo(MediaType.APPLICATION_PDF_VALUE);
+        assertThat(ccjPdfAttachment.getFilename()).isEqualTo(expectedPdfFilename);
+
+        EmailAttachment ccjJsonAttachment = emailDataArgument.getValue()
+            .getAttachments()
+            .get(1);
+
+        String expectedCcjJsonFilename = buildJsonRequestForJudgementFileBaseName(claim.getReferenceNumber())
+            + JSON_EXTENSION;
+
+        assertThat(ccjJsonAttachment.getContentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
+        assertThat(ccjJsonAttachment.getFilename()).isEqualTo(expectedCcjJsonFilename);
     }
 }

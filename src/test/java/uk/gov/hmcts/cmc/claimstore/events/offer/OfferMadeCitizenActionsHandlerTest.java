@@ -69,7 +69,7 @@ public class OfferMadeCitizenActionsHandlerTest {
             eq(event.getClaim().getSubmitterEmail()),
             eq(CLAIMANT_TEMPLATE_ID),
             anyMap(),
-            eq("claimant-offer-made-notification-000CM001")
+            eq("claimant-offer-made-notification-000MC001")
         );
     }
 
@@ -82,7 +82,7 @@ public class OfferMadeCitizenActionsHandlerTest {
             eq(event.getClaim().getDefendantEmail()),
             eq(DEFENDANT_TEMPLATE_ID),
             anyMap(),
-            eq("defendant-offer-made-notification-000CM001")
+            eq("defendant-offer-made-notification-000MC001")
         );
     }
 }

@@ -1,11 +1,12 @@
 {
-  "caseNumber": "000CM001",
+  "caseNumber": "000MC001",
   "ccjRequestedOn": "26-Apr-2018",
+  "judgmentType":"BY_ADMISSION",
   "amountWithInterest": 40.99,
   "courtFee": 40.00,
-  "alreadyPaid": 10.00,
-  "paymentType": "BY_SPECIFIED_DATE",
-  "fullPaymentDeadline": "12-Mar-2200",
+  "alreadyPaid": null,
+  "paymentType": "IMMEDIATELY",
+  "fullPaymentDeadline": null,
   "instalments": null,
   "claimantEmailAddress": "claimant@mail.com",
   "defendantEmailAddress": null

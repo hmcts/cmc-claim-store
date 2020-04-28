@@ -130,7 +130,7 @@ public class MediationReportServiceTest {
         verify(appInsights).trackEvent(
             eq(AppInsightsEvent.MEDIATION_REPORT_FAILURE),
             anyString(),
-            eq("{000CM001=Unable to find total amount of claim}"));
+            eq("{000MC001=Unable to find total amount of claim}"));
     }
 
     private static String inputStreamToString(InputStream is) {

@@ -5,10 +5,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
+import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.StatesPaidEmailContentProvider;
+import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
@@ -20,6 +24,8 @@ import java.io.IOException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
@@ -43,8 +49,15 @@ public class StatesPaidStaffNotificationServiceTest extends BaseMockSpringTest {
     @MockBean
     protected EmailService emailService;
 
+    @Mock
+    private StatesPaidEmailContentProvider emailContentProvider;
+
+    @Autowired
+    private DefendantResponseReceiptService defendantResponseReceiptService;
+
     @Before
     public void beforeEachTest() {
+
         claimWithFullDefenceResponse = SampleClaim.getClaimFullDefenceStatesPaidWithAcceptation();
 
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
@@ -52,13 +65,31 @@ public class StatesPaidStaffNotificationServiceTest extends BaseMockSpringTest {
     }
 
     @Test
-    public void shouldSendEmailToExpectedRecipient() {
+    public void shouldSendEmailToExpectedRecipientStaffEmailsEnabled() {
+        StatesPaidStaffNotificationService staffNotificationService;
+        staffNotificationService = new StatesPaidStaffNotificationService(
+            emailService, emailProperties, emailContentProvider, defendantResponseReceiptService, true);
+        
+        when(emailContentProvider.createContent(anyMap())).thenReturn(new EmailContent("subject", "body"));
 
-        service.notifyStaffClaimantResponseStatesPaidSubmittedFor(claimWithFullDefenceResponse);
+        staffNotificationService.notifyStaffClaimantResponseStatesPaidSubmittedFor(claimWithFullDefenceResponse);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
         assertThat(senderArgument.getValue()).isEqualTo(emailProperties.getSender());
+    }
+
+    @Test
+    public void shouldNotSendEmailToExpectedRecipientStaffEmailsDisabled() {
+
+        StatesPaidStaffNotificationService staffNotificationService;
+        staffNotificationService = new StatesPaidStaffNotificationService(
+            emailService, emailProperties, emailContentProvider, defendantResponseReceiptService, false);
+
+        staffNotificationService.notifyStaffClaimantResponseStatesPaidSubmittedFor(claimWithFullDefenceResponse);
+
+        verify(emailContentProvider, never()).createContent(anyMap());
+        verify(emailService, never()).sendEmail(anyString(), any(EmailData.class));
     }
 
     @Test

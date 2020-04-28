@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.AuthenticateUserResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinRequest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.TokenExchangeResponse;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserInfo;
 
 @FeignClient(name = "idam-api", url = "${idam.api.url}")
@@ -73,4 +74,7 @@ public interface IdamApi {
         @RequestParam("client_id") final String clientId,
         @RequestParam("client_secret") final String clientSecret
     );
+
+    @RequestMapping(method = RequestMethod.GET, value = "/details")
+    UserDetails retrieveUserDetails(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation);
 }
