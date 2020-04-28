@@ -27,11 +27,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleHearingLocation;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import java.math.BigDecimal;
-import java.time.Clock;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.time.*;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -94,6 +90,7 @@ public class ClaimantResponseServiceTest {
 
     @Before
     public void setUp() {
+        clock = Clock.fixed(Instant.now(), ZoneId.of("UTC"));
         claimantResponseService = new ClaimantResponseService(
             claimService,
             appInsights,
@@ -507,16 +504,16 @@ public class ClaimantResponseServiceTest {
 
         final Claim claim = SampleClaim.builder()
             .withFeatures(ImmutableList.of(ADMISSIONS.getValue()))
-            .withResponseDeadline(LocalDate.now().minusMonths(2))
+            .withResponseDeadline(LocalDate.now().plusDays(2))
             .withResponse(SampleResponse.FullDefence.builder().build())
             .withRespondedAt(respondedAt)
             .withClaimantResponse(claimantResponse)
             .build();
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
-        when(LocalDate.now(clock)).thenReturn(LocalDate.now());
         when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseRejection.class), eq(AUTHORISATION)))
             .thenReturn(claim);
+        when(directionsQuestionnaireDeadlineCalculator.calculate(any())).thenReturn(LocalDate.now());
         when(directionsQuestionnaireService.prepareCaseEvent(any(), any()))
             .thenReturn(DIRECTIONS_QUESTIONNAIRE_DEADLINE);
 
