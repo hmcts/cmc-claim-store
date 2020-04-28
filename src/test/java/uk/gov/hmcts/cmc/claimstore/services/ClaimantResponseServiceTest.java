@@ -40,11 +40,7 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_JUDGE_DIRECTIONS;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LIFT_STAY;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFERRED_TO_MEDIATION;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.STAY_CLAIM;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.*;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BOTH_OPTED_IN_FOR_MEDIATION_PILOT;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BOTH_OPTED_IN_FOR_NON_MEDIATION_PILOT;
@@ -59,10 +55,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.LA_PILOT_
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_NON_PILOT_ELIGIBLE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_PILOT_ELIGIBLE;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
-import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.DQ_FLAG;
-import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.JUDGE_PILOT_FLAG;
-import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.LA_PILOT_FLAG;
-import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.MEDIATION_PILOT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.*;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.EXTERNAL_ID;
 
@@ -503,6 +496,38 @@ public class ClaimantResponseServiceTest {
         inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class), anyString());
         inOrder.verify(appInsights, once()).trackEvent(eq(CLAIMANT_RESPONSE_ACCEPTED),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+    }
+
+    @Test
+    public void rejectionFullDefenceNoMediationShouldUpdateDirectionsQuestionnaireDeadlineIfOfflineDQ()  {
+        final LocalDateTime respondedAt = LocalDateTime.now().minusDays(10);
+
+        final ClaimantResponse claimantResponse = SampleClaimantResponse.ClaimantResponseRejection.builder()
+            .buildRejectionWithDirectionsQuestionnaire();
+
+        final Claim claim = SampleClaim.builder()
+            .withFeatures(ImmutableList.of(ADMISSIONS.getValue()))
+            .withResponseDeadline(LocalDate.now().minusMonths(2))
+            .withResponse(SampleResponse.FullDefence.builder().build())
+            .withRespondedAt(respondedAt)
+            .withClaimantResponse(claimantResponse)
+            .build();
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
+        when(LocalDate.now(clock)).thenReturn(LocalDate.now());
+        when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseRejection.class), eq(AUTHORISATION)))
+            .thenReturn(claim);
+        when(directionsQuestionnaireService.prepareCaseEvent(any(), any()))
+            .thenReturn(DIRECTIONS_QUESTIONNAIRE_DEADLINE);
+
+        claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
+
+        verify(caseRepository).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
+        verify(directionsQuestionnaireDeadlineCalculator, once())
+            .calculate(any(LocalDateTime.class));
+        verify(caseRepository, once())
+            .updateDirectionsQuestionnaireDeadline(any(Claim.class), any(LocalDate.class), anyString());
+        verify(eventProducer).createClaimantResponseEvent(any(Claim.class), eq(AUTHORISATION));
     }
 
     @Test
