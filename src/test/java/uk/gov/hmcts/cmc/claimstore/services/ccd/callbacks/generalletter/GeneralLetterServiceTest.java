@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.events.GeneralLetterReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -211,7 +212,7 @@ class GeneralLetterServiceTest {
         when(documentManagementService.downloadDocument(anyString(), any(ClaimDocument.class)))
                 .thenReturn(PDF_BYTES);
         CCDCase updatedCase = generalLetterService.createAndPrintLetter(ccdCase,
-                claim, AUTHORISATION, LETTER_CONTENT, GENERAL_DOCUMENT_NAME);
+                claim, AUTHORISATION, LETTER_CONTENT, GENERAL_DOCUMENT_NAME, CCDContactPartyType.DEFENDANT);
         assertThat(updatedCase).isEqualTo(expected);
     }
 }

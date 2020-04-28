@@ -1,10 +1,13 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
@@ -47,6 +50,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 @Service
 @ConditionalOnProperty("feature_toggles.ctsc_enabled")
 public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
 
@@ -113,16 +117,8 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
         CallbackRequest callbackRequest = callbackParams.getRequest();
         Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
-        LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
 
-        CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue().toBuilder()
-                .responseDeadline(newDeadline)
-                .build();
-        CCDCase updatedCCDCase = ccdCase.toBuilder()
-                .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
-                        .value(respondent)
-                        .build()))
-                .build();
+        LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
 
         List<String> validationResult = this.moreTimeRequestRule.validateMoreTimeCanBeRequested(claim);
         var builder = AboutToStartOrSubmitCallbackResponse
@@ -132,7 +128,7 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
                 .errors(validationResult)
                 .build();
         }
-        Map<String, Object> data = new HashMap<>(caseDetailsConverter.convertToMap(updatedCCDCase));
+        Map<String, Object> data = new HashMap<>(caseDetailsConverter.convertToMap(ccdCase));
         data.put(RESPONSE_DEADLINE_PREVIEW, String.format(PREVIEW_SENTENCE, formatDate(newDeadline)));
         return builder
             .data(data)
@@ -143,25 +139,33 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackParams.getRequest().getCaseDetails());
         Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
+
+        LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
+
+        CCDCase newDeadlineCcdCase = addDeadlineToCCDCase(ccdCase, newDeadline);
+        Claim newDeadlineClaim = claim.toBuilder().responseDeadline(newDeadline).build();
+
         try {
             eventProducer.createMoreTimeForResponseRequestedEvent(
-                claim,
-                claim.getResponseDeadline(),
-                claim.getClaimData().getDefendant().getEmail().orElse(null)
+                newDeadlineClaim,
+                newDeadlineClaim.getResponseDeadline(),
+                newDeadlineClaim.getClaimData().getDefendant().getEmail().orElse(null)
             );
 
-            sendNotificationToClaimant(claim);
+            sendNotificationToClaimant(newDeadlineClaim);
 
-            if (claim.getDefendantEmail() != null && claim.getDefendantId() != null) {
-                sendEmailNotificationToDefendant(claim);
+            if (newDeadlineClaim.getDefendantEmail() != null && newDeadlineClaim.getDefendantId() != null) {
+                sendEmailNotificationToDefendant(newDeadlineClaim);
                 return AboutToStartOrSubmitCallbackResponse.builder().build();
 
             } else {
-                String content = String.format(STANDARD_DEADLINE_TEXT, claim.getClaimData().getClaimant().getName(),
-                    formatDate(claim.getResponseDeadline()));
-                String filename = String.format("%s-response-deadline-extended.pdf", claim.getReferenceNumber());
-                CCDCase updatedCCDCase = generalLetterService.createAndPrintLetter(ccdCase, claim, authorisation,
-                    content, filename);
+                String content = String.format(STANDARD_DEADLINE_TEXT,
+                    newDeadlineClaim.getClaimData().getClaimant().getName(),
+                    formatDate(newDeadlineClaim.getResponseDeadline()));
+                String filename = String.format("%s-response-deadline-extended.pdf",
+                    newDeadlineClaim.getReferenceNumber());
+                CCDCase updatedCCDCase = generalLetterService.createAndPrintLetter(newDeadlineCcdCase,
+                    newDeadlineClaim, authorisation, content, filename, CCDContactPartyType.DEFENDANT);
 
                 return AboutToStartOrSubmitCallbackResponse
                         .builder()
@@ -170,11 +174,23 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
             }
 
         } catch (Exception e) {
+            logger.error("Error notifying citizens", e);
             return AboutToStartOrSubmitCallbackResponse
                 .builder()
                 .errors(Collections.singletonList(ERROR_MESSAGE))
                 .build();
         }
+    }
+
+    private CCDCase addDeadlineToCCDCase(CCDCase ccdCase, LocalDate newDeadline) {
+        CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue().toBuilder()
+            .responseDeadline(newDeadline)
+            .build();
+        return ccdCase.toBuilder()
+            .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
+                .value(respondent)
+                .build()))
+            .build();
     }
 
     private void sendEmailNotificationToDefendant(Claim claim) {

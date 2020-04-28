@@ -169,17 +169,16 @@ public class GeneralLetterService {
                 .build();
     }
 
-    public CCDCase createAndPrintLetter(CCDCase ccdCase, Claim claim, String authorisation, String content,
-                                                  String filename) throws Exception {
+    public CCDCase createAndPrintLetter(CCDCase ccdCase,
+                                        Claim claim,
+                                        String authorisation,
+                                        String content,
+                                        String filename,
+                                        CCDContactPartyType partyType) throws Exception {
         UserDetails userDetails = userService.getUserDetails(authorisation);
-        CCDCase updatedCCDCase = setLetterContent(ccdCase, content, userDetails, CCDContactPartyType.DEFENDANT);
+        CCDCase updatedCCDCase = setLetterContent(ccdCase, content, userDetails, partyType);
         String docUrl = createAndPreview(updatedCCDCase, authorisation, generalLetterTemplateId);
 
-      return printAndUpdateCaseDocuments(
-                updatedCCDCase,
-                claim,
-                authorisation,
-                filename,
-                docUrl);
+        return printAndUpdateCaseDocuments(updatedCCDCase, claim, authorisation, filename, docUrl);
     }
 }

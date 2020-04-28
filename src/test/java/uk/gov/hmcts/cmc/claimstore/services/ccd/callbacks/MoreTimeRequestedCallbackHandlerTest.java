@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
@@ -22,14 +23,11 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationT
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleMoreTimeRequestedEvent;
-import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
-import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.MoreTimeRequestedCallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
-import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -62,7 +60,6 @@ class MoreTimeRequestedCallbackHandlerTest {
 
     private static final String DEFENDANT_TEMPLATE_ID = "defendant template id";
     private static final String CLAIMANT_TEMPLATE_ID = "claimant template id";
-    private static final String GENERAL_LETTER_TEMPLATE_ID = "generalLetterTemplateId";
     private Map<String, Object> data;
     private static final String DOC_URL = "http://success.test";
     private static final String DOC_URL_BINARY = "http://success.test/binary";
@@ -78,7 +75,6 @@ class MoreTimeRequestedCallbackHandlerTest {
     private static final URI DOCUMENT_URI = URI.create("http://localhost/doc.pdf");
     private static final String ERROR_MESSAGE = "There was a technical problem. Nothing has been sent."
             + " You need to try again.";
-    private static final String GENERAL_DOCUMENT_NAME = "reference-response-deadline-extended.pdf";
     private static final String AUTHORISATION = "auth";
     private static final LocalDate deadline = LocalDate.now();
 
@@ -100,8 +96,6 @@ class MoreTimeRequestedCallbackHandlerTest {
     private EmailTemplates emailTemplates;
     @Mock
     private GeneralLetterService generalLetterService;
-    @Mock
-    private UserService userService;
 
     private Claim claim;
 
@@ -110,8 +104,6 @@ class MoreTimeRequestedCallbackHandlerTest {
     private MoreTimeRequestedCallbackHandler moreTimeRequestedCallbackHandler;
 
     private CCDCase ccdCase;
-
-    private UserDetails userDetails;
 
     private CallbackParams callbackParams;
 
@@ -154,10 +146,6 @@ class MoreTimeRequestedCallbackHandlerTest {
         data = new HashMap<>();
         data.put(CHANGE_CONTACT_PARTY, "claimant");
         data.put(LETTER_CONTENT, "content");
-        userDetails = SampleUserDetails.builder()
-                .withForename("Judge")
-                .withSurname("McJudge")
-                .build();
 
         CaseDetails caseDetails = CaseDetails.builder()
             .id(10L)
@@ -182,7 +170,7 @@ class MoreTimeRequestedCallbackHandlerTest {
         void setUp() {
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
             when(responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn()))
-                    .thenReturn(LocalDate.now());
+                    .thenReturn(deadline);
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
             List<String> validationResults = List.of("a", "b", "c");
             when(moreTimeRequestRule.validateMoreTimeCanBeRequested(any(Claim.class)))
@@ -205,6 +193,9 @@ class MoreTimeRequestedCallbackHandlerTest {
         void setUp() {
             claim = claim.toBuilder().responseDeadline(deadline).build();
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            when(responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn()))
+                .thenReturn(deadline);
         }
 
         @Test
@@ -238,6 +229,8 @@ class MoreTimeRequestedCallbackHandlerTest {
             when(notificationsProperties.getTemplates()).thenReturn(templates);
             when(templates.getEmail()).thenReturn(emailTemplates);
             when(notificationsProperties.getFrontendBaseUrl()).thenReturn(FRONTEND_BASE_URL);
+            when(responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn()))
+                .thenReturn(deadline);
         }
 
         @Test
@@ -281,15 +274,17 @@ class MoreTimeRequestedCallbackHandlerTest {
             when(notificationsProperties.getTemplates()).thenReturn(templates);
             when(templates.getEmail()).thenReturn(emailTemplates);
             when(notificationsProperties.getFrontendBaseUrl()).thenReturn(FRONTEND_BASE_URL);
+            when(responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn()))
+                .thenReturn(deadline);
         }
 
         @Test
         void sendLetterToNotLinkedDefendant() throws Exception {
             when(generalLetterService.createAndPrintLetter(ccdCase, claim, AUTHORISATION,
-                  LETTER_CONTENT, DOC_NAME)).thenReturn(ccdCase);
+                  LETTER_CONTENT, DOC_NAME, CCDContactPartyType.DEFENDANT)).thenReturn(ccdCase);
             moreTimeRequestedCallbackHandler.sendNotifications(callbackParams);
             verify(generalLetterService).createAndPrintLetter(any(CCDCase.class), any(Claim.class), anyString(),
-                    anyString(), anyString());
+                    anyString(), anyString(), any());
 
         }
 
