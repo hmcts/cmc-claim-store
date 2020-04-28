@@ -1,21 +1,17 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
-import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
-import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
@@ -119,6 +115,15 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
         LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
 
+        CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue().toBuilder()
+                .responseDeadline(newDeadline)
+                .build();
+        CCDCase updatedCCDCase = ccdCase.toBuilder()
+                .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
+                        .value(respondent)
+                        .build()))
+                .build();
+
         List<String> validationResult = this.moreTimeRequestRule.validateMoreTimeCanBeRequested(claim);
         var builder = AboutToStartOrSubmitCallbackResponse
             .builder();
@@ -127,7 +132,7 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
                 .errors(validationResult)
                 .build();
         }
-        Map<String, Object> data = new HashMap<>(caseDetailsConverter.convertToMap(ccdCase));
+        Map<String, Object> data = new HashMap<>(caseDetailsConverter.convertToMap(updatedCCDCase));
         data.put(RESPONSE_DEADLINE_PREVIEW, String.format(PREVIEW_SENTENCE, formatDate(newDeadline)));
         return builder
             .data(data)

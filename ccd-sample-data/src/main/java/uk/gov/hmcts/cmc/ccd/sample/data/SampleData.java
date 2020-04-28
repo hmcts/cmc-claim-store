@@ -19,6 +19,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentSchedule;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTelephone;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDCourtDetermination;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDFormaliseOption;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseAcceptation;
@@ -266,6 +267,7 @@ public class SampleData {
         CCDAddress ccdAddress = getCCDAddress();
         return CCDRespondent.builder()
             .partyName("Mary Richards")
+            .responseMoreTimeNeededOption(NO)
             .claimantProvidedDetail(
                 CCDParty.builder()
                     .type(INDIVIDUAL)

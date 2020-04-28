@@ -11,9 +11,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
-import uk.gov.hmcts.cmc.ccd.domain.GeneralLetterContent;
 import uk.gov.hmcts.cmc.claimstore.events.GeneralLetterReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -60,6 +58,7 @@ class GeneralLetterServiceTest {
         .documentBinaryUrl(DOC_URL_BINARY)
         .documentUrl(DOC_URL).build();
     private static final URI DOCUMENT_URI = URI.create("http://localhost/doc.pdf");
+    private static final String AUTHORISATION = "auth";
     private static final Claim claim = SampleClaim
         .builder()
         .build();
@@ -110,7 +109,8 @@ class GeneralLetterServiceTest {
             publisher,
             documentManagementService,
             clock,
-            userService);
+            userService,
+            GENERAL_LETTER_TEMPLATE_ID);
         String documentUrl = DOCUMENT_URI.toString();
         CCDDocument document = new CCDDocument(documentUrl, documentUrl, GENERAL_LETTER_PDF);
         ccdCase = CCDCase.builder()
@@ -191,18 +191,27 @@ class GeneralLetterServiceTest {
     }
 
     @Test
-    void shouldSetLetterContent() {
+    void shouldCreateAndPrintLetter() throws Exception {
+        when(docAssemblyService
+                .createGeneralLetter(any(CCDCase.class), anyString(), anyString())).thenReturn(docAssemblyResponse);
+        when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
+        when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetails);
+        when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);
+        doNothing().when(publisher).publishEvent(any(GeneralLetterReadyToPrintEvent.class));
         CCDCase expected = ccdCase.toBuilder()
-                .generalLetterContent(
-                        GeneralLetterContent.builder()
-                                .caseworkerName(userDetails.getFullName())
-                                .letterContent(LETTER_CONTENT)
-                                .issueLetterContact(CCDContactPartyType.DEFENDANT)
-                                .build()
-                )
+                .caseDocuments(ImmutableList.<CCDCollectionElement<CCDClaimDocument>>builder()
+                        .addAll(ccdCase.getCaseDocuments())
+                        .add(CLAIM_DOCUMENT)
+                        .build())
+                .draftLetterDoc(null)
+                .generalLetterContent(null)
                 .build();
-        CCDCase updatedCase = generalLetterService
-                .setLetterContent(ccdCase, LETTER_CONTENT, userDetails, CCDContactPartyType.DEFENDANT);
+        when(documentManagementService.downloadDocument(anyString(), any(ClaimDocument.class)))
+                .thenReturn(PDF_BYTES);
+        CCDCase updatedCase = generalLetterService.createAndPrintLetter(ccdCase,
+                claim, AUTHORISATION, LETTER_CONTENT, GENERAL_DOCUMENT_NAME);
         assertThat(updatedCase).isEqualTo(expected);
     }
 }

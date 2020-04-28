@@ -13,9 +13,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
-import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.GeneralLetterContent;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.claimstore.events.GeneralLetterReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -38,7 +36,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.GENERAL_LETTER;
-import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 
 @Service
@@ -176,13 +173,13 @@ public class GeneralLetterService {
                                                   String filename) throws Exception {
         UserDetails userDetails = userService.getUserDetails(authorisation);
         CCDCase updatedCCDCase = setLetterContent(ccdCase, content, userDetails, CCDContactPartyType.DEFENDANT);
-        String docUrl =         createAndPreview(updatedCCDCase, authorisation, generalLetterTemplateId);
+        String docUrl = createAndPreview(updatedCCDCase, authorisation, generalLetterTemplateId);
 
       return printAndUpdateCaseDocuments(
                 updatedCCDCase,
                 claim,
                 authorisation,
-               filename,
+                filename,
                 docUrl);
     }
 }
