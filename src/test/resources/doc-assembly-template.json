@@ -93,5 +93,13 @@
   "expertReportPermissionPartyGivenToClaimant" : false,
   "expertReportPermissionPartyGivenToDefendant" : false,
   "grantExpertReportPermission": true,
-  "expertReportInstruction": "submit more docs"
+  "expertReportInstruction": "submit more docs",
+  "claimantContactAddressRemoved": false,
+  "claimantEmailRemoved": false,
+  "claimantPhoneRemoved": false,
+  "hasContactAddressChanged": false,
+  "hasEmailChanged": false,
+  "hasMainAddressChanged": false,
+  "hasPhoneChanged": false
+
 }
