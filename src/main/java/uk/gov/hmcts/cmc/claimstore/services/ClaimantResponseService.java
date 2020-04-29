@@ -108,14 +108,6 @@ public class ClaimantResponseService {
             caseRepository.saveCaseEvent(authorization, updatedClaim, CaseEvent.STAY_CLAIM);
         }
 
-        if (!isSettlementAgreement(response, claimantResponse)) {
-            eventProducer.createClaimantResponseEvent(updatedClaim, authorization);
-        }
-
-        if (isSettlePreJudgment(claimantResponse)) {
-            caseRepository.saveCaseEvent(authorization, updatedClaim, SETTLED_PRE_JUDGMENT);
-        }
-
         CaseEvent caseEvent = null;
         if (claimantResponse.getType() == REJECTION) {
             ResponseRejection responseRejection = (ResponseRejection) claimantResponse;
@@ -128,6 +120,14 @@ public class ClaimantResponseService {
             } else {
                 caseRepository.saveCaseEvent(authorization, updatedClaim, caseEvent);
             }
+        }
+
+        if (!isSettlementAgreement(response, claimantResponse)) {
+            eventProducer.createClaimantResponseEvent(updatedClaim, authorization);
+        }
+
+        if (isSettlePreJudgment(claimantResponse)) {
+            caseRepository.saveCaseEvent(authorization, updatedClaim, SETTLED_PRE_JUDGMENT);
         }
 
         raiseAppInsightEvents(updatedClaim, response, claimantResponse, caseEvent);
