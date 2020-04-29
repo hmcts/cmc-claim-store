@@ -19,6 +19,7 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -98,6 +99,8 @@ class GeneralLetterServiceTest {
     @Mock
     private Clock clock;
     @Mock
+    private CaseDetailsConverter caseDetailsConverter;
+    @Mock
     private UserService userService;
 
     private GeneralLetterService generalLetterService;
@@ -106,6 +109,7 @@ class GeneralLetterServiceTest {
     @BeforeEach
     void setUp() {
         generalLetterService = new GeneralLetterService(
+            caseDetailsConverter,
             docAssemblyService,
             publisher,
             documentManagementService,
@@ -171,6 +175,8 @@ class GeneralLetterServiceTest {
                 .add(CLAIM_DOCUMENT)
                 .build())
             .draftLetterDoc(null)
+            .contactChangeParty(null)
+            .contactChangeContent(null)
             .generalLetterContent(null)
             .build();
         when(documentManagementService.downloadDocument(anyString(), any(ClaimDocument.class)))

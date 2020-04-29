@@ -88,9 +88,8 @@ public class GeneralLetterService {
             String templateId
     ) throws DocumentGenerationFailedException {
         logger.info("General Letter: creating general letter");
-        if (caseDetails.getData().containsKey(DRAFT_LETTER_DOC)) {
-            caseDetails.getData().remove(DRAFT_LETTER_DOC);
-        }
+        CaseDetails caseDetails = CaseDetails.builder().data(caseDetailsConverter.convertToMap(ccdCase)).build();
+        caseDetails.getData().remove(DRAFT_LETTER_DOC);
         DocAssemblyResponse docAssemblyResponse = docAssemblyService.createGeneralLetter(ccdCase,
                 authorisation, templateId);
         return docAssemblyResponse.getRenditionOutputLocation();
