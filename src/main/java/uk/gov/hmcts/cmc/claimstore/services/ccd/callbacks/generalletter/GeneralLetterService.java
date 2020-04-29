@@ -19,10 +19,12 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 import uk.gov.hmcts.reform.docassembly.exception.DocumentGenerationFailedException;
 import uk.gov.hmcts.reform.sendletter.api.Document;
@@ -36,12 +38,14 @@ import java.util.Collections;
 import java.util.List;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.GENERAL_LETTER;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterCallbackHandler.DRAFT_LETTER_DOC;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 
 @Service
 @ConditionalOnProperty(prefix = "doc_assembly", name = "url")
 public class GeneralLetterService {
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final CaseDetailsConverter caseDetailsConverter;
     private final DocAssemblyService docAssemblyService;
     private final ApplicationEventPublisher publisher;
     private final DocumentManagementService documentManagementService;
@@ -50,13 +54,15 @@ public class GeneralLetterService {
     private final String generalLetterTemplateId;
 
     public GeneralLetterService(
-            DocAssemblyService docAssemblyService,
-            ApplicationEventPublisher publisher,
-            DocumentManagementService documentManagementService,
-            Clock clock,
-            UserService userService,
-            @Value("${doc_assembly.generalLetterTemplateId}") String generalLetterTemplateId
+        CaseDetailsConverter caseDetailsConverter,
+        DocAssemblyService docAssemblyService,
+        ApplicationEventPublisher publisher,
+        DocumentManagementService documentManagementService,
+        Clock clock,
+        UserService userService,
+        @Value("${doc_assembly.generalLetterTemplateId}") String generalLetterTemplateId
     ) {
+        this.caseDetailsConverter = caseDetailsConverter;
         this.docAssemblyService = docAssemblyService;
         this.publisher = publisher;
         this.documentManagementService = documentManagementService;
@@ -82,6 +88,9 @@ public class GeneralLetterService {
             String templateId
     ) throws DocumentGenerationFailedException {
         logger.info("General Letter: creating general letter");
+        if (caseDetails.getData().containsKey(DRAFT_LETTER_DOC)) {
+            caseDetails.getData().remove(DRAFT_LETTER_DOC);
+        }
         DocAssemblyResponse docAssemblyResponse = docAssemblyService.createGeneralLetter(ccdCase,
                 authorisation, templateId);
         return docAssemblyResponse.getRenditionOutputLocation();
@@ -108,6 +117,8 @@ public class GeneralLetterService {
         return ccdCase.toBuilder()
                 .caseDocuments(updateCaseDocumentsWithGeneralLetter(ccdCase, draftLetterDoc, documentName))
                 .draftLetterDoc(null)
+                .contactChangeParty(null)
+                .contactChangeContent(null)
                 .generalLetterContent(null)
                 .build();
     }

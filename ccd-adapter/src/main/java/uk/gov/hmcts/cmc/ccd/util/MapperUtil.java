@@ -70,7 +70,11 @@ public class MapperUtil {
         CCDRespondent defendant = ccdCase.getRespondents().stream()
             .findFirst()
             .map(CCDCollectionElement::getValue)
-            .orElseThrow(() -> new IllegalStateException("Missing respondent"));
+            .orElse(null);
+
+        if (defendant == null) {
+            return null;
+        }
 
         if (Optional.ofNullable(defendant.getMediationFailedReason()).isPresent()) {
             return FAILED;

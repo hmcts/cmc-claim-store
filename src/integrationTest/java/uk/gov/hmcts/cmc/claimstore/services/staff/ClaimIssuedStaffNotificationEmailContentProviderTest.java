@@ -22,7 +22,7 @@ public class ClaimIssuedStaffNotificationEmailContentProviderTest extends BaseMo
     @Test
     public void shouldFormatEmailSubjectToExpectedValue() {
         EmailContent emailContent = provider.createContent(wrapInMap(SampleClaim.getDefault()));
-        assertThat(emailContent.getSubject()).isEqualTo("Claim 000MC001 issued");
+        assertThat(emailContent.getSubject().trim()).isEqualTo("Claim 000MC001 issued");
     }
 
     @Test
