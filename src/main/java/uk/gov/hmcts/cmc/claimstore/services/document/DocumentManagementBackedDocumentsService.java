@@ -108,7 +108,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
                 .orElseGet(() -> generateNewDocument(claim, authorisation, claimDocumentType));
 
         } catch (Exception ex) {
-            return getService(claimDocumentType).createPdf(claim).getBytes();
+            return generateNewDocument(claim, authorisation, claimDocumentType);
         }
     }
 
