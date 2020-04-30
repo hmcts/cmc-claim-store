@@ -270,7 +270,7 @@ class ManageDocumentsCallbackHandlerTest {
         }
 
         @ParameterizedTest(name
-            = "#{index} - shouldReturnErrorIfModifyingTypeOfExistingPaperResponseToDifferentPaperResponse={arguments}")
+            = "#{index} - shouldNotReturnErrorIfModifyingTypeOfExistingPaperResponseToNonPaperResponse={arguments}")
         @ArgumentsSource(PaperResponseToNonPaperResponseType.class)
         void shouldNotReturnErrorIfModifyingTypeOfExistingPaperResponseToNonPaperResponse(
             CCDClaimDocumentType paperResponseType,
