@@ -18,7 +18,6 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimAuthorisationRule;
-import uk.gov.hmcts.cmc.claimstore.rules.ClaimDeadlineService;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.rules.PaidInFullRule;
 import uk.gov.hmcts.cmc.claimstore.rules.ReviewOrderRule;
@@ -134,7 +133,7 @@ public class ClaimServiceTest {
             userService,
             issueDateCalculator,
             responseDeadlineCalculator,
-            new MoreTimeRequestRule(new ClaimDeadlineService()),
+            new MoreTimeRequestRule(),
             eventProducer,
             appInsights,
             new PaidInFullRule(),
@@ -217,7 +216,7 @@ public class ClaimServiceTest {
             userService,
             issueDateCalculator,
             responseDeadlineCalculator,
-            new MoreTimeRequestRule(new ClaimDeadlineService()),
+            new MoreTimeRequestRule(),
             eventProducer,
             appInsights,
             new PaidInFullRule(),
