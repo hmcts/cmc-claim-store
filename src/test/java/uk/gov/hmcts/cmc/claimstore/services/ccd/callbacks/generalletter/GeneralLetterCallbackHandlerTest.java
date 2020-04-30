@@ -187,7 +187,7 @@ class GeneralLetterCallbackHandlerTest {
             eq(claim),
             eq(BEARER_TOKEN.name()),
             eq(GENERAL_DOCUMENT_NAME),
-            eq(DOC_URL))).thenThrow(Exception.class);
+            eq(DOC_URL))).thenThrow(RuntimeException.class);
         AboutToStartOrSubmitCallbackResponse actualResponse = (AboutToStartOrSubmitCallbackResponse)
             handler.printAndUpdateCaseDocuments(callbackParams);
         verify(generalLetterService, once())

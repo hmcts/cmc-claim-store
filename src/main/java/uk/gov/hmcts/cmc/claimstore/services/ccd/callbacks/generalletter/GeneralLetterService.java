@@ -75,108 +75,114 @@ public class GeneralLetterService {
         UserDetails userDetails = userService.getUserDetails(authorisation);
         String caseworkerName = userDetails.getFullName();
         return AboutToStartOrSubmitCallbackResponse
-                .builder()
-                .data(ImmutableMap.of("generalLetterContent",
-                        GeneralLetterContent.builder().caseworkerName(caseworkerName).build()
-                ))
-                .build();
+            .builder()
+            .data(ImmutableMap.of("generalLetterContent",
+                GeneralLetterContent.builder().caseworkerName(caseworkerName).build()
+            ))
+            .build();
     }
 
-    public String createAndPreview(
-            CCDCase ccdCase,
-            String authorisation,
-            String templateId
-    ) throws DocumentGenerationFailedException {
+    public String createAndPreview(CCDCase ccdCase,
+                                   String authorisation,
+                                   String templateId) throws DocumentGenerationFailedException {
         logger.info("General Letter: creating general letter");
+
         CaseDetails caseDetails = CaseDetails.builder().data(caseDetailsConverter.convertToMap(ccdCase)).build();
         caseDetails.getData().remove(DRAFT_LETTER_DOC);
         DocAssemblyResponse docAssemblyResponse = docAssemblyService.createGeneralLetter(ccdCase,
-                authorisation, templateId);
+            authorisation, templateId);
         return docAssemblyResponse.getRenditionOutputLocation();
     }
 
-    public CCDCase printAndUpdateCaseDocuments(
-            CCDCase ccdCase,
-            Claim claim,
-            String authorisation,
-            String documentName,
-            String docUrl) throws Exception {
+    public CCDCase printAndUpdateCaseDocuments(CCDCase ccdCase,
+                                               Claim claim,
+                                               String authorisation,
+                                               String documentName,
+                                               String docUrl) {
         CCDDocument draftLetterDoc;
         if (ccdCase.getDraftLetterDoc() == null) {
             draftLetterDoc = CCDDocument.builder()
-                    .documentUrl(docUrl)
-                    .documentBinaryUrl(docUrl + "/binary")
-                    .documentFileName("")
-                    .build();
-            ;
+                .documentUrl(docUrl)
+                .documentBinaryUrl(docUrl + "/binary")
+                .documentFileName("")
+                .build();
         } else {
             draftLetterDoc = ccdCase.getDraftLetterDoc();
         }
-        printLetter(authorisation, draftLetterDoc, claim);
+
+        try {
+            printLetter(authorisation, draftLetterDoc, claim);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+
         return ccdCase.toBuilder()
-                .caseDocuments(updateCaseDocumentsWithGeneralLetter(ccdCase, draftLetterDoc, documentName))
-                .draftLetterDoc(null)
-                .contactChangeParty(null)
-                .contactChangeContent(null)
-                .generalLetterContent(null)
-                .build();
+            .caseDocuments(updateCaseDocumentsWithGeneralLetter(ccdCase, draftLetterDoc, documentName))
+            .draftLetterDoc(null)
+            .contactChangeParty(null)
+            .contactChangeContent(null)
+            .generalLetterContent(null)
+            .build();
     }
 
     private List<CCDCollectionElement<CCDClaimDocument>> updateCaseDocumentsWithGeneralLetter(
-            CCDCase ccdCase,
-            CCDDocument draftLetterDoc,
-            String documentName
-    ) {
+        CCDCase ccdCase,
+        CCDDocument draftLetterDoc,
+        String documentName) {
+
         CCDCollectionElement<CCDClaimDocument> claimDocument = CCDCollectionElement.<CCDClaimDocument>builder()
-                .value(CCDClaimDocument.builder()
-                        .documentLink(CCDDocument.builder()
-                                .documentFileName(documentName)
-                                .documentUrl(draftLetterDoc.getDocumentUrl())
-                                .documentBinaryUrl(draftLetterDoc.getDocumentBinaryUrl())
-                                .build())
-                        .documentName(documentName)
-                        .createdDatetime(LocalDateTime.now(clock.withZone(UTC_ZONE)))
-                        .documentType(GENERAL_LETTER)
-                        .build())
-                .build();
+            .value(CCDClaimDocument.builder()
+                .documentLink(CCDDocument.builder()
+                    .documentFileName(documentName)
+                    .documentUrl(draftLetterDoc.getDocumentUrl())
+                    .documentBinaryUrl(draftLetterDoc.getDocumentBinaryUrl())
+                    .build())
+                .documentName(documentName)
+                .createdDatetime(LocalDateTime.now(clock.withZone(UTC_ZONE)))
+                .documentType(GENERAL_LETTER)
+                .build())
+            .build();
         return ImmutableList.<CCDCollectionElement<CCDClaimDocument>>builder()
-                .addAll(ccdCase.getCaseDocuments())
-                .add(claimDocument)
-                .build();
+            .addAll(ccdCase.getCaseDocuments())
+            .add(claimDocument)
+            .build();
     }
 
     private void printLetter(String authorisation, CCDDocument document, Claim claim) throws URISyntaxException {
         GeneralLetterReadyToPrintEvent event = new GeneralLetterReadyToPrintEvent(
-                claim,
-                downloadLetter(authorisation, document)
+            claim,
+            downloadLetter(authorisation, document)
         );
         publisher.publishEvent(event);
     }
 
     private Document downloadLetter(String authorisation, CCDDocument document) throws URISyntaxException {
         return new Document(Base64.getEncoder().encodeToString(
-                documentManagementService.downloadDocument(
-                        authorisation,
-                        ClaimDocument.builder()
-                                .documentName(document.getDocumentFileName())
-                                .documentManagementUrl(new URI(document.getDocumentUrl()))
-                                .documentManagementBinaryUrl(new URI(document.getDocumentBinaryUrl()))
-                                .build())),
-                Collections.emptyMap());
+            documentManagementService.downloadDocument(
+                authorisation,
+                ClaimDocument.builder()
+                    .documentName(document.getDocumentFileName())
+                    .documentManagementUrl(new URI(document.getDocumentUrl()))
+                    .documentManagementBinaryUrl(new URI(document.getDocumentBinaryUrl()))
+                    .build())),
+            Collections.emptyMap());
     }
 
-    private CCDCase setLetterContent(CCDCase ccdCase, String content, UserDetails userDetails,
-                                    CCDContactPartyType ccdContactPartyType) {
+    private CCDCase setLetterContent(CCDCase ccdCase,
+                                     String content,
+                                     UserDetails userDetails,
+                                     CCDContactPartyType ccdContactPartyType) {
+
         String caseworkerName = userDetails.getFullName();
         GeneralLetterContent generalLetterContent = GeneralLetterContent.builder()
-                .caseworkerName(caseworkerName)
-                .letterContent(content)
-                .issueLetterContact(ccdContactPartyType)
-                .build();
+            .caseworkerName(caseworkerName)
+            .letterContent(content)
+            .issueLetterContact(ccdContactPartyType)
+            .build();
 
         return ccdCase.toBuilder()
-                .generalLetterContent(generalLetterContent)
-                .build();
+            .generalLetterContent(generalLetterContent)
+            .build();
     }
 
     public CCDCase createAndPrintLetter(CCDCase ccdCase,
@@ -184,7 +190,8 @@ public class GeneralLetterService {
                                         String authorisation,
                                         String content,
                                         String filename,
-                                        CCDContactPartyType partyType) throws Exception {
+                                        CCDContactPartyType partyType) {
+
         UserDetails userDetails = userService.getUserDetails(authorisation);
         CCDCase updatedCCDCase = setLetterContent(ccdCase, content, userDetails, partyType);
         String docUrl = createAndPreview(updatedCCDCase, authorisation, generalLetterTemplateId);

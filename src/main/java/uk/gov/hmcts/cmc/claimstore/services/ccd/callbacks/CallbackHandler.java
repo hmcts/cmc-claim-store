@@ -24,14 +24,7 @@ public abstract class CallbackHandler {
 
     public CallbackResponse handle(CallbackParams callbackParams) {
         return Optional.ofNullable(callbacks().get(callbackParams.getType()))
-            .map(callback -> {
-                try {
-                    return callback.execute(callbackParams);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return null;
-            })
+            .map(callback ->  callback.execute(callbackParams))
             .orElseThrow(() -> new CallbackException(
                 String.format("Callback for event %s, type %s not implemented",
                     callbackParams.getRequest().getEventId(),
