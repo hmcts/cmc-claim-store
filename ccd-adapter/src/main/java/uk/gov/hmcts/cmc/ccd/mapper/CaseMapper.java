@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDChannelType;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.util.MapperUtil;
 import uk.gov.hmcts.cmc.domain.models.ChannelType;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -91,6 +92,7 @@ public class CaseMapper {
         claimDocumentCollectionMapper.from(ccdCase, builder);
         directionOrderMapper.from(ccdCase, builder);
 
+        CCDRespondent defendant = ccdCase.getRespondents().get(0).getValue();
         builder
             .id(ccdCase.getId())
             .state(EnumUtils.getEnumIgnoreCase(ClaimState.class, ccdCase.getState()))
@@ -102,12 +104,15 @@ public class CaseMapper {
             .issuedOn(ccdCase.getIssuedOn())
             .submitterEmail(ccdCase.getSubmitterEmail())
             .state(ClaimState.fromValue(ccdCase.getState()))
+            .responseDeadline(defendant.getResponseDeadline())
             .claimSubmissionOperationIndicators(
                 mapFromCCDClaimSubmissionOperationIndicators.apply(ccdCase.getClaimSubmissionOperationIndicators()))
             .intentionToProceedDeadline(ccdCase.getIntentionToProceedDeadline())
             .reviewOrder(reviewOrderMapper.from(ccdCase.getReviewOrder()))
             .dateReferredForDirections(ccdCase.getDateReferredForDirections())
             .paperResponse(MapperUtil.hasPaperResponse.apply(ccdCase))
+            .moreTimeRequested(defendant.getResponseMoreTimeNeededOption() != null
+                && defendant.getResponseMoreTimeNeededOption().toBoolean())
             .mediationOutcome(getMediationOutcome(ccdCase));
 
         if (ccdCase.getFeatures() != null) {
