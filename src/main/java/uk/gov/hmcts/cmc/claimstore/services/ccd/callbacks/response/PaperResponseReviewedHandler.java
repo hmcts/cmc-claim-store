@@ -125,7 +125,7 @@ class PaperResponseReviewedHandler {
         Claim claimByEvent = claimAfterEvent.get();
         LocalDate deadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claimByEvent.getIssuedOn());
 
-        errors.addAll(moreTimeRequestRule.validateMoreTimeCanBeRequested(claimByEvent, deadline));
+        errors.addAll(moreTimeRequestRule.validateMoreTimeCanBeRequested(claimByEvent));
         responseClaim
             .responseDeadline(deadline)
             .moreTimeRequested(true);
