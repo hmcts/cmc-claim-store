@@ -245,7 +245,7 @@ public class PaperResponseReviewedCallbackHandler extends CallbackHandler {
         LocalDate newDeadline =
             responseDeadlineCalculator.calculatePostponedResponseDeadline(claimByEvent.getIssuedOn());
 
-        List<String> validationResult = moreTimeRequestRule.validateMoreTimeCanBeRequested(claimByEvent, newDeadline);
+        List<String> validationResult = moreTimeRequestRule.validateMoreTimeCanBeRequested(claimByEvent);
         AboutToStartOrSubmitCallbackResponseBuilder builder = AboutToStartOrSubmitCallbackResponse.builder();
         claimByEvent = claimByEvent.toBuilder()
             .responseDeadline(newDeadline)
