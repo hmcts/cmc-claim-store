@@ -47,7 +47,8 @@ public class PaperResponseReviewedCallbackHandler extends CallbackHandler {
         ClaimDocumentType.PAPER_RESPONSE_FULL_ADMIT,
         ClaimDocumentType.PAPER_RESPONSE_DISPUTES_ALL,
         ClaimDocumentType.PAPER_RESPONSE_PART_ADMIT,
-        ClaimDocumentType.PAPER_RESPONSE_STATES_PAID);
+        ClaimDocumentType.PAPER_RESPONSE_STATES_PAID,
+        ClaimDocumentType.PAPER_RESPONSE_COUNTER_CLAIM);
 
     private static List<String> paperResponseScannedType = Arrays.asList("N9a",
         "N9b",
@@ -244,7 +245,7 @@ public class PaperResponseReviewedCallbackHandler extends CallbackHandler {
         LocalDate newDeadline =
             responseDeadlineCalculator.calculatePostponedResponseDeadline(claimByEvent.getIssuedOn());
 
-        List<String> validationResult = moreTimeRequestRule.validateMoreTimeCanBeRequested(claimByEvent, newDeadline);
+        List<String> validationResult = moreTimeRequestRule.validateMoreTimeCanBeRequested(claimByEvent);
         AboutToStartOrSubmitCallbackResponseBuilder builder = AboutToStartOrSubmitCallbackResponse.builder();
         claimByEvent = claimByEvent.toBuilder()
             .responseDeadline(newDeadline)

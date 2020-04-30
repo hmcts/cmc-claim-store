@@ -17,18 +17,22 @@ class SampleStaffUploadedDoc {
         // Utility private constructor
     }
 
-    static final List<CCDCollectionElement<CCDClaimDocument>> staffUploadedDocs = Collections.singletonList(
-        CCDCollectionElement.<CCDClaimDocument>builder()
-            .id("2323-2342-34-2-342")
-            .value(CCDClaimDocument.builder()
-                .documentName("name")
-                .documentLink(CCDDocument.builder()
-                    .documentUrl("http://www.cnn.com")
-                    .documentBinaryUrl("http://www.cnn.com")
-                    .documentFileName("documentFileName").build()
-                )
-                .documentType(CCDClaimDocumentType.PAPER_RESPONSE_DISPUTES_ALL).build())
-            .build());
+    static final List<CCDCollectionElement<CCDClaimDocument>> getCCDClaimDocuments(
+        CCDClaimDocumentType ccdClaimDocumentType) {
+
+        return Collections.singletonList(
+            CCDCollectionElement.<CCDClaimDocument>builder()
+                .id("2323-2342-34-2-342")
+                .value(CCDClaimDocument.builder()
+                    .documentName("name")
+                    .documentLink(CCDDocument.builder()
+                        .documentUrl("http://www.cnn.com")
+                        .documentBinaryUrl("http://www.cnn.com")
+                        .documentFileName("documentFileName").build()
+                    )
+                    .documentType(ccdClaimDocumentType).build())
+                .build());
+    }
 
     static final List<CCDCollectionElement<CCDScannedDocument>> scannedDocsPaperResponse = Collections.singletonList(
         CCDCollectionElement.<CCDScannedDocument>builder()

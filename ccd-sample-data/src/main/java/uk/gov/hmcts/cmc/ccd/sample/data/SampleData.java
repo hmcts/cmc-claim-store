@@ -278,6 +278,7 @@ public class SampleData {
         CCDAddress ccdAddress = getCCDAddress();
         return CCDRespondent.builder()
             .partyName("Mary Richards")
+            .responseMoreTimeNeededOption(NO)
             .claimantProvidedDetail(
                 CCDParty.builder()
                     .type(INDIVIDUAL)
@@ -795,14 +796,14 @@ public class SampleData {
             .build();
     }
 
-    public static CCDCase withPaperResponseFromStaffUploadedDoc() {
+    public static CCDCase withStaffUploadedDoc(CCDClaimDocumentType ccdClaimDocumentType) {
         List<CCDCollectionElement<CCDApplicant>> applicants
             = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
 
         return ccdBuilderWithDefault()
             .amountBreakDown(getAmountBreakDown())
             .applicants(applicants)
-            .staffUploadedDocuments(SampleStaffUploadedDoc.staffUploadedDocs)
+            .staffUploadedDocuments(SampleStaffUploadedDoc.getCCDClaimDocuments(ccdClaimDocumentType))
             .state(OPEN.getValue())
             .build();
     }
