@@ -101,15 +101,15 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     }
 
     private byte[] getClaimJourneyDocuments(Claim claim, String authorisation, ClaimDocumentType claimDocumentType) {
-        try {
-            Optional<ClaimDocument> claimDocument = claim.getClaimDocument(claimDocumentType);
+        Optional<ClaimDocument> claimDocument = claim.getClaimDocument(claimDocumentType);
+
+        if (claimDocument.isPresent()) {
             return claimDocument
                 .map(document -> documentManagementService.downloadDocument(authorisation, document))
                 .orElseGet(() -> generateNewDocument(claim, authorisation, claimDocumentType));
-
-        } catch (Exception ex) {
-            return generateNewDocument(claim, authorisation, claimDocumentType);
         }
+
+        return generateNewDocument(claim, authorisation, claimDocumentType);
     }
 
     private byte[] generateNewDocument(Claim claim, String authorisation, ClaimDocumentType claimDocumentType) {
