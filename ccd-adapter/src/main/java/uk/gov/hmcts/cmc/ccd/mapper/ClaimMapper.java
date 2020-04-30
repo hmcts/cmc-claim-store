@@ -143,6 +143,7 @@ public class ClaimMapper {
     private List<TheirDetails> getDefendants(CCDCase ccdCase, Claim.ClaimBuilder claimBuilder) {
 
         return asStream(ccdCase.getRespondents())
+            .filter(respondent -> respondent.getValue() != null)
             .map(respondent -> defendantMapper.from(claimBuilder, respondent))
             .collect(Collectors.toList());
     }
