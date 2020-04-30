@@ -49,8 +49,7 @@ public class CallbackHandlerFactory {
             .map(Role::getRole)
             .collect(Collectors.joining(",")));
 
-        if (callbackHandler.getSupportedRoles().stream().anyMatch(role ->
-            userRoles.contains(role.getRole()))) {
+        if (callbackHandler.getSupportedRoles().stream().anyMatch(role -> userRoles.contains(role.getRole()))) {
             return true;
         } else {
             throw new ForbiddenActionException("User does not have supported role for event " + eventId);
