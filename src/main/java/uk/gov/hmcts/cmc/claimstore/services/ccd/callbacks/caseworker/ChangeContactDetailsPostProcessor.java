@@ -125,9 +125,16 @@ public class ChangeContactDetailsPostProcessor {
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
 
-        return letterNeededForDefendant(ccdCase.getContactChangeParty(), ccdCase)
-            ? generalLetterService.printAndUpdateCaseDocuments(caseDetails, authorisation)
-            : changeContactDetailsNotificationService.sendEmailToRightRecipient(ccdCase, claim);
+        var response = AboutToStartOrSubmitCallbackResponse.builder().build();
+        if (letterNeededForDefendant(ccdCase.getContactChangeParty(), ccdCase)) {
+            CCDCase updatedCCDCase = generalLetterService.printAndUpdateCaseDocuments(ccdCase, claim, authorisation,
+                    ccdCase.getDraftLetterDoc().getDocumentFileName(),
+                    ccdCase.getDraftLetterDoc().getDocumentUrl());
+            response.setData(caseDetailsConverter.convertToMap(updatedCCDCase));
+            return response;
+        } else {
+            return changeContactDetailsNotificationService.sendEmailToRightRecipient(ccdCase, claim);
+        }
     }
 
     public boolean letterNeededForDefendant(CCDContactPartyType contactPartyType, CCDCase ccdCase) {
