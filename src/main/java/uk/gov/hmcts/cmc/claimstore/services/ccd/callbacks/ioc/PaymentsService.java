@@ -17,7 +17,9 @@ import uk.gov.hmcts.reform.payments.client.models.FeeDto;
 import uk.gov.hmcts.reform.payments.client.models.PaymentDto;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
@@ -59,15 +61,18 @@ public class PaymentsService {
         ClaimData claimData
     ) {
 
-        Optional<Payment> optionalPayment = claimData.getPayment();
-        if (!optionalPayment.isPresent()) {
+        Optional<Payment> payment = claimData.getPayment();
+        if (!payment.isPresent()) {
             return Optional.empty();
         }
-        Payment claimPayment = optionalPayment.get();
+
+        Payment claimPayment = payment.get();
         logger.info("Retrieving payment with reference {}", claimPayment.getReference());
 
         PaymentDto paymentDto = paymentsClient.retrievePayment(authorisation, claimPayment.getReference());
-        return Optional.of(from(paymentDto, claimPayment.getNextUrl()));
+
+        //retrieve payment doesn't return dateCreated so we need to set this from the original object
+        return Optional.of(from(paymentDto, claimPayment.getNextUrl(), claimPayment.getDateCreated()));
     }
 
     public Payment createPayment(
@@ -106,7 +111,7 @@ public class PaymentsService {
         logger.info("Created payment for claim with external id {}: {}", claim.getExternalId(), payment);
 
         payment.setAmount(feeOutcome.getFeeAmount());
-        return from(payment, null);
+        return from(payment, null, null);
     }
 
     public void cancelPayment(String authorisation, String paymentReference) {
@@ -143,19 +148,31 @@ public class PaymentsService {
             .build();
     }
 
-    private Payment from(PaymentDto paymentDto, String nextUrlCurrent) {
+    private Payment from(PaymentDto paymentDto, String nextUrlCurrent, String originalDateCreated) {
         String dateCreated = Optional.ofNullable(paymentDto.getDateCreated())
             .map(date -> date.toLocalDate().toString())
-            .orElse(null);
+            .orElse(originalDateCreated);
+
         String nextUrl = Optional.ofNullable(paymentDto.getLinks().getNextUrl())
             .map(url -> url.getHref().toString())
             .orElse(nextUrlCurrent);
+
+        String feeId = null;
+        if (paymentDto.getFees() != null) {
+            feeId = Arrays.stream(paymentDto.getFees())
+                .map(FeeDto::getId)
+                .map(Object::toString)
+                .collect(Collectors.joining(", "));
+        }
+
         return Payment.builder()
             .amount(paymentDto.getAmount())
             .reference(paymentDto.getReference())
             .status(PaymentStatus.fromValue(paymentDto.getStatus()))
             .dateCreated(dateCreated)
             .nextUrl(nextUrl)
+            .transactionId(paymentDto.getExternalReference())
+            .feeId(feeId)
             .build();
     }
 }
