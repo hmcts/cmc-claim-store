@@ -24,7 +24,7 @@ public class PaymentTest {
     public void shouldBeValidationMessageForInvalidPayment() {
         //given
         Payment payment = new Payment(null, null, null,
-            null, null, null);
+            null, null, null, null, null);
         //when
         Set<String> errors = validate(payment);
         //then
