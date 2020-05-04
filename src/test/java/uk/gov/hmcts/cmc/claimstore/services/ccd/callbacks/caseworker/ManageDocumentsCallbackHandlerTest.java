@@ -194,13 +194,13 @@ class ManageDocumentsCallbackHandlerTest {
 
             @Test
             void shouldReturnErrorsIfThereAreNoDifferencesEmptyStaffUploadedDocuments() {
-                CaseDetails caseDetails = CaseDetails.builder().build();
 
                 CCDCase ccdCase = CCDCase.builder()
                     .staffUploadedDocuments(List.of())
                     .build();
 
-                when(caseDetailsConverter.extractCCDCase(eq(caseDetails))).thenReturn(ccdCase);
+                when(caseDetailsConverter.extractCCDCase(caseDetails)).thenReturn(ccdCase);
+                when(caseDetailsConverter.extractCCDCase(caseDetailsBefore)).thenReturn(ccdCase);
 
                 AboutToStartOrSubmitCallbackResponse response
                     = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
