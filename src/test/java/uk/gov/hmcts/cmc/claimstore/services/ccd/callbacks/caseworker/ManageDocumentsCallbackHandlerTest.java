@@ -143,7 +143,8 @@ class ManageDocumentsCallbackHandlerTest {
 
                 CCDCase ccdCase = CCDCase.builder().build();
 
-                when(caseDetailsConverter.extractCCDCase(eq(caseDetails))).thenReturn(ccdCase);
+                when(caseDetailsConverter.extractCCDCase(caseDetails)).thenReturn(ccdCase);
+                when(caseDetailsConverter.extractCCDCase(caseDetailsBefore)).thenReturn(ccdCase);
 
                 AboutToStartOrSubmitCallbackResponse response
                     = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
