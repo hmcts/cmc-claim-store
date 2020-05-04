@@ -278,7 +278,6 @@ public class SampleData {
         CCDAddress ccdAddress = getCCDAddress();
         return CCDRespondent.builder()
             .partyName("Mary Richards")
-            .responseMoreTimeNeededOption(NO)
             .claimantProvidedDetail(
                 CCDParty.builder()
                     .type(INDIVIDUAL)
