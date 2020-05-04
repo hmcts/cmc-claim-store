@@ -10,12 +10,10 @@ import uk.gov.hmcts.cmc.claimstore.rules.ClaimantResponseRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
-import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
@@ -24,6 +22,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static java.util.function.Predicate.isEqual;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LIFT_STAY;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
@@ -109,11 +108,18 @@ public class ClaimantResponseService {
             caseRepository.saveCaseEvent(authorization, updatedClaim, CaseEvent.STAY_CLAIM);
         }
 
-        if (!FeaturesUtils.isOnlineDQ(updatedClaim) && isRejectResponseNoMediation(claimantResponse)) {
-            LocalDate deadline = directionsQuestionnaireDeadlineCalculator
-                .calculateDirectionsQuestionnaireDeadline(LocalDateTime.now(clock));
-            caseRepository.updateDirectionsQuestionnaireDeadline(claim, deadline, authorization);
-            updatedClaim = claimService.getClaimByExternalId(externalId, authorization);
+        CaseEvent caseEvent = null;
+        if (claimantResponse.getType() == REJECTION) {
+            ResponseRejection responseRejection = (ResponseRejection) claimantResponse;
+            caseEvent = directionsQuestionnaireService.prepareCaseEvent(responseRejection, updatedClaim);
+
+            if (caseEvent == DIRECTIONS_QUESTIONNAIRE_DEADLINE) {
+                LocalDate deadline = directionsQuestionnaireDeadlineCalculator.calculate(LocalDateTime.now(clock));
+                caseRepository.updateDirectionsQuestionnaireDeadline(claim, deadline, authorization);
+                updatedClaim = claimService.getClaimByExternalId(externalId, authorization);
+            } else {
+                caseRepository.saveCaseEvent(authorization, updatedClaim, caseEvent);
+            }
         }
 
         if (!isSettlementAgreement(response, claimantResponse)) {
@@ -124,16 +130,8 @@ public class ClaimantResponseService {
             caseRepository.saveCaseEvent(authorization, updatedClaim, SETTLED_PRE_JUDGMENT);
         }
 
-        CaseEvent caseEvent = null;
-        if (claimantResponse.getType() == REJECTION) {
-            caseEvent = directionsQuestionnaireService.prepareCaseEvent(
-                (ResponseRejection) claimantResponse,
-                updatedClaim
-            );
-            caseRepository.saveCaseEvent(authorization, updatedClaim, caseEvent);
-        }
-
         raiseAppInsightEvents(updatedClaim, response, claimantResponse, caseEvent);
+
     }
 
     private boolean isSettlementAgreement(Response response, ClaimantResponse claimantResponse) {
@@ -144,13 +142,6 @@ public class ClaimantResponseService {
                 .isPresent();
         }
         return false;
-    }
-
-    private boolean isRejectResponseNoMediation(ClaimantResponse claimantResponse) {
-        return ClaimantResponseType.REJECTION.equals(claimantResponse.getType())
-            && ((ResponseRejection) claimantResponse).getFreeMediation()
-            .filter(isEqual(YesNoOption.NO))
-            .isPresent();
     }
 
     private void formaliseResponseAcceptance(
@@ -168,9 +159,9 @@ public class ClaimantResponseService {
     }
 
     private void raiseAppInsightEvents(Claim claim,
-                                        Response response,
-                                        ClaimantResponse claimantResponse,
-                                        CaseEvent caseEvent) {
+                                       Response response,
+                                       ClaimantResponse claimantResponse,
+                                       CaseEvent caseEvent) {
 
         if (claimantResponse instanceof ResponseAcceptation) {
             appInsights.trackEvent(CLAIMANT_RESPONSE_ACCEPTED, REFERENCE_NUMBER, claim.getReferenceNumber());
@@ -201,7 +192,7 @@ public class ClaimantResponseService {
                 break;
             case WAITING_TRANSFER:
                 appInsights.trackEvent(AppInsightsEvent.READY_FOR_TRANSFER, REFERENCE_NUMBER,
-                        claim.getReferenceNumber());
+                    claim.getReferenceNumber());
                 break;
             default:
                 //Empty

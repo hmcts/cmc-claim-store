@@ -55,7 +55,7 @@ public class DirectionsQuestionnaireService {
             return ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS;
         }
 
-        if (isJudgePilot(claim)  && pilotCourtService.isPilotCourt(preferredCourt, JDDO, claim.getCreatedAt())) {
+        if (isJudgePilot(claim) && pilotCourtService.isPilotCourt(preferredCourt, JDDO, claim.getCreatedAt())) {
             return ASSIGNING_FOR_JUDGE_DIRECTIONS;
         }
 

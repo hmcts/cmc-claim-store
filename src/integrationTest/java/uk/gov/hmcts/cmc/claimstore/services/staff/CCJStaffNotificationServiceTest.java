@@ -116,8 +116,7 @@ public class CCJStaffNotificationServiceTest extends BaseMockSpringTest {
             claim.getClaimData().getDefendant().getName()
         );
 
-        assertThat(emailDataArgument.getValue()
-            .getSubject()).isEqualTo(subject);
+        assertThat(emailDataArgument.getValue().getSubject().trim()).isEqualTo(subject);
 
         assertThat(emailDataArgument.getValue()
             .getMessage()).startsWith(
@@ -153,8 +152,7 @@ public class CCJStaffNotificationServiceTest extends BaseMockSpringTest {
             claim.getClaimData().getDefendant().getName()
         );
 
-        assertThat(emailDataArgument.getValue()
-            .getSubject()).isEqualTo(subject);
+        assertThat(emailDataArgument.getValue().getSubject().trim()).isEqualTo(subject);
 
         assertThat(emailDataArgument.getValue()
             .getMessage()).startsWith(
@@ -174,8 +172,7 @@ public class CCJStaffNotificationServiceTest extends BaseMockSpringTest {
             claim.getClaimData().getDefendant().getName()
         );
 
-        assertThat(emailDataArgument.getValue()
-            .getSubject()).isEqualTo(subject);
+        assertThat(emailDataArgument.getValue().getSubject().trim()).isEqualTo(subject);
 
         assertThat(emailDataArgument.getValue()
             .getMessage()).startsWith(

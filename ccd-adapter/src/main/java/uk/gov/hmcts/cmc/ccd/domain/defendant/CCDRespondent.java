@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Value
-@Builder
+@Builder(toBuilder = true)
 public class CCDRespondent {
     private String partyName;
     private String letterHolderId;

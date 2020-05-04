@@ -67,7 +67,9 @@
     "reference": "RC-1524-6488-1670-7520",
     "status": "success",
     "id": "PaymentId",
-    "date_created": "2019-01-01"
+    "date_created": "2019-01-01",
+    "transactionId": "transactionId",
+    "feeId": "feeId"
   },
   "feeAmountInPennies": 4000,
   "reason": "reason",
