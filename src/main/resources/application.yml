@@ -198,7 +198,7 @@ feature_toggles:
   watermark_pdf: false
   reminderEmails: false
   save_claim_state_enabled: false
-  ctsc_enabled: false
+  ctsc_enabled: true
   staff_emails_enabled: true
   auto_cancel_payments: "${FEATURE_AUTO_CANCEL_PAYMENTS:false}"
 

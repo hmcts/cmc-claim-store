@@ -130,12 +130,12 @@ class GeneralLetterCallbackHandlerTest {
 
     @Test
     void shouldSendForCreateAndPreview() {
-        when(generalLetterService.createAndPreview(eq(ccdCase),
+        when(generalLetterService.generateLetter(eq(ccdCase),
             eq(BEARER_TOKEN.name()),
             eq(GENERAL_LETTER_TEMPLATE_ID))).thenReturn(DOC_URL);
         AboutToStartOrSubmitCallbackResponse actualResponse =
             (AboutToStartOrSubmitCallbackResponse) handler.createAndPreview(callbackParams);
-        verify(generalLetterService, once()).createAndPreview(ccdCase, BEARER_TOKEN.name(),
+        verify(generalLetterService, once()).generateLetter(ccdCase, BEARER_TOKEN.name(),
             GENERAL_LETTER_TEMPLATE_ID);
         assertThat(actualResponse.getData().get(DRAFT_LETTER_DOC_KEY))
             .isEqualTo(CCDDocument.builder().documentUrl(DOC_URL).build());
@@ -143,12 +143,12 @@ class GeneralLetterCallbackHandlerTest {
 
     @Test
     void shouldSendErrorsWhenExceptionThrownForCreateAndPreview() {
-        when(generalLetterService.createAndPreview(eq(ccdCase),
+        when(generalLetterService.generateLetter(eq(ccdCase),
             eq(BEARER_TOKEN.name()),
             eq(GENERAL_LETTER_TEMPLATE_ID))).thenThrow(DocumentGenerationFailedException.class);
         AboutToStartOrSubmitCallbackResponse actualResponse =
             (AboutToStartOrSubmitCallbackResponse) handler.createAndPreview(callbackParams);
-        verify(generalLetterService, once()).createAndPreview(ccdCase, BEARER_TOKEN.name(),
+        verify(generalLetterService, once()).generateLetter(ccdCase, BEARER_TOKEN.name(),
             GENERAL_LETTER_TEMPLATE_ID);
         assertThat(actualResponse.getErrors().get(0)).isEqualTo(ERROR_MESSAGE);
     }
@@ -168,30 +168,30 @@ class GeneralLetterCallbackHandlerTest {
             .generalLetterContent(null)
             .build();
         when(caseDetailsConverter.convertToMap(any(CCDCase.class))).thenReturn(dataMap);
-        when(generalLetterService.printAndUpdateCaseDocuments(eq(ccdCase),
+        when(generalLetterService.processDocuments(eq(ccdCase),
             eq(claim),
             eq(BEARER_TOKEN.name()),
-            eq(GENERAL_DOCUMENT_NAME),
-            eq(DOC_URL))).thenReturn(updateCCDCase);
+            eq(GENERAL_DOCUMENT_NAME)
+        )).thenReturn(updateCCDCase);
         AboutToStartOrSubmitCallbackResponse actualResponse = (AboutToStartOrSubmitCallbackResponse)
             handler.printAndUpdateCaseDocuments(callbackParams);
         verify(generalLetterService, once())
-            .printAndUpdateCaseDocuments(ccdCase, claim, BEARER_TOKEN.name(), GENERAL_DOCUMENT_NAME, DOC_URL);
+            .processDocuments(ccdCase, claim, BEARER_TOKEN.name(), GENERAL_DOCUMENT_NAME);
         assertThat(actualResponse.getData()).isEqualTo(dataMap);
     }
 
     @Test
     void shouldSendErrorsWhenExceptionThrownForPrintAndUpdateCaseDocuments() throws Exception {
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
-        when(generalLetterService.printAndUpdateCaseDocuments(eq(ccdCase),
+        when(generalLetterService.processDocuments(eq(ccdCase),
             eq(claim),
             eq(BEARER_TOKEN.name()),
-            eq(GENERAL_DOCUMENT_NAME),
-            eq(DOC_URL))).thenThrow(RuntimeException.class);
+            eq(GENERAL_DOCUMENT_NAME)
+        )).thenThrow(RuntimeException.class);
         AboutToStartOrSubmitCallbackResponse actualResponse = (AboutToStartOrSubmitCallbackResponse)
             handler.printAndUpdateCaseDocuments(callbackParams);
         verify(generalLetterService, once())
-            .printAndUpdateCaseDocuments(ccdCase, claim, BEARER_TOKEN.name(), GENERAL_DOCUMENT_NAME, DOC_URL);
+            .processDocuments(ccdCase, claim, BEARER_TOKEN.name(), GENERAL_DOCUMENT_NAME);
         assertThat(actualResponse.getErrors().get(0)).isEqualTo(ERROR_MESSAGE);
     }
 }

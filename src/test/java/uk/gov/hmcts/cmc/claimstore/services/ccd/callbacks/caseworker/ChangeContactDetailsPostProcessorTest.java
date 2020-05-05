@@ -60,7 +60,7 @@ public class ChangeContactDetailsPostProcessorTest {
     @Mock
     private CaseDetails caseDetails;
     @Mock
-    private LetterGeneratorService letterGeneratorService;
+    private ChangeContactLetterService changeContactLetterService;
     @Mock
     private GeneralLetterService generalLetterService;
     @Mock
@@ -76,11 +76,11 @@ public class ChangeContactDetailsPostProcessorTest {
     void setUp() {
         changeContactDetailsPostProcessor = new ChangeContactDetailsPostProcessor(
             caseDetailsConverter,
-            letterGeneratorService,
+            changeContactLetterService,
             changeContactDetailsNotificationService,
             new LetterContentBuilder(),
-            userService,
-            generalLetterService);
+            userService
+        );
     }
 
     @Test
@@ -112,9 +112,8 @@ public class ChangeContactDetailsPostProcessorTest {
 
         given(userService.getUserDetails(anyString())).willReturn(SampleUserDetails.getDefault());
 
-        given(letterGeneratorService.createGeneralLetter(any(CCDCase.class), anyString()))
-            .willReturn(docAssemblyResponse);
-        given(docAssemblyResponse.getRenditionOutputLocation()).willReturn(DOC_URL);
+        given(changeContactLetterService.createGeneralLetter(any(CCDCase.class), anyString()))
+            .willReturn(DOC_URL);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse
             = (AboutToStartOrSubmitCallbackResponse) changeContactDetailsPostProcessor
@@ -140,10 +139,10 @@ public class ChangeContactDetailsPostProcessorTest {
     public void shouldPrintAndUpdateCaseDocumentsIfDefendantNotLinked() throws Exception {
         CCDDocument draftLetterDoc = CCDDocument.builder().documentUrl(DOC_URL).documentFileName(DOC_NAME).build();
         CCDCase ccdCase = SampleData.getCCDCitizenCaseWithRespondent(CCDRespondent.builder().defendantId(null)
-                .build()).toBuilder()
-                .contactChangeParty(CCDContactPartyType.CLAIMANT)
-                .draftLetterDoc(draftLetterDoc)
-                .build();
+            .build()).toBuilder()
+            .contactChangeParty(CCDContactPartyType.CLAIMANT)
+            .draftLetterDoc(draftLetterDoc)
+            .build();
 
         Claim claim = SampleClaim.getCitizenClaim().toBuilder().build();
 
@@ -161,8 +160,8 @@ public class ChangeContactDetailsPostProcessorTest {
             .build();
 
         changeContactDetailsPostProcessor.notifyPartiesViaEmailOrLetter(callbackParams);
-        verify(generalLetterService).printAndUpdateCaseDocuments(eq(ccdCase), eq(claim),
-                eq(AUTHORISATION_TOKEN), eq(DOC_NAME), eq(DOC_URL));
+
+        verify(changeContactLetterService).printAndUpdateCaseDocuments(eq(ccdCase), eq(claim), eq(AUTHORISATION_TOKEN));
     }
 
     @Test

@@ -141,4 +141,5 @@ public class CCDCase {
     private CCDLaList assignedTo;
     private CCDContactPartyType contactChangeParty;
     private CCDContactChangeContent contactChangeContent;
+    private CCDCalculatedResponseDeadline calculatedResponseDeadlineContent;
 }
