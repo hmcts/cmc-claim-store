@@ -11,7 +11,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCalculatedResponseDeadline;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
@@ -34,7 +33,6 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralL
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
-import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
@@ -55,6 +53,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.MoreTimeRequestedCallbackHandler.CALCULATED_RESPONSE_DEADLINE;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.MoreTimeRequestedCallbackHandler.PREVIEW_SENTENCE;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.MoreTimeRequestedCallbackHandler.RESPONSE_DEADLINE_PREVIEW;
+import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_EMAIL;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_ID;
@@ -202,9 +203,9 @@ class MoreTimeRequestedCallbackHandlerTest {
             AboutToStartOrSubmitCallbackResponse response
                 = (AboutToStartOrSubmitCallbackResponse) moreTimeRequestedCallbackHandler.handle(callbackParams);
 
-            assertThat(response.getData()).hasSize(1)
-                .containsEntry(CALCULATED_RESPONSE_DEADLINE, CCDCalculatedResponseDeadline.builder()
-                    .calculatedResponseDeadline(Formatting.formatDate(deadline)).build());
+            assertThat(response.getData()).hasSize(2)
+                .containsEntry(CALCULATED_RESPONSE_DEADLINE, deadline)
+                .containsEntry(RESPONSE_DEADLINE_PREVIEW, String.format(PREVIEW_SENTENCE, formatDate(deadline)));
         }
     }
 
@@ -219,8 +220,7 @@ class MoreTimeRequestedCallbackHandlerTest {
                 .request(callbackRequest)
                 .build();
             ccdCase = ccdCase.toBuilder()
-                .calculatedResponseDeadlineContent(CCDCalculatedResponseDeadline.builder()
-                    .calculatedResponseDeadline(Formatting.formatDate(deadline)).build())
+                .calculatedResponseDeadline(deadline)
                 .build();
 
             UserDetails userDetails = SampleUserDetails.builder()
@@ -261,8 +261,7 @@ class MoreTimeRequestedCallbackHandlerTest {
                 .build();
 
             ccdCase = ccdCase.toBuilder()
-                .calculatedResponseDeadlineContent(CCDCalculatedResponseDeadline.builder()
-                    .calculatedResponseDeadline(Formatting.formatDate(deadline)).build())
+                .calculatedResponseDeadline(deadline)
                 .build();
 
             claim = claim.toBuilder().responseDeadline(deadline).build();
@@ -303,8 +302,7 @@ class MoreTimeRequestedCallbackHandlerTest {
                 .build();
 
             ccdCase = ccdCase.toBuilder()
-                .calculatedResponseDeadlineContent(CCDCalculatedResponseDeadline.builder()
-                    .calculatedResponseDeadline(Formatting.formatDate(deadline)).build())
+                .calculatedResponseDeadline(deadline)
                 .build();
 
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
@@ -358,8 +356,7 @@ class MoreTimeRequestedCallbackHandlerTest {
                 .defendantEmail(null).defendantId(null).build();
 
             ccdCase = ccdCase.toBuilder()
-                .calculatedResponseDeadlineContent(CCDCalculatedResponseDeadline.builder()
-                    .calculatedResponseDeadline(Formatting.formatDate(deadline)).build())
+                .calculatedResponseDeadline(deadline)
                 .build();
 
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);

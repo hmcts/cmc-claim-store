@@ -88,7 +88,7 @@ public class GeneralLetterService {
             .contactChangeParty(null)
             .contactChangeContent(null)
             .generalLetterContent(null)
-            .calculatedResponseDeadlineContent(null)
+            .calculatedResponseDeadline(null)
             .build();
     }
 
