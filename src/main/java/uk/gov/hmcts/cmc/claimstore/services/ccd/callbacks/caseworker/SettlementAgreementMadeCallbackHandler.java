@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import java.util.Map;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.AGREEMENT_COUNTER_SIGNED_BY_DEFENDANT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.AGREEMENT_SIGNED_BY_BOTH;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_COUNTER_SIGNED_BY_DEFENDANT;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
 
 @Service
@@ -29,7 +31,7 @@ public class SettlementAgreementMadeCallbackHandler extends AbstractStateChangeC
         Arrays.asList(AGREEMENT_COUNTER_SIGNED_BY_DEFENDANT,
             OFFER_COUNTER_SIGNED_BY_DEFENDANT,
             AGREEMENT_SIGNED_BY_BOTH);
-    private static final List<Role> ROLES = Collections.singletonList(CITIZEN);
+    private static final List<Role> ROLES = ImmutableList.of(CASEWORKER, CITIZEN);
 
     private final boolean ctscEnabled;
 
@@ -40,7 +42,6 @@ public class SettlementAgreementMadeCallbackHandler extends AbstractStateChangeC
     public SettlementAgreementMadeCallbackHandler(
         CaseDetailsConverter caseDetailsConverter,
         @Value("${feature_toggles.ctsc_enabled}") boolean ctscEnabled) {
-
         super(EVENTS, ROLES, caseDetailsConverter);
         this.ctscEnabled = ctscEnabled;
     }
