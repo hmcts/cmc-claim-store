@@ -45,6 +45,8 @@ public class PaymentMapperTest {
         assertThat(payment.getReference()).isEqualTo(ccdCase.getPaymentReference());
         assertThat(payment.getStatus()).isEqualTo(PaymentStatus.fromValue(ccdCase.getPaymentStatus()));
         assertThat(payment.getNextUrl()).isEqualTo(ccdCase.getPaymentNextUrl());
+        assertThat(payment.getTransactionId()).isEqualTo(ccdCase.getPaymentTransactionId());
+        assertThat(payment.getFeeId()).isEqualTo(ccdCase.getPaymentFeeId());
     }
 
     @Test
@@ -64,6 +66,8 @@ public class PaymentMapperTest {
         assertThat(payment.getReference()).isEqualTo(ccdCase.getPaymentReference());
         assertThat(payment.getNextUrl()).isEqualTo(ccdCase.getPaymentNextUrl());
         assertThat(payment.getStatus()).isEqualTo(PaymentStatus.fromValue(ccdCase.getPaymentStatus()));
+        assertThat(payment.getTransactionId()).isEqualTo(ccdCase.getPaymentTransactionId());
+        assertThat(payment.getFeeId()).isEqualTo(ccdCase.getPaymentFeeId());
     }
 
     @Test
@@ -84,6 +88,24 @@ public class PaymentMapperTest {
         assertThat(payment.getReference()).isEqualTo(ccdCase.getPaymentReference());
         assertThat(payment.getStatus()).isEqualTo(PaymentStatus.fromValue(ccdCase.getPaymentStatus()));
         assertThat(payment.getNextUrl()).isEqualTo(ccdCase.getPaymentNextUrl());
+        assertThat(payment.getTransactionId()).isEqualTo(ccdCase.getPaymentTransactionId());
+        assertThat(payment.getFeeId()).isEqualTo(ccdCase.getPaymentFeeId());
+    }
+
+    @Test
+    public void toShouldNotBuildPaymentIfPaymentIsNull() {
+        CCDCase.CCDCaseBuilder caseBuilder = CCDCase.builder();
+        mapper.to(null, caseBuilder);
+        CCDCase ccdCase = caseBuilder.build();
+
+        assertThat(ccdCase.getPaymentDateCreated()).isNull();
+        assertThat(ccdCase.getPaymentId()).isNull();
+        assertThat(ccdCase.getPaymentAmount()).isNull();
+        assertThat(ccdCase.getPaymentReference()).isNull();
+        assertThat(ccdCase.getPaymentStatus()).isNull();
+        assertThat(ccdCase.getPaymentNextUrl()).isNull();
+        assertThat(ccdCase.getPaymentTransactionId()).isNull();
+        assertThat(ccdCase.getPaymentFeeId()).isNull();
     }
 
     @Test
@@ -109,6 +131,8 @@ public class PaymentMapperTest {
         assertThat(payment.getReference()).isEqualTo(ccdCase.getPaymentReference());
         assertThat(payment.getStatus()).isEqualTo(PaymentStatus.fromValue(ccdCase.getPaymentStatus()));
         assertThat(payment.getNextUrl()).isEqualTo(ccdCase.getPaymentNextUrl());
+        assertThat(payment.getTransactionId()).isEqualTo(ccdCase.getPaymentTransactionId());
+        assertThat(payment.getFeeId()).isEqualTo(ccdCase.getPaymentFeeId());
     }
 
     @Test
@@ -134,6 +158,8 @@ public class PaymentMapperTest {
         assertThat(payment.getReference()).isEqualTo(ccdCase.getPaymentReference());
         assertThat(payment.getStatus()).isNull();
         assertThat(payment.getNextUrl()).isEqualTo(ccdCase.getPaymentNextUrl());
+        assertThat(payment.getTransactionId()).isEqualTo(ccdCase.getPaymentTransactionId());
+        assertThat(payment.getFeeId()).isEqualTo(ccdCase.getPaymentFeeId());
     }
 
     @Test
@@ -157,5 +183,16 @@ public class PaymentMapperTest {
         assertThat(payment.getReference()).isEqualTo(ccdCase.getPaymentReference());
         assertThat(payment.getStatus()).isEqualTo(PaymentStatus.fromValue(ccdCase.getPaymentStatus()));
         assertThat(payment.getNextUrl()).isEqualTo(ccdCase.getPaymentNextUrl());
+        assertThat(payment.getTransactionId()).isEqualTo(ccdCase.getPaymentTransactionId());
+        assertThat(payment.getFeeId()).isEqualTo(ccdCase.getPaymentFeeId());
+    }
+
+    @Test
+    public void fromShouldNotBuildPaymentIfPaymentIsNull() {
+        CCDCase ccdCase = CCDCase.builder().build();
+
+        Payment payment = mapper.from(ccdCase);
+
+        assertThat(payment).isNull();
     }
 }
