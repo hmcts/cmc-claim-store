@@ -7,14 +7,15 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
-import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +26,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
 
 @Service
-public class SettlementAgreementMadeCallbackHandler extends AbstractStateChangeCallbackHandler {
+public class SettlementAgreementMadeCallbackHandler extends CallbackHandler {
     private static final List<CaseEvent> EVENTS =
         Arrays.asList(AGREEMENT_COUNTER_SIGNED_BY_DEFENDANT,
             OFFER_COUNTER_SIGNED_BY_DEFENDANT,
@@ -33,27 +34,38 @@ public class SettlementAgreementMadeCallbackHandler extends AbstractStateChangeC
     private static final List<Role> ROLES = ImmutableList.of(CASEWORKER, CITIZEN);
 
     private final boolean ctscEnabled;
+    private static final String STATE = "state";
 
     private final ImmutableMap<CallbackType, Callback> callbacks = ImmutableMap.of(
         CallbackType.ABOUT_TO_SUBMIT, this::determineState
     );
 
     public SettlementAgreementMadeCallbackHandler(
-        CaseDetailsConverter caseDetailsConverter,
         @Value("${feature_toggles.ctsc_enabled}") boolean ctscEnabled) {
-        super(EVENTS, ROLES, caseDetailsConverter);
         this.ctscEnabled = ctscEnabled;
     }
 
     private CallbackResponse determineState(CallbackParams callbackParams) {
         ClaimState state = ctscEnabled ? ClaimState.SETTLEMENT_AGREEMENT_MADE : ClaimState.OPEN;
+        Map<String, Object> data = new HashMap<>(callbackParams.getRequest().getCaseDetails().getData());
+        data.put(STATE, state.getValue());
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(updateState(callbackParams, state))
+            .data(data)
             .build();
     }
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
         return callbacks;
+    }
+
+    @Override
+    public List<CaseEvent> handledEvents() {
+        return EVENTS;
+    }
+
+    @Override
+    public List<Role> getSupportedRoles() {
+        return ROLES;
     }
 }
