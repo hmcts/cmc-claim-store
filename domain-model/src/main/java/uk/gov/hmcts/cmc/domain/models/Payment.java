@@ -26,6 +26,8 @@ public class Payment {
     private final PaymentStatus status;
     private final String nextUrl;
     private final String returnUrl;
+    private final String transactionId;
+    private final String feeId;
 
     public Payment(
         String id,
@@ -34,7 +36,9 @@ public class Payment {
         String dateCreated,
         PaymentStatus status,
         String nextUrl,
-        String returnUrl
+        String returnUrl,
+        String transactionId,
+        String feeId
     ) {
         this.id = id;
         this.amount = amount;
@@ -43,6 +47,8 @@ public class Payment {
         this.status = status;
         this.nextUrl = nextUrl;
         this.returnUrl = returnUrl;
+        this.transactionId = transactionId;
+        this.feeId = feeId;
     }
 
     @Override

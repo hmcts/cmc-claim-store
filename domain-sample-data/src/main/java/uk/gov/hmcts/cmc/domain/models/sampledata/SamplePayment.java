@@ -22,6 +22,8 @@ public class SamplePayment {
             .amount(new BigDecimal("40.99"))
             .dateCreated("2019-01-01")
             .id("PaymentId")
+            .transactionId("transactionId")
+            .feeId("feeId")
             .returnUrl(RETURN_URL)
             .status(SUCCESS);
     }

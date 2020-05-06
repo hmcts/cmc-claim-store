@@ -68,6 +68,8 @@
     "status": "success",
     "id": "PaymentId",
     "date_created": "2019-01-01",
+    "transactionId": "transactionId",
+    "feeId": "feeId",
     "return_url": "http://returnUrl.test"
   },
   "feeAmountInPennies": 4000,

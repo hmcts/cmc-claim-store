@@ -35,6 +35,8 @@ public class PaymentMapper implements BuilderMapper<CCDCase, Payment, CCDCase.CC
             .paymentId(payment.getId())
             .paymentReference(payment.getReference())
             .paymentNextUrl(payment.getNextUrl())
+            .paymentTransactionId(payment.getTransactionId())
+            .paymentFeeId(payment.getFeeId())
             .paymentReturnUrl(payment.getReturnUrl())
             .paymentStatus(payment.getStatus() != null ? payment.getStatus().toString() : null);
 
@@ -66,7 +68,9 @@ public class PaymentMapper implements BuilderMapper<CCDCase, Payment, CCDCase.CC
                 ? PaymentStatus.fromValue(ccdCase.getPaymentStatus())
                 : null,
             ccdCase.getPaymentNextUrl(),
-            ccdCase.getPaymentReturnUrl());
+            ccdCase.getPaymentReturnUrl(),
+            ccdCase.getPaymentTransactionId(),
+            ccdCase.getPaymentFeeId());
     }
 
     private LocalDate parseDate(String input) {
