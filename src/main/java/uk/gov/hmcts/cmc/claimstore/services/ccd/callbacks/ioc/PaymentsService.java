@@ -65,9 +65,7 @@ public class PaymentsService {
         logger.info("Retrieving payment with reference {}", claimPayment.getReference());
 
         PaymentDto paymentDto = paymentsClient.retrievePayment(authorisation, claimPayment.getReference());
-        String returnUrl = claimData.getPayment()
-            .orElseThrow(IllegalStateException::new).getReturnUrl();
-        return Optional.of(from(paymentDto, claimPayment.getNextUrl(), returnUrl, claimPayment.getDateCreated()));
+        return Optional.of(from(paymentDto, claimPayment));
     }
 
     public Payment createPayment(
@@ -97,18 +95,17 @@ public class PaymentsService {
 
         logger.info("Creating payment in pay hub for claim with external id {}",
             claim.getExternalId());
-        String returnUrl = claim.getClaimData().getPayment()
-            .orElseThrow(IllegalStateException::new).getReturnUrl();
-        logger.info("Return URL: {}", returnUrl);
+        Payment claimPayment = claim.getClaimData().getPayment().orElseThrow(IllegalStateException::new);
+        logger.info("Return URL: {}", claimPayment.getReturnUrl());
         PaymentDto payment = paymentsClient.createPayment(
             authorisation,
             paymentRequest,
-            returnUrl
+            claimPayment.getReturnUrl()
         );
         logger.info("Created payment for claim with external id {}: {}", claim.getExternalId(), payment);
 
         payment.setAmount(feeOutcome.getFeeAmount());
-        return from(payment, null, returnUrl, null);
+        return from(payment, claimPayment);
     }
 
     public void cancelPayment(String authorisation, String paymentReference) {
@@ -145,14 +142,14 @@ public class PaymentsService {
             .build();
     }
 
-    private Payment from(PaymentDto paymentDto, String nextUrlCurrent, String returnUrl, String originalDateCreated) {
+    private Payment from(PaymentDto paymentDto, Payment claimPayment) {
         String dateCreated = Optional.ofNullable(paymentDto.getDateCreated())
             .map(date -> date.toLocalDate().toString())
-            .orElse(originalDateCreated);
+            .orElse(claimPayment.getDateCreated());
 
         String nextUrl = Optional.ofNullable(paymentDto.getLinks().getNextUrl())
             .map(url -> url.getHref().toString())
-            .orElse(nextUrlCurrent);
+            .orElse(claimPayment.getNextUrl());
 
         String feeId = null;
         if (paymentDto.getFees() != null) {
@@ -168,7 +165,7 @@ public class PaymentsService {
             .status(PaymentStatus.fromValue(paymentDto.getStatus()))
             .dateCreated(dateCreated)
             .nextUrl(nextUrl)
-            .returnUrl(returnUrl)
+            .returnUrl(claimPayment.getReturnUrl())
             .transactionId(paymentDto.getExternalReference())
             .feeId(feeId)
             .build();
