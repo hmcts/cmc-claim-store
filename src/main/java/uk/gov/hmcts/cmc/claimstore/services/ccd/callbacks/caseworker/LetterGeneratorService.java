@@ -1,12 +1,14 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 
 @Service
+@ConditionalOnProperty(prefix = "doc_assembly", name = "url")
 public class LetterGeneratorService {
     private final String generalLetterTemplateId;
     private final DocAssemblyService docAssemblyService;
