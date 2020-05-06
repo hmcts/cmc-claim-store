@@ -37,10 +37,6 @@ public class NotificationReferenceBuilder {
             // do not instantiate
         }
 
-        public static String referenceForClaimant(String claimReferenceNumber) {
-            return reference(TEMPLATE, CLAIMANT, claimReferenceNumber);
-        }
-
         public static String referenceForDefendant(String claimReferenceNumber) {
             return reference(TEMPLATE, DEFENDANT, claimReferenceNumber);
         }
