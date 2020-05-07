@@ -6,25 +6,21 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Data;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.hibernate.validator.constraints.NotBlank;
 
 import java.math.BigDecimal;
-import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Builder
 @Data
-@JsonIgnoreProperties(value = {"description", "state"})
+@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(value = PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Payment {
     private final String id;
     /**
      * The amount which was paid, in pennies for payments v1 or pounds with payments v2.
      */
-    @NotNull
     private final BigDecimal amount;
-    @NotBlank
     private final String reference;
     private final String dateCreated;
     private final PaymentStatus status;
