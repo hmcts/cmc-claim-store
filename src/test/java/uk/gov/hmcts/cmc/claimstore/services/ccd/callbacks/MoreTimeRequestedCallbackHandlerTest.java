@@ -186,7 +186,7 @@ class MoreTimeRequestedCallbackHandlerTest {
 
         @Test
         void shouldValidateRequestOnAboutToStartEvent() {
-            when(moreTimeRequestRule.validateMoreTimeCanBeRequested(any(Claim.class)))
+            when(moreTimeRequestRule.validateMoreTimeCanBeRequested(any(Claim.class), any(LocalDate.class)))
                 .thenReturn(List.of("a", "b", "c"));
 
             AboutToStartOrSubmitCallbackResponse response
@@ -197,7 +197,7 @@ class MoreTimeRequestedCallbackHandlerTest {
 
         @Test
         void shouldProvideResponseDeadline() {
-            when(moreTimeRequestRule.validateMoreTimeCanBeRequested(any(Claim.class)))
+            when(moreTimeRequestRule.validateMoreTimeCanBeRequested(any(Claim.class), any(LocalDate.class)))
                 .thenReturn(Lists.emptyList());
 
             AboutToStartOrSubmitCallbackResponse response
@@ -277,7 +277,7 @@ class MoreTimeRequestedCallbackHandlerTest {
             verify(eventProducer).createMoreTimeForResponseRequestedEvent(
                 eq(claim),
                 eq(deadline),
-                eq(claim.getClaimData().getDefendant().getEmail().get())
+                eq(claim.getClaimData().getDefendant().getEmail().orElse(null))
             );
             assertThat(response).isNotNull();
         }

@@ -65,9 +65,6 @@ public class ChangeContactDetailsPostProcessor {
         var callbackResponse = AboutToStartOrSubmitCallbackResponse.builder();
         CCDCase caseBefore = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetailsBefore());
         CCDCase caseNow = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
-        if (caseBefore.equals(caseNow)) {
-            return callbackResponse.build();
-        }
         CCDContactPartyType contactChangeParty = caseNow.getContactChangeParty();
         CCDParty partyBefore = getPartyDetail(caseBefore, contactChangeParty);
         CCDParty partyNow = getPartyDetail(caseNow, contactChangeParty);
@@ -120,7 +117,6 @@ public class ChangeContactDetailsPostProcessor {
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
-
 
         var builder = AboutToStartOrSubmitCallbackResponse.builder();
         CCDCase updatedCase = ccdCase;

@@ -37,7 +37,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.time.LocalDate;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -59,26 +58,14 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
     public static final String CALCULATED_RESPONSE_DEADLINE = "calculatedResponseDeadline";
     public static final String LETTER_NAME = "%s-response-deadline-extended.pdf";
-
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
-
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
-
     private static final List<CaseEvent> EVENTS = Collections.singletonList(RESPONSE_MORE_TIME);
-
-    private final EventProducer eventProducer;
-    private final ResponseDeadlineCalculator responseDeadlineCalculator;
-    private final MoreTimeRequestRule moreTimeRequestRule;
-    private final CaseDetailsConverter caseDetailsConverter;
-    private final NotificationService notificationService;
-    private final NotificationsProperties notificationsProperties;
-    private UserService userService;
-    private String generalLetterTemplateId;
-    private final GeneralLetterService generalLetterService;
-
     public static final String PREVIEW_SENTENCE = "The response deadline will be %s .";
+    public static final String RESPONSE_DEADLINE_PREVIEW = "responseDeadlinePreview";
+
     private static final String ERROR_MESSAGE =
         "There was a technical problem. Nothing has been sent. You need to try again.";
+
     private static final String STANDARD_DEADLINE_TEXT = String.join("%n",
         "You’ve been given an extra 14 days to respond to the claim made against you by %s.",
         "",
@@ -86,7 +73,17 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
         "",
         "If you don’t respond, you could get a County Court Judgment (CCJ). This may make it harder to get "
             + "credit, such as a mobile phone contract, credit card or mortgage.");
-    public static final String RESPONSE_DEADLINE_PREVIEW = "responseDeadlinePreview";
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final EventProducer eventProducer;
+    private final ResponseDeadlineCalculator responseDeadlineCalculator;
+    private final MoreTimeRequestRule moreTimeRequestRule;
+    private final CaseDetailsConverter caseDetailsConverter;
+    private final NotificationService notificationService;
+    private final NotificationsProperties notificationsProperties;
+    private final UserService userService;
+    private final GeneralLetterService generalLetterService;
+    private final String generalLetterTemplateId;
 
     @Autowired
     public MoreTimeRequestedCallbackHandler(
@@ -142,7 +139,7 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
         }
 
         Map<String, Object> data = Map.of(CALCULATED_RESPONSE_DEADLINE, newDeadline,
-        RESPONSE_DEADLINE_PREVIEW, String.format(PREVIEW_SENTENCE, formatDate(newDeadline)));
+            RESPONSE_DEADLINE_PREVIEW, String.format(PREVIEW_SENTENCE, formatDate(newDeadline)));
 
         return builder.data(data).build();
     }

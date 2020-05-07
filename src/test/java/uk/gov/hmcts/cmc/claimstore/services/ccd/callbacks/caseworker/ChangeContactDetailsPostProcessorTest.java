@@ -19,7 +19,6 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -27,7 +26,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 
 import java.util.Collections;
 import java.util.Map;
@@ -61,15 +59,8 @@ public class ChangeContactDetailsPostProcessorTest {
     private CaseDetails caseDetails;
     @Mock
     private ChangeContactLetterService changeContactLetterService;
-    @Mock
-    private GeneralLetterService generalLetterService;
-    @Mock
-    private DocAssemblyResponse docAssemblyResponse;
-
     private ChangeContactDetailsPostProcessor changeContactDetailsPostProcessor;
-
     private CallbackRequest callbackRequest;
-
     private CallbackParams callbackParams;
 
     @BeforeEach
@@ -136,7 +127,7 @@ public class ChangeContactDetailsPostProcessorTest {
     }
 
     @Test
-    public void shouldPrintAndUpdateCaseDocumentsIfDefendantNotLinked() throws Exception {
+    public void shouldPrintAndUpdateCaseDocumentsIfDefendantNotLinked() {
         CCDDocument draftLetterDoc = CCDDocument.builder().documentUrl(DOC_URL).documentFileName(DOC_NAME).build();
         CCDCase ccdCase = SampleData.getCCDCitizenCaseWithRespondent(CCDRespondent.builder().defendantId(null)
             .build()).toBuilder()
@@ -165,7 +156,7 @@ public class ChangeContactDetailsPostProcessorTest {
     }
 
     @Test
-    public void shouldSendEmailToRightRecipientWhenCaseIsLinkedAndChangeMadeForClaimant() throws Exception {
+    public void shouldSendEmailToRightRecipientWhenCaseIsLinkedAndChangeMadeForClaimant() {
         CCDCase ccdCase = SampleData.getCCDCitizenCaseWithRespondent(CCDRespondent.builder().defendantId(DEFENDANT_ID)
             .build()).toBuilder()
             .contactChangeParty(CCDContactPartyType.CLAIMANT)
@@ -191,7 +182,7 @@ public class ChangeContactDetailsPostProcessorTest {
     }
 
     @Test
-    public void shouldSendEmailToRightRecipientWhenMadeForDefendant() throws Exception {
+    public void shouldSendEmailToRightRecipientWhenMadeForDefendant() {
         CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList()).toBuilder()
             .contactChangeParty(CCDContactPartyType.DEFENDANT)
             .build();
