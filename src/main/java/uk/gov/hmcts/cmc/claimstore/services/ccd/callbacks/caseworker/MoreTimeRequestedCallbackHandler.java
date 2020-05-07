@@ -205,7 +205,7 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
             } else {
                 String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
                 String filename = String.format(LETTER_NAME, updatedClaim.getReferenceNumber());
-                updatedCase = generalLetterService.publishLetter(ccdCase, updatedClaim, authorisation, filename);
+                updatedCase = generalLetterService.publishLetter(updatedCase, updatedClaim, authorisation, filename);
             }
             return builder.data(caseDetailsConverter.convertToMap(updatedCase)).build();
         } catch (Exception e) {
