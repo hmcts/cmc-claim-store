@@ -35,7 +35,7 @@ public class PaymentMapper implements BuilderMapper<CCDCase, Payment, CCDCase.CC
             .paymentId(payment.getId())
             .paymentReference(payment.getReference())
             .paymentNextUrl(payment.getNextUrl())
-            .paymentStatus(payment.getStatus().toString())
+            .paymentStatus(payment.getStatus() != null ? payment.getStatus().toString() : null)
             .paymentTransactionId(payment.getTransactionId())
             .paymentFeeId(payment.getFeeId());
 
