@@ -36,9 +36,10 @@ public class SettlementAgreementMadeCallbackHandler extends CallbackHandler {
     private final boolean ctscEnabled;
     private static final String STATE = "state";
 
-    private final ImmutableMap<CallbackType, Callback> callbacks = ImmutableMap.of(
-        CallbackType.ABOUT_TO_SUBMIT, this::determineState
-    );
+    @Override
+    protected Map<CallbackType, Callback> callbacks() {
+        return ImmutableMap.of(CallbackType.ABOUT_TO_SUBMIT, this::determineState);
+    }
 
     public SettlementAgreementMadeCallbackHandler(
         @Value("${feature_toggles.ctsc_enabled}") boolean ctscEnabled) {
@@ -52,11 +53,6 @@ public class SettlementAgreementMadeCallbackHandler extends CallbackHandler {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
             .build();
-    }
-
-    @Override
-    protected Map<CallbackType, Callback> callbacks() {
-        return callbacks;
     }
 
     @Override
