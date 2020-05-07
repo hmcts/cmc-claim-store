@@ -370,18 +370,18 @@ class MoreTimeRequestedCallbackHandlerTest {
 
         @Test
         void sendLetterToNotLinkedDefendant() {
-            when(generalLetterService.processDocuments(ccdCase, claim, AUTHORISATION, DOC_NAME)).thenReturn(ccdCase);
+            when(generalLetterService.publishLetter(ccdCase, claim, AUTHORISATION, DOC_NAME)).thenReturn(ccdCase);
 
             moreTimeRequestedCallbackHandler.handle(callbackParams);
 
             verify(generalLetterService)
-                .processDocuments(any(CCDCase.class), any(Claim.class), anyString(), anyString());
+                .publishLetter(any(CCDCase.class), any(Claim.class), anyString(), anyString());
 
         }
 
         @Test
         void shouldReturnWithErrorsWhenFailsToCreateDoc() {
-            when(generalLetterService.processDocuments(ccdCase, claim, AUTHORISATION, DOC_NAME))
+            when(generalLetterService.publishLetter(ccdCase, claim, AUTHORISATION, DOC_NAME))
                 .thenThrow(new RuntimeException("error occurred"));
 
             var response = (AboutToStartOrSubmitCallbackResponse)

@@ -78,7 +78,7 @@ public class GeneralLetterService {
         return docAssemblyResponse.getRenditionOutputLocation();
     }
 
-    public CCDCase processDocuments(CCDCase ccdCase, Claim claim, String authorisation, String documentName) {
+    public CCDCase publishLetter(CCDCase ccdCase, Claim claim, String authorisation, String documentName) {
         var draftLetterDoc = ccdCase.getDraftLetterDoc();
         printLetter(authorisation, draftLetterDoc, claim);
 
@@ -88,7 +88,6 @@ public class GeneralLetterService {
             .contactChangeParty(null)
             .contactChangeContent(null)
             .generalLetterContent(null)
-            .calculatedResponseDeadline(null)
             .build();
     }
 

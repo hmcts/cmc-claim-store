@@ -159,9 +159,9 @@ public class ChangeContactDetailsPostProcessorTest {
             .params(ImmutableMap.of(BEARER_TOKEN, AUTHORISATION_TOKEN))
             .build();
 
-        changeContactDetailsPostProcessor.notifyPartiesViaEmailOrLetter(callbackParams);
+        changeContactDetailsPostProcessor.performPostProcesses(callbackParams);
 
-        verify(changeContactLetterService).printAndUpdateCaseDocuments(eq(ccdCase), eq(claim), eq(AUTHORISATION_TOKEN));
+        verify(changeContactLetterService).publishLetter(eq(ccdCase), eq(claim), eq(AUTHORISATION_TOKEN));
     }
 
     @Test
@@ -186,7 +186,7 @@ public class ChangeContactDetailsPostProcessorTest {
             .params(ImmutableMap.of(BEARER_TOKEN, AUTHORISATION_TOKEN))
             .build();
 
-        changeContactDetailsPostProcessor.notifyPartiesViaEmailOrLetter(callbackParams);
+        changeContactDetailsPostProcessor.performPostProcesses(callbackParams);
         verify(changeContactDetailsNotificationService).sendEmailToRightRecipient(eq(ccdCase), eq(claim));
     }
 
@@ -211,7 +211,7 @@ public class ChangeContactDetailsPostProcessorTest {
             .params(ImmutableMap.of(BEARER_TOKEN, AUTHORISATION_TOKEN))
             .build();
 
-        changeContactDetailsPostProcessor.notifyPartiesViaEmailOrLetter(callbackParams);
+        changeContactDetailsPostProcessor.performPostProcesses(callbackParams);
         verify(changeContactDetailsNotificationService).sendEmailToRightRecipient(eq(ccdCase), eq(claim));
     }
 

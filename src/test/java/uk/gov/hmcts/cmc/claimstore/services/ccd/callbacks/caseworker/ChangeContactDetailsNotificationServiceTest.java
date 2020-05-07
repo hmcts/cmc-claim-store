@@ -50,7 +50,6 @@ public class ChangeContactDetailsNotificationServiceTest {
     @Before
     public void setUp() {
         changeContactDetailsNotificationService = new ChangeContactDetailsNotificationService(
-            caseDetailsConverter,
             notificationService,
             notificationsProperties
         );

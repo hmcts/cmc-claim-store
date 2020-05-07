@@ -32,12 +32,12 @@ import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -116,7 +116,7 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
         return Map.of(
             CallbackType.ABOUT_TO_START, this::calculateResponseDeadline,
             CallbackType.MID, this::generateLetter,
-            CallbackType.ABOUT_TO_SUBMIT, this::sendNotifications
+            CallbackType.ABOUT_TO_SUBMIT, this::performPostProcesses
         );
     }
 
@@ -131,20 +131,20 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
     }
 
     private AboutToStartOrSubmitCallbackResponse calculateResponseDeadline(CallbackParams callbackParams) {
-        CallbackRequest callbackRequest = callbackParams.getRequest();
-        Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
-        LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
+        CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
+        Claim claim = caseDetailsConverter.extractClaim(caseDetails);
 
-        List<String> validationResult = this.moreTimeRequestRule.validateMoreTimeCanBeRequested(claim);
+        LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
+        List<String> validationResult = this.moreTimeRequestRule.validateMoreTimeCanBeRequested(claim, newDeadline);
         var builder = AboutToStartOrSubmitCallbackResponse.builder();
         if (!validationResult.isEmpty()) {
             return builder.errors(validationResult).build();
         }
 
-        return builder
-            .data(Map.of(CALCULATED_RESPONSE_DEADLINE, newDeadline,
-                RESPONSE_DEADLINE_PREVIEW, String.format(PREVIEW_SENTENCE, formatDate(newDeadline))))
-            .build();
+        Map<String, Object> data = Map.of(CALCULATED_RESPONSE_DEADLINE, newDeadline,
+        RESPONSE_DEADLINE_PREVIEW, String.format(PREVIEW_SENTENCE, formatDate(newDeadline)));
+
+        return builder.data(data).build();
     }
 
     private CallbackResponse generateLetter(CallbackParams callbackParams) {
@@ -185,41 +185,35 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
         return ccdCase.getApplicants().get(0).getValue().getPartyName();
     }
 
-    private CallbackResponse sendNotifications(CallbackParams callbackParams) {
+    private CallbackResponse performPostProcesses(CallbackParams callbackParams) {
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
         LocalDate responseDeadline = ccdCase.getCalculatedResponseDeadline();
-        CCDCase updatedCCDCase = addDeadlineToCCDCase(ccdCase, responseDeadline);
-        Claim newDeadlineClaim = claim.toBuilder().responseDeadline(responseDeadline).build();
+        CCDCase updatedCase = addDeadlineToCCDCase(ccdCase, responseDeadline);
+        Claim updatedClaim = claim.toBuilder().responseDeadline(responseDeadline).build();
 
+        var builder = AboutToStartOrSubmitCallbackResponse.builder();
         try {
             eventProducer.createMoreTimeForResponseRequestedEvent(
-                newDeadlineClaim,
-                newDeadlineClaim.getResponseDeadline(),
-                newDeadlineClaim.getClaimData().getDefendant().getEmail().orElse(null)
+                updatedClaim,
+                updatedClaim.getResponseDeadline(),
+                updatedClaim.getClaimData().getDefendant().getEmail().orElse(null)
             );
 
-            sendNotificationToClaimant(newDeadlineClaim);
+            sendNotificationToClaimant(updatedClaim);
 
-            if (newDeadlineClaim.getDefendantEmail() != null && newDeadlineClaim.getDefendantId() != null) {
-                sendEmailNotificationToDefendant(newDeadlineClaim);
+            if (updatedClaim.getDefendantEmail() != null && updatedClaim.getDefendantId() != null) {
+                sendEmailNotificationToDefendant(updatedClaim);
             } else {
                 String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
-                String filename = String.format(LETTER_NAME, newDeadlineClaim.getReferenceNumber());
-                updatedCCDCase = generalLetterService.processDocuments(updatedCCDCase, newDeadlineClaim,
-                    authorisation, filename);
+                String filename = String.format(LETTER_NAME, updatedClaim.getReferenceNumber());
+                updatedCase = generalLetterService.publishLetter(ccdCase, updatedClaim, authorisation, filename);
             }
-
-            return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(caseDetailsConverter.convertToMap(updatedCCDCase))
-                .build();
+            return builder.data(caseDetailsConverter.convertToMap(updatedCase)).build();
         } catch (Exception e) {
             logger.error("Error notifying citizens", e);
-            return AboutToStartOrSubmitCallbackResponse
-                .builder()
-                .errors(Collections.singletonList(ERROR_MESSAGE))
-                .build();
+            return builder.errors(Collections.singletonList(ERROR_MESSAGE)).build();
         }
     }
 
@@ -232,6 +226,7 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
             .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
                 .value(respondent)
                 .build()))
+            .calculatedResponseDeadline(null)
             .build();
     }
 

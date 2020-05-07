@@ -169,7 +169,7 @@ class GeneralLetterServiceTest {
             .thenReturn(PDF_BYTES);
 
         CCDCase updatedCase = generalLetterService
-            .processDocuments(ccdCase, claim, BEARER_TOKEN.name(), GENERAL_DOCUMENT_NAME);
+            .publishLetter(ccdCase, claim, BEARER_TOKEN.name(), GENERAL_DOCUMENT_NAME);
         verify(documentManagementService, once()).downloadDocument(eq(BEARER_TOKEN.name()), any(ClaimDocument.class));
         assertThat(updatedCase).isEqualTo(expected);
     }

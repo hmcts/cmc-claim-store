@@ -168,7 +168,7 @@ class GeneralLetterCallbackHandlerTest {
             .generalLetterContent(null)
             .build();
         when(caseDetailsConverter.convertToMap(any(CCDCase.class))).thenReturn(dataMap);
-        when(generalLetterService.processDocuments(eq(ccdCase),
+        when(generalLetterService.publishLetter(eq(ccdCase),
             eq(claim),
             eq(BEARER_TOKEN.name()),
             eq(GENERAL_DOCUMENT_NAME)
@@ -176,14 +176,14 @@ class GeneralLetterCallbackHandlerTest {
         AboutToStartOrSubmitCallbackResponse actualResponse = (AboutToStartOrSubmitCallbackResponse)
             handler.printAndUpdateCaseDocuments(callbackParams);
         verify(generalLetterService, once())
-            .processDocuments(ccdCase, claim, BEARER_TOKEN.name(), GENERAL_DOCUMENT_NAME);
+            .publishLetter(ccdCase, claim, BEARER_TOKEN.name(), GENERAL_DOCUMENT_NAME);
         assertThat(actualResponse.getData()).isEqualTo(dataMap);
     }
 
     @Test
     void shouldSendErrorsWhenExceptionThrownForPrintAndUpdateCaseDocuments() throws Exception {
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
-        when(generalLetterService.processDocuments(eq(ccdCase),
+        when(generalLetterService.publishLetter(eq(ccdCase),
             eq(claim),
             eq(BEARER_TOKEN.name()),
             eq(GENERAL_DOCUMENT_NAME)
@@ -191,7 +191,7 @@ class GeneralLetterCallbackHandlerTest {
         AboutToStartOrSubmitCallbackResponse actualResponse = (AboutToStartOrSubmitCallbackResponse)
             handler.printAndUpdateCaseDocuments(callbackParams);
         verify(generalLetterService, once())
-            .processDocuments(ccdCase, claim, BEARER_TOKEN.name(), GENERAL_DOCUMENT_NAME);
+            .publishLetter(ccdCase, claim, BEARER_TOKEN.name(), GENERAL_DOCUMENT_NAME);
         assertThat(actualResponse.getErrors().get(0)).isEqualTo(ERROR_MESSAGE);
     }
 }

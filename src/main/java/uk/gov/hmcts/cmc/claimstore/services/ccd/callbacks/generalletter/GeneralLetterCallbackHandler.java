@@ -107,7 +107,7 @@ public class GeneralLetterCallbackHandler extends CallbackHandler {
         boolean errors = false;
         CCDCase updatedCcdCase = ccdCase;
         try {
-            updatedCcdCase = generalLetterService.processDocuments(
+            updatedCcdCase = generalLetterService.publishLetter(
                 ccdCase,
                 caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails()),
                 authorisation,
