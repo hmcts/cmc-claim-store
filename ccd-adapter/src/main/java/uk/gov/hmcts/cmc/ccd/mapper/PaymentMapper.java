@@ -37,7 +37,8 @@ public class PaymentMapper implements BuilderMapper<CCDCase, Payment, CCDCase.CC
             .paymentNextUrl(payment.getNextUrl())
             .paymentStatus(payment.getStatus() != null ? payment.getStatus().toString() : null)
             .paymentTransactionId(payment.getTransactionId())
-            .paymentFeeId(payment.getFeeId());
+            .paymentFeeId(payment.getFeeId())
+            .paymentReturnUrl(payment.getReturnUrl());
 
         if (StringUtils.isNotBlank(payment.getDateCreated())) {
             builder.paymentDateCreated(parseDate(payment.getDateCreated()));
@@ -51,6 +52,7 @@ public class PaymentMapper implements BuilderMapper<CCDCase, Payment, CCDCase.CC
             && isBlank(ccdCase.getPaymentReference())
             && ccdCase.getPaymentDateCreated() == null
             && isBlank(ccdCase.getPaymentStatus())
+            && isBlank(ccdCase.getPaymentReturnUrl())
         ) {
             return null;
         }
@@ -66,6 +68,7 @@ public class PaymentMapper implements BuilderMapper<CCDCase, Payment, CCDCase.CC
                 ? PaymentStatus.fromValue(ccdCase.getPaymentStatus())
                 : null,
             ccdCase.getPaymentNextUrl(),
+            ccdCase.getPaymentReturnUrl(),
             ccdCase.getPaymentTransactionId(),
             ccdCase.getPaymentFeeId());
     }
