@@ -6,30 +6,26 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Data;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.hibernate.validator.constraints.NotBlank;
 
 import java.math.BigDecimal;
-import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Builder
 @Data
-@JsonIgnoreProperties(value = {"description", "state"})
+@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(value = PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Payment {
     private final String id;
     /**
      * The amount which was paid, in pennies for payments v1 or pounds with payments v2.
      */
-    @NotNull
     private final BigDecimal amount;
-    @NotBlank
     private final String reference;
     private final String dateCreated;
     private final PaymentStatus status;
-    // Add not blank after we switch to IOC
     private final String nextUrl;
+    private final String returnUrl;
     private final String transactionId;
     private final String feeId;
 
@@ -40,6 +36,7 @@ public class Payment {
         String dateCreated,
         PaymentStatus status,
         String nextUrl,
+        String returnUrl,
         String transactionId,
         String feeId
     ) {
@@ -49,6 +46,7 @@ public class Payment {
         this.dateCreated = dateCreated;
         this.status = status;
         this.nextUrl = nextUrl;
+        this.returnUrl = returnUrl;
         this.transactionId = transactionId;
         this.feeId = feeId;
     }
