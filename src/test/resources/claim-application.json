@@ -48,7 +48,8 @@
     "status": "SUCCESS",
     "date_created": "2019-01-01",
     "transaction_id": "transactionId",
-    "fee_id": "feeId"
+    "fee_id": "feeId",
+    "return_url": "http://returnUrl.test"
   },
   "amount": {
     "type": "breakdown",
