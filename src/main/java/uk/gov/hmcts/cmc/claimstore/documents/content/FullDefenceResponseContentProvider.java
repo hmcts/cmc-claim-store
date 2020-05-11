@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
-import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.documents.content.directionsquestionnaire.HearingContentProvider;
@@ -53,8 +52,10 @@ public class FullDefenceResponseContentProvider {
         }
 
         fullDefenceResponse.getPaymentDeclaration()
-            .map(this::createContentFor)
-            .ifPresent(paymentContent -> content.put("paymentDeclaration", paymentContent));
+            .ifPresent(paymentDeclaration -> {
+                content.put("paymentDate", formatDate(paymentDeclaration.getPaidDate()));
+                content.put("paymentMethod", paymentDeclaration.getExplanation());
+            });
 
         fullDefenceResponse.getFreeMediation().ifPresent(mediation ->
             content.put("mediation", mediation.equals(YesNoOption.YES))
@@ -83,13 +84,6 @@ public class FullDefenceResponseContentProvider {
             content.put("hearingContent", hearingContentProvider.mapDirectionQuestionnaire(dq)));
 
         return content;
-    }
-
-    private Map<Object, Object> createContentFor(PaymentDeclaration paymentDeclaration) {
-        return ImmutableMap.builder()
-            .put("paidDate", formatDate(paymentDeclaration.getPaidDate()))
-            .put("explanation", paymentDeclaration.getExplanation())
-            .build();
     }
 
     private EvidenceContent createContentFor(EvidenceRow evidenceRow) {
