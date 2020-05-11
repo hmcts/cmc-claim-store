@@ -69,7 +69,8 @@
     "id": "PaymentId",
     "date_created": "2019-01-01",
     "transactionId": "transactionId",
-    "feeId": "feeId"
+    "feeId": "feeId",
+    "return_url": "http://returnUrl.test"
   },
   "feeAmountInPennies": 4000,
   "reason": "reason",
