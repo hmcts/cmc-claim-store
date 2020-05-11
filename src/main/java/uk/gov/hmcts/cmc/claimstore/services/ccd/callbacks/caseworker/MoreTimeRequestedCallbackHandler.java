@@ -215,13 +215,15 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
     }
 
     private CCDCase addDeadlineToCCDCase(CCDCase ccdCase, LocalDate newDeadline) {
-        CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue().toBuilder()
+        CCDCollectionElement<CCDRespondent> collectionElement = ccdCase.getRespondents().get(0);
+        CCDRespondent respondent = collectionElement.getValue().toBuilder()
             .responseDeadline(newDeadline)
             .responseMoreTimeNeededOption(CCDYesNoOption.YES)
             .build();
         return ccdCase.toBuilder()
             .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
                 .value(respondent)
+                .id(collectionElement.getId())
                 .build()))
             .calculatedResponseDeadline(null)
             .build();
