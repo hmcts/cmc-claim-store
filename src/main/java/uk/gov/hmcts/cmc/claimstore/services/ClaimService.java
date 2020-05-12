@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
+import uk.gov.hmcts.cmc.claimstore.filters.DocumentsFilter;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseRepository;
@@ -103,6 +104,13 @@ public class ClaimService {
         claimAuthorisationRule.assertClaimCanBeAccessed(claim, authorisation);
 
         return claim;
+    }
+
+    public Claim getFilteredClaimByExternalId(String externalId, String authorisation) {
+        User user = userService.getUser(authorisation);
+        return DocumentsFilter.filterDocuments(
+            getClaimByExternalId(externalId, user), user.getUserDetails()
+        );
     }
 
     public Claim getClaimByExternalId(String externalId, String authorisation) {

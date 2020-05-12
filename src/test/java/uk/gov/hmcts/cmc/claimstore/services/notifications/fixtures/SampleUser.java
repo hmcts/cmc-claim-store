@@ -4,7 +4,8 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 
 public class SampleUser {
-
+    private static final String DEFAULT_CLAIMANT_ID = "1";
+    private static final String DEFAULT_DEFENDANT_ID = "4";
     private String authorisation = "Bearer letmein";
     private UserDetails userDetails = SampleUserDetails.getDefault();
 
@@ -28,6 +29,28 @@ public class SampleUser {
 
     public static User getDefault() {
         return SampleUser.builder().build();
+    }
+
+    public static User getDefaultDefendant() {
+        return builder()
+            .withUserDetails(SampleUserDetails.builder().withUserId(DEFAULT_DEFENDANT_ID).withMail("kk@mm.com").build())
+            .build();
+    }
+
+    public static User getDefaultClaimant() {
+        return builder()
+            .withUserDetails(SampleUserDetails.builder().withUserId(DEFAULT_CLAIMANT_ID).withMail("kk@mm.com").build())
+            .build();
+    }
+
+    public static User getDefaultSolicitor() {
+        return builder()
+            .withUserDetails(SampleUserDetails.builder().withUserId(DEFAULT_CLAIMANT_ID)
+                .withMail("solicitor@liar.com")
+                .withRoles("solicitor")
+                .build()
+            )
+            .build();
     }
 
 }
