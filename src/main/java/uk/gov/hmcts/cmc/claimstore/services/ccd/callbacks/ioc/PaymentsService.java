@@ -17,9 +17,9 @@ import uk.gov.hmcts.reform.payments.client.models.FeeDto;
 import uk.gov.hmcts.reform.payments.client.models.PaymentDto;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Optional;
-
-import static java.lang.String.format;
+import java.util.stream.Collectors;
 
 @Service
 @Conditional(FeesAndPaymentsConfiguration.class)
@@ -34,12 +34,10 @@ public class PaymentsService {
     private final String siteId;
     private final String currency;
     private final String description;
-    private final String returnUrlPattern;
 
     public PaymentsService(
         PaymentsClient paymentsClient,
         FeesClient feesClient,
-        @Value("${payments.returnUrlPattern}") String returnUrlPattern,
         @Value("${payments.api.service}") String service,
         @Value("${payments.api.siteId}") String siteId,
         @Value("${payments.api.currency}") String currency,
@@ -47,7 +45,6 @@ public class PaymentsService {
     ) {
         this.paymentsClient = paymentsClient;
         this.feesClient = feesClient;
-        this.returnUrlPattern = returnUrlPattern;
         this.service = service;
         this.siteId = siteId;
         this.currency = currency;
@@ -59,15 +56,16 @@ public class PaymentsService {
         ClaimData claimData
     ) {
 
-        Optional<Payment> optionalPayment = claimData.getPayment();
-        if (!optionalPayment.isPresent()) {
+        Optional<Payment> payment = claimData.getPayment();
+        if (!payment.isPresent()) {
             return Optional.empty();
         }
-        Payment claimPayment = optionalPayment.get();
+
+        Payment claimPayment = payment.get();
         logger.info("Retrieving payment with reference {}", claimPayment.getReference());
 
         PaymentDto paymentDto = paymentsClient.retrievePayment(authorisation, claimPayment.getReference());
-        return Optional.of(from(paymentDto, claimPayment.getNextUrl()));
+        return Optional.of(from(paymentDto, claimPayment));
     }
 
     public Payment createPayment(
@@ -97,16 +95,17 @@ public class PaymentsService {
 
         logger.info("Creating payment in pay hub for claim with external id {}",
             claim.getExternalId());
-        logger.info("Next URL: {}", format(returnUrlPattern, claim.getExternalId()));
+        Payment claimPayment = claim.getClaimData().getPayment().orElseThrow(IllegalStateException::new);
+        logger.info("Return URL: {}", claimPayment.getReturnUrl());
         PaymentDto payment = paymentsClient.createPayment(
             authorisation,
             paymentRequest,
-            format(returnUrlPattern, claim.getExternalId())
+            claimPayment.getReturnUrl()
         );
         logger.info("Created payment for claim with external id {}: {}", claim.getExternalId(), payment);
 
         payment.setAmount(feeOutcome.getFeeAmount());
-        return from(payment, null);
+        return from(payment, claimPayment);
     }
 
     public void cancelPayment(String authorisation, String paymentReference) {
@@ -143,19 +142,32 @@ public class PaymentsService {
             .build();
     }
 
-    private Payment from(PaymentDto paymentDto, String nextUrlCurrent) {
+    private Payment from(PaymentDto paymentDto, Payment claimPayment) {
         String dateCreated = Optional.ofNullable(paymentDto.getDateCreated())
             .map(date -> date.toLocalDate().toString())
-            .orElse(null);
+            .orElse(claimPayment.getDateCreated());
+
         String nextUrl = Optional.ofNullable(paymentDto.getLinks().getNextUrl())
             .map(url -> url.getHref().toString())
-            .orElse(nextUrlCurrent);
+            .orElse(claimPayment.getNextUrl());
+
+        String feeId = null;
+        if (paymentDto.getFees() != null) {
+            feeId = Arrays.stream(paymentDto.getFees())
+                .map(FeeDto::getId)
+                .map(Object::toString)
+                .collect(Collectors.joining(", "));
+        }
+
         return Payment.builder()
             .amount(paymentDto.getAmount())
             .reference(paymentDto.getReference())
             .status(PaymentStatus.fromValue(paymentDto.getStatus()))
             .dateCreated(dateCreated)
             .nextUrl(nextUrl)
+            .returnUrl(claimPayment.getReturnUrl())
+            .transactionId(paymentDto.getExternalReference())
+            .feeId(feeId)
             .build();
     }
 }

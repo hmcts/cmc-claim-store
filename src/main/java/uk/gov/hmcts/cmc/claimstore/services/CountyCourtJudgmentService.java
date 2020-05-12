@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.documents.CCJByAdmissionOrDeterminationPdfService;
+import uk.gov.hmcts.cmc.claimstore.documents.ClaimantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -24,6 +25,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUE
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED_AFTER_SETTLEMENT_BREACH;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED_BY_ADMISSION;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.REDETERMINATION_REQUESTED;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForReferToJudgeFileBaseName;
 import static uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType.ADMISSIONS;
 import static uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType.DETERMINATION;
 
@@ -40,6 +42,7 @@ public class CountyCourtJudgmentService {
     private final CCJByAdmissionOrDeterminationPdfService ccjByAdmissionOrDeterminationPdfService;
     private final DocumentsService documentService;
     private final boolean ctscEnabled;
+    private final ClaimantResponseReceiptService claimantResponseReceiptService;
 
     @Autowired
     public CountyCourtJudgmentService(
@@ -52,7 +55,9 @@ public class CountyCourtJudgmentService {
         CaseRepository caseRepository,
         CCJByAdmissionOrDeterminationPdfService ccjByAdmissionOrDeterminationPdfService,
         DocumentsService documentService,
-        @Value("${feature_toggles.ctsc_enabled}") boolean ctscEnabled
+        @Value("${feature_toggles.ctsc_enabled}") boolean ctscEnabled,
+        ClaimantResponseReceiptService claimantResponseReceiptService
+
     ) {
         this.claimService = claimService;
         this.authorisationService = authorisationService;
@@ -64,6 +69,8 @@ public class CountyCourtJudgmentService {
         this.ccjByAdmissionOrDeterminationPdfService = ccjByAdmissionOrDeterminationPdfService;
         this.documentService = documentService;
         this.ctscEnabled = ctscEnabled;
+        this.claimantResponseReceiptService = claimantResponseReceiptService;
+
     }
 
     public Claim save(
@@ -125,8 +132,11 @@ public class CountyCourtJudgmentService {
 
         Claim claimWithReDetermination = claimService.getClaimByExternalId(externalId, authorisation);
 
+        Claim claimWithReDeterminationDoc = uploadRedeterminationDocumentToDocumentStore(claimWithReDetermination,
+            redetermination, authorisation);
+
         eventProducer.createRedeterminationEvent(
-            claimWithReDetermination,
+            claimWithReDeterminationDoc,
             authorisation,
             userDetails.getFullName(),
             redetermination.getPartyType()
@@ -134,7 +144,7 @@ public class CountyCourtJudgmentService {
 
         appInsights.trackEvent(REDETERMINATION_REQUESTED, AppInsights.REFERENCE_NUMBER, claim.getReferenceNumber());
 
-        return claimWithReDetermination;
+        return claimWithReDeterminationDoc;
 
     }
 
@@ -146,6 +156,20 @@ public class CountyCourtJudgmentService {
         if (ctscEnabled && (countyCourtJudgment.getCcjType() == ADMISSIONS
             || countyCourtJudgment.getCcjType() == DETERMINATION)) {
             PDF document = ccjByAdmissionOrDeterminationPdfService.createPdf(claim);
+            updateClaim = documentService.uploadToDocumentManagement(document, authorisation, claim);
+        }
+        return updateClaim;
+    }
+
+    private Claim uploadRedeterminationDocumentToDocumentStore(
+        Claim claim,
+        ReDetermination reDetermination,
+        String authorisation) {
+        Claim updateClaim = claim;
+        if (ctscEnabled) {
+            String partyType = reDetermination.getPartyType().name().toLowerCase();
+            PDF document = claimantResponseReceiptService.createPdf(claim,
+                buildRequestForReferToJudgeFileBaseName(claim.getReferenceNumber(), partyType));
             updateClaim = documentService.uploadToDocumentManagement(document, authorisation, claim);
         }
         return updateClaim;

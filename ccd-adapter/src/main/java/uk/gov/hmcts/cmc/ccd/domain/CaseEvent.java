@@ -33,6 +33,7 @@ public enum CaseEvent {
     OFFER_COUNTER_SIGNED_BY_DEFENDANT("OfferCounterSignedByDefendant"),
     AGREEMENT_SIGNED_BY_CLAIMANT("AgreementSignedByClaimant"),
     AGREEMENT_COUNTER_SIGNED_BY_DEFENDANT("AgreementCounterSignedByDefendant"),
+    AGREEMENT_SIGNED_BY_BOTH("AgreementSignedByBoth"),
     AGREEMENT_REJECTED_BY_DEFENDANT("AgreementRejectedByDefendant"),
     SETTLEMENT_AGREEMENT_UPLOAD("SettlementAgreementUpload"),
     REVIEW_ORDER_UPLOAD("ReviewOrderUpload"),
@@ -58,6 +59,7 @@ public enum CaseEvent {
     ORDER_REVIEW_REQUESTED("OrderReviewRequested"),
     WAITING_TRANSFER("WaitingTransfer"),
     LIFT_STAY("LiftStay"),
+    REFER_TO_JUDGE("ReferToJudge"),
     //inversion of control
     INITIATE_CLAIM_PAYMENT_CITIZEN("InitiateClaimPaymentCitizen"),
     RESUME_CLAIM_PAYMENT_CITIZEN("ResumeClaimPaymentCitizen"),
@@ -73,7 +75,12 @@ public enum CaseEvent {
     UPDATE_CLAIM("UpdateClaim"),
     RESET_PIN("ResetPin"),
     ISSUE_GENERAL_LETTER("IssueGeneralLetter"),
-    CCJ_REQUEST_UPLOAD("CCJRequestUpload");
+    PROVIDE_DIRECTIONS("ProvideDirections"),
+    MANAGE_DOCUMENTS("ManageDocuments"),
+    CLAIMANT_RESPONSE_RECEIPT_UPLOAD("ClaimantResponseReceiptUpload"),
+    REVIEW_JUDGE_COMMENTS("ReviewJudgeComments"),
+    CCJ_REQUEST_UPLOAD("CCJRequestUpload"),
+    CHANGE_CONTACT_DETAILS("ChangeContactDetails");
 
     private final String value;
 
