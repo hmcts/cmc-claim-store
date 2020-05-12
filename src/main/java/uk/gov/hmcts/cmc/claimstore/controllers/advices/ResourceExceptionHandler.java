@@ -24,6 +24,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantLinkException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentDownloadForbiddenException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.InvalidApplicationException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
@@ -82,6 +83,14 @@ public class ResourceExceptionHandler {
         return ResponseEntity
             .status(HttpStatus.FORBIDDEN)
             .body(new ExceptionForClient(HttpStatus.FORBIDDEN.value(), exception.getMessage()));
+    }
+
+    @ExceptionHandler(value = DocumentDownloadForbiddenException.class)
+    public ResponseEntity<Object> forbiddenDocumentDownload(DocumentDownloadForbiddenException exception) {
+        logger.error(exception);
+        return ResponseEntity
+            .status(HttpStatus.FORBIDDEN)
+            .build();
     }
 
     @ExceptionHandler(value = {
