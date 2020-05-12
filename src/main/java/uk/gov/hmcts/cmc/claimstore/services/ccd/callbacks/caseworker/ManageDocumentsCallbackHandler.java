@@ -80,7 +80,8 @@ public class ManageDocumentsCallbackHandler extends CallbackHandler {
             errors.add(PAPER_RESPONSE_ERROR_MESSAGE);
         }
 
-        if (request.getCaseDetails().equals(request.getCaseDetailsBefore())) {
+        if (isStaffDocumentsUnmodified(ccdCase.getStaffUploadedDocuments(),
+            ccdCaseBefore.getStaffUploadedDocuments())) {
             errors.add(NO_CHANGES_ERROR_MESSAGE);
         }
 
@@ -92,6 +93,17 @@ public class ManageDocumentsCallbackHandler extends CallbackHandler {
         }
 
         return builder.build();
+    }
+
+    private boolean isStaffDocumentsUnmodified(List<CCDCollectionElement<CCDClaimDocument>> staffUploadedDocuments,
+                                               List<CCDCollectionElement<CCDClaimDocument>> staffUploadedDocumentsBefore
+    ) {
+
+        return (staffUploadedDocuments == null && staffUploadedDocumentsBefore == null)
+            || (staffUploadedDocuments == null && staffUploadedDocumentsBefore.isEmpty())
+            || (staffUploadedDocumentsBefore == null && staffUploadedDocuments.isEmpty())
+            || (staffUploadedDocuments != null && staffUploadedDocuments.equals(staffUploadedDocumentsBefore));
+
     }
 
     private boolean paperResponseSelected(CCDCase ccdCase, CCDCase ccdCaseBefore) {
