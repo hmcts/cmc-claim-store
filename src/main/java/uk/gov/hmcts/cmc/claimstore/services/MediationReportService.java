@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -32,6 +33,7 @@ public class MediationReportService {
 
     private final String emailToAddress;
     private final String emailFromAddress;
+    private final Clock clock;
 
     @Autowired
     public MediationReportService(
@@ -39,6 +41,7 @@ public class MediationReportService {
         CaseSearchApi caseSearchApi,
         UserService userService,
         AppInsights appInsights,
+        Clock clock,
         @Value("${milo.recipient}") String emailToAddress,
         @Value("${milo.sender}") String emailFromAddress
     ) {
@@ -46,6 +49,7 @@ public class MediationReportService {
         this.caseSearchApi = caseSearchApi;
         this.userService = userService;
         this.appInsights = appInsights;
+        this.clock = clock;
         this.emailToAddress = emailToAddress;
         this.emailFromAddress = emailFromAddress;
     }
@@ -70,7 +74,7 @@ public class MediationReportService {
     public void automatedMediationReport() throws Exception {
         sendMediationReport(
             userService.authenticateAnonymousCaseWorker().getAuthorisation(),
-            LocalDate.now().minusDays(1)
+            LocalDate.now(clock).minusDays(1)
         );
     }
 

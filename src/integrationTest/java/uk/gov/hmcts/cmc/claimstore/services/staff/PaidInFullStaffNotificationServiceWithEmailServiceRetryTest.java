@@ -79,7 +79,7 @@ public class PaidInFullStaffNotificationServiceWithEmailServiceRetryTest extends
         verify(javaMailSender, atLeast(3)).createMimeMessage();
         verify(telemetry).trackEvent(
             eq("Notification - failure"),
-            eq(singletonMap("EmailSubject", "Paid in Full 000CM001: John Rambo v Dr. John Smith")),
+            eq(singletonMap("EmailSubject", "Paid in Full 000MC001: John Rambo v Dr. John Smith")),
             eq(null)
         );
     }

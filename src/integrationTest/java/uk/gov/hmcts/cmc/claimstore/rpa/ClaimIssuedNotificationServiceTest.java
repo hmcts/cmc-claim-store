@@ -93,7 +93,7 @@ public class ClaimIssuedNotificationServiceTest extends BaseMockSpringTest {
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
-        assertThat(emailDataArgument.getValue().getSubject()).isEqualToIgnoringNewLines("J new claim 000CM001");
+        assertThat(emailDataArgument.getValue().getSubject()).isEqualToIgnoringNewLines("J new claim 000MC001");
         assertThat(emailDataArgument.getValue().getMessage()).isEqualToIgnoringNewLines("Please find attached claim.");
     }
 

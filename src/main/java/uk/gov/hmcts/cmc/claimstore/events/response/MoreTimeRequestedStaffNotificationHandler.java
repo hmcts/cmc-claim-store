@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.events.response;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
@@ -22,27 +23,32 @@ public class MoreTimeRequestedStaffNotificationHandler {
     private final MoreTimeRequestedNotificationService notificationService;
     private final NotificationsProperties notificationsProperties;
     private final StaffEmailProperties staffEmailProperties;
+    private final boolean staffEmailsEnabled;
 
     @Autowired
     public MoreTimeRequestedStaffNotificationHandler(
         MoreTimeRequestedNotificationService notificationService,
         NotificationsProperties notificationsProperties,
-        StaffEmailProperties staffEmailProperties
+        StaffEmailProperties staffEmailProperties,
+        @Value("${feature_toggles.staff_emails_enabled}") boolean staffEmailsEnabled
     ) {
 
         this.notificationService = notificationService;
         this.notificationsProperties = notificationsProperties;
         this.staffEmailProperties = staffEmailProperties;
+        this.staffEmailsEnabled = staffEmailsEnabled;
     }
 
     @EventListener
     public void sendNotifications(MoreTimeRequestedEvent event) {
-        notificationService.sendMail(
-            staffEmailProperties.getRecipient(),
-            notificationsProperties.getTemplates().getEmail().getStaffMoreTimeRequested(),
-            prepareNotificationParameters(event),
-            String.format(REFERENCE_TEMPLATE, "staff", event.getClaim().getReferenceNumber())
-        );
+        if (staffEmailsEnabled) {
+            notificationService.sendMail(
+                staffEmailProperties.getRecipient(),
+                notificationsProperties.getTemplates().getEmail().getStaffMoreTimeRequested(),
+                prepareNotificationParameters(event),
+                String.format(REFERENCE_TEMPLATE, "staff", event.getClaim().getReferenceNumber())
+            );
+        }
     }
 
     private Map<String, String> prepareNotificationParameters(MoreTimeRequestedEvent event) {

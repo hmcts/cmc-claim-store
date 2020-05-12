@@ -5,7 +5,7 @@ import lombok.Getter;
 
 import java.time.LocalDate;
 
-@Builder
+@Builder(toBuilder = true)
 @Getter
 public class CCDParty {
     private String partyId;

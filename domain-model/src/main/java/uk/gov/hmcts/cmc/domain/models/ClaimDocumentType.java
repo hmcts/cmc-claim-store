@@ -9,8 +9,8 @@ public enum ClaimDocumentType {
     SEALED_CLAIM("legalSealedClaim", "sealedClaim"),
     CLAIM_ISSUE_RECEIPT("claimIssueReceipt"),
     DEFENDANT_RESPONSE_RECEIPT("defendantResponseReceipt"),
-    CLAIMANT_RESPONSE_RECEIPT,
-    CCJ_REQUEST,
+    CCJ_REQUEST("ccjRequest"),
+    CLAIMANT_RESPONSE_RECEIPT("claimantResponseReceipt"),
     SETTLEMENT_AGREEMENT("settlementAgreement"),
     DEFENDANT_PIN_LETTER,
     CLAIMANT_DIRECTIONS_QUESTIONNAIRE("claimantHearingRequirement"),
@@ -21,7 +21,11 @@ public enum ClaimDocumentType {
     PAPER_RESPONSE_PART_ADMIT,
     PAPER_RESPONSE_STATES_PAID,
     PAPER_RESPONSE_MORE_TIME,
-    PAPER_RESPONSE_DISPUTES_ALL;
+    PAPER_RESPONSE_DISPUTES_ALL,
+    PAPER_RESPONSE_COUNTER_CLAIM,
+    GENERAL_LETTER,
+    OTHER,
+    CORRESPONDENCE;
 
     private final List<String> values;
 

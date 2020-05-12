@@ -254,4 +254,26 @@ public class NotificationReferenceBuilder {
             return reference("offlineDQ-%s-mediation-unsuccessful-%s", party, claimReferenceNumber);
         }
     }
+
+    public static class PaperResponse {
+        private PaperResponse() {
+            // do not instantiate
+        }
+
+        public static String notifyClaimantPaperResponseSubmitted(String claimReferenceNumber, String party) {
+            return reference("paper-response-submitted-%s-%s", party, claimReferenceNumber);
+        }
+    }
+
+    public static class ContactDetailsChanged {
+        public static final String TEMPLATE = "to-%s-contact-details-changed-%s";
+
+        private ContactDetailsChanged() {
+            // do not instantiate
+        }
+
+        public static String referenceForContactChanges(String claimReferenceNumber, String otherParty) {
+            return reference(TEMPLATE, otherParty.toLowerCase(), claimReferenceNumber);
+        }
+    }
 }

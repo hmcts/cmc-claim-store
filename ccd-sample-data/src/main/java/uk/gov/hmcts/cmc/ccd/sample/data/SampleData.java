@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestDateType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestEndDateType;
@@ -262,6 +263,17 @@ public class SampleData {
             .build();
     }
 
+    public static CCDParty getCCDPartyWithEmail(String email) {
+        return CCDParty.builder()
+            .type(INDIVIDUAL)
+            .primaryAddress(getCCDAddress())
+            .dateOfBirth(LocalDate.of(1950, 1, 1))
+            .correspondenceAddress(getCCDAddress())
+            .telephoneNumber(withDefaultPhoneNumber())
+            .emailAddress(email)
+            .build();
+    }
+
     public static CCDRespondent getCCDRespondentIndividual() {
         CCDAddress ccdAddress = getCCDAddress();
         return CCDRespondent.builder()
@@ -378,6 +390,11 @@ public class SampleData {
                     .type(INDIVIDUAL)
                     .primaryAddress(ccdAddress)
                     .dateOfBirth(LocalDate.of(1950, 1, 1))
+                    .correspondenceAddress(ccdAddress)
+                    .build())
+            .partyDetail(
+                CCDParty.builder()
+                    .primaryAddress(ccdAddress)
                     .correspondenceAddress(ccdAddress)
                     .build())
             .claimantProvidedPartyName("Individual")
@@ -543,6 +560,18 @@ public class SampleData {
             .applicants(applicants)
             .respondents(respondents)
             .state(OPEN.getValue())
+            .build();
+    }
+    
+    public static CCDCase addContactChangePartyClaimant(CCDCase ccdCase) {
+        return ccdCase.toBuilder()
+            .contactChangeParty(CCDContactPartyType.CLAIMANT)
+            .build();
+    }
+
+    public static CCDCase addContactChangePartyDefendant(CCDCase ccdCase) {
+        return ccdCase.toBuilder()
+            .contactChangeParty(CCDContactPartyType.DEFENDANT)
             .build();
     }
 
@@ -766,14 +795,14 @@ public class SampleData {
             .build();
     }
 
-    public static CCDCase withPaperResponseFromStaffUploadedDoc() {
+    public static CCDCase withStaffUploadedDoc(CCDClaimDocumentType ccdClaimDocumentType) {
         List<CCDCollectionElement<CCDApplicant>> applicants
             = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
 
         return ccdBuilderWithDefault()
             .amountBreakDown(getAmountBreakDown())
             .applicants(applicants)
-            .staffUploadedDocuments(SampleStaffUploadedDoc.staffUploadedDocs)
+            .staffUploadedDocuments(SampleStaffUploadedDoc.getCCDClaimDocuments(ccdClaimDocumentType))
             .state(OPEN.getValue())
             .build();
     }

@@ -52,9 +52,9 @@ public class MediationCSVGeneratorTest {
         mediationClaims.add(getWithClaimantResponseRejectionForPartAdmissionAndMediation());
 
         String expected = REPORT_HEADER
-            + "5,1,4,5,000CM001,40.99,1,John Rambo,Mediation Contact Person,07999999999,claimant@mail.com,Yes"
+            + "5,1,4,5,000MC001,40.99,1,John Rambo,Mediation Contact Person,07999999999,claimant@mail.com,Yes"
             + CRLF
-            + "5,1,4,5,000CM001,40.99,2,Dr. John Smith,Mediation Contact Person,07999999999,j.smith@example.com,Yes"
+            + "5,1,4,5,000MC001,40.99,2,Dr. John Smith,Mediation Contact Person,07999999999,j.smith@example.com,Yes"
             + CRLF;
         mediationCSVGenerator.createMediationCSV();
         String mediationCSV = mediationCSVGenerator.getCsvData();
@@ -70,13 +70,13 @@ public class MediationCSVGeneratorTest {
         mediationClaims.add(claimWithAmountMoreThan300);
 
         String expected = REPORT_HEADER
-            + "5,1,4,5,000CM001,40.99,1,John Rambo,Mediation Contact Person,07999999999,claimant@mail.com,Yes"
+            + "5,1,4,5,000MC001,40.99,1,John Rambo,Mediation Contact Person,07999999999,claimant@mail.com,Yes"
             + CRLF
-            + "5,1,4,5,000CM001,40.99,2,Dr. John Smith,Mediation Contact Person,07999999999,j.smith@example.com,Yes"
+            + "5,1,4,5,000MC001,40.99,2,Dr. John Smith,Mediation Contact Person,07999999999,j.smith@example.com,Yes"
             + CRLF
-            + "5,1,4,5,000CM001,1000.99,1,John Rambo,Mediation Contact Person,07999999999,claimant@mail.com,No"
+            + "5,1,4,5,000MC001,1000.99,1,John Rambo,Mediation Contact Person,07999999999,claimant@mail.com,No"
             + CRLF
-            + "5,1,4,5,000CM001,1000.99,2,Dr. John Smith,Mediation Contact Person,07999999999,j.smith@example.com,No"
+            + "5,1,4,5,000MC001,1000.99,2,Dr. John Smith,Mediation Contact Person,07999999999,j.smith@example.com,No"
             + CRLF;
         mediationCSVGenerator.createMediationCSV();
         String mediationCSV = mediationCSVGenerator.getCsvData();

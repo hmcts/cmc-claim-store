@@ -81,7 +81,7 @@ import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.RESPONSE_DEADLINE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClaimServiceTest {
-    private static final String RETURN_URL = "http://returnUrl.test/%s/bla";
+    private static final String RETURN_URL = "http://returnUrl.test";
 
     private static final ClaimData VALID_APP = SampleClaimData.submittedByClaimant();
     private static final ClaimData VALID_LEGAL_APP = SampleClaimData.submittedByLegalRepresentative();
@@ -134,8 +134,7 @@ public class ClaimServiceTest {
             appInsights,
             new PaidInFullRule(),
             new ClaimAuthorisationRule(userService),
-            new ReviewOrderRule(),
-            RETURN_URL);
+            new ReviewOrderRule());
     }
 
     @Test
@@ -193,8 +192,7 @@ public class ClaimServiceTest {
             appInsights,
             new PaidInFullRule(),
             new ClaimAuthorisationRule(userService),
-            new ReviewOrderRule(),
-            RETURN_URL);
+            new ReviewOrderRule());
 
         ClaimData claimData = SampleClaimData.validDefaults();
 
