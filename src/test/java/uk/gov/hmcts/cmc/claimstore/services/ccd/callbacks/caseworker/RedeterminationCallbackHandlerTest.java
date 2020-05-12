@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,9 +18,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.util.Collections;
+import java.util.HashMap;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFER_TO_JUDGE_BY_CLAIMANT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFER_TO_JUDGE_BY_DEFENDANT;
@@ -64,15 +63,10 @@ class RedeterminationCallbackHandlerTest {
             handler = new RedeterminationCallbackHandler(caseDetailsConverter, false);
 
             String state = ClaimState.OPEN.getValue();
-            when(caseDetailsConverter.convertToMap(ccdCase)).thenReturn(ImmutableMap.of("state", state));
+            when(caseDetailsConverter.convertToMap(ccdCase)).thenReturn(new HashMap());
 
             AboutToStartOrSubmitCallbackResponse response =
                 (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
-
-            CCDCase updatedCcdCase = CCDCase.builder()
-                .state(state)
-                .build();
-            verify(caseDetailsConverter).convertToMap(updatedCcdCase);
 
             Assertions.assertEquals(state, response.getData().get("state"));
         }
@@ -83,15 +77,10 @@ class RedeterminationCallbackHandlerTest {
             handler = new RedeterminationCallbackHandler(caseDetailsConverter, true);
 
             String state = ClaimState.REDETERMINATION_REQUESTED.getValue();
-            when(caseDetailsConverter.convertToMap(ccdCase)).thenReturn(ImmutableMap.of("state", state));
+            when(caseDetailsConverter.convertToMap(ccdCase)).thenReturn(new HashMap());
 
             AboutToStartOrSubmitCallbackResponse response =
                 (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
-
-            CCDCase updatedCcdCase = CCDCase.builder()
-                .state(state)
-                .build();
-            verify(caseDetailsConverter).convertToMap(updatedCcdCase);
 
             Assertions.assertEquals(state, response.getData().get("state"));
         }
@@ -123,15 +112,10 @@ class RedeterminationCallbackHandlerTest {
             handler = new RedeterminationCallbackHandler(caseDetailsConverter, false);
 
             String state = ClaimState.OPEN.getValue();
-            when(caseDetailsConverter.convertToMap(ccdCase)).thenReturn(ImmutableMap.of("state", state));
+            when(caseDetailsConverter.convertToMap(ccdCase)).thenReturn(new HashMap());
 
             AboutToStartOrSubmitCallbackResponse response =
                 (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
-
-            CCDCase updatedCcdCase = CCDCase.builder()
-                .state(state)
-                .build();
-            verify(caseDetailsConverter).convertToMap(updatedCcdCase);
 
             Assertions.assertEquals(state, response.getData().get("state"));
         }
@@ -142,15 +126,10 @@ class RedeterminationCallbackHandlerTest {
             handler = new RedeterminationCallbackHandler(caseDetailsConverter, true);
 
             String state = ClaimState.REDETERMINATION_REQUESTED.getValue();
-            when(caseDetailsConverter.convertToMap(ccdCase)).thenReturn(ImmutableMap.of("state", state));
+            when(caseDetailsConverter.convertToMap(ccdCase)).thenReturn(new HashMap());
 
             AboutToStartOrSubmitCallbackResponse response =
                 (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
-
-            CCDCase updatedCcdCase = CCDCase.builder()
-                .state(state)
-                .build();
-            verify(caseDetailsConverter).convertToMap(updatedCcdCase);
 
             Assertions.assertEquals(state, response.getData().get("state"));
         }
