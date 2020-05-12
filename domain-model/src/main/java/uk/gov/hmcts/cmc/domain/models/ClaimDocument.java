@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -7,6 +8,7 @@ import java.net.URI;
 import java.time.LocalDateTime;
 
 @Getter
+@JsonIgnoreProperties(value = {"documentManagementUrl", "documentManagementBinaryUrl"})
 public class ClaimDocument extends CollectionId {
     private final URI documentManagementUrl;
     private final URI documentManagementBinaryUrl;
