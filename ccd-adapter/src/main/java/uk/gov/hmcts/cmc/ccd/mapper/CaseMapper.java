@@ -65,7 +65,7 @@ public class CaseMapper {
 
         claim.getDateReferredForDirections().ifPresent(builder::dateReferredForDirections);
         claim.getPreferredDQCourt().ifPresent(builder::preferredDQCourt);
-        claim.getProceedOnPaperReason()
+        claim.getProceedOfflineReason()
             .map(ProceedOnPaperRequestType::name)
             .map(CCDProceedOnPaperRequestType::valueOf)
             .ifPresent(builder::proceedOnPaperReason);
@@ -88,7 +88,7 @@ public class CaseMapper {
             .claimSubmissionOperationIndicators(
                 mapClaimSubmissionOperationIndicatorsToCCD.apply(claim.getClaimSubmissionOperationIndicators()))
             .intentionToProceedDeadline(claim.getIntentionToProceedDeadline())
-            .paperProceedOtherReason(claim.getPaperProceedOtherReason())
+            .proceedOnPaperOtherReason(claim.getProceedOfflineOtherReason())
             .build();
     }
 
@@ -116,13 +116,13 @@ public class CaseMapper {
             .reviewOrder(reviewOrderMapper.from(ccdCase.getReviewOrder()))
             .dateReferredForDirections(ccdCase.getDateReferredForDirections())
             .paperResponse(MapperUtil.hasPaperResponse.apply(ccdCase))
-            .paperProceedOtherReason(ccdCase.getPaperProceedOtherReason())
+            .proceedOfflineOtherReason(ccdCase.getProceedOnPaperOtherReason())
             .mediationOutcome(getMediationOutcome(ccdCase));
 
         Optional.ofNullable(ccdCase.getProceedOnPaperReason())
             .map(CCDProceedOnPaperRequestType::name)
             .map(ProceedOnPaperRequestType::valueOf)
-            .ifPresent(builder::proceedOnPaperReason);
+            .ifPresent(builder::proceedOfflineReason);
 
         if (ccdCase.getFeatures() != null) {
             builder.features(Arrays.asList(ccdCase.getFeatures().split(",")));

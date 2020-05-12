@@ -78,8 +78,8 @@ public class Claim {
     private final YesNoOption paperResponse;
     private final LocalDateTime dateReferredForDirections;
     private final String preferredDQCourt;
-    private final ProceedOnPaperRequestType proceedOnPaperReason;
-    private final String paperProceedOtherReason;
+    private final ProceedOnPaperRequestType proceedOfflineReason;
+    private final String proceedOfflineOtherReason;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -126,8 +126,8 @@ public class Claim {
         YesNoOption paperResponse,
         LocalDateTime dateReferredForDirections,
         String preferredDQCourt,
-        ProceedOnPaperRequestType proceedOnPaperReason,
-        String paperProceedOtherReason
+        ProceedOnPaperRequestType proceedOfflineReason,
+        String proceedOfflineOtherReason
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -171,8 +171,8 @@ public class Claim {
         this.paperResponse = paperResponse;
         this.dateReferredForDirections = dateReferredForDirections;
         this.preferredDQCourt = preferredDQCourt;
-        this.proceedOnPaperReason = proceedOnPaperReason;
-        this.paperProceedOtherReason = paperProceedOtherReason;
+        this.proceedOfflineReason = proceedOfflineReason;
+        this.proceedOfflineOtherReason = proceedOfflineOtherReason;
     }
 
     public Optional<Response> getResponse() {
@@ -284,8 +284,8 @@ public class Claim {
         return Optional.ofNullable(preferredDQCourt);
     }
 
-    public Optional<ProceedOnPaperRequestType> getProceedOnPaperReason() {
-        return Optional.ofNullable(proceedOnPaperReason);
+    public Optional<ProceedOnPaperRequestType> getProceedOfflineReason() {
+        return Optional.ofNullable(proceedOfflineReason);
     }
 
     @Override

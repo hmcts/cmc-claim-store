@@ -208,26 +208,26 @@ public class CaseMapperTest {
         String otherReason = "Judge want it to be moved";
         CCDCase ccdCase = SampleData.getCCDLegalCase().toBuilder()
             .proceedOnPaperReason(CCDProceedOnPaperRequestType.OTHER)
-            .paperProceedOtherReason(otherReason)
+            .proceedOnPaperOtherReason(otherReason)
             .build();
 
         Claim claim = ccdCaseMapper.from(ccdCase);
 
-        assertEquals(ccdCase.getProceedOnPaperReason().name(), claim.getProceedOnPaperReason().get().name());
-        assertEquals(ccdCase.getPaperProceedOtherReason(), claim.getPaperProceedOtherReason());
+        assertEquals(ccdCase.getProceedOnPaperReason().name(), claim.getProceedOfflineReason().get().name());
+        assertEquals(ccdCase.getProceedOnPaperOtherReason(), claim.getProceedOfflineOtherReason());
     }
 
     @Test
     public void shouldMapProceedOnPaperDetails() {
         String otherReason = "Judge want it to be moved";
         Claim claim = SampleClaim.getDefault().toBuilder()
-            .proceedOnPaperReason(ProceedOnPaperRequestType.APPLICATION_BY_CLAIMANT)
-            .paperProceedOtherReason(otherReason)
+            .proceedOfflineReason(ProceedOnPaperRequestType.APPLICATION_BY_CLAIMANT)
+            .proceedOfflineOtherReason(otherReason)
             .build();
 
         CCDCase ccdCase = ccdCaseMapper.to(claim);
 
-        assertEquals(claim.getProceedOnPaperReason().get().name(), ccdCase.getProceedOnPaperReason().name());
-        assertEquals(claim.getPaperProceedOtherReason(), ccdCase.getPaperProceedOtherReason());
+        assertEquals(claim.getProceedOfflineReason().get().name(), ccdCase.getProceedOnPaperReason().name());
+        assertEquals(claim.getProceedOfflineOtherReason(), ccdCase.getProceedOnPaperOtherReason());
     }
 }

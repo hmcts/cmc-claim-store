@@ -142,5 +142,5 @@ public class CCDCase {
     private CCDContactPartyType contactChangeParty;
     private CCDContactChangeContent contactChangeContent;
     private CCDProceedOnPaperRequestType proceedOnPaperReason;
-    private String paperProceedOtherReason;
+    private String proceedOnPaperOtherReason;
 }
