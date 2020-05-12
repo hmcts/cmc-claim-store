@@ -28,6 +28,7 @@ public class CalendarTest extends BaseMockSpringTest {
         assertThat(obj.getDate()).isEqualTo(toDate("2019-06-26"));
     }
 
+
     @Test
     public void shouldReturnBadRequestWhenDateIsMalformed() throws Exception {
         makeRequest("2019-10-100000").andExpect(status().isBadRequest());
