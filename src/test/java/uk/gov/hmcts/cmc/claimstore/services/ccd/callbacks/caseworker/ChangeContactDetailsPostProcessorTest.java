@@ -19,7 +19,6 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -27,7 +26,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 
 import java.util.Collections;
 import java.util.Map;
@@ -47,6 +45,7 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_ID
 public class ChangeContactDetailsPostProcessorTest {
     private static final String AUTHORISATION_TOKEN = "Bearer let me in";
     private static final String DOC_URL = "http://success.test";
+    private static final String DOC_NAME = "documentName";
 
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
@@ -59,27 +58,20 @@ public class ChangeContactDetailsPostProcessorTest {
     @Mock
     private CaseDetails caseDetails;
     @Mock
-    private LetterGeneratorService letterGeneratorService;
-    @Mock
-    private GeneralLetterService generalLetterService;
-    @Mock
-    private DocAssemblyResponse docAssemblyResponse;
-
+    private ChangeContactLetterService changeContactLetterService;
     private ChangeContactDetailsPostProcessor changeContactDetailsPostProcessor;
-
     private CallbackRequest callbackRequest;
-
     private CallbackParams callbackParams;
 
     @BeforeEach
     void setUp() {
         changeContactDetailsPostProcessor = new ChangeContactDetailsPostProcessor(
             caseDetailsConverter,
-            letterGeneratorService,
+            changeContactLetterService,
             changeContactDetailsNotificationService,
             new LetterContentBuilder(),
-            userService,
-            generalLetterService);
+            userService
+        );
     }
 
     @Test
@@ -111,9 +103,8 @@ public class ChangeContactDetailsPostProcessorTest {
 
         given(userService.getUserDetails(anyString())).willReturn(SampleUserDetails.getDefault());
 
-        given(letterGeneratorService.createGeneralLetter(any(CCDCase.class), anyString()))
-            .willReturn(docAssemblyResponse);
-        given(docAssemblyResponse.getRenditionOutputLocation()).willReturn(DOC_URL);
+        given(changeContactLetterService.createGeneralLetter(any(CCDCase.class), anyString()))
+            .willReturn(DOC_URL);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse
             = (AboutToStartOrSubmitCallbackResponse) changeContactDetailsPostProcessor
@@ -137,12 +128,17 @@ public class ChangeContactDetailsPostProcessorTest {
 
     @Test
     public void shouldPrintAndUpdateCaseDocumentsIfDefendantNotLinked() {
+        CCDDocument draftLetterDoc = CCDDocument.builder().documentUrl(DOC_URL).documentFileName(DOC_NAME).build();
         CCDCase ccdCase = SampleData.getCCDCitizenCaseWithRespondent(CCDRespondent.builder().defendantId(null)
             .build()).toBuilder()
             .contactChangeParty(CCDContactPartyType.CLAIMANT)
+            .draftLetterDoc(draftLetterDoc)
             .build();
 
+        Claim claim = SampleClaim.getCitizenClaim().toBuilder().build();
+
         when(caseDetailsConverter.extractCCDCase(caseDetails)).thenReturn(ccdCase);
+        when(caseDetailsConverter.extractClaim(caseDetails)).thenReturn(claim);
 
         callbackRequest = CallbackRequest
             .builder()
@@ -154,8 +150,9 @@ public class ChangeContactDetailsPostProcessorTest {
             .params(ImmutableMap.of(BEARER_TOKEN, AUTHORISATION_TOKEN))
             .build();
 
-        changeContactDetailsPostProcessor.notifyPartiesViaEmailOrLetter(callbackParams);
-        verify(generalLetterService).printAndUpdateCaseDocuments(eq(caseDetails), eq(AUTHORISATION_TOKEN));
+        changeContactDetailsPostProcessor.performPostProcesses(callbackParams);
+
+        verify(changeContactLetterService).publishLetter(eq(ccdCase), eq(claim), eq(AUTHORISATION_TOKEN));
     }
 
     @Test
@@ -180,7 +177,7 @@ public class ChangeContactDetailsPostProcessorTest {
             .params(ImmutableMap.of(BEARER_TOKEN, AUTHORISATION_TOKEN))
             .build();
 
-        changeContactDetailsPostProcessor.notifyPartiesViaEmailOrLetter(callbackParams);
+        changeContactDetailsPostProcessor.performPostProcesses(callbackParams);
         verify(changeContactDetailsNotificationService).sendEmailToRightRecipient(eq(ccdCase), eq(claim));
     }
 
@@ -205,7 +202,7 @@ public class ChangeContactDetailsPostProcessorTest {
             .params(ImmutableMap.of(BEARER_TOKEN, AUTHORISATION_TOKEN))
             .build();
 
-        changeContactDetailsPostProcessor.notifyPartiesViaEmailOrLetter(callbackParams);
+        changeContactDetailsPostProcessor.performPostProcesses(callbackParams);
         verify(changeContactDetailsNotificationService).sendEmailToRightRecipient(eq(ccdCase), eq(claim));
     }
 
