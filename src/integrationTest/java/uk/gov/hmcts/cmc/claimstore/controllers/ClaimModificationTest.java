@@ -81,7 +81,6 @@ public class ClaimModificationTest extends BaseMockSpringTest {
     private static final UserDetails LEGAL_REP_DETAILS = SampleUserDetails.builder()
         .withRoles(Role.LEGAL_ADVISOR.getRole())
         .withUserId(SampleClaim.USER_ID).build();
-    private static final User LEGAL_REP = new User(AUTHORISATION_TOKEN, CITIZEN_DETAILS);
     private static final String RETURN_URL = "http://return.url";
     private static final User LEGAL_REP = new User(BEARER_TOKEN, CITIZEN_DETAILS);
     private static final String REASON = "blah".repeat(4);
