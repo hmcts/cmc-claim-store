@@ -144,4 +144,5 @@ public class CCDCase {
     private CCDContactChangeContent contactChangeContent;
     private CCDProceedOnPaperReasonType proceedOnPaperReason;
     private String proceedOnPaperOtherReason;
+    private LocalDate calculatedResponseDeadline;
 }

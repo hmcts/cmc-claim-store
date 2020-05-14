@@ -16,19 +16,18 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 
 import java.util.Collections;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType.CLAIMANT;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.Params.BEARER_TOKEN;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService.DRAFT_LETTER_DOC;
 
 @Service
 @ConditionalOnProperty(prefix = "doc_assembly", name = "url")
@@ -36,35 +35,34 @@ public class ChangeContactDetailsPostProcessor {
 
     private static final Logger logger = LoggerFactory.getLogger(ChangeContactDetailsPostProcessor.class);
     public static final String NO_DETAILS_CHANGED_ERROR = "You need to change contact details to continue.";
-    private static final String DRAFT_LETTER_DOC = "draftLetterDoc";
+    private static final String ERROR_MESSAGE =
+        "There was a technical problem. Nothing has been sent. You need to try again.";
 
     private final CaseDetailsConverter caseDetailsConverter;
-    private final LetterGeneratorService letterGeneratorService;
+    private final ChangeContactLetterService changeContactLetterService;
     private final ChangeContactDetailsNotificationService changeContactDetailsNotificationService;
     private final LetterContentBuilder letterContentBuilder;
     private final UserService userService;
-    private final GeneralLetterService generalLetterService;
 
     public ChangeContactDetailsPostProcessor(
         CaseDetailsConverter caseDetailsConverter,
-        LetterGeneratorService letterGeneratorService,
+        ChangeContactLetterService changeContactLetterService,
         ChangeContactDetailsNotificationService changeContactDetailsNotificationService,
         LetterContentBuilder letterContentBuilder,
-        UserService userService,
-        GeneralLetterService generalLetterService
+        UserService userService
     ) {
         this.caseDetailsConverter = caseDetailsConverter;
-        this.letterGeneratorService = letterGeneratorService;
+        this.changeContactLetterService = changeContactLetterService;
         this.changeContactDetailsNotificationService = changeContactDetailsNotificationService;
         this.letterContentBuilder = letterContentBuilder;
         this.userService = userService;
-        this.generalLetterService = generalLetterService;
     }
 
     public CallbackResponse showNewContactDetails(CallbackParams callbackParams) {
         logger.info("Change Contact Details: create letter (preview)");
 
         CallbackRequest callbackRequest = callbackParams.getRequest();
+        var callbackResponse = AboutToStartOrSubmitCallbackResponse.builder();
         CCDCase caseBefore = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetailsBefore());
         CCDCase caseNow = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
         CCDContactPartyType contactChangeParty = caseNow.getContactChangeParty();
@@ -74,8 +72,7 @@ public class ChangeContactDetailsPostProcessor {
         CCDContactChangeContent contactChangeContent = letterContentBuilder.letterContent(partyBefore, partyNow);
 
         if (contactChangeContent.noContentChange()) {
-            return AboutToStartOrSubmitCallbackResponse
-                .builder()
+            return callbackResponse
                 .errors(Collections.singletonList(NO_DETAILS_CHANGED_ERROR))
                 .build();
         }
@@ -93,16 +90,12 @@ public class ChangeContactDetailsPostProcessor {
                 .respondents(caseBefore.getRespondents())
                 .build();
 
-            DocAssemblyResponse generalLetter = letterGeneratorService.createGeneralLetter(ccdCase, authorisation);
             data.put(DRAFT_LETTER_DOC, CCDDocument.builder()
-                .documentUrl(generalLetter.getRenditionOutputLocation())
+                .documentUrl(changeContactLetterService.createGeneralLetter(ccdCase, authorisation))
                 .build());
         }
 
-        return AboutToStartOrSubmitCallbackResponse
-            .builder()
-            .data(data.build())
-            .build();
+        return callbackResponse.data(data.build()).build();
     }
 
     private String getCaseworkerName(String authorisation) {
@@ -118,16 +111,30 @@ public class ChangeContactDetailsPostProcessor {
         }
     }
 
-    public CallbackResponse notifyPartiesViaEmailOrLetter(CallbackParams callbackParams) {
+    public CallbackResponse performPostProcesses(CallbackParams callbackParams) {
         logger.info("Change Contact Details: print letter or send email notifications");
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
 
-        return letterNeededForDefendant(ccdCase.getContactChangeParty(), ccdCase)
-            ? generalLetterService.printAndUpdateCaseDocuments(caseDetails, authorisation)
-            : changeContactDetailsNotificationService.sendEmailToRightRecipient(ccdCase, claim);
+        var builder = AboutToStartOrSubmitCallbackResponse.builder();
+        CCDCase updatedCase = ccdCase;
+        try {
+            if (letterNeededForDefendant(ccdCase.getContactChangeParty(), updatedCase)) {
+                updatedCase = changeContactLetterService.publishLetter(updatedCase, claim, authorisation);
+                logger.info("Change Contact Details: Letter is sent to defendant");
+            } else {
+                changeContactDetailsNotificationService.sendEmailToRightRecipient(updatedCase, claim);
+                updatedCase = updatedCase.toBuilder().contactChangeParty(null).contactChangeContent(null).build();
+                logger.info("Change Contact Details: Email was sent to the party");
+            }
+
+            return builder.data(caseDetailsConverter.convertToMap(updatedCase)).build();
+        } catch (Exception e) {
+            logger.error("Error performing post processing", e);
+            return builder.errors(Collections.singletonList(ERROR_MESSAGE)).build();
+        }
     }
 
     public boolean letterNeededForDefendant(CCDContactPartyType contactPartyType, CCDCase ccdCase) {
