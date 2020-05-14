@@ -116,7 +116,7 @@ public class CaseMapper {
             .reviewOrder(reviewOrderMapper.from(ccdCase.getReviewOrder()))
             .dateReferredForDirections(ccdCase.getDateReferredForDirections())
             .paperResponse(MapperUtil.hasPaperResponse.apply(ccdCase))
-            .proceedOfflineOtherReason(ccdCase.getProceedOnPaperOtherReason())
+            .proceedOfflineOtherReasonDescription(ccdCase.getProceedOnPaperOtherReason())
             .mediationOutcome(getMediationOutcome(ccdCase));
 
         Optional.ofNullable(ccdCase.getProceedOnPaperReason())

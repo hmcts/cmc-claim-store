@@ -222,7 +222,7 @@ public class CaseMapperTest {
         String otherReason = "Judge want it to be moved";
         Claim claim = SampleClaim.getDefault().toBuilder()
             .proceedOfflineReason(ProceedOfflineReasonType.APPLICATION_BY_CLAIMANT)
-            .proceedOfflineOtherReason(otherReason)
+            .proceedOfflineOtherReasonDescription(otherReason)
             .build();
 
         CCDCase ccdCase = ccdCaseMapper.to(claim);
