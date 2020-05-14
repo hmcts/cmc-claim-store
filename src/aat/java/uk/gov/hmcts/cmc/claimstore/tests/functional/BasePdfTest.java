@@ -32,7 +32,7 @@ public abstract class BasePdfTest extends BaseTest {
         return commonOperations.submitClaim(user.getAuthorisation(), user.getUserDetails().getId(), claimData);
     }
 
-    private InputStream retrievePdf(String pdfName, String externalId) {
+    protected InputStream retrievePdf(String pdfName, String externalId) {
         return RestAssured
             .given()
             .header(HttpHeaders.AUTHORIZATION, user.getAuthorisation())

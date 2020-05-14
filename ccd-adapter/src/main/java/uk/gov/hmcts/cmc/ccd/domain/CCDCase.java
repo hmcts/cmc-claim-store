@@ -60,6 +60,9 @@ public class CCDCase {
     private String paymentStatus;
     private LocalDate paymentDateCreated;
     private String paymentNextUrl;
+    private String paymentReturnUrl;
+    private String paymentTransactionId;
+    private String paymentFeeId;
     private String preferredCourt;
     private String personalInjuryGeneralDamages;
     private String housingDisrepairCostOfRepairDamages;
@@ -115,11 +118,11 @@ public class CCDCase {
     private CCDHearingDurationType estimatedHearingDuration;
 
     private CCDDocument draftOrderDoc;
+    private CCDDocument draftLetterDoc;
 
     private CCDYesNoOption expertReportPermissionPartyAskedByClaimant;
     private CCDYesNoOption expertReportPermissionPartyAskedByDefendant;
     private CCDYesNoOption grantExpertReportPermission;
-
     //TODO - Remove once CCD 1.5.9 released
     private CCDYesNoOption expertReportPermissionPartyGivenToClaimant;
     private CCDYesNoOption expertReportPermissionPartyGivenToDefendant;
@@ -135,4 +138,9 @@ public class CCDCase {
     private CCDChannelType channel;
     private LocalDate intentionToProceedDeadline;
     private LocalDateTime dateReferredForDirections;
+    private GeneralLetterContent generalLetterContent;
+    private CCDLaList assignedTo;
+    private CCDContactPartyType contactChangeParty;
+    private CCDContactChangeContent contactChangeContent;
+    private LocalDate calculatedResponseDeadline;
 }

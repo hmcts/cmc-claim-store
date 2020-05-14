@@ -52,7 +52,8 @@ public class ResumePaymentCallbackHandler extends CallbackHandler {
         CaseDetailsConverter caseDetailsConverter,
         CaseMapper caseMapper,
         IssueDateCalculator issueDateCalculator,
-        ResponseDeadlineCalculator responseDeadlineCalculator) {
+        ResponseDeadlineCalculator responseDeadlineCalculator
+    ) {
         this.paymentsService = paymentsService;
         this.caseDetailsConverter = caseDetailsConverter;
         this.caseMapper = caseMapper;
@@ -115,7 +116,8 @@ public class ResumePaymentCallbackHandler extends CallbackHandler {
 
             case INITIATED:
             case PENDING:
-                paymentsService.cancelPayment(authorisation, originalPayment.getReference());
+                String paymentReference = originalPayment.getReference();
+                paymentsService.cancelPayment(authorisation, paymentReference);
                 // fall through
 
             default:

@@ -52,7 +52,7 @@ public class ClaimantDirectionsHearingContentProviderTest {
             claim.getClaimData().getDefendant().getName()
         );
 
-        assertThat(content.getSubject()).isEqualTo(subject);
+        assertThat(content.getSubject().trim()).isEqualTo(subject);
     }
 
 }

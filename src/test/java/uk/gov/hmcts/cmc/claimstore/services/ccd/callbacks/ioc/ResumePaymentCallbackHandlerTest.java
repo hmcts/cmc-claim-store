@@ -64,6 +64,8 @@ public class ResumePaymentCallbackHandlerTest {
 
     private CallbackRequest callbackRequest;
 
+    private CaseDetailsConverter caseDetailsConverter;
+
     private ResumePaymentCallbackHandler handler;
 
     @Mock
@@ -78,7 +80,7 @@ public class ResumePaymentCallbackHandlerTest {
         when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
         when(caseMapper.to(any(Claim.class))).thenReturn(ccdCase);
         JsonMapper jsonMapper = new JsonMapper(new JacksonConfiguration().objectMapper());
-        CaseDetailsConverter caseDetailsConverter
+        caseDetailsConverter
             = new CaseDetailsConverter(caseMapper, jsonMapper, workingDayIndicator, 12);
         handler = new ResumePaymentCallbackHandler(
             paymentsService,

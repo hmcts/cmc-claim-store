@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 public class Formatting {
 
-    private static final String DATE_PATTERN = "d MMMM uuuu";
+    public static final String DATE_PATTERN = "d MMMM uuuu";
     private static final String DATE_TIME_PATTERN = "d MMMM uuuu 'at' h:mma";
     private static final NumberFormat numberFormat = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("en-GB"));
     private static final DecimalFormat decimalFormat = new DecimalFormat("£###,###.##");

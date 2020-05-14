@@ -63,7 +63,7 @@ public class ClaimController {
     @ApiOperation("Fetch claim for given external id")
     public Claim getByExternalId(@PathVariable("externalId") String externalId,
                                  @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
-        return claimService.getClaimByExternalId(externalId, authorisation);
+        return claimService.getFilteredClaimByExternalId(externalId, authorisation);
     }
 
     @GetMapping("/{claimReference:" + CLAIM_REFERENCE_PATTERN + "}")

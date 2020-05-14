@@ -66,7 +66,7 @@ public class OfferRespondedCitizenActionsHandlerTest {
             eq(event.getClaim().getSubmitterEmail()),
             eq(OFFER_ACCEPTED_TO_CLAIMANT),
             anyMap(),
-            eq("to-claimant-offer-accepted-by-claimant-notification-000CM001")
+            eq("to-claimant-offer-accepted-by-claimant-notification-000MC001")
         );
     }
 
@@ -81,7 +81,7 @@ public class OfferRespondedCitizenActionsHandlerTest {
             eq(event.getClaim().getDefendantEmail()),
             eq(OFFER_ACCEPTED_TO_DEFENDANT),
             anyMap(),
-            eq("to-defendant-offer-accepted-by-claimant-notification-000CM001")
+            eq("to-defendant-offer-accepted-by-claimant-notification-000MC001")
         );
     }
 
@@ -96,7 +96,7 @@ public class OfferRespondedCitizenActionsHandlerTest {
             eq(event.getClaim().getSubmitterEmail()),
             eq(OFFER_REJECTED_TO_CLAIMANT),
             anyMap(),
-            eq("to-claimant-offer-rejected-by-claimant-notification-000CM001")
+            eq("to-claimant-offer-rejected-by-claimant-notification-000MC001")
         );
     }
 
@@ -111,7 +111,7 @@ public class OfferRespondedCitizenActionsHandlerTest {
             eq(event.getClaim().getDefendantEmail()),
             eq(OFFER_REJECTED_TO_DEFENDANT),
             anyMap(),
-            eq("to-defendant-offer-rejected-by-claimant-notification-000CM001")
+            eq("to-defendant-offer-rejected-by-claimant-notification-000MC001")
         );
     }
 }

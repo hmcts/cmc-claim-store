@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.docassembly.DocAssemblyClient;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyRequest;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 import uk.gov.hmcts.reform.docassembly.domain.OutputType;
+import uk.gov.hmcts.reform.docassembly.exception.DocumentGenerationFailedException;
 
 import java.util.Optional;
 
@@ -66,6 +67,56 @@ public class DocAssemblyService {
             authTokenGenerator.generate(),
             docAssemblyRequest
         );
+    }
+
+    public DocAssemblyResponse  changeContactLetter(CCDCase ccdCase, String authorisation, String templateId) {
+        logger.info("Doc assembly service: creating general letter request for doc assembly for external id: {}",
+            ccdCase.getExternalId());
+
+        DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
+            .templateId(templateId)
+            .outputType(OutputType.PDF)
+            .formPayload(docAssemblyTemplateBodyMapper.changeContactBody(ccdCase))
+            .build();
+
+        logger.info("Doc assembly service: sending general letter request to doc assembly for external id: {}",
+            ccdCase.getExternalId());
+        try {
+            return docAssemblyClient.generateOrder(
+                authorisation,
+                authTokenGenerator.generate(),
+                docAssemblyRequest
+            );
+        } catch (Exception e) {
+            logger.error("Error while trying to generate a general letter docAssembly for external id: {}",
+                ccdCase.getExternalId());
+            throw new DocumentGenerationFailedException(e);
+        }
+    }
+
+    public DocAssemblyResponse  createGeneralLetter(CCDCase ccdCase, String authorisation, String templateId) {
+        logger.info("Doc assembly service: creating general letter request for doc assembly for external id: {}",
+            ccdCase.getExternalId());
+
+        DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
+            .templateId(templateId)
+            .outputType(OutputType.PDF)
+            .formPayload(docAssemblyTemplateBodyMapper.generalLetterBody(ccdCase))
+            .build();
+
+        logger.info("Doc assembly service: sending general letter request to doc assembly for external id: {}",
+            ccdCase.getExternalId());
+        try {
+            return docAssemblyClient.generateOrder(
+                authorisation,
+                authTokenGenerator.generate(),
+                docAssemblyRequest
+            );
+        } catch (Exception e) {
+            logger.error("Error while trying to generate a general letter docAssembly for external id: {}",
+                ccdCase.getExternalId());
+            throw new DocumentGenerationFailedException(e);
+        }
     }
 
     private String getTemplateId(String state) {

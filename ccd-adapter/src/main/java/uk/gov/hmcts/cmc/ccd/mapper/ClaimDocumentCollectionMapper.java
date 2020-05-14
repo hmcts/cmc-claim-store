@@ -39,7 +39,6 @@ public class ClaimDocumentCollectionMapper {
                 .getClaimDocuments()
                 .stream()
                 .filter(this::isNotPin)
-                .filter(this::isNotCCJ)
                 .map(claimDocumentMapper::to)
                 .collect(Collectors.toList())
         );
