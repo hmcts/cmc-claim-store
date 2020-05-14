@@ -5,12 +5,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDChannelType;
-import uk.gov.hmcts.cmc.ccd.domain.CCDProceedOnPaperRequestType;
+import uk.gov.hmcts.cmc.ccd.domain.CCDProceedOnPaperReasonType;
 import uk.gov.hmcts.cmc.ccd.util.MapperUtil;
 import uk.gov.hmcts.cmc.domain.models.ChannelType;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
-import uk.gov.hmcts.cmc.domain.models.ProceedOnPaperRequestType;
+import uk.gov.hmcts.cmc.domain.models.ProceedOfflineReasonType;
 import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
 
 import java.util.Arrays;
@@ -66,8 +66,8 @@ public class CaseMapper {
         claim.getDateReferredForDirections().ifPresent(builder::dateReferredForDirections);
         claim.getPreferredDQCourt().ifPresent(builder::preferredDQCourt);
         claim.getProceedOfflineReason()
-            .map(ProceedOnPaperRequestType::name)
-            .map(CCDProceedOnPaperRequestType::valueOf)
+            .map(ProceedOfflineReasonType::name)
+            .map(CCDProceedOnPaperReasonType::valueOf)
             .ifPresent(builder::proceedOnPaperReason);
 
         return builder
@@ -120,8 +120,8 @@ public class CaseMapper {
             .mediationOutcome(getMediationOutcome(ccdCase));
 
         Optional.ofNullable(ccdCase.getProceedOnPaperReason())
-            .map(CCDProceedOnPaperRequestType::name)
-            .map(ProceedOnPaperRequestType::valueOf)
+            .map(CCDProceedOnPaperReasonType::name)
+            .map(ProceedOfflineReasonType::valueOf)
             .ifPresent(builder::proceedOfflineReason);
 
         if (ccdCase.getFeatures() != null) {

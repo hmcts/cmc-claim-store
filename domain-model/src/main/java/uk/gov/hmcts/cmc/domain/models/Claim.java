@@ -78,7 +78,7 @@ public class Claim {
     private final YesNoOption paperResponse;
     private final LocalDateTime dateReferredForDirections;
     private final String preferredDQCourt;
-    private final ProceedOnPaperRequestType proceedOfflineReason;
+    private final ProceedOfflineReasonType proceedOfflineReason;
     private final String proceedOfflineOtherReason;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
@@ -126,7 +126,7 @@ public class Claim {
         YesNoOption paperResponse,
         LocalDateTime dateReferredForDirections,
         String preferredDQCourt,
-        ProceedOnPaperRequestType proceedOfflineReason,
+        ProceedOfflineReasonType proceedOfflineReason,
         String proceedOfflineOtherReason
     ) {
         this.id = id;
@@ -284,7 +284,7 @@ public class Claim {
         return Optional.ofNullable(preferredDQCourt);
     }
 
-    public Optional<ProceedOnPaperRequestType> getProceedOfflineReason() {
+    public Optional<ProceedOfflineReasonType> getProceedOfflineReason() {
         return Optional.ofNullable(proceedOfflineReason);
     }
 
