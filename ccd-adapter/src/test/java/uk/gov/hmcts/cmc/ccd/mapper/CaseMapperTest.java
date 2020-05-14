@@ -214,7 +214,7 @@ public class CaseMapperTest {
         Claim claim = ccdCaseMapper.from(ccdCase);
 
         assertEquals(ccdCase.getProceedOnPaperReason().name(), claim.getProceedOfflineReason().get().name());
-        assertEquals(ccdCase.getProceedOnPaperOtherReason(), claim.getProceedOfflineOtherReason());
+        assertEquals(ccdCase.getProceedOnPaperOtherReason(), claim.getProceedOfflineOtherReasonDescription());
     }
 
     @Test
@@ -228,6 +228,6 @@ public class CaseMapperTest {
         CCDCase ccdCase = ccdCaseMapper.to(claim);
 
         assertEquals(claim.getProceedOfflineReason().get().name(), ccdCase.getProceedOnPaperReason().name());
-        assertEquals(claim.getProceedOfflineOtherReason(), ccdCase.getProceedOnPaperOtherReason());
+        assertEquals(claim.getProceedOfflineOtherReasonDescription(), ccdCase.getProceedOnPaperOtherReason());
     }
 }

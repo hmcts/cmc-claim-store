@@ -27,7 +27,8 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @JsonIgnoreProperties(
     value = {"totalClaimAmount", "totalAmountTillToday", "totalAmountTillDateOfIssue",
         "amountWithInterestUntilIssueDate", "totalInterestTillDateOfIssue", "totalInterest",
-        "serviceDate", "amountWithInterest", "directionsQuestionnaireDeadline", "claimSubmissionOperationIndicators"},
+        "serviceDate", "amountWithInterest", "directionsQuestionnaireDeadline", "claimSubmissionOperationIndicators",
+        "proceedOfflineOtherReasonDescription"},
     allowGetters = true
 )
 @Getter
@@ -79,7 +80,7 @@ public class Claim {
     private final LocalDateTime dateReferredForDirections;
     private final String preferredDQCourt;
     private final ProceedOfflineReasonType proceedOfflineReason;
-    private final String proceedOfflineOtherReason;
+    private final String proceedOfflineOtherReasonDescription;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -127,7 +128,7 @@ public class Claim {
         LocalDateTime dateReferredForDirections,
         String preferredDQCourt,
         ProceedOfflineReasonType proceedOfflineReason,
-        String proceedOfflineOtherReason
+        String proceedOfflineOtherReasonDescription
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -172,7 +173,7 @@ public class Claim {
         this.dateReferredForDirections = dateReferredForDirections;
         this.preferredDQCourt = preferredDQCourt;
         this.proceedOfflineReason = proceedOfflineReason;
-        this.proceedOfflineOtherReason = proceedOfflineOtherReason;
+        this.proceedOfflineOtherReasonDescription = proceedOfflineOtherReasonDescription;
     }
 
     public Optional<Response> getResponse() {

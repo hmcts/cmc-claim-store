@@ -88,7 +88,7 @@ public class CaseMapper {
             .claimSubmissionOperationIndicators(
                 mapClaimSubmissionOperationIndicatorsToCCD.apply(claim.getClaimSubmissionOperationIndicators()))
             .intentionToProceedDeadline(claim.getIntentionToProceedDeadline())
-            .proceedOnPaperOtherReason(claim.getProceedOfflineOtherReason())
+            .proceedOnPaperOtherReason(claim.getProceedOfflineOtherReasonDescription())
             .build();
     }
 
