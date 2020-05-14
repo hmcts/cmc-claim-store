@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_CLAIMANT_RESPONSE;
@@ -98,7 +99,8 @@ public class ClaimantResponseContentProvider {
                         );
 
                     if (claim.getReDeterminationRequestedAt().isPresent()
-                        || responseAcceptation.getFormaliseOption().equals(FormaliseOption.REFER_TO_JUDGE)) {
+                        || responseAcceptation.getFormaliseOption()
+                        .filter(Predicate.isEqual(FormaliseOption.REFER_TO_JUDGE)).isPresent()) {
                         admissionStatus = getDefendantAdmissionStatus(defendantResponse);
                     }
                 }
