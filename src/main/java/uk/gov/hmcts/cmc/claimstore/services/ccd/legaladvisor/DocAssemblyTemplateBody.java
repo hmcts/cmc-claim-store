@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -19,6 +20,7 @@ import java.util.List;
 
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.TemplateConstants.HMCTS_URL;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @Value
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -94,10 +96,23 @@ public class DocAssemblyTemplateBody implements FormPayload {
     private boolean expertReportPermissionPartyGivenToDefendant;
     private List<CCDCollectionElement<String>> expertReportInstructionClaimant;
     private List<CCDCollectionElement<String>> expertReportInstructionDefendant;
+
     private String partyName;
     private CCDAddress partyAddress;
     private String body;
     private String caseName;
     private String caseworkerName;
+    private String claimantName;
+    private String claimantPhone;
+    private String claimantEmail;
+    private boolean hasPhoneChanged;
+    private boolean hasEmailChanged;
+    private boolean hasMainAddressChanged;
+    private CCDAddress claimantAddress;
+    private boolean hasContactAddressChanged;
+    private CCDAddress claimantContactAddress;
+    private boolean claimantPhoneRemoved;
+    private boolean claimantEmailRemoved;
+    private boolean claimantContactAddressRemoved;
 
 }

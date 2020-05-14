@@ -29,6 +29,16 @@ public class CalendarTest extends BaseMockSpringTest {
     }
 
     @Test
+    public void shouldReturnNextWorkingDayWhenBankHoliday() throws Exception {
+        MvcResult result = makeRequest("2020-12-24")
+            .andExpect(status().isOk())
+            .andReturn();
+
+        NextWorkingDay nextWorkingDayBankHol = jsonMappingHelper.deserializeObjectFrom(result, NextWorkingDay.class);
+        assertThat(nextWorkingDayBankHol.getDate()).isEqualTo(toDate("2020-12-29"));
+    }
+
+    @Test
     public void shouldReturnBadRequestWhenDateIsMalformed() throws Exception {
         makeRequest("2019-10-100000").andExpect(status().isBadRequest());
     }

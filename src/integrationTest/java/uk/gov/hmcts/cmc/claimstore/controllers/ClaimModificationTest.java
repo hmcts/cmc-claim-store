@@ -81,6 +81,8 @@ public class ClaimModificationTest extends BaseMockSpringTest {
     private static final UserDetails LEGAL_REP_DETAILS = SampleUserDetails.builder()
         .withRoles(Role.LEGAL_ADVISOR.getRole())
         .withUserId(SampleClaim.USER_ID).build();
+    private static final User LEGAL_REP = new User(AUTHORISATION_TOKEN, CITIZEN_DETAILS);
+    private static final String RETURN_URL = "http://return.url";
     private static final User LEGAL_REP = new User(BEARER_TOKEN, CITIZEN_DETAILS);
     private static final String REASON = "blah".repeat(4);
 
@@ -244,6 +246,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
                 .amount(BigDecimal.TEN)
                 .nextUrl("http://next.url")
                 .reference(REASON)
+                .returnUrl(RETURN_URL)
                 .status(PaymentStatus.INITIATED)
                 .build())
             .build();
@@ -254,6 +257,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
         ClaimData returnedClaimData = postedClaimData.toBuilder()
             .payment(Payment.builder()
                 .nextUrl("http://redirect.to.ocmc")
+                .returnUrl(RETURN_URL)
                 .amount(BigDecimal.TEN)
                 .reference(REASON)
                 .status(PaymentStatus.SUCCESS)
@@ -285,7 +289,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
         assertThat(response)
             .isNotNull()
             .extracting(CreatePaymentResponse::getNextUrl)
-            .matches(url -> url.endsWith("/claim/" + SampleClaim.EXTERNAL_ID + "/finish-payment"));
+            .isEqualTo(RETURN_URL);
     }
 
     @Test

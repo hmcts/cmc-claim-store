@@ -13,6 +13,8 @@ import java.util.Map;
 
 abstract class AbstractStateChangeCallbackHandler extends CallbackHandler {
 
+    private static final String STATE = "state";
+
     private final List<CaseEvent> events;
     private final List<Role> roles;
 
@@ -29,9 +31,10 @@ abstract class AbstractStateChangeCallbackHandler extends CallbackHandler {
     Map<String, Object> updateState(CallbackParams callbackParams, ClaimState state) {
 
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackParams.getRequest().getCaseDetails());
-        ccdCase.setState(state.getValue());
+        Map<String, Object> data = caseDetailsConverter.convertToMap(ccdCase);
+        data.put(STATE, state.getValue());
 
-        return caseDetailsConverter.convertToMap(ccdCase);
+        return data;
     }
 
     @Override

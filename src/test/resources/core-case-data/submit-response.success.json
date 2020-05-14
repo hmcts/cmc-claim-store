@@ -79,6 +79,7 @@
           "letterHolderId": "75",
           "responseDeadline": "2020-02-06",
           "responseDefenceType": "ALREADY_PAID",
+          "responseMoreTimeNeededOption": "yes",
           "responseSubmittedOn": "2019-01-02T16:02:30.834",
           "claimantProvidedPartyName": "Mary Richards",
           "claimantProvidedDetail": {
