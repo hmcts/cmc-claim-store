@@ -163,4 +163,12 @@ public class EmailTemplates {
     @NotEmpty
     private String defendantMediationFailureOfflineDQ;
 
+    @NotEmpty
+    private String claimantPaperResponseReceived;
+
+    @NotEmpty
+    private String claimantContactDetailsChanged;
+
+    @NotEmpty
+    private String defendantContactDetailsChanged;
 }
