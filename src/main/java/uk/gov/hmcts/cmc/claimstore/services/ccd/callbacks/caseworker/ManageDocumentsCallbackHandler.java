@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.PAPER_RESPONSE_COUNTER_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.PAPER_RESPONSE_DISPUTES_ALL;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.PAPER_RESPONSE_FULL_ADMIT;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.PAPER_RESPONSE_MORE_TIME;
@@ -43,7 +44,7 @@ public class ManageDocumentsCallbackHandler extends CallbackHandler {
     private static final List<CaseEvent> EVENTS = Collections.singletonList(MANAGE_DOCUMENTS);
     private static final List<CCDClaimDocumentType> paperResponseDocumentTypes
         = ImmutableList.of(PAPER_RESPONSE_FULL_ADMIT, PAPER_RESPONSE_PART_ADMIT, PAPER_RESPONSE_STATES_PAID,
-        PAPER_RESPONSE_MORE_TIME, PAPER_RESPONSE_DISPUTES_ALL);
+        PAPER_RESPONSE_MORE_TIME, PAPER_RESPONSE_DISPUTES_ALL, PAPER_RESPONSE_COUNTER_CLAIM);
 
     private final CaseDetailsConverter caseDetailsConverter;
 
@@ -79,7 +80,8 @@ public class ManageDocumentsCallbackHandler extends CallbackHandler {
             errors.add(PAPER_RESPONSE_ERROR_MESSAGE);
         }
 
-        if (request.getCaseDetails().equals(request.getCaseDetailsBefore())) {
+        if (isStaffDocumentsUnmodified(ccdCase.getStaffUploadedDocuments(),
+            ccdCaseBefore.getStaffUploadedDocuments())) {
             errors.add(NO_CHANGES_ERROR_MESSAGE);
         }
 
@@ -91,6 +93,17 @@ public class ManageDocumentsCallbackHandler extends CallbackHandler {
         }
 
         return builder.build();
+    }
+
+    private boolean isStaffDocumentsUnmodified(List<CCDCollectionElement<CCDClaimDocument>> staffUploadedDocuments,
+                                               List<CCDCollectionElement<CCDClaimDocument>> staffUploadedDocumentsBefore
+    ) {
+
+        return (staffUploadedDocuments == null && staffUploadedDocumentsBefore == null)
+            || (staffUploadedDocuments == null && staffUploadedDocumentsBefore.isEmpty())
+            || (staffUploadedDocumentsBefore == null && staffUploadedDocuments.isEmpty())
+            || (staffUploadedDocuments != null && staffUploadedDocuments.equals(staffUploadedDocumentsBefore));
+
     }
 
     private boolean paperResponseSelected(CCDCase ccdCase, CCDCase ccdCaseBefore) {

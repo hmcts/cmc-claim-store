@@ -50,5 +50,4 @@ public class DocumentTemplates {
     public byte[] getClaimantDirectionsQuestionnaire() {
         return readBytes("/citizen/templates/document/claimantDirectionsQuestionnaire.html");
     }
-
 }

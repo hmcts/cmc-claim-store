@@ -37,6 +37,7 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.CORRESPONDENCE;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.MEDIATION_AGREEMENT;
@@ -75,10 +76,24 @@ class ManageDocumentsCallbackHandlerTest {
 
         @Test
         void shouldNotReturnErrorsIfThereAreDifferences() {
+
             CaseDetails caseDetails = CaseDetails.builder().build();
             CaseDetails caseDetailsBefore = CaseDetails.builder()
                 .data(ImmutableMap.of("different", "data"))
                 .build();
+
+            CCDCollectionElement<CCDClaimDocument> element =
+                buildCCDCollection(CCDClaimDocumentType.values()[0], null);
+
+            CCDCase ccdCase = CCDCase.builder()
+                .staffUploadedDocuments(ImmutableList.of(element))
+                .build();
+
+            CCDCase ccdCasBefore = CCDCase.builder()
+                .build();
+
+            when(caseDetailsConverter.extractCCDCase(eq(caseDetails))).thenReturn(ccdCase);
+            when(caseDetailsConverter.extractCCDCase(eq(caseDetailsBefore))).thenReturn(ccdCasBefore);
 
             CallbackRequest request = CallbackRequest.builder()
                 .caseDetails(caseDetails)
@@ -96,25 +111,103 @@ class ManageDocumentsCallbackHandlerTest {
             Assertions.assertNull(response.getErrors());
         }
 
-        @Test
-        void shouldReturnErrorsIfThereAreNoDifferences() {
-            CaseDetails caseDetails = CaseDetails.builder().build();
+        @Nested
+        @DisplayName("No differences test")
+        class NoDifferencesTest {
+            private CaseDetails caseDetails;
+            private CaseDetails caseDetailsBefore;
+            private CallbackParams callbackParams;
 
-            CallbackRequest request = CallbackRequest.builder()
-                .caseDetails(caseDetails)
-                .caseDetailsBefore(caseDetails)
-                .build();
+            @BeforeEach
+            void setUp() {
 
-            CallbackParams callbackParams = CallbackParams.builder()
-                .type(CallbackType.MID)
-                .request(request)
-                .build();
+                caseDetails = CaseDetails.builder().build();
+                caseDetailsBefore = CaseDetails.builder()
+                    .data(ImmutableMap.of("different", "data"))
+                    .build();
 
-            AboutToStartOrSubmitCallbackResponse response
-                = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
+                CallbackRequest request = CallbackRequest.builder()
+                    .caseDetails(caseDetails)
+                    .caseDetailsBefore(caseDetailsBefore)
+                    .build();
 
-            Assertions.assertNotNull(response.getErrors());
-            assertThat(response.getErrors(), contains(ManageDocumentsCallbackHandler.NO_CHANGES_ERROR_MESSAGE));
+                callbackParams = CallbackParams.builder()
+                    .type(CallbackType.MID)
+                    .request(request)
+                    .build();
+
+            }
+
+            @Test
+            void shouldReturnErrorsIfThereAreNoDifferencesNullStaffDocuments() {
+
+                CCDCase ccdCase = CCDCase.builder().build();
+
+                when(caseDetailsConverter.extractCCDCase(caseDetails)).thenReturn(ccdCase);
+                when(caseDetailsConverter.extractCCDCase(caseDetailsBefore)).thenReturn(ccdCase);
+
+                AboutToStartOrSubmitCallbackResponse response
+                    = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
+
+                Assertions.assertNotNull(response.getErrors());
+                assertThat(response.getErrors(), contains(ManageDocumentsCallbackHandler.NO_CHANGES_ERROR_MESSAGE));
+            }
+
+            @Test
+            void shouldReturnErrorsIfThereAreNoDifferencesNullBefore() {
+
+                CCDCase ccdCase = CCDCase.builder()
+                    .build();
+
+                CCDCase ccdCaseBefore = CCDCase.builder()
+                    .staffUploadedDocuments(List.of())
+                    .build();
+
+                when(caseDetailsConverter.extractCCDCase(eq(caseDetails))).thenReturn(ccdCase);
+                when(caseDetailsConverter.extractCCDCase(eq(caseDetailsBefore))).thenReturn(ccdCaseBefore);
+
+                AboutToStartOrSubmitCallbackResponse response
+                    = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
+
+                Assertions.assertNotNull(response.getErrors());
+                assertThat(response.getErrors(), contains(ManageDocumentsCallbackHandler.NO_CHANGES_ERROR_MESSAGE));
+            }
+
+            @Test
+            void shouldReturnErrorsIfThereAreNoDifferencesNullAfter() {
+                CCDCase ccdCase = CCDCase.builder()
+                    .staffUploadedDocuments(List.of())
+                    .build();
+
+                CCDCase ccdCaseBefore = CCDCase.builder()
+                    .build();
+
+                when(caseDetailsConverter.extractCCDCase(eq(caseDetails))).thenReturn(ccdCase);
+                when(caseDetailsConverter.extractCCDCase(eq(caseDetailsBefore))).thenReturn(ccdCaseBefore);
+
+                AboutToStartOrSubmitCallbackResponse response
+                    = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
+
+                Assertions.assertNotNull(response.getErrors());
+                assertThat(response.getErrors(), contains(ManageDocumentsCallbackHandler.NO_CHANGES_ERROR_MESSAGE));
+            }
+
+            @Test
+            void shouldReturnErrorsIfThereAreNoDifferencesEmptyStaffUploadedDocuments() {
+
+                CCDCase ccdCase = CCDCase.builder()
+                    .staffUploadedDocuments(List.of())
+                    .build();
+
+                when(caseDetailsConverter.extractCCDCase(caseDetails)).thenReturn(ccdCase);
+                when(caseDetailsConverter.extractCCDCase(caseDetailsBefore)).thenReturn(ccdCase);
+
+                AboutToStartOrSubmitCallbackResponse response
+                    = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
+
+                Assertions.assertNotNull(response.getErrors());
+                assertThat(response.getErrors(), contains(ManageDocumentsCallbackHandler.NO_CHANGES_ERROR_MESSAGE));
+            }
         }
     }
 
@@ -144,7 +237,11 @@ class ManageDocumentsCallbackHandlerTest {
                 .staffUploadedDocuments(ImmutableList.of(element))
                 .build();
 
-            when(caseDetailsConverter.extractCCDCase(any())).thenReturn(ccdCase);
+            CCDCase ccdCasBefore = CCDCase.builder()
+                .build();
+
+            when(caseDetailsConverter.extractCCDCase(eq(caseDetails))).thenReturn(ccdCase);
+            when(caseDetailsConverter.extractCCDCase(eq(caseDetailsBefore))).thenReturn(ccdCasBefore);
 
             CallbackRequest request = CallbackRequest.builder()
                 .caseDetails(caseDetails)
@@ -270,7 +367,7 @@ class ManageDocumentsCallbackHandlerTest {
         }
 
         @ParameterizedTest(name
-            = "#{index} - shouldReturnErrorIfModifyingTypeOfExistingPaperResponseToDifferentPaperResponse={arguments}")
+            = "#{index} - shouldNotReturnErrorIfModifyingTypeOfExistingPaperResponseToNonPaperResponse={arguments}")
         @ArgumentsSource(PaperResponseToNonPaperResponseType.class)
         void shouldNotReturnErrorIfModifyingTypeOfExistingPaperResponseToNonPaperResponse(
             CCDClaimDocumentType paperResponseType,

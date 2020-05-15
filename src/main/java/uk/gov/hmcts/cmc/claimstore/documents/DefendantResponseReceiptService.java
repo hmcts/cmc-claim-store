@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.documents;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
@@ -38,9 +39,14 @@ public class DefendantResponseReceiptService implements PdfService {
         }
         return new PDF(
             buildResponseFileBaseName(claim.getReferenceNumber()),
-            pdfServiceClient.generateFromHtml(
-            documentTemplates.getDefendantResponseReceipt(),
-            contentProvider.createContent(claim)),
+            createHtml(claim),
             DEFENDANT_RESPONSE_RECEIPT);
+    }
+
+    @VisibleForTesting
+    public byte[] createHtml(Claim claim) {
+        return pdfServiceClient.generateFromHtml(
+        documentTemplates.getDefendantResponseReceipt(),
+        contentProvider.createContent(claim));
     }
 }

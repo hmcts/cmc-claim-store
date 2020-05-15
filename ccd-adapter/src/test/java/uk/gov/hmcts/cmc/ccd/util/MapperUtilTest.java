@@ -1,7 +1,10 @@
 package uk.gov.hmcts.cmc.ccd.util;
 
 import org.junit.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDDefendant;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -201,14 +204,20 @@ public class MapperUtilTest {
 
     }
 
-    @Test
-    public void cantContinueOnlineIfStaffUploadedDocumentPresent() {
+    @ParameterizedTest
+    @EnumSource(CCDClaimDocumentType.class)
+    public void shouldMarkClaimsWithPaperResponseDocuments(CCDClaimDocumentType ccdClaimDocumentType) {
+
         CCDCase ccdCase =
-            SampleData.withPaperResponseFromStaffUploadedDoc();
+            SampleData.withStaffUploadedDoc(ccdClaimDocumentType);
 
         YesNoOption result = hasPaperResponse.apply(ccdCase);
-        assertThat(result).isEqualTo(YesNoOption.YES);
 
+        YesNoOption expectedResult = ccdClaimDocumentType.name().startsWith("PAPER") ? YesNoOption.YES : YesNoOption.NO;
+
+        assertThat(result)
+            .as(ccdClaimDocumentType.name())
+            .isEqualTo(expectedResult);
     }
 
     @Test

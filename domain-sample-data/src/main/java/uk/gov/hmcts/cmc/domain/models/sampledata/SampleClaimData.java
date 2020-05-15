@@ -23,6 +23,7 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.noInteres
 
 public class SampleClaimData {
     public static final String EXTERNAL_REFERENCE_NUMBER = "CLAIM234324";
+    private static final String RETURN_URL = "http://returnUrl.test";
 
     private UUID externalId = UUID.fromString(SampleClaim.EXTERNAL_ID);
     private List<Party> claimants;
