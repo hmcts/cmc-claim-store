@@ -112,12 +112,8 @@ public class DefendantResponseContentProviderTest {
     public void shouldProvidePaymentDeclaration() {
         Map<String, Object> content = provider.createContent(claim);
 
-        assertThat(content).containsKey("paymentDeclaration");
-        assertThat(content.get("paymentDeclaration")).isInstanceOf(Map.class);
-        assertThat((Map<String, String>) content.get("paymentDeclaration"))
-            .containsOnlyKeys("paidDate", "explanation")
-            .containsEntry("paidDate", "2 January 2016")
-            .containsEntry("explanation", "Paid cash");
+        assertThat(content).containsEntry("paymentDate", "2 January 2016");
+        assertThat(content).containsEntry("paymentMethod", "Paid cash");
     }
 
     @Test

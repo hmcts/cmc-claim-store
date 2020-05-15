@@ -17,14 +17,17 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
-import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimAuthorisationRule;
+import uk.gov.hmcts.cmc.claimstore.rules.ClaimDeadlineService;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.rules.PaidInFullRule;
 import uk.gov.hmcts.cmc.claimstore.rules.ReviewOrderRule;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
@@ -43,8 +46,10 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SamplePayment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -54,6 +59,9 @@ import static java.time.LocalDate.now;
 import static java.util.Collections.singletonList;
 import static java.util.Optional.empty;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -80,7 +88,7 @@ import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.RESPONSE_DEADLINE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClaimServiceTest {
-    private static final String RETURN_URL = "http://returnUrl.test/%s/bla";
+    private static final String RETURN_URL = "http://returnUrl.test";
 
     private static final ClaimData VALID_APP = SampleClaimData.submittedByClaimant();
     private static final ClaimData VALID_LEGAL_APP = SampleClaimData.submittedByLegalRepresentative();
@@ -102,10 +110,7 @@ public class ClaimServiceTest {
     private ClaimService claimService;
 
     @Mock
-    private ClaimRepository claimRepository;
-    @Mock
     private CaseRepository caseRepository;
-
     @Mock
     private UserService userService;
     @Mock
@@ -122,19 +127,19 @@ public class ClaimServiceTest {
     @Before
     public void setup() {
         when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(VALID_DEFENDANT);
+        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
 
         claimService = new ClaimService(
             caseRepository,
             userService,
             issueDateCalculator,
             responseDeadlineCalculator,
-            new MoreTimeRequestRule(),
+            new MoreTimeRequestRule(new ClaimDeadlineService()),
             eventProducer,
             appInsights,
             new PaidInFullRule(),
             new ClaimAuthorisationRule(userService),
-            new ReviewOrderRule(),
-            RETURN_URL);
+            new ReviewOrderRule());
     }
 
     @Test
@@ -174,10 +179,34 @@ public class ClaimServiceTest {
     }
 
     @Test
+    public void getFilteredClaimByExternalIdShouldFilterDocuments() {
+
+        Claim claimWithDocs = SampleClaim.builder()
+            .withOrderDocument(URI.create("http://localhost/doc.pdf"))
+            .withClaimIssueReceiptDocument(URI.create("http://localhost/doc.pdf"))
+            .withSealedClaimDocument(URI.create("http://localhost/doc.pdf"))
+            .withSettlementAgreementDocument(URI.create("http://localhost/doc.pdf"))
+            .build();
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
+            .thenReturn(Optional.of(claimWithDocs));
+
+        List<ClaimDocument> docList = claimService.getFilteredClaimByExternalId(EXTERNAL_ID, AUTHORISATION)
+            .getClaimDocumentCollection().map(ClaimDocumentCollection::getClaimDocuments)
+            .orElse(Collections.emptyList());
+
+        assertAll(
+            () -> assertTrue(docList
+                .stream().map(ClaimDocument::getDocumentType)
+                .anyMatch(ClaimDocumentType.CLAIM_ISSUE_RECEIPT::equals)),
+            () -> assertFalse(docList
+                .stream().map(ClaimDocument::getDocumentType)
+                .anyMatch(ClaimDocumentType.SEALED_CLAIM::equals))
+        );
+    }
+
+    @Test
     public void saveClaimShouldFinishSuccessfully() {
         //given
-
-        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
         when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(ISSUE_DATE);
         when(responseDeadlineCalculator.calculateResponseDeadline(eq(ISSUE_DATE))).thenReturn(RESPONSE_DEADLINE);
         when(caseRepository.saveClaim(eq(USER), any())).thenReturn(claim);
@@ -187,13 +216,12 @@ public class ClaimServiceTest {
             userService,
             issueDateCalculator,
             responseDeadlineCalculator,
-            new MoreTimeRequestRule(),
+            new MoreTimeRequestRule(new ClaimDeadlineService()),
             eventProducer,
             appInsights,
             new PaidInFullRule(),
             new ClaimAuthorisationRule(userService),
-            new ReviewOrderRule(),
-            RETURN_URL);
+            new ReviewOrderRule());
 
         ClaimData claimData = SampleClaimData.validDefaults();
 
@@ -214,7 +242,6 @@ public class ClaimServiceTest {
     public void saveLegalRepClaimShouldFinishSuccessfully() {
         ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
 
-        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
         when(caseRepository.saveRepresentedClaim(eq(USER), any(Claim.class))).thenReturn(representedClaim);
 
         Claim createdLegalRepClaim = claimService
@@ -239,7 +266,7 @@ public class ClaimServiceTest {
     public void requestMoreTimeToRespondShouldFinishSuccessfully() {
 
         LocalDate newDeadline = RESPONSE_DEADLINE.plusDays(20);
-        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
+
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
             .thenReturn(Optional.of(claim));
         when(responseDeadlineCalculator.calculatePostponedResponseDeadline(any()))
@@ -261,7 +288,6 @@ public class ClaimServiceTest {
 
     @Test(expected = MoreTimeAlreadyRequestedException.class)
     public void requestMoreTimeForResponseThrowsMoreTimeAlreadyRequestedExceptionWhenMoreTimeRequestForSecondTime() {
-        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
 
         Claim claim = createClaimModel(RESPONSE_DEADLINE, true);
 
@@ -303,7 +329,7 @@ public class ClaimServiceTest {
 
     @Test
     public void paidInFullShouldFinishSuccessfully() {
-        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
+
         when(userService.getUserDetails(AUTHORISATION)).thenReturn(VALID_CLAIMANT);
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
             .thenReturn(Optional.of(claim));
@@ -321,7 +347,7 @@ public class ClaimServiceTest {
 
     @Test(expected = ConflictException.class)
     public void paidInFullShouldThrowConflictExceptionIfAlreadyPaidInFull() {
-        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
+
         when(userService.getUserDetails(AUTHORISATION)).thenReturn(VALID_CLAIMANT);
 
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
@@ -397,7 +423,6 @@ public class ClaimServiceTest {
         when(caseRepository.getClaimByExternalId(claim.getExternalId(), USER))
             .thenReturn(Optional.of(claim));
 
-        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
         when(userService.getUserDetails(AUTHORISATION))
             .thenReturn(SampleUserDetails.builder().withUserId("300").build());
 
@@ -459,7 +484,7 @@ public class ClaimServiceTest {
                     Payment.builder().nextUrl("http://nexturl.test").build())
                 .build())
             .build();
-        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
+
         when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(ISSUE_DATE);
         when(responseDeadlineCalculator.calculateResponseDeadline(eq(ISSUE_DATE))).thenReturn(RESPONSE_DEADLINE);
         when(caseRepository.initiatePayment(eq(USER), any(Claim.class)))
@@ -475,7 +500,7 @@ public class ClaimServiceTest {
 
     @Test
     public void resumePaymentShouldReturnReturnUrlIfPaymentIsSuccessful() {
-        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
+
         ClaimData claimData = SampleClaimData.builder()
             .withExternalId(UUID.fromString(EXTERNAL_ID))
             .build();
@@ -495,7 +520,7 @@ public class ClaimServiceTest {
 
     @Test
     public void resumePaymentShouldReturnNextUrlIfPaymentIsNotSuccessful() {
-        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
+
         ClaimData claimData = SampleClaimData.builder()
             .withExternalId(UUID.fromString(EXTERNAL_ID))
             .withPayment(
@@ -521,7 +546,7 @@ public class ClaimServiceTest {
 
     @Test
     public void resumePaymentShouldUpdateClaimDataBeingPassed() {
-        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
+
         ClaimData claimData = SampleClaimData.builder()
             .withExternalId(UUID.fromString(EXTERNAL_ID))
             .withFeeAccountNumber("OLD_ACCOUNT")
@@ -562,14 +587,14 @@ public class ClaimServiceTest {
         Claim argumentCaptorValue = claimArgumentCaptor.getValue();
 
         assertThat(argumentCaptorValue.getClaimData().getFeeAccountNumber().orElse("")).isEqualTo("NEW_ACCOUNT");
-        AmountBreakDown finalAmount = (AmountBreakDown)argumentCaptorValue.getClaimData().getAmount();
+        AmountBreakDown finalAmount = (AmountBreakDown) argumentCaptorValue.getClaimData().getAmount();
         assertThat(finalAmount.getTotalAmount()).isEqualTo("1000.99");
         assertThat(argumentCaptorValue.getClaimData()).isEqualTo(claimDataToBeUpdated);
     }
 
     @Test
     public void saveCitizenClaimShouldFinishSuccessfully() {
-        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
+
         when(caseRepository.getClaimByExternalId(VALID_APP.getExternalId().toString(), USER))
             .thenReturn(Optional.of(claim));
         when(caseRepository
@@ -586,7 +611,7 @@ public class ClaimServiceTest {
 
     @Test
     public void saveReviewOrderShouldFinishSuccessfully() {
-        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
+
         when(userService.getUserDetails(AUTHORISATION)).thenReturn(VALID_CLAIMANT);
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
             .thenReturn(Optional.of(claim));
@@ -606,7 +631,6 @@ public class ClaimServiceTest {
     public void saveReviewOrderShouldThrowConflictExceptionIfAlreadyExists() {
         ReviewOrder reviewOrder = SampleReviewOrder.getDefault();
 
-        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
         when(userService.getUserDetails(AUTHORISATION)).thenReturn(VALID_CLAIMANT);
 
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))

@@ -10,6 +10,7 @@ import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
 public class SamplePayment {
 
     public static final String PAYMENT_REFERENCE = "RC-1524-6488-1670-7520";
+    private static final String RETURN_URL = "http://returnUrl.test";
 
     private SamplePayment() {
         super();
@@ -21,6 +22,9 @@ public class SamplePayment {
             .amount(new BigDecimal("40.99"))
             .dateCreated("2019-01-01")
             .id("PaymentId")
+            .transactionId("transactionId")
+            .feeId("feeId")
+            .returnUrl(RETURN_URL)
             .status(SUCCESS);
     }
 }

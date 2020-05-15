@@ -30,6 +30,7 @@ import java.util.Map;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.GENERAL_LETTER;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ISSUE_GENERAL_LETTER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService.DRAFT_LETTER_DOC;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildLetterFileBaseName;
 
 @Service
@@ -40,9 +41,8 @@ public class GeneralLetterCallbackHandler extends CallbackHandler {
     private static final List<CaseEvent> EVENTS = ImmutableList.of(ISSUE_GENERAL_LETTER);
     private final GeneralLetterService generalLetterService;
     private final CaseDetailsConverter caseDetailsConverter;
-    protected static final String DRAFT_LETTER_DOC = "draftLetterDoc";
     private final String generalLetterTemplateId;
-    private static final String ERROR_MESSAGE =
+    public static final String ERROR_MESSAGE =
         "There was a technical problem. Nothing has been sent. You need to try again.";
 
     @Autowired
@@ -83,15 +83,14 @@ public class GeneralLetterCallbackHandler extends CallbackHandler {
     public CallbackResponse createAndPreview(CallbackParams callbackParams) {
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
         try {
+            String letterUrl = generalLetterService.generateLetter(
+                caseDetailsConverter.extractCCDCase(callbackParams.getRequest().getCaseDetails()),
+                authorisation,
+                generalLetterTemplateId);
+
             return AboutToStartOrSubmitCallbackResponse
                 .builder()
-                .data(ImmutableMap.of(
-                    DRAFT_LETTER_DOC,
-                    CCDDocument.builder().documentUrl(generalLetterService.createAndPreview(
-                        caseDetailsConverter.extractCCDCase(callbackParams.getRequest().getCaseDetails()),
-                        authorisation,
-                        generalLetterTemplateId)).build()
-                ))
+                .data(ImmutableMap.of(DRAFT_LETTER_DOC, CCDDocument.builder().documentUrl(letterUrl).build()))
                 .build();
         } catch (DocumentGenerationFailedException e) {
             logger.info("General Letter creating and preview failed", e);
@@ -108,12 +107,11 @@ public class GeneralLetterCallbackHandler extends CallbackHandler {
         boolean errors = false;
         CCDCase updatedCcdCase = ccdCase;
         try {
-            updatedCcdCase = generalLetterService.printAndUpdateCaseDocuments(
+            updatedCcdCase = generalLetterService.publishLetter(
                 ccdCase,
                 caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails()),
                 authorisation,
-                getDocumentName(ccdCase),
-                ccdCase.getDraftLetterDoc().getDocumentUrl()
+                getDocumentName(ccdCase)
             );
         } catch (Exception e) {
             logger.info("General Letter printing and case documents update failed", e);
