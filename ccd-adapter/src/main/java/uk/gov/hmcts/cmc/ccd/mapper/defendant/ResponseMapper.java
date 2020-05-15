@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefenceType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseMethod;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.ccd.mapper.DirectionsQuestionnaireMapper;
@@ -25,6 +26,7 @@ import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.ResponseMethod;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.math.BigDecimal;
@@ -78,6 +80,10 @@ public class ResponseMapper {
 
         builder.responseType(
             CCDResponseType.valueOf(response.getResponseType().name())
+        );
+
+        builder.responseMethod(
+            CCDResponseMethod.valueOf(response.getResponseMethod().name())
         );
 
         response.getFreeMediation().ifPresent(freeMediation ->
@@ -232,6 +238,7 @@ public class ResponseMapper {
             .timeline(extractDefendantTimeline(respondent))
             .paymentDeclaration(extractPaymentDeclaration(respondent))
             .directionsQuestionnaire(directionsQuestionnaireMapper.from(respondent.getDirectionsQuestionnaire()))
+            .responseMethod(ResponseMethod.valueOf(respondent.getResponseMethod().name()))
             .build();
     }
 
@@ -294,6 +301,7 @@ public class ResponseMapper {
             .timeline(extractDefendantTimeline(respondent))
             .statementOfMeans(statementOfMeansMapper.from(respondent.getStatementOfMeans()))
             .directionsQuestionnaire(directionsQuestionnaireMapper.from(respondent.getDirectionsQuestionnaire()))
+            .responseMethod(ResponseMethod.valueOf(respondent.getResponseMethod().name()))
             .build();
     }
 
@@ -316,6 +324,7 @@ public class ResponseMapper {
             .mediationContactPerson(respondent.getResponseMediationContactPerson())
             .paymentIntention(paymentIntentionMapper.from(respondent.getDefendantPaymentIntention()))
             .statementOfMeans(statementOfMeansMapper.from(respondent.getStatementOfMeans()))
+            .responseMethod(ResponseMethod.valueOf(respondent.getResponseMethod().name()))
             .build();
     }
 

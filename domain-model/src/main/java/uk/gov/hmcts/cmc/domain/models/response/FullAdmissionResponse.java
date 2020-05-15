@@ -33,7 +33,8 @@ public class FullAdmissionResponse extends Response {
         Party defendant,
         StatementOfTruth statementOfTruth,
         PaymentIntention paymentIntention,
-        StatementOfMeans statementOfMeans
+        StatementOfMeans statementOfMeans,
+        ResponseMethod responseMethod
     ) {
         super(
             FULL_ADMISSION,
@@ -42,7 +43,8 @@ public class FullAdmissionResponse extends Response {
             mediationContactPerson,
             moreTimeNeeded,
             defendant,
-            statementOfTruth
+            statementOfTruth,
+            responseMethod
         );
         this.paymentIntention = paymentIntention;
         this.statementOfMeans = statementOfMeans;
