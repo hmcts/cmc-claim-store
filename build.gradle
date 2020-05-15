@@ -212,7 +212,7 @@ dependencies {
   compile group: 'org.springframework.retry', name: 'spring-retry'
   compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign'
 
-  compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '10.9'
+  compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '11.0'
 
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
