@@ -102,7 +102,7 @@ allprojects {
     }
     dependencies {
       // CVE-2019-17563
-      dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.33') {
+      dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.35') {
         entry 'tomcat-embed-core'
         entry 'tomcat-embed-el'
         entry 'tomcat-embed-websocket'
