@@ -107,7 +107,7 @@ pilot-courts:
   datafile: "/data/pilot-courts.csv"
 
 milo:
-  schedule: "${MILO_CSV_SCHEDULE:-}"
+  schedule: "${MILO_CSV_SCHEDULE:}"
   recipient: ${MILO_CSV_RECIPIENT:}
   sender: ${MILO_CSV_SENDER:}
 
