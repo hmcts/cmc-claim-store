@@ -42,6 +42,7 @@ public class MediationCSVGenerator {
         .caseType("CASE_TYPE")
         .amount("AMOUNT")
         .partyType("PARTY_TYPE")
+        .partyName("COMPANY_NAME")
         .contactName("CONTACT_NAME")
         .contactNumber("CONTACT_NUMBER")
         .checkList("CHECK_LIST")
@@ -95,6 +96,14 @@ public class MediationCSVGenerator {
             .filter(amount -> amount <= PILOT_AMOUNT)
             .map(amount -> "Yes")
             .orElse("No");
+
+    private static final Map<Integer, Function<Claim, String>> PARTY_NAME_EXTRACTORS =
+        ImmutableMap.of(
+            CLAIMANT_PARTY_TYPE,
+            claim -> claim.getClaimData().getClaimant().getName(),
+            DEFENDANT_PARTY_TYPE,
+            claim -> claim.getClaimData().getDefendant().getName()
+        );
 
     private static final String NULL_STRING = "null";
 
@@ -159,6 +168,7 @@ public class MediationCSVGenerator {
             .amount(String.valueOf(claim.getTotalClaimAmount()
                 .orElseThrow(() -> new MediationCSVGenerationException("Unable to find total amount of claim"))))
             .partyType(String.valueOf(partyType))
+            .partyName(PARTY_NAME_EXTRACTORS.get(partyType).apply(claim))
             .emailAddress(CONTACT_EMAIL_EXTRACTORS.get(partyType)
                 .apply(claim))
             .contactName(CONTACT_PERSON_EXTRACTORS.get(partyType)
