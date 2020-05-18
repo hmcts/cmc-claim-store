@@ -168,6 +168,14 @@ public class JobServiceTest {
         verify(scheduler).deleteJob(key);
     }
 
+    @Test
+    public void shouldClearDownOldJobs() throws SchedulerException {
+        jobsService.clearJobs();
+
+        verify(scheduler).clear();
+
+    }
+
     private JobData getJobData(String jobId, String group) {
         Map<String, Object> data = new HashMap<>();
         data.put("caseId", "234324332432432");
