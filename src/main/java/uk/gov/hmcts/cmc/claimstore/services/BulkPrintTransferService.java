@@ -22,7 +22,6 @@ public class BulkPrintTransferService {
         this.noticeTransferLetterTemplateId = noticeTransferLetterTemplateId;
     }
 
-
     public String generateNoticeOfTransferLetter(CCDCase ccdCase) {
         // TODO
         return null;
