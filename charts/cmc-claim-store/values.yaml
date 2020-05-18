@@ -51,7 +51,7 @@ java:
     STAFF_NOTIFICATIONS_SENDER: noreply@reform.hmcts.net
     RPA_NOTIFICATIONS_SENDER: noreply@reform.hmcts.net
     DOCUMENT_MANAGEMENT_USERROLES: caseworker-cmc,citizen
-    MILO_CSV_SCHEDULE: '-'
+    MILO_CSV_SCHEDULE: ''
     MILO_CSV_SENDER: noreply@reform.hmcts.net
     SCHEDULE_STATE_TRANSITION_STAY_CLAIM: '0 0 16 ? * MON-FRI *'
     SCHEDULE_STATE_TRANSITION_WAITING_TRANSFER: '0 0 16 ? * MON-FRI *'
