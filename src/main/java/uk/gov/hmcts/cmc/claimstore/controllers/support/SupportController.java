@@ -112,7 +112,7 @@ public class SupportController {
         ClaimantResponseStaffNotificationHandler claimantResponseStaffNotificationHandler,
         PaidInFullStaffNotificationHandler paidInFullStaffNotificationHandler,
         DocumentsService documentsService,
-         PostClaimOrchestrationHandler postClaimOrchestrationHandler,
+        PostClaimOrchestrationHandler postClaimOrchestrationHandler,
         MediationReportService mediationReportService,
         ClaimSubmissionOperationIndicatorRule claimSubmissionOperationIndicatorRule,
         ScheduledStateTransitionService scheduledStateTransitionService

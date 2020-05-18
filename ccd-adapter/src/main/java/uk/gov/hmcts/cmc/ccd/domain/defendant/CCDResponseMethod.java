@@ -4,5 +4,5 @@ package uk.gov.hmcts.cmc.ccd.domain.defendant;
 public enum CCDResponseMethod {
     ONLINE,
     OFFLINE,
-    PAPER_DEFENSE_RESPONSE
+    PAPER_DEFENCE_RESPONSE
 }

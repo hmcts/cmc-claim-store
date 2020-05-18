@@ -4,5 +4,5 @@ package uk.gov.hmcts.cmc.domain.models.response;
 public enum ResponseMethod {
     ONLINE,
     OFFLINE,
-    PAPER_DEFENSE_RESPONSE;
+    PAPER_DEFENCE_RESPONSE;
 }
