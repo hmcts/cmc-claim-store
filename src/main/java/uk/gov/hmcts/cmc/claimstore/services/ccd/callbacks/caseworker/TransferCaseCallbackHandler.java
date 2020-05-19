@@ -64,11 +64,11 @@ public class TransferCaseCallbackHandler extends CallbackHandler {
 
     private CallbackResponse prepopulateData(CallbackParams callbackParams) {
 
-     return AboutToStartOrSubmitCallbackResponse
+        return AboutToStartOrSubmitCallbackResponse
             .builder()
             .data(ImmutableMap.of(
                 "dateOfTransfer", "TODAYS_DATE", // TODO
-                "reasonForTransfer",null,
+                "reasonForTransfer", null,
                 "nameOfTransferCourt", null,
                 "addressOfTransferCourt", null
             ))
