@@ -302,8 +302,7 @@ public class DefendantResponseStaffNotificationServiceTest extends BaseMockSprin
             claimWithFullAdmissionByCompany.getClaimData().getClaimant().getName(),
             claimWithFullAdmissionByCompany.getClaimData().getDefendant().getName()
         );
-        assertThat(emailDataArgument.getValue()
-            .getSubject()).isEqualTo(subject
+        assertThat(emailDataArgument.getValue().getSubject().trim()).isEqualTo(subject
         );
 
         assertThat(emailDataArgument.getValue()
@@ -339,8 +338,7 @@ public class DefendantResponseStaffNotificationServiceTest extends BaseMockSprin
             claimWithFullAdmissionByCompany.getClaimData().getClaimant().getName(),
             claimWithFullAdmissionByCompany.getClaimData().getDefendant().getName()
         );
-        assertThat(emailDataArgument.getValue()
-            .getSubject()).isEqualTo(subject
+        assertThat(emailDataArgument.getValue().getSubject().trim()).isEqualTo(subject
         );
 
         assertThat(emailDataArgument.getValue()

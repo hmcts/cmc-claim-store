@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.ccd.domain;
 
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Value;
 
 @Builder
-@Getter
+@Value
 public class CCDTelephone {
     private String telephoneNumber;
     private String telephoneUsageType;

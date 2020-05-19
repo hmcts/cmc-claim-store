@@ -20,6 +20,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.PAPER_RESPONSE_COUNTER_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.PAPER_RESPONSE_DISPUTES_ALL;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.PAPER_RESPONSE_FULL_ADMIT;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.PAPER_RESPONSE_MORE_TIME;
@@ -37,7 +38,8 @@ public class MapperUtil {
         PAPER_RESPONSE_PART_ADMIT,
         PAPER_RESPONSE_STATES_PAID,
         PAPER_RESPONSE_MORE_TIME,
-        PAPER_RESPONSE_DISPUTES_ALL);
+        PAPER_RESPONSE_DISPUTES_ALL,
+        PAPER_RESPONSE_COUNTER_CLAIM);
 
     private static final List<String> paperResponseScannedType = Arrays.asList("N9a",
         "N9b",
@@ -70,7 +72,11 @@ public class MapperUtil {
         CCDRespondent defendant = ccdCase.getRespondents().stream()
             .findFirst()
             .map(CCDCollectionElement::getValue)
-            .orElseThrow(() -> new IllegalStateException("Missing respondent"));
+            .orElse(null);
+
+        if (defendant == null) {
+            return null;
+        }
 
         if (Optional.ofNullable(defendant.getMediationFailedReason()).isPresent()) {
             return FAILED;

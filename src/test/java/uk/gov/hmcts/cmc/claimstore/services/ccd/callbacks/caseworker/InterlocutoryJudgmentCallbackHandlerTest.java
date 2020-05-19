@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,9 +16,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.util.Collections;
+import java.util.HashMap;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCUTORY_JUDGMENT;
 
@@ -58,14 +57,9 @@ class InterlocutoryJudgmentCallbackHandlerTest {
         handler = new InterlocutoryJudgmentCallbackHandler(caseDetailsConverter, false);
 
         String state = ClaimState.OPEN.getValue();
-        when(caseDetailsConverter.convertToMap(ccdCase)).thenReturn(ImmutableMap.of("state", state));
+        when(caseDetailsConverter.convertToMap(ccdCase)).thenReturn(new HashMap());
 
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
-
-        CCDCase updatedCcdCase = CCDCase.builder()
-            .state(state)
-            .build();
-        verify(caseDetailsConverter).convertToMap(updatedCcdCase);
 
         Assertions.assertEquals(state, response.getData().get("state"));
     }
@@ -76,14 +70,9 @@ class InterlocutoryJudgmentCallbackHandlerTest {
         handler = new InterlocutoryJudgmentCallbackHandler(caseDetailsConverter, true);
 
         String state = ClaimState.JUDGMENT_DECIDE_AMOUNT.getValue();
-        when(caseDetailsConverter.convertToMap(ccdCase)).thenReturn(ImmutableMap.of("state", state));
+        when(caseDetailsConverter.convertToMap(ccdCase)).thenReturn(new HashMap());
 
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse) handler.handle(params);
-
-        CCDCase updatedCcdCase = CCDCase.builder()
-            .state(state)
-            .build();
-        verify(caseDetailsConverter).convertToMap(updatedCcdCase);
 
         Assertions.assertEquals(state, response.getData().get("state"));
     }
