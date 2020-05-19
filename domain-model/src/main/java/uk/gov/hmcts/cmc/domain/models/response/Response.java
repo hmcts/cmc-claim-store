@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
@@ -32,7 +33,7 @@ public abstract class Response {
     @NotNull
     protected final ResponseType responseType;
 
-    protected final ResponseMethod responseMethod;
+    protected ResponseMethod responseMethod;
 
     protected final YesNoOption freeMediation;
 
@@ -102,6 +103,10 @@ public abstract class Response {
 
     public Optional<StatementOfTruth> getStatementOfTruth() {
         return Optional.ofNullable(statementOfTruth);
+    }
+
+    public void setResponseMethod(ResponseMethod responseMethod) {
+        this.responseMethod = responseMethod;
     }
 
     @Override

@@ -24,7 +24,7 @@ public class FullAdmissionResponse extends Response {
     @Valid
     private final StatementOfMeans statementOfMeans;
 
-    @Builder
+    @Builder(toBuilder = true)
     public FullAdmissionResponse(
         YesNoOption freeMediation,
         String mediationPhoneNumber,

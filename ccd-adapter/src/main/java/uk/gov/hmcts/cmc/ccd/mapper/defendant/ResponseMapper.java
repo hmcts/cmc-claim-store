@@ -238,7 +238,8 @@ public class ResponseMapper {
             .timeline(extractDefendantTimeline(respondent))
             .paymentDeclaration(extractPaymentDeclaration(respondent))
             .directionsQuestionnaire(directionsQuestionnaireMapper.from(respondent.getDirectionsQuestionnaire()))
-            .responseMethod(ResponseMethod.valueOf(respondent.getResponseMethod().name()))
+            .responseMethod(respondent.getResponseMethod() == null ? null :
+                ResponseMethod.valueOf(respondent.getResponseMethod().name()))
             .build();
     }
 
@@ -301,7 +302,8 @@ public class ResponseMapper {
             .timeline(extractDefendantTimeline(respondent))
             .statementOfMeans(statementOfMeansMapper.from(respondent.getStatementOfMeans()))
             .directionsQuestionnaire(directionsQuestionnaireMapper.from(respondent.getDirectionsQuestionnaire()))
-            .responseMethod(ResponseMethod.valueOf(respondent.getResponseMethod().name()))
+            .responseMethod(respondent.getResponseMethod() == null ? null :
+                ResponseMethod.valueOf(respondent.getResponseMethod().name()))
             .build();
     }
 
@@ -324,7 +326,8 @@ public class ResponseMapper {
             .mediationContactPerson(respondent.getResponseMediationContactPerson())
             .paymentIntention(paymentIntentionMapper.from(respondent.getDefendantPaymentIntention()))
             .statementOfMeans(statementOfMeansMapper.from(respondent.getStatementOfMeans()))
-            .responseMethod(ResponseMethod.valueOf(respondent.getResponseMethod().name()))
+            .responseMethod(respondent.getResponseMethod() == null ? null :
+                ResponseMethod.valueOf(respondent.getResponseMethod().name()))
             .build();
     }
 

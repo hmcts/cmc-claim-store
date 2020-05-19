@@ -43,6 +43,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
 
         public FullAdmissionResponse build() {
             return FullAdmissionResponse.builder()
+                .responseMethod(ResponseMethod.ONLINE)
                 .moreTimeNeeded(YesNoOption.NO)
                 .defendant(defendantDetails)
                 .paymentIntention(SamplePaymentIntention.instalments())
