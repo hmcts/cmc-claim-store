@@ -3,7 +3,7 @@
 properties([
         pipelineTriggers([cron('H 05 * * *')]),
         parameters([
-                string(name: 'URL_TO_TEST', defaultValue: 'https://cmc-claim-store-aat.service.core-compute-aat.internal/', description: 'The URL you want to run these tests against'),
+                string(name: 'URL_TO_TEST', defaultValue: 'http://cmc-claim-store-aat.service.core-compute-aat.internal/', description: 'The URL you want to run these tests against'),
                 string(name: 'SecurityRules',
                         defaultValue: 'https://raw.githubusercontent.com/hmcts/security-test-rules/master/conf/security-rules.conf',
                         description: 'The URL you want to run these tests against'),
