@@ -91,6 +91,18 @@ public class GeneralLetterService {
             .build();
     }
 
+    // TODO refactor other methods to remove duplication
+    public CCDCase addCaseDocument(CCDCase ccdCase, CCDDocument document, String documentName) {
+
+        List<CCDCollectionElement<CCDClaimDocument>> updatedCaseDocuments =
+            updateCaseDocumentsWithGeneralLetter(
+                ccdCase, document, documentName);
+
+        return ccdCase.toBuilder()
+            .caseDocuments(updatedCaseDocuments)
+            .build();
+    }
+
     private List<CCDCollectionElement<CCDClaimDocument>> updateCaseDocumentsWithGeneralLetter(
         CCDCase ccdCase,
         CCDDocument draftLetterDoc,

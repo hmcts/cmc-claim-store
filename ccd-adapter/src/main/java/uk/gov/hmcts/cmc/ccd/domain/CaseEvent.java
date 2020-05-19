@@ -58,7 +58,7 @@ public enum CaseEvent {
     CLAIMANT_DIRECTIONS_QUESTIONNAIRE_UPLOAD("ClaimantDirectionsQuestionnaireUpload"),
     ORDER_REVIEW_REQUESTED("OrderReviewRequested"),
     WAITING_TRANSFER("WaitingTransfer"),
-    TRANSFER_CASE("TransferCase"),
+    TRANSFER("Transfer"),
     LIFT_STAY("LiftStay"),
     REFER_TO_JUDGE("ReferToJudge"),
     //inversion of control

@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,44 +7,47 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.claimstore.services.BulkPrintTransferService;
+import uk.gov.hmcts.cmc.claimstore.services.TransferCaseService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
+import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
-import java.util.Collections;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TRANSFER_CASE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TRANSFER;
+import static uk.gov.hmcts.cmc.claimstore.services.TransferCaseService.NoticeOfTransferLetter.FOR_COURT;
+import static uk.gov.hmcts.cmc.claimstore.services.TransferCaseService.NoticeOfTransferLetter.FOR_DEFENDANT;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
 @Service
 @ConditionalOnProperty({"feature_toggles.ctsc_enabled"})
 public class TransferCaseCallbackHandler extends CallbackHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
-    private static final List<CaseEvent> EVENTS = ImmutableList.of(TRANSFER_CASE);
-    private final BulkPrintTransferService bulkPrintTransferService;
+    private static final List<Role> ROLES = List.of(CASEWORKER);
+    private static final List<CaseEvent> EVENTS = List.of(TRANSFER);
+    private final TransferCaseService transferCaseService;
     private final CaseDetailsConverter caseDetailsConverter;
 
     @Autowired
     public TransferCaseCallbackHandler(
-        BulkPrintTransferService bulkPrintTransferService,
+        TransferCaseService transferCaseService,
         CaseDetailsConverter caseDetailsConverter
     ) {
-        this.bulkPrintTransferService = bulkPrintTransferService;
+        this.transferCaseService = transferCaseService;
         this.caseDetailsConverter = caseDetailsConverter;
     }
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
-        return ImmutableMap.of(
+        return Map.of(
             CallbackType.ABOUT_TO_START, this::prepopulateData,
             CallbackType.ABOUT_TO_SUBMIT, this::performBulkPrintTransfer
         );
@@ -66,11 +67,8 @@ public class TransferCaseCallbackHandler extends CallbackHandler {
 
         return AboutToStartOrSubmitCallbackResponse
             .builder()
-            .data(ImmutableMap.of(
-                "dateOfTransfer", "TODAYS_DATE", // TODO
-                "reasonForTransfer", null,
-                "nameOfTransferCourt", null,
-                "addressOfTransferCourt", null
+            .data(Map.of(
+                "dateOfTransfer", Formatting.formatDate(LocalDate.now())
             ))
             .build();
     }
@@ -78,33 +76,21 @@ public class TransferCaseCallbackHandler extends CallbackHandler {
     private CallbackResponse performBulkPrintTransfer(CallbackParams callbackParams) {
 
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackParams.getRequest().getCaseDetails());
+        String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
 
-        try {
+        ccdCase = transferCaseService.addNoticeOfTransferLetterToCaseDocuments(ccdCase, authorisation, FOR_COURT);
 
-            var noticeOfTransferLetter = bulkPrintTransferService.generateNoticeOfTransferLetter(ccdCase);
+        if (!isDefendantLinked(ccdCase)) {
+            ccdCase = transferCaseService.addNoticeOfTransferLetterToCaseDocuments(ccdCase, authorisation,
+                FOR_DEFENDANT);
+        }
 
-            bulkPrintTransferService.addNoticeOfTransferToCaseRecordToCaseDocuments(ccdCase, noticeOfTransferLetter);
+        transferCaseService.sendCaseDocumentsToBulkPrint(ccdCase);
 
-            if (!isDefendantLinked(ccdCase)) {
-                var transferNoticeLetter = bulkPrintTransferService.generateTransferNoticeLetter(ccdCase);
+        transferCaseService.sendClaimUpdatedEmailToClaimant(ccdCase);
 
-                bulkPrintTransferService.addTransferLetterNoticeToCaseDocuments(ccdCase, transferNoticeLetter);
-            }
-
-            bulkPrintTransferService.sendCaseDocumentsToBulkPrint(ccdCase);
-
-            bulkPrintTransferService.sendClaimUpdatedEmailToClaimant(ccdCase);
-
-            if (isDefendantLinked(ccdCase)) {
-                bulkPrintTransferService.sendClaimUpdatedEmailToDefendant(ccdCase);
-            }
-
-        } catch (Exception e) {
-            return AboutToStartOrSubmitCallbackResponse
-                .builder()
-                .errors(Collections.singletonList(
-                    "There was a technical problem. Some items may not have been sent. You may want to try again."))
-                .build();
+        if (isDefendantLinked(ccdCase)) {
+            transferCaseService.sendClaimUpdatedEmailToDefendant(ccdCase);
         }
 
         return AboutToStartOrSubmitCallbackResponse
