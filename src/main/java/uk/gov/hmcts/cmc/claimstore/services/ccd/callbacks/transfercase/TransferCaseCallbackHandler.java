@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
+package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.transfercase;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.claimstore.services.TransferCaseService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
@@ -22,9 +21,9 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TRANSFER;
-import static uk.gov.hmcts.cmc.claimstore.services.TransferCaseService.NoticeOfTransferLetter.FOR_COURT;
-import static uk.gov.hmcts.cmc.claimstore.services.TransferCaseService.NoticeOfTransferLetter.FOR_DEFENDANT;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.transfercase.NoticeOfTransferLetterType.FOR_COURT;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.transfercase.NoticeOfTransferLetterType.FOR_DEFENDANT;
 
 @Service
 @ConditionalOnProperty({"feature_toggles.ctsc_enabled"})
@@ -76,11 +75,10 @@ public class TransferCaseCallbackHandler extends CallbackHandler {
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackParams.getRequest().getCaseDetails());
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
 
-        ccdCase = transferCaseService.addNoticeOfTransferLetterToCaseDocuments(ccdCase, authorisation, FOR_COURT);
+        ccdCase = transferCaseService.attachNoticeOfTransferLetterToCase(ccdCase, authorisation, FOR_COURT);
 
         if (!isDefendantLinked(ccdCase)) {
-            ccdCase = transferCaseService.addNoticeOfTransferLetterToCaseDocuments(ccdCase, authorisation,
-                FOR_DEFENDANT);
+            ccdCase = transferCaseService.attachNoticeOfTransferLetterToCase(ccdCase, authorisation, FOR_DEFENDANT);
         }
 
         transferCaseService.sendCaseDocumentsToBulkPrint(ccdCase);

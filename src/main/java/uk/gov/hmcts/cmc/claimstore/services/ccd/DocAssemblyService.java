@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -115,6 +116,26 @@ public class DocAssemblyService {
         } catch (Exception e) {
             logger.error("Error while trying to generate a general letter docAssembly for external id: {}",
                 ccdCase.getExternalId());
+            throw new DocumentGenerationFailedException(e);
+        }
+    }
+
+    public DocAssemblyResponse createLetter(String authorisation, String templateId,
+                                            DocAssemblyTemplateBody formPayload) {
+
+        DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
+            .templateId(templateId)
+            .outputType(OutputType.PDF)
+            .formPayload(formPayload)
+            .build();
+
+        try {
+            return docAssemblyClient.generateOrder(
+                authorisation,
+                authTokenGenerator.generate(),
+                docAssemblyRequest
+            );
+        } catch (Exception e) {
             throw new DocumentGenerationFailedException(e);
         }
     }
