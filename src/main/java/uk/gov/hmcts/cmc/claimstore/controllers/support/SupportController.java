@@ -177,7 +177,7 @@ public class SupportController {
 
     @PutMapping("/documents/{referenceNumber}/{documentType}")
     @ApiOperation("Ensure a document is available on CCD")
-    @ApiResponses( {
+    @ApiResponses({
         @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 201, message = "Created"),
         @ApiResponse(code = 404, message = "Claim not found"),
