@@ -82,9 +82,8 @@ public class ResponseMapper {
             CCDResponseType.valueOf(response.getResponseType().name())
         );
 
-        builder.responseMethod(
-            CCDResponseMethod.valueOf(response.getResponseMethod().name())
-        );
+        builder.responseMethod(response.getResponseMethod() == null ? null :
+            CCDResponseMethod.valueOf(response.getResponseMethod().name()));
 
         response.getFreeMediation().ifPresent(freeMediation ->
             builder.responseFreeMediationOption(CCDYesNoOption.valueOf(freeMediation.name())));
