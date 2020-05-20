@@ -54,7 +54,7 @@ public class PartAdmissionResponse extends Response {
     private final DirectionsQuestionnaire directionsQuestionnaire;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot of be done about removing parameters here
-    @Builder(toBuilder = true)
+    @Builder
     public PartAdmissionResponse(
         YesNoOption freeMediation,
         String mediationPhoneNumber,
