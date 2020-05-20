@@ -144,7 +144,8 @@ public class ClaimMapper {
 
         return asStream(ccdCase.getRespondents())
             .filter(respondent -> respondent.getValue() != null)
-            .map(respondent -> defendantMapper.from(claimBuilder, respondent))
+            .map(respondent -> defendantMapper.from(claimBuilder, respondent, ccdCase))
             .collect(Collectors.toList());
     }
+
 }

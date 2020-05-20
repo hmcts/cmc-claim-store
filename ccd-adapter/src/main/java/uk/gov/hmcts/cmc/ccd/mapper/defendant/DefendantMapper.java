@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.ccd.mapper.defendant;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
@@ -75,7 +76,7 @@ public class DefendantMapper {
         respondentBuilder.settlementReachedAt(claim.getSettlementReachedAt());
 
         respondentBuilder.partyDetail(partyDetail.build());
-        claim.getResponse().ifPresent(toResponse(claim, respondentBuilder, partyDetail));
+        claim.getResponse().ifPresent(toResponse(respondentBuilder, partyDetail));
 
         theirDetailsMapper.to(respondentBuilder, theirDetails);
 
@@ -90,7 +91,8 @@ public class DefendantMapper {
             .build();
     }
 
-    public TheirDetails from(Claim.ClaimBuilder builder, CCDCollectionElement<CCDRespondent> respondentElement) {
+    public TheirDetails from(Claim.ClaimBuilder builder, CCDCollectionElement<CCDRespondent> respondentElement,
+                             CCDCase ccdCase) {
 
         CCDRespondent ccdRespondent = respondentElement.getValue();
         CCDParty partyDetail = ccdRespondent.getPartyDetail();
@@ -116,7 +118,7 @@ public class DefendantMapper {
         Optional.ofNullable(ccdRespondent.getMediationSettlementReachedAt())
             .ifPresent(builder::mediationSettlementReachedAt);
 
-        responseMapper.from(builder, respondentElement);
+        responseMapper.from(builder, respondentElement, ccdCase);
 
         claimantResponseMapper.from(ccdRespondent.getClaimantResponse(), builder);
 
@@ -128,7 +130,6 @@ public class DefendantMapper {
     }
 
     private Consumer<Response> toResponse(
-        Claim claim,
         CCDRespondent.CCDRespondentBuilder builder,
         CCDParty.CCDPartyBuilder partyDetail
     ) {
