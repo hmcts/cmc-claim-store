@@ -44,7 +44,7 @@ public class DefendantResponseController {
         @PathVariable("externalId") String externalId,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization
     ) {
-        response.setResponseMethod(ResponseMethod.ONLINE);
+        response.setResponseMethod(ResponseMethod.DIGITAL);
         return defendantResponseService.save(externalId, defendantId, response, authorization);
     }
 }

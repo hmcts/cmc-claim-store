@@ -43,7 +43,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
 
         public FullAdmissionResponse build() {
             return FullAdmissionResponse.builder()
-                .responseMethod(ResponseMethod.ONLINE)
+                .responseMethod(ResponseMethod.DIGITAL)
                 .moreTimeNeeded(YesNoOption.NO)
                 .defendant(defendantDetails)
                 .paymentIntention(SamplePaymentIntention.instalments())
@@ -298,7 +298,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 freeMediationOption, mediationPhoneNumber, mediationContactPerson,
                 moreTimeNeededOption, defendantDetails, statementOfTruth,
                 defenceType, defence, paymentDeclaration, timeline, evidence, directionsQuestionnaire,
-                ResponseMethod.ONLINE
+                ResponseMethod.DIGITAL
             );
         }
     }
