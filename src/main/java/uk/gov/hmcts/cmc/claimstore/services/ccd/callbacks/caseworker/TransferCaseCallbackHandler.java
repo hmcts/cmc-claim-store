@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -30,7 +29,6 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 @Service
 @ConditionalOnProperty({"feature_toggles.ctsc_enabled"})
 public class TransferCaseCallbackHandler extends CallbackHandler {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final List<Role> ROLES = List.of(CASEWORKER);
     private static final List<CaseEvent> EVENTS = List.of(TRANSFER);
     private final TransferCaseService transferCaseService;
@@ -100,7 +98,6 @@ public class TransferCaseCallbackHandler extends CallbackHandler {
     }
 
     private boolean isDefendantLinked(CCDCase ccdCase) {
-        // TODO
-        return false;
+        return !StringUtils.isBlank(ccdCase.getRespondents().get(0).getValue().getDefendantId());
     }
 }
