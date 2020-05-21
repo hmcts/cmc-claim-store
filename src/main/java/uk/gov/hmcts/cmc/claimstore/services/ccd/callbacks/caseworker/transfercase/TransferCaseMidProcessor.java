@@ -13,6 +13,10 @@ import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
+import java.util.Map;
+
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService.DRAFT_LETTER_DOC;
+
 @Service
 public class TransferCaseMidProcessor {
 
@@ -42,6 +46,7 @@ public class TransferCaseMidProcessor {
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
 
         ImmutableMap.Builder<String, Object> data = ImmutableMap.<String, Object>builder();
+        var callbackResponse = AboutToStartOrSubmitCallbackResponse.builder();
 
         DocAssemblyTemplateBody formPayloadForCourt =
             noticeOfTransferLetterTemplateMapper.noticeOfTransferLetterBodyForCourt(
@@ -53,6 +58,8 @@ public class TransferCaseMidProcessor {
 
         ccdCase.setCoverLetterDoc(noticeOfTransferLetterForCourt);
 
+        data.put("coverLetterDoc", noticeOfTransferLetterForCourt);
+
         if (!isDefendantLinked(ccdCase)) {
 
             DocAssemblyTemplateBody formPayloadForDefendant =
@@ -63,13 +70,10 @@ public class TransferCaseMidProcessor {
                 formPayloadForDefendant,
                 noticeOfTransferSentToDefendantTemplateId);
 
-            ccdCase.setDraftLetterDoc(noticeOfTransferLetterForDefendant);
+            data.put("draftLetterDoc", noticeOfTransferLetterForDefendant);
         }
 
-        return AboutToStartOrSubmitCallbackResponse
-            .builder()
-            //.data(data)
-            .build();
+        return callbackResponse.data(data.build()).build();
     }
 
     private boolean isDefendantLinked(CCDCase ccdCase) {

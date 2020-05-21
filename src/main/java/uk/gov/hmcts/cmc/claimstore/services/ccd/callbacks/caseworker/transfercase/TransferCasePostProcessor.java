@@ -32,7 +32,7 @@ public class TransferCasePostProcessor {
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackParams.getRequest().getCaseDetails());
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
 
-        ccdCase = attachedNoticeOfTransferToCase(ccdCase, authorisation);
+        ccdCase = attachNoticesOfTransferToCase(ccdCase);
 
         sendCaseDocumentsToBulkPrint(ccdCase);
 
@@ -44,22 +44,18 @@ public class TransferCasePostProcessor {
             .build();
     }
 
-    private CCDCase attachedNoticeOfTransferToCase(CCDCase ccdCase, String authorisation) {
-        ccdCase = attachNoticeOfTransferLetterToCase(ccdCase, authorisation, NoticeOfTransferLetterType.FOR_COURT);
+    private CCDCase attachNoticesOfTransferToCase(CCDCase ccdCase) {
+
+        ccdCase = generalLetterService.attachGeneralLetterToCase(ccdCase, ccdCase.getCoverLetterDoc(),
+            "Notice of transfer letter for court");
 
         if (!isDefendantLinked(ccdCase)) {
-            ccdCase = attachNoticeOfTransferLetterToCase(ccdCase, authorisation, NoticeOfTransferLetterType.FOR_DEFENDANT);
+
+            ccdCase = generalLetterService.attachGeneralLetterToCase(ccdCase, ccdCase.getDraftLetterDoc(),
+                "Notice of transfer letter for defendant");
         }
+
         return ccdCase;
-    }
-
-    private CCDCase attachNoticeOfTransferLetterToCase(CCDCase ccdCase, String authorisation,
-                                                      NoticeOfTransferLetterType noticeOfTransferLetterType) {
-
-        CCDDocument noticeOfTransferLetter = ccdCase.getDraftLetterDoc();   // TODO depends on notice type
-
-        return generalLetterService.attachGeneralLetterToCase(ccdCase, noticeOfTransferLetter,
-            noticeOfTransferLetterType.documentName);
     }
 
     private void sendCaseDocumentsToBulkPrint(CCDCase ccdCase) {
