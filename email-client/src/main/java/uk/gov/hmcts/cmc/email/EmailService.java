@@ -1,6 +1,13 @@
 package uk.gov.hmcts.cmc.email;
 
 import com.microsoft.applicationinsights.TelemetryClient;
+import com.sendgrid.Method;
+import com.sendgrid.Request;
+import com.sendgrid.Response;
+import com.sendgrid.SendGrid;
+import com.sendgrid.helpers.mail.Mail;
+import com.sendgrid.helpers.mail.objects.Content;
+import com.sendgrid.helpers.mail.objects.Email;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +18,6 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.email.sendgrid.SendGridClient;
 
-import java.io.IOException;
 import java.io.IOException;
 
 import static java.util.Collections.singletonMap;
