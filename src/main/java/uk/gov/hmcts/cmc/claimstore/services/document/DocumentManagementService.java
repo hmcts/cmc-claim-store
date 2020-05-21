@@ -161,4 +161,21 @@ public class DocumentManagementService {
         appInsights.trackEvent(DOCUMENT_MANAGEMENT_DOWNLOAD_FAILURE, DOCUMENT_NAME, filename);
         throw exception;
     }
+
+    public Document getDocumentMetaData(String authorisation, String documentPath) {
+        try {
+            UserDetails userDetails = userService.getUserDetails(authorisation);
+            String userRoles = String.join(",", this.userRoles);
+            return documentMetadataDownloadClient.getDocumentMetadata(
+                authorisation,
+                authTokenGenerator.generate(),
+                userRoles,
+                userDetails.getId(),
+                documentPath
+            );
+        } catch (Exception ex) {
+            throw new DocumentManagementException(
+                "Unable to download document from document management.", ex);
+        }
+    }
 }
