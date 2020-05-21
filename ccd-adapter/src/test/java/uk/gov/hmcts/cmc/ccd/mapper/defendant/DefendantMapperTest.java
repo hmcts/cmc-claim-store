@@ -65,7 +65,6 @@ public class DefendantMapperTest {
         mapper.to(null, SampleClaim.getDefault());
     }
 
-
     @Test(expected = NullPointerException.class)
     public void mapToShouldThrowExceptionWhenClaimIsNull() {
         TheirDetails theirDetails = SampleTheirDetails.builder().organisationDetails();
