@@ -160,7 +160,7 @@ public class DefendantMapperTest {
         Claim.ClaimBuilder claimBuilder = Claim.builder().serviceDate(now());
 
         //when
-        mapper.from(claimBuilder, CCDCollectionElement.<CCDRespondent>builder().value(ccdRespondent).build(), ccdCase);
+        mapper.from(claimBuilder, CCDCollectionElement.<CCDRespondent>builder().value(ccdRespondent).build());
         Claim finalClaim = claimBuilder.build();
 
         // Then
@@ -190,7 +190,7 @@ public class DefendantMapperTest {
         Claim.ClaimBuilder claimBuilder = Claim.builder();
 
         //when
-        mapper.from(claimBuilder, CCDCollectionElement.<CCDRespondent>builder().value(ccdRespondent).build(), ccdCase);
+        mapper.from(claimBuilder, CCDCollectionElement.<CCDRespondent>builder().value(ccdRespondent).build());
         Claim finalClaim = claimBuilder.build();
 
         // Then
@@ -209,7 +209,7 @@ public class DefendantMapperTest {
         Claim.ClaimBuilder claimBuilder = Claim.builder().issuedOn(now());
 
         //when
-        TheirDetails party = mapper.from(claimBuilder, defendant, ccdCase);
+        TheirDetails party = mapper.from(claimBuilder, defendant);
         Claim finalClaim = claimBuilder.build();
 
         // Then
@@ -274,7 +274,7 @@ public class DefendantMapperTest {
         Claim.ClaimBuilder claimBuilder = Claim.builder();
 
         //when
-        mapper.from(claimBuilder, CCDCollectionElement.<CCDRespondent>builder().value(ccdRespondent).build(), ccdCase);
+        mapper.from(claimBuilder, CCDCollectionElement.<CCDRespondent>builder().value(ccdRespondent).build());
         Claim claim = claimBuilder.build();
 
         //Then
@@ -350,7 +350,7 @@ public class DefendantMapperTest {
         Claim.ClaimBuilder claimBuilder = Claim.builder();
 
         //when
-        mapper.from(claimBuilder, CCDCollectionElement.<CCDRespondent>builder().value(ccdRespondent).build(), ccdCase);
+        mapper.from(claimBuilder, CCDCollectionElement.<CCDRespondent>builder().value(ccdRespondent).build());
 
         //Then
         assertNull(ccdRespondent.getSettlementReachedAt());
@@ -365,7 +365,7 @@ public class DefendantMapperTest {
         Claim.ClaimBuilder claimBuilder = Claim.builder();
 
         //when
-        mapper.from(claimBuilder, CCDCollectionElement.<CCDRespondent>builder().value(ccdRespondent).build(), ccdCase);
+        mapper.from(claimBuilder, CCDCollectionElement.<CCDRespondent>builder().value(ccdRespondent).build());
         Claim finalClaim = claimBuilder.build();
 
         // Then
@@ -381,7 +381,7 @@ public class DefendantMapperTest {
         Claim.ClaimBuilder claimBuilder = Claim.builder();
 
         //when
-        mapper.from(claimBuilder, CCDCollectionElement.<CCDRespondent>builder().value(ccdRespondent).build(), ccdCase);
+        mapper.from(claimBuilder, CCDCollectionElement.<CCDRespondent>builder().value(ccdRespondent).build());
         Claim finalClaim = claimBuilder.build();
 
         // Then
@@ -396,7 +396,7 @@ public class DefendantMapperTest {
         Claim.ClaimBuilder claimBuilder = Claim.builder();
 
         //when
-        mapper.from(claimBuilder, CCDCollectionElement.<CCDRespondent>builder().value(ccdRespondent).build(), ccdCase);
+        mapper.from(claimBuilder, CCDCollectionElement.<CCDRespondent>builder().value(ccdRespondent).build());
         Claim finalClaim = claimBuilder.build();
 
         // Then

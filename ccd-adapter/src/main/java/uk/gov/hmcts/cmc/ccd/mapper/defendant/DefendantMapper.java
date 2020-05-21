@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.ccd.mapper.defendant;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
@@ -91,8 +90,7 @@ public class DefendantMapper {
             .build();
     }
 
-    public TheirDetails from(Claim.ClaimBuilder builder, CCDCollectionElement<CCDRespondent> respondentElement,
-                             CCDCase ccdCase) {
+    public TheirDetails from(Claim.ClaimBuilder builder, CCDCollectionElement<CCDRespondent> respondentElement) {
 
         CCDRespondent ccdRespondent = respondentElement.getValue();
         CCDParty partyDetail = ccdRespondent.getPartyDetail();
