@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.transfercase;
+package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
@@ -20,26 +20,27 @@ public class NoticeOfTransferLetterTemplateMapper {
         this.clock = clock;
     }
 
-    public DocAssemblyTemplateBody noticeOfTransferLetterBody(CCDCase ccdCase,
-                                                              NoticeOfTransferLetterType noticeOfTransferLetterType) {
+    public DocAssemblyTemplateBody noticeOfTransferLetterBodyForCourt(CCDCase ccdCase) {
+
+        String partyName = ccdCase.getTransferContent().getNameOfTransferCourt();
+        CCDAddress partyAddress = ccdCase.getTransferContent().getAddressOfTransferCourt();
+
+        return noticeOfTransferLetterBody(ccdCase, partyName, partyAddress);
+    }
+
+    public DocAssemblyTemplateBody noticeOfTransferLetterBodyForDefendant(CCDCase ccdCase) {
+
+        String partyName = getDefendantName(ccdCase);
+        CCDAddress partyAddress = getDefendantAddress(ccdCase);
+
+        return noticeOfTransferLetterBody(ccdCase, partyName, partyAddress);
+    }
+
+    private DocAssemblyTemplateBody noticeOfTransferLetterBody(CCDCase ccdCase,
+                                                               String partyName,
+                                                               CCDAddress partyAddress) {
 
         LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
-
-        String partyName;
-        CCDAddress partyAddress;
-
-        switch (noticeOfTransferLetterType) {
-            case FOR_COURT:
-                partyName = ccdCase.getTransferContent().getNameOfTransferCourt();
-                partyAddress = ccdCase.getTransferContent().getAddressOfTransferCourt();
-                break;
-            case FOR_DEFENDANT:
-                partyName = getDefendantName(ccdCase);
-                partyAddress = getDefendantAddress(ccdCase);
-                break;
-            default:
-                throw new IllegalArgumentException();
-        }
 
         return DocAssemblyTemplateBody.builder()
             .currentDate(currentDate)
@@ -53,10 +54,11 @@ public class NoticeOfTransferLetterTemplateMapper {
     }
 
     private String getDefendantName(CCDCase ccdCase) {
-        return ccdCase.getRespondents().get(0)
-            .getValue().getPartyName() != null
-            ? ccdCase.getRespondents().get(0).getValue().getPartyName() :
-            ccdCase.getRespondents().get(0).getValue().getClaimantProvidedPartyName();
+        CCDRespondent respondent = ccdCase.getRespondents().get(0)
+            .getValue();
+        return respondent.getPartyName() != null
+            ? respondent.getPartyName() :
+            respondent.getClaimantProvidedPartyName();
     }
 
     private CCDAddress getDefendantAddress(CCDCase ccdCase) {

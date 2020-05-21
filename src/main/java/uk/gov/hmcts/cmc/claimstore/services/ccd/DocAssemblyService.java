@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
@@ -120,7 +121,16 @@ public class DocAssemblyService {
         }
     }
 
-    public DocAssemblyResponse createLetter(String authorisation, String templateId,
+    public CCDDocument generateLetterAsDocument(String authorisation,
+                                                 DocAssemblyTemplateBody formPayload, String templateId) {
+
+        var docAssemblyResponse = createLetter(authorisation,
+            templateId, formPayload);
+
+        return CCDDocument.builder().documentUrl(docAssemblyResponse.getRenditionOutputLocation()).build();
+    }
+
+    private DocAssemblyResponse createLetter(String authorisation, String templateId,
                                             DocAssemblyTemplateBody formPayload) {
 
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
