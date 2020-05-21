@@ -120,7 +120,7 @@ public class RespondToClaimTest extends BaseTest {
             .extract().body().as(Claim.class);
 
         response.setResponseMethod(ResponseMethod.DIGITAL);
-        
+
         assertThat(updatedCase.getResponse().isPresent()).isTrue();
         assertThat(updatedCase.getResponse().get()).isEqualTo(response);
         assertThat(updatedCase.getRespondedAt()).isNotNull();

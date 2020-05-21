@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.mapper.defendant;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
@@ -17,7 +16,6 @@ import uk.gov.hmcts.cmc.ccd.mapper.PaymentIntentionMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.TelephoneMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.TimelineEventMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans.StatementOfMeansMapper;
-import uk.gov.hmcts.cmc.ccd.util.MapperUtil;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
@@ -121,8 +119,7 @@ public class ResponseMapper {
         }
     }
 
-    public void from(Claim.ClaimBuilder claimBuilder, CCDCollectionElement<CCDRespondent> respondentElement,
-                     CCDCase ccdCase) {
+    public void from(Claim.ClaimBuilder claimBuilder, CCDCollectionElement<CCDRespondent> respondentElement) {
         CCDRespondent respondent = respondentElement.getValue();
         requireNonNull(claimBuilder, "claimBuilder must not be null");
         requireNonNull(respondent, "respondent must not be null");
@@ -132,13 +129,13 @@ public class ResponseMapper {
 
         switch (respondent.getResponseType()) {
             case FULL_DEFENCE:
-                claimBuilder.response(extractFullDefence(respondentElement, ccdCase));
+                claimBuilder.response(extractFullDefence(respondentElement));
                 break;
             case FULL_ADMISSION:
-                claimBuilder.response(extractFullAdmission(respondentElement, ccdCase));
+                claimBuilder.response(extractFullAdmission(respondentElement));
                 break;
             case PART_ADMISSION:
-                claimBuilder.response(extractPartAdmission(respondentElement, ccdCase));
+                claimBuilder.response(extractPartAdmission(respondentElement));
                 break;
             default:
                 throw new MappingException("Invalid responseType");
@@ -223,8 +220,7 @@ public class ResponseMapper {
         };
     }
 
-    private FullDefenceResponse extractFullDefence(CCDCollectionElement<CCDRespondent> respondentElement,
-                                                   CCDCase ccdCase) {
+    private FullDefenceResponse extractFullDefence(CCDCollectionElement<CCDRespondent> respondentElement) {
         CCDRespondent respondent = respondentElement.getValue();
 
         return FullDefenceResponse.builder()
@@ -241,21 +237,13 @@ public class ResponseMapper {
             .timeline(extractDefendantTimeline(respondent))
             .paymentDeclaration(extractPaymentDeclaration(respondent))
             .directionsQuestionnaire(directionsQuestionnaireMapper.from(respondent.getDirectionsQuestionnaire()))
-            .responseMethod(setResponseMethod(respondent, ccdCase))
+            .responseMethod(setResponseMethod(respondent))
             .build();
     }
 
-    private ResponseMethod setResponseMethod(CCDRespondent respondent, CCDCase ccdCase) {
-        if (respondent.getResponseMethod() != null) {
-            return ResponseMethod.valueOf(respondent.getResponseMethod().name());
-        }
-
-        // Prior to ROC-7939 Response method was determined from documents attached to claim
-        if (MapperUtil.hasPaperResponse.apply(ccdCase) == YesNoOption.YES) {
-            return ResponseMethod.OFFLINE;
-        }
-
-        return ResponseMethod.DIGITAL;
+    private ResponseMethod setResponseMethod(CCDRespondent respondent) {
+        return respondent.getResponseMethod() == null ? null :
+            ResponseMethod.valueOf(respondent.getResponseMethod().name());
     }
 
     private StatementOfTruth extractStatementOfTruth(CCDRespondent respondent) {
@@ -297,8 +285,7 @@ public class ResponseMapper {
         );
     }
 
-    private PartAdmissionResponse extractPartAdmission(CCDCollectionElement<CCDRespondent> respondentElement,
-                                                       CCDCase ccdCase) {
+    private PartAdmissionResponse extractPartAdmission(CCDCollectionElement<CCDRespondent> respondentElement) {
         CCDRespondent respondent = respondentElement.getValue();
 
         return PartAdmissionResponse.builder()
@@ -318,7 +305,7 @@ public class ResponseMapper {
             .timeline(extractDefendantTimeline(respondent))
             .statementOfMeans(statementOfMeansMapper.from(respondent.getStatementOfMeans()))
             .directionsQuestionnaire(directionsQuestionnaireMapper.from(respondent.getDirectionsQuestionnaire()))
-            .responseMethod(setResponseMethod(respondent, ccdCase))
+            .responseMethod(setResponseMethod(respondent))
             .build();
     }
 
@@ -328,8 +315,7 @@ public class ResponseMapper {
             : null;
     }
 
-    private FullAdmissionResponse extractFullAdmission(CCDCollectionElement<CCDRespondent> respondentElement,
-                                                       CCDCase ccdCase) {
+    private FullAdmissionResponse extractFullAdmission(CCDCollectionElement<CCDRespondent> respondentElement) {
         CCDRespondent respondent = respondentElement.getValue();
 
         return FullAdmissionResponse.builder()
@@ -342,7 +328,7 @@ public class ResponseMapper {
             .mediationContactPerson(respondent.getResponseMediationContactPerson())
             .paymentIntention(paymentIntentionMapper.from(respondent.getDefendantPaymentIntention()))
             .statementOfMeans(statementOfMeansMapper.from(respondent.getStatementOfMeans()))
-            .responseMethod(setResponseMethod(respondent, ccdCase))
+            .responseMethod(setResponseMethod(respondent))
             .build();
     }
 

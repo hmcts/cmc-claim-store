@@ -4,9 +4,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.ccd.util.MapperUtil;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.ResponseMethod;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.time.LocalDate;
@@ -36,11 +40,14 @@ public class CaseDetailsConverter {
     }
 
     public Claim extractClaim(CaseDetails caseDetails) {
-        Claim claim = caseMapper.from(extractCCDCase(caseDetails));
+        CCDCase ccdCase = extractCCDCase(caseDetails);
+        Claim claim = caseMapper.from(ccdCase);
 
         if (claim.getRespondedAt() == null) {
             return claim;
         }
+
+        claim.getResponse().ifPresent(response -> updateResponseMethod(response, ccdCase));
 
         // Calculating the intention to proceed here rather than in the mapper as we have access
         // to the WorkingDayIndicator here
@@ -48,6 +55,18 @@ public class CaseDetailsConverter {
         return claim.toBuilder()
                     .intentionToProceedDeadline(intentionToProceedDeadline)
                     .build();
+    }
+
+    private void updateResponseMethod(Response response, CCDCase ccdCase) {
+        if (response.getResponseMethod() != null) {
+            return;
+        }
+
+        // Prior to ROC-7939 Response method was determined from documents attached to claim
+        ResponseMethod responseMethod = MapperUtil.hasPaperResponse.apply(ccdCase) == YesNoOption.YES
+            ? ResponseMethod.OFFLINE : ResponseMethod.DIGITAL;
+
+        response.setResponseMethod(responseMethod);
     }
 
     public CCDCase extractCCDCase(CaseDetails caseDetails) {

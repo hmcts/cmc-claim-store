@@ -101,7 +101,7 @@ public class ResponseMapperTest {
             .build();
         //when
 
-        mapper.from(builder, respondentElement, ccdCase);
+        mapper.from(builder, respondentElement);
 
         //then
         assertThat(builder.build().getResponse().orElse(null)).isEqualTo(ccdRespondent);
@@ -118,7 +118,7 @@ public class ResponseMapperTest {
             .id(UUID.randomUUID().toString())
             .build();
         //when
-        mapper.from(builder, respondentElement, ccdCase);
+        mapper.from(builder, respondentElement);
 
         //then
         assertThat(builder.build().getResponse().orElse(null)).isEqualTo(ccdRespondent);
@@ -135,7 +135,7 @@ public class ResponseMapperTest {
             .id(UUID.randomUUID().toString())
             .build();
         //when
-        mapper.from(builder, respondentElement, ccdCase);
+        mapper.from(builder, respondentElement);
 
         //then
         assertThat(builder.build().getResponse().orElse(null)).isEqualTo(ccdRespondent);
@@ -152,7 +152,7 @@ public class ResponseMapperTest {
             .id(UUID.randomUUID().toString())
             .build();
         //when
-        mapper.from(builder, respondentElement, ccdCase);
+        mapper.from(builder, respondentElement);
 
         //then
         assertThat(builder.build().getResponse().orElse(null)).isEqualTo(ccdRespondent);

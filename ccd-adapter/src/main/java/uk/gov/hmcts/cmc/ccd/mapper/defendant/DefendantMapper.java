@@ -118,7 +118,7 @@ public class DefendantMapper {
         Optional.ofNullable(ccdRespondent.getMediationSettlementReachedAt())
             .ifPresent(builder::mediationSettlementReachedAt);
 
-        responseMapper.from(builder, respondentElement, ccdCase);
+        responseMapper.from(builder, respondentElement);
 
         claimantResponseMapper.from(ccdRespondent.getClaimantResponse(), builder);
 
