@@ -119,6 +119,7 @@ public class CCDCase {
 
     private CCDDocument draftOrderDoc;
     private CCDDocument draftLetterDoc;
+    private CCDDocument coverLetterDoc;
 
     private CCDYesNoOption expertReportPermissionPartyAskedByClaimant;
     private CCDYesNoOption expertReportPermissionPartyAskedByDefendant;

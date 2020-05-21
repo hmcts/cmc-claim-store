@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transferca
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CCDTransferContent;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
@@ -10,7 +11,6 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
-import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
@@ -22,7 +22,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TRANSFER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
 @Service
-@ConditionalOnProperty({"feature_toggles.ctsc_enabled"})
+@ConditionalOnProperty({"feature_toggles.ctsc_enabled"})    // TODO Prevent CCD error if not enabled
 public class TransferCaseCallbackHandler extends CallbackHandler {
     private static final List<Role> ROLES = List.of(CASEWORKER);
     private static final List<CaseEvent> EVENTS = List.of(TRANSFER);
@@ -64,9 +64,7 @@ public class TransferCaseCallbackHandler extends CallbackHandler {
         return AboutToStartOrSubmitCallbackResponse
             .builder()
             .data(Map.of(
-                "dateOfTransfer", Formatting.formatDate(LocalDate.now())
-            ))
-            .build();
+                "transferContent", CCDTransferContent.builder().dateOfTransfer(LocalDate.now())
+            )).build();
     }
-
 }

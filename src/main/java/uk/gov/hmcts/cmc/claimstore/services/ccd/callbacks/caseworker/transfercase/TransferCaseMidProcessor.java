@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase;
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,8 @@ public class TransferCaseMidProcessor {
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackParams.getRequest().getCaseDetails());
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
 
+        ImmutableMap.Builder<String, Object> data = ImmutableMap.<String, Object>builder();
+
         DocAssemblyTemplateBody formPayloadForCourt =
             noticeOfTransferLetterTemplateMapper.noticeOfTransferLetterBodyForCourt(
                 ccdCase);
@@ -48,7 +51,7 @@ public class TransferCaseMidProcessor {
             formPayloadForCourt,
             noticeOfTransferSentToCourtTemplateId);
 
-        ccdCase.setDraftLetterDoc(noticeOfTransferLetterForCourt);      // TODO setNoticeOfTransferForCourtLetter
+        ccdCase.setCoverLetterDoc(noticeOfTransferLetterForCourt);
 
         if (!isDefendantLinked(ccdCase)) {
 
@@ -60,12 +63,12 @@ public class TransferCaseMidProcessor {
                 formPayloadForDefendant,
                 noticeOfTransferSentToDefendantTemplateId);
 
-            ccdCase.setDraftLetterDoc(noticeOfTransferLetterForDefendant);      // TODO setNoticeOfTransferForDefendantLetter
+            ccdCase.setDraftLetterDoc(noticeOfTransferLetterForDefendant);
         }
 
         return AboutToStartOrSubmitCallbackResponse
             .builder()
-            .data(caseDetailsConverter.convertToMap(ccdCase))
+            //.data(data)
             .build();
     }
 

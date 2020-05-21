@@ -15,12 +15,16 @@ public class TransferCasePostProcessor {
 
     private final CaseDetailsConverter caseDetailsConverter;
     private final GeneralLetterService generalLetterService;
+    private final TransferCaseLetterSender transferCaseLetterSender;
 
     public TransferCasePostProcessor(
-        CaseDetailsConverter caseDetailsConverter, GeneralLetterService generalLetterService) {
+        CaseDetailsConverter caseDetailsConverter,
+        GeneralLetterService generalLetterService,
+        TransferCaseLetterSender transferCaseLetterSender) {
 
         this.caseDetailsConverter = caseDetailsConverter;
         this.generalLetterService = generalLetterService;
+        this.transferCaseLetterSender = transferCaseLetterSender;
     }
 
     public CallbackResponse performBulkPrintTransfer(CallbackParams callbackParams) {
@@ -28,24 +32,25 @@ public class TransferCasePostProcessor {
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackParams.getRequest().getCaseDetails());
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
 
-        ccdCase = attachNoticeOfTransferLetterToCase(ccdCase, authorisation, NoticeOfTransferLetterType.FOR_COURT);
-
-        if (!isDefendantLinked(ccdCase)) {
-            ccdCase = attachNoticeOfTransferLetterToCase(ccdCase, authorisation, NoticeOfTransferLetterType.FOR_DEFENDANT);
-        }
+        ccdCase = attachedNoticeOfTransferToCase(ccdCase, authorisation);
 
         sendCaseDocumentsToBulkPrint(ccdCase);
 
-        sendClaimUpdatedEmailToClaimant(ccdCase);
-
-        if (isDefendantLinked(ccdCase)) {
-            sendClaimUpdatedEmailToDefendant(ccdCase);
-        }
+        sendEmailNotifications(ccdCase);
 
         return AboutToStartOrSubmitCallbackResponse
             .builder()
             .data(caseDetailsConverter.convertToMap(ccdCase))
             .build();
+    }
+
+    private CCDCase attachedNoticeOfTransferToCase(CCDCase ccdCase, String authorisation) {
+        ccdCase = attachNoticeOfTransferLetterToCase(ccdCase, authorisation, NoticeOfTransferLetterType.FOR_COURT);
+
+        if (!isDefendantLinked(ccdCase)) {
+            ccdCase = attachNoticeOfTransferLetterToCase(ccdCase, authorisation, NoticeOfTransferLetterType.FOR_DEFENDANT);
+        }
+        return ccdCase;
     }
 
     private CCDCase attachNoticeOfTransferLetterToCase(CCDCase ccdCase, String authorisation,
@@ -58,11 +63,24 @@ public class TransferCasePostProcessor {
     }
 
     private void sendCaseDocumentsToBulkPrint(CCDCase ccdCase) {
-        // TODO Based on GeneralLetterService.printLetter
+
+        if (!isDefendantLinked(ccdCase)) {
+            transferCaseLetterSender.sendNoticeOfTransferForDefendant(ccdCase);
+        }
+
+        transferCaseLetterSender.sendAllCaseDocumentsToCourt(ccdCase);
+    }
+
+    private void sendEmailNotifications(CCDCase ccdCase) {
+        sendClaimUpdatedEmailToClaimant(ccdCase);
+
+        if (isDefendantLinked(ccdCase)) {
+            sendClaimUpdatedEmailToDefendant(ccdCase);
+        }
     }
 
     private void sendClaimUpdatedEmailToClaimant(CCDCase ccdCase) {
-        // TODOn Based on ChangeContactDetailsNotificationService
+        // TODO Based on ChangeContactDetailsNotificationService
     }
 
     private void sendClaimUpdatedEmailToDefendant(CCDCase ccdCase) {
