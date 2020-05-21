@@ -48,17 +48,7 @@ public class DefendantMapperTest {
     @Autowired
     private DefendantMapper mapper;
 
-    private CCDCase ccdCase;
-
     private final LocalDateTime mediationSettledTime = LocalDateTime.of(2019, 11, 13, 8, 20, 30);
-
-    @Before
-    public void setUp() {
-        ccdCase = CCDCase.builder()
-            .staffUploadedDocuments(List.of())
-            .scannedDocuments(List.of())
-            .build();
-    }
 
     @Test(expected = NullPointerException.class)
     public void mapToShouldThrowExceptionWhenTheirDetailsIsNull() {

@@ -30,16 +30,6 @@ public class ResponseMapperTest {
     @Autowired
     private ResponseMapper mapper;
 
-    private CCDCase ccdCase;
-
-    @Before
-    public void setUp() {
-        ccdCase = CCDCase.builder()
-            .staffUploadedDocuments(List.of())
-            .scannedDocuments(List.of())
-            .build();
-    }
-
     @Test(expected = NullPointerException.class)
     public void mapToShouldThrowExceptionWhenBuildersIsNull() {
         mapper.to(null, SampleResponse.FullDefence.validDefaults(), CCDParty.builder());
