@@ -41,10 +41,12 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackVersion;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.rules.GenerateOrderRule;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
+import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
+import uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
@@ -123,6 +125,8 @@ class DrawJudgeOrderCallbackHandlerTest {
     private LegalOrderService legalOrderService;
     @Mock
     private DirectionOrderService directionOrderService;
+    @Mock
+    private DocumentManagementService documentManagementService;
 
     private CallbackRequest callbackRequest;
     private DrawJudgeOrderCallbackHandler drawJudgeOrderCallbackHandler;
@@ -133,7 +137,7 @@ class DrawJudgeOrderCallbackHandlerTest {
             docAssemblyService, new GenerateOrderRule(), directionsQuestionnaireService, pilotCourtService);
 
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
-            caseDetailsConverter, legalOrderService, appInsights, directionOrderService);
+            caseDetailsConverter, legalOrderService, appInsights, directionOrderService, documentManagementService);
 
         drawJudgeOrderCallbackHandler = new DrawJudgeOrderCallbackHandler(orderCreator, orderPostProcessor);
 
@@ -300,6 +304,8 @@ class DrawJudgeOrderCallbackHandlerTest {
             when(directionOrderService.getHearingCourt(any())).thenReturn(HearingCourt.builder().build());
 
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            when(documentManagementService.getDocumentMetaData(any(), any()))
+                .thenReturn(ResourceLoader.successfulDocumentManagementDownloadResponse());
 
             when(caseDetailsConverter.convertToMap(any(CCDCase.class)))
                 .thenReturn(ImmutableMap.<String, Object>builder()
@@ -340,6 +346,8 @@ class DrawJudgeOrderCallbackHandlerTest {
                 .hearingCourt("birmingham")
                 .build();
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            when(documentManagementService.getDocumentMetaData(any(), any()))
+                .thenReturn(ResourceLoader.successfulDocumentManagementDownloadResponse());
 
             when(directionOrderService.getHearingCourt(any())).thenReturn(hearingCourt);
 
@@ -369,6 +377,8 @@ class DrawJudgeOrderCallbackHandlerTest {
             when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
             when(clock.getZone()).thenReturn(ZoneOffset.UTC);
             when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);
+            when(documentManagementService.getDocumentMetaData(any(), any()))
+                .thenReturn(ResourceLoader.successfulDocumentManagementDownloadResponse());
 
             when(directionOrderService.getHearingCourt(any())).thenReturn(hearingCourt);
 
