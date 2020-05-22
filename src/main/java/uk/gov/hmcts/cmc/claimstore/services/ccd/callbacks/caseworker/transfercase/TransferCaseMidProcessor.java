@@ -20,6 +20,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.G
 @Service
 public class TransferCaseMidProcessor {
 
+    public static final String COVER_LETTER_DOC = "coverLetterDoc";
     private final DocAssemblyService docAssemblyService;
     private final NoticeOfTransferLetterTemplateMapper noticeOfTransferLetterTemplateMapper;
     private final String noticeOfTransferSentToCourtTemplateId;
@@ -56,9 +57,7 @@ public class TransferCaseMidProcessor {
             formPayloadForCourt,
             noticeOfTransferSentToCourtTemplateId);
 
-        ccdCase.setCoverLetterDoc(noticeOfTransferLetterForCourt);
-
-        data.put("coverLetterDoc", noticeOfTransferLetterForCourt);
+        data.put(COVER_LETTER_DOC, noticeOfTransferLetterForCourt);
 
         if (!isDefendantLinked(ccdCase)) {
 
@@ -70,7 +69,7 @@ public class TransferCaseMidProcessor {
                 formPayloadForDefendant,
                 noticeOfTransferSentToDefendantTemplateId);
 
-            data.put("draftLetterDoc", noticeOfTransferLetterForDefendant);
+            data.put(DRAFT_LETTER_DOC, noticeOfTransferLetterForDefendant);
         }
 
         return callbackResponse.data(data.build()).build();
