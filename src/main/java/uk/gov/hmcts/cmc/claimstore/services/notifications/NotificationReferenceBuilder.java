@@ -269,6 +269,16 @@ public class NotificationReferenceBuilder {
         }
     }
 
+    public static class IssuePaperDefence {
+        private IssuePaperDefence() {
+            // do not instantiate
+        }
+
+        public static String notifyClaimantPaperResponseFormsSentToDefendant(String claimReferenceNumber, String party) {
+            return reference("paper-response-forms-sent-%s-%s", party, claimReferenceNumber);
+        }
+    }
+
     public static class ContactDetailsChanged {
         public static final String TEMPLATE = "to-%s-contact-details-changed-%s";
 

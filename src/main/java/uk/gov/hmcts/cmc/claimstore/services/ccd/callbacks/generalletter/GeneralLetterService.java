@@ -82,6 +82,7 @@ public class GeneralLetterService {
         var draftLetterDoc = ccdCase.getDraftLetterDoc();
         printLetter(authorisation, draftLetterDoc, claim);
 
+        //needs to be refactored to make updating case documents optional
         return ccdCase.toBuilder()
             .caseDocuments(updateCaseDocumentsWithGeneralLetter(ccdCase, draftLetterDoc, documentName))
             .draftLetterDoc(null)
