@@ -8,6 +8,9 @@ import uk.gov.hmcts.cmc.ccd.util.MapperUtil;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
+import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseMethod;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
@@ -47,26 +50,32 @@ public class CaseDetailsConverter {
             return claim;
         }
 
-        claim.getResponse().ifPresent(response -> updateResponseMethod(response, ccdCase));
-
         // Calculating the intention to proceed here rather than in the mapper as we have access
         // to the WorkingDayIndicator here
         LocalDate intentionToProceedDeadline = calculateIntentionToProceedDeadline(claim.getRespondedAt());
         return claim.toBuilder()
                     .intentionToProceedDeadline(intentionToProceedDeadline)
+                    .response(updateResponseMethod(claim.getResponse().orElse(null), ccdCase))
                     .build();
     }
 
-    private void updateResponseMethod(Response response, CCDCase ccdCase) {
-        if (response.getResponseMethod() != null) {
-            return;
+    private Response updateResponseMethod(Response response, CCDCase ccdCase) {
+        if (response == null || response.getResponseMethod() != null) {
+            return response;
         }
 
         // Prior to ROC-7939 Response method was determined from documents attached to claim
         ResponseMethod responseMethod = MapperUtil.hasPaperResponse.apply(ccdCase) == YesNoOption.YES
             ? ResponseMethod.OFFLINE : ResponseMethod.DIGITAL;
 
-        response.setResponseMethod(responseMethod);
+        if (response instanceof PartAdmissionResponse) {
+            return ((PartAdmissionResponse)response).toBuilder().responseMethod(responseMethod).build();
+        } else if (response instanceof FullAdmissionResponse) {
+            return ((FullAdmissionResponse)response).toBuilder().responseMethod(responseMethod).build();
+        } else if (response instanceof FullDefenceResponse) {
+            return ((FullDefenceResponse) response).toBuilder().responseMethod(responseMethod).build();
+        }
+        throw new IllegalArgumentException("Unhandled response type");
     }
 
     public CCDCase extractCCDCase(CaseDetails caseDetails) {

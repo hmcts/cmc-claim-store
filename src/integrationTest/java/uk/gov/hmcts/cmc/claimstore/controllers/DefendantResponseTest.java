@@ -12,7 +12,6 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
-import uk.gov.hmcts.cmc.domain.models.response.ResponseMethod;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
@@ -98,7 +97,6 @@ public class DefendantResponseTest extends BaseMockSpringTest {
         ).andExpect(
             status().isOk()
         );
-        response.setResponseMethod(ResponseMethod.DIGITAL);
         verify(claimService)
             .saveDefendantResponse(CLAIM_LINKED, SampleClaim.DEFENDANT_EMAIL, response, AUTHORISATION_TOKEN);
         verify(eventProducer)

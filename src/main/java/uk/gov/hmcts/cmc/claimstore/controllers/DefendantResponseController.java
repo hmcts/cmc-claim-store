@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.services.DefendantResponseService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
-import uk.gov.hmcts.cmc.domain.models.response.ResponseMethod;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -44,7 +43,6 @@ public class DefendantResponseController {
         @PathVariable("externalId") String externalId,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization
     ) {
-        response.setResponseMethod(ResponseMethod.DIGITAL);
         return defendantResponseService.save(externalId, defendantId, response, authorization);
     }
 }

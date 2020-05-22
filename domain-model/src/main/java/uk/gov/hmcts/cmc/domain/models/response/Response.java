@@ -104,10 +104,6 @@ public abstract class Response {
         return Optional.ofNullable(statementOfTruth);
     }
 
-    public void setResponseMethod(ResponseMethod responseMethod) {
-        this.responseMethod = responseMethod;
-    }
-
     @Override
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ourStyle());
