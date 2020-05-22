@@ -81,7 +81,8 @@ public enum CaseEvent {
     CLAIMANT_RESPONSE_RECEIPT_UPLOAD("ClaimantResponseReceiptUpload"),
     REVIEW_JUDGE_COMMENTS("ReviewJudgeComments"),
     CCJ_REQUEST_UPLOAD("CCJRequestUpload"),
-    CHANGE_CONTACT_DETAILS("ChangeContactDetails");
+    CHANGE_CONTACT_DETAILS("ChangeContactDetails"),
+    ISSUE_PAPER_DEFENSE_FORMS("IssuePaperDefenceForms");
 
     private final String value;
 
