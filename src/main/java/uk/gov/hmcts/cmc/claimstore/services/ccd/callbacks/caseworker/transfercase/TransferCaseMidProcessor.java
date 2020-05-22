@@ -57,7 +57,7 @@ public class TransferCaseMidProcessor {
             noticeOfTransferLetterTemplateMapper.noticeOfTransferLetterBodyForCourt(
                 ccdCase, caseworkerName);
 
-        CCDDocument noticeOfTransferLetterForCourt = docAssemblyService.generateLetterAsDocument(authorisation,
+        CCDDocument noticeOfTransferLetterForCourt = docAssemblyService.generateDocument(authorisation,
             formPayloadForCourt,
             noticeOfTransferSentToCourtTemplateId);
 
@@ -69,7 +69,7 @@ public class TransferCaseMidProcessor {
                 noticeOfTransferLetterTemplateMapper.noticeOfTransferLetterBodyForDefendant(
                     ccdCase, caseworkerName);
 
-            CCDDocument noticeOfTransferLetterForDefendant = docAssemblyService.generateLetterAsDocument(authorisation,
+            CCDDocument noticeOfTransferLetterForDefendant = docAssemblyService.generateDocument(authorisation,
                 formPayloadForDefendant,
                 noticeOfTransferSentToDefendantTemplateId);
 

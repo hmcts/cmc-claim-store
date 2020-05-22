@@ -46,6 +46,8 @@ public class NoticeOfTransferLetterTemplateMapper {
         return DocAssemblyTemplateBody.builder()
             .currentDate(currentDate)
             .referenceNumber(ccdCase.getPreviousServiceCaseReference())
+            .transferredCourtName(ccdCase.getTransferContent().getNameOfTransferCourt())
+            .transferredCourtAddress(ccdCase.getTransferContent().getAddressOfTransferCourt())
             .caseworkerName(caseworkerName)
             .caseName(ccdCase.getCaseName())
             .partyName(partyName)

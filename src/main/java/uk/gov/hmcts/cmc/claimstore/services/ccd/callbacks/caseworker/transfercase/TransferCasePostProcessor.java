@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transferca
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -50,16 +51,19 @@ public class TransferCasePostProcessor {
 
     private CCDCase attachNoticesOfTransferToCase(CCDCase ccdCase) {
 
-        ccdCase = generalLetterService.attachGeneralLetterToCase(ccdCase, ccdCase.getCoverLetterDoc(),
+        CCDDocument coverLetterDoc = ccdCase.getCoverLetterDoc();
+
+        CCDCase ccdCaseWithDocuments = generalLetterService.attachGeneralLetterToCase(ccdCase, coverLetterDoc,
             buildNoticeOfTransferLetterFileName(ccdCase, FOR_COURT));
 
         if (!isDefendantLinked(ccdCase)) {
 
-            ccdCase = generalLetterService.attachGeneralLetterToCase(ccdCase, ccdCase.getDraftLetterDoc(),
+            ccdCaseWithDocuments = generalLetterService.attachGeneralLetterToCase(ccdCaseWithDocuments,
+                ccdCase.getDraftLetterDoc(),
                 buildNoticeOfTransferLetterFileName(ccdCase, FOR_DEFENDANT));
         }
 
-        return ccdCase;
+        return ccdCaseWithDocuments;
     }
 
     private String buildNoticeOfTransferLetterFileName(CCDCase ccdCase,

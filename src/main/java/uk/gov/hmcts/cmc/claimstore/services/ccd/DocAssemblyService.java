@@ -51,6 +51,25 @@ public class DocAssemblyService {
         this.judgeTemplateId = judgeTemplateId;
     }
 
+    public CCDDocument generateDocument(String authorisation,
+                                        DocAssemblyTemplateBody formPayload,
+                                        String templateId) {
+
+        DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
+            .templateId(templateId)
+            .outputType(OutputType.PDF)
+            .formPayload(formPayload)
+            .build();
+
+        var docAssemblyResponse = docAssemblyClient.generateOrder(
+            authorisation,
+            authTokenGenerator.generate(),
+            docAssemblyRequest
+        );
+
+        return CCDDocument.builder().documentUrl(docAssemblyResponse.getRenditionOutputLocation()).build();
+    }
+
     public DocAssemblyResponse createOrder(CCDCase ccdCase, String authorisation) {
         UserDetails userDetails = userService.getUserDetails(authorisation);
 
@@ -71,7 +90,7 @@ public class DocAssemblyService {
         );
     }
 
-    public DocAssemblyResponse  changeContactLetter(CCDCase ccdCase, String authorisation, String templateId) {
+    public DocAssemblyResponse changeContactLetter(CCDCase ccdCase, String authorisation, String templateId) {
         logger.info("Doc assembly service: creating general letter request for doc assembly for external id: {}",
             ccdCase.getExternalId());
 
@@ -96,7 +115,7 @@ public class DocAssemblyService {
         }
     }
 
-    public DocAssemblyResponse  createGeneralLetter(CCDCase ccdCase, String authorisation, String templateId) {
+    public DocAssemblyResponse createGeneralLetter(CCDCase ccdCase, String authorisation, String templateId) {
         logger.info("Doc assembly service: creating general letter request for doc assembly for external id: {}",
             ccdCase.getExternalId());
 
@@ -117,35 +136,6 @@ public class DocAssemblyService {
         } catch (Exception e) {
             logger.error("Error while trying to generate a general letter docAssembly for external id: {}",
                 ccdCase.getExternalId());
-            throw new DocumentGenerationFailedException(e);
-        }
-    }
-
-    public CCDDocument generateLetterAsDocument(String authorisation,
-                                                 DocAssemblyTemplateBody formPayload, String templateId) {
-
-        var docAssemblyResponse = createLetter(authorisation,
-            templateId, formPayload);
-
-        return CCDDocument.builder().documentUrl(docAssemblyResponse.getRenditionOutputLocation()).build();
-    }
-
-    private DocAssemblyResponse createLetter(String authorisation, String templateId,
-                                            DocAssemblyTemplateBody formPayload) {
-
-        DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
-            .templateId(templateId)
-            .outputType(OutputType.PDF)
-            .formPayload(formPayload)
-            .build();
-
-        try {
-            return docAssemblyClient.generateOrder(
-                authorisation,
-                authTokenGenerator.generate(),
-                docAssemblyRequest
-            );
-        } catch (Exception e) {
             throw new DocumentGenerationFailedException(e);
         }
     }
