@@ -20,32 +20,33 @@ public class NoticeOfTransferLetterTemplateMapper {
         this.clock = clock;
     }
 
-    public DocAssemblyTemplateBody noticeOfTransferLetterBodyForCourt(CCDCase ccdCase) {
+    public DocAssemblyTemplateBody noticeOfTransferLetterBodyForCourt(CCDCase ccdCase, String caseworkerName) {
 
         String partyName = ccdCase.getTransferContent().getNameOfTransferCourt();
         CCDAddress partyAddress = ccdCase.getTransferContent().getAddressOfTransferCourt();
 
-        return noticeOfTransferLetterBody(ccdCase, partyName, partyAddress);
+        return noticeOfTransferLetterBody(ccdCase, partyName, partyAddress, caseworkerName);
     }
 
-    public DocAssemblyTemplateBody noticeOfTransferLetterBodyForDefendant(CCDCase ccdCase) {
+    public DocAssemblyTemplateBody noticeOfTransferLetterBodyForDefendant(CCDCase ccdCase, String caseworkerName) {
 
         String partyName = getDefendantName(ccdCase);
         CCDAddress partyAddress = getDefendantAddress(ccdCase);
 
-        return noticeOfTransferLetterBody(ccdCase, partyName, partyAddress);
+        return noticeOfTransferLetterBody(ccdCase, partyName, partyAddress, caseworkerName);
     }
 
     private DocAssemblyTemplateBody noticeOfTransferLetterBody(CCDCase ccdCase,
                                                                String partyName,
-                                                               CCDAddress partyAddress) {
+                                                               CCDAddress partyAddress,
+                                                               String caseworkerName) {
 
         LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
 
         return DocAssemblyTemplateBody.builder()
             .currentDate(currentDate)
             .referenceNumber(ccdCase.getPreviousServiceCaseReference())
-            .caseworkerName(ccdCase.getTransferContent().getCaseworkerName())
+            .caseworkerName(caseworkerName)
             .caseName(ccdCase.getCaseName())
             .partyName(partyName)
             .partyAddress(partyAddress)

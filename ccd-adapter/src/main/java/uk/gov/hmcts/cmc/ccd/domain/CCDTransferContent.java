@@ -10,7 +10,6 @@ import java.time.LocalDate;
 public class CCDTransferContent {
 
     private LocalDate dateOfTransfer;
-    private String caseworkerName;
     private String reasonForTransfer;
     private String nameOfTransferCourt;
     private CCDAddress addressOfTransferCourt;

@@ -3,12 +3,16 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transferca
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
+
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase.NoticeOfTransferLetterType.FOR_COURT;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase.NoticeOfTransferLetterType.FOR_DEFENDANT;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildNoticeOfTransferForCourtFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildNoticeOfTransferForDefendantFileBaseName;
 
 @Service
 public class TransferCasePostProcessor {
@@ -47,15 +51,34 @@ public class TransferCasePostProcessor {
     private CCDCase attachNoticesOfTransferToCase(CCDCase ccdCase) {
 
         ccdCase = generalLetterService.attachGeneralLetterToCase(ccdCase, ccdCase.getCoverLetterDoc(),
-            "Notice of transfer letter for court");
+            buildNoticeOfTransferLetterFileName(ccdCase, FOR_COURT));
 
         if (!isDefendantLinked(ccdCase)) {
 
             ccdCase = generalLetterService.attachGeneralLetterToCase(ccdCase, ccdCase.getDraftLetterDoc(),
-                "Notice of transfer letter for defendant");
+                buildNoticeOfTransferLetterFileName(ccdCase, FOR_DEFENDANT));
         }
 
         return ccdCase;
+    }
+
+    private String buildNoticeOfTransferLetterFileName(CCDCase ccdCase,
+                                                       NoticeOfTransferLetterType noticeOfTransferLetterType) {
+
+        String basename;
+
+        switch (noticeOfTransferLetterType) {
+            case FOR_COURT:
+                basename = buildNoticeOfTransferForCourtFileBaseName(ccdCase.getPreviousServiceCaseReference());
+                break;
+            case FOR_DEFENDANT:
+                basename = buildNoticeOfTransferForDefendantFileBaseName(ccdCase.getPreviousServiceCaseReference());
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
+
+        return String.format("%s.pdf", basename);
     }
 
     private void sendCaseDocumentsToBulkPrint(CCDCase ccdCase) {

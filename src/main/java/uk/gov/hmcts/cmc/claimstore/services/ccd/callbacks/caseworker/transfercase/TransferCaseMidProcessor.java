@@ -6,14 +6,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
-
-import java.util.Map;
 
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService.DRAFT_LETTER_DOC;
 
@@ -26,6 +26,7 @@ public class TransferCaseMidProcessor {
     private final String noticeOfTransferSentToCourtTemplateId;
     private final String noticeOfTransferSentToDefendantTemplateId;
     private final CaseDetailsConverter caseDetailsConverter;
+    private final UserService userService;
 
     public TransferCaseMidProcessor(
         DocAssemblyService docAssemblyService,
@@ -33,25 +34,28 @@ public class TransferCaseMidProcessor {
         @Value("${doc_assembly.noticeOfTransferSentToCourtTemplateId}") String noticeOfTransferSentToCourtTemplateId,
         @Value("${doc_assembly.noticeOfTransferSentToDefendantTemplateId}")
             String noticeOfTransferSentToDefendantTemplateId,
-        CaseDetailsConverter caseDetailsConverter) {
+        CaseDetailsConverter caseDetailsConverter,
+        UserService userService) {
         this.docAssemblyService = docAssemblyService;
         this.noticeOfTransferLetterTemplateMapper = noticeOfTransferLetterTemplateMapper;
         this.noticeOfTransferSentToCourtTemplateId = noticeOfTransferSentToCourtTemplateId;
         this.noticeOfTransferSentToDefendantTemplateId = noticeOfTransferSentToDefendantTemplateId;
         this.caseDetailsConverter = caseDetailsConverter;
+        this.userService = userService;
     }
 
     public CallbackResponse generateNoticeOfTransferLetters(CallbackParams callbackParams) {
 
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackParams.getRequest().getCaseDetails());
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
+        String caseworkerName = getCaseworkerName(authorisation);
 
-        ImmutableMap.Builder<String, Object> data = ImmutableMap.<String, Object>builder();
+        ImmutableMap.Builder<String, Object> data = ImmutableMap.builder();
         var callbackResponse = AboutToStartOrSubmitCallbackResponse.builder();
 
         DocAssemblyTemplateBody formPayloadForCourt =
             noticeOfTransferLetterTemplateMapper.noticeOfTransferLetterBodyForCourt(
-                ccdCase);
+                ccdCase, caseworkerName);
 
         CCDDocument noticeOfTransferLetterForCourt = docAssemblyService.generateLetterAsDocument(authorisation,
             formPayloadForCourt,
@@ -63,7 +67,7 @@ public class TransferCaseMidProcessor {
 
             DocAssemblyTemplateBody formPayloadForDefendant =
                 noticeOfTransferLetterTemplateMapper.noticeOfTransferLetterBodyForDefendant(
-                    ccdCase);
+                    ccdCase, caseworkerName);
 
             CCDDocument noticeOfTransferLetterForDefendant = docAssemblyService.generateLetterAsDocument(authorisation,
                 formPayloadForDefendant,
@@ -77,5 +81,10 @@ public class TransferCaseMidProcessor {
 
     private boolean isDefendantLinked(CCDCase ccdCase) {
         return !StringUtils.isBlank(ccdCase.getRespondents().get(0).getValue().getDefendantId());
+    }
+
+    private String getCaseworkerName(String authorisation) {
+        UserDetails userDetails = userService.getUserDetails(authorisation);
+        return userDetails.getFullName();
     }
 }
