@@ -3,12 +3,22 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transferca
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.claimstore.events.BulkPrintTransferEvent;
+import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.PrintableDocumentService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
+import uk.gov.hmcts.reform.sendletter.api.Document;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase.NoticeOfTransferLetterType.FOR_COURT;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase.NoticeOfTransferLetterType.FOR_DEFENDANT;
@@ -20,28 +30,32 @@ public class TransferCasePostProcessor {
 
     private final CaseDetailsConverter caseDetailsConverter;
     private final GeneralLetterService generalLetterService;
-    private final TransferCaseLetterSender transferCaseLetterSender;
+    private final PrintableDocumentService printableDocumentService;
+    private final EventProducer eventProducer;
 
     public TransferCasePostProcessor(
         CaseDetailsConverter caseDetailsConverter,
         GeneralLetterService generalLetterService,
-        TransferCaseLetterSender transferCaseLetterSender) {
-
+        PrintableDocumentService printableDocumentService,
+        EventProducer eventProducer
+    ) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.generalLetterService = generalLetterService;
-        this.transferCaseLetterSender = transferCaseLetterSender;
+        this.printableDocumentService = printableDocumentService;
+        this.eventProducer = eventProducer;
     }
 
     public CallbackResponse performBulkPrintTransfer(CallbackParams callbackParams) {
 
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackParams.getRequest().getCaseDetails());
+        Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
 
-        ccdCase = attachNoticesOfTransferToCase(ccdCase);
-
-        sendCaseDocumentsToBulkPrint(ccdCase);
+        ccdCase = publishCaseDocuments(ccdCase, claim, authorisation);
 
         sendEmailNotifications(ccdCase);
+
+        ccdCase = ccdCase.toBuilder().coverLetterDoc(null).transferContent(null).build();
 
         return AboutToStartOrSubmitCallbackResponse
             .builder()
@@ -49,26 +63,55 @@ public class TransferCasePostProcessor {
             .build();
     }
 
-    private CCDCase attachNoticesOfTransferToCase(CCDCase ccdCase) {
-
-        CCDDocument coverLetterDoc = ccdCase.getCoverLetterDoc();
-
-        CCDCase ccdCaseWithDocuments = generalLetterService.attachGeneralLetterToCase(ccdCase, coverLetterDoc,
-            buildNoticeOfTransferLetterFileName(ccdCase, FOR_COURT));
+    private CCDCase publishCaseDocuments(CCDCase ccdCase, Claim claim, String authorisation) {
 
         if (!isDefendantLinked(ccdCase)) {
-
-            ccdCaseWithDocuments = generalLetterService.attachGeneralLetterToCase(ccdCaseWithDocuments,
-                ccdCase.getDraftLetterDoc(),
+            ccdCase = generalLetterService.publishLetter(ccdCase, claim, authorisation,
                 buildNoticeOfTransferLetterFileName(ccdCase, FOR_DEFENDANT));
         }
 
-        return ccdCaseWithDocuments;
+        Document coverLetterDoc = printableDocumentService.process(ccdCase.getCoverLetterDoc(), authorisation);
+        List<BulkPrintTransferEvent.PrintableDocument> caseDocuments = getDocuments(ccdCase, authorisation);
+        eventProducer.createBulkPrintTransferEvent(claim, coverLetterDoc, caseDocuments);
+
+        return processData(ccdCase);
     }
 
-    private String buildNoticeOfTransferLetterFileName(CCDCase ccdCase,
-                                                       NoticeOfTransferLetterType noticeOfTransferLetterType) {
+    private List<BulkPrintTransferEvent.PrintableDocument> getDocuments(CCDCase ccdCase, String authorisation) {
+        return ccdCase.getCaseDocuments().stream()
+            .map(CCDCollectionElement::getValue)
+            .map(CCDClaimDocument::getDocumentLink)
+            .map(d -> this.getPrintableDocument(authorisation, d))
+            .collect(Collectors.toList());
+    }
 
+    private BulkPrintTransferEvent.PrintableDocument getPrintableDocument(String authorisation, CCDDocument document) {
+        Document printableDocument = printableDocumentService.process(document, authorisation);
+        return new BulkPrintTransferEvent.PrintableDocument(printableDocument, document.getDocumentFileName());
+    }
+
+    private CCDCase processData(CCDCase ccdCase) {
+        ccdCase = generalLetterService.attachGeneralLetterToCase(ccdCase,
+            ccdCase.getCoverLetterDoc(), buildNoticeOfTransferLetterFileName(ccdCase, FOR_COURT));
+
+        return ccdCase.toBuilder()
+            .coverLetterDoc(null)
+            .transferContent(null)
+            .build();
+    }
+
+    private void sendEmailNotifications(CCDCase ccdCase) {
+        sendClaimUpdatedEmailToClaimant(ccdCase);
+
+        if (isDefendantLinked(ccdCase)) {
+            sendClaimUpdatedEmailToDefendant(ccdCase);
+        }
+    }
+
+    private String buildNoticeOfTransferLetterFileName(
+        CCDCase ccdCase,
+        NoticeOfTransferLetterType noticeOfTransferLetterType
+    ) {
         String basename;
 
         switch (noticeOfTransferLetterType) {
@@ -83,23 +126,6 @@ public class TransferCasePostProcessor {
         }
 
         return String.format("%s.pdf", basename);
-    }
-
-    private void sendCaseDocumentsToBulkPrint(CCDCase ccdCase) {
-
-        if (!isDefendantLinked(ccdCase)) {
-            transferCaseLetterSender.sendNoticeOfTransferForDefendant(ccdCase);
-        }
-
-        transferCaseLetterSender.sendAllCaseDocumentsToCourt(ccdCase);
-    }
-
-    private void sendEmailNotifications(CCDCase ccdCase) {
-        sendClaimUpdatedEmailToClaimant(ccdCase);
-
-        if (isDefendantLinked(ccdCase)) {
-            sendClaimUpdatedEmailToDefendant(ccdCase);
-        }
     }
 
     private void sendClaimUpdatedEmailToClaimant(CCDCase ccdCase) {

@@ -15,20 +15,15 @@ import uk.gov.hmcts.cmc.ccd.domain.GeneralLetterContent;
 import uk.gov.hmcts.cmc.claimstore.events.GeneralLetterReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
-import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.PrintableDocumentService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.docassembly.exception.DocumentGenerationFailedException;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.util.Base64;
-import java.util.Collections;
 import java.util.List;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.GENERAL_LETTER;
@@ -42,20 +37,20 @@ public class GeneralLetterService {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final DocAssemblyService docAssemblyService;
     private final ApplicationEventPublisher publisher;
-    private final DocumentManagementService documentManagementService;
+    private final PrintableDocumentService printableDocumentService;
     private final Clock clock;
     private final UserService userService;
 
     public GeneralLetterService(
         DocAssemblyService docAssemblyService,
         ApplicationEventPublisher publisher,
-        DocumentManagementService documentManagementService,
+        PrintableDocumentService printableDocumentService,
         Clock clock,
         UserService userService
     ) {
         this.docAssemblyService = docAssemblyService;
         this.publisher = publisher;
-        this.documentManagementService = documentManagementService;
+        this.printableDocumentService = printableDocumentService;
         this.clock = clock;
         this.userService = userService;
     }
@@ -126,24 +121,8 @@ public class GeneralLetterService {
     }
 
     private void printLetter(String authorisation, CCDDocument document, Claim claim) {
-        Document downloadedLetter = downloadLetter(authorisation, document);
+        Document downloadedLetter = printableDocumentService.process(document, authorisation);
         GeneralLetterReadyToPrintEvent event = new GeneralLetterReadyToPrintEvent(claim, downloadedLetter);
         publisher.publishEvent(event);
-    }
-
-    private Document downloadLetter(String authorisation, CCDDocument document) {
-        try {
-            return new Document(Base64.getEncoder().encodeToString(
-                documentManagementService.downloadDocument(
-                    authorisation,
-                    ClaimDocument.builder()
-                        .documentName(document.getDocumentFileName())
-                        .documentManagementUrl(new URI(document.getDocumentUrl()))
-                        .documentManagementBinaryUrl(new URI(document.getDocumentBinaryUrl()))
-                        .build())),
-                Collections.emptyMap());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
     }
 }
