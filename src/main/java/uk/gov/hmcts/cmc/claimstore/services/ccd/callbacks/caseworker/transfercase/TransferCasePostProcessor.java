@@ -64,17 +64,17 @@ public class TransferCasePostProcessor {
     }
 
     private CCDCase publishCaseDocuments(CCDCase ccdCase, Claim claim, String authorisation) {
-
-        if (!isDefendantLinked(ccdCase)) {
-            ccdCase = generalLetterService.publishLetter(ccdCase, claim, authorisation,
-                buildNoticeOfTransferLetterFileName(ccdCase, FOR_DEFENDANT));
+        CCDCase updated = ccdCase;
+        if (!isDefendantLinked(updated)) {
+            updated = generalLetterService.publishLetter(updated, claim, authorisation,
+                buildNoticeOfTransferLetterFileName(updated, FOR_DEFENDANT));
         }
 
-        Document coverLetterDoc = printableDocumentService.process(ccdCase.getCoverLetterDoc(), authorisation);
-        List<BulkPrintTransferEvent.PrintableDocument> caseDocuments = getDocuments(ccdCase, authorisation);
+        Document coverLetterDoc = printableDocumentService.process(updated.getCoverLetterDoc(), authorisation);
+        List<BulkPrintTransferEvent.PrintableDocument> caseDocuments = getDocuments(updated, authorisation);
         eventProducer.createBulkPrintTransferEvent(claim, coverLetterDoc, caseDocuments);
 
-        return processData(ccdCase);
+        return processData(updated);
     }
 
     private List<BulkPrintTransferEvent.PrintableDocument> getDocuments(CCDCase ccdCase, String authorisation) {
@@ -91,10 +91,10 @@ public class TransferCasePostProcessor {
     }
 
     private CCDCase processData(CCDCase ccdCase) {
-        ccdCase = generalLetterService.attachGeneralLetterToCase(ccdCase,
+        CCDCase updated = generalLetterService.attachGeneralLetterToCase(ccdCase,
             ccdCase.getCoverLetterDoc(), buildNoticeOfTransferLetterFileName(ccdCase, FOR_COURT));
 
-        return ccdCase.toBuilder()
+        return updated.toBuilder()
             .coverLetterDoc(null)
             .transferContent(null)
             .build();
