@@ -10,7 +10,6 @@ import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.docassembly.DocAssemblyClient;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyRequest;
@@ -30,9 +29,6 @@ public class DocAssemblyServiceTest {
     private static final String BEARER_TOKEN = "Bearer let me in";
     private static final String SERVICE_TOKEN = "Bearer service let me in";
     private static final String DOC_URL = "http://success.test";
-    public static final String LEGAL_ADVISOR_TEMPLATE_ID = "legalAdvisorTemplateId";
-    public static final String GENERAL_LETTER_TEMPLATE_ID = "generalLetterTemplateId";
-    public static final String CONTACT_CHANGE_LETTER_TEMPLATE_ID = "ContactChangeLetterTemplateId";
 
     private static final UserDetails JUDGE = new UserDetails(
         "1",
@@ -49,8 +45,6 @@ public class DocAssemblyServiceTest {
     @Mock
     private AuthTokenGenerator authTokenGenerator;
     @Mock
-    private DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
-    @Mock
     private DocAssemblyResponse docAssemblyResponse;
 
     private DocAssemblyService docAssemblyService;
@@ -59,84 +53,33 @@ public class DocAssemblyServiceTest {
 
     @Before
     public void setup() {
-        docAssemblyService = new DocAssemblyService(authTokenGenerator,
-            docAssemblyTemplateBodyMapper,
-            docAssemblyClient,
-            userService,
-            LEGAL_ADVISOR_TEMPLATE_ID,
-            JUDGE_TEMPLATE_ID);
+        docAssemblyService = new DocAssemblyService(authTokenGenerator, docAssemblyClient);
+
         ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
-        when(userService.getUserDetails(eq(BEARER_TOKEN))).thenReturn(JUDGE);
         when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
         when(authTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
     }
 
     @Test
-    public void shouldCreateOrderOnDocAssembly() {
+    public void shouldRenderTemplate() {
+        String templateId = "templateId";
         ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
-        when(docAssemblyTemplateBodyMapper.from(eq(ccdCase), eq(JUDGE)))
-            .thenReturn(DocAssemblyTemplateBody.builder().build());
-        DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
-            .templateId(LEGAL_ADVISOR_TEMPLATE_ID)
-            .outputType(OutputType.PDF)
-            .formPayload(docAssemblyTemplateBodyMapper.from(ccdCase, JUDGE))
-            .build();
-        when(docAssemblyClient
-            .generateOrder(eq(BEARER_TOKEN), eq(SERVICE_TOKEN), eq(docAssemblyRequest)))
-            .thenReturn(docAssemblyResponse);
-
-        DocAssemblyResponse response = docAssemblyService.createOrder(ccdCase, BEARER_TOKEN);
-
-        assertThat(response.getRenditionOutputLocation()).isEqualTo(DOC_URL);
-
-        verify(docAssemblyClient).generateOrder(eq(BEARER_TOKEN), eq(SERVICE_TOKEN), any(DocAssemblyRequest.class));
-    }
-
-    @Test
-    public void shouldCreateChangeContactLetter() {
         DocAssemblyTemplateBody docAssemblyTemplateBody = DocAssemblyTemplateBody.builder().build();
-
-        when(docAssemblyTemplateBodyMapper.changeContactBody(eq(ccdCase)))
-            .thenReturn(docAssemblyTemplateBody);
-
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
-            .templateId(CONTACT_CHANGE_LETTER_TEMPLATE_ID)
+            .templateId(templateId)
             .outputType(OutputType.PDF)
             .formPayload(docAssemblyTemplateBody)
             .build();
-
         when(docAssemblyClient
             .generateOrder(eq(BEARER_TOKEN), eq(SERVICE_TOKEN), eq(docAssemblyRequest)))
             .thenReturn(docAssemblyResponse);
 
-        when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
-
-        DocAssemblyResponse response = docAssemblyService.changeContactLetter(ccdCase,
-            BEARER_TOKEN, CONTACT_CHANGE_LETTER_TEMPLATE_ID);
+        DocAssemblyResponse response = docAssemblyService.renderTemplate(ccdCase, BEARER_TOKEN, templateId,
+            docAssemblyTemplateBody);
 
         assertThat(response.getRenditionOutputLocation()).isEqualTo(DOC_URL);
+
         verify(docAssemblyClient).generateOrder(eq(BEARER_TOKEN), eq(SERVICE_TOKEN), any(DocAssemblyRequest.class));
     }
 
-    @Test
-    public void shouldCreateGeneralLetter() {
-        when(docAssemblyTemplateBodyMapper.generalLetterBody(eq(ccdCase)))
-            .thenReturn(DocAssemblyTemplateBody.builder().build());
-
-        DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
-            .templateId(GENERAL_LETTER_TEMPLATE_ID)
-            .outputType(OutputType.PDF)
-            .formPayload(docAssemblyTemplateBodyMapper.generalLetterBody(ccdCase))
-            .build();
-
-        when(docAssemblyClient
-            .generateOrder(eq(BEARER_TOKEN), eq(SERVICE_TOKEN), eq(docAssemblyRequest)))
-            .thenReturn(docAssemblyResponse);
-
-        DocAssemblyResponse response = docAssemblyService.createGeneralLetter(ccdCase,
-            BEARER_TOKEN, GENERAL_LETTER_TEMPLATE_ID);
-
-        assertThat(response.getRenditionOutputLocation()).isEqualTo(DOC_URL);
-        verify(docAssemblyClient).generateOrder(eq(BEARER_TOKEN), eq(SERVICE_TOKEN), any(DocAssemblyRequest.class));
-    }
 }

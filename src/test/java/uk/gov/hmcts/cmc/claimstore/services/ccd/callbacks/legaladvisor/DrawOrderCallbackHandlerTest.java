@@ -24,7 +24,6 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
-import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -89,9 +88,6 @@ public class DrawOrderCallbackHandlerTest {
     private DocAssemblyService docAssemblyService;
 
     @Mock
-    private PilotCourtService pilotCourtService;
-
-    @Mock
     private DirectionOrderService directionOrderService;
 
     private CallbackParams callbackParams;
@@ -101,14 +97,16 @@ public class DrawOrderCallbackHandlerTest {
     private DrawOrderCallbackHandler drawOrderCallbackHandler;
     @Mock
     private AppInsights appInsights;
+    @Mock
+    private OrderRenderer orderRenderer;
 
     @Before
     public void setUp() {
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
             caseDetailsConverter, legalOrderService, appInsights, directionOrderService);
 
-        drawOrderCallbackHandler = new DrawOrderCallbackHandler(orderPostProcessor,
-            caseDetailsConverter, docAssemblyService);
+        drawOrderCallbackHandler = new DrawOrderCallbackHandler(orderPostProcessor, caseDetailsConverter,
+            orderRenderer);
 
         when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
@@ -136,7 +134,7 @@ public class DrawOrderCallbackHandlerTest {
 
         DocAssemblyResponse docAssemblyResponse = Mockito.mock(DocAssemblyResponse.class);
         when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOCUMENT_URL);
-        when(docAssemblyService.createOrder(eq(ccdCase), eq(BEARER_TOKEN)))
+        when(orderRenderer.renderLegalAdvisorOrder(eq(ccdCase), eq(BEARER_TOKEN)))
             .thenReturn(docAssemblyResponse);
 
         CallbackParams callbackParams = CallbackParams.builder()
@@ -145,9 +143,7 @@ public class DrawOrderCallbackHandlerTest {
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response =
-            (AboutToStartOrSubmitCallbackResponse) drawOrderCallbackHandler
-                .handle(callbackParams);
+        var response = (AboutToStartOrSubmitCallbackResponse) drawOrderCallbackHandler.handle(callbackParams);
 
         CCDDocument document = CCDDocument.builder().documentUrl(DOCUMENT_URL).build();
         assertThat(response.getData()).contains(entry("draftOrderDoc", document));

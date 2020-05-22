@@ -123,14 +123,20 @@ class DrawJudgeOrderCallbackHandlerTest {
     private LegalOrderService legalOrderService;
     @Mock
     private DirectionOrderService directionOrderService;
+    @Mock
+    private OrderRenderer orderRenderer;
 
     private CallbackRequest callbackRequest;
     private DrawJudgeOrderCallbackHandler drawJudgeOrderCallbackHandler;
 
     @BeforeEach
     void setUp() {
-        OrderCreator orderCreator = new OrderCreator(legalOrderGenerationDeadlinesCalculator, caseDetailsConverter,
-            docAssemblyService, new GenerateOrderRule(), directionsQuestionnaireService, pilotCourtService);
+        OrderCreator orderCreator = new OrderCreator(legalOrderGenerationDeadlinesCalculator,
+            caseDetailsConverter,
+            new GenerateOrderRule(),
+            directionsQuestionnaireService,
+            pilotCourtService,
+            orderRenderer);
 
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
             caseDetailsConverter, legalOrderService, appInsights, directionOrderService);
@@ -163,8 +169,7 @@ class DrawJudgeOrderCallbackHandlerTest {
 
             DocAssemblyResponse docAssemblyResponse = Mockito.mock(DocAssemblyResponse.class);
             when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
-            when(docAssemblyService.createOrder(eq(ccdCase), eq(BEARER_TOKEN)))
-                .thenReturn(docAssemblyResponse);
+            when(orderRenderer.renderOrder(eq(ccdCase), eq(BEARER_TOKEN))).thenReturn(docAssemblyResponse);
 
             CallbackParams callbackParams = CallbackParams.builder()
                 .type(CallbackType.MID)

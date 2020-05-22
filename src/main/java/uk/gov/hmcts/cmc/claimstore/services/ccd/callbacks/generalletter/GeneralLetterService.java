@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.ccd.domain.GeneralLetterContent;
 import uk.gov.hmcts.cmc.claimstore.events.GeneralLetterReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
@@ -45,19 +46,22 @@ public class GeneralLetterService {
     private final DocumentManagementService documentManagementService;
     private final Clock clock;
     private final UserService userService;
+    private final DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
 
     public GeneralLetterService(
         DocAssemblyService docAssemblyService,
         ApplicationEventPublisher publisher,
         DocumentManagementService documentManagementService,
         Clock clock,
-        UserService userService
+        UserService userService,
+        DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper
     ) {
         this.docAssemblyService = docAssemblyService;
         this.publisher = publisher;
         this.documentManagementService = documentManagementService;
         this.clock = clock;
         this.userService = userService;
+        this.docAssemblyTemplateBodyMapper = docAssemblyTemplateBodyMapper;
     }
 
     public CallbackResponse prepopulateData(String authorisation) {
@@ -74,7 +78,8 @@ public class GeneralLetterService {
     public String generateLetter(CCDCase ccdCase, String authorisation, String templateId)
         throws DocumentGenerationFailedException {
         logger.info("General Letter: creating general letter");
-        var docAssemblyResponse = docAssemblyService.createGeneralLetter(ccdCase, authorisation, templateId);
+        var docAssemblyResponse = docAssemblyService.renderTemplate(ccdCase, authorisation, templateId,
+            docAssemblyTemplateBodyMapper.generalLetterBody(ccdCase));
         return docAssemblyResponse.getRenditionOutputLocation();
     }
 
