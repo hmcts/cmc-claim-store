@@ -191,6 +191,7 @@ notifications:
       claimantPaperResponseReceived: "b8bc5ed5-3362-4bcc-b678-c4298f149560"
       defendantContactDetailsChanged: "39b8c7a0-6d8a-4bee-8b79-e0f1df73d249"
       claimantContactDetailsChanged: "bc227831-a2f5-4399-bfa4-06a392bc5a80"
+      caseTransferred: "841843ef-2d49-4c6b-8179-6e42443e049d"
 
 staff-notifications:
   sender:

@@ -605,8 +605,9 @@ public final class SampleClaim {
             null,
             offlineJourney,
             null,
+            null,
             null
-            );
+        );
     }
 
     public SampleClaim withSubmitterId(String userId) {

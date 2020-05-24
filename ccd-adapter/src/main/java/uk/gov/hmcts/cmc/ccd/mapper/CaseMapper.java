@@ -18,6 +18,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.mapper.ClaimSubmissionOperationIndicatorMapper.mapClaimSubmissionOperationIndicatorsToCCD;
 import static uk.gov.hmcts.cmc.ccd.mapper.ClaimSubmissionOperationIndicatorMapper.mapFromCCDClaimSubmissionOperationIndicators;
 import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.getMediationOutcome;
+import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.getTransferContent;
 import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.toCaseName;
 
 @Component
@@ -108,7 +109,8 @@ public class CaseMapper {
             .reviewOrder(reviewOrderMapper.from(ccdCase.getReviewOrder()))
             .dateReferredForDirections(ccdCase.getDateReferredForDirections())
             .paperResponse(MapperUtil.hasPaperResponse.apply(ccdCase))
-            .mediationOutcome(getMediationOutcome(ccdCase));
+            .mediationOutcome(getMediationOutcome(ccdCase))
+            .transferContent(getTransferContent(ccdCase));
 
         if (ccdCase.getFeatures() != null) {
             builder.features(Arrays.asList(ccdCase.getFeatures().split(",")));

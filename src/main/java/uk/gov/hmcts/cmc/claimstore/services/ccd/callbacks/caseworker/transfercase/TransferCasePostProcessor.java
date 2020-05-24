@@ -32,17 +32,20 @@ public class TransferCasePostProcessor {
     private final GeneralLetterService generalLetterService;
     private final PrintableDocumentService printableDocumentService;
     private final EventProducer eventProducer;
+    private final TransferCaseNotificationsService transferCaseNotificationsService;
 
     public TransferCasePostProcessor(
         CaseDetailsConverter caseDetailsConverter,
         GeneralLetterService generalLetterService,
         PrintableDocumentService printableDocumentService,
-        EventProducer eventProducer
+        EventProducer eventProducer,
+        TransferCaseNotificationsService transferCaseNotificationsService
     ) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.generalLetterService = generalLetterService;
         this.printableDocumentService = printableDocumentService;
         this.eventProducer = eventProducer;
+        this.transferCaseNotificationsService = transferCaseNotificationsService;
     }
 
     public CallbackResponse performBulkPrintTransfer(CallbackParams callbackParams) {
@@ -53,7 +56,7 @@ public class TransferCasePostProcessor {
 
         ccdCase = publishCaseDocuments(ccdCase, claim, authorisation);
 
-        sendEmailNotifications(ccdCase);
+        sendEmailNotifications(ccdCase, claim);
 
         ccdCase = ccdCase.toBuilder().coverLetterDoc(null).transferContent(null).build();
 
@@ -100,11 +103,11 @@ public class TransferCasePostProcessor {
             .build();
     }
 
-    private void sendEmailNotifications(CCDCase ccdCase) {
-        sendClaimUpdatedEmailToClaimant(ccdCase);
+    private void sendEmailNotifications(CCDCase ccdCase, Claim claim) {
+        transferCaseNotificationsService.sendClaimUpdatedEmailToClaimant(claim);
 
         if (isDefendantLinked(ccdCase)) {
-            sendClaimUpdatedEmailToDefendant(ccdCase);
+            transferCaseNotificationsService.sendClaimUpdatedEmailToDefendant(claim);
         }
     }
 
@@ -126,14 +129,6 @@ public class TransferCasePostProcessor {
         }
 
         return String.format("%s.pdf", basename);
-    }
-
-    private void sendClaimUpdatedEmailToClaimant(CCDCase ccdCase) {
-        // TODO Based on ChangeContactDetailsNotificationService
-    }
-
-    private void sendClaimUpdatedEmailToDefendant(CCDCase ccdCase) {
-        // TODO Based on ChangeContactDetailsNotificationService
     }
 
     private boolean isDefendantLinked(CCDCase ccdCase) {
