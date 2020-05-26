@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.launchdarkly;
 
-import com.launchdarkly.client.LDClientInterface;
+import com.launchdarkly.client.LDClient;
 import com.launchdarkly.client.LDUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,15 +15,14 @@ public class LaunchDarklyClient {
         .anonymous(true)
         .build();
 
-    private final LDClientInterface internalClient;
+    private final LDClient internalClient;
 
     @Autowired
     public LaunchDarklyClient(
         LDClientFactory ldClientFactory,
-        @Value("${launchdarkly.sdk-key}") String sdkKey,
-        @Value("${launchdarkly.offline-mode:false}") Boolean offlineMode
+        @Value("${launchdarkly.sdk-key}") String sdkKey
     ) {
-        this.internalClient = ldClientFactory.create(sdkKey, offlineMode);
+        this.internalClient = ldClientFactory.create(sdkKey);
         Runtime.getRuntime().addShutdownHook(new Thread(this::close));
     }
 

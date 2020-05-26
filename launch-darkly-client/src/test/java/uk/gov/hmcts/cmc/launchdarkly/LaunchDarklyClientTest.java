@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.launchdarkly;
 
-import com.launchdarkly.client.LDClientInterface;
+import com.launchdarkly.client.LDClient;
 import com.launchdarkly.client.LDUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,7 @@ class LaunchDarklyClientTest {
     private LDClientFactory ldClientFactory;
 
     @Mock
-    private LDClientInterface ldClient;
+    private LDClient ldClient;
 
     @Mock
     private LDUser ldUser;
@@ -34,8 +34,8 @@ class LaunchDarklyClientTest {
 
     @BeforeEach
     void setUp() {
-        when(ldClientFactory.create(eq(SDK_KEY), anyBoolean())).thenReturn(ldClient);
-        launchDarklyClient = new LaunchDarklyClient(ldClientFactory, SDK_KEY, true);
+        when(ldClientFactory.create(SDK_KEY)).thenReturn(ldClient);
+        launchDarklyClient = new LaunchDarklyClient(ldClientFactory, SDK_KEY);
     }
 
     @Test
