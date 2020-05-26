@@ -7,4 +7,4 @@ include 'ccd-adapter'
 include 'rpa-mapper'
 include 'job-scheduler'
 include 'ccd-sample-data'
-
+include 'launch-darkly-client'
