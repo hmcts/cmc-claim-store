@@ -128,6 +128,19 @@ public class ResponseDeadlineCalculatorTest {
         assertThat(postponedDeadline).isWeekday().isTheSame(expectedPostponedDate);
     }
 
+    @Test
+    public void calculateWhenServiceDateIsOnNonWorkingDay() {
+        LocalDate issuedOn = toDate("2017-09-15");
+        LocalDate expectedServiceDate = toDate("2017-09-25");
+
+        when(nonWorkingDaysCollection.contains(any(LocalDate.class)))
+                .thenReturn(true, true, true, false);
+
+        LocalDate serviceDate = calculator.calculateServiceDate(issuedOn);
+
+        assertThat(serviceDate).isWeekday().isTheSame(expectedServiceDate);
+    }
+
     /**
      * The fixture was taken from the real bank holidays API.
      */

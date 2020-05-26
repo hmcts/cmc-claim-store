@@ -15,6 +15,8 @@ import uk.gov.hmcts.cmc.ccd.domain.GeneralLetterContent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
@@ -31,6 +33,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -48,9 +51,10 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 
 @Service
 @ConditionalOnProperty("feature_toggles.ctsc_enabled")
-public class IssuePaperDefenseCallbackHandler extends CallbackHandler {
+public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
     public static final String CALCULATED_RESPONSE_DEADLINE = "calculatedResponseDeadline";
     public static final String CALCULATED_SERVICE_DATE = "calculatedServiceDate";
+    //to be added when design is complete
     public static final String STATIC_LETTER_CONTENT = "";
     public static final String LETTER_NAME = "%s-issue-paper-form.pdf";
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
@@ -66,14 +70,18 @@ public class IssuePaperDefenseCallbackHandler extends CallbackHandler {
     private final UserService userService;
     private final GeneralLetterService generalLetterService;
     private final String generalLetterTemplateId;
+    private final ResponseDeadlineCalculator responseDeadlineCalculator;
+    private final IssueDateCalculator issueDateCalculator;
 
     @Autowired
-    public IssuePaperDefenseCallbackHandler(
+    public IssuePaperDefenceCallbackHandler(
             CaseDetailsConverter caseDetailsConverter,
             NotificationService notificationService,
             NotificationsProperties notificationsProperties,
             GeneralLetterService generalLetterService,
             UserService userService,
+            ResponseDeadlineCalculator responseDeadlineCalculator,
+            IssueDateCalculator issueDateCalculator,
             @Value("${doc_assembly.generalLetterTemplateId}") String generalLetterTemplateId
     ) {
         this.caseDetailsConverter = caseDetailsConverter;
@@ -81,6 +89,8 @@ public class IssuePaperDefenseCallbackHandler extends CallbackHandler {
         this.notificationService = notificationService;
         this.notificationsProperties = notificationsProperties;
         this.userService = userService;
+        this.responseDeadlineCalculator = responseDeadlineCalculator;
+        this.issueDateCalculator = issueDateCalculator;
         this.generalLetterTemplateId = generalLetterTemplateId;
     }
 
@@ -105,45 +115,26 @@ public class IssuePaperDefenseCallbackHandler extends CallbackHandler {
 
 
     private AboutToStartOrSubmitCallbackResponse calculateDeadlines(CallbackParams callbackParams) {
+        LocalDate formIssueDate = issueDateCalculator.calculateIssueDay(LocalDateTime.now());
+        LocalDate newServiceDate = responseDeadlineCalculator.calculateServiceDate(formIssueDate);
+        LocalDate newResponseDeadline = responseDeadlineCalculator.calculateResponseDeadline(formIssueDate);
 
-        LocalDate formIssueDate = LocalDate.now();
-        LocalDate newServiceDate = formIssueDate.plusDays(5);
-        LocalDate newDeadline = newServiceDate.plusDays(14);
-
-        Map<String, Object> data = Map.of(CALCULATED_RESPONSE_DEADLINE, newDeadline
+        Map<String, Object> data = Map.of(CALCULATED_RESPONSE_DEADLINE, newResponseDeadline
                 , CALCULATED_SERVICE_DATE, newServiceDate);
 
         return AboutToStartOrSubmitCallbackResponse.builder().data(data).build();
     }
 
-    private CCDCase setLetterContent(CCDCase ccdCase, String content, String authorisation) {
-        UserDetails userDetails = userService.getUserDetails(authorisation);
-        String caseworkerName = userDetails.getFullName();
-        GeneralLetterContent generalLetterContent = GeneralLetterContent.builder()
-                .caseworkerName(caseworkerName)
-                .letterContent(content)
-                .issueLetterContact(CCDContactPartyType.DEFENDANT)
-                .build();
-
-        return ccdCase.toBuilder()
-                .generalLetterContent(generalLetterContent)
-                .build();
-    }
-
-    private String getClaimantName(CCDCase ccdCase) {
-        return ccdCase.getApplicants().get(0).getValue().getPartyName();
-    }
-
     private AboutToStartOrSubmitCallbackResponse createAndSendPaperDefenceForms(CallbackParams callbackParams) {
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
-        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);¸
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
 
         var response = AboutToStartOrSubmitCallbackResponse.builder();
         LocalDate deadline = ccdCase.getCalculatedResponseDeadline();
 
         String content = String.format(STATIC_LETTER_CONTENT, getClaimantName(ccdCase), formatDate(deadline));
-        CCDCase updated = setLetterContent(ccdCase, content, authorisation);
+        CCDCase updated = setCoverLetterContent(ccdCase, content, authorisation);
         String letterUrl = generalLetterService.generateLetter(updated, authorisation, generalLetterTemplateId);
 
         //attach OCON form OCON9x to it
@@ -212,5 +203,23 @@ public class IssuePaperDefenseCallbackHandler extends CallbackHandler {
         parameters.put(RESPONSE_DEADLINE, formatDate(claim.getResponseDeadline()));
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
         return parameters;
+    }
+
+    private CCDCase setCoverLetterContent(CCDCase ccdCase, String content, String authorisation) {
+        UserDetails userDetails = userService.getUserDetails(authorisation);
+        String caseworkerName = userDetails.getFullName();
+        GeneralLetterContent generalLetterContent = GeneralLetterContent.builder()
+                .caseworkerName(caseworkerName)
+                .letterContent(content)
+                .issueLetterContact(CCDContactPartyType.DEFENDANT)
+                .build();
+
+        return ccdCase.toBuilder()
+                .generalLetterContent(generalLetterContent)
+                .build();
+    }
+
+    private String getClaimantName(CCDCase ccdCase) {
+        return ccdCase.getApplicants().get(0).getValue().getPartyName();
     }
 }
