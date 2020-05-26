@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,8 +59,6 @@ public class TransferCasePostProcessor {
 
         sendEmailNotifications(ccdCase, claim);
 
-        ccdCase = ccdCase.toBuilder().coverLetterDoc(null).transferContent(null).build();
-
         return AboutToStartOrSubmitCallbackResponse
             .builder()
             .data(caseDetailsConverter.convertToMap(ccdCase))
@@ -99,7 +98,7 @@ public class TransferCasePostProcessor {
 
         return updated.toBuilder()
             .coverLetterDoc(null)
-            .transferContent(null)
+            .transferContent(updated.getTransferContent().toBuilder().dateOfTransfer(LocalDate.now()).build())
             .build();
     }
 

@@ -5,12 +5,11 @@ import lombok.Value;
 
 import java.time.LocalDate;
 
-@Builder
+@Builder(toBuilder = true)
 @Value
 public class CCDTransferContent {
 
     private LocalDate dateOfTransfer;
-    private String reasonForTransfer;
-    private String nameOfTransferCourt;
-    private CCDAddress addressOfTransferCourt;
+    private CCDTransferReason transferReason;
+    private String transferReasonOther;
 }

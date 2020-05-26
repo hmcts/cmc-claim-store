@@ -55,7 +55,7 @@ class TransferCaseNotificationsServiceTest {
         claim = SampleClaim.builder()
             .withDefendantEmail(DEFENDANT_EMAIL)
             .withTransferContent(TransferContent.builder()
-                .nameOfTransferCourt(TRANSFER_COURT_NAME)
+                .hearingCourtName(TRANSFER_COURT_NAME)
                 .build())
             .build();
     }

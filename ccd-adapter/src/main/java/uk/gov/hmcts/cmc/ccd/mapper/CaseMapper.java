@@ -18,7 +18,6 @@ import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.mapper.ClaimSubmissionOperationIndicatorMapper.mapClaimSubmissionOperationIndicatorsToCCD;
 import static uk.gov.hmcts.cmc.ccd.mapper.ClaimSubmissionOperationIndicatorMapper.mapFromCCDClaimSubmissionOperationIndicators;
 import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.getMediationOutcome;
-import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.getTransferContent;
 import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.toCaseName;
 
 @Component
@@ -29,19 +28,22 @@ public class CaseMapper {
     private final ClaimDocumentCollectionMapper claimDocumentCollectionMapper;
     private final ReviewOrderMapper reviewOrderMapper;
     private final DirectionOrderMapper directionOrderMapper;
+    private final TransferContentMapper transferContentMapper;
 
     public CaseMapper(
         ClaimMapper claimMapper,
         @Value("${migration.cases.flag:false}") boolean isMigrated,
         ClaimDocumentCollectionMapper claimDocumentCollectionMapper,
         ReviewOrderMapper reviewOrderMapper,
-        DirectionOrderMapper directionOrderMapper
+        DirectionOrderMapper directionOrderMapper,
+        TransferContentMapper transferContentMapper
     ) {
         this.claimMapper = claimMapper;
         this.isMigrated = isMigrated;
         this.claimDocumentCollectionMapper = claimDocumentCollectionMapper;
         this.reviewOrderMapper = reviewOrderMapper;
         this.directionOrderMapper = directionOrderMapper;
+        this.transferContentMapper = transferContentMapper;
     }
 
     public CCDCase to(Claim claim) {
@@ -110,7 +112,7 @@ public class CaseMapper {
             .dateReferredForDirections(ccdCase.getDateReferredForDirections())
             .paperResponse(MapperUtil.hasPaperResponse.apply(ccdCase))
             .mediationOutcome(getMediationOutcome(ccdCase))
-            .transferContent(getTransferContent(ccdCase));
+            .transferContent(transferContentMapper.from(ccdCase));
 
         if (ccdCase.getFeatures() != null) {
             builder.features(Arrays.asList(ccdCase.getFeatures().split(",")));

@@ -13,6 +13,6 @@ public class TransferContent {
 
     private LocalDate dateOfTransfer;
     private String reasonForTransfer;
-    private String nameOfTransferCourt;
-    private Address addressOfTransferCourt;
+    private String hearingCourtName;
+    private Address hearingCourtAddress;
 }

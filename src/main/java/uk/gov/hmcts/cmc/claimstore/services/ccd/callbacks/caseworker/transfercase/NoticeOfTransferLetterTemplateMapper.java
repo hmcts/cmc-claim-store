@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transferca
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDTransferReason;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
 
@@ -22,10 +23,17 @@ public class NoticeOfTransferLetterTemplateMapper {
 
     public DocAssemblyTemplateBody noticeOfTransferLetterBodyForCourt(CCDCase ccdCase, String caseworkerName) {
 
-        String partyName = ccdCase.getTransferContent().getNameOfTransferCourt();
-        CCDAddress partyAddress = ccdCase.getTransferContent().getAddressOfTransferCourt();
+        LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
 
-        return noticeOfTransferLetterBody(ccdCase, partyName, partyAddress, caseworkerName);
+        return DocAssemblyTemplateBody.builder()
+            .currentDate(currentDate)
+            .referenceNumber(ccdCase.getPreviousServiceCaseReference())
+            .hearingCourtName(ccdCase.getHearingCourtName())
+            .hearingCourtAddress(ccdCase.getHearingCourtAddress())
+            .caseworkerName(caseworkerName)
+            .caseName(ccdCase.getCaseName())
+            .reasonForTransfer(getTransferReason(ccdCase))
+            .build();
     }
 
     public DocAssemblyTemplateBody noticeOfTransferLetterBodyForDefendant(CCDCase ccdCase, String caseworkerName) {
@@ -33,27 +41,25 @@ public class NoticeOfTransferLetterTemplateMapper {
         String partyName = getDefendantName(ccdCase);
         CCDAddress partyAddress = getDefendantAddress(ccdCase);
 
-        return noticeOfTransferLetterBody(ccdCase, partyName, partyAddress, caseworkerName);
-    }
-
-    private DocAssemblyTemplateBody noticeOfTransferLetterBody(CCDCase ccdCase,
-                                                               String partyName,
-                                                               CCDAddress partyAddress,
-                                                               String caseworkerName) {
-
         LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
 
         return DocAssemblyTemplateBody.builder()
             .currentDate(currentDate)
             .referenceNumber(ccdCase.getPreviousServiceCaseReference())
-            .transferredCourtName(ccdCase.getTransferContent().getNameOfTransferCourt())
-            .transferredCourtAddress(ccdCase.getTransferContent().getAddressOfTransferCourt())
+            .hearingCourtName(ccdCase.getHearingCourtName())
+            .hearingCourtAddress(ccdCase.getHearingCourtAddress())
             .caseworkerName(caseworkerName)
             .caseName(ccdCase.getCaseName())
             .partyName(partyName)
             .partyAddress(partyAddress)
-            .reasonForTransfer(ccdCase.getTransferContent().getReasonForTransfer())
+            .reasonForTransfer(getTransferReason(ccdCase))
             .build();
+    }
+
+    private String getTransferReason(CCDCase ccdCase) {
+        return ccdCase.getTransferContent().getTransferReason() == CCDTransferReason.OTHER
+            ? ccdCase.getTransferContent().getTransferReasonOther()
+            : ccdCase.getTransferContent().getTransferReason().getValue();
     }
 
     private String getDefendantName(CCDCase ccdCase) {

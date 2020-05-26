@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTransferContent;
+import uk.gov.hmcts.cmc.ccd.domain.CCDTransferReason;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
 
@@ -71,10 +72,11 @@ class NoticeOfTransferLetterTemplateMapperTest {
         ccdCase = CCDCase.builder()
             .previousServiceCaseReference(CASE_REFERENCE)
             .respondents(respondents)
+            .hearingCourtName(TRANSFER_COURT_NAME)
+            .hearingCourtAddress(transferCourtAddress)
             .transferContent(CCDTransferContent.builder()
-                .nameOfTransferCourt(TRANSFER_COURT_NAME)
-                .addressOfTransferCourt(transferCourtAddress)
-                .reasonForTransfer(TRANSFER_REASON)
+                .transferReason(CCDTransferReason.OTHER)
+                .transferReasonOther(TRANSFER_REASON)
                 .build())
             .build();
     }
@@ -113,8 +115,8 @@ class NoticeOfTransferLetterTemplateMapperTest {
             .builder()
             .referenceNumber(CASE_REFERENCE)
             .currentDate(LocalDate.parse(TRANSFER_DATE))
-            .transferredCourtName(TRANSFER_COURT_NAME)
-            .transferredCourtAddress(transferCourtAddress)
+            .hearingCourtName(TRANSFER_COURT_NAME)
+            .hearingCourtAddress(transferCourtAddress)
             .reasonForTransfer(TRANSFER_REASON)
             .caseworkerName(CASE_WORKER_NAME);
 

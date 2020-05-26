@@ -6,7 +6,9 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTransferContent;
+import uk.gov.hmcts.cmc.ccd.domain.CCDTransferReason;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
+import uk.gov.hmcts.cmc.ccd.mapper.AddressMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.MediationOutcome;
 import uk.gov.hmcts.cmc.domain.models.TransferContent;
@@ -87,20 +89,6 @@ public class MapperUtil {
         } else {
             return null;
         }
-    }
-
-    public static TransferContent getTransferContent(CCDCase ccdCase) {
-        CCDTransferContent ccdTransferContent = ccdCase.getTransferContent();
-
-        if (ccdTransferContent == null) {
-            return null;
-        }
-
-        return TransferContent.builder()
-            .dateOfTransfer(ccdTransferContent.getDateOfTransfer())
-            .reasonForTransfer(ccdTransferContent.getReasonForTransfer())
-            .nameOfTransferCourt(ccdTransferContent.getNameOfTransferCourt())
-            .build();
     }
 
     public static boolean isAnyNotNull(Object... objects) {

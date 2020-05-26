@@ -63,7 +63,7 @@ public class TransferCaseNotificationsService {
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
         parameters.put(EXTERNAL_ID, claim.getExternalId());
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
-        parameters.put(COURT_NAME, claim.getTransferContent().getNameOfTransferCourt());
+        parameters.put(COURT_NAME, claim.getTransferContent().getHearingCourtName());
         return parameters;
     }
 }
