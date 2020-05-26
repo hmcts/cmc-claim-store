@@ -1,3 +1,5 @@
 #!/bin/bash
-sonarlint -Dsonar.java.libraries=build/libs --src "{src/main/**,email-client/src/main/**,ccd-adapter/src/main/**}"  --tests "{src/test/**,src/apiTest/**,email-client/src/test/**,ccd-adapter/src/test/**}"
+sonarlint -Dsonar.java.libraries=build/libs \
+  --src "{src/main/**,email-client/src/main/**,ccd-adapter/src/main/**,launch-darkly-client/src/main/**}" \
+  --tests "{src/test/**,src/apiTest/**,email-client/src/test/**,ccd-adapter/src/test/**,launch-darkly-client/src/test/**}"
 
