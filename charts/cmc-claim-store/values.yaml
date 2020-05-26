@@ -29,6 +29,7 @@ java:
         - rpa-email-response
         - rpa-email-ccj
         - rpa-email-paid-in-full
+        - launchDarkly-sdk-key
   environment:
     REFORM_TEAM: cmc
     REFORM_SERVICE_NAME: claim-store
