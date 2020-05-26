@@ -136,6 +136,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .timeline(SampleDefendantTimeline.validDefaults())
                 .evidence(SampleDefendantEvidence.validDefaults())
                 .statementOfMeans(SampleStatementOfMeans.builder().build())
+                .responseMethod(ResponseMethod.DIGITAL)
                 .build();
         }
 
