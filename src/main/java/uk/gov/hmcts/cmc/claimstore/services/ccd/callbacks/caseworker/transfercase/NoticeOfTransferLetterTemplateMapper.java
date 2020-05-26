@@ -59,15 +59,11 @@ public class NoticeOfTransferLetterTemplateMapper {
     private String getDefendantName(CCDCase ccdCase) {
         CCDRespondent respondent = ccdCase.getRespondents().get(0)
             .getValue();
-        return respondent.getPartyName() != null
-            ? respondent.getPartyName() :
-            respondent.getClaimantProvidedPartyName();
+        return respondent.getClaimantProvidedPartyName();
     }
 
     private CCDAddress getDefendantAddress(CCDCase ccdCase) {
         CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
-        return respondent.getPartyDetail() != null
-            ? respondent.getPartyDetail().getPrimaryAddress()
-            : respondent.getClaimantProvidedDetail().getPrimaryAddress();
+        return respondent.getClaimantProvidedDetail().getPrimaryAddress();
     }
 }

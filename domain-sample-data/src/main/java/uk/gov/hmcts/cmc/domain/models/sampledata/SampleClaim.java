@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.MediationOutcome;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.TransferContent;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
@@ -111,6 +112,7 @@ public final class SampleClaim {
     private final LocalDate intentionToProceedDeadline = NOW_IN_LOCAL_ZONE.toLocalDate().plusDays(33);
     private final YesNoOption offlineJourney = NO;
     private MediationOutcome mediationOutcome;
+    private TransferContent transferContent;
 
     private SampleClaim() {
     }
@@ -606,7 +608,7 @@ public final class SampleClaim {
             offlineJourney,
             null,
             null,
-            null
+            transferContent
         );
     }
 
@@ -847,6 +849,11 @@ public final class SampleClaim {
 
     public SampleClaim withMediationOutcome(MediationOutcome mediationOutcome) {
         this.mediationOutcome = mediationOutcome;
+        return this;
+    }
+
+    public SampleClaim withTransferContent(TransferContent transferContent) {
+        this.transferContent = transferContent;
         return this;
     }
 }

@@ -16,7 +16,7 @@ public final class NotificationTemplateParameters {
     public static final String COUNTER_SIGNING_PARTY = "counterSigningParty";
     public static final String NEW_FEATURES = "newFeatures";
     public static final String DQ_DEADLINE = "DQsdeadline";
-    public static final String COURT_NAME = "CourtName";
+    public static final String COURT_NAME = "courtName";
 
     private NotificationTemplateParameters() {
         // Utility class
