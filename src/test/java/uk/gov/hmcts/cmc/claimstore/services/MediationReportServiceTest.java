@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,7 +25,9 @@ import uk.gov.hmcts.cmc.email.EmailService;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.Scanner;
 
@@ -42,6 +45,7 @@ public class MediationReportServiceTest {
     private static final String FROM_ADDRESS = "sender@mail.com";
     private static final String TO_ADDRESS = "recipient@mail.com";
     private static final String AUTHORISATION = "Authorisation";
+    private static final LocalDate TODAY = LocalDate.of(2020, 3, 3);
 
     private static final Claim SAMPLE_CLAIM = SampleClaim.builder()
         .withResponse(SampleResponse.FullDefence.validDefaults())
@@ -60,6 +64,8 @@ public class MediationReportServiceTest {
     private ArgumentCaptor<EmailData> emailDataCaptor;
 
     private MediationReportService service;
+    @Mock
+    private Clock clock;
 
     @Before
     public void setUp() {
@@ -68,11 +74,15 @@ public class MediationReportServiceTest {
             caseSearchApi,
             userService,
             appInsights,
+            clock,
             TO_ADDRESS,
             FROM_ADDRESS
         );
         when(caseSearchApi.getMediationClaims(anyString(), any(LocalDate.class)))
             .thenReturn(Collections.singletonList(SAMPLE_CLAIM));
+
+        when(clock.instant()).thenReturn(TODAY.atStartOfDay(ZoneOffset.UTC).toInstant());
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
     }
 
     @Test
@@ -84,7 +94,7 @@ public class MediationReportServiceTest {
     }
 
     @Test
-    public void automatedCSVShouldUseYesterdayAndAnonymousUser() throws IOException {
+    public void automatedCSVShouldUseYesterdayAndAnonymousUser() throws Exception {
         final User mockUser = mock(User.class);
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(mockUser);
         when(mockUser.getAuthorisation()).thenReturn(AUTHORISATION);
@@ -92,7 +102,7 @@ public class MediationReportServiceTest {
         service.automatedMediationReport();
 
         verify(userService).authenticateAnonymousCaseWorker();
-        verify(caseSearchApi).getMediationClaims(AUTHORISATION, LocalDate.now().minusDays(1));
+        verify(caseSearchApi).getMediationClaims(AUTHORISATION, TODAY.minusDays(1));
 
         verifyEmailData();
     }
@@ -109,11 +119,11 @@ public class MediationReportServiceTest {
         assertThatThrownBy(() -> service.automatedMediationReport())
             .isInstanceOf(MediationCSVGenerationException.class);
 
-        verify(appInsights).trackEvent(eq(AppInsightsEvent.MEDIATION_REPORT_FAILURE), anyString(), any());
+        verify(appInsights).trackEvent(eq(AppInsightsEvent.MEDIATION_REPORT_FAILURE), any());
     }
 
     @Test
-    public void shouldReportAppInsightsEventOnProblematicRecords() {
+    public void shouldReportAppInsightsEventOnProblematicRecords() throws Exception {
         User mockUser = mock(User.class);
         Claim claimWithNoClaimData = SampleClaim.builder()
             .withResponse(SampleResponse.FullDefence.validDefaults())
@@ -129,8 +139,8 @@ public class MediationReportServiceTest {
 
         verify(appInsights).trackEvent(
             eq(AppInsightsEvent.MEDIATION_REPORT_FAILURE),
-            anyString(),
-            eq("{000MC001=Unable to find total amount of claim}"));
+            eq(ImmutableMap.of("MILO report date time", "2020-03-02",
+                "000MC001", "Unable to find total amount of claim")));
     }
 
     private static String inputStreamToString(InputStream is) {

@@ -37,6 +37,9 @@ spring:
     password: ${CMC_DB_PASSWORD:-}
     url: jdbc:postgresql://${CMC_DB_HOST:}:${CMC_DB_PORT:}/${CMC_DB_NAME:cmc}${CMC_DB_CONNECTION_OPTIONS:}
 
+launchdarkly:
+  sdk-key: "${LAUNCH_DARKLY_SDK_KEY:sdk-c732c882-b5df-4e9b-9ec1-679836b93907}"
+
 quartzProperties:
   org.quartz:
     scheduler:
@@ -107,7 +110,7 @@ pilot-courts:
   datafile: "/data/pilot-courts.csv"
 
 milo:
-  schedule: "${MILO_CSV_SCHEDULE:-}"
+  schedule: "${MILO_CSV_SCHEDULE:}"
   recipient: ${MILO_CSV_RECIPIENT:}
   sender: ${MILO_CSV_SENDER:}
 
