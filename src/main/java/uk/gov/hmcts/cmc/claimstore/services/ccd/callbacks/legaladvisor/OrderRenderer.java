@@ -34,20 +34,12 @@ public class OrderRenderer {
         this.docAssemblyTemplateBodyMapper = docAssemblyTemplateBodyMapper;
     }
 
-    public DocAssemblyResponse renderLegalAdvisorOrder(CCDCase ccdCase, String authorisation) {
-        return renderOrder(ccdCase, authorisation, legalAdvisorTemplateId);
-    }
-
-    public DocAssemblyResponse renderJudgeOrder(CCDCase ccdCase, String authorisation) {
-        return renderOrder(ccdCase, authorisation, judgeTemplateId);
-    }
-
     public DocAssemblyResponse renderOrder(CCDCase ccdCase, String authorisation) {
         ClaimState claimState = ClaimState.fromValue(ccdCase.getState());
         return claimState == READY_FOR_JUDGE_DIRECTIONS  ? renderJudgeOrder(ccdCase, authorisation)
             : renderLegalAdvisorOrder(ccdCase, authorisation);
     }
-
+    
     private DocAssemblyResponse renderOrder(CCDCase ccdCase, String authorisation, String templateId) {
         UserDetails userDetails = userService.getUserDetails(authorisation);
 
@@ -56,4 +48,13 @@ public class OrderRenderer {
             templateId,
             docAssemblyTemplateBodyMapper.from(ccdCase, userDetails));
     }
+
+    public DocAssemblyResponse renderLegalAdvisorOrder(CCDCase ccdCase, String authorisation) {
+        return renderOrder(ccdCase, authorisation, legalAdvisorTemplateId);
+    }
+
+    public DocAssemblyResponse renderJudgeOrder(CCDCase ccdCase, String authorisation) {
+        return renderOrder(ccdCase, authorisation, judgeTemplateId);
+    }
+
 }
