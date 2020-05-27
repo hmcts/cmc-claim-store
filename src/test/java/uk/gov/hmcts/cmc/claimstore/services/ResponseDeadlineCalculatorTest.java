@@ -131,14 +131,11 @@ public class ResponseDeadlineCalculatorTest {
     @Test
     public void calculateWhenServiceDateIsOnNonWorkingDay() {
         LocalDate issuedOn = toDate("2017-09-15");
-        LocalDate expectedServiceDate = toDate("2017-09-25");
-
-        when(nonWorkingDaysCollection.contains(any(LocalDate.class)))
-                .thenReturn(true, true, true, false);
+        LocalDate expectedServiceDate = toDate("2017-09-20");
 
         LocalDate serviceDate = calculator.calculateServiceDate(issuedOn);
 
-        assertThat(serviceDate).isWeekday().isTheSame(expectedServiceDate);
+        assertThat(serviceDate).isTheSame(expectedServiceDate);
     }
 
     /**
