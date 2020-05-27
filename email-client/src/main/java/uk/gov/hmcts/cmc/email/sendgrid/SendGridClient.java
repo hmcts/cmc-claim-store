@@ -24,7 +24,7 @@ public class SendGridClient {
     @Autowired
     public SendGridClient(
         SendGridFactory factory,
-        @Value("${SENDGRID_API_KEY}") String apiKey,
+        @Value("${sendgrid.api-key}") String apiKey,
         @Value("false") Boolean testing
     ) {
         sendGrid = factory.createSendGrid(apiKey, testing);
