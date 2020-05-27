@@ -25,6 +25,10 @@ public class SampleEmailData {
 
     public static EmailData getWithAttachment(String pdfFilename) {
         return new EmailData(EMAIL_TO, EMAIL_SUBJECT, EMAIL_MESSAGE,
-            List.of(EmailAttachment.pdf(new byte[] { 1, 2, 3 }, pdfFilename)));
+            List.of(EmailAttachment.pdf(new byte[] {1, 2, 3}, pdfFilename)));
+    }
+
+    private SampleEmailData() {
+        // hidden constructor
     }
 }
