@@ -37,6 +37,9 @@ spring:
     password: ${CMC_DB_PASSWORD:-}
     url: jdbc:postgresql://${CMC_DB_HOST:}:${CMC_DB_PORT:}/${CMC_DB_NAME:cmc}${CMC_DB_CONNECTION_OPTIONS:}
 
+launchdarkly:
+  sdk-key: "${LAUNCH_DARKLY_SDK_KEY:sdk-c732c882-b5df-4e9b-9ec1-679836b93907}"
+
 quartzProperties:
   org.quartz:
     scheduler:
@@ -71,7 +74,6 @@ fees:
     jurisdiction2: "county court"
 
 payments:
-  returnUrlPattern: "${FRONTEND_BASE_URL:}/claim/%s/finish-payment"
   api:
     url: ${PAY_URL:}
     service: "CMC"
@@ -108,7 +110,7 @@ pilot-courts:
   datafile: "/data/pilot-courts.csv"
 
 milo:
-  schedule: "${MILO_CSV_SCHEDULE:-}"
+  schedule: "${MILO_CSV_SCHEDULE:}"
   recipient: ${MILO_CSV_RECIPIENT:}
   sender: ${MILO_CSV_SENDER:}
 
@@ -187,6 +189,7 @@ notifications:
       defendantReadyForTransfer: "487fdd65-131e-4547-a3ed-f632872fe957"
       claimantMediationFailureOfflineDQ: "55d06073-0b81-4daf-a3b4-1698c7810189"
       defendantMediationFailureOfflineDQ: "15a38762-2141-4a70-8cc9-22a27db985bc"
+      claimantPaperResponseReceived: "b8bc5ed5-3362-4bcc-b678-c4298f149560"
       defendantContactDetailsChanged: "39b8c7a0-6d8a-4bee-8b79-e0f1df73d249"
       claimantContactDetailsChanged: "bc227831-a2f5-4399-bfa4-06a392bc5a80"
 

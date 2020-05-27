@@ -112,8 +112,7 @@ public class DocAssemblyTemplateBodyMapper {
         GeneralLetterContent generalLetterContent = ccdCase.getGeneralLetterContent();
         String partyName;
         CCDAddress partyAddress;
-        if (ccdCase.getGeneralLetterContent().getIssueLetterContact()
-            .equals(CCDContactPartyType.CLAIMANT)) {
+        if (generalLetterContent.getIssueLetterContact().equals(CCDContactPartyType.CLAIMANT)) {
             partyName = ccdCase.getApplicants().get(0).getValue().getPartyName();
             partyAddress = ccdCase.getApplicants().get(0)
                 .getValue().getPartyDetail().getPrimaryAddress();

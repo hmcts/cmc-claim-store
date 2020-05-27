@@ -29,7 +29,7 @@ public class MoreTimeRequestRule {
     }
 
     public void assertMoreTimeCanBeRequested(Claim claim) {
-        Objects.requireNonNull(claim, "claim object can not be null");
+        Objects.requireNonNull(claim, "Claim object can not be null");
 
         if (claim.isMoreTimeRequested()) {
             throw new MoreTimeAlreadyRequestedException("You have already requested more time");
@@ -37,7 +37,7 @@ public class MoreTimeRequestRule {
     }
 
     public List<String> validateMoreTimeCanBeRequested(Claim claim, LocalDate newDeadline) {
-        Objects.requireNonNull(claim, "claim object can not be null");
+        Objects.requireNonNull(claim, "Claim object can not be null");
 
         List<String> validationErrors = new ArrayList<>();
 

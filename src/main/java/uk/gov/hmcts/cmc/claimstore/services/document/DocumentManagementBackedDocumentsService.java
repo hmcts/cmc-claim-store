@@ -10,7 +10,10 @@ import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.documents.questionnaire.ClaimantDirectionsQuestionnairePdfService;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.claimstore.rules.ClaimDocumentsAccessRule;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
@@ -33,6 +36,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     private final SettlementAgreementCopyService settlementAgreementCopyService;
     private final ReviewOrderService reviewOrderService;
     private final ClaimantDirectionsQuestionnairePdfService claimantDirectionsQuestionnairePdfService;
+    private final UserService userService;
 
     @Autowired
     @SuppressWarnings("squid:S00107")
@@ -45,7 +49,8 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         DefendantResponseReceiptService defendantResponseReceiptService,
         SettlementAgreementCopyService settlementAgreementCopyService,
         ReviewOrderService reviewOrderService,
-        ClaimantDirectionsQuestionnairePdfService claimantDirectionsQuestionnairePdfService
+        ClaimantDirectionsQuestionnairePdfService claimantDirectionsQuestionnairePdfService,
+        UserService userService
     ) {
         this.claimService = claimService;
         this.documentManagementService = documentManagementService;
@@ -55,6 +60,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         this.settlementAgreementCopyService = settlementAgreementCopyService;
         this.reviewOrderService = reviewOrderService;
         this.claimantDirectionsQuestionnairePdfService = claimantDirectionsQuestionnairePdfService;
+        this.userService = userService;
     }
 
     private PdfService getService(ClaimDocumentType claimDocumentType) {
@@ -79,7 +85,11 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
 
     @Override
     public byte[] generateDocument(String externalId, ClaimDocumentType claimDocumentType, String authorisation) {
-        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
+        User user = userService.getUser(authorisation);
+
+        Claim claim = claimService.getClaimByExternalId(externalId, user);
+        ClaimDocumentsAccessRule.assertDocumentCanBeAccessedByUser(claim, claimDocumentType, user);
+
         return processRequest(claim, authorisation, claimDocumentType);
     }
 
@@ -103,10 +113,13 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     private byte[] getClaimJourneyDocuments(Claim claim, String authorisation, ClaimDocumentType claimDocumentType) {
         try {
             Optional<ClaimDocument> claimDocument = claim.getClaimDocument(claimDocumentType);
-            return claimDocument
-                .map(document -> documentManagementService.downloadDocument(authorisation, document))
-                .orElseGet(() -> generateNewDocument(claim, authorisation, claimDocumentType));
+            if (claimDocument.isPresent()) {
+                return claimDocument
+                    .map(document -> documentManagementService.downloadDocument(authorisation, document))
+                    .orElseGet(() -> generateNewDocument(claim, authorisation, claimDocumentType));
+            }
 
+            return generateNewDocument(claim, authorisation, claimDocumentType);
         } catch (Exception ex) {
             return getService(claimDocumentType).createPdf(claim).getBytes();
         }
