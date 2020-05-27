@@ -248,8 +248,8 @@ dependencies {
 
   testCompile group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
   testCompile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: '2.4.0'
-  testCompile group: 'net.jodah', name: 'failsafe', version: '2.3.5'
-  testCompile group: 'org.xmlunit', name: 'xmlunit-core', version: '2.6.3'
+  testCompile group: 'net.jodah', name: 'failsafe', version: '2.4.0'
+  testCompile group: 'org.xmlunit', name: 'xmlunit-core', version: '2.7.0'
   testCompile group: 'org.xmlunit', name: 'xmlunit-matchers', version: '2.6.3'
 }
 
