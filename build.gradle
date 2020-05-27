@@ -172,6 +172,7 @@ dependencies {
   compile project(':rpa-mapper')
   compile project(':domain-sample-data')
   compile project(':job-scheduler')
+  compile project(':launch-darkly-client')
 
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
@@ -247,7 +248,7 @@ dependencies {
 
   testCompile group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
   testCompile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: '2.4.0'
-  testCompile group: 'net.jodah', name: 'failsafe', version: '2.3.5'
+  testCompile group: 'net.jodah', name: 'failsafe', version: '2.4.0'
   testCompile group: 'org.xmlunit', name: 'xmlunit-core', version: '2.6.3'
   testCompile group: 'org.xmlunit', name: 'xmlunit-matchers', version: '2.6.3'
 }
@@ -383,6 +384,7 @@ sonarqube {
         "**/DBCaseRepository.java",
         "**/MapperUtil.java",
         "**/CCDCaseApi.java",
+        "launch-darkly-client/**",
         "rpa-mapper/**"
       ].join(",")
   }

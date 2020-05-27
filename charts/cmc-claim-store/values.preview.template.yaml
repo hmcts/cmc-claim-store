@@ -43,6 +43,7 @@ java:
         - rpa-email-response
         - rpa-email-ccj
         - rpa-email-paid-in-full
+        - launchDarkly-sdk-key
   environment:
     LOG_LEVEL: DEBUG
     CMC_DB_HOST: ${SERVICE_NAME}-postgresql
