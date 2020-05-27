@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.launchdarkly.internal;
 
-import com.launchdarkly.client.LDClient;
+import com.launchdarkly.client.LDClientInterface;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +16,7 @@ class LDClientFactoryTest {
 
     @Test
     void testCreate() {
-        LDClient client = factory.create("test key");
+        LDClientInterface client = factory.create("test key", true);
         assertNotNull(client);
     }
 }
