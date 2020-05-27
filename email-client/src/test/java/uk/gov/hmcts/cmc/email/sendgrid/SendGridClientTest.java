@@ -79,4 +79,24 @@ public class SendGridClientTest {
         when(sendGrid.api(any(Request.class))).thenThrow(new IOException("expected exception"));
         sendGridClient.sendEmail(SampleEmailData.EMAIL_FROM, SampleEmailData.getDefault());
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNullFromNotAllowed() throws IOException {
+        sendGridClient.sendEmail(null, SampleEmailData.getDefault());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testBlankFromNotAllowed() throws IOException {
+        sendGridClient.sendEmail(" \t ", SampleEmailData.getDefault());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNullToNotAllowed() throws IOException {
+        sendGridClient.sendEmail(SampleEmailData.EMAIL_FROM, SampleEmailData.getWithToNull());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNullSubjectNotAllowed() throws IOException {
+        sendGridClient.sendEmail(SampleEmailData.EMAIL_FROM, SampleEmailData.getWithSubjectNull());
+    }
 }

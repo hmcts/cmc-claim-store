@@ -31,6 +31,8 @@ public class SendGridClient {
     }
 
     public void sendEmail(String from, EmailData emailData) throws IOException {
+        verifyData(from, emailData);
+
         Email sender = new Email(from);
         String subject = emailData.getSubject();
         Email recipient = new Email(emailData.getTo());
@@ -49,6 +51,23 @@ public class SendGridClient {
                 response.getStatusCode(),
                 response.getBody()
             )));
+        }
+    }
+
+    private void verifyData(String from, EmailData emailData) {
+        if (from == null || from.isBlank()) {
+            throw new IllegalArgumentException("from cannot be null or blank");
+        }
+        if (emailData == null) {
+            throw new IllegalArgumentException("emailData cannot be null");
+        }
+        String to = emailData.getTo();
+        if (to == null || to.isBlank()) {
+            throw new IllegalArgumentException("emailData.to cannot be null or blank");
+        }
+        String subject = emailData.getSubject();
+        if (subject == null || subject.isBlank()) {
+            throw new IllegalArgumentException("emailData.subject cannot be null or blank");
         }
     }
 }
