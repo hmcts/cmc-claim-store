@@ -175,12 +175,13 @@ public class DocAssemblyTemplateBodyMapper {
 
         CCDApplicant claimant = ccdCase.getApplicants().get(0).getValue();
 
+        //Temporarily calculated to display to defendant in form
         LocalDate extendedResponseDeadline =
             responseDeadlineCalculator.calculatePostponedResponseDeadline(ccdCase.getIssuedOn());
 
         return DocAssemblyTemplateBody.builder()
             .referenceNumber(ccdCase.getPreviousServiceCaseReference())
-            .responseDeadline(ccdCase.getCalculatedResponseDeadline())
+            .responseDeadline(defendant.getResponseDeadline())
             .extendedResponseDeadline(extendedResponseDeadline)
             .partyName(defendantName)
             .partyAddress(defendantAddress)

@@ -421,7 +421,7 @@ class DocAssemblyTemplateBodyMapperTest {
             DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.paperDefenceForm(ccdCase);
             DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
                 .referenceNumber("ref no")
-                .responseDeadline(LocalDate.now())
+                .responseDeadline(ccdCase.getRespondents().get(0).getValue().getResponseDeadline())
                 .extendedResponseDeadline(extendedDeadline)
                 .partyName("Individual")
                 .partyAddress(CCDAddress.builder()
@@ -449,17 +449,22 @@ class DocAssemblyTemplateBodyMapperTest {
 
         @Test
         void shouldMapTemplateBodySoleTraderYesToNewFeature() {
+            LocalDate now = LocalDate.now();
+            CCDRespondent ccdRespondentSoleTrader = SampleData.getCCDRespondentSoleTrader()
+                    .toBuilder()
+                    .responseDeadline(now)
+                    .build();
             ccdCase.setRespondents(
                 ImmutableList.of(
                     CCDCollectionElement.<CCDRespondent>builder()
-                        .value(SampleData.getCCDRespondentSoleTrader())
+                        .value(ccdRespondentSoleTrader)
                         .build()
                 ));
 
             DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.paperDefenceForm(ccdCase);
             DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
                 .referenceNumber("ref no")
-                .responseDeadline(LocalDate.now())
+                .responseDeadline(now)
                 .extendedResponseDeadline(extendedDeadline)
                 .partyName("SoleTrader")
                 .partyAddress(CCDAddress.builder()
@@ -488,17 +493,22 @@ class DocAssemblyTemplateBodyMapperTest {
 
         @Test
         void shouldMapTemplateBodyCompanyYesToNewFeature() {
+            LocalDate now = LocalDate.now();
+            CCDRespondent ccdRespondentCompany = SampleData.getCCDRespondentCompany()
+                .toBuilder()
+                .responseDeadline(now)
+                .build();
             ccdCase.setRespondents(
                 ImmutableList.of(
                     CCDCollectionElement.<CCDRespondent>builder()
-                        .value(SampleData.getCCDRespondentCompany())
+                        .value(ccdRespondentCompany)
                         .build()
                 ));
 
             DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.paperDefenceForm(ccdCase);
             DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
                 .referenceNumber("ref no")
-                .responseDeadline(LocalDate.now())
+                .responseDeadline(now)
                 .extendedResponseDeadline(extendedDeadline)
                 .partyName("Abc Ltd")
                 .partyAddress(CCDAddress.builder()
