@@ -172,6 +172,7 @@ dependencies {
   compile project(':rpa-mapper')
   compile project(':domain-sample-data')
   compile project(':job-scheduler')
+  compile project(':launch-darkly-client')
 
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
@@ -240,14 +241,14 @@ dependencies {
   testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: versions.junit
   testCompile group: 'org.junit.platform', name: 'junit-platform-commons', version: versions.junitPlatform
   testCompile group: 'org.junit.platform', name: 'junit-platform-engine', version: versions.junitPlatform
-  testCompile group: 'org.assertj', name: 'assertj-core', version: '3.15.0'
+  testCompile group: 'org.assertj', name: 'assertj-core', version: '3.16.1'
   testCompile group: 'org.mockito', name: 'mockito-core', version: '3.3.3'
   testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.3.3'
   testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.13.0'
 
   testCompile group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
   testCompile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: '2.4.0'
-  testCompile group: 'net.jodah', name: 'failsafe', version: '2.3.5'
+  testCompile group: 'net.jodah', name: 'failsafe', version: '2.4.0'
   testCompile group: 'org.xmlunit', name: 'xmlunit-core', version: '2.7.0'
   testCompile group: 'org.xmlunit', name: 'xmlunit-matchers', version: '2.6.3'
 }
@@ -383,6 +384,7 @@ sonarqube {
         "**/DBCaseRepository.java",
         "**/MapperUtil.java",
         "**/CCDCaseApi.java",
+        "launch-darkly-client/**",
         "rpa-mapper/**"
       ].join(",")
   }
