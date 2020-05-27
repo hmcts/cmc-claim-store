@@ -16,7 +16,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TRANSFER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
 @Service
-@ConditionalOnProperty( {"feature_toggles.ctsc_enabled"})    // TODO Prevent CCD error if not enabled
+@ConditionalOnProperty({"feature_toggles.ctsc_enabled"})    // TODO Prevent CCD error if not enabled
 public class TransferCaseCallbackHandler extends CallbackHandler {
     private static final List<Role> ROLES = List.of(CASEWORKER);
     private static final List<CaseEvent> EVENTS = List.of(TRANSFER);

@@ -87,10 +87,7 @@ class NoticeOfTransferLetterTemplateMapperTest {
         DocAssemblyTemplateBody requestBody = noticeOfTransferLetterTemplateMapper
             .noticeOfTransferLetterBodyForCourt(ccdCase, CASE_WORKER_NAME);
 
-        DocAssemblyTemplateBody expectedRequestBody = baseExpectedRequestBodyBuilder()
-            .partyName(TRANSFER_COURT_NAME)
-            .partyAddress(transferCourtAddress)
-            .build();
+        DocAssemblyTemplateBody expectedRequestBody = baseExpectedRequestBodyBuilder().build();
 
         assertEquals(expectedRequestBody, requestBody);
     }
