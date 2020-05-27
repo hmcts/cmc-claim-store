@@ -120,7 +120,7 @@ public class GeneralLetterService {
             .build();
     }
 
-    private void printLetter(String authorisation, CCDDocument document, Claim claim) {
+    public void printLetter(String authorisation, CCDDocument document, Claim claim) {
         Document downloadedLetter = printableDocumentService.process(document, authorisation);
         GeneralLetterReadyToPrintEvent event = new GeneralLetterReadyToPrintEvent(claim, downloadedLetter);
         publisher.publishEvent(event);

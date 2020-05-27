@@ -35,7 +35,7 @@ public class TransferCaseCallbackHandler extends CallbackHandler {
     protected Map<CallbackType, Callback> callbacks() {
         return Map.of(
             CallbackType.MID, transferCaseMidProcessor::generateNoticeOfTransferLetters,
-            CallbackType.ABOUT_TO_SUBMIT, transferCasePostProcessor::performBulkPrintTransfer
+            CallbackType.ABOUT_TO_SUBMIT, transferCasePostProcessor::completeCaseTransfer
         );
     }
 

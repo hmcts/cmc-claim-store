@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.events;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.sendletter.api.Document;
@@ -9,6 +10,7 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
+@EqualsAndHashCode
 public class BulkPrintTransferEvent {
     private final Claim claim;
     private final Document coverLetter;

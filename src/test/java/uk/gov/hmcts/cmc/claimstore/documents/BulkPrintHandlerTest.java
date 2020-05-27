@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintablePdf;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintableTemplate;
+import uk.gov.hmcts.cmc.claimstore.events.BulkPrintTransferEvent;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.events.GeneralLetterReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.events.legaladvisor.DirectionsOrderReadyToPrintEvent;
@@ -16,8 +17,12 @@ import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.BULK_PRINT_TRANSFER_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.DIRECTION_ORDER_LETTER_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.GENERAL_LETTER_TYPE;
 
@@ -89,7 +94,7 @@ public class BulkPrintHandlerTest {
         Document generalLetter = new Document("letter", new HashMap<>());
 
         GeneralLetterReadyToPrintEvent printEvent
-            = new GeneralLetterReadyToPrintEvent(claim,  generalLetter);
+            = new GeneralLetterReadyToPrintEvent(claim, generalLetter);
 
         //when
         bulkPrintHandler.print(printEvent);
@@ -103,5 +108,39 @@ public class BulkPrintHandlerTest {
                     claim.getReferenceNumber() + "-general-letter-"
                         + LocalDate.now())
             ), GENERAL_LETTER_TYPE);
+    }
+
+    @Test
+    public void notifyForBulkPrintTransferEvent() {
+        //given
+        BulkPrintHandler bulkPrintHandler = new BulkPrintHandler(bulkPrintService);
+        Claim claim = mock(Claim.class);
+        when(claim.getReferenceNumber()).thenReturn("AAA");
+
+        Document coverLetter = new Document("letter", new HashMap<>());
+        Document caseDocument = mock(Document.class);
+        String caseDocumentFileName = "caseDoc.pdf";
+
+        List<BulkPrintTransferEvent.PrintableDocument> caseDocuments = List.of(
+            new BulkPrintTransferEvent.PrintableDocument(caseDocument, caseDocumentFileName)
+        );
+
+        BulkPrintTransferEvent printEvent = new BulkPrintTransferEvent(claim, coverLetter, caseDocuments);
+
+        //when
+        bulkPrintHandler.print(printEvent);
+
+        //verify
+        verify(bulkPrintService).printPdf(
+            claim,
+            ImmutableList.of(
+                new PrintablePdf(
+                    coverLetter,
+                    claim.getReferenceNumber() + "-directions-order-cover-sheet"),
+                new PrintablePdf(
+                    caseDocument,
+                    caseDocumentFileName
+                )
+            ), BULK_PRINT_TRANSFER_TYPE);
     }
 }

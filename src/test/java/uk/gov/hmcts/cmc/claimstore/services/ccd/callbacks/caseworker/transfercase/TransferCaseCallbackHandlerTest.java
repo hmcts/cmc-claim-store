@@ -50,7 +50,7 @@ public class TransferCaseCallbackHandlerTest {
 
         CallbackParams callbackParams = getCallbackParams(ABOUT_TO_SUBMIT);
 
-        when(transferCasePostProcessor.performBulkPrintTransfer(callbackParams)).thenReturn(expectedResponse);
+        when(transferCasePostProcessor.completeCaseTransfer(callbackParams)).thenReturn(expectedResponse);
 
         CallbackResponse response = handler.handle(callbackParams);
 
