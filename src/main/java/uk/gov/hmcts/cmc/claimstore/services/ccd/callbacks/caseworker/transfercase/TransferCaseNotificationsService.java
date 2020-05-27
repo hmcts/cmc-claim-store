@@ -10,12 +10,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.CaseTransferred.referenceForCaseTransferred;
-import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.COURT_NAME;
-import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.DEFENDANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.PARTY_NAME;
 
 @Service
 public class TransferCaseNotificationsService {
@@ -32,34 +31,29 @@ public class TransferCaseNotificationsService {
     public void sendClaimUpdatedEmailToClaimant(Claim claim) {
 
         EmailTemplates templates = notificationsProperties.getTemplates().getEmail();
-
-        notifyParty(claim, claim.getSubmitterEmail(),
-            templates.getCaseTransferred(),
-            "claimant");
+        String partyName = claim.getClaimData().getClaimant().getName();
+        notifyParty(claim, claim.getSubmitterEmail(), templates.getCaseTransferred(), "claimant", partyName);
     }
 
     public void sendClaimUpdatedEmailToDefendant(Claim claim) {
 
         EmailTemplates templates = notificationsProperties.getTemplates().getEmail();
-
-        notifyParty(claim, claim.getDefendantEmail(),
-            templates.getCaseTransferred(),
-            "defendant");
+        String partyName = claim.getClaimData().getDefendant().getName();
+        notifyParty(claim, claim.getDefendantEmail(), templates.getCaseTransferred(), "defendant", partyName);
     }
 
-    private void notifyParty(Claim claim, String partyEmail, String partyEmailTemplateId, String party) {
+    private void notifyParty(Claim claim, String partyEmail, String emailTemplateId, String party, String partyName) {
         notificationService.sendMail(
             partyEmail,
-            partyEmailTemplateId,
-            aggregateParams(claim),
+            emailTemplateId,
+            aggregateParams(claim, partyName),
             referenceForCaseTransferred(claim.getReferenceNumber(), party)
         );
     }
 
-    private Map<String, String> aggregateParams(Claim claim) {
+    private Map<String, String> aggregateParams(Claim claim, String partyName) {
         Map<String, String> parameters = new HashMap<>();
-        parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
-        parameters.put(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName());
+        parameters.put(PARTY_NAME, partyName);
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
         parameters.put(EXTERNAL_ID, claim.getExternalId());
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());

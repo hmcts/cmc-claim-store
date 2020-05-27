@@ -64,23 +64,22 @@ class TransferCaseNotificationsServiceTest {
     void shouldSendClaimUpdatedEmailToClaimant() {
 
         transferCaseNotificationsService.sendClaimUpdatedEmailToClaimant(claim);
-
-        thenEmailSent(SUBMITTER_EMAIL, "to-claimant-case-transferred-000MC001");
+        String partyName = claim.getClaimData().getClaimant().getName();
+        thenEmailSent(SUBMITTER_EMAIL, "to-claimant-case-transferred-000MC001", partyName);
     }
 
     @Test
     void shouldSendClaimUpdatedEmailToDefendant() {
         transferCaseNotificationsService.sendClaimUpdatedEmailToDefendant(claim);
-
-        thenEmailSent(DEFENDANT_EMAIL, "to-defendant-case-transferred-000MC001");
+        String partyName = claim.getClaimData().getDefendant().getName();
+        thenEmailSent(DEFENDANT_EMAIL, "to-defendant-case-transferred-000MC001", partyName);
     }
 
-    private void thenEmailSent(String recipientEmail, String reference) {
+    private void thenEmailSent(String recipientEmail, String reference, String partyName) {
 
         Map<String, String> expectedParams = Map.of(
             "claimReferenceNumber", claim.getReferenceNumber(),
-            "claimantName", claim.getClaimData().getClaimant().getName(),
-            "defendantName", claim.getClaimData().getDefendant().getName(),
+            "partyName", partyName,
             "frontendBaseUrl", FRONTEND_BASE_URL,
             "externalId", claim.getExternalId(),
             "courtName", TRANSFER_COURT_NAME
