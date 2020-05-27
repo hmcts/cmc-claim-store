@@ -74,6 +74,18 @@ public class SendGridClientTest {
         }
     }
 
+    @Test
+    public void testAttachments() throws IOException {
+        when(sendGrid.api(any(Request.class))).thenReturn(new Response(202, "response body", Collections.emptyMap()));
+
+        sendGridClient.sendEmail(SampleEmailData.EMAIL_FROM, SampleEmailData.getWithAttachment("test.pdf"));
+
+        verify(sendGrid).api(requestCaptor.capture());
+
+        Request capturedRequest = requestCaptor.getValue();
+        assertTrue(capturedRequest.getBody().contains("\"filename\":\"test.pdf\""));
+    }
+
     @Test(expected = IOException.class)
     public void testIOExceptionIsPropagated() throws IOException {
         when(sendGrid.api(any(Request.class))).thenThrow(new IOException("expected exception"));

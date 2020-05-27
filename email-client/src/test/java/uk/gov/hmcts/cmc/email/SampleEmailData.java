@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.email;
 
 import java.util.Collections;
+import java.util.List;
 
 import static uk.gov.hmcts.cmc.email.EmailService.EMAIL_SUBJECT;
 
@@ -20,5 +21,10 @@ public class SampleEmailData {
 
     public static EmailData getWithSubjectNull() {
         return new EmailData(EMAIL_TO, null, EMAIL_MESSAGE, Collections.emptyList());
+    }
+
+    public static EmailData getWithAttachment(String pdfFilename) {
+        return new EmailData(EMAIL_TO, EMAIL_SUBJECT, EMAIL_MESSAGE,
+            List.of(EmailAttachment.pdf(new byte[] { 1, 2, 3 }, pdfFilename)));
     }
 }

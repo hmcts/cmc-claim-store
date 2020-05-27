@@ -5,6 +5,7 @@ import com.sendgrid.Request;
 import com.sendgrid.Response;
 import com.sendgrid.SendGrid;
 import com.sendgrid.helpers.mail.Mail;
+import com.sendgrid.helpers.mail.objects.Attachments;
 import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
 import org.apache.http.HttpException;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailSendFailedException;
 
@@ -38,6 +40,11 @@ public class SendGridClient {
         Email recipient = new Email(emailData.getTo());
         Content content = new Content(MediaType.TEXT_PLAIN_VALUE, emailData.getMessage());
         Mail mail = new Mail(sender, subject, recipient, content);
+        if (emailData.hasAttachments()) {
+            emailData.getAttachments().stream()
+                .map(SendGridClient::toSendGridAttachments)
+                .forEach(mail::addAttachments);
+        }
 
         Request request = new Request();
         request.setMethod(Method.POST);
@@ -51,6 +58,23 @@ public class SendGridClient {
                 response.getStatusCode(),
                 response.getBody()
             )));
+        }
+    }
+
+    private static Attachments toSendGridAttachments(EmailAttachment attachment) {
+        try {
+            Attachments.Builder builder = new Attachments.Builder(
+                attachment.getFilename(),
+                attachment.getData().getInputStream()
+            );
+            builder.withType(attachment.getContentType());
+            builder.withDisposition("attachment");
+            return builder.build();
+        } catch (IOException e) {
+            throw new EmailSendFailedException(
+                "Could not open input stream for attachment " + attachment.getFilename(),
+                e
+            );
         }
     }
 
