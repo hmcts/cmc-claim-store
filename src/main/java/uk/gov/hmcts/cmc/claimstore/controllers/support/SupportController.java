@@ -1,13 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.support;
 
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,7 +16,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerErrorException;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
@@ -50,6 +47,7 @@ import uk.gov.hmcts.cmc.claimstore.services.MediationReportService;
 import uk.gov.hmcts.cmc.claimstore.services.ScheduledStateTransitionService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
+import uk.gov.hmcts.cmc.claimstore.services.statetransition.StateTransitionInput;
 import uk.gov.hmcts.cmc.claimstore.services.statetransition.StateTransitions;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -67,6 +65,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_CLAIMANT_RESPONSE;
@@ -112,7 +112,7 @@ public class SupportController {
         ClaimantResponseStaffNotificationHandler claimantResponseStaffNotificationHandler,
         PaidInFullStaffNotificationHandler paidInFullStaffNotificationHandler,
         DocumentsService documentsService,
-         PostClaimOrchestrationHandler postClaimOrchestrationHandler,
+        PostClaimOrchestrationHandler postClaimOrchestrationHandler,
         MediationReportService mediationReportService,
         ClaimSubmissionOperationIndicatorRule claimSubmissionOperationIndicatorRule,
         ScheduledStateTransitionService scheduledStateTransitionService
@@ -272,23 +272,20 @@ public class SupportController {
 
     }
 
-    @PostMapping(value = "/claims/transitionClaimState")
+    @PutMapping(value = "/claims/transitionClaimState")
     @ApiOperation("Trigger scheduled state transition")
     public void transitionClaimState(
-            @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation,
-            @RequestParam StateTransitions stateTransition,
-            @RequestParam(required = false)
-            @ApiParam("Optional. If supplied check will run as if triggered at this timestamp. Format is "
-                    + "yyyy-MM-ddThh:mm:ss")
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-                    LocalDateTime localDateTime
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation,
+        @Valid @NotNull @RequestBody StateTransitionInput stateTransitionInput
     ) {
+        LocalDateTime localDateTime = stateTransitionInput.getLocalDateTime();
+        StateTransitions stateTransition = stateTransitionInput.getStateTransitions();
         LocalDateTime runDateTime = localDateTime == null ? LocalDateTimeFactory.nowInLocalZone() : localDateTime;
 
         User user = userService.getUser(authorisation);
         String format = runDateTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss"));
         logger.info(format("transitionClaimState %s called by %s for date: %s", stateTransition,
-                user.getUserDetails().getId(), format));
+            user.getUserDetails().getId(), format));
         scheduledStateTransitionService.transitionClaims(runDateTime, user, stateTransition);
     }
 
@@ -312,7 +309,7 @@ public class SupportController {
         if (!claim.getClaimData().isClaimantRepresented()) {
             GeneratePinResponse pinResponse = userService
                 .generatePin(claim.getClaimData().getDefendant().getName(), authorisation
-            );
+                );
 
             claimService.linkLetterHolder(claim, pinResponse.getUserId(), authorisation);
             documentGenerator.generateForNonRepresentedClaim(
@@ -366,7 +363,7 @@ public class SupportController {
 
     private void resendStaffNotificationClaimantResponse(Claim claim, String authorization) {
         ClaimantResponse claimantResponse = claim.getClaimantResponse()
-                .orElseThrow(() -> new IllegalArgumentException(MISSING_CLAIMANT_RESPONSE));
+            .orElseThrow(() -> new IllegalArgumentException(MISSING_CLAIMANT_RESPONSE));
         if (!isSettlementAgreement(claim, claimantResponse)) {
             claimantResponseStaffNotificationHandler.onClaimantResponse(
                 new ClaimantResponseEvent(claim, authorization)
