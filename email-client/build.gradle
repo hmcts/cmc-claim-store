@@ -14,7 +14,6 @@ dependencies {
   compile project(':launch-darkly-client')
 
   compile group: 'org.springframework.boot', name: 'spring-boot-starter'
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-json'
   compile group: 'org.springframework.retry', name: 'spring-retry', version: '1.2.5.RELEASE'
 
