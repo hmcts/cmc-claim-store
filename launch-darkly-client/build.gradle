@@ -1,0 +1,17 @@
+apply plugin: 'jacoco'
+apply plugin: 'net.ltgt.apt'
+
+sourceCompatibility = 11
+
+dependencies {
+  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '4.14.0'
+  compile group: 'org.springframework', name: 'spring-context-support'
+
+  testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api'
+  testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine'
+  testCompile group: 'org.mockito', name: 'mockito-junit-jupiter'
+}
+
+test {
+  useJUnitPlatform()
+}
