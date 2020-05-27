@@ -47,7 +47,7 @@ public class ResponseDeadlineCalculator {
     }
 
     public LocalDate calculateServiceDate(LocalDate issueDate) {
-        return calculateFirstWorkingDayAfterOffset(issueDate, serviceDays);
+        return issueDate.plusDays(serviceDays);
     }
 
     private LocalDate calculateFirstWorkingDayAfterOffset(LocalDate date, int offset) {
