@@ -92,8 +92,8 @@ public abstract class Response {
         return moreTimeNeeded;
     }
 
-    public ResponseMethod getResponseMethod() {
-        return responseMethod;
+    public Optional<ResponseMethod> getResponseMethod() {
+        return Optional.ofNullable(responseMethod);
     }
 
     public Party getDefendant() {

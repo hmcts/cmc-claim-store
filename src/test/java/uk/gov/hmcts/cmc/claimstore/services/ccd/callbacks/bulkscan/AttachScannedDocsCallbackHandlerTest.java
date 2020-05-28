@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseMethod.OFFLINE;
 
@@ -46,7 +47,7 @@ class AttachScannedDocsCallbackHandlerTest {
 
         CallbackRequest callbackRequest = CallbackRequest
             .builder()
-            .caseDetails(CaseDetails.builder().data(Collections.EMPTY_MAP).build())
+            .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
             .eventId(CaseEvent.ATTACH_SCANNED_DOCS.getValue())
             .build();
 
@@ -105,9 +106,11 @@ class AttachScannedDocsCallbackHandlerTest {
 
         when(caseDetailsConverter.extractCCDCase(any())).thenReturn(ccdCase);
 
-        when(caseDetailsConverter.convertToMap(ccdCase)).thenReturn(Map.of());
+        when(caseDetailsConverter.convertToMap(ccdCase)).thenReturn(Collections.emptyMap());
 
         callbackHandler.handle(callbackParams);
+
+        verify(caseDetailsConverter).convertToMap(ccdCase);
 
     }
 
@@ -157,7 +160,7 @@ class AttachScannedDocsCallbackHandlerTest {
             "PAPER_RESPONSE_DISPUTES_ALL",
             "PAPER_RESPONSE_COUNTER_CLAIM"},
         mode = EnumSource.Mode.EXCLUDE)
-    void shouldNotCHangeResponseMethodForResponseStaffUploadedDocuments(CCDClaimDocumentType documentType) {
+    void shouldNotChangeResponseMethodForResponseStaffUploadedDocuments(CCDClaimDocumentType documentType) {
         CCDCollectionElement<CCDClaimDocument> document = CCDCollectionElement.<CCDClaimDocument>builder()
             .value(CCDClaimDocument.builder().documentType(documentType).build())
             .build();

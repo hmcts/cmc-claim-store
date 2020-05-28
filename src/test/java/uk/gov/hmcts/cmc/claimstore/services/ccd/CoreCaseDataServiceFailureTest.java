@@ -238,7 +238,7 @@ public class CoreCaseDataServiceFailureTest {
         Claim providedClaim = SampleClaim.withNoResponse();
         Claim expectedClaim = SampleClaim.claim(providedClaim.getClaimData(), "000MC001");
 
-        when(caseDetailsConverter.extractClaim(any((CaseDetails.class)))).thenReturn(expectedClaim);
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(expectedClaim);
 
         service.requestMoreTimeForResponse(AUTHORISATION, providedClaim, FUTURE_DATE);
 
@@ -261,7 +261,7 @@ public class CoreCaseDataServiceFailureTest {
             .ccjType(CountyCourtJudgmentType.DEFAULT)
             .build();
 
-        when(caseDetailsConverter.extractClaim(any((CaseDetails.class)))).thenReturn(providedClaim);
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(providedClaim);
 
         service.saveCountyCourtJudgment(AUTHORISATION,
             providedClaim.getId(),
@@ -283,7 +283,7 @@ public class CoreCaseDataServiceFailureTest {
 
         URI sealedClaimUri = URI.create("http://localhost/sealedClaim.pdf");
         Claim claim = SampleClaim.getClaimWithSealedClaimLink(sealedClaimUri);
-        when(caseDetailsConverter.extractClaim(any((CaseDetails.class)))).thenReturn(claim);
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
 
         service.saveClaimDocuments(AUTHORISATION,
             SampleClaim.CLAIM_ID,
@@ -306,7 +306,7 @@ public class CoreCaseDataServiceFailureTest {
         Claim providedClaim = SampleClaim.getDefault();
         Response providedResponse = SampleResponse.validDefaults();
 
-        when(caseDetailsConverter.extractClaim(any((CaseDetails.class))))
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
             .thenReturn(SampleClaim.getWithResponse(providedResponse));
 
         service.saveDefendantResponse(providedClaim.getId(),
@@ -331,7 +331,7 @@ public class CoreCaseDataServiceFailureTest {
         Claim providedClaim = SampleClaim.getDefault();
         Response providedResponse = SampleResponse.FullAdmission.builder().build();
 
-        when(caseDetailsConverter.extractClaim(any((CaseDetails.class))))
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
             .thenReturn(SampleClaim.getWithResponse(providedResponse));
 
         service.saveDefendantResponse(providedClaim.getId(),
@@ -356,7 +356,7 @@ public class CoreCaseDataServiceFailureTest {
         Claim providedClaim = SampleClaim.getDefault();
         Response providedResponse = SampleResponse.PartAdmission.builder().build();
 
-        when(caseDetailsConverter.extractClaim(any((CaseDetails.class))))
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
             .thenReturn(SampleClaim.getWithResponse(providedResponse));
 
         service.saveDefendantResponse(providedClaim.getId(),
@@ -382,7 +382,7 @@ public class CoreCaseDataServiceFailureTest {
         Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
         ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultAcceptation();
 
-        when(caseDetailsConverter.extractClaim(any((CaseDetails.class))))
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
             .thenReturn(SampleClaim.getWithClaimantResponse());
 
         service.saveClaimantResponse(providedClaim.getId(),
@@ -434,7 +434,7 @@ public class CoreCaseDataServiceFailureTest {
         ClaimantResponse claimantResponse = SampleClaimantResponse.ClaimantResponseAcceptation
             .builder().buildAcceptationIssueSettlementWithClaimantPaymentIntention();
 
-        when(caseDetailsConverter.extractClaim(any((CaseDetails.class))))
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
             .thenReturn(SampleClaim.getWithClaimantResponse());
 
         service.saveClaimantResponse(providedClaim.getId(), claimantResponse, AUTHORISATION);
@@ -456,7 +456,7 @@ public class CoreCaseDataServiceFailureTest {
         Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
         ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultRejection();
 
-        when(caseDetailsConverter.extractClaim(any((CaseDetails.class))))
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
             .thenReturn(SampleClaim.getWithClaimantResponse());
 
         service.saveClaimantResponse(providedClaim.getId(),
@@ -479,7 +479,7 @@ public class CoreCaseDataServiceFailureTest {
     public void saveSettlementFailure() {
         Settlement providedSettlement = SampleSettlement.validDefaults();
 
-        when(caseDetailsConverter.extractClaim(any((CaseDetails.class))))
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
             .thenReturn(SampleClaim.getWithSettlement(providedSettlement));
 
         service.saveSettlement(
@@ -587,7 +587,7 @@ public class CoreCaseDataServiceFailureTest {
 
         Claim claim = SampleClaim.getDefault();
 
-        when(caseDetailsConverter.extractClaim(any((CaseDetails.class)))).thenReturn(SampleClaim.builder().build());
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(SampleClaim.builder().build());
 
         service.saveReDetermination(AUTHORISATION, claim.getId(), reDetermination, REFER_TO_JUDGE_BY_CLAIMANT);
     }
@@ -597,7 +597,7 @@ public class CoreCaseDataServiceFailureTest {
         Claim claim = SampleClaim.getDefault();
         PaidInFull paidInFull = PaidInFull.builder().moneyReceivedOn(now()).build();
 
-        when(caseDetailsConverter.extractClaim(any((CaseDetails.class)))).thenReturn(claim);
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
 
         service.savePaidInFull(claim.getId(), paidInFull, AUTHORISATION);
     }
