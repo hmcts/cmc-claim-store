@@ -6,8 +6,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.events.BulkPrintTransferEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
@@ -67,11 +65,12 @@ public class TransferCaseLetterSenderTest {
 
         CCDDocument noticeForCourt = mock(CCDDocument.class);
         Document coverLetterDoc = mock(Document.class);
-        List<CCDCollectionElement<CCDClaimDocument>> ccdCaseDocuments = List.of();
         final List<BulkPrintTransferEvent.PrintableDocument> caseDocuments = List.of();
 
         when(ccdCase.getCoverLetterDoc()).thenReturn(noticeForCourt);
-        when(ccdCase.getCaseDocuments()).thenReturn(ccdCaseDocuments);
+        when(ccdCase.getCaseDocuments()).thenReturn(List.of());
+        when(ccdCase.getScannedDocuments()).thenReturn(List.of());
+        when(ccdCase.getStaffUploadedDocuments()).thenReturn(List.of());
         when(printableDocumentService.process(noticeForCourt, AUTHORISATION)).thenReturn(coverLetterDoc);
 
         transferCaseLetterSender.sendAllCaseDocumentsToCourt(AUTHORISATION, ccdCase, claim);

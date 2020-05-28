@@ -1,10 +1,13 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase;
 
+import com.google.common.collect.ImmutableList;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocument;
 import uk.gov.hmcts.cmc.claimstore.events.BulkPrintTransferEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.PrintableDocumentService;
@@ -38,15 +41,38 @@ public class TransferCaseLetterSender {
     public void sendAllCaseDocumentsToCourt(String authorisation, CCDCase ccdCase, Claim claim) {
 
         Document coverLetterDoc = printableDocumentService.process(ccdCase.getCoverLetterDoc(), authorisation);
-        List<BulkPrintTransferEvent.PrintableDocument> caseDocuments = getDocumentsExcludingCoverNote(ccdCase, authorisation);
+        List<BulkPrintTransferEvent.PrintableDocument> caseDocuments = getAllCaseDocuments(ccdCase, authorisation);
         eventProducer.createBulkPrintTransferEvent(claim, coverLetterDoc, caseDocuments);
     }
 
-    private List<BulkPrintTransferEvent.PrintableDocument> getDocumentsExcludingCoverNote(CCDCase ccdCase, String authorisation) {
-        return ccdCase.getCaseDocuments().stream()
+    private List<BulkPrintTransferEvent.PrintableDocument> getAllCaseDocuments(CCDCase ccdCase, String authorisation) {
+
+        return ImmutableList.<BulkPrintTransferEvent.PrintableDocument>builder()
+            .addAll(getClaimDocuments(ccdCase, authorisation))
+            .addAll(scannedDocuments(ccdCase, authorisation))
+            .build();
+    }
+
+    private List<BulkPrintTransferEvent.PrintableDocument> getClaimDocuments(CCDCase ccdCase, String authorisation) {
+        ImmutableList<CCDCollectionElement<CCDClaimDocument>> claimsDocuments
+            = ImmutableList.<CCDCollectionElement<CCDClaimDocument>>builder()
+            .addAll(ccdCase.getCaseDocuments())
+            .addAll(ccdCase.getStaffUploadedDocuments())
+            .build();
+
+        return claimsDocuments.stream()
             .map(CCDCollectionElement::getValue)
+            .filter(d -> !d.getDocumentType().equals(CCDClaimDocumentType.CLAIM_ISSUE_RECEIPT))
             .map(CCDClaimDocument::getDocumentLink)
             .filter(d -> !d.getDocumentUrl().equals(ccdCase.getCoverLetterDoc().getDocumentUrl()))
+            .map(d -> this.getPrintableDocument(authorisation, d))
+            .collect(Collectors.toList());
+    }
+
+    private List<BulkPrintTransferEvent.PrintableDocument> scannedDocuments(CCDCase ccdCase, String authorisation) {
+        return ccdCase.getScannedDocuments().stream()
+            .map(CCDCollectionElement::getValue)
+            .map(CCDScannedDocument::getUrl)
             .map(d -> this.getPrintableDocument(authorisation, d))
             .collect(Collectors.toList());
     }
