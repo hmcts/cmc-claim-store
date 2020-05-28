@@ -11,10 +11,13 @@ import uk.gov.hmcts.cmc.email.sendgrid.SendGridClient;
 
 import java.io.IOException;
 
+import static java.util.Collections.singletonMap;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.cmc.email.EmailService.EMAIL_SUBJECT;
+import static uk.gov.hmcts.cmc.email.EmailService.NOTIFICATION_FAILURE;
 
 @RunWith(MockitoJUnitRunner.class)
 @ContextConfiguration
@@ -31,18 +34,6 @@ public class EmailServiceTest {
     @Before
     public void beforeEachTest() {
         emailService = new EmailService(telemetryClient, false, sendGrid);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testSendEmailThrowsInvalidArgumentExceptionForInvalidTo() {
-        EmailData emailData = SampleEmailData.getWithToNull();
-        emailService.sendEmail(SampleEmailData.EMAIL_FROM, emailData);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testSendEmailThrowsInvalidArgumentExceptionForInvalidSubject() {
-        EmailData emailData = SampleEmailData.getWithSubjectNull();
-        emailService.sendEmail(SampleEmailData.EMAIL_FROM, emailData);
     }
 
     @Test
