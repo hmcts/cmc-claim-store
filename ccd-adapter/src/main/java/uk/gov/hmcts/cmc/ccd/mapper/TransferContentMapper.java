@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTransferContent;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTransferReason;
 import uk.gov.hmcts.cmc.domain.models.TransferContent;
@@ -14,19 +13,16 @@ public class TransferContentMapper {
         this.addressMapper = addressMapper;
     }
 
-    public TransferContent from(CCDCase ccdCase) {
-
-        CCDTransferContent ccdTransferContent = ccdCase.getTransferContent();
-
-        if (ccdTransferContent == null) {
+    public TransferContent from(CCDTransferContent transferContent) {
+        if (transferContent == null) {
             return null;
         }
 
         return TransferContent.builder()
-            .dateOfTransfer(ccdTransferContent.getDateOfTransfer())
-            .reasonForTransfer(getReasonForTransfer(ccdTransferContent))
-            .hearingCourtName(ccdCase.getHearingCourtName())
-            .hearingCourtAddress(addressMapper.from(ccdCase.getHearingCourtAddress()))
+            .dateOfTransfer(transferContent.getDateOfTransfer())
+            .reasonForTransfer(getReasonForTransfer(transferContent))
+            .hearingCourtName(transferContent.getTransferCourtName())
+            .hearingCourtAddress(addressMapper.from(transferContent.getTransferCourtAddress()))
             .build();
     }
 

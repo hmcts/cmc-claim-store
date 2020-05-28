@@ -47,20 +47,29 @@ public class TransferCaseLetterSender {
 
     private List<BulkPrintTransferEvent.PrintableDocument> getAllCaseDocuments(CCDCase ccdCase, String authorisation) {
 
-        return ImmutableList.<BulkPrintTransferEvent.PrintableDocument>builder()
-            .addAll(getClaimDocuments(ccdCase, authorisation))
-            .addAll(scannedDocuments(ccdCase, authorisation))
-            .build();
+        var printableDocuments = ImmutableList.<BulkPrintTransferEvent.PrintableDocument>builder()
+            .addAll(getClaimDocuments(ccdCase, authorisation));
+
+        List<BulkPrintTransferEvent.PrintableDocument> scannedDocuments = scannedDocuments(ccdCase, authorisation);
+
+        if (scannedDocuments != null && !scannedDocuments.isEmpty()) {
+            printableDocuments.addAll(scannedDocuments);
+        }
+
+        return printableDocuments.build();
     }
 
     private List<BulkPrintTransferEvent.PrintableDocument> getClaimDocuments(CCDCase ccdCase, String authorisation) {
-        ImmutableList<CCDCollectionElement<CCDClaimDocument>> claimsDocuments
-            = ImmutableList.<CCDCollectionElement<CCDClaimDocument>>builder()
-            .addAll(ccdCase.getCaseDocuments())
-            .addAll(ccdCase.getStaffUploadedDocuments())
-            .build();
+        var claimsDocuments = ImmutableList.<CCDCollectionElement<CCDClaimDocument>>builder()
+            .addAll(ccdCase.getCaseDocuments());
 
-        return claimsDocuments.stream()
+        List<CCDCollectionElement<CCDClaimDocument>> uploadedDocuments = ccdCase.getStaffUploadedDocuments();
+
+        if (uploadedDocuments != null && !uploadedDocuments.isEmpty()) {
+            claimsDocuments.addAll(uploadedDocuments);
+        }
+
+        return claimsDocuments.build().stream()
             .map(CCDCollectionElement::getValue)
             .filter(d -> !d.getDocumentType().equals(CCDClaimDocumentType.CLAIM_ISSUE_RECEIPT))
             .map(CCDClaimDocument::getDocumentLink)
@@ -70,6 +79,10 @@ public class TransferCaseLetterSender {
     }
 
     private List<BulkPrintTransferEvent.PrintableDocument> scannedDocuments(CCDCase ccdCase, String authorisation) {
+        if (ccdCase.getScannedDocuments() == null) {
+            return null;
+        }
+
         return ccdCase.getScannedDocuments().stream()
             .map(CCDCollectionElement::getValue)
             .map(CCDScannedDocument::getUrl)

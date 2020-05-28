@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transferca
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDTransferContent;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTransferReason;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
@@ -24,12 +25,13 @@ public class NoticeOfTransferLetterTemplateMapper {
     public DocAssemblyTemplateBody noticeOfTransferLetterBodyForCourt(CCDCase ccdCase, String caseworkerName) {
 
         LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
+        CCDTransferContent transferContent = ccdCase.getTransferContent();
 
         return DocAssemblyTemplateBody.builder()
             .currentDate(currentDate)
             .referenceNumber(ccdCase.getPreviousServiceCaseReference())
-            .hearingCourtName(ccdCase.getHearingCourtName())
-            .hearingCourtAddress(ccdCase.getHearingCourtAddress())
+            .hearingCourtName(transferContent.getTransferCourtName())
+            .hearingCourtAddress(transferContent.getTransferCourtAddress())
             .caseworkerName(caseworkerName)
             .caseName(ccdCase.getCaseName())
             .reasonForTransfer(getTransferReason(ccdCase))
@@ -42,12 +44,13 @@ public class NoticeOfTransferLetterTemplateMapper {
         CCDAddress partyAddress = getDefendantAddress(ccdCase);
 
         LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
+        CCDTransferContent transferContent = ccdCase.getTransferContent();
 
         return DocAssemblyTemplateBody.builder()
             .currentDate(currentDate)
             .referenceNumber(ccdCase.getPreviousServiceCaseReference())
-            .hearingCourtName(ccdCase.getHearingCourtName())
-            .hearingCourtAddress(ccdCase.getHearingCourtAddress())
+            .hearingCourtName(transferContent.getTransferCourtName())
+            .hearingCourtAddress(transferContent.getTransferCourtAddress())
             .caseworkerName(caseworkerName)
             .caseName(ccdCase.getCaseName())
             .partyName(partyName)

@@ -72,10 +72,10 @@ class NoticeOfTransferLetterTemplateMapperTest {
         ccdCase = CCDCase.builder()
             .previousServiceCaseReference(CASE_REFERENCE)
             .respondents(respondents)
-            .hearingCourtName(TRANSFER_COURT_NAME)
-            .hearingCourtAddress(transferCourtAddress)
             .transferContent(CCDTransferContent.builder()
                 .transferReason(CCDTransferReason.OTHER)
+                .transferCourtName(TRANSFER_COURT_NAME)
+                .transferCourtAddress(transferCourtAddress)
                 .transferReasonOther(TRANSFER_REASON)
                 .build())
             .build();

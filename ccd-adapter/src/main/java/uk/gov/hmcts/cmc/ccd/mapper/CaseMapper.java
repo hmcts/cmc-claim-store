@@ -112,7 +112,7 @@ public class CaseMapper {
             .dateReferredForDirections(ccdCase.getDateReferredForDirections())
             .paperResponse(MapperUtil.hasPaperResponse.apply(ccdCase))
             .mediationOutcome(getMediationOutcome(ccdCase))
-            .transferContent(transferContentMapper.from(ccdCase));
+            .transferContent(transferContentMapper.from(ccdCase.getTransferContent()));
 
         if (ccdCase.getFeatures() != null) {
             builder.features(Arrays.asList(ccdCase.getFeatures().split(",")));
