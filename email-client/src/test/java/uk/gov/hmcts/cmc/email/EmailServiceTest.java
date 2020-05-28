@@ -117,6 +117,9 @@ public class EmailServiceTest {
         EmailData emailData = SampleEmailData.getDefault();
         doThrow(new IOException("expected exception")).when(sendGrid).sendEmail(anyString(), any(EmailData.class));
         emailService.sendEmail(SampleEmailData.EMAIL_FROM, emailData);
+
+        verify(telemetryClient)
+            .trackEvent(NOTIFICATION_FAILURE, singletonMap(EMAIL_SUBJECT, emailData.getSubject()), null);
     }
 
 }
