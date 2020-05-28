@@ -86,6 +86,8 @@ class AttachScannedDocsCallbackHandlerTest {
 
         callbackHandler.handle(callbackParams);
 
+        verify(caseDetailsConverter).convertToMap(expectedCcdCase);
+
     }
 
     @ParameterizedTest
@@ -149,6 +151,8 @@ class AttachScannedDocsCallbackHandlerTest {
 
         callbackHandler.handle(callbackParams);
 
+        verify(caseDetailsConverter).convertToMap(expectedCcdCase);
+
     }
 
     @ParameterizedTest
@@ -178,6 +182,8 @@ class AttachScannedDocsCallbackHandlerTest {
         when(caseDetailsConverter.convertToMap(ccdCase)).thenReturn(Map.of());
 
         callbackHandler.handle(callbackParams);
+
+        verify(caseDetailsConverter).convertToMap(ccdCase);
 
     }
 }

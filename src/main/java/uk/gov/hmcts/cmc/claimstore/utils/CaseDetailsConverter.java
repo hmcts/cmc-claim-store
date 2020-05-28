@@ -60,7 +60,7 @@ public class CaseDetailsConverter {
     }
 
     private Response updateResponseMethod(Response response, CCDCase ccdCase) {
-        if (response == null || response.getResponseMethod() != null) {
+        if (response == null || response.getResponseMethod().isPresent()) {
             return response;
         }
 
