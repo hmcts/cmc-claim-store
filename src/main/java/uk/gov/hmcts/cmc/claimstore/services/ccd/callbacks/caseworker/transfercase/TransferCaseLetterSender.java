@@ -38,14 +38,15 @@ public class TransferCaseLetterSender {
     public void sendAllCaseDocumentsToCourt(String authorisation, CCDCase ccdCase, Claim claim) {
 
         Document coverLetterDoc = printableDocumentService.process(ccdCase.getCoverLetterDoc(), authorisation);
-        List<BulkPrintTransferEvent.PrintableDocument> caseDocuments = getDocuments(ccdCase, authorisation);
+        List<BulkPrintTransferEvent.PrintableDocument> caseDocuments = getDocumentsExcludingCoverNote(ccdCase, authorisation);
         eventProducer.createBulkPrintTransferEvent(claim, coverLetterDoc, caseDocuments);
     }
 
-    private List<BulkPrintTransferEvent.PrintableDocument> getDocuments(CCDCase ccdCase, String authorisation) {
+    private List<BulkPrintTransferEvent.PrintableDocument> getDocumentsExcludingCoverNote(CCDCase ccdCase, String authorisation) {
         return ccdCase.getCaseDocuments().stream()
             .map(CCDCollectionElement::getValue)
             .map(CCDClaimDocument::getDocumentLink)
+            .filter(d -> !d.getDocumentUrl().equals(ccdCase.getCoverLetterDoc().getDocumentUrl()))
             .map(d -> this.getPrintableDocument(authorisation, d))
             .collect(Collectors.toList());
     }
