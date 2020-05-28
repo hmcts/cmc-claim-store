@@ -24,4 +24,5 @@ withNightlyPipeline(type, product, component) {
     env.Rules = params.SecurityRules
     enableSlackNotifications(channel)
     enableSecurityScan()
+    enableFullFunctionalTest(200)
 }
