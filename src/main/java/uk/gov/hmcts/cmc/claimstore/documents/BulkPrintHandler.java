@@ -98,18 +98,13 @@ public class BulkPrintHandler {
             event.getCoverLetter(),
             buildCoverSheetFileBaseName(claim.getReferenceNumber()));
 
-        ImmutableList.Builder<Printable> printableDocs = ImmutableList.<Printable>builder().add(coverLetter);
-        addCaseDocuments(event.getCaseDocuments(), printableDocs);
-
-        bulkPrintService.printPdf(claim, printableDocs.build(), BULK_PRINT_TRANSFER_TYPE);
-    }
-
-    private void addCaseDocuments(
-        List<BulkPrintTransferEvent.PrintableDocument> caseDocuments,
-        ImmutableList.Builder<Printable> printableDocs
-    ) {
-        for (BulkPrintTransferEvent.PrintableDocument document : caseDocuments) {
-            printableDocs.add(new PrintablePdf(document.getDocument(), document.getFileName()));
-        }
-    }
+       List<Printable> printableDocs = List.of(coverLetter);
+       printableDocs.addAll(event.getCaseDocuments()
+           .stream()
+           .map(d -> new PrintablePdf(d.getDocument(), d.getFileName()))
+           .collect(Collectors.toList())
+       );
+        
+        bulkPrintService.printPdf(claim, Collections.unmodifiableList(printableDocs), BULK_PRINT_TRANSFER_TYPE);
+    }   
 }
