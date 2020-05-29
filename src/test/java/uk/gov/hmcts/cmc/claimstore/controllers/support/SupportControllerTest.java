@@ -32,7 +32,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ScheduledStateTransitionService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
-import uk.gov.hmcts.cmc.claimstore.services.statetransition.StateTransitions;
+import uk.gov.hmcts.cmc.claimstore.services.statetransition.StateTransitionInput;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
@@ -64,6 +64,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.services.statetransition.StateTransitions.STAY_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
@@ -519,20 +520,23 @@ class SupportControllerTest {
             final LocalDateTime localDateTime
                 = LocalDateTime.of(2019, 1, 1, 1, 1, 1);
 
-            controller.transitionClaimState(auth, StateTransitions.STAY_CLAIM, localDateTime);
+            StateTransitionInput stateTransitionInput
+                = StateTransitionInput.builder().localDateTime(localDateTime).stateTransitions(STAY_CLAIM).build();
+            controller.transitionClaimState(auth, stateTransitionInput);
 
             verify(scheduledStateTransitionService).transitionClaims(localDateTime, user,
-                StateTransitions.STAY_CLAIM);
+                STAY_CLAIM);
         }
 
         @Test
         void shouldPerformIntentionToProceedCheckWithNullDatetime() {
-            controller.transitionClaimState(auth, StateTransitions.STAY_CLAIM, null);
+            StateTransitionInput stateTransitionInput
+                = StateTransitionInput.builder().localDateTime(null).stateTransitions(STAY_CLAIM).build();
+            controller.transitionClaimState(auth, stateTransitionInput);
 
             verify(scheduledStateTransitionService).transitionClaims(notNull(), eq(user),
-                eq(StateTransitions.STAY_CLAIM));
+                eq(STAY_CLAIM));
         }
-
     }
 
     @Nested
