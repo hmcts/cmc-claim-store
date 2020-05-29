@@ -99,7 +99,14 @@ doc_assembly:
   judgeTemplateId: "CV-CMC-GOR-ENG-00219-1.docx"
   generalLetterTemplateId: "CV-CMC-GOR-ENG-0005.docx"
   contactChangeTemplateId: "CV-CMC-GOR-ENG-0006.docx"
-  oconFormTemplateID: ""
+  oconFormIndividualWithDQs: "grg"
+  oconFormSoleTraderWithDQs: ""
+  oconFormOrganisationWithDQs: ""
+  oconFormIndividualWithoutDQs: ""
+  oconFormSoleTraderWithoutDQs: ""
+  oconFormOrganisationWithoutDQs: ""
+  paperDefenceCoverLetterTemplateID: "CV-CMC-GOR-ENG-0007.docx"
+
 
 nonworking-days:
   datafile: ${NONWORKINGDAYS_DATAFILE:/data/non-working_days.dat}
