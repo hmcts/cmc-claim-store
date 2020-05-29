@@ -15,7 +15,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class TransferCaseDocumentServiceTest {
+class TransferCaseDocumentServiceTest {
 
     private static final String CASE_REFERENCE = "0001";
 
@@ -40,7 +40,7 @@ public class TransferCaseDocumentServiceTest {
     }
 
     @Test
-    public void shouldAttachNoticeOfTransferForCourt() {
+    void shouldAttachNoticeOfTransferForCourt() {
 
         when(ccdCase.getCoverLetterDoc()).thenReturn(noticeForCourt);
 
@@ -54,7 +54,7 @@ public class TransferCaseDocumentServiceTest {
     }
 
     @Test
-    public void shouldAttachNoticeOfTransferForDefendant() {
+    void shouldAttachNoticeOfTransferForDefendant() {
 
         when(ccdCase.getDraftLetterDoc()).thenReturn(noticeForDefendant);
 

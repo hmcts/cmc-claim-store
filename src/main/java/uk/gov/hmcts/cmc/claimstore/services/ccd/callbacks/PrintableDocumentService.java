@@ -34,7 +34,7 @@ public class PrintableDocumentService {
                         .build())),
                 Collections.emptyMap());
         } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException(e);
         }
     }
 }

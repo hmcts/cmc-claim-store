@@ -22,7 +22,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class TransferCaseLetterSenderTest {
+class TransferCaseLetterSenderTest {
 
     private static final String AUTHORISATION = "Bearer: abcd";
 
