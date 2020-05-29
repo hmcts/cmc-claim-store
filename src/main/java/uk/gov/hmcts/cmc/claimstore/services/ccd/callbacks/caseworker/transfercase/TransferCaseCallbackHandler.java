@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
@@ -28,16 +29,18 @@ public class TransferCaseCallbackHandler extends CallbackHandler {
     private final TransferCaseMidProcessor transferCaseMidProcessor;
     private final TransferCasePostProcessor transferCasePostProcessor;
     private final CaseDetailsConverter caseDetailsConverter;
+    private final boolean bulkPrintTransferEnabled;
 
     @Autowired
     public TransferCaseCallbackHandler(
         TransferCaseMidProcessor transferCaseMidProcessor,
         TransferCasePostProcessor transferCasePostProcessor,
-        CaseDetailsConverter caseDetailsConverter
-    ) {
+        CaseDetailsConverter caseDetailsConverter,
+        @Value("${feature_toggles.bulk_print_transfer_enabled}") boolean bulkPrintTransferEnabled) {
         this.transferCaseMidProcessor = transferCaseMidProcessor;
         this.transferCasePostProcessor = transferCasePostProcessor;
         this.caseDetailsConverter = caseDetailsConverter;
+        this.bulkPrintTransferEnabled = bulkPrintTransferEnabled;
     }
 
     @Override
@@ -47,6 +50,13 @@ public class TransferCaseCallbackHandler extends CallbackHandler {
             CallbackType.MID, transferCaseMidProcessor::generateNoticeOfTransferLetters,
             CallbackType.ABOUT_TO_SUBMIT, transferCasePostProcessor::completeCaseTransfer
         );
+    }
+
+    @Override
+    public void register(Map<String, CallbackHandler> handlers) {
+        if (bulkPrintTransferEnabled) {
+            super.register(handlers);
+        }
     }
 
     @Override
