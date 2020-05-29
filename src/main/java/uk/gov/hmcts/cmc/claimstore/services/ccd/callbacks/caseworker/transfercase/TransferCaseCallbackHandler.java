@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
@@ -23,7 +22,6 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TRANSFER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
 @Service
-@ConditionalOnProperty({"feature_toggles.ctsc_enabled"})    // TODO Prevent CCD error if not enabled
 public class TransferCaseCallbackHandler extends CallbackHandler {
     private static final List<Role> ROLES = List.of(CASEWORKER);
     private static final List<CaseEvent> EVENTS = List.of(TRANSFER);
