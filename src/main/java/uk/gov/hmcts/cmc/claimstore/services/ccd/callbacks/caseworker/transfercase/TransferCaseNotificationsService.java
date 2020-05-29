@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transferca
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
@@ -32,14 +33,16 @@ public class TransferCaseNotificationsService {
 
         EmailTemplates templates = notificationsProperties.getTemplates().getEmail();
         String partyName = claim.getClaimData().getClaimant().getName();
-        notifyParty(claim, claim.getSubmitterEmail(), templates.getCaseTransferred(), "claimant", partyName);
+        notifyParty(claim, claim.getSubmitterEmail(), templates.getCaseTransferred(),
+            NotificationReferenceBuilder.CLAIMANT, partyName);
     }
 
     public void sendClaimUpdatedEmailToDefendant(Claim claim) {
 
         EmailTemplates templates = notificationsProperties.getTemplates().getEmail();
         String partyName = claim.getClaimData().getDefendant().getName();
-        notifyParty(claim, claim.getDefendantEmail(), templates.getCaseTransferred(), "defendant", partyName);
+        notifyParty(claim, claim.getDefendantEmail(), templates.getCaseTransferred(),
+            NotificationReferenceBuilder.DEFENDANT, partyName);
     }
 
     private void notifyParty(Claim claim, String partyEmail, String emailTemplateId, String party, String partyName) {

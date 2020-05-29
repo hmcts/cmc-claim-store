@@ -15,7 +15,10 @@ import uk.gov.hmcts.cmc.claimstore.events.legaladvisor.DirectionsOrderReadyToPri
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.BULK_PRINT_TRANSFER_TYPE;
@@ -98,13 +101,13 @@ public class BulkPrintHandler {
             event.getCoverLetter(),
             buildCoverSheetFileBaseName(claim.getReferenceNumber()));
 
-       List<Printable> printableDocs = List.of(coverLetter);
-       printableDocs.addAll(event.getCaseDocuments()
-           .stream()
-           .map(d -> new PrintablePdf(d.getDocument(), d.getFileName()))
-           .collect(Collectors.toList())
-       );
-        
+        List<Printable> printableDocs = new ArrayList<>(List.of(coverLetter));
+        printableDocs.addAll(event.getCaseDocuments()
+            .stream()
+            .map(d -> new PrintablePdf(d.getDocument(), d.getFileName()))
+            .collect(Collectors.toList())
+        );
+
         bulkPrintService.printPdf(claim, Collections.unmodifiableList(printableDocs), BULK_PRINT_TRANSFER_TYPE);
-    }   
+    }
 }
