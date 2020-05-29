@@ -207,7 +207,6 @@ feature_toggles:
   ctsc_enabled: false
   staff_emails_enabled: true
   auto_cancel_payments: "${FEATURE_AUTO_CANCEL_PAYMENTS:false}"
-  bulk_print_transfer_enabled: "${FEATURE_BULK_PRINT_TRANSFER:false}"
 
 feign:
   httpclient:

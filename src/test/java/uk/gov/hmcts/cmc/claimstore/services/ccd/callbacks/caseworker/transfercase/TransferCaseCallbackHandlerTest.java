@@ -2,17 +2,13 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transferca
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
-import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
@@ -22,6 +18,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType.MI
 @ExtendWith(MockitoExtension.class)
 public class TransferCaseCallbackHandlerTest {
 
+    @InjectMocks
     private TransferCaseCallbackHandler handler;
 
     @Mock
@@ -36,13 +33,8 @@ public class TransferCaseCallbackHandlerTest {
     @Mock
     private CallbackResponse expectedResponse;
 
-    @Mock
-    private CaseDetailsConverter caseDetailsConverter;
-
     @Test
     public void shouldHandleMidCallbackType() {
-
-        givenBulkPrintTransferFeatureEnabled(false);
 
         CallbackParams callbackParams = getCallbackParams(MID);
 
@@ -56,8 +48,6 @@ public class TransferCaseCallbackHandlerTest {
     @Test
     public void shouldHandleAboutToSubmitCallbackType() {
 
-        givenBulkPrintTransferFeatureEnabled(true);
-
         CallbackParams callbackParams = getCallbackParams(ABOUT_TO_SUBMIT);
 
         when(transferCasePostProcessor.completeCaseTransfer(callbackParams)).thenReturn(expectedResponse);
@@ -67,39 +57,10 @@ public class TransferCaseCallbackHandlerTest {
         assertEquals(expectedResponse, response);
     }
 
-    @Test
-    public void shouldRegisterHandlerIfBulkPrintFeatureIsEnabled() {
-
-        givenBulkPrintTransferFeatureEnabled(true);
-
-        Map<String, CallbackHandler> handlers = new HashMap<>();
-
-        handler.register(handlers);
-
-        assertEquals(1, handlers.size());
-    }
-
-    @Test
-    public void shouldNotRegisterHandlerIfBulkPrintFeatureIsDisabled() {
-
-        givenBulkPrintTransferFeatureEnabled(false);
-
-        Map<String, CallbackHandler> handlers = new HashMap<>();
-
-        handler.register(handlers);
-
-        assertEquals(0, handlers.size());
-    }
-
     private CallbackParams getCallbackParams(CallbackType callbackType) {
         return CallbackParams.builder()
             .type(callbackType)
             .request(callbackRequest)
             .build();
-    }
-
-    private void givenBulkPrintTransferFeatureEnabled(boolean enabled) {
-        handler = new TransferCaseCallbackHandler(transferCaseMidProcessor, transferCasePostProcessor,
-            caseDetailsConverter, enabled);
     }
 }
