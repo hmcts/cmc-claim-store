@@ -11,6 +11,7 @@ import com.sendgrid.helpers.mail.objects.Email;
 import org.apache.http.HttpException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
@@ -52,7 +53,7 @@ public class SendGridClient {
         request.setBody(mail.build());
 
         Response response = sendGrid.api(request);
-        if (response.getStatusCode() / 100 != 2) {
+        if (!HttpStatus.valueOf(response.getStatusCode()).is2xxSuccessful()) {
             throw new EmailSendFailedException(new HttpException(String.format(
                 "SendGrid returned a non-success response (%d); body: %s",
                 response.getStatusCode(),
