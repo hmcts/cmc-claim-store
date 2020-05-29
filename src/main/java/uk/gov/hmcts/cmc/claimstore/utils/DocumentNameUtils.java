@@ -145,4 +145,20 @@ public class DocumentNameUtils {
 
         return format("%s-request-redeterm-%s", caseRef, partyType);
     }
+
+    //what are the file names?
+
+    public static String buildPaperDefenceCoverLetterFileBaseName(String caseRef, String partyType) {
+        requireNonBlank(caseRef);
+        requireNonBlank(partyType);
+
+        return format("%s-request-redeterm-%s", caseRef, partyType);
+    }
+
+    public static String buildOconFormFileBaseName(String caseRef, String partyType) {
+        requireNonBlank(caseRef);
+        requireNonBlank(partyType);
+
+        return format("%s-request-redeterm-%s", caseRef, partyType);
+    }
 }

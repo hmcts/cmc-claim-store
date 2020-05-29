@@ -99,6 +99,7 @@ doc_assembly:
   judgeTemplateId: "CV-CMC-GOR-ENG-00219-1.docx"
   generalLetterTemplateId: "CV-CMC-GOR-ENG-0005.docx"
   contactChangeTemplateId: "CV-CMC-GOR-ENG-0006.docx"
+  oconFormTemplateID: ""
 
 nonworking-days:
   datafile: ${NONWORKINGDAYS_DATAFILE:/data/non-working_days.dat}

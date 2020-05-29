@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.claimstore.events.offer.OfferRejectedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.response.PaperDefenceReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.events.revieworder.ReviewOrderEvent;
 import uk.gov.hmcts.cmc.claimstore.events.settlement.CountersignSettlementAgreementEvent;
 import uk.gov.hmcts.cmc.claimstore.events.settlement.RejectSettlementAgreementEvent;
@@ -25,6 +26,7 @@ import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimCreatedEvent
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
+import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.time.LocalDate;
 
@@ -116,6 +118,14 @@ public class EventProducer {
 
     public void createInterlocutoryJudgmentEvent(Claim claim) {
         publisher.publishEvent(new InterlocutoryJudgmentEvent(claim));
+    }
+
+    public void createPaperDefenceEvent(
+            Claim claim,
+            Document coverLetter,
+            Document oconForm
+    ) {
+        publisher.publishEvent(new PaperDefenceReadyToPrintEvent(claim, coverLetter, oconForm));
     }
 
     public void createRejectOrganisationPaymentPlanEvent(Claim claim) {
