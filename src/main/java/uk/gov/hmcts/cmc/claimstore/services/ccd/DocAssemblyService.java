@@ -49,6 +49,25 @@ public class DocAssemblyService {
         this.judgeTemplateId = judgeTemplateId;
     }
 
+    public CCDDocument generateDocument(String authorisation,
+                                        DocAssemblyTemplateBody formPayload,
+                                        String templateId) {
+
+        DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
+                .templateId(templateId)
+                .outputType(OutputType.PDF)
+                .formPayload(formPayload)
+                .build();
+
+        var docAssemblyResponse = docAssemblyClient.generateOrder(
+                authorisation,
+                authTokenGenerator.generate(),
+                docAssemblyRequest
+        );
+
+        return CCDDocument.builder().documentUrl(docAssemblyResponse.getRenditionOutputLocation()).build();
+    }
+
     public DocAssemblyResponse createOrder(CCDCase ccdCase, String authorisation) {
         UserDetails userDetails = userService.getUserDetails(authorisation);
 

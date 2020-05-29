@@ -14,10 +14,12 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.GeneralLetterContent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
+import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
@@ -56,6 +58,7 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
     public static final String CALCULATED_SERVICE_DATE = "calculatedServiceDate";
     //to be added when design is complete
     public static final String STATIC_LETTER_CONTENT = "";
+    public static final String COVER_LETTER_DOC = "coverLetterDoc";
     public static final String LETTER_NAME = "%s-issue-paper-form.pdf";
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
     private static final List<CaseEvent> EVENTS = Collections.singletonList(ISSUE_PAPER_DEFENSE_FORMS);
@@ -72,6 +75,9 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
     private final String generalLetterTemplateId;
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
     private final IssueDateCalculator issueDateCalculator;
+    private final EventProducer eventProducer;
+    private final String oconFormTemplateId;
+    private final DocAssemblyService docAssemblyService;
 
     @Autowired
     public IssuePaperDefenceCallbackHandler(
@@ -82,7 +88,10 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
             UserService userService,
             ResponseDeadlineCalculator responseDeadlineCalculator,
             IssueDateCalculator issueDateCalculator,
-            @Value("${doc_assembly.generalLetterTemplateId}") String generalLetterTemplateId
+            EventProducer eventProducer,
+            DocAssemblyService docAssemblyService,
+            @Value("${doc_assembly.generalLetterTemplateId}") String generalLetterTemplateId,
+            @Value("${doc_assembly.oconFormTemplateId}") String oconFormTemplateId
     ) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.generalLetterService = generalLetterService;
@@ -92,6 +101,9 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
         this.responseDeadlineCalculator = responseDeadlineCalculator;
         this.issueDateCalculator = issueDateCalculator;
         this.generalLetterTemplateId = generalLetterTemplateId;
+        this.eventProducer = eventProducer;
+        this.oconFormTemplateId = oconFormTemplateId;
+        this.docAssemblyService = docAssemblyService;
     }
 
     @Override
@@ -135,12 +147,17 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
 
         String content = String.format(STATIC_LETTER_CONTENT, getClaimantName(ccdCase), formatDate(deadline));
         CCDCase updated = setCoverLetterContent(ccdCase, content, authorisation);
-        String letterUrl = generalLetterService.generateLetter(updated, authorisation, generalLetterTemplateId);
+        String CoverLetterUrl = generalLetterService.generateLetter(updated, authorisation, generalLetterTemplateId);
 
-        //attach OCON form OCON9x to it
+        CCDDocument oconForm = docAssemblyService.generateDocument(authorisation,
+                formPayloadForCourt,
+                oconFormTemplateId);
+
+        Map<String, Object> data = Map.of(COVER_LETTER_DOC, CCDDocument.builder().documentUrl(CoverLetterUrl).build(),
+                DRAFT_LETTER_DOC, oconForm);
 
         return response
-                .data(Map.of(DRAFT_LETTER_DOC, CCDDocument.builder().documentUrl(letterUrl).build()))
+                .data(data)
                 .build();
     }
 
@@ -163,6 +180,7 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
         try {
             notifyClaimant(updatedClaim);
             String filename = String.format(LETTER_NAME, updatedClaim.getReferenceNumber());
+            eventProducer.createPaperDefenceEvent(updatedClaim.getClaimDocumentCollection().get().getDocument());
             updatedCase = generalLetterService.publishLetter(updatedCase, updatedClaim, authorisation, filename);
             } catch (Exception e) {
             logger.error("Error notifying citizens", e);
