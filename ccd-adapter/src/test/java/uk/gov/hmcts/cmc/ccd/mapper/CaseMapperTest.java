@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import java.time.LocalDateTime;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -35,6 +37,8 @@ public class CaseMapperTest {
 
     @Autowired
     private CaseMapper ccdCaseMapper;
+
+    private static final String PREFERRED_COURT  = "preferred-court";
 
     @Test
     public void shouldMapLegalClaimToCCD() {
@@ -199,5 +203,19 @@ public class CaseMapperTest {
         //then
         assertTrue(claim.getDirectionOrder().isPresent());
         assertThat(claim.getDirectionOrder().get()).isEqualTo(ccdCase.getDirectionOrder());
+    }
+
+    @Test
+    public void shouldMapPreferredDQCourtOnFromCCDCase() {
+        //given
+        CCDCase ccdCase = SampleData.getCCDCitizenCase(getAmountBreakDown()).toBuilder()
+            .preferredDQCourt(PREFERRED_COURT)
+            .build();
+
+        //when
+        Claim claim = ccdCaseMapper.from(ccdCase);
+
+        //then
+        MatcherAssert.assertThat(claim.getPreferredDQCourt().get(), is(PREFERRED_COURT));
     }
 }
