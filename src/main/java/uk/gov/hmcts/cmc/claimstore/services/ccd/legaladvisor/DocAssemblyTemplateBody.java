@@ -21,7 +21,7 @@ import java.util.List;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.TemplateConstants.HMCTS_URL;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Builder
+@Builder(toBuilder = true)
 @Value
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DocAssemblyTemplateBody implements FormPayload {
@@ -56,6 +56,10 @@ public class DocAssemblyTemplateBody implements FormPayload {
     private LocalDate docUploadDeadline;
 
     private boolean hasSecondOrderDirections;
+
+    private LocalDate responseDeadline;
+
+    private LocalDate extendedResponseDeadline;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     @JsonSerialize(using = LocalDateSerializer.class)
@@ -114,5 +118,10 @@ public class DocAssemblyTemplateBody implements FormPayload {
     private boolean claimantPhoneRemoved;
     private boolean claimantEmailRemoved;
     private boolean claimantContactAddressRemoved;
+
+    private String preferredCourt;
+    private String claimAmount;
+    private String soleTradingTraderName;
+    private String organisationName;
 
 }
