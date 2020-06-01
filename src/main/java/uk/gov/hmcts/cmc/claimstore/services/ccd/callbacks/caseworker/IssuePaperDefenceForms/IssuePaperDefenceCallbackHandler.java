@@ -99,7 +99,7 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
                 , CALCULATED_SERVICE_DATE, newRespondent.getServedDate());
 
         CCDDocument coverLetter = issuePaperResponseLetterService.createCoverLetter(ccdCase, caseworkerName, authorisation);
-        CCDDocument oconForm = issuePaperResponseLetterService.createOconForm(ccdCase, caseworkerName, claim, authorisation);
+        CCDDocument oconForm = issuePaperResponseLetterService.createOconForm(ccdCase, claim, authorisation);
 
         data.put(COVER_LETTER_DOC, coverLetter);
         data.put(DRAFT_LETTER_DOC, oconForm);
