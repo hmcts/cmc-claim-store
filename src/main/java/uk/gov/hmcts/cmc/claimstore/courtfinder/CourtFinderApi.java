@@ -13,6 +13,7 @@ import java.util.List;
 public interface CourtFinderApi {
 
     String SEARCH_POSTCODE_URL = "/search/results.json?postcode={postcode}&spoe=nearest&aol=Money%20Claims";
+    String SEARCH_NAME_URL = "/search/results.json?q={name}";
     String COURT_DETAILS_URL = "/courts/{slug}.json";
 
     @RequestMapping(method = RequestMethod.GET, value = SEARCH_POSTCODE_URL)
@@ -20,5 +21,10 @@ public interface CourtFinderApi {
 
     @RequestMapping(method = RequestMethod.GET, value = COURT_DETAILS_URL)
     CourtDetails getCourtDetailsFromNameSlug(@PathVariable("slug") String courtNameSlug);
+
+    @RequestMapping(method = RequestMethod.GET, value = SEARCH_NAME_URL)
+    List<Court> findMoneyClaimCourtByName(@PathVariable("name") String name);
+
+
 
 }
