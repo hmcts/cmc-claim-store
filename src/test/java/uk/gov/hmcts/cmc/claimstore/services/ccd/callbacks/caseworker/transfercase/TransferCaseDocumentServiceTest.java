@@ -15,7 +15,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class TransferCaseDocumentServiceTest {
+class TransferCaseDocumentServiceTest {
 
     private static final String CASE_REFERENCE = "0001";
     private static final String AUTHORISATION = "Bearer:auth_token";
@@ -41,7 +41,7 @@ public class TransferCaseDocumentServiceTest {
     }
 
     @Test
-    public void shouldAttachNoticeOfTransferForCourt() {
+    void shouldAttachNoticeOfTransferForCourt() {
 
 
         transferCaseDocumentService.attachNoticeOfTransferForCourt(ccdCase, noticeForCourt, AUTHORISATION);
@@ -56,7 +56,7 @@ public class TransferCaseDocumentServiceTest {
     }
 
     @Test
-    public void shouldAttachNoticeOfTransferForDefendant() {
+    void shouldAttachNoticeOfTransferForDefendant() {
 
         when(ccdCase.getDraftLetterDoc()).thenReturn(noticeForDefendant);
 

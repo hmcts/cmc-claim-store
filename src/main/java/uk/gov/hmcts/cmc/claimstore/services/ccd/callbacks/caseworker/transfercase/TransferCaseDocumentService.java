@@ -50,7 +50,8 @@ public class TransferCaseDocumentService {
                 basename = buildNoticeOfTransferForDefendantFileBaseName(ccdCase.getPreviousServiceCaseReference());
                 break;
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException(noticeOfTransferLetterType
+                    + " noticeOfTransferLetterType unable to be handled");
         }
 
         return String.format("%s.pdf", basename);

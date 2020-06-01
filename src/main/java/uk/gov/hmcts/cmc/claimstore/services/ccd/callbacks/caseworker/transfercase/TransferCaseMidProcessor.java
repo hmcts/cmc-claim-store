@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase;
 
-import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -14,6 +13,9 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplate
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService.DRAFT_LETTER_DOC;
 
@@ -50,7 +52,7 @@ public class TransferCaseMidProcessor {
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
         String caseworkerName = getCaseworkerName(authorisation);
 
-        ImmutableMap.Builder<String, Object> data = ImmutableMap.builder();
+        Map<String, Object> data = new HashMap<>();
         var callbackResponse = AboutToStartOrSubmitCallbackResponse.builder();
 
         DocAssemblyTemplateBody formPayloadForCourt =
@@ -76,7 +78,7 @@ public class TransferCaseMidProcessor {
             data.put(DRAFT_LETTER_DOC, noticeOfTransferLetterForDefendant);
         }
 
-        return callbackResponse.data(data.build()).build();
+        return callbackResponse.data(data).build();
     }
 
     private boolean isDefendantLinked(CCDCase ccdCase) {

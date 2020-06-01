@@ -67,7 +67,9 @@ public class DocAssemblyService {
             docAssemblyRequest
         );
 
-        return CCDDocument.builder().documentUrl(docAssemblyResponse.getRenditionOutputLocation()).build();
+        return CCDDocument.builder()
+          .documentUrl(docAssemblyResponse.getRenditionOutputLocation())
+          .build();
     }
 
     public DocAssemblyResponse createOrder(CCDCase ccdCase, String authorisation) {

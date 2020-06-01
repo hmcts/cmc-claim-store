@@ -133,7 +133,7 @@ public class BulkPrintHandlerTest {
         //verify
         verify(bulkPrintService).printPdf(
             claim,
-            ImmutableList.of(
+            List.of(
                 new PrintablePdf(
                     coverLetter,
                     claim.getReferenceNumber() + "-directions-order-cover-sheet"),

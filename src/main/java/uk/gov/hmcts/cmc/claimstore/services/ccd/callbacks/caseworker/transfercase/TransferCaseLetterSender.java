@@ -79,7 +79,7 @@ public class TransferCaseLetterSender {
 
     private List<BulkPrintTransferEvent.PrintableDocument> scannedDocuments(CCDCase ccdCase, String authorisation) {
         if (ccdCase.getScannedDocuments() == null) {
-            return null;
+            return List.of();
         }
 
         return ccdCase.getScannedDocuments().stream()

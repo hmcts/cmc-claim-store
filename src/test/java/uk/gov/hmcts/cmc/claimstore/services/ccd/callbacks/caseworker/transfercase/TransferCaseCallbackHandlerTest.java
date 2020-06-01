@@ -16,7 +16,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType.AB
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType.MID;
 
 @ExtendWith(MockitoExtension.class)
-public class TransferCaseCallbackHandlerTest {
+class TransferCaseCallbackHandlerTest {
 
     @InjectMocks
     private TransferCaseCallbackHandler handler;
@@ -34,7 +34,7 @@ public class TransferCaseCallbackHandlerTest {
     private CallbackResponse expectedResponse;
 
     @Test
-    public void shouldHandleMidCallbackType() {
+    void shouldHandleMidCallbackType() {
 
         CallbackParams callbackParams = getCallbackParams(MID);
 
@@ -46,7 +46,7 @@ public class TransferCaseCallbackHandlerTest {
     }
 
     @Test
-    public void shouldHandleAboutToSubmitCallbackType() {
+    void shouldHandleAboutToSubmitCallbackType() {
 
         CallbackParams callbackParams = getCallbackParams(ABOUT_TO_SUBMIT);
 

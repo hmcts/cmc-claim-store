@@ -28,7 +28,7 @@ public class TransferContentMapper {
 
     private static String getReasonForTransfer(CCDTransferContent ccdTransferContent) {
         return ccdTransferContent.getTransferReason() == CCDTransferReason.OTHER
-            ? ccdTransferContent.getTransferReason().getValue()
-            : ccdTransferContent.getTransferReasonOther();
+            ? ccdTransferContent.getTransferReasonOther()
+            : ccdTransferContent.getTransferReason().getValue();
     }
 }

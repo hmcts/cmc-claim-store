@@ -14,19 +14,21 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.singletonList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class TransferCasePostProcessorTest {
+class TransferCasePostProcessorTest {
 
     private static final String AUTHORISATION = "Bearer: abcd";
     private static final String DEFENDANT_ID = "4";
@@ -71,12 +73,18 @@ public class TransferCasePostProcessorTest {
         when(transferCaseDocumentService.attachNoticeOfTransferForCourt(ccdCase, ccdDocument, AUTHORISATION))
             .thenReturn(ccdCase);
 
+        Map<String, Object> mappedCaseData = mock(Map.class);
+        when(caseDetailsConverter.convertToMap(any(CCDCase.class))).thenReturn(mappedCaseData);
+
         CallbackParams callbackParams = CallbackParams.builder()
             .request(callbackRequest)
             .params(Map.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
             .build();
 
-        CallbackResponse callbackResponse = transferCasePostProcessor.completeCaseTransfer(callbackParams);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = (AboutToStartOrSubmitCallbackResponse)
+            transferCasePostProcessor.completeCaseTransfer(callbackParams);
+
+        assertEquals(mappedCaseData, callbackResponse.getData());
     }
 
     private void givenDefendantIsLinked(boolean isLinked) {
