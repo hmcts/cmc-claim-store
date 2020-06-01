@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTransferContent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
@@ -66,7 +67,9 @@ public class TransferCasePostProcessorTest {
         when(callbackRequest.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetailsConverter.extractCCDCase(caseDetails)).thenReturn(ccdCase);
 
-        when(transferCaseDocumentService.attachNoticeOfTransferForCourt(ccdCase)).thenReturn(ccdCase);
+        CCDDocument ccdDocument = CCDDocument.builder().build();
+        when(transferCaseDocumentService.attachNoticeOfTransferForCourt(ccdCase, ccdDocument, AUTHORISATION))
+            .thenReturn(ccdCase);
 
         CallbackParams callbackParams = CallbackParams.builder()
             .request(callbackRequest)

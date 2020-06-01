@@ -33,14 +33,14 @@ public class TransferCaseLetterSender {
         this.eventProducer = eventProducer;
     }
 
-    public void sendNoticeOfTransferForDefendant(String authorisation, CCDCase ccdCase, Claim claim) {
+    public void sendNoticeOfTransferForDefendant(String authorisation, CCDDocument ccdDocument, Claim claim) {
 
-        generalLetterService.printLetter(authorisation, ccdCase.getDraftLetterDoc(), claim);
+        generalLetterService.printLetter(authorisation, ccdDocument, claim);
     }
 
-    public void sendAllCaseDocumentsToCourt(String authorisation, CCDCase ccdCase, Claim claim) {
+    public void sendAllCaseDocumentsToCourt(String authorisation, CCDCase ccdCase, Claim claim, CCDDocument coverDoc) {
 
-        Document coverLetterDoc = printableDocumentService.process(ccdCase.getCoverLetterDoc(), authorisation);
+        Document coverLetterDoc = printableDocumentService.process(coverDoc, authorisation);
         List<BulkPrintTransferEvent.PrintableDocument> caseDocuments = getAllCaseDocuments(ccdCase, authorisation);
         eventProducer.createBulkPrintTransferEvent(claim, coverLetterDoc, caseDocuments);
     }
@@ -73,7 +73,6 @@ public class TransferCaseLetterSender {
             .map(CCDCollectionElement::getValue)
             .filter(d -> !d.getDocumentType().equals(CCDClaimDocumentType.CLAIM_ISSUE_RECEIPT))
             .map(CCDClaimDocument::getDocumentLink)
-            .filter(d -> !d.getDocumentUrl().equals(ccdCase.getCoverLetterDoc().getDocumentUrl()))
             .map(d -> this.getPrintableDocument(authorisation, d))
             .collect(Collectors.toList());
     }

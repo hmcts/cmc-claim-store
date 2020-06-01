@@ -18,6 +18,7 @@ import static org.mockito.Mockito.when;
 public class TransferCaseDocumentServiceTest {
 
     private static final String CASE_REFERENCE = "0001";
+    private static final String AUTHORISATION = "Bearer:auth_token";
 
     @InjectMocks
     private TransferCaseDocumentService transferCaseDocumentService;
@@ -42,14 +43,15 @@ public class TransferCaseDocumentServiceTest {
     @Test
     public void shouldAttachNoticeOfTransferForCourt() {
 
-        when(ccdCase.getCoverLetterDoc()).thenReturn(noticeForCourt);
 
-        transferCaseDocumentService.attachNoticeOfTransferForCourt(ccdCase);
+        transferCaseDocumentService.attachNoticeOfTransferForCourt(ccdCase, noticeForCourt, AUTHORISATION);
 
         verify(generalLetterService).attachGeneralLetterToCase(
             eq(ccdCase),
             eq(noticeForCourt),
-            eq(CASE_REFERENCE + "-notice-of-transfer-for-court.pdf")
+            eq(CASE_REFERENCE + "-notice-of-transfer-for-court.pdf"),
+            eq(AUTHORISATION)
+
         );
     }
 
@@ -58,12 +60,13 @@ public class TransferCaseDocumentServiceTest {
 
         when(ccdCase.getDraftLetterDoc()).thenReturn(noticeForDefendant);
 
-        transferCaseDocumentService.attachNoticeOfTransferForDefendant(ccdCase);
+        transferCaseDocumentService.attachNoticeOfTransferForDefendant(ccdCase, noticeForDefendant, AUTHORISATION);
 
         verify(generalLetterService).attachGeneralLetterToCase(
             eq(ccdCase),
             eq(noticeForDefendant),
-            eq(CASE_REFERENCE + "-notice-of-transfer-for-defendant.pdf")
+            eq(CASE_REFERENCE + "-notice-of-transfer-for-defendant.pdf"),
+            eq(AUTHORISATION)
         );
     }
 }

@@ -16,12 +16,14 @@ import uk.gov.hmcts.cmc.claimstore.events.GeneralLetterReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.PrintableDocumentService;
+import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.docassembly.exception.DocumentGenerationFailedException;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
+import java.net.URI;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,19 +42,22 @@ public class GeneralLetterService {
     private final PrintableDocumentService printableDocumentService;
     private final Clock clock;
     private final UserService userService;
+    private final DocumentManagementService documentManagementService;
 
     public GeneralLetterService(
         DocAssemblyService docAssemblyService,
         ApplicationEventPublisher publisher,
         PrintableDocumentService printableDocumentService,
         Clock clock,
-        UserService userService
+        UserService userService,
+        DocumentManagementService documentManagementService
     ) {
         this.docAssemblyService = docAssemblyService;
         this.publisher = publisher;
         this.printableDocumentService = printableDocumentService;
         this.clock = clock;
         this.userService = userService;
+        this.documentManagementService = documentManagementService;
     }
 
     public CallbackResponse prepopulateData(String authorisation) {
@@ -78,7 +83,7 @@ public class GeneralLetterService {
         printLetter(authorisation, draftLetterDoc, claim);
 
         return ccdCase.toBuilder()
-            .caseDocuments(updateCaseDocumentsWithGeneralLetter(ccdCase, draftLetterDoc, documentName))
+            .caseDocuments(updateCaseDocumentsWithGeneralLetter(ccdCase, draftLetterDoc, documentName, authorisation))
             .draftLetterDoc(null)
             .contactChangeParty(null)
             .contactChangeContent(null)
@@ -86,11 +91,16 @@ public class GeneralLetterService {
             .build();
     }
 
-    public CCDCase attachGeneralLetterToCase(CCDCase ccdCase, CCDDocument document, String documentName) {
+    public CCDCase attachGeneralLetterToCase(
+        CCDCase ccdCase,
+        CCDDocument document,
+        String documentName,
+        String authorization
+    ) {
 
         List<CCDCollectionElement<CCDClaimDocument>> updatedCaseDocuments =
             updateCaseDocumentsWithGeneralLetter(
-                ccdCase, document, documentName);
+                ccdCase, document, documentName, authorization);
 
         return ccdCase.toBuilder()
             .caseDocuments(updatedCaseDocuments)
@@ -99,18 +109,25 @@ public class GeneralLetterService {
 
     private List<CCDCollectionElement<CCDClaimDocument>> updateCaseDocumentsWithGeneralLetter(
         CCDCase ccdCase,
-        CCDDocument draftLetterDoc,
-        String documentName) {
+        CCDDocument ccdDocument,
+        String documentName,
+        String authorisation) {
+
+        var documentMetadata = documentManagementService.getDocumentMetaData(
+            authorisation,
+            URI.create(ccdDocument.getDocumentUrl()).getPath()
+        );
 
         CCDCollectionElement<CCDClaimDocument> claimDocument = CCDCollectionElement.<CCDClaimDocument>builder()
             .value(CCDClaimDocument.builder()
                 .documentLink(CCDDocument.builder()
                     .documentFileName(documentName)
-                    .documentUrl(draftLetterDoc.getDocumentUrl())
-                    .documentBinaryUrl(draftLetterDoc.getDocumentBinaryUrl())
+                    .documentUrl(ccdDocument.getDocumentUrl())
+                    .documentBinaryUrl(documentMetadata.links.binary.href)
                     .build())
                 .documentName(documentName)
                 .createdDatetime(LocalDateTime.now(clock.withZone(UTC_ZONE)))
+                .size(documentMetadata.size)
                 .documentType(GENERAL_LETTER)
                 .build())
             .build();

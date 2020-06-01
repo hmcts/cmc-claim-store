@@ -30,7 +30,6 @@ public class PrintableDocumentService {
                     ClaimDocument.builder()
                         .documentName(document.getDocumentFileName())
                         .documentManagementUrl(new URI(document.getDocumentUrl()))
-                        .documentManagementBinaryUrl(new URI(document.getDocumentBinaryUrl()))
                         .build())),
                 Collections.emptyMap());
         } catch (URISyntaxException e) {

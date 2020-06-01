@@ -51,7 +51,7 @@ public class TransferCaseLetterSenderTest {
         when(ccdCase.getDraftLetterDoc()).thenReturn(noticeForDefendant);
 
         transferCaseLetterSender.sendNoticeOfTransferForDefendant(AUTHORISATION,
-            ccdCase, claim);
+            noticeForDefendant, claim);
 
         verify(generalLetterService).printLetter(
             AUTHORISATION,
@@ -67,13 +67,12 @@ public class TransferCaseLetterSenderTest {
         Document coverLetterDoc = mock(Document.class);
         final List<BulkPrintTransferEvent.PrintableDocument> caseDocuments = List.of();
 
-        when(ccdCase.getCoverLetterDoc()).thenReturn(noticeForCourt);
         when(ccdCase.getCaseDocuments()).thenReturn(List.of());
         when(ccdCase.getScannedDocuments()).thenReturn(List.of());
         when(ccdCase.getStaffUploadedDocuments()).thenReturn(List.of());
         when(printableDocumentService.process(noticeForCourt, AUTHORISATION)).thenReturn(coverLetterDoc);
 
-        transferCaseLetterSender.sendAllCaseDocumentsToCourt(AUTHORISATION, ccdCase, claim);
+        transferCaseLetterSender.sendAllCaseDocumentsToCourt(AUTHORISATION, ccdCase, claim, noticeForCourt);
 
         verify(eventProducer).createBulkPrintTransferEvent(eq(claim), eq(coverLetterDoc), eq(caseDocuments));
     }
