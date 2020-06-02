@@ -147,7 +147,7 @@ class AttachScannedDocsCallbackHandlerTest {
             .respondents(List.of(expectedRespondent))
             .build();
 
-        when(caseDetailsConverter.convertToMap(expectedCcdCase)).thenReturn(Map.of());
+        when(caseDetailsConverter.convertToMap(expectedCcdCase)).thenReturn(Collections.emptyMap());
 
         callbackHandler.handle(callbackParams);
 
