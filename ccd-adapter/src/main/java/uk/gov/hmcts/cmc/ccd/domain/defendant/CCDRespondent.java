@@ -28,6 +28,7 @@ public class CCDRespondent {
     private String letterHolderId;
     private String defendantId;
     private LocalDate responseDeadline;
+    private LocalDate extendedResponseDeadline;
     private LocalDate servedDate;
 
     private CCDParty claimantProvidedDetail;
