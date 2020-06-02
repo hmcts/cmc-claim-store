@@ -25,6 +25,7 @@ import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,16 +41,10 @@ class TransferCasePostProcessorTest {
     private CaseDetailsConverter caseDetailsConverter;
 
     @Mock
-    private TransferCaseNotificationsService transferCaseNotificationsService;
-
-    @Mock
-    private TransferCaseLetterSender transferCaseLetterSender;
-
-    @Mock
-    private TransferCaseDocumentService transferCaseDocumentService;
-
-    @Mock
     private TransferCaseDocumentPublishService transferCaseDocumentPublishService;
+
+    @Mock
+    private TransferCaseNotificationsService transferCaseNotificationsService;
 
     @Mock
     private CallbackRequest callbackRequest;
@@ -88,6 +83,8 @@ class TransferCasePostProcessorTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = (AboutToStartOrSubmitCallbackResponse)
             transferCasePostProcessor.completeCaseTransfer(callbackParams);
 
+        verify(transferCaseNotificationsService).sendClaimUpdatedEmailToClaimant(claim);
+
         assertEquals(mappedCaseData, callbackResponse.getData());
     }
 
@@ -97,8 +94,6 @@ class TransferCasePostProcessorTest {
 
         if (isLinked) {
             defendantBuilder.defendantId(DEFENDANT_ID);
-        } else {
-            //stubLetterForDefendant();
         }
 
         List<CCDCollectionElement<CCDRespondent>> respondents

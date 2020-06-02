@@ -14,20 +14,12 @@ public class TransferCaseDocumentService {
         this.generalLetterService = generalLetterService;
     }
 
-    public CCDCase attachNoticeOfTransferForCourt(CCDCase ccdCase, CCDDocument ccdDocument, String authorisation) {
+    public CCDCase attachNoticeOfTransfer(CCDCase ccdCase, CCDDocument ccdDocument, String authorisation) {
 
         return generalLetterService.attachGeneralLetterToCase(ccdCase,
             ccdDocument,
             ccdDocument.getDocumentFileName(),
             authorisation
         );
-    }
-
-    public CCDCase attachNoticeOfTransferForDefendant(CCDCase ccdCase, CCDDocument ccdDocument, String authorisation) {
-
-        return generalLetterService.attachGeneralLetterToCase(ccdCase,
-            ccdDocument,
-            ccdDocument.getDocumentFileName(),
-            authorisation);
     }
 }

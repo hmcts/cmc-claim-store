@@ -13,6 +13,8 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTransferContent;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTransferReason;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
 
 import java.time.Clock;
@@ -34,6 +36,7 @@ class NoticeOfTransferLetterTemplateMapperTest {
     public static final String TRANSFER_DATE = "2019-04-24";
     private static final String CASE_WORKER_NAME = "John";
     private static final String DEFENDANT_NAME = "Sue";
+    private static final String AUTHORISATION = "Bearer:auth_token";
 
     @InjectMocks
     private NoticeOfTransferLetterTemplateMapper noticeOfTransferLetterTemplateMapper;
@@ -49,8 +52,17 @@ class NoticeOfTransferLetterTemplateMapperTest {
     @Mock
     private CCDAddress transferCourtAddress;
 
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private UserDetails userDetails;
+
     @BeforeEach
     public void beforeEach() {
+
+        when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetails);
+        when(userDetails.getFullName()).thenReturn(CASE_WORKER_NAME);
 
         when(clock.instant()).thenReturn(LocalDate.parse(TRANSFER_DATE)
             .atStartOfDay().toInstant(ZoneOffset.UTC));
@@ -85,7 +97,7 @@ class NoticeOfTransferLetterTemplateMapperTest {
     void shouldMapNoticeOfTransferLetterBodyForCourt() {
 
         DocAssemblyTemplateBody requestBody = noticeOfTransferLetterTemplateMapper
-            .noticeOfTransferLetterBodyForCourt(ccdCase, CASE_WORKER_NAME);
+            .noticeOfTransferLetterBodyForCourt(ccdCase, AUTHORISATION);
 
         DocAssemblyTemplateBody expectedRequestBody = baseExpectedRequestBodyBuilder().build();
 
@@ -96,7 +108,7 @@ class NoticeOfTransferLetterTemplateMapperTest {
     void shouldMapNoticeOfTransferLetterBodyForDefendant() {
 
         DocAssemblyTemplateBody requestBody = noticeOfTransferLetterTemplateMapper
-            .noticeOfTransferLetterBodyForDefendant(ccdCase, CASE_WORKER_NAME);
+            .noticeOfTransferLetterBodyForDefendant(ccdCase, AUTHORISATION);
 
         DocAssemblyTemplateBody expectedRequestBody = baseExpectedRequestBodyBuilder()
             .partyName(DEFENDANT_NAME)

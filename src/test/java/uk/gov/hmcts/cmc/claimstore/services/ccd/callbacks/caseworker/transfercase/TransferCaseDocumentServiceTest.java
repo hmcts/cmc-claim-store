@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,7 +16,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class TransferCaseDocumentServiceTest {
 
-    private static final String CASE_REFERENCE = "0001";
+    private static final String FILENAME = "0001.pdf";
     private static final String AUTHORISATION = "Bearer:auth_token";
 
     @InjectMocks
@@ -32,37 +31,17 @@ class TransferCaseDocumentServiceTest {
     @Mock
     private CCDDocument noticeForCourt;
 
-    @Mock
-    private CCDDocument noticeForDefendant;
-
-    @BeforeEach
-    public void beforeEach() {
-        when(ccdCase.getPreviousServiceCaseReference()).thenReturn(CASE_REFERENCE);
-    }
-
     @Test
     void shouldAttachNoticeOfTransferForCourt() {
 
-        transferCaseDocumentService.attachNoticeOfTransferForCourt(ccdCase, noticeForCourt, AUTHORISATION);
+        when(noticeForCourt.getDocumentFileName()).thenReturn(FILENAME);
+
+        transferCaseDocumentService.attachNoticeOfTransfer(ccdCase, noticeForCourt, AUTHORISATION);
 
         verify(generalLetterService).attachGeneralLetterToCase(
             eq(ccdCase),
             eq(noticeForCourt),
-            eq(CASE_REFERENCE + "-notice-of-transfer-for-court.pdf"),
-            eq(AUTHORISATION)
-
-        );
-    }
-
-    @Test
-    void shouldAttachNoticeOfTransferForDefendant() {
-
-        transferCaseDocumentService.attachNoticeOfTransferForDefendant(ccdCase, noticeForDefendant, AUTHORISATION);
-
-        verify(generalLetterService).attachGeneralLetterToCase(
-            eq(ccdCase),
-            eq(noticeForDefendant),
-            eq(CASE_REFERENCE + "-notice-of-transfer-for-defendant.pdf"),
+            eq(FILENAME),
             eq(AUTHORISATION)
         );
     }

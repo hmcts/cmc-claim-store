@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.ccd.domain;
 
 import lombok.Builder;
 import lombok.Value;
-import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.time.LocalDate;
 

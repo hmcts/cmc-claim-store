@@ -65,7 +65,7 @@ public class TransferCaseDocumentPublishService {
 
         transferCaseLetterSender.sendNoticeOfTransferForDefendant(authorisation, defendantLetter, claim);
 
-        return transferCaseDocumentService.attachNoticeOfTransferForDefendant(ccdCase, defendantLetter, authorisation);
+        return transferCaseDocumentService.attachNoticeOfTransfer(ccdCase, defendantLetter, authorisation);
     }
 
     private CCDCase publishCaseDocumentsToCourt(CCDCase ccdCase, String authorisation, Claim claim) {
@@ -81,7 +81,7 @@ public class TransferCaseDocumentPublishService {
 
         transferCaseLetterSender.sendAllCaseDocumentsToCourt(authorisation, ccdCase, claim, coverDoc);
 
-        return transferCaseDocumentService.attachNoticeOfTransferForCourt(ccdCase, coverDoc, authorisation);
+        return transferCaseDocumentService.attachNoticeOfTransfer(ccdCase, coverDoc, authorisation);
     }
 
     private boolean isDefendantLinked(CCDCase ccdCase) {
