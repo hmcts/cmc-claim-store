@@ -35,7 +35,7 @@ public class TransferCasePostProcessor {
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
 
-        ccdCase = transferCaseDocumentPublishService.publishNoticesOfTransferToCase(ccdCase, authorisation, claim);
+        ccdCase = transferCaseDocumentPublishService.publishCaseDocuments(ccdCase, authorisation, claim);
 
         sendEmailNotifications(ccdCase, claim);
 

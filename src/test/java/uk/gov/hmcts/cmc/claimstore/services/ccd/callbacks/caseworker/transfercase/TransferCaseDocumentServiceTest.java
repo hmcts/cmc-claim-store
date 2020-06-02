@@ -43,7 +43,6 @@ class TransferCaseDocumentServiceTest {
     @Test
     void shouldAttachNoticeOfTransferForCourt() {
 
-
         transferCaseDocumentService.attachNoticeOfTransferForCourt(ccdCase, noticeForCourt, AUTHORISATION);
 
         verify(generalLetterService).attachGeneralLetterToCase(

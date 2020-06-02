@@ -5,11 +5,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
 
-import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase.NoticeOfTransferLetterType.FOR_COURT;
-import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase.NoticeOfTransferLetterType.FOR_DEFENDANT;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildNoticeOfTransferForCourtFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildNoticeOfTransferForDefendantFileBaseName;
-
 @Service
 public class TransferCaseDocumentService {
 
@@ -23,7 +18,7 @@ public class TransferCaseDocumentService {
 
         return generalLetterService.attachGeneralLetterToCase(ccdCase,
             ccdDocument,
-            buildNoticeOfTransferLetterFileName(ccdCase, FOR_COURT),
+            ccdDocument.getDocumentFileName(),
             authorisation
         );
     }
@@ -32,28 +27,7 @@ public class TransferCaseDocumentService {
 
         return generalLetterService.attachGeneralLetterToCase(ccdCase,
             ccdDocument,
-            buildNoticeOfTransferLetterFileName(ccdCase, FOR_DEFENDANT),
+            ccdDocument.getDocumentFileName(),
             authorisation);
-    }
-
-    public String buildNoticeOfTransferLetterFileName(
-        CCDCase ccdCase,
-        NoticeOfTransferLetterType noticeOfTransferLetterType
-    ) {
-        String basename;
-
-        switch (noticeOfTransferLetterType) {
-            case FOR_COURT:
-                basename = buildNoticeOfTransferForCourtFileBaseName(ccdCase.getPreviousServiceCaseReference());
-                break;
-            case FOR_DEFENDANT:
-                basename = buildNoticeOfTransferForDefendantFileBaseName(ccdCase.getPreviousServiceCaseReference());
-                break;
-            default:
-                throw new IllegalArgumentException(noticeOfTransferLetterType
-                    + " noticeOfTransferLetterType unable to be handled");
-        }
-
-        return String.format("%s.pdf", basename);
     }
 }

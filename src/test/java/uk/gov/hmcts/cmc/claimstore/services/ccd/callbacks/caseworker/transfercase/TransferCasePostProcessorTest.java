@@ -77,7 +77,7 @@ class TransferCasePostProcessorTest {
         when(caseDetailsConverter.extractCCDCase(caseDetails)).thenReturn(ccdCase);
         when(caseDetailsConverter.extractClaim(caseDetails)).thenReturn(claim);
 
-        when(transferCaseDocumentPublishService.publishNoticesOfTransferToCase(ccdCase, AUTHORISATION, claim))
+        when(transferCaseDocumentPublishService.publishCaseDocuments(ccdCase, AUTHORISATION, claim))
             .thenReturn(ccdCase);
 
         CallbackParams callbackParams = CallbackParams.builder()
