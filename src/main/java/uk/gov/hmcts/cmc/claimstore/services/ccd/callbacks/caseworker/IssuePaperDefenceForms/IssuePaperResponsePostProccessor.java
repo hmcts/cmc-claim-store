@@ -46,6 +46,7 @@ public class IssuePaperResponsePostProccessor {
 
         LocalDate responseDeadline = ccdCase.getCalculatedResponseDeadline();
         LocalDate serviceDate = ccdCase.getCalculatedServiceDate();
+        //claim updating here correct? -> should ccd case be updated at end?
         Claim updatedClaim = claim.toBuilder()
                 .responseDeadline(responseDeadline)
                 .serviceDate(serviceDate)
