@@ -41,7 +41,7 @@ public class PaperDefenceLetterBodyMapper {
                 ? applicant.getPrimaryAddress() : applicant.getCorrespondenceAddress();
         CCDAddress defendantAddress = respondent.getCorrespondenceAddress() == null
                 ? respondent.getPrimaryAddress() : respondent.getCorrespondenceAddress();
-        //set deadlines
+        //set deadlines -> calculated and extended calculated
 
         return DocAssemblyTemplateBody.builder()
                 .referenceNumber(ccdCase.getPreviousServiceCaseReference())
@@ -67,6 +67,7 @@ public class PaperDefenceLetterBodyMapper {
         return  commonTemplate;
     }
 
+    //business name and sole trader trading name same thing?
     public DocAssemblyTemplateBody oconFormWithBusinessNameWithDQsTemplateMapper(CCDCase ccdCase) {
         DocAssemblyTemplateBody commonTemplate = oconFormCommonTemplateMapper(ccdCase);
         return  commonTemplate.toBuilder()

@@ -113,6 +113,8 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
         LocalDate formIssueDate = issueDateCalculator.calculateIssueDay(LocalDateTime.now());
         LocalDate newServiceDate = responseDeadlineCalculator.calculateServiceDate(formIssueDate);
         LocalDate newResponseDeadline = responseDeadlineCalculator.calculateResponseDeadline(formIssueDate);
+        LocalDate newExtendedResponseDeadline =
+                responseDeadlineCalculator.calculatePostponedResponseDeadline(formIssueDate);
 
         CCDCollectionElement<CCDRespondent> collectionElement = ccdCase.getRespondents().get(0);
         CCDRespondent respondent = collectionElement.getValue().toBuilder()
@@ -125,6 +127,7 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
                         .value(respondent)
                         .id(collectionElement.getId())
                         .build()))
+                .extendedResponseDeadline(newExtendedResponseDeadline)
                 .build();
     }
 
