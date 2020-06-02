@@ -24,7 +24,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -82,7 +81,7 @@ class AttachScannedDocsCallbackHandlerTest {
             .respondents(List.of(expectedRespondent))
             .build();
 
-        when(caseDetailsConverter.convertToMap(expectedCcdCase)).thenReturn(Map.of());
+        when(caseDetailsConverter.convertToMap(expectedCcdCase)).thenReturn(Collections.emptyMap());
 
         callbackHandler.handle(callbackParams);
 
@@ -179,7 +178,7 @@ class AttachScannedDocsCallbackHandlerTest {
 
         when(caseDetailsConverter.extractCCDCase(any())).thenReturn(ccdCase);
 
-        when(caseDetailsConverter.convertToMap(ccdCase)).thenReturn(Map.of());
+        when(caseDetailsConverter.convertToMap(ccdCase)).thenReturn(Collections.emptyMap());
 
         callbackHandler.handle(callbackParams);
 
