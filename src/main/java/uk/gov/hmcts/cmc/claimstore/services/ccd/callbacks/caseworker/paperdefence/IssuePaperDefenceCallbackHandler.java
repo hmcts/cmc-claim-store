@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.IssuePaperDefenceForms;
+package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.paperdefence;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
