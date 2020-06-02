@@ -143,6 +143,4 @@ public class CCDCase {
     private CCDContactPartyType contactChangeParty;
     private CCDContactChangeContent contactChangeContent;
     private LocalDate calculatedResponseDeadline;
-    private LocalDate calculatedServiceDate;
-    private LocalDate extendedResponseDeadline;
 }

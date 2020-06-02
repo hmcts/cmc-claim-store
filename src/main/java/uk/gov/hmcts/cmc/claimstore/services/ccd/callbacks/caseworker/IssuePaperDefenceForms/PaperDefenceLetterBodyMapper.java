@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
 
 import java.time.Clock;
@@ -35,22 +36,21 @@ public class PaperDefenceLetterBodyMapper {
     }
 
     private DocAssemblyTemplateBody oconFormCommonTemplateMapper(CCDCase ccdCase) {
+        CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
         CCDParty applicant = ccdCase.getApplicants().get(0).getValue().getPartyDetail();
-        CCDParty respondent = ccdCase.getRespondents().get(0).getValue().getClaimantProvidedDetail();
+        CCDParty givenRespondent = respondent.getClaimantProvidedDetail();
         CCDAddress claimantAddress = applicant.getCorrespondenceAddress() == null
                 ? applicant.getPrimaryAddress() : applicant.getCorrespondenceAddress();
-        CCDAddress defendantAddress = respondent.getCorrespondenceAddress() == null
-                ? respondent.getPrimaryAddress() : respondent.getCorrespondenceAddress();
-        //set deadlines -> calculated and extended calculated
+        CCDAddress defendantAddress = givenRespondent.getCorrespondenceAddress() == null
+                ? givenRespondent.getPrimaryAddress() : givenRespondent.getCorrespondenceAddress();
 
         return DocAssemblyTemplateBody.builder()
                 .referenceNumber(ccdCase.getPreviousServiceCaseReference())
-                .responseDeadline()
-                .extendedResponseDeadline()
+                .responseDeadline(respondent.getResponseDeadline())
+                .extendedResponseDeadline(respondent.getExtendedResponseDeadline())
                 .claimAmount(ccdCase.getTotalAmount())
-                //do I need specific defendant address attribute?
+                //do I need specific defendant (address) attribute?
                 .partyAddress(defendantAddress)
-                //dq or normal court?
                 .claimantName(String.join(" ", applicant.getTitle(), applicant.getFirstName(), applicant.getLastName()))
                 .claimantPhone(applicant.getTelephoneNumber().toString())
                 .claimantEmail(applicant.getEmailAddress())
