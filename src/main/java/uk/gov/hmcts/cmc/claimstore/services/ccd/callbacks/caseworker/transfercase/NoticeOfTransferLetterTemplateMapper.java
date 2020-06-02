@@ -6,6 +6,8 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTransferContent;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTransferReason;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
 
 import java.time.Clock;
@@ -18,11 +20,14 @@ public class NoticeOfTransferLetterTemplateMapper {
 
     private final Clock clock;
 
-    public NoticeOfTransferLetterTemplateMapper(Clock clock) {
+    public NoticeOfTransferLetterTemplateMapper(Clock clock, UserService userService) {
         this.clock = clock;
+        this.userService = userService;
     }
 
-    public DocAssemblyTemplateBody noticeOfTransferLetterBodyForCourt(CCDCase ccdCase, String caseworkerName) {
+    private final UserService userService;
+
+    public DocAssemblyTemplateBody noticeOfTransferLetterBodyForCourt(CCDCase ccdCase, String authorisation) {
 
         LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
         CCDTransferContent transferContent = ccdCase.getTransferContent();
@@ -32,13 +37,13 @@ public class NoticeOfTransferLetterTemplateMapper {
             .referenceNumber(ccdCase.getPreviousServiceCaseReference())
             .hearingCourtName(transferContent.getTransferCourtName())
             .hearingCourtAddress(transferContent.getTransferCourtAddress())
-            .caseworkerName(caseworkerName)
+            .caseworkerName(getCaseworkerName(authorisation))
             .caseName(ccdCase.getCaseName())
             .reasonForTransfer(getTransferReason(ccdCase))
             .build();
     }
 
-    public DocAssemblyTemplateBody noticeOfTransferLetterBodyForDefendant(CCDCase ccdCase, String caseworkerName) {
+    public DocAssemblyTemplateBody noticeOfTransferLetterBodyForDefendant(CCDCase ccdCase, String authorisation) {
 
         String partyName = getDefendantName(ccdCase);
         CCDAddress partyAddress = getDefendantAddress(ccdCase);
@@ -51,7 +56,7 @@ public class NoticeOfTransferLetterTemplateMapper {
             .referenceNumber(ccdCase.getPreviousServiceCaseReference())
             .hearingCourtName(transferContent.getTransferCourtName())
             .hearingCourtAddress(transferContent.getTransferCourtAddress())
-            .caseworkerName(caseworkerName)
+            .caseworkerName(getCaseworkerName(authorisation))
             .caseName(ccdCase.getCaseName())
             .partyName(partyName)
             .partyAddress(partyAddress)
@@ -74,5 +79,10 @@ public class NoticeOfTransferLetterTemplateMapper {
     private CCDAddress getDefendantAddress(CCDCase ccdCase) {
         CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
         return respondent.getClaimantProvidedDetail().getPrimaryAddress();
+    }
+
+    private String getCaseworkerName(String authorisation) {
+        UserDetails userDetails = userService.getUserDetails(authorisation);
+        return userDetails.getFullName();
     }
 }

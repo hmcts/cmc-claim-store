@@ -8,12 +8,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTransferContent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -49,7 +49,13 @@ class TransferCasePostProcessorTest {
     private TransferCaseDocumentService transferCaseDocumentService;
 
     @Mock
+    private TransferCaseDocumentPublishService transferCaseDocumentPublishService;
+
+    @Mock
     private CallbackRequest callbackRequest;
+
+    @Mock
+    private Claim claim;
 
     private CCDCase ccdCase;
 
@@ -63,18 +69,16 @@ class TransferCasePostProcessorTest {
 
         givenDefendantIsLinked(true);
 
-        CaseDetails caseDetails = mock(CaseDetails.class);
-        when(callbackRequest.getCaseDetails()).thenReturn(caseDetails);
-
-        when(callbackRequest.getCaseDetails()).thenReturn(caseDetails);
-        when(caseDetailsConverter.extractCCDCase(caseDetails)).thenReturn(ccdCase);
-
-        CCDDocument ccdDocument = CCDDocument.builder().build();
-        when(transferCaseDocumentService.attachNoticeOfTransferForCourt(ccdCase, ccdDocument, AUTHORISATION))
-            .thenReturn(ccdCase);
-
         Map<String, Object> mappedCaseData = mock(Map.class);
         when(caseDetailsConverter.convertToMap(any(CCDCase.class))).thenReturn(mappedCaseData);
+
+        CaseDetails caseDetails = mock(CaseDetails.class);
+        when(callbackRequest.getCaseDetails()).thenReturn(caseDetails);
+        when(caseDetailsConverter.extractCCDCase(caseDetails)).thenReturn(ccdCase);
+        when(caseDetailsConverter.extractClaim(caseDetails)).thenReturn(claim);
+
+        when(transferCaseDocumentPublishService.publishNoticesOfTransferToCase(ccdCase, AUTHORISATION, claim))
+            .thenReturn(ccdCase);
 
         CallbackParams callbackParams = CallbackParams.builder()
             .request(callbackRequest)

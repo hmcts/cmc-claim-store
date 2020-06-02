@@ -13,16 +13,12 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType.ABOUT_TO_SUBMIT;
-import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType.MID;
 
 @ExtendWith(MockitoExtension.class)
 class TransferCaseCallbackHandlerTest {
 
     @InjectMocks
     private TransferCaseCallbackHandler handler;
-
-    @Mock
-    private TransferCaseMidProcessor transferCaseMidProcessor;
 
     @Mock
     private TransferCasePostProcessor transferCasePostProcessor;
@@ -32,18 +28,6 @@ class TransferCaseCallbackHandlerTest {
 
     @Mock
     private CallbackResponse expectedResponse;
-
-    @Test
-    void shouldHandleMidCallbackType() {
-
-        CallbackParams callbackParams = getCallbackParams(MID);
-
-        when(transferCaseMidProcessor.generateNoticeOfTransferLetters(callbackParams)).thenReturn(expectedResponse);
-
-        CallbackResponse response = handler.handle(callbackParams);
-
-        assertEquals(expectedResponse, response);
-    }
 
     @Test
     void shouldHandleAboutToSubmitCallbackType() {

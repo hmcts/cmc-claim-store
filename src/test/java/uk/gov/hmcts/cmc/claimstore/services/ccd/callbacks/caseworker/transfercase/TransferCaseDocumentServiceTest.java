@@ -58,8 +58,6 @@ class TransferCaseDocumentServiceTest {
     @Test
     void shouldAttachNoticeOfTransferForDefendant() {
 
-        when(ccdCase.getDraftLetterDoc()).thenReturn(noticeForDefendant);
-
         transferCaseDocumentService.attachNoticeOfTransferForDefendant(ccdCase, noticeForDefendant, AUTHORISATION);
 
         verify(generalLetterService).attachGeneralLetterToCase(

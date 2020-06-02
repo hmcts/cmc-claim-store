@@ -48,7 +48,6 @@ class TransferCaseLetterSenderTest {
     void shouldSendNoticeOfTransferForDefendant() {
 
         CCDDocument noticeForDefendant = mock(CCDDocument.class);
-        when(ccdCase.getDraftLetterDoc()).thenReturn(noticeForDefendant);
 
         transferCaseLetterSender.sendNoticeOfTransferForDefendant(AUTHORISATION,
             noticeForDefendant, claim);

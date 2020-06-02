@@ -27,17 +27,14 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 public class TransferCaseCallbackHandler extends CallbackHandler {
     private static final List<Role> ROLES = List.of(CASEWORKER);
     private static final List<CaseEvent> EVENTS = List.of(TRANSFER);
-    private final TransferCaseMidProcessor transferCaseMidProcessor;
     private final TransferCasePostProcessor transferCasePostProcessor;
     private final CaseDetailsConverter caseDetailsConverter;
 
     @Autowired
     public TransferCaseCallbackHandler(
-        TransferCaseMidProcessor transferCaseMidProcessor,
         TransferCasePostProcessor transferCasePostProcessor,
         CaseDetailsConverter caseDetailsConverter
     ) {
-        this.transferCaseMidProcessor = transferCaseMidProcessor;
         this.transferCasePostProcessor = transferCasePostProcessor;
         this.caseDetailsConverter = caseDetailsConverter;
     }
@@ -46,7 +43,6 @@ public class TransferCaseCallbackHandler extends CallbackHandler {
     protected Map<CallbackType, Callback> callbacks() {
         return Map.of(
             CallbackType.ABOUT_TO_START, this::prepopulateData,
-            CallbackType.MID, transferCaseMidProcessor::generateNoticeOfTransferLetters,
             CallbackType.ABOUT_TO_SUBMIT, transferCasePostProcessor::completeCaseTransfer
         );
     }
