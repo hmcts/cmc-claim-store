@@ -73,7 +73,7 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
     @Override
     protected Map<CallbackType, Callback> callbacks() {
         return Map.of(
-                CallbackType.ABOUT_TO_SUBMIT, this::updateDeadlinesAndSendDocuments
+                CallbackType.ABOUT_TO_SUBMIT, this::issuePaperDefence
         );
     }
 
@@ -88,13 +88,11 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
     }
 
 
-    private AboutToStartOrSubmitCallbackResponse updateDeadlinesAndSendDocuments(CallbackParams callbackParams) {
+    private AboutToStartOrSubmitCallbackResponse issuePaperDefence(CallbackParams callbackParams) {
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
-        var userDetails = userService.getUserDetails(authorisation);
-        String caseworkerName = userDetails.getFullName();
         CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
 
         CCDCase updatedCCDCase = addNewDeadlinesToCCDCase(ccdCase);
@@ -104,8 +102,7 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
                 .serviceDate(respondent.getServedDate())
                 .build();
 
-        CCDDocument coverLetter = issuePaperResponseLetterService
-                .createCoverLetter(updatedCCDCase, caseworkerName, authorisation);
+        CCDDocument coverLetter = issuePaperResponseLetterService.createCoverLetter(updatedCCDCase, authorisation);
         CCDDocument oconForm = issuePaperResponseLetterService.createOconForm(updatedCCDCase, claim, authorisation);
 
 
