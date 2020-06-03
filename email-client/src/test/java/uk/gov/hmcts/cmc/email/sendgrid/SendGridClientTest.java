@@ -28,6 +28,8 @@ import static org.mockito.Mockito.when;
 public class SendGridClientTest {
     private static final String API_KEY = "dummy key";
 
+    private static final Response GOOD_RESPONSE = new Response(202, "response body", Collections.emptyMap());
+
     @Mock
     private SendGridFactory factory;
 
@@ -76,7 +78,7 @@ public class SendGridClientTest {
 
     @Test
     public void testAttachments() throws IOException {
-        when(sendGrid.api(any(Request.class))).thenReturn(new Response(202, "response body", Collections.emptyMap()));
+        when(sendGrid.api(any(Request.class))).thenReturn(GOOD_RESPONSE);
 
         sendGridClient.sendEmail(SampleEmailData.EMAIL_FROM, SampleEmailData.getWithAttachment("test.pdf"));
 
@@ -110,5 +112,14 @@ public class SendGridClientTest {
     @Test(expected = IllegalArgumentException.class)
     public void testNullSubjectNotAllowed() throws IOException {
         sendGridClient.sendEmail(SampleEmailData.EMAIL_FROM, SampleEmailData.getWithSubjectNull());
+    }
+
+    @Test
+    public void testEmptyContent() throws IOException {
+        when(sendGrid.api(any(Request.class))).thenReturn(GOOD_RESPONSE);
+        sendGridClient.sendEmail(SampleEmailData.EMAIL_FROM, SampleEmailData.getWithEmptyContent());
+        verify(sendGrid).api(requestCaptor.capture());
+        Request capturedRequest = requestCaptor.getValue();
+        assertTrue(capturedRequest.getBody().contains("\"content\":[{\"type\":\"text/plain\",\"value\":\" \"}]"));
     }
 }

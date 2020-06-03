@@ -39,7 +39,7 @@ public class SendGridClient {
         Email sender = new Email(from);
         String subject = emailData.getSubject();
         Email recipient = new Email(emailData.getTo());
-        Content content = new Content(MediaType.TEXT_PLAIN_VALUE, emailData.getMessage());
+        Content content = new Content(MediaType.TEXT_PLAIN_VALUE, getMessage(emailData));
         Mail mail = new Mail(sender, subject, recipient, content);
         if (emailData.hasAttachments()) {
             emailData.getAttachments().stream()
@@ -60,6 +60,15 @@ public class SendGridClient {
                 response.getBody()
             )));
         }
+    }
+
+    private static String getMessage(EmailData emailData) {
+        // SendGrid will not allow empty messages, but it's fine with blank messages.
+        String message = emailData.getMessage();
+        if (message == null || message.isBlank()) {
+            message = " ";
+        }
+        return message;
     }
 
     private static Attachments toSendGridAttachments(EmailAttachment attachment) {

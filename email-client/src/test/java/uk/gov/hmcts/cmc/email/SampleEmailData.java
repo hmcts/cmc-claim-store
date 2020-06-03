@@ -28,6 +28,10 @@ public class SampleEmailData {
             List.of(EmailAttachment.pdf(new byte[] {1, 2, 3}, pdfFilename)));
     }
 
+    public static EmailData getWithEmptyContent() {
+        return new EmailData(EMAIL_TO, EMAIL_SUBJECT, "", Collections.emptyList());
+    }
+
     private SampleEmailData() {
         // hidden constructor
     }
