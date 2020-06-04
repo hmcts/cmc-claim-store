@@ -1,22 +1,33 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.paperdefence;
 
+import com.google.common.collect.ImmutableList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPartyType;
-import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
+
+import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.OCON_FORM;
+import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
+
 @Service
 @ConditionalOnProperty(prefix = "doc_assembly", name = "url")
 public class IssuePaperResponseLetterService {
+
+    public static final String LETTER_NAME = "%s-issue-paper-form.pdf)";
+
     private final String oconFormIndividualWithDQs;
     private final String oconFormSoleTraderWithDQs;
     private final String oconFormOrganisationWithDQs;
@@ -27,6 +38,7 @@ public class IssuePaperResponseLetterService {
     private final PaperDefenceLetterBodyMapper paperDefenceLetterBodyMapper;
     private final DocAssemblyService docAssemblyService;
     private final UserService userService;
+    private final Clock clock;
 
     @Autowired
     public IssuePaperResponseLetterService(
@@ -39,7 +51,8 @@ public class IssuePaperResponseLetterService {
             @Value("${doc_assembly.paperDefenceCoverLetterTemplateID}") String paperDefenceCoverLetterTemplateID,
             PaperDefenceLetterBodyMapper paperDefenceLetterBodyMapper,
             DocAssemblyService docAssemblyService,
-            UserService userService
+            UserService userService,
+            Clock clock
     ) {
         this.oconFormIndividualWithDQs = oconFormIndividualWithDQs;
         this.oconFormSoleTraderWithDQs = oconFormSoleTraderWithDQs;
@@ -51,6 +64,7 @@ public class IssuePaperResponseLetterService {
         this.paperDefenceCoverLetterTemplateID = paperDefenceCoverLetterTemplateID;
         this.docAssemblyService = docAssemblyService;
         this.userService = userService;
+        this.clock = clock;
     }
 
     public CCDDocument createCoverLetter(CCDCase ccdCase, String authorisation) {
@@ -94,23 +108,47 @@ public class IssuePaperResponseLetterService {
                 if(FeaturesUtils.isOnlineDQ(claim)){
                     paperResponseLetter
                             .templateId(oconFormOrganisationWithDQs)
-                            .payload(paperDefenceLetterBodyMapper.oconFormWithBusinessNameWithDQsTemplateMapper(ccdCase));
+                            .payload(paperDefenceLetterBodyMapper.oconFormOrganisationWithDQsTemplateMapper(ccdCase));
                 } else {
                     paperResponseLetter
                             .templateId(oconFormOrganisationWithoutDQs)
-                            .payload(paperDefenceLetterBodyMapper.oconFormWithBusinessNameWithoutDQsTemplateMapper(ccdCase));
+                            .payload(paperDefenceLetterBodyMapper.oconFormOrganisationWithoutDQsTemplateMapper(ccdCase));
                 }
             case SOLE_TRADER:
                 if(FeaturesUtils.isOnlineDQ(claim)){
                     paperResponseLetter
                             .templateId(oconFormSoleTraderWithDQs)
-                            .payload(paperDefenceLetterBodyMapper.oconFormWithBusinessNameWithDQsTemplateMapper(ccdCase));
+                            .payload(paperDefenceLetterBodyMapper.oconFormSoleTraderWithDQsTemplateMapper(ccdCase));
                 } else {
                     paperResponseLetter
                             .templateId(oconFormSoleTraderWithoutDQs)
-                            .payload(paperDefenceLetterBodyMapper.oconFormWithBusinessNameWithoutDQsTemplateMapper(ccdCase));
+                            .payload(paperDefenceLetterBodyMapper.oconFormSoleTraderWithoutDQsTemplateMapper(ccdCase));
                 }
         }
         return paperResponseLetter.build();
+    }
+
+    public CCDCase updateCaseDocumentsWithDefendantLetter(CCDCase ccdCase, Claim claim, CCDDocument coverLetter) {
+
+        CCDCollectionElement<CCDClaimDocument> defendantCoverLetter = CCDCollectionElement.<CCDClaimDocument>builder()
+                .value(CCDClaimDocument.builder()
+                        .documentLink(CCDDocument.builder()
+                                .documentFileName(coverLetter.getDocumentFileName())
+                                .documentUrl(coverLetter.getDocumentUrl())
+                                .documentBinaryUrl(coverLetter.getDocumentBinaryUrl())
+                                .build())
+                        .documentName(String.format(LETTER_NAME, claim.getReferenceNumber()))
+                        .createdDatetime(LocalDateTime.now(clock.withZone(UTC_ZONE)))
+                        .documentType(OCON_FORM)
+                        .build())
+                .build();
+
+        return CCDCase.builder()
+                .caseDocuments(
+                        ImmutableList.<CCDCollectionElement<CCDClaimDocument>>builder()
+                        .addAll(ccdCase.getCaseDocuments())
+                        .add(defendantCoverLetter)
+                        .build())
+                .build();
     }
 }

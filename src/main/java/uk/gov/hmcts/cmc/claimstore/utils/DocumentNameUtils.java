@@ -142,23 +142,20 @@ public class DocumentNameUtils {
     public static String buildRequestForReferToJudgeFileBaseName(String caseRef, String partyType) {
         requireNonBlank(caseRef);
         requireNonBlank(partyType);
+        //pdf extension?
 
         return format("%s-request-redeterm-%s", caseRef, partyType);
     }
 
-    //what are the file names?
-
-    public static String buildPaperDefenceCoverLetterFileBaseName(String caseRef, String partyType) {
+    public static String buildPaperDefenceCoverLetterFileBaseName(String caseRef) {
         requireNonBlank(caseRef);
-        requireNonBlank(partyType);
 
-        return format("%s-request-redeterm-%s", caseRef, partyType);
+        return format("%s-issue-paper-form", caseRef);
     }
 
-    public static String buildOconFormFileBaseName(String caseRef, String partyType) {
+    public static String buildOconFormFileBaseName(String caseRef) {
         requireNonBlank(caseRef);
-        requireNonBlank(partyType);
 
-        return format("%s-request-redeterm-%s", caseRef, partyType);
+        return format("%s-issue-OCON9x-form", caseRef);
     }
 }

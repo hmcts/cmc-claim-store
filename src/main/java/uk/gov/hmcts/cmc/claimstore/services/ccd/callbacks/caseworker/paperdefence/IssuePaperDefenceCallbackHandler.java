@@ -13,13 +13,11 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
-import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.ChangeContactDetailsPostProcessor;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -39,12 +37,11 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
     private static final List<CaseEvent> EVENTS = Collections.singletonList(ISSUE_PAPER_DEFENSE_FORMS);
-    private static final Logger logger = LoggerFactory.getLogger(ChangeContactDetailsPostProcessor.class);
+    private static final Logger logger = LoggerFactory.getLogger(IssuePaperDefenceCallbackHandler.class);
     private static final String ERROR_MESSAGE =
             "There was a technical problem. Nothing has been sent. You need to try again.";
 
     private final CaseDetailsConverter caseDetailsConverter;
-    private final UserService userService;
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
     private final IssueDateCalculator issueDateCalculator;
     private final IssuePaperResponseLetterService issuePaperResponseLetterService;
@@ -54,7 +51,6 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
     @Autowired
     public IssuePaperDefenceCallbackHandler(
             CaseDetailsConverter caseDetailsConverter,
-            UserService userService,
             EventProducer eventProducer,
             ResponseDeadlineCalculator responseDeadlineCalculator,
             IssueDateCalculator issueDateCalculator,
@@ -63,7 +59,6 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
     ) {
         this.eventProducer = eventProducer;
         this.caseDetailsConverter = caseDetailsConverter;
-        this.userService = userService;
         this.responseDeadlineCalculator = responseDeadlineCalculator;
         this.issueDateCalculator = issueDateCalculator;
         this.issuePaperResponseLetterService = issuePaperResponseLetterService;
@@ -105,12 +100,13 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
         CCDDocument coverLetter = issuePaperResponseLetterService.createCoverLetter(updatedCCDCase, authorisation);
         CCDDocument oconForm = issuePaperResponseLetterService.createOconForm(updatedCCDCase, claim, authorisation);
 
-
         var builder = AboutToStartOrSubmitCallbackResponse.builder();
         try {
             issuePaperResponseNotificationService.notifyClaimant(updatedClaim);
             eventProducer.createPaperDefenceEvent(updatedClaim, oconForm, coverLetter);
-            return builder.data(caseDetailsConverter.convertToMap(updatedCCDCase)).build();
+            CCDCase ccdCaseWithDocs = issuePaperResponseLetterService
+                    .updateCaseDocumentsWithDefendantLetter(updatedCCDCase, claim, coverLetter);
+            return builder.data(caseDetailsConverter.convertToMap(ccdCaseWithDocs)).build();
         } catch (Exception e) {
             logger.error("Error notifying citizens", e);
             return builder.errors(Collections.singletonList(ERROR_MESSAGE)).build();
