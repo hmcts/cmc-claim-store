@@ -93,6 +93,7 @@ public class BulkPrintHandler {
 
     @EventListener
     public void print(PaperDefenceReadyToPrintEvent event) {
+        //how to convert from ccd document to document
         requireNonNull(event);
         Claim claim = event.getClaim();
 
@@ -102,7 +103,7 @@ public class BulkPrintHandler {
 
         PrintablePdf oconForm = new PrintablePdf(
                 event.getOconForm(),
-                buildOconFormFileBaseName());
+                buildOconFormFileBaseName(claim.getReferenceNumber()));
 
         ImmutableList.Builder<Printable> printableDocs = ImmutableList.<Printable>builder()
                 .add(coverLetter)

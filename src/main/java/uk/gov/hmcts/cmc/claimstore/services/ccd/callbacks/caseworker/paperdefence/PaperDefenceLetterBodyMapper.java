@@ -41,6 +41,7 @@ public class PaperDefenceLetterBodyMapper {
         CCDParty givenRespondent = respondent.getClaimantProvidedDetail();
         CCDAddress claimantAddress = applicant.getCorrespondenceAddress() == null
                 ? applicant.getPrimaryAddress() : applicant.getCorrespondenceAddress();
+        //does this work if the defendant is a company
         CCDAddress defendantAddress = givenRespondent.getCorrespondenceAddress() == null
                 ? givenRespondent.getPrimaryAddress() : givenRespondent.getCorrespondenceAddress();
 
@@ -62,13 +63,13 @@ public class PaperDefenceLetterBodyMapper {
         DocAssemblyTemplateBody commonTemplate = oconFormCommonTemplateMapper(ccdCase);
         return  commonTemplate.toBuilder().preferredCourt(ccdCase.getPreferredDQCourt()).build();
     }
+
     public DocAssemblyTemplateBody oconFormIndividualWithoutDQsTemplateMapper(CCDCase ccdCase) {
         DocAssemblyTemplateBody commonTemplate = oconFormCommonTemplateMapper(ccdCase);
         return  commonTemplate;
     }
 
-    //business name and sole trader trading name same thing?
-    public DocAssemblyTemplateBody oconFormWithBusinessNameWithDQsTemplateMapper(CCDCase ccdCase) {
+    public DocAssemblyTemplateBody oconFormSoleTraderWithDQsTemplateMapper(CCDCase ccdCase) {
         DocAssemblyTemplateBody commonTemplate = oconFormCommonTemplateMapper(ccdCase);
         return  commonTemplate.toBuilder()
                 .soleTradingTraderName(ccdCase.getRespondents().get(0).getValue().getPartyDetail().getBusinessName())
@@ -76,10 +77,25 @@ public class PaperDefenceLetterBodyMapper {
                 .build();
     }
 
-    public DocAssemblyTemplateBody oconFormWithBusinessNameWithoutDQsTemplateMapper(CCDCase ccdCase) {
+    public DocAssemblyTemplateBody oconFormSoleTraderWithoutDQsTemplateMapper(CCDCase ccdCase) {
         DocAssemblyTemplateBody commonTemplate = oconFormCommonTemplateMapper(ccdCase);
         return commonTemplate.toBuilder()
                 .soleTradingTraderName(ccdCase.getRespondents().get(0).getValue().getPartyDetail().getBusinessName())
+                .build();
+    }
+
+    public DocAssemblyTemplateBody oconFormOrganisationWithDQsTemplateMapper(CCDCase ccdCase) {
+        DocAssemblyTemplateBody commonTemplate = oconFormCommonTemplateMapper(ccdCase);
+        return  commonTemplate.toBuilder()
+                .organisationName(ccdCase.getRespondents().get(0).getValue().getClaimantProvidedPartyName())
+                .preferredCourt(ccdCase.getPreferredDQCourt())
+                .build();
+    }
+
+    public DocAssemblyTemplateBody oconFormOrganisationWithoutDQsTemplateMapper(CCDCase ccdCase) {
+        DocAssemblyTemplateBody commonTemplate = oconFormCommonTemplateMapper(ccdCase);
+        return commonTemplate.toBuilder()
+                .organisationName(ccdCase.getRespondents().get(0).getValue().getClaimantProvidedPartyName())
                 .build();
     }
 }
