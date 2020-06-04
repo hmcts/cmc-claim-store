@@ -21,11 +21,19 @@ public class PaperDefenceLetterBodyMapper {
     }
 
     public DocAssemblyTemplateBody coverLetterTemplateMapper(CCDCase ccdCase, String caseworkerName) {
+        CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
+        CCDParty givenRespondent = respondent.getClaimantProvidedDetail();
+        CCDAddress defendantAddress = givenRespondent.getCorrespondenceAddress() == null
+                ? givenRespondent.getPrimaryAddress() : givenRespondent.getCorrespondenceAddress();
+        CCDParty applicant = ccdCase.getApplicants().get(0).getValue().getPartyDetail();
 
         LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
 
         return DocAssemblyTemplateBody.builder()
-                //change variables
+                .partyName(String.join(" ", givenRespondent.getTitle(),
+                        givenRespondent.getFirstName(), givenRespondent.getLastName()))
+                .partyAddress(defendantAddress)
+                .claimantName(String.join(" ", applicant.getTitle(), applicant.getFirstName(), applicant.getLastName()))
                 .currentDate(currentDate)
                 .referenceNumber(ccdCase.getPreviousServiceCaseReference())
                 .hearingCourtName(ccdCase.getHearingCourtName())
