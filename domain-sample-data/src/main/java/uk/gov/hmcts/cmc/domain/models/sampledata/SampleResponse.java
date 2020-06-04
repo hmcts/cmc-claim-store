@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.ResponseMethod;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.sampledata.statementofmeans.SampleStatementOfMeans;
@@ -42,6 +43,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
 
         public FullAdmissionResponse build() {
             return FullAdmissionResponse.builder()
+                .responseMethod(ResponseMethod.DIGITAL)
                 .moreTimeNeeded(YesNoOption.NO)
                 .defendant(defendantDetails)
                 .paymentIntention(SamplePaymentIntention.instalments())
@@ -134,6 +136,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .timeline(SampleDefendantTimeline.validDefaults())
                 .evidence(SampleDefendantEvidence.validDefaults())
                 .statementOfMeans(SampleStatementOfMeans.builder().build())
+                .responseMethod(ResponseMethod.DIGITAL)
                 .build();
         }
 
@@ -295,7 +298,8 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
             return new FullDefenceResponse(
                 freeMediationOption, mediationPhoneNumber, mediationContactPerson,
                 moreTimeNeededOption, defendantDetails, statementOfTruth,
-                defenceType, defence, paymentDeclaration, timeline, evidence, directionsQuestionnaire
+                defenceType, defence, paymentDeclaration, timeline, evidence, directionsQuestionnaire,
+                ResponseMethod.DIGITAL
             );
         }
     }

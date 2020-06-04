@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefenceType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseMethod;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.ccd.mapper.DirectionsQuestionnaireMapper;
@@ -25,6 +26,7 @@ import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.ResponseMethod;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.math.BigDecimal;
@@ -79,6 +81,11 @@ public class ResponseMapper {
         builder.responseType(
             CCDResponseType.valueOf(response.getResponseType().name())
         );
+
+        CCDResponseMethod responseMethod = response.getResponseMethod()
+            .map(r -> CCDResponseMethod.valueOf(r.name()))
+            .orElse(null);
+        builder.responseMethod(responseMethod);
 
         response.getFreeMediation().ifPresent(freeMediation ->
             builder.responseFreeMediationOption(CCDYesNoOption.valueOf(freeMediation.name())));
@@ -232,7 +239,13 @@ public class ResponseMapper {
             .timeline(extractDefendantTimeline(respondent))
             .paymentDeclaration(extractPaymentDeclaration(respondent))
             .directionsQuestionnaire(directionsQuestionnaireMapper.from(respondent.getDirectionsQuestionnaire()))
+            .responseMethod(getResponseMethod(respondent))
             .build();
+    }
+
+    private ResponseMethod getResponseMethod(CCDRespondent respondent) {
+        return respondent.getResponseMethod() == null ? null :
+            ResponseMethod.valueOf(respondent.getResponseMethod().name());
     }
 
     private StatementOfTruth extractStatementOfTruth(CCDRespondent respondent) {
@@ -294,6 +307,7 @@ public class ResponseMapper {
             .timeline(extractDefendantTimeline(respondent))
             .statementOfMeans(statementOfMeansMapper.from(respondent.getStatementOfMeans()))
             .directionsQuestionnaire(directionsQuestionnaireMapper.from(respondent.getDirectionsQuestionnaire()))
+            .responseMethod(getResponseMethod(respondent))
             .build();
     }
 
@@ -316,6 +330,7 @@ public class ResponseMapper {
             .mediationContactPerson(respondent.getResponseMediationContactPerson())
             .paymentIntention(paymentIntentionMapper.from(respondent.getDefendantPaymentIntention()))
             .statementOfMeans(statementOfMeansMapper.from(respondent.getStatementOfMeans()))
+            .responseMethod(getResponseMethod(respondent))
             .build();
     }
 
