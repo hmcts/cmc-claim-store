@@ -110,7 +110,6 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
         } catch (Exception e) {
             logger.error("Error notifying citizens", e);
             return builder.errors(Collections.singletonList(ERROR_MESSAGE)).build();
-
         }
     }
 
