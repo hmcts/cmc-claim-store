@@ -91,7 +91,7 @@ public class GeneralLetterService {
             .build();
     }
 
-    private List<CCDCollectionElement<CCDClaimDocument>> updateCaseDocumentsWithGeneralLetter(
+    public List<CCDCollectionElement<CCDClaimDocument>> updateCaseDocumentsWithGeneralLetter(
         CCDCase ccdCase,
         CCDDocument draftLetterDoc,
         String documentName) {
