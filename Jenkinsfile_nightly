@@ -29,6 +29,15 @@ def secrets = [
   ]
 ]
 
+static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
+  [$class     : 'AzureKeyVaultSecret',
+   secretType : 'Secret',
+   name       : secretName,
+   version    : '',
+   envVariable: envVar
+  ]
+}
+
 withNightlyPipeline(type, product, component) {
     env.TEST_URL = params.URL_TO_TEST
 
