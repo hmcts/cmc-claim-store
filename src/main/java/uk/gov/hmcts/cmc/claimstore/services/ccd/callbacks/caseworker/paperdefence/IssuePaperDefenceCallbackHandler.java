@@ -104,9 +104,10 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
         try {
             issuePaperResponseNotificationService.notifyClaimant(updatedClaim);
             eventProducer.createPaperDefenceEvent(updatedClaim, oconForm, coverLetter);
-            CCDCase ccdCaseWithDocs = issuePaperResponseLetterService
-                    .updateCaseDocumentsWithDefendantLetter(updatedCCDCase, claim, coverLetter);
-            return builder.data(caseDetailsConverter.convertToMap(ccdCaseWithDocs)).build();
+            return builder.data(caseDetailsConverter
+                    .convertToMap(issuePaperResponseLetterService
+                            .getUpdatedCaseWithDocuments(updatedCCDCase, claim, coverLetter)))
+                    .build();
         } catch (Exception e) {
             logger.error("Error notifying citizens", e);
             return builder.errors(Collections.singletonList(ERROR_MESSAGE)).build();
@@ -133,5 +134,4 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
                         .build()))
                 .build();
     }
-
 }
