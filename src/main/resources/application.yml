@@ -99,13 +99,13 @@ doc_assembly:
   judgeTemplateId: "CV-CMC-GOR-ENG-00219-1.docx"
   generalLetterTemplateId: "CV-CMC-GOR-ENG-0005.docx"
   contactChangeTemplateId: "CV-CMC-GOR-ENG-0006.docx"
-  oconFormIndividualWithDQs: "grg"
-  oconFormSoleTraderWithDQs: ""
-  oconFormOrganisationWithDQs: ""
-  oconFormIndividualWithoutDQs: ""
-  oconFormSoleTraderWithoutDQs: ""
-  oconFormOrganisationWithoutDQs: ""
   paperDefenceCoverLetterTemplateID: "CV-CMC-GOR-ENG-0007.docx"
+  oconFormIndividualWithDQs: "CV-CMC-GOR-ENG-0010.docx"
+  oconFormSoleTraderWithDQs: "CV-CMC-GOR-ENG-0011.docx"
+  oconFormOrganisationWithDQs: "CV-CMC-GOR-ENG-0012.docx"
+  oconFormIndividualWithoutDQs: "CV-CMC-GOR-ENG-0013.docx"
+  oconFormSoleTraderWithoutDQs: "CV-CMC-GOR-ENG-0014.docx"
+  oconFormOrganisationWithoutDQs: "CV-CMC-GOR-ENG-0015.docx"
 
 
 nonworking-days:
