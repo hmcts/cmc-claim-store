@@ -142,5 +142,7 @@ public class CCDCase {
     private CCDLaList assignedTo;
     private CCDContactPartyType contactChangeParty;
     private CCDContactChangeContent contactChangeContent;
+    private CCDProceedOnPaperReasonType proceedOnPaperReason;
+    private String proceedOnPaperOtherReason;
     private LocalDate calculatedResponseDeadline;
 }
