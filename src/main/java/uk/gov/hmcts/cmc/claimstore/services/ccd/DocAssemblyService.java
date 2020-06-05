@@ -56,18 +56,20 @@ public class DocAssemblyService {
                                         String templateId) {
 
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
-                .templateId(templateId)
-                .outputType(OutputType.PDF)
-                .formPayload(formPayload)
-                .build();
+            .templateId(templateId)
+            .outputType(OutputType.PDF)
+            .formPayload(formPayload)
+            .build();
 
         var docAssemblyResponse = docAssemblyClient.generateOrder(
-                authorisation,
-                authTokenGenerator.generate(),
-                docAssemblyRequest
+            authorisation,
+            authTokenGenerator.generate(),
+            docAssemblyRequest
         );
 
-        return CCDDocument.builder().documentUrl(docAssemblyResponse.getRenditionOutputLocation()).build();
+        return CCDDocument.builder()
+          .documentUrl(docAssemblyResponse.getRenditionOutputLocation())
+          .build();
     }
 
     public DocAssemblyResponse createOrder(CCDCase ccdCase, String authorisation) {
@@ -90,7 +92,7 @@ public class DocAssemblyService {
         );
     }
 
-    public DocAssemblyResponse  changeContactLetter(CCDCase ccdCase, String authorisation, String templateId) {
+    public DocAssemblyResponse changeContactLetter(CCDCase ccdCase, String authorisation, String templateId) {
         logger.info("Doc assembly service: creating general letter request for doc assembly for external id: {}",
             ccdCase.getExternalId());
 
@@ -115,7 +117,7 @@ public class DocAssemblyService {
         }
     }
 
-    public DocAssemblyResponse  createGeneralLetter(CCDCase ccdCase, String authorisation, String templateId) {
+    public DocAssemblyResponse createGeneralLetter(CCDCase ccdCase, String authorisation, String templateId) {
         logger.info("Doc assembly service: creating general letter request for doc assembly for external id: {}",
             ccdCase.getExternalId());
 

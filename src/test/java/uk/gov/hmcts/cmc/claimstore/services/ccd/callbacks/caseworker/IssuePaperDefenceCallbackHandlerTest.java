@@ -156,7 +156,7 @@ public class IssuePaperDefenceCallbackHandlerTest {
                 .caseDetails(caseDetails)
                 .build();
     }
-    
+
     @Nested
     @DisplayName("Email sent Tests")
     class EmailNotificationSent {

@@ -14,6 +14,7 @@ import java.util.Collections;
 
 @Service
 public class PrintableDocumentService {
+
     private final DocumentManagementService documentManagementService;
 
     @Autowired
