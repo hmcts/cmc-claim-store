@@ -24,23 +24,23 @@ public class PaperDefenceLetterBodyMapper {
         CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
         CCDParty givenRespondent = respondent.getClaimantProvidedDetail();
         CCDAddress defendantAddress = givenRespondent.getCorrespondenceAddress() == null
-                ? givenRespondent.getPrimaryAddress() : givenRespondent.getCorrespondenceAddress();
+            ? givenRespondent.getPrimaryAddress() : givenRespondent.getCorrespondenceAddress();
         CCDParty applicant = ccdCase.getApplicants().get(0).getValue().getPartyDetail();
 
         LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
 
         return DocAssemblyTemplateBody.builder()
-                .partyName(String.join(" ", givenRespondent.getTitle(),
-                        givenRespondent.getFirstName(), givenRespondent.getLastName()))
-                .partyAddress(defendantAddress)
-                .claimantName(String.join(" ", applicant.getTitle(), applicant.getFirstName(), applicant.getLastName()))
-                .currentDate(currentDate)
-                .referenceNumber(ccdCase.getPreviousServiceCaseReference())
-                .hearingCourtName(ccdCase.getHearingCourtName())
-                .hearingCourtAddress(ccdCase.getHearingCourtAddress())
-                .caseworkerName(caseworkerName)
-                .caseName(ccdCase.getCaseName())
-                .build();
+            .partyName(String.join(" ", givenRespondent.getTitle(),
+                givenRespondent.getFirstName(), givenRespondent.getLastName()))
+            .partyAddress(defendantAddress)
+            .claimantName(String.join(" ", applicant.getTitle(), applicant.getFirstName(), applicant.getLastName()))
+            .currentDate(currentDate)
+            .referenceNumber(ccdCase.getPreviousServiceCaseReference())
+            .responseDeadline(respondent.getResponseDeadline())
+            .extendedResponseDeadline(respondent.getExtendedResponseDeadline())
+            .caseworkerName(caseworkerName)
+            .caseName(ccdCase.getCaseName())
+            .build();
     }
 
     private DocAssemblyTemplateBody oconFormCommonTemplateMapper(CCDCase ccdCase) {
@@ -48,62 +48,62 @@ public class PaperDefenceLetterBodyMapper {
         CCDParty applicant = ccdCase.getApplicants().get(0).getValue().getPartyDetail();
         CCDParty givenRespondent = respondent.getClaimantProvidedDetail();
         CCDAddress claimantAddress = applicant.getCorrespondenceAddress() == null
-                ? applicant.getPrimaryAddress() : applicant.getCorrespondenceAddress();
+            ? applicant.getPrimaryAddress() : applicant.getCorrespondenceAddress();
         //does this work if the defendant is a company
         CCDAddress defendantAddress = givenRespondent.getCorrespondenceAddress() == null
-                ? givenRespondent.getPrimaryAddress() : givenRespondent.getCorrespondenceAddress();
+            ? givenRespondent.getPrimaryAddress() : givenRespondent.getCorrespondenceAddress();
 
         return DocAssemblyTemplateBody.builder()
-                .referenceNumber(ccdCase.getPreviousServiceCaseReference())
-                .responseDeadline(respondent.getResponseDeadline())
-                .extendedResponseDeadline(respondent.getExtendedResponseDeadline())
-                .claimAmount(ccdCase.getTotalAmount())
-                //do I need specific defendant (address) attribute?
-                .partyAddress(defendantAddress)
-                .claimantName(String.join(" ", applicant.getTitle(), applicant.getFirstName(), applicant.getLastName()))
-                .claimantPhone(applicant.getTelephoneNumber().toString())
-                .claimantEmail(applicant.getEmailAddress())
-                .claimantAddress(claimantAddress)
-                .build();
+            .referenceNumber(ccdCase.getPreviousServiceCaseReference())
+            .responseDeadline(respondent.getResponseDeadline())
+            .extendedResponseDeadline(respondent.getExtendedResponseDeadline())
+            .claimAmount(ccdCase.getTotalAmount())
+            //do I need specific defendant (address) attribute?
+            .partyAddress(defendantAddress)
+            .claimantName(String.join(" ", applicant.getTitle(), applicant.getFirstName(), applicant.getLastName()))
+            .claimantPhone(applicant.getTelephoneNumber().toString())
+            .claimantEmail(applicant.getEmailAddress())
+            .claimantAddress(claimantAddress)
+            .build();
     }
 
     public DocAssemblyTemplateBody oconFormIndividualWithDQsTemplateMapper(CCDCase ccdCase) {
         DocAssemblyTemplateBody commonTemplate = oconFormCommonTemplateMapper(ccdCase);
-        return  commonTemplate.toBuilder().preferredCourt(ccdCase.getPreferredDQCourt()).build();
+        return commonTemplate.toBuilder().preferredCourt(ccdCase.getPreferredDQCourt()).build();
     }
 
     public DocAssemblyTemplateBody oconFormIndividualWithoutDQsTemplateMapper(CCDCase ccdCase) {
         DocAssemblyTemplateBody commonTemplate = oconFormCommonTemplateMapper(ccdCase);
-        return  commonTemplate;
+        return commonTemplate;
     }
 
     public DocAssemblyTemplateBody oconFormSoleTraderWithDQsTemplateMapper(CCDCase ccdCase) {
         DocAssemblyTemplateBody commonTemplate = oconFormCommonTemplateMapper(ccdCase);
-        return  commonTemplate.toBuilder()
-                .soleTradingTraderName(ccdCase.getRespondents().get(0).getValue().getPartyDetail().getBusinessName())
-                .preferredCourt(ccdCase.getPreferredDQCourt())
-                .build();
+        return commonTemplate.toBuilder()
+            .soleTradingTraderName(ccdCase.getRespondents().get(0).getValue().getPartyDetail().getBusinessName())
+            .preferredCourt(ccdCase.getPreferredDQCourt())
+            .build();
     }
 
     public DocAssemblyTemplateBody oconFormSoleTraderWithoutDQsTemplateMapper(CCDCase ccdCase) {
         DocAssemblyTemplateBody commonTemplate = oconFormCommonTemplateMapper(ccdCase);
         return commonTemplate.toBuilder()
-                .soleTradingTraderName(ccdCase.getRespondents().get(0).getValue().getPartyDetail().getBusinessName())
-                .build();
+            .soleTradingTraderName(ccdCase.getRespondents().get(0).getValue().getPartyDetail().getBusinessName())
+            .build();
     }
 
     public DocAssemblyTemplateBody oconFormOrganisationWithDQsTemplateMapper(CCDCase ccdCase) {
         DocAssemblyTemplateBody commonTemplate = oconFormCommonTemplateMapper(ccdCase);
-        return  commonTemplate.toBuilder()
-                .organisationName(ccdCase.getRespondents().get(0).getValue().getClaimantProvidedPartyName())
-                .preferredCourt(ccdCase.getPreferredDQCourt())
-                .build();
+        return commonTemplate.toBuilder()
+            .organisationName(ccdCase.getRespondents().get(0).getValue().getClaimantProvidedPartyName())
+            .preferredCourt(ccdCase.getPreferredDQCourt())
+            .build();
     }
 
     public DocAssemblyTemplateBody oconFormOrganisationWithoutDQsTemplateMapper(CCDCase ccdCase) {
         DocAssemblyTemplateBody commonTemplate = oconFormCommonTemplateMapper(ccdCase);
         return commonTemplate.toBuilder()
-                .organisationName(ccdCase.getRespondents().get(0).getValue().getClaimantProvidedPartyName())
-                .build();
+            .organisationName(ccdCase.getRespondents().get(0).getValue().getClaimantProvidedPartyName())
+            .build();
     }
 }

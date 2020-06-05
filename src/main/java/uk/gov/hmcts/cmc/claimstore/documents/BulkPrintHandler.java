@@ -12,7 +12,6 @@ import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.events.GeneralLetterReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.events.legaladvisor.DirectionsOrderReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.PaperDefenceReadyToPrintEvent;
-import uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.time.LocalDate;
@@ -93,23 +92,19 @@ public class BulkPrintHandler {
 
     @EventListener
     public void print(PaperDefenceReadyToPrintEvent event) {
-        //how to convert from ccd document to document
         requireNonNull(event);
         Claim claim = event.getClaim();
 
-        PrintablePdf coverLetter = new PrintablePdf(
-                event.getCoverLetter(),
-                buildPaperDefenceCoverLetterFileBaseName(claim.getReferenceNumber()));
-
-        PrintablePdf oconForm = new PrintablePdf(
-                event.getOconForm(),
-                buildOconFormFileBaseName(claim.getReferenceNumber()));
-
-        ImmutableList.Builder<Printable> printableDocs = ImmutableList.<Printable>builder()
-                .add(coverLetter)
-                .add(oconForm);
-
-        bulkPrintService.printPdf(claim, printableDocs.build(), PAPER_DEFENCE_TYPE);
+        bulkPrintService.printPdf(claim,
+            ImmutableList.<Printable>builder()
+                .add(new PrintablePdf(
+                    event.getCoverLetter(),
+                    buildPaperDefenceCoverLetterFileBaseName(claim.getReferenceNumber())))
+                .add(new PrintablePdf(
+                    event.getOconForm(),
+                    buildOconFormFileBaseName(claim.getReferenceNumber())))
+                .build(),
+            PAPER_DEFENCE_TYPE);
     }
 
 }
