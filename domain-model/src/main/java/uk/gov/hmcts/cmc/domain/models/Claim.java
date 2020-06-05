@@ -81,6 +81,7 @@ public class Claim {
     private final String preferredDQCourt;
     private final ProceedOfflineReasonType proceedOfflineReason;
     private final String proceedOfflineOtherReasonDescription;
+    private final YesNoOption evidenceHandled;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -128,7 +129,8 @@ public class Claim {
         LocalDateTime dateReferredForDirections,
         String preferredDQCourt,
         ProceedOfflineReasonType proceedOfflineReason,
-        String proceedOfflineOtherReasonDescription
+        String proceedOfflineOtherReasonDescription,
+        YesNoOption evidenceHandled
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -174,6 +176,7 @@ public class Claim {
         this.preferredDQCourt = preferredDQCourt;
         this.proceedOfflineReason = proceedOfflineReason;
         this.proceedOfflineOtherReasonDescription = proceedOfflineOtherReasonDescription;
+        this.evidenceHandled = evidenceHandled;
     }
 
     public Optional<Response> getResponse() {

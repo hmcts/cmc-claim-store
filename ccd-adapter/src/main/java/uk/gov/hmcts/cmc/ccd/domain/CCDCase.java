@@ -76,12 +76,16 @@ public class CCDCase {
     private String features;
     private CCDYesNoOption migratedFromClaimStore;
     private List<CCDCollectionElement<CCDClaimDocument>> caseDocuments;
-    private List<CCDCollectionElement<CCDScannedDocument>> scannedDocuments;
+    @Builder.Default
+    private List<CCDCollectionElement<CCDScannedDocument>> scannedDocuments = Collections.emptyList();;
+    @Builder.Default
+    private List<CCDCollectionElement<CCDScannedDocument>> filteredScannedDocuments = Collections.emptyList();;
     private List<CCDCollectionElement<CCDClaimDocument>> staffUploadedDocuments;
     private String caseName;
     private CCDClaimSubmissionOperationIndicators claimSubmissionOperationIndicators;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String state;
+    private CCDYesNoOption evidenceHandled;
 
     private LocalDate docUploadDeadline;
 

@@ -607,6 +607,7 @@ public final class SampleClaim {
             null,
             null,
             null,
+            null,
             null
             );
     }
