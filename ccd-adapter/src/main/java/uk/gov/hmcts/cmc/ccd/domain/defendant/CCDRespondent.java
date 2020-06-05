@@ -48,6 +48,7 @@ public class CCDRespondent {
     private CCDParty partyDetail;
     private LocalDateTime responseSubmittedOn;
     private CCDResponseType responseType;
+    private CCDResponseMethod responseMethod;
     private String responseAmount;
     private String paymentDeclarationPaidAmount;
     private LocalDate paymentDeclarationPaidDate;

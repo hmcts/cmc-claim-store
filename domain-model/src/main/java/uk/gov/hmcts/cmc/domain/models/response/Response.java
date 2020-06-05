@@ -32,6 +32,8 @@ public abstract class Response {
     @NotNull
     protected final ResponseType responseType;
 
+    protected ResponseMethod responseMethod;
+
     protected final YesNoOption freeMediation;
 
     @Size(max = 30, message = "Mediation phone number may not be longer than {max} characters")
@@ -57,7 +59,8 @@ public abstract class Response {
         String mediationContactPerson,
         YesNoOption moreTimeNeeded,
         Party defendant,
-        StatementOfTruth statementOfTruth
+        StatementOfTruth statementOfTruth,
+        ResponseMethod responseMethod
     ) {
         this.responseType = responseType;
         this.freeMediation = freeMediation;
@@ -66,6 +69,7 @@ public abstract class Response {
         this.moreTimeNeeded = moreTimeNeeded;
         this.defendant = defendant;
         this.statementOfTruth = statementOfTruth;
+        this.responseMethod = responseMethod;
     }
 
     public ResponseType getResponseType() {
@@ -86,6 +90,10 @@ public abstract class Response {
 
     public YesNoOption getMoreTimeNeeded() {
         return moreTimeNeeded;
+    }
+
+    public Optional<ResponseMethod> getResponseMethod() {
+        return Optional.ofNullable(responseMethod);
     }
 
     public Party getDefendant() {
