@@ -7,10 +7,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
-import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
@@ -39,36 +37,33 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
     private static final List<CaseEvent> EVENTS = Collections.singletonList(ISSUE_PAPER_DEFENSE_FORMS);
     private static final Logger logger = LoggerFactory.getLogger(IssuePaperDefenceCallbackHandler.class);
     private static final String ERROR_MESSAGE =
-            "There was a technical problem. Nothing has been sent. You need to try again.";
+        "There was a technical problem. Nothing has been sent. You need to try again.";
 
     private final CaseDetailsConverter caseDetailsConverter;
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
     private final IssueDateCalculator issueDateCalculator;
-    private final IssuePaperResponseLetterService issuePaperResponseLetterService;
-    private final EventProducer eventProducer;
     private final IssuePaperResponseNotificationService issuePaperResponseNotificationService;
+    private final DocumentPublishService documentPublishService;
 
     @Autowired
     public IssuePaperDefenceCallbackHandler(
-            CaseDetailsConverter caseDetailsConverter,
-            EventProducer eventProducer,
-            ResponseDeadlineCalculator responseDeadlineCalculator,
-            IssueDateCalculator issueDateCalculator,
-            IssuePaperResponseLetterService issuePaperResponseLetterService,
-            IssuePaperResponseNotificationService issuePaperResponseNotificationService
+        CaseDetailsConverter caseDetailsConverter,
+        ResponseDeadlineCalculator responseDeadlineCalculator,
+        IssueDateCalculator issueDateCalculator,
+        IssuePaperResponseNotificationService issuePaperResponseNotificationService,
+        DocumentPublishService DocumentPublishService
     ) {
-        this.eventProducer = eventProducer;
         this.caseDetailsConverter = caseDetailsConverter;
         this.responseDeadlineCalculator = responseDeadlineCalculator;
         this.issueDateCalculator = issueDateCalculator;
-        this.issuePaperResponseLetterService = issuePaperResponseLetterService;
         this.issuePaperResponseNotificationService = issuePaperResponseNotificationService;
+        this.documentPublishService = DocumentPublishService;
     }
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
         return Map.of(
-                CallbackType.ABOUT_TO_SUBMIT, this::issuePaperDefence
+            CallbackType.ABOUT_TO_SUBMIT, this::issuePaperDefence
         );
     }
 
@@ -85,53 +80,56 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
 
     private AboutToStartOrSubmitCallbackResponse issuePaperDefence(CallbackParams callbackParams) {
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
-        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
-        Claim claim = caseDetailsConverter.extractClaim(caseDetails);
-        String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
-        CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
+        LocalDate formIssueDate = issueDateCalculator.calculateIssueDay(LocalDateTime.now());
+        LocalDate serviceDate = responseDeadlineCalculator.calculateServiceDate(formIssueDate);
+        LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(formIssueDate);
 
-        CCDCase updatedCCDCase = addNewDeadlinesToCCDCase(ccdCase);
+        LocalDate extendedResponseDeadline = responseDeadlineCalculator
+            .calculatePostponedResponseDeadline(formIssueDate);
 
-        Claim updatedClaim = claim.toBuilder()
-                .responseDeadline(respondent.getResponseDeadline())
-                .serviceDate(respondent.getServedDate())
-                .build();
-
-        CCDDocument coverLetter = issuePaperResponseLetterService.createCoverLetter(updatedCCDCase, authorisation);
-        CCDDocument oconForm = issuePaperResponseLetterService.createOconForm(updatedCCDCase, claim, authorisation);
+        CCDCase ccdCase = updateCaseDates(caseDetails, responseDeadline, serviceDate, extendedResponseDeadline);
+        Claim claim = updateClaimDates(caseDetails, serviceDate, responseDeadline);
 
         var builder = AboutToStartOrSubmitCallbackResponse.builder();
         try {
-            issuePaperResponseNotificationService.notifyClaimant(updatedClaim);
-            eventProducer.createPaperDefenceEvent(updatedClaim, oconForm, coverLetter);
-            return builder.data(caseDetailsConverter
-                    .convertToMap(issuePaperResponseLetterService
-                            .getUpdatedCaseWithDocuments(updatedCCDCase, claim, coverLetter)))
-                    .build();
+            String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
+            ccdCase = documentPublishService.publishDocuments(ccdCase, claim, authorisation);
+            issuePaperResponseNotificationService.notifyClaimant(claim);
+            return builder.data(caseDetailsConverter.convertToMap(ccdCase)).build();
         } catch (Exception e) {
             logger.error("Error notifying citizens", e);
             return builder.errors(Collections.singletonList(ERROR_MESSAGE)).build();
         }
     }
 
-    private CCDCase addNewDeadlinesToCCDCase(CCDCase ccdCase) {
-        LocalDate formIssueDate = issueDateCalculator.calculateIssueDay(LocalDateTime.now());
-        LocalDate newServiceDate = responseDeadlineCalculator.calculateServiceDate(formIssueDate);
-        LocalDate newResponseDeadline = responseDeadlineCalculator.calculateResponseDeadline(formIssueDate);
-        LocalDate newExtendedResponseDeadline =
-                responseDeadlineCalculator.calculatePostponedResponseDeadline(formIssueDate);
+    private CCDCase updateCaseDates(
+        CaseDetails caseDetails,
+        LocalDate responseDeadline,
+        LocalDate serviceDate,
+        LocalDate extendedResponseDeadline
+    ) {
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
 
         CCDCollectionElement<CCDRespondent> collectionElement = ccdCase.getRespondents().get(0);
         CCDRespondent respondent = collectionElement.getValue().toBuilder()
-                .responseDeadline(newResponseDeadline)
-                .servedDate(newServiceDate)
-                .extendedResponseDeadline(newExtendedResponseDeadline)
-                .build();
+            .responseDeadline(responseDeadline)
+            .servedDate(serviceDate)
+            .extendedResponseDeadline(extendedResponseDeadline)
+            .build();
         return ccdCase.toBuilder()
-                .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
-                        .value(respondent)
-                        .id(collectionElement.getId())
-                        .build()))
-                .build();
+            .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
+                .value(respondent)
+                .id(collectionElement.getId())
+                .build()))
+            .build();
     }
+
+    private Claim updateClaimDates(CaseDetails caseDetails, LocalDate serviceDate, LocalDate responseDeadline) {
+        return caseDetailsConverter.extractClaim(caseDetails)
+            .toBuilder()
+            .responseDeadline(responseDeadline)
+            .serviceDate(serviceDate)
+            .build();
+    }
+
 }

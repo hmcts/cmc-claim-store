@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.events;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.InterlocutoryJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.ReDeterminationEvent;
@@ -27,6 +26,7 @@ import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimCreatedEvent
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
+import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.time.LocalDate;
 
@@ -120,11 +120,7 @@ public class EventProducer {
         publisher.publishEvent(new InterlocutoryJudgmentEvent(claim));
     }
 
-    public void createPaperDefenceEvent(
-            Claim claim,
-            CCDDocument coverLetter,
-            CCDDocument oconForm
-    ) {
+    public void createPaperDefenceEvent(Claim claim, Document coverLetter, Document oconForm) {
         publisher.publishEvent(new PaperDefenceReadyToPrintEvent(claim, coverLetter, oconForm));
     }
 

@@ -21,16 +21,16 @@ import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
-import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.paperdefence.DocumentPublishService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.paperdefence.IssuePaperDefenceCallbackHandler;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.paperdefence.IssuePaperResponseNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
-import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -41,7 +41,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.net.URI;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -52,8 +51,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.paperdefence.IssuePaperDefenceCallbackHandler.CALCULATED_SERVICE_DATE;
-import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.MoreTimeRequestedCallbackHandler.CALCULATED_RESPONSE_DEADLINE;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.GENERAL_LETTER_PDF;
 
@@ -67,12 +64,12 @@ public class IssuePaperDefenceCallbackHandlerTest {
 
     private static final String GENERAL_LETTER_TEMPLATE = "generalLetterTemplate";
     private static final CCDDocument DRAFT_LETTER_DOC = CCDDocument.builder()
-            .documentFileName(DOC_NAME)
-            .documentBinaryUrl(DOC_URL_BINARY)
-            .documentUrl(DOC_URL).build();
+        .documentFileName(DOC_NAME)
+        .documentBinaryUrl(DOC_URL_BINARY)
+        .documentUrl(DOC_URL).build();
     private static final URI DOCUMENT_URI = URI.create("http://localhost/doc.pdf");
     private static final String ERROR_MESSAGE = "There was a technical problem. Nothing has been sent."
-            + " You need to try again.";
+        + " You need to try again.";
     private static final String AUTHORISATION = "auth";
     private static final LocalDate now = LocalDate.now();
     private static final LocalDate responseDeadline = now;
@@ -97,6 +94,10 @@ public class IssuePaperDefenceCallbackHandlerTest {
     private ResponseDeadlineCalculator responseDeadlineCalculator;
     @Mock
     private IssueDateCalculator issueDateCalculator;
+    @Mock
+    private DocumentPublishService documentPublishService;
+    @Mock
+    private IssuePaperResponseNotificationService issuePaperResponseNotificationService;
 
     private Claim claim;
     private CallbackRequest callbackRequest;
@@ -108,147 +109,76 @@ public class IssuePaperDefenceCallbackHandlerTest {
     @BeforeEach
     void setUp() {
         issuePaperDefenceCallbackHandler = new IssuePaperDefenceCallbackHandler(
-                caseDetailsConverter,
-                notificationService,
-                notificationsProperties,
-                generalLetterService,
-                userService,
-                responseDeadlineCalculator,
-                issueDateCalculator,
-                GENERAL_LETTER_TEMPLATE
+            caseDetailsConverter,
+            responseDeadlineCalculator,
+            issueDateCalculator,
+            issuePaperResponseNotificationService,
+            documentPublishService
         );
         claim = SampleClaim.getDefault();
         claim = Claim.builder()
-                .claimData(SampleClaimData.builder().build())
-                .defendantEmail("email@email.com")
-                .defendantId("id")
-                .submitterEmail("email@email.com")
-                .referenceNumber("ref. number")
-                .build();
+            .claimData(SampleClaimData.builder().build())
+            .defendantEmail("email@email.com")
+            .defendantId("id")
+            .submitterEmail("email@email.com")
+            .referenceNumber("ref. number")
+            .build();
         String documentUrl = DOCUMENT_URI.toString();
         CCDDocument document = new CCDDocument(documentUrl, documentUrl, GENERAL_LETTER_PDF);
         ccdCase = CCDCase.builder()
-                .previousServiceCaseReference("000MC001")
-                .respondents(ImmutableList.of(
-                        CCDCollectionElement.<CCDRespondent>builder()
-                                .value(SampleData.getIndividualRespondentWithDQInClaimantResponse())
-                                .build()
-                ))
-                .applicants(List.of(
-                        CCDCollectionElement.<CCDApplicant>builder()
-                                .value(SampleData.getCCDApplicantIndividual())
-                                .build()
-                ))
-                .caseDocuments(ImmutableList.of(CCDCollectionElement.<CCDClaimDocument>builder()
-                        .value(CCDClaimDocument.builder()
-                                .documentLink(document)
-                                .documentType(CCDClaimDocumentType.GENERAL_LETTER)
-                                .documentName("general-letter")
-                                .build())
-                        .build()))
-                .draftLetterDoc(DRAFT_LETTER_DOC).build();
+            .previousServiceCaseReference("000MC001")
+            .respondents(ImmutableList.of(
+                CCDCollectionElement.<CCDRespondent>builder()
+                    .value(SampleData.getIndividualRespondentWithDQInClaimantResponse())
+                    .build()
+            ))
+            .applicants(List.of(
+                CCDCollectionElement.<CCDApplicant>builder()
+                    .value(SampleData.getCCDApplicantIndividual())
+                    .build()
+            ))
+            .caseDocuments(ImmutableList.of(CCDCollectionElement.<CCDClaimDocument>builder()
+                .value(CCDClaimDocument.builder()
+                    .documentLink(document)
+                    .documentType(CCDClaimDocumentType.GENERAL_LETTER)
+                    .documentName("general-letter")
+                    .build())
+                .build()))
+            .draftLetterDoc(DRAFT_LETTER_DOC).build();
 
         CaseDetails caseDetails = CaseDetails.builder()
-                .id(10L)
-                .data(Collections.emptyMap())
-                .build();
+            .id(10L)
+            .data(Collections.emptyMap())
+            .build();
         callbackRequest =
-                CallbackRequest.builder()
-                        .eventId(CaseEvent.ISSUE_PAPER_DEFENSE_FORMS.getValue())
-                        .caseDetails(caseDetails)
-                        .build();
+            CallbackRequest.builder()
+                .eventId(CaseEvent.ISSUE_PAPER_DEFENSE_FORMS.getValue())
+                .caseDetails(caseDetails)
+                .build();
     }
-    @Nested
-    @DisplayName("About to Start Validation test")
-    class ValidationTest {
-        @BeforeEach
-        void setUp() {
-            callbackParams = CallbackParams.builder()
-                    .type(CallbackType.ABOUT_TO_START)
-                    .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
-                    .request(callbackRequest)
-                    .build();
-
-            when(issueDateCalculator.calculateIssueDay(LocalDateTime.now())).thenReturn(issueDate);
-            when(responseDeadlineCalculator.calculateResponseDeadline(LocalDate.now()))
-                    .thenReturn(responseDeadline);
-            when(responseDeadlineCalculator.calculateServiceDate(LocalDate.now()))
-                    .thenReturn(serviceDate);
-        }
-
-        @Test
-        void shouldProvideNewDeadlines() {
-            AboutToStartOrSubmitCallbackResponse response
-                    = (AboutToStartOrSubmitCallbackResponse) issuePaperDefenceCallbackHandler.handle(callbackParams);
-
-            assertThat(response.getData()).hasSize(2)
-                    .containsEntry(CALCULATED_RESPONSE_DEADLINE, responseDeadline)
-                    .containsEntry(CALCULATED_SERVICE_DATE, serviceDate);
-        }
-    }
-
-    @Nested
-    @DisplayName("Mid callback test")
-    class MidCallbackTest {
-        @BeforeEach
-        void setUp() {
-            callbackParams = CallbackParams.builder()
-                    .type(CallbackType.MID)
-                    .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
-                    .request(callbackRequest)
-                    .build();
-            ccdCase = ccdCase.toBuilder()
-                    .calculatedResponseDeadline(responseDeadline)
-                    .build();
-
-            UserDetails userDetails = SampleUserDetails.builder()
-                    .withForename("Case")
-                    .withSurname("worker")
-                    .withRoles("caseworker-cmc")
-                    .build();
-
-            when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(userDetails);
-
-            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-        }
-
-        @Test
-        void shouldGenerateLetter() {
-            when(generalLetterService
-                    .generateLetter(any(CCDCase.class), eq(AUTHORISATION), eq(GENERAL_LETTER_TEMPLATE)))
-                    .thenReturn(DOC_URL);
-
-            AboutToStartOrSubmitCallbackResponse response
-                    = (AboutToStartOrSubmitCallbackResponse) issuePaperDefenceCallbackHandler.handle(callbackParams);
-
-            assertThat(response.getData()).hasSize(1)
-                    .containsEntry(GeneralLetterService.DRAFT_LETTER_DOC, CCDDocument.builder()
-                            .documentUrl(DOC_URL).build());
-        }
-    }
-
+    
     @Nested
     @DisplayName("Email sent Tests")
     class EmailNotificationSent {
         @BeforeEach
         void setUp() {
             claim = claim.toBuilder()
-                    .referenceNumber("reference")
-                    .issuedOn(LocalDate.now())
-                    .responseDeadline(LocalDate.now().plusDays(28))
-                    .serviceDate(LocalDate.now().plusDays(5))
-                    .claimData(SampleClaimData.submittedByClaimant())
-            .build();
+                .referenceNumber("reference")
+                .issuedOn(LocalDate.now())
+                .responseDeadline(LocalDate.now().plusDays(28))
+                .serviceDate(LocalDate.now().plusDays(5))
+                .claimData(SampleClaimData.submittedByClaimant())
+                .build();
 
             callbackParams = CallbackParams.builder()
-                    .type(CallbackType.ABOUT_TO_SUBMIT)
-                    .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
-                    .request(callbackRequest)
-                    .build();
+                .type(CallbackType.ABOUT_TO_SUBMIT)
+                .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
+                .request(callbackRequest)
+                .build();
 
             ccdCase = ccdCase.toBuilder()
-                    .calculatedResponseDeadline(responseDeadline)
-                    .build();
+                .calculatedResponseDeadline(responseDeadline)
+                .build();
 
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
@@ -262,10 +192,10 @@ public class IssuePaperDefenceCallbackHandlerTest {
             when(emailTemplates.getDefendantAskedToRespondByPost()).thenReturn(CLAIMANT_TEMPLATE_ID);
             issuePaperDefenceCallbackHandler.handle(callbackParams);
             verify(notificationService, once()).sendMail(
-                    eq(claim.getSubmitterEmail()),
-                    eq(CLAIMANT_TEMPLATE_ID),
-                    anyMap(),
-                    eq(String.format("paper-response-forms-sent-%s-%s", "claimant", claim.getReferenceNumber()))
+                eq(claim.getSubmitterEmail()),
+                eq(CLAIMANT_TEMPLATE_ID),
+                anyMap(),
+                eq(String.format("paper-response-forms-sent-%s-%s", "claimant", claim.getReferenceNumber()))
             );
         }
     }
@@ -276,22 +206,22 @@ public class IssuePaperDefenceCallbackHandlerTest {
         @BeforeEach
         void setUp() {
             callbackParams = CallbackParams.builder()
-                    .type(CallbackType.ABOUT_TO_SUBMIT)
-                    .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
-                    .request(callbackRequest)
-                    .build();
+                .type(CallbackType.ABOUT_TO_SUBMIT)
+                .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
+                .request(callbackRequest)
+                .build();
 
             claim = claim.toBuilder()
-                    .referenceNumber("reference")
-                    .issuedOn(LocalDate.now())
-                    .responseDeadline(LocalDate.now().plusDays(28))
-                    .serviceDate(LocalDate.now().plusDays(5))
-                    .claimData(SampleClaimData.submittedByClaimant())
-                    .build();
+                .referenceNumber("reference")
+                .issuedOn(LocalDate.now())
+                .responseDeadline(LocalDate.now().plusDays(28))
+                .serviceDate(LocalDate.now().plusDays(5))
+                .claimData(SampleClaimData.submittedByClaimant())
+                .build();
 
             ccdCase = ccdCase.toBuilder()
-                    .calculatedResponseDeadline(responseDeadline)
-                    .build();
+                .calculatedResponseDeadline(responseDeadline)
+                .build();
 
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
@@ -307,17 +237,17 @@ public class IssuePaperDefenceCallbackHandlerTest {
             issuePaperDefenceCallbackHandler.handle(callbackParams);
 
             verify(generalLetterService)
-                    .publishLetter(any(CCDCase.class), any(Claim.class), anyString(), anyString());
+                .publishLetter(any(CCDCase.class), any(Claim.class), anyString(), anyString());
 
         }
 
         @Test
         void shouldReturnWithErrorsWhenFailsToCreateDoc() {
             when(generalLetterService.publishLetter(ccdCase, claim, AUTHORISATION, DOC_NAME))
-                    .thenThrow(new RuntimeException("error occurred"));
+                .thenThrow(new RuntimeException("error occurred"));
 
             var response = (AboutToStartOrSubmitCallbackResponse)
-                    issuePaperDefenceCallbackHandler.handle(callbackParams);
+                issuePaperDefenceCallbackHandler.handle(callbackParams);
 
             assertThat(response.getErrors().get(0)).isEqualTo(ERROR_MESSAGE);
         }
