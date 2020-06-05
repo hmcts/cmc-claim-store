@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
@@ -30,9 +31,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -78,8 +81,14 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
             @BeforeEach
             void setUp() {
                 var scannedDocuments = Arrays.stream(CCDScannedDocumentType.values())
-                    .map(t -> CCDScannedDocument.builder().type(t).build())
-                    .map(d -> CCDCollectionElement.<CCDScannedDocument>builder().value(d).build())
+                    .map(t -> CCDScannedDocument.builder()
+                        .type(t)
+                        .url(CCDDocument.builder().documentFileName("filename").build())
+                        .build()
+                    )
+                    .map(d -> CCDCollectionElement.<CCDScannedDocument>builder()
+                        .value(d).id(UUID.randomUUID().toString())
+                        .build())
                     .collect(Collectors.toList());
 
                 when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
@@ -131,15 +140,20 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
             void setUp() {
                 noSubtypeForm = CCDScannedDocument.builder()
                     .type(CCDScannedDocumentType.form)
+                    .url(CCDDocument.builder().documentFileName("filename").build())
                     .build();
                 subtypeForm = CCDScannedDocument.builder()
-                        .type(CCDScannedDocumentType.form)
-                        .subtype("subtype")
-                        .build();
+                    .type(CCDScannedDocumentType.form)
+                    .url(CCDDocument.builder().documentFileName("filename").build())
+                    .subtype("subtype")
+                    .build();
 
                 var scannedDocuments = List.of(noSubtypeForm, subtypeForm)
                     .stream()
-                    .map(d -> CCDCollectionElement.<CCDScannedDocument>builder().value(d).build())
+                    .map(d -> CCDCollectionElement.<CCDScannedDocument>builder()
+                        .value(d)
+                        .id(UUID.randomUUID().toString())
+                        .build())
                     .collect(Collectors.toList());
 
                 when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
@@ -176,6 +190,57 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
                 assertThat(scannedDocuments).doesNotContain(subtypeForm);
             }
         }
+
+        @Nested
+        class OCON9XFormTests {
+
+            private final int numberOfForms = 2;
+            private List<CCDCollectionElement<CCDScannedDocument>> scannedDocuments;
+
+            @BeforeEach
+            void setUp() {
+                scannedDocuments = new ArrayList<>();
+
+                for (int i = 1; i <= numberOfForms; i++) {
+                    CCDScannedDocument document = CCDScannedDocument.builder()
+                        .type(CCDScannedDocumentType.form)
+                        .url(CCDDocument.builder().documentFileName("filename" + i).build())
+                        .build();
+                    CCDCollectionElement<CCDScannedDocument> element =
+                        CCDCollectionElement.<CCDScannedDocument>builder()
+                        .value(document)
+                        .id("id " + i)
+                        .build();
+                    scannedDocuments.add(element);
+                }
+
+                when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
+                    .thenReturn(CCDCase.builder().scannedDocuments(scannedDocuments).build());
+            }
+
+            @Test
+            void shouldReturnDynamicLists() {
+                AboutToStartOrSubmitCallbackResponse response =
+                    (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
+
+                Map<String, Object> ocon9xForm = (Map<String, Object>)response.getData().get("ocon9xForm");
+
+                List<Map<String, String>> listItems = (List<Map<String, String>>) ocon9xForm.get("list_items");
+
+                assertThat(listItems.size()).isEqualTo(numberOfForms);
+
+                assertThat(listItems.stream().map(m -> m.get("code")).collect(Collectors.toSet()))
+                    .isEqualTo(scannedDocuments.stream().map(CCDCollectionElement::getId).collect(Collectors.toSet()));
+
+                assertThat(listItems.stream().map(m -> m.get("label")).collect(Collectors.toSet()))
+                    .isEqualTo(scannedDocuments.stream()
+                        .map(CCDCollectionElement::getValue)
+                        .map(CCDScannedDocument::getUrl)
+                        .map(CCDDocument::getDocumentFileName)
+                        .collect(Collectors.toSet()));
+
+            }
+        }
     }
 
     @Nested
@@ -185,18 +250,14 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
 
         private CaseDetails caseDetails;
 
-        private CaseDetails caseDetailsBefore;
-
         @BeforeEach
         void setUp() {
 
             caseDetails = CaseDetails.builder().build();
-            caseDetailsBefore = CaseDetails.builder().caseTypeId("before").build();
             CallbackRequest callbackRequest =
                 CallbackRequest.builder()
                     .eventId(CaseEvent.PAPER_RESPONSE_OCON_9X_FORM.getValue())
                     .caseDetails(caseDetails)
-                    .caseDetailsBefore(caseDetailsBefore)
                     .build();
 
             callbackParams = CallbackParams.builder()
@@ -205,21 +266,21 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
                 .request(callbackRequest)
                 .build();
 
-            scannedDocuments = Arrays.stream(CCDScannedDocumentType.values())
-                .map(t -> CCDScannedDocument.builder().type(t).build())
-                .map(d -> CCDCollectionElement.<CCDScannedDocument>builder()
+            scannedDocuments = IntStream.of(3)
+                .mapToObj(i -> CCDScannedDocument.builder()
+                    .type(CCDScannedDocumentType.form)
+                    .url(CCDDocument.builder().documentFileName("filename" + i).build())
+                    .build()
+                ).map(d -> CCDCollectionElement.<CCDScannedDocument>builder()
                     .value(d)
                     .id(UUID.randomUUID().toString())
                     .build()
-                )
-                .collect(Collectors.toList());
+                ).collect(Collectors.toList());
+
         }
 
         @Test
         void shouldReturnErrorIfDocumentAdded() {
-
-            when(caseDetailsConverter.extractCCDCase(eq(caseDetailsBefore)))
-                .thenReturn(CCDCase.builder().scannedDocuments(scannedDocuments).build());
 
             var addedScanDocuments = new ArrayList<>(scannedDocuments);
             addedScanDocuments.add(CCDCollectionElement.<CCDScannedDocument>builder()
@@ -227,7 +288,10 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
                 .id(UUID.randomUUID().toString())
                 .build());
             when(caseDetailsConverter.extractCCDCase(eq(caseDetails)))
-                .thenReturn(CCDCase.builder().scannedDocuments(addedScanDocuments).build());
+                .thenReturn(CCDCase.builder()
+                    .scannedDocuments(scannedDocuments)
+                    .filteredScannedDocuments(addedScanDocuments)
+                    .build());
 
             AboutToStartOrSubmitCallbackResponse response =
                 (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
@@ -238,13 +302,15 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
 
         @Test
         void shouldReturnErrorIfDocumentRemoved() {
-            when(caseDetailsConverter.extractCCDCase(eq(caseDetailsBefore)))
-                .thenReturn(CCDCase.builder().scannedDocuments(scannedDocuments).build());
 
             var removedScannedDocuments = new ArrayList<>(scannedDocuments);
             removedScannedDocuments.remove(0);
+
             when(caseDetailsConverter.extractCCDCase(eq(caseDetails)))
-                .thenReturn(CCDCase.builder().scannedDocuments(removedScannedDocuments).build());
+                .thenReturn(CCDCase.builder()
+                    .scannedDocuments(scannedDocuments)
+                    .filteredScannedDocuments(removedScannedDocuments)
+                    .build());
 
             AboutToStartOrSubmitCallbackResponse response =
                 (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
@@ -255,11 +321,11 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
 
         @Test
         void shouldReturnNoErrorIfNoDocumentChanges() {
-            when(caseDetailsConverter.extractCCDCase(eq(caseDetailsBefore)))
-                .thenReturn(CCDCase.builder().scannedDocuments(scannedDocuments).build());
-
             when(caseDetailsConverter.extractCCDCase(eq(caseDetails)))
-                .thenReturn(CCDCase.builder().scannedDocuments(scannedDocuments).build());
+                .thenReturn(CCDCase.builder()
+                    .scannedDocuments(scannedDocuments)
+                    .filteredScannedDocuments(scannedDocuments)
+                    .build());
 
             AboutToStartOrSubmitCallbackResponse response =
                 (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
@@ -281,8 +347,6 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
 
             private CCDCase ccdCase;
 
-            private String subtype = OCON9X_SUBTYPE;
-
             @BeforeEach
             void setUp() {
                 now = LocalDateTime.now();
@@ -301,22 +365,10 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
                     .id(id)
                     .build();
 
-                CCDScannedDocument filteredDocument = CCDScannedDocument.builder()
-                    .type(CCDScannedDocumentType.form)
-                    .subtype(subtype)
-                    .deliveryDate(now)
-                    .fileName(filename)
-                    .build();
-
-                var filteredDocuments = CCDCollectionElement.<CCDScannedDocument>builder()
-                    .value(filteredDocument)
-                    .id(id)
-                    .build();
-
                 ccdCase = CCDCase.builder()
                     .previousServiceCaseReference(reference)
                     .scannedDocuments(List.of(scannedDocuments))
-                    .filteredScannedDocuments(List.of(filteredDocuments))
+                    .ocon9xForm(id)
                     .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
                         .value(CCDRespondent.builder().build())
                         .build()))
@@ -342,8 +394,7 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
             void shouldUpdateCaseDataCorrectly() {
                 handler.handle(callbackParams);
 
-                CCDCollectionElement<CCDRespondent> respondentElement = ccdCase.getRespondents()
-                    .get(0);
+                CCDCollectionElement<CCDRespondent> respondentElement = ccdCase.getRespondents().get(0);
 
                 CCDRespondent respondent = respondentElement
                     .getValue()
@@ -360,7 +411,7 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
                     .getValue()
                     .toBuilder()
                     .fileName(reference + "-scanned-OCON9x-form.pdf")
-                    .subtype(subtype)
+                    .subtype(OCON9X_SUBTYPE)
                     .deliveryDate(now)
                     .build();
 
@@ -368,91 +419,8 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
                     .respondents(List.of(respondentElement.toBuilder().value(respondent).build()))
                     .scannedDocuments(List.of(scannedDocElement.toBuilder().value(scannedDoc).build()))
                     .filteredScannedDocuments(Collections.emptyList())
+                    .ocon9xForm(null)
                     .evidenceHandled(CCDYesNoOption.YES)
-                    .build();
-
-                verify(caseDetailsConverter).convertToMap(expectedCCDCase);
-
-            }
-        }
-
-        @Nested
-        class NonOcon9xSubtypeTests {
-
-            private CCDCase ccdCase;
-
-            private String subtype = "Non OCON9x";
-
-            @BeforeEach
-            void setUp() {
-                now = LocalDateTime.now();
-
-                CaseDetails caseDetails = CaseDetails.builder().build();
-
-                CCDScannedDocument document = CCDScannedDocument.builder()
-                    .type(CCDScannedDocumentType.form)
-                    .subtype(subtype)
-                    .deliveryDate(now)
-                    .fileName(filename)
-                    .build();
-
-                String id = UUID.randomUUID().toString();
-                var scannedDocuments = CCDCollectionElement.<CCDScannedDocument>builder()
-                    .value(document)
-                    .id(id)
-                    .build();
-
-                ccdCase = CCDCase.builder()
-                    .previousServiceCaseReference(reference)
-                    .scannedDocuments(List.of(scannedDocuments))
-                    .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
-                        .value(CCDRespondent.builder().build())
-                        .build()))
-                    .build();
-
-                when(caseDetailsConverter.extractCCDCase(eq(caseDetails))).thenReturn(ccdCase);
-
-                CallbackRequest callbackRequest =
-                    CallbackRequest.builder()
-                        .eventId(CaseEvent.PAPER_RESPONSE_OCON_9X_FORM.getValue())
-                        .caseDetails(CaseDetails.builder().build())
-                        .build();
-
-                callbackParams = CallbackParams.builder()
-                    .type(CallbackType.ABOUT_TO_SUBMIT)
-                    .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
-                    .request(callbackRequest)
-                    .build();
-
-            }
-
-            @Test
-            void shouldUpdateCaseDataCorrectly() {
-                handler.handle(callbackParams);
-
-                CCDCollectionElement<CCDRespondent> respondentElement = ccdCase.getRespondents()
-                    .get(0);
-
-                CCDRespondent respondent = respondentElement
-                    .getValue()
-                    .toBuilder()
-                    .build();
-
-                CCDCollectionElement<CCDScannedDocument> scannedDocElement =
-                    ccdCase.getScannedDocuments()
-                        .get(0);
-
-                CCDScannedDocument scannedDoc = scannedDocElement
-                    .getValue()
-                    .toBuilder()
-                    .fileName(filename)
-                    .subtype(subtype)
-                    .deliveryDate(now)
-                    .build();
-
-                CCDCase expectedCCDCase = ccdCase.toBuilder()
-                    .respondents(List.of(respondentElement.toBuilder().value(respondent).build()))
-                    .scannedDocuments(List.of(scannedDocElement.toBuilder().value(scannedDoc).build()))
                     .build();
 
                 verify(caseDetailsConverter).convertToMap(expectedCCDCase);

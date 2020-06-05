@@ -77,9 +77,10 @@ public class CCDCase {
     private CCDYesNoOption migratedFromClaimStore;
     private List<CCDCollectionElement<CCDClaimDocument>> caseDocuments;
     @Builder.Default
-    private List<CCDCollectionElement<CCDScannedDocument>> scannedDocuments = Collections.emptyList();;
+    private List<CCDCollectionElement<CCDScannedDocument>> scannedDocuments = Collections.emptyList();
     @Builder.Default
-    private List<CCDCollectionElement<CCDScannedDocument>> filteredScannedDocuments = Collections.emptyList();;
+    private List<CCDCollectionElement<CCDScannedDocument>> filteredScannedDocuments = Collections.emptyList();
+    private String ocon9xForm;
     private List<CCDCollectionElement<CCDClaimDocument>> staffUploadedDocuments;
     private String caseName;
     private CCDClaimSubmissionOperationIndicators claimSubmissionOperationIndicators;
