@@ -59,7 +59,7 @@ public class DocAssemblyTemplateBody implements FormPayload {
 
     private LocalDate responseDeadline;
 
-    private LocalDate extendedResponseDeadline;
+    private LocalDate updatedResponseDeadline;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     @JsonSerialize(using = LocalDateSerializer.class)

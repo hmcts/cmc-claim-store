@@ -83,17 +83,17 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
         LocalDate formIssueDate = issueDateCalculator.calculateIssueDay(LocalDateTime.now());
         LocalDate serviceDate = responseDeadlineCalculator.calculateServiceDate(formIssueDate);
         LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(formIssueDate);
-
-        LocalDate extendedResponseDeadline = responseDeadlineCalculator
-            .calculatePostponedResponseDeadline(formIssueDate);
-
-        CCDCase ccdCase = updateCaseDates(caseDetails, responseDeadline, serviceDate, extendedResponseDeadline);
+        CCDCase ccdCase = updateCaseDates(caseDetails, responseDeadline, serviceDate);
         Claim claim = updateClaimDates(caseDetails, serviceDate, responseDeadline);
 
         var builder = AboutToStartOrSubmitCallbackResponse.builder();
         try {
             String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
-            ccdCase = documentPublishService.publishDocuments(ccdCase, claim, authorisation);
+
+            LocalDate extendedResponseDeadline = responseDeadlineCalculator
+                .calculatePostponedResponseDeadline(formIssueDate);
+
+            ccdCase = documentPublishService.publishDocuments(ccdCase, claim, authorisation, extendedResponseDeadline);
             issuePaperResponseNotificationService.notifyClaimant(claim);
             return builder.data(caseDetailsConverter.convertToMap(ccdCase)).build();
         } catch (Exception e) {
@@ -105,8 +105,7 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
     private CCDCase updateCaseDates(
         CaseDetails caseDetails,
         LocalDate responseDeadline,
-        LocalDate serviceDate,
-        LocalDate extendedResponseDeadline
+        LocalDate serviceDate
     ) {
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
 
@@ -114,7 +113,6 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
         CCDRespondent respondent = collectionElement.getValue().toBuilder()
             .responseDeadline(responseDeadline)
             .servedDate(serviceDate)
-            .extendedResponseDeadline(extendedResponseDeadline)
             .build();
         return ccdCase.toBuilder()
             .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
