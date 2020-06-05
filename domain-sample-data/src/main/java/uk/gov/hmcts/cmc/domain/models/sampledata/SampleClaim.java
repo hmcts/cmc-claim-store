@@ -608,8 +608,10 @@ public final class SampleClaim {
             offlineJourney,
             null,
             null,
+            null,
+            null,
             transferContent
-        );
+            );
     }
 
     public SampleClaim withSubmitterId(String userId) {

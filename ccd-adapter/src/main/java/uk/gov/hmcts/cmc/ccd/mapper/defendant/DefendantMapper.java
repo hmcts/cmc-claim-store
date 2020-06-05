@@ -75,7 +75,7 @@ public class DefendantMapper {
         respondentBuilder.settlementReachedAt(claim.getSettlementReachedAt());
 
         respondentBuilder.partyDetail(partyDetail.build());
-        claim.getResponse().ifPresent(toResponse(claim, respondentBuilder, partyDetail));
+        claim.getResponse().ifPresent(toResponse(respondentBuilder, partyDetail));
 
         theirDetailsMapper.to(respondentBuilder, theirDetails);
 
@@ -128,7 +128,6 @@ public class DefendantMapper {
     }
 
     private Consumer<Response> toResponse(
-        Claim claim,
         CCDRespondent.CCDRespondentBuilder builder,
         CCDParty.CCDPartyBuilder partyDetail
     ) {

@@ -5,13 +5,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDChannelType;
+import uk.gov.hmcts.cmc.ccd.domain.CCDProceedOnPaperReasonType;
 import uk.gov.hmcts.cmc.ccd.util.MapperUtil;
 import uk.gov.hmcts.cmc.domain.models.ChannelType;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
+import uk.gov.hmcts.cmc.domain.models.ProceedOfflineReasonType;
 import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
@@ -65,6 +68,10 @@ public class CaseMapper {
 
         claim.getDateReferredForDirections().ifPresent(builder::dateReferredForDirections);
         claim.getPreferredDQCourt().ifPresent(builder::preferredDQCourt);
+        claim.getProceedOfflineReason()
+            .map(ProceedOfflineReasonType::name)
+            .map(CCDProceedOnPaperReasonType::valueOf)
+            .ifPresent(builder::proceedOnPaperReason);
 
         return builder
             .id(claim.getId())
@@ -84,6 +91,7 @@ public class CaseMapper {
             .claimSubmissionOperationIndicators(
                 mapClaimSubmissionOperationIndicatorsToCCD.apply(claim.getClaimSubmissionOperationIndicators()))
             .intentionToProceedDeadline(claim.getIntentionToProceedDeadline())
+            .proceedOnPaperOtherReason(claim.getProceedOfflineOtherReasonDescription())
             .build();
     }
 
@@ -111,8 +119,14 @@ public class CaseMapper {
             .reviewOrder(reviewOrderMapper.from(ccdCase.getReviewOrder()))
             .dateReferredForDirections(ccdCase.getDateReferredForDirections())
             .paperResponse(MapperUtil.hasPaperResponse.apply(ccdCase))
+            .proceedOfflineOtherReasonDescription(ccdCase.getProceedOnPaperOtherReason())
             .mediationOutcome(getMediationOutcome(ccdCase))
             .transferContent(transferContentMapper.from(ccdCase.getTransferContent()));
+
+        Optional.ofNullable(ccdCase.getProceedOnPaperReason())
+            .map(CCDProceedOnPaperReasonType::name)
+            .map(ProceedOfflineReasonType::valueOf)
+            .ifPresent(builder::proceedOfflineReason);
 
         if (ccdCase.getFeatures() != null) {
             builder.features(Arrays.asList(ccdCase.getFeatures().split(",")));
