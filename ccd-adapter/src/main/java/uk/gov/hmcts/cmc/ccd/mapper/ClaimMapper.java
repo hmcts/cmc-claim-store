@@ -147,4 +147,5 @@ public class ClaimMapper {
             .map(respondent -> defendantMapper.from(claimBuilder, respondent))
             .collect(Collectors.toList());
     }
+
 }

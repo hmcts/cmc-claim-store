@@ -22,7 +22,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: '5.1.5'
 
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
-  testCompile group: 'commons-io', name: 'commons-io', version: '2.6'
+  testCompile group: 'commons-io', name: 'commons-io', version: '2.7'
 
   testCompile group: 'org.mockito', name: 'mockito-core', version: '3.3.3'
 }
