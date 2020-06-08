@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
+import uk.gov.hmcts.cmc.domain.models.ClaimFeatures;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -40,6 +41,8 @@ public class NoticeOfTransferLetterTemplateMapper {
             .caseworkerName(getCaseworkerName(authorisation))
             .caseName(ccdCase.getCaseName())
             .reasonForTransfer(getTransferReason(ccdCase))
+            .orderDrawnByJudge(isOrderDrawnByJudge(ccdCase))
+            .orderDrawnByLA(isOrderDrawnByLA(ccdCase))
             .build();
     }
 
@@ -84,5 +87,15 @@ public class NoticeOfTransferLetterTemplateMapper {
     private String getCaseworkerName(String authorisation) {
         UserDetails userDetails = userService.getUserDetails(authorisation);
         return userDetails.getFullName();
+    }
+
+    private boolean isOrderDrawnByJudge(CCDCase ccdCase) {
+        return ccdCase.getDirectionOrder() != null && ccdCase.getFeatures()
+            .contains(ClaimFeatures.JUDGE_PILOT_FLAG.getValue());
+    }
+
+    private boolean isOrderDrawnByLA(CCDCase ccdCase) {
+        return ccdCase.getDirectionOrder() != null && ccdCase.getFeatures()
+            .contains(ClaimFeatures.LA_PILOT_FLAG.getValue());
     }
 }

@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTransferContent;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTransferReason;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
+import uk.gov.hmcts.cmc.domain.models.ClaimFeatures;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -94,12 +96,48 @@ class NoticeOfTransferLetterTemplateMapperTest {
     }
 
     @Test
-    void shouldMapNoticeOfTransferLetterBodyForCourt() {
+    void shouldMapNoticeOfTransferLetterBodyForCourtWithNoOrder() {
 
         DocAssemblyTemplateBody requestBody = noticeOfTransferLetterTemplateMapper
             .noticeOfTransferLetterBodyForCourt(ccdCase, AUTHORISATION);
 
         DocAssemblyTemplateBody expectedRequestBody = baseExpectedRequestBodyBuilder().build();
+
+        assertEquals(expectedRequestBody, requestBody);
+    }
+
+    @Test
+    void shouldMapNoticeOfTransferLetterBodyForCourtWithJudgeOrder() {
+
+        ccdCase = ccdCase.toBuilder()
+            .directionOrder(CCDDirectionOrder.builder().build())
+            .features(ClaimFeatures.JUDGE_PILOT_FLAG.getValue())
+            .build();
+
+        DocAssemblyTemplateBody requestBody = noticeOfTransferLetterTemplateMapper
+            .noticeOfTransferLetterBodyForCourt(ccdCase, AUTHORISATION);
+
+        DocAssemblyTemplateBody expectedRequestBody = baseExpectedRequestBodyBuilder()
+            .orderDrawnByJudge(true)
+            .build();
+
+        assertEquals(expectedRequestBody, requestBody);
+    }
+
+    @Test
+    void shouldMapNoticeOfTransferLetterBodyForCourtWithLAOrder() {
+
+        ccdCase = ccdCase.toBuilder()
+            .directionOrder(CCDDirectionOrder.builder().build())
+            .features(ClaimFeatures.LA_PILOT_FLAG.getValue())
+            .build();
+
+        DocAssemblyTemplateBody requestBody = noticeOfTransferLetterTemplateMapper
+            .noticeOfTransferLetterBodyForCourt(ccdCase, AUTHORISATION);
+
+        DocAssemblyTemplateBody expectedRequestBody = baseExpectedRequestBodyBuilder()
+            .orderDrawnByLA(true)
+            .build();
 
         assertEquals(expectedRequestBody, requestBody);
     }
