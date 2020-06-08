@@ -41,7 +41,7 @@ class CaseDetailsConverterTest {
     private NonWorkingDaysCollection nonWorkingDaysCollection;
 
     @Nested
-    class CtscSDisabledTests {
+    class CtscDisabledTests {
 
         @BeforeEach
         void setup() {
@@ -76,7 +76,7 @@ class CaseDetailsConverterTest {
         }
 
         @Test
-        void convertsCaseDetailsToClaimWithResponseMethod() {
+        void convertsCaseDetailsToClaimWithoutResponseMethod() {
             CaseDetails caseDetails = successfulCoreCaseDataStoreSubmitResponseWithDQ();
             Claim claim = caseDetailsConverter.extractClaim(caseDetails);
             assertThat(claim.getResponse().get().getResponseMethod()).isNotPresent();
