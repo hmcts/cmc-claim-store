@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.reform.document.DocumentMetadataDownloadClientApi;
 import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
 import uk.gov.hmcts.reform.document.domain.Classification;
+import uk.gov.hmcts.reform.document.domain.Document;
 
 import java.net.URI;
 import java.util.Collections;
@@ -168,5 +169,27 @@ public class DocumentManagementServiceTest {
             .documentName("0000-claim")
             .build();
         documentManagementService.downloadDocument("auth string", claimDocument);
+    }
+
+    @Test
+    public void getDocumentMetaData() {
+        URI docUri = URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4");
+
+        when(documentMetadataDownloadClient
+            .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString())
+        ).thenReturn(successfulDocumentManagementDownloadResponse());
+
+        UserDetails userDetails = new UserDetails("id", "mail@mail.com",
+            "userFirstName", "userLastName", Collections.singletonList("role"));
+        when(userService.getUserDetails(anyString())).thenReturn(userDetails);
+        when(responseEntity.getBody()).thenReturn(new ByteArrayResource("test".getBytes()));
+
+        Document documentMetaData = documentManagementService.getDocumentMetaData("auth string", docUri.getPath());
+
+        assertEquals(72552L, documentMetaData.size);
+        assertEquals("000LR002.pdf", documentMetaData.originalDocumentName);
+
+        verify(documentMetadataDownloadClient)
+            .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString());
     }
 }
