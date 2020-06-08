@@ -172,6 +172,7 @@ dependencies {
   compile project(':rpa-mapper')
   compile project(':domain-sample-data')
   compile project(':job-scheduler')
+  compile project(':launch-darkly-client')
 
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
@@ -187,12 +188,12 @@ dependencies {
 
   compile group: 'com.mitchellbosecke', name: 'pebble', version: '2.4.0'
 
-  compile group: 'commons-io', name: 'commons-io', version: '2.6'
+  compile group: 'commons-io', name: 'commons-io', version: '2.7'
 
   compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
 
-  compile group: 'org.elasticsearch', name: 'elasticsearch', version: '7.6.2'
+  compile group: 'org.elasticsearch', name: 'elasticsearch', version: '7.7.0'
   compile group: 'org.postgresql', name: 'postgresql', version: '42.2.12'
 
   compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.15.1-RELEASE'
@@ -219,7 +220,7 @@ dependencies {
   compile group: 'org.springframework.retry', name: 'spring-retry'
   compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign'
 
-  compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '10.9'
+  compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '11.0'
 
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
@@ -247,8 +248,8 @@ dependencies {
 
   testCompile group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
   testCompile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: '2.4.0'
-  testCompile group: 'net.jodah', name: 'failsafe', version: '2.3.5'
-  testCompile group: 'org.xmlunit', name: 'xmlunit-core', version: '2.6.3'
+  testCompile group: 'net.jodah', name: 'failsafe', version: '2.4.0'
+  testCompile group: 'org.xmlunit', name: 'xmlunit-core', version: '2.7.0'
   testCompile group: 'org.xmlunit', name: 'xmlunit-matchers', version: '2.6.3'
 }
 
@@ -383,6 +384,7 @@ sonarqube {
         "**/DBCaseRepository.java",
         "**/MapperUtil.java",
         "**/CCDCaseApi.java",
+        "launch-darkly-client/**",
         "rpa-mapper/**"
       ].join(",")
   }
