@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 public enum CaseEvent {
     CREATE_CASE("CreateClaim"),
+    CREATE_HWF_CASE("CreateHelpWithFeesClaim"),
     ISSUE_CASE("IssueClaim"),
     MORE_TIME_REQUESTED_PAPER("MoreTimeRequestedPaper"),
     TEST_SUPPORT_UPDATE("TestSupportUpdate"),
