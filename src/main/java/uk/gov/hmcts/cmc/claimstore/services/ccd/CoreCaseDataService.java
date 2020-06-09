@@ -707,7 +707,7 @@ public class CoreCaseDataService {
     }
 
     private Claim toClaim(StartEventResponse startEventResponse) {
-        return caseMapper.from(caseDetailsConverter.extractCCDCase(startEventResponse.getCaseDetails()));
+        return caseDetailsConverter.extractClaim(startEventResponse.getCaseDetails());
     }
 
     private CaseDataContent caseDataContent(StartEventResponse startEventResponse, Claim ccdClaim) {
@@ -1026,8 +1026,7 @@ public class CoreCaseDataService {
                 isRepresented(userDetails)
             );
 
-            CCDCase ccdCase = caseDetailsConverter.extractCCDCase(startEventResponse.getCaseDetails());
-            Claim claim = caseMapper.from(ccdCase);
+            Claim claim = caseDetailsConverter.extractClaim(startEventResponse.getCaseDetails());
 
             Claim updatedClaim = claim.toBuilder()
                 .letterHolderId(letterHolderId)

@@ -6,7 +6,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
-import uk.gov.hmcts.cmc.claimstore.services.notifications.MoreTimeRequestedNotificationService;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 
@@ -20,14 +20,14 @@ public class MoreTimeRequestedStaffNotificationHandler {
 
     private static final String REFERENCE_TEMPLATE = "more-time-requested-notification-to-%s-%s";
 
-    private final MoreTimeRequestedNotificationService notificationService;
+    private final NotificationService notificationService;
     private final NotificationsProperties notificationsProperties;
     private final StaffEmailProperties staffEmailProperties;
     private final boolean staffEmailsEnabled;
 
     @Autowired
     public MoreTimeRequestedStaffNotificationHandler(
-        MoreTimeRequestedNotificationService notificationService,
+        NotificationService notificationService,
         NotificationsProperties notificationsProperties,
         StaffEmailProperties staffEmailProperties,
         @Value("${feature_toggles.staff_emails_enabled}") boolean staffEmailsEnabled

@@ -151,4 +151,11 @@
         <gav regex="true">.*</gav>
         <cve>CVE-2019-16869</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+			Improper validation of certificate with host mismatch in Apache Log4j SMTP appender
+			]]></notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2020-9488</cve>
+    </suppress>
 </suppressions>

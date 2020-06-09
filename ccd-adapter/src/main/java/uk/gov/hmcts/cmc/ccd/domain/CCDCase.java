@@ -60,6 +60,9 @@ public class CCDCase {
     private String paymentStatus;
     private LocalDate paymentDateCreated;
     private String paymentNextUrl;
+    private String paymentReturnUrl;
+    private String paymentTransactionId;
+    private String paymentFeeId;
     private String preferredCourt;
     private String personalInjuryGeneralDamages;
     private String housingDisrepairCostOfRepairDamages;
@@ -139,4 +142,7 @@ public class CCDCase {
     private CCDLaList assignedTo;
     private CCDContactPartyType contactChangeParty;
     private CCDContactChangeContent contactChangeContent;
+    private CCDProceedOnPaperReasonType proceedOnPaperReason;
+    private String proceedOnPaperOtherReason;
+    private LocalDate calculatedResponseDeadline;
 }
