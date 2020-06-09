@@ -256,6 +256,11 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
             return this;
         }
 
+        public FullDefence withDefendantDetails(Party defendantDetails) {
+            this.defendantDetails = defendantDetails;
+            return this;
+        }
+
         public FullDefence withPaymentDeclaration(PaymentDeclaration paymentDeclaration) {
             this.paymentDeclaration = paymentDeclaration;
             return this;
@@ -290,7 +295,8 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
             return new FullDefenceResponse(
                 freeMediationOption, mediationPhoneNumber, mediationContactPerson,
                 moreTimeNeededOption, defendantDetails, statementOfTruth,
-                defenceType, defence, paymentDeclaration, timeline, evidence, directionsQuestionnaire
+                defenceType, defence, paymentDeclaration, timeline, evidence, directionsQuestionnaire,
+                null
             );
         }
     }

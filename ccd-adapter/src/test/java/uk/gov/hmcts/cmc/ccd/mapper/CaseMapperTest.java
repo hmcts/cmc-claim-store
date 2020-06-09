@@ -9,10 +9,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
+import uk.gov.hmcts.cmc.ccd.domain.CCDProceedOnPaperReasonType;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.ccd.util.MapperUtil;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
+import uk.gov.hmcts.cmc.domain.models.ProceedOfflineReasonType;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
@@ -199,5 +201,33 @@ public class CaseMapperTest {
         //then
         assertTrue(claim.getDirectionOrder().isPresent());
         assertThat(claim.getDirectionOrder().get()).isEqualTo(ccdCase.getDirectionOrder());
+    }
+
+    @Test
+    public void shouldReverseMapProceedOnPaperDetails() {
+        String otherReason = "Judge want it to be moved";
+        CCDCase ccdCase = SampleData.getCCDLegalCase().toBuilder()
+            .proceedOnPaperReason(CCDProceedOnPaperReasonType.OTHER)
+            .proceedOnPaperOtherReason(otherReason)
+            .build();
+
+        Claim claim = ccdCaseMapper.from(ccdCase);
+
+        assertEquals(ccdCase.getProceedOnPaperReason().name(), claim.getProceedOfflineReason().get().name());
+        assertEquals(ccdCase.getProceedOnPaperOtherReason(), claim.getProceedOfflineOtherReasonDescription());
+    }
+
+    @Test
+    public void shouldMapProceedOnPaperDetails() {
+        String otherReason = "Judge want it to be moved";
+        Claim claim = SampleClaim.getDefault().toBuilder()
+            .proceedOfflineReason(ProceedOfflineReasonType.APPLICATION_BY_CLAIMANT)
+            .proceedOfflineOtherReasonDescription(otherReason)
+            .build();
+
+        CCDCase ccdCase = ccdCaseMapper.to(claim);
+
+        assertEquals(claim.getProceedOfflineReason().get().name(), ccdCase.getProceedOnPaperReason().name());
+        assertEquals(claim.getProceedOfflineOtherReasonDescription(), ccdCase.getProceedOnPaperOtherReason());
     }
 }

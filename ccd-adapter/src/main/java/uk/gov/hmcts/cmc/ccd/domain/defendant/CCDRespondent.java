@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Value
-@Builder
+@Builder(toBuilder = true)
 public class CCDRespondent {
     private String partyName;
     private String letterHolderId;
@@ -48,6 +48,7 @@ public class CCDRespondent {
     private CCDParty partyDetail;
     private LocalDateTime responseSubmittedOn;
     private CCDResponseType responseType;
+    private CCDResponseMethod responseMethod;
     private String responseAmount;
     private String paymentDeclarationPaidAmount;
     private LocalDate paymentDeclarationPaidDate;

@@ -3,8 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
@@ -38,7 +36,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.AGREEMENT_SIGNED_BY_CLAIMANT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCUTORY_JUDGMENT;
@@ -121,13 +118,8 @@ public class ClaimantResponseTest extends BaseMockSpringTest {
         when(caseRepository.saveClaimantResponse(liftedClaim, claimantResponse, AUTHORISATION_TOKEN))
             .thenReturn(updatedClaim);
 
-        webClient.perform(
-            post(RESPONSE_URL, SampleClaim.EXTERNAL_ID, SampleClaim.USER_ID)
-                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonMappingHelper.toJson(claimantResponse))).andExpect(
-            status().isCreated()
-        );
+        doPost(AUTHORISATION_TOKEN, claimantResponse, RESPONSE_URL, SampleClaim.EXTERNAL_ID, SampleClaim.USER_ID)
+            .andExpect(status().isCreated());
 
         verify(caseRepository)
             .saveCaseEvent(AUTHORISATION_TOKEN, stayedClaim, CaseEvent.LIFT_STAY);
@@ -288,10 +280,7 @@ public class ClaimantResponseTest extends BaseMockSpringTest {
         when(caseRepository.saveClaimantResponse(firstClaim, claimantResponse, AUTHORISATION_TOKEN))
             .thenReturn(updatedClaim);
 
-        return webClient.perform(
-            post(RESPONSE_URL, SampleClaim.EXTERNAL_ID, SampleClaim.USER_ID)
-                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonMappingHelper.toJson(claimantResponse)));
+        return doPost(AUTHORISATION_TOKEN, claimantResponse,
+            RESPONSE_URL, SampleClaim.EXTERNAL_ID, SampleClaim.USER_ID);
     }
 }
