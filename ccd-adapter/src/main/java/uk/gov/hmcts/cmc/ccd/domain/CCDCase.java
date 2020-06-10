@@ -76,7 +76,7 @@ public class CCDCase {
     private String features;
     private CCDYesNoOption migratedFromClaimStore;
     private List<CCDCollectionElement<CCDClaimDocument>> caseDocuments;
-    private List<CCDCollectionElement<CCDScannedDocument>> scannedDocuments;
+    private List<CCDCollectionElement<CCDScannedDocument>> scannedDocuments = Collections.emptyList();
     private List<CCDCollectionElement<CCDClaimDocument>> staffUploadedDocuments;
     private String caseName;
     private CCDClaimSubmissionOperationIndicators claimSubmissionOperationIndicators;

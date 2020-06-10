@@ -71,6 +71,7 @@ public enum CaseEvent {
     MEDIATION_SUCCESSFUL("SuccessfulMediation"),
     RESEND_RPA("ResendRpa"),
     PROCEEDS_IN_CASEMAN("CaseProceedsInCaseman"),
+    PAPER_RESPONSE_FULL_DEFENCE("PaperResponseFullDefence"),
     ATTACH_SCANNED_DOCS("attachScannedDocs"),
     UPDATE_CLAIM("UpdateClaim"),
     RESET_PIN("ResetPin"),
