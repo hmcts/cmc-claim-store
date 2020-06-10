@@ -14,4 +14,3 @@ public class CourtDetails {
     private String slug;
     private List<Facilities> facilities;
 }
-
