@@ -202,7 +202,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseMockSpringTest
         verify(emailService).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
 
         assertThat(emailDataArgument.getValue().getTo()).isEqualTo("recipient@example.com");
-        assertThat(emailDataArgument.getValue().getSubject())
+        assertThat(emailDataArgument.getValue().getSubject().trim())
             .isEqualTo("Civil Money Claim full admission submitted: Pay by instalments "
                 + CASE_REFERENCE
                 + " - Jan Clark v Mary Richards");

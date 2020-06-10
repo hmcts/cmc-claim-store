@@ -132,6 +132,10 @@ public final class SampleClaim {
             .build();
     }
 
+    public static Claim getDefaultWithoutResponse() {
+        return getDefaultWithoutResponse(DEFENDANT_EMAIL);
+    }
+
     public static Claim getDefaultWithoutResponse(String defendantEmail) {
         return builder()
             .withClaimData(
@@ -600,6 +604,8 @@ public final class SampleClaim {
             null,
             null,
             offlineJourney,
+            null,
+            null,
             null,
             null
             );

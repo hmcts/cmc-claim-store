@@ -1,13 +1,13 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
+import uk.gov.hmcts.cmc.claimstore.filters.DocumentsFilter;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseRepository;
@@ -64,7 +64,6 @@ public class ClaimService {
     private final PaidInFullRule paidInFullRule;
     private final ClaimAuthorisationRule claimAuthorisationRule;
     private final ReviewOrderRule reviewOrderRule;
-    private final String returnUrlPattern;
 
     @SuppressWarnings("squid:S00107")
     @Autowired
@@ -78,8 +77,7 @@ public class ClaimService {
         AppInsights appInsights,
         PaidInFullRule paidInFullRule,
         ClaimAuthorisationRule claimAuthorisationRule,
-        ReviewOrderRule reviewOrderRule,
-        @Value("${payments.returnUrlPattern}") String returnUrlPattern
+        ReviewOrderRule reviewOrderRule
     ) {
         this.userService = userService;
         this.issueDateCalculator = issueDateCalculator;
@@ -91,11 +89,10 @@ public class ClaimService {
         this.paidInFullRule = paidInFullRule;
         this.claimAuthorisationRule = claimAuthorisationRule;
         this.reviewOrderRule = reviewOrderRule;
-        this.returnUrlPattern = returnUrlPattern;
     }
 
     public List<Claim> getClaimBySubmitterId(String submitterId, String authorisation) {
-        claimAuthorisationRule.assertSubmitterIdMatchesAuthorisation(submitterId, authorisation);
+        claimAuthorisationRule.assertUserIdMatchesAuthorisation(submitterId, authorisation);
         return caseRepository.getBySubmitterId(submitterId, authorisation);
     }
 
@@ -107,6 +104,13 @@ public class ClaimService {
         claimAuthorisationRule.assertClaimCanBeAccessed(claim, authorisation);
 
         return claim;
+    }
+
+    public Claim getFilteredClaimByExternalId(String externalId, String authorisation) {
+        User user = userService.getUser(authorisation);
+        return DocumentsFilter.filterDocuments(
+            getClaimByExternalId(externalId, user), user.getUserDetails()
+        );
     }
 
     public Claim getClaimByExternalId(String externalId, String authorisation) {
@@ -148,14 +152,13 @@ public class ClaimService {
         String submitterId = userService.getUserDetails(authorisation).getId();
 
         return asStream(caseRepository.getBySubmitterId(submitterId, authorisation))
-            .filter(claim -> externalReference.equals(
-                claim.getClaimData().getExternalReferenceNumber().orElse("")
-            ))
+            .filter(claim ->
+                claim.getClaimData().getExternalReferenceNumber().filter(externalReference::equals).isPresent())
             .collect(Collectors.toList());
     }
 
     public List<Claim> getClaimByDefendantId(String id, String authorisation) {
-        claimAuthorisationRule.assertSubmitterIdMatchesAuthorisation(id, authorisation);
+        claimAuthorisationRule.assertUserIdMatchesAuthorisation(id, authorisation);
 
         return caseRepository.getByDefendantId(id, authorisation);
     }
@@ -209,11 +212,12 @@ public class ClaimService {
 
         Payment payment = resumedClaim.getClaimData().getPayment()
             .orElseThrow(() -> new IllegalStateException(MISSING_PAYMENT));
-
+        String returnUrl = resumedClaim.getClaimData().getPayment()
+            .orElseThrow(IllegalStateException::new).getReturnUrl();
         return CreatePaymentResponse.builder()
             .nextUrl(
                 payment.getStatus().equals(PaymentStatus.SUCCESS)
-                    ? String.format(returnUrlPattern, claim.getExternalId())
+                    ? returnUrl
                     : payment.getNextUrl()
             )
             .build();

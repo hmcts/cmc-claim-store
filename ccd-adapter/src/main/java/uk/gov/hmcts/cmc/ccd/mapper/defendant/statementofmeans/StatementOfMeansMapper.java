@@ -251,7 +251,8 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
             .courtOrders(courtOrders)
             .priorityDebts(priorityDebts)
             .partner(livingPartnerMapper.from(ccdStatementOfMeans.getLivingPartner()))
-            .disability(DisabilityStatus.valueOf(ccdStatementOfMeans.getDisabilityStatus().name()))
+            .disability(ccdStatementOfMeans.getDisabilityStatus() == null ? null :
+                DisabilityStatus.valueOf(ccdStatementOfMeans.getDisabilityStatus().name()))
             .carer(ccdStatementOfMeans.getCarer() != null && ccdStatementOfMeans.getCarer().toBoolean())
             .build();
     }
@@ -357,6 +358,9 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
     }
 
     private Residence extractResidence(CCDStatementOfMeans ccdStatementOfMeans) {
+        if (ccdStatementOfMeans.getResidenceType() == null) {
+            return null;
+        }
         return Residence.builder()
             .type(Residence.ResidenceType.valueOf(ccdStatementOfMeans.getResidenceType().name()))
             .otherDetail(ccdStatementOfMeans.getResidenceOtherDetail())

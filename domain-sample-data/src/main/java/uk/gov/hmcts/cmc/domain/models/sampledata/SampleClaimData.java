@@ -22,8 +22,10 @@ import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.noInterestBuilder;
 
 public class SampleClaimData {
+    public static final String EXTERNAL_REFERENCE_NUMBER = "CLAIM234324";
+    private static final String RETURN_URL = "http://returnUrl.test";
 
-    private UUID externalId = UUID.randomUUID();
+    private UUID externalId = UUID.fromString(SampleClaim.EXTERNAL_ID);
     private List<Party> claimants;
     private List<TheirDetails> defendants;
     private Payment payment = SamplePayment.builder().build();
@@ -34,7 +36,7 @@ public class SampleClaimData {
     private String feeAccountNumber = "PBA1234567";
     private StatementOfTruth statementOfTruth;
     private PersonalInjury personalInjury = new PersonalInjury(DamagesExpectation.MORE_THAN_THOUSAND_POUNDS);
-    private String externalReferenceNumber = "CLAIM234324";
+    private String externalReferenceNumber = EXTERNAL_REFERENCE_NUMBER;
     private String preferredCourt = "LONDON COUNTY COUNCIL";
     private String feeCode = "X0012";
     private Timeline timeline = SampleTimeline.validDefaults();

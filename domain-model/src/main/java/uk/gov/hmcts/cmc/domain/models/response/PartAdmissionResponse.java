@@ -54,7 +54,7 @@ public class PartAdmissionResponse extends Response {
     private final DirectionsQuestionnaire directionsQuestionnaire;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot of be done about removing parameters here
-    @Builder
+    @Builder(toBuilder = true)
     public PartAdmissionResponse(
         YesNoOption freeMediation,
         String mediationPhoneNumber,
@@ -69,7 +69,8 @@ public class PartAdmissionResponse extends Response {
         DefendantTimeline timeline,
         DefendantEvidence evidence,
         StatementOfMeans statementOfMeans,
-        DirectionsQuestionnaire directionsQuestionnaire
+        DirectionsQuestionnaire directionsQuestionnaire,
+        ResponseMethod responseMethod
     ) {
         super(
             PART_ADMISSION,
@@ -78,7 +79,8 @@ public class PartAdmissionResponse extends Response {
             mediationContactPerson,
             moreTimeNeeded,
             defendant,
-            statementOfTruth
+            statementOfTruth,
+            responseMethod
         );
         this.amount = amount;
         this.paymentDeclaration = paymentDeclaration;
