@@ -25,6 +25,4 @@ public interface CourtFinderApi {
     @RequestMapping(method = RequestMethod.GET, value = SEARCH_NAME_URL)
     List<Court> findMoneyClaimCourtByName(@PathVariable("name") String name);
 
-
-
 }
