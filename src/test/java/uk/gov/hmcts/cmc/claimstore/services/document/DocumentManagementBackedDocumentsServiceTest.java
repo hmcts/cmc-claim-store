@@ -105,8 +105,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
         Claim claim = SampleClaim.getDefault().toBuilder().claimDocumentCollection(claimDocumentCollection).build();
 
         when(userService.getUser(AUTHORISATION)).thenReturn(DEFENDANT);
-        when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(DEFENDANT)))
-            .thenReturn(claim);
+        when(claimService.getClaimByExternalId(claim.getExternalId(), DEFENDANT)).thenReturn(claim);
 
         when(documentManagementService.downloadScannedDocument(AUTHORISATION, oconDocument))
             .thenReturn(PDF_BYTES);
@@ -114,6 +113,17 @@ public class DocumentManagementBackedDocumentsServiceTest {
         byte[] pdf = documentManagementBackedDocumentsService.getOCON9xForm(claim.getExternalId(), AUTHORISATION);
 
         assertArrayEquals(PDF_BYTES, pdf);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionIfErrorGettingOCON9xForm() {
+
+        when(userService.getUser(AUTHORISATION)).thenReturn(DEFENDANT);
+        Claim claimWithoutOCON9xForm = SampleClaim.getDefault();
+        when(claimService.getClaimByExternalId(claimWithoutOCON9xForm.getExternalId(), DEFENDANT))
+            .thenReturn(claimWithoutOCON9xForm);
+
+        documentManagementBackedDocumentsService.getOCON9xForm(claimWithoutOCON9xForm.getExternalId(), AUTHORISATION);
     }
 
     @Test
