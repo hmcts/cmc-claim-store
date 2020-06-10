@@ -68,6 +68,8 @@ public interface CaseRepository {
 
     Claim saveClaim(User user, Claim claim);
 
+    Claim saveHelpWithFeesClaim(User user, Claim claim);
+
     Claim saveRepresentedClaim(User user, Claim claim);
 
     void saveReDetermination(String authorisation, Claim claim, ReDetermination reDetermination);

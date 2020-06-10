@@ -176,10 +176,12 @@ public class CCDCaseRepository implements CaseRepository {
 
     @Override
     public Claim saveClaim(User user, Claim claim) {
-        if (claim.getClaimData().getHelpWithFeesNumber().isPresent()) {
-            return coreCaseDataService.createNewHelpWithFeesCase(user, claim);
-        }
         return coreCaseDataService.createNewCase(user, claim);
+    }
+
+    @Override
+    public Claim saveHelpWithFeesClaim(User user, Claim claim) {
+        return coreCaseDataService.createNewHelpWithFeesCase(user, claim);
     }
 
     @Override

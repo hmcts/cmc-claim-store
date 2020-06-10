@@ -61,7 +61,7 @@ public class TotalAmountCalculator {
     }
 
     public static Optional<BigDecimal> calculateInterestForClaim(Claim claim) {
-        return calculateInterestForClaim(claim, getToDate(claim));
+        return getToDate(claim).flatMap(toDate -> calculateInterestForClaim(claim, toDate));
     }
 
     public static BigDecimal calculateInterest(
@@ -189,12 +189,15 @@ public class TotalAmountCalculator {
             : claim.getIssuedOn();
     }
 
-    private static LocalDate getToDate(Claim claim) {
+    private static Optional<LocalDate> getToDate(Claim claim) {
         if (claim.getCountyCourtJudgmentRequestedAt() != null) {
-            return claim.getCountyCourtJudgmentRequestedAt().toLocalDate();
-        } else {
-            return LocalDate.now().isAfter(claim.getIssuedOn()) ? LocalDate.now() : claim.getIssuedOn();
+            return Optional.of(claim.getCountyCourtJudgmentRequestedAt().toLocalDate());
         }
+        LocalDate issuedOn = claim.getIssuedOn();
+        if (issuedOn == null) {
+            return Optional.empty();
+        }
+        return Optional.of(LocalDate.now().isAfter(claim.getIssuedOn()) ? LocalDate.now() : claim.getIssuedOn());
     }
 
     private static BigDecimal daysBetween(LocalDate startDate, LocalDate endDate) {
