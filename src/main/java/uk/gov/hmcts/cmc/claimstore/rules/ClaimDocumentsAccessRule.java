@@ -10,21 +10,20 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static java.util.function.Predicate.not;
 
 public class ClaimDocumentsAccessRule {
 
-    private static final List<ClaimDocumentType> solicitortViewableDocsType = List.of(ClaimDocumentType.SEALED_CLAIM);
+    private static final List<ClaimDocumentType> solicitorViewableDocsType = List.of(ClaimDocumentType.SEALED_CLAIM);
 
-    public static final Supplier<List<ClaimDocumentType>> defendantViewableDocsType = () ->
+    public static final List<ClaimDocumentType> defendantViewableDocsType =
         Arrays.stream(ClaimDocumentType.values())
             .filter(not(ClaimDocumentType.CLAIM_ISSUE_RECEIPT::equals))
             .collect(Collectors.toList());
 
-    public static final Supplier<List<ClaimDocumentType>> claimantViewableDocsType = () ->
+    public static final List<ClaimDocumentType> claimantViewableDocsType =
         Arrays.stream(ClaimDocumentType.values())
             .filter(not(ClaimDocumentType.SEALED_CLAIM::equals))
             .collect(Collectors.toList());
@@ -40,24 +39,26 @@ public class ClaimDocumentsAccessRule {
             throw new DocumentDownloadForbiddenException(FORBIDDEN_ACTION_MESSAGE);
         }
 
-        if (!findViewableDocsList(claim, user)
-            .contains(docToDownload)) {
+        if (!findViewableDocsList(claim, user).contains(docToDownload)) {
             throw new DocumentDownloadForbiddenException(FORBIDDEN_ACTION_MESSAGE);
         }
     }
 
     private static List<ClaimDocumentType> findViewableDocsList(Claim claim, User user) {
-
         UserDetails userDetails = user.getUserDetails();
+
         if (userDetails.isSolicitor()) {
-            return solicitortViewableDocsType;
+            return solicitorViewableDocsType;
         }
 
         if (userDetails.getId().equals(claim.getDefendantId())) {
-            return defendantViewableDocsType.get();
-        } else if (userDetails.getId().equals(claim.getSubmitterId())) {
-            return claimantViewableDocsType.get();
+            return defendantViewableDocsType;
         }
+
+        if (userDetails.getId().equals(claim.getSubmitterId())) {
+            return claimantViewableDocsType;
+        }
+
         return Collections.emptyList();
     }
 }
