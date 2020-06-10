@@ -42,7 +42,7 @@ public class PaperResponseOCON9xFormCallbackHandler  extends CallbackHandler {
     private static final String DYNAMIC_LIST_ITEMS = "list_items";
     private static final String DYNAMIC_LIST_SELECTED_VALUE = "value";
 
-    private static final String SCANNED_DOCUMENTS = "filteredScannedDocuments";
+    private static final String SCANNED_DOCUMENTS = "temporaryScannedDocuments";
     private static final String OCON9X = "ocon9xForm";
     public static final String OCON9X_SUBTYPE = "OCON9x";
     public static final String SCANNED_DOCUMENTS_MODIFIED_ERROR = "You man not add or remove new documents";
@@ -85,7 +85,7 @@ public class PaperResponseOCON9xFormCallbackHandler  extends CallbackHandler {
         List<CCDCollectionElement<CCDScannedDocument>> formsBefore = filterForms(ccdCase);
 
         List errors = new ArrayList();
-        if (!formsBefore.equals(ccdCase.getFilteredScannedDocuments())) {
+        if (!formsBefore.equals(ccdCase.getTemporaryScannedDocuments())) {
             errors.add(SCANNED_DOCUMENTS_MODIFIED_ERROR);
         }
 
@@ -130,7 +130,7 @@ public class PaperResponseOCON9xFormCallbackHandler  extends CallbackHandler {
         CCDCase updatedCCDCase = ccdCase.toBuilder()
             .respondents(updatedRespondents)
             .scannedDocuments(updatedScannedDocuments)
-            .filteredScannedDocuments(Collections.emptyList())
+            .temporaryScannedDocuments(Collections.emptyList())
             .ocon9xForm(null)
             .evidenceHandled(CCDYesNoOption.YES)
             .build();

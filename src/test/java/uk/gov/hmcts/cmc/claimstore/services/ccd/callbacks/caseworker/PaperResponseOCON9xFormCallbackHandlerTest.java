@@ -102,7 +102,7 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
 
                 Set<CCDScannedDocumentType> scannedDocumentTypes =
                     ((List<CCDCollectionElement<CCDScannedDocument>>) response.getData()
-                        .get("filteredScannedDocuments"))
+                        .get("temporaryScannedDocuments"))
                         .stream()
                         .map(CCDCollectionElement::getValue)
                         .map(CCDScannedDocument::getType)
@@ -120,7 +120,7 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
 
                 Set<CCDScannedDocumentType> scannedDocumentTypes =
                     ((List<CCDCollectionElement<CCDScannedDocument>>) response.getData()
-                        .get("filteredScannedDocuments"))
+                        .get("temporaryScannedDocuments"))
                         .stream()
                         .map(CCDCollectionElement::getValue)
                         .map(CCDScannedDocument::getType)
@@ -167,7 +167,7 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
 
                 Set<CCDScannedDocument> scannedDocuments =
                     ((List<CCDCollectionElement<CCDScannedDocument>>) response.getData()
-                        .get("filteredScannedDocuments"))
+                        .get("temporaryScannedDocuments"))
                         .stream()
                         .map(CCDCollectionElement::getValue)
                         .collect(Collectors.toSet());
@@ -182,7 +182,7 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
 
                 Set<CCDScannedDocument> scannedDocuments =
                     ((List<CCDCollectionElement<CCDScannedDocument>>) response.getData()
-                        .get("filteredScannedDocuments"))
+                        .get("temporaryScannedDocuments"))
                         .stream()
                         .map(CCDCollectionElement::getValue)
                         .collect(Collectors.toSet());
@@ -290,7 +290,7 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
             when(caseDetailsConverter.extractCCDCase(eq(caseDetails)))
                 .thenReturn(CCDCase.builder()
                     .scannedDocuments(scannedDocuments)
-                    .filteredScannedDocuments(addedScanDocuments)
+                    .temporaryScannedDocuments(addedScanDocuments)
                     .build());
 
             AboutToStartOrSubmitCallbackResponse response =
@@ -309,7 +309,7 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
             when(caseDetailsConverter.extractCCDCase(eq(caseDetails)))
                 .thenReturn(CCDCase.builder()
                     .scannedDocuments(scannedDocuments)
-                    .filteredScannedDocuments(removedScannedDocuments)
+                    .temporaryScannedDocuments(removedScannedDocuments)
                     .build());
 
             AboutToStartOrSubmitCallbackResponse response =
@@ -324,7 +324,7 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
             when(caseDetailsConverter.extractCCDCase(eq(caseDetails)))
                 .thenReturn(CCDCase.builder()
                     .scannedDocuments(scannedDocuments)
-                    .filteredScannedDocuments(scannedDocuments)
+                    .temporaryScannedDocuments(scannedDocuments)
                     .build());
 
             AboutToStartOrSubmitCallbackResponse response =
@@ -418,7 +418,7 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
                 CCDCase expectedCCDCase = ccdCase.toBuilder()
                     .respondents(List.of(respondentElement.toBuilder().value(respondent).build()))
                     .scannedDocuments(List.of(scannedDocElement.toBuilder().value(scannedDoc).build()))
-                    .filteredScannedDocuments(Collections.emptyList())
+                    .temporaryScannedDocuments(Collections.emptyList())
                     .ocon9xForm(null)
                     .evidenceHandled(CCDYesNoOption.YES)
                     .build();

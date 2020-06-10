@@ -78,8 +78,6 @@ public class CCDCase {
     private List<CCDCollectionElement<CCDClaimDocument>> caseDocuments;
     @Builder.Default
     private List<CCDCollectionElement<CCDScannedDocument>> scannedDocuments = Collections.emptyList();
-    @Builder.Default
-    private List<CCDCollectionElement<CCDScannedDocument>> filteredScannedDocuments = Collections.emptyList();
     private String ocon9xForm;
     private List<CCDCollectionElement<CCDClaimDocument>> staffUploadedDocuments;
     private String caseName;
@@ -150,4 +148,10 @@ public class CCDCase {
     private CCDProceedOnPaperReasonType proceedOnPaperReason;
     private String proceedOnPaperOtherReason;
     private LocalDate calculatedResponseDeadline;
+
+    /**
+     * Temporary variables that are not to be persisted to case data but are only used during events
+     */
+    @Builder.Default
+    private List<CCDCollectionElement<CCDScannedDocument>> temporaryScannedDocuments = Collections.emptyList();
 }
