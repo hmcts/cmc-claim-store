@@ -38,7 +38,7 @@ class ScannedDocumentsControllerTest {
     @Test
     void shouldRetrieveOCON9XForm() {
 
-        byte[] pdfDocument = new byte[77];
+        byte[] pdfDocument = new byte[]{1, 2, 3};
 
         when(documentsService.getOCON9xForm(claim.getExternalId(), AUTHORISATION))
             .thenReturn(pdfDocument);

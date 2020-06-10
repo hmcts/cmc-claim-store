@@ -44,7 +44,7 @@ public class ScannedDocumentsController {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
 
-        logger.info("Received request to download OCN9x form");
+        logger.info("Received request to download OCON9x form");
 
         byte[] pdfDocument = documentsService.getOCON9xForm(externalId, authorisation);
 
