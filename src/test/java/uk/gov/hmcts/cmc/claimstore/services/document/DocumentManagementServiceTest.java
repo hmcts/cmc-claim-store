@@ -152,9 +152,10 @@ public class DocumentManagementServiceTest {
 
     @Test
     public void downloadDocumentFromDocumentManagementThrowException() {
-        expectedException.expect(DocumentManagementException.class);
-        expectedException.expectMessage("Unable to download document 0000-claim from document management");
         URI docUri = URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4");
+        expectedException.expect(DocumentManagementException.class);
+        expectedException.expectMessage(
+            String.format("Unable to download document %s from document management", docUri));
 
         UserDetails userDetails = new UserDetails("id", "mail@mail.com",
             "userFirstName", "userLastName", Collections.singletonList("role"));

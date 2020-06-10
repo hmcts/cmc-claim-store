@@ -21,6 +21,9 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
+import uk.gov.hmcts.cmc.domain.models.ScannedDocument;
+import uk.gov.hmcts.cmc.domain.models.ScannedDocumentSubtype;
+import uk.gov.hmcts.cmc.domain.models.ScannedDocumentType;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
@@ -88,6 +91,29 @@ public class DocumentManagementBackedDocumentsServiceTest {
             userService
         );
         when(userService.getUser(AUTHORISATION)).thenReturn(CLAIMANT);
+    }
+
+    @Test
+    public void shouldGetOCON9xForm() {
+
+        ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
+        ScannedDocument oconDocument = ScannedDocument.builder()
+            .documentType(ScannedDocumentType.FORM)
+            .subtype(ScannedDocumentSubtype.OCON9X.value)
+            .build();
+        claimDocumentCollection.addScannedDocument(oconDocument);
+        Claim claim = SampleClaim.getDefault().toBuilder().claimDocumentCollection(claimDocumentCollection).build();
+
+        when(userService.getUser(AUTHORISATION)).thenReturn(DEFENDANT);
+        when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(DEFENDANT)))
+            .thenReturn(claim);
+
+        when(documentManagementService.downloadScannedDocument(AUTHORISATION, oconDocument))
+            .thenReturn(PDF_BYTES);
+
+        byte[] pdf = documentManagementBackedDocumentsService.getOCON9xForm(claim.getExternalId(), AUTHORISATION);
+
+        assertArrayEquals(PDF_BYTES, pdf);
     }
 
     @Test
