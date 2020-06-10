@@ -37,8 +37,8 @@ public class ClaimDocumentCollection {
     public Optional<ScannedDocument> getScannedDocument(ScannedDocumentType scannedDocumentType,
                                                         ScannedDocumentSubtype subtype) {
         return scannedDocuments.stream()
-            .filter(scannedDocument -> scannedDocument.getDocumentType().equals(scannedDocumentType)
-                && scannedDocument.getSubtype().equals(subtype.value))
+            .filter(scannedDocument -> scannedDocument.getDocumentType().equals(scannedDocumentType))
+            .filter(scannedDocument -> scannedDocument.getSubtype().equals(subtype.value))
             .findFirst();
     }
 }
