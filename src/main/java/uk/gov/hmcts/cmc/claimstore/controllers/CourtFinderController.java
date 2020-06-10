@@ -24,8 +24,9 @@ import javax.validation.constraints.NotNull;
 )
 public class CourtFinderController {
 
+    public static final String MONEY_CLAIM_AOL = "Money claims";
+
     private final CourtFinderApi courtFinderApi;
-    private static final String MONEY_CLAIM_AOL = "Money claims";
 
     @Autowired
     public CourtFinderController(CourtFinderApi courtFinderApi) {
