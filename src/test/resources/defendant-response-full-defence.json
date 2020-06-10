@@ -1,6 +1,5 @@
 {
   "responseType": "FULL_DEFENCE",
-  "responseMethod": "DIGITAL",
   "defenceType": "DISPUTE",
   "paymentDeclaration": {
     "paidDate": "2016-01-02",
