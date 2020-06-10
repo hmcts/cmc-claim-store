@@ -18,10 +18,37 @@ def component = "claim-store"
 
 def channel = '#cmc-tech-notification'
 
+def secrets = [
+  // these are required for our integration tests container (initialised in Jenkins)
+  'cmc-${env}': [
+    secret('citizen-oauth-client-secret', 'OAUTH2_CLIENT_SECRET'),
+    secret('smoke-test-citizen-username', 'SMOKE_TEST_CITIZEN_USERNAME'),
+    secret('smoke-test-solicitor-username', 'SMOKE_TEST_SOLICITOR_USERNAME'),
+    secret('smoke-test-user-password', 'SMOKE_TEST_USER_PASSWORD'),
+    secret('generated-user-email-pattern', 'GENERATED_USER_EMAIL_PATTERN')
+  ]
+]
+
+static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
+  [$class     : 'AzureKeyVaultSecret',
+   secretType : 'Secret',
+   name       : secretName,
+   version    : '',
+   envVariable: envVar
+  ]
+}
+
+// Vars needed for AKS testing
+env.FRONTEND_BASE_URL = 'https://moneyclaims.aat.platform.hmcts.net'
+env.IDAM_API_URL = 'https://idam-api.aat.platform.hmcts.net'
+env.S2S_URL = 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
+env.PDF_SERVICE_URL = 'http://cmc-pdf-service-aat.service.core-compute-aat.internal'
+
 withNightlyPipeline(type, product, component) {
     env.TEST_URL = params.URL_TO_TEST
 
     env.Rules = params.SecurityRules
+    loadVaultSecrets(secrets)
     enableSlackNotifications(channel)
     enableSecurityScan()
     enableFullFunctionalTest(200)
