@@ -21,7 +21,9 @@ public class PaperResponseLetterServiceTest {
 
     @Test
     void shouldCreateOconFormForIndividualWithDQs() {
+        //claim with dqs
         Claim claim = SampleClaim.getCitizenClaim();
+        //check for correct template id and payload function being called?
 
 
     }

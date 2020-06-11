@@ -118,10 +118,12 @@ public class PaperDefenceLetterBodyMapperTest {
                     ? respondent.getPartyName() :
                     respondent.getClaimantProvidedPartyName();
 
+            DocAssemblyTemplateBody requestBody = paperDefenceLetterBodyMapper
+                    .oconFormCommonTemplateMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE);
             DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
                     .referenceNumber(ccdCase.getPreviousServiceCaseReference())
                     .responseDeadline(respondent.getResponseDeadline())
-                    .updatedResponseDeadline(extendedResponseDeadline)
+                    .updatedResponseDeadline(EXTENDED_RESPONSE_DEADLINE)
                     .claimAmount(ccdCase.getTotalAmount())
                     .partyName(partyName)
                     .partyAddress(defendantAddress)
