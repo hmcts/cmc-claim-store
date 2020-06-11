@@ -104,8 +104,7 @@ public class IssuePaperDefenceCallbackHandlerTest {
     private IssuePaperDefenceCallbackHandler issuePaperDefenceCallbackHandler;
     private CCDCase ccdCase;
     private CallbackParams callbackParams;
-
-
+    
     @BeforeEach
     void setUp() {
         issuePaperDefenceCallbackHandler = new IssuePaperDefenceCallbackHandler(

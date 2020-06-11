@@ -51,13 +51,13 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
         ResponseDeadlineCalculator responseDeadlineCalculator,
         IssueDateCalculator issueDateCalculator,
         IssuePaperResponseNotificationService issuePaperResponseNotificationService,
-        DocumentPublishService DocumentPublishService
+        DocumentPublishService documentPublishService
     ) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.responseDeadlineCalculator = responseDeadlineCalculator;
         this.issueDateCalculator = issueDateCalculator;
         this.issuePaperResponseNotificationService = issuePaperResponseNotificationService;
-        this.documentPublishService = DocumentPublishService;
+        this.documentPublishService = documentPublishService;
     }
 
     @Override
@@ -76,7 +76,6 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
     public List<Role> getSupportedRoles() {
         return ROLES;
     }
-
 
     private AboutToStartOrSubmitCallbackResponse issuePaperDefence(CallbackParams callbackParams) {
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();

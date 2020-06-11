@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPartyType;
+import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
@@ -88,43 +89,56 @@ public class PaperResponseLetterService {
             paperResponseLetter.templateId);
     }
 
-    private PaperResponseLetter formForCorrectDefendantType(CCDCase ccdCase, Claim claim, LocalDate extendedResponseDeadline) {
+    private PaperResponseLetter formForCorrectDefendantType(CCDCase ccdCase, Claim claim, LocalDate extendedDeadline) {
         PaperResponseLetter.PaperResponseLetterBuilder paperResponseLetter = PaperResponseLetter.builder();
         CCDPartyType partyType = ccdCase.getRespondents().get(0).getValue().getPartyDetail().getType();
         switch (partyType) {
             case INDIVIDUAL:
                 if (FeaturesUtils.isOnlineDQ(claim)) {
-                    paperResponseLetter
+                    return paperResponseLetter
                         .templateId(oconFormIndividualWithDQs)
-                        .payload(paperDefenceLetterBodyMapper.oconFormIndividualWithDQsTemplateMapper(ccdCase, extendedResponseDeadline));
+                        .payload(paperDefenceLetterBodyMapper
+                            .oconFormIndividualWithDQsMapper(ccdCase, extendedDeadline))
+                        .build();
                 } else {
-                    paperResponseLetter
+                    return paperResponseLetter
                         .templateId(oconFormIndividualWithoutDQs)
-                        .payload(paperDefenceLetterBodyMapper.oconFormIndividualWithoutDQsTemplateMapper(ccdCase, extendedResponseDeadline));
+                        .payload(paperDefenceLetterBodyMapper
+                            .oconFormIndividualWithoutDQsMapper(ccdCase, extendedDeadline))
+                        .build();
                 }
             case ORGANISATION:
             case COMPANY:
                 if (FeaturesUtils.isOnlineDQ(claim)) {
-                    paperResponseLetter
+                    return paperResponseLetter
                         .templateId(oconFormOrganisationWithDQs)
-                        .payload(paperDefenceLetterBodyMapper.oconFormOrganisationWithDQsTemplateMapper(ccdCase, extendedResponseDeadline));
+                        .payload(paperDefenceLetterBodyMapper
+                            .oconFormOrganisationWithDQsMapper(ccdCase, extendedDeadline))
+                        .build();
                 } else {
-                    paperResponseLetter
+                    return paperResponseLetter
                         .templateId(oconFormOrganisationWithoutDQs)
-                        .payload(paperDefenceLetterBodyMapper.oconFormOrganisationWithoutDQsTemplateMapper(ccdCase, extendedResponseDeadline));
+                        .payload(paperDefenceLetterBodyMapper
+                            .oconFormOrganisationWithoutDQsMapper(ccdCase, extendedDeadline))
+                        .build();
                 }
             case SOLE_TRADER:
                 if (FeaturesUtils.isOnlineDQ(claim)) {
-                    paperResponseLetter
+                    return paperResponseLetter
                         .templateId(oconFormSoleTraderWithDQs)
-                        .payload(paperDefenceLetterBodyMapper.oconFormSoleTraderWithDQsTemplateMapper(ccdCase, extendedResponseDeadline));
+                        .payload(paperDefenceLetterBodyMapper
+                            .oconFormSoleTraderWithDQsMapper(ccdCase, extendedDeadline))
+                        .build();
                 } else {
-                    paperResponseLetter
+                    return paperResponseLetter
                         .templateId(oconFormSoleTraderWithoutDQs)
-                        .payload(paperDefenceLetterBodyMapper.oconFormSoleTraderWithoutDQsTemplateMapper(ccdCase, extendedResponseDeadline));
+                        .payload(paperDefenceLetterBodyMapper
+                            .oconFormSoleTraderWithoutDQsMapper(ccdCase, extendedDeadline))
+                        .build();
                 }
+            default:
+                throw new MappingException();
         }
-        return paperResponseLetter.build();
     }
 
     public CCDCase addCoverLetterToCaseWithDocuments(
