@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.domain.amount;
 
-import org.apache.commons.lang3.time.DateUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Interest;
