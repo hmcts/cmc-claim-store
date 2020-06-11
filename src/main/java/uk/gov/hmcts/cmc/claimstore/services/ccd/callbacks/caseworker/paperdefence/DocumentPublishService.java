@@ -39,13 +39,13 @@ public class DocumentPublishService {
 
         Document coverDoc = printableDocumentService.process(coverLetter, authorisation);
 
-//        CCDDocument oconForm = issuePaperResponseLetterService
-//        .createOconForm(ccdCase, claim, authorisation, extendedResponseDeadline);
+        CCDDocument oconForm = paperResponseLetterService
+            .createOconForm(ccdCase, claim, authorisation, extendedResponseDeadline);
 
-        Document formDoc = null;
-//            = printableDocumentService.process(oconForm, authorisation);
+        Document formDoc = printableDocumentService.process(oconForm, authorisation);
 
         eventProducer.createPaperDefenceEvent(claim, coverDoc, formDoc);
+
         return paperResponseLetterService
             .addCoverLetterToCaseWithDocuments(ccdCase, claim, coverLetter, authorisation);
     }

@@ -100,9 +100,9 @@ public class BulkPrintHandler {
                 .add(new PrintablePdf(
                     event.getCoverLetter(),
                     buildPaperDefenceCoverLetterFileBaseName(claim.getReferenceNumber())))
-//                .add(new PrintablePdf(
-//                    event.getOconForm(),
-//                    buildOconFormFileBaseName(claim.getReferenceNumber())))
+                .add(new PrintablePdf(
+                    event.getOconForm(),
+                    buildOconFormFileBaseName(claim.getReferenceNumber())))
                 .build(),
             PAPER_DEFENCE_TYPE);
     }

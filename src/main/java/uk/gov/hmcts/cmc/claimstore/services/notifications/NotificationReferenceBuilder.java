@@ -274,8 +274,8 @@ public class NotificationReferenceBuilder {
             // do not instantiate
         }
 
-        public static String notifyClaimantPaperResponseFormsSentToDefendant(String claimReferenceNumber, String party) {
-            return reference("paper-response-forms-sent-%s-%s", party, claimReferenceNumber);
+        public static String notifyClaimantPaperResponseFormsSentToDefendant(String referenceNumber, String party) {
+            return reference("paper-response-forms-sent-%s-%s", party, referenceNumber);
         }
     }
 

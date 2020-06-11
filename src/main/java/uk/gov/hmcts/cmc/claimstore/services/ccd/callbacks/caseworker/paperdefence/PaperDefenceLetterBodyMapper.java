@@ -51,40 +51,40 @@ public class PaperDefenceLetterBodyMapper {
             .build();
     }
 
-    public DocAssemblyTemplateBody oconFormIndividualWithDQsTemplateMapper(CCDCase ccdCase, LocalDate extendedResponseDeadline) {
-        DocAssemblyTemplateBody commonTemplate = oconFormCommonTemplateMapper(ccdCase, extendedResponseDeadline);
+    public DocAssemblyTemplateBody oconFormIndividualWithDQsMapper(CCDCase ccdCase, LocalDate extendedDeadline) {
+        DocAssemblyTemplateBody commonTemplate = oconFormCommonTemplateMapper(ccdCase, extendedDeadline);
         return commonTemplate.toBuilder().preferredCourt(ccdCase.getPreferredDQCourt()).build();
     }
 
-    public DocAssemblyTemplateBody oconFormIndividualWithoutDQsTemplateMapper(CCDCase ccdCase, LocalDate extendedResponseDeadline) {
-        return oconFormCommonTemplateMapper(ccdCase, extendedResponseDeadline);
+    public DocAssemblyTemplateBody oconFormIndividualWithoutDQsMapper(CCDCase ccdCase, LocalDate extendedDeadline) {
+        return oconFormCommonTemplateMapper(ccdCase, extendedDeadline);
     }
 
-    public DocAssemblyTemplateBody oconFormSoleTraderWithDQsTemplateMapper(CCDCase ccdCase, LocalDate extendedResponseDeadline) {
-        DocAssemblyTemplateBody commonTemplate = oconFormCommonTemplateMapper(ccdCase, extendedResponseDeadline);
+    public DocAssemblyTemplateBody oconFormSoleTraderWithDQsMapper(CCDCase ccdCase, LocalDate extendedDeadline) {
+        DocAssemblyTemplateBody commonTemplate = oconFormCommonTemplateMapper(ccdCase, extendedDeadline);
         return commonTemplate.toBuilder()
             .soleTradingTraderName(ccdCase.getRespondents().get(0).getValue().getPartyDetail().getBusinessName())
             .preferredCourt(ccdCase.getPreferredDQCourt())
             .build();
     }
 
-    public DocAssemblyTemplateBody oconFormSoleTraderWithoutDQsTemplateMapper(CCDCase ccdCase, LocalDate extendedResponseDeadline) {
-        DocAssemblyTemplateBody commonTemplate = oconFormCommonTemplateMapper(ccdCase, extendedResponseDeadline);
+    public DocAssemblyTemplateBody oconFormSoleTraderWithoutDQsMapper(CCDCase ccdCase, LocalDate extendedDeadline) {
+        DocAssemblyTemplateBody commonTemplate = oconFormCommonTemplateMapper(ccdCase, extendedDeadline);
         return commonTemplate.toBuilder()
             .soleTradingTraderName(ccdCase.getRespondents().get(0).getValue().getPartyDetail().getBusinessName())
             .build();
     }
 
-    public DocAssemblyTemplateBody oconFormOrganisationWithDQsTemplateMapper(CCDCase ccdCase, LocalDate extendedResponseDeadline) {
-        DocAssemblyTemplateBody commonTemplate = oconFormCommonTemplateMapper(ccdCase, extendedResponseDeadline);
+    public DocAssemblyTemplateBody oconFormOrganisationWithDQsMapper(CCDCase ccdCase, LocalDate extendedDeadline) {
+        DocAssemblyTemplateBody commonTemplate = oconFormCommonTemplateMapper(ccdCase, extendedDeadline);
         return commonTemplate.toBuilder()
             .organisationName(ccdCase.getRespondents().get(0).getValue().getClaimantProvidedPartyName())
             .preferredCourt(ccdCase.getPreferredDQCourt())
             .build();
     }
 
-    public DocAssemblyTemplateBody oconFormOrganisationWithoutDQsTemplateMapper(CCDCase ccdCase, LocalDate extendedResponseDeadline) {
-        DocAssemblyTemplateBody commonTemplate = oconFormCommonTemplateMapper(ccdCase, extendedResponseDeadline);
+    public DocAssemblyTemplateBody oconFormOrganisationWithoutDQsMapper(CCDCase ccdCase, LocalDate extendedDeadline) {
+        DocAssemblyTemplateBody commonTemplate = oconFormCommonTemplateMapper(ccdCase, extendedDeadline);
         return commonTemplate.toBuilder()
             .organisationName(ccdCase.getRespondents().get(0).getValue().getClaimantProvidedPartyName())
             .build();
