@@ -5,15 +5,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.List;
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @Builder
-public class Court {
-    private String name;
-    private String slug;
-    private Address address;
-    @JsonProperty("areas_of_law")
-    private List<AreaOfLaw> areasOfLaw;
+public class AreaOfLaw {
+    String name;
+    @JsonProperty("external_link")
+    String externalLink;
+    @JsonProperty("display_url")
+    String displayUrl;
+    @JsonProperty("external_link_desc")
+    String externalDescription;
 }
