@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.PaperResponseTests;
+package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.paperresponsetests;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,8 +46,8 @@ public class PaperResponseLetterServiceTest {
     private static final String OCON_COMPANY_DQS = "oconCompDqTemplateID";
     private static final String OCON_COMPANY = "oconCompTemplateID";
     private static final String OCON_SOLE_TRADER_DQS = "oconSoleDqTemplateID";
-    private static final String OCON_SOLE_TRADER= "oconSoleTemplateID";
-    private static final String COVER_LETTER= "coverLetter";
+    private static final String OCON_SOLE_TRADER = "oconSoleTemplateID";
+    private static final String COVER_LETTER = "coverLetter";
     protected static final String AUTHORISATION_TOKEN = "Bearer token";
     private static final LocalDate EXTENDED_RESPONSE_DEADLINE = LocalDate.now();
     private static final UserDetails CITIZEN_DETAILS = SampleUserDetails.builder()
@@ -67,10 +67,9 @@ public class PaperResponseLetterServiceTest {
     private Claim claim;
     private DocAssemblyTemplateBody docAssemblyTemplateBody;
 
-
     @BeforeEach
     void setUp() {
-        paperResponseLetterService = new PaperResponseLetterService (
+        paperResponseLetterService = new PaperResponseLetterService(
                 COVER_LETTER,
                 OCON_INDIVIDUAL_DQS,
                 OCON_INDIVIDUAL,
@@ -119,7 +118,7 @@ public class PaperResponseLetterServiceTest {
 
     @Nested
     @DisplayName("Tests whose claims have online DQs")
-    class withDQsTests {
+    class WithDQsTests {
 
         @BeforeEach
         void setUp() {
@@ -191,7 +190,7 @@ public class PaperResponseLetterServiceTest {
 
     @Nested
     @DisplayName("Tests whose claims do not have online DQs")
-    class withoutDQsTests {
+    class WithoutDQsTests {
 
         @BeforeEach
         void setUp() {

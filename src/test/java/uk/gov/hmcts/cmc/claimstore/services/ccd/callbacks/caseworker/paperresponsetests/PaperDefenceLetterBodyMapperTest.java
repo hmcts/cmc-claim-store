@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.PaperResponseTests;
+package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.paperresponsetests;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
@@ -68,11 +68,11 @@ public class PaperDefenceLetterBodyMapperTest {
         applicant = ccdCase.getApplicants().get(0).getValue();
         givenRespondent = respondent.getClaimantProvidedDetail();
         claimantAddress = applicant.getPartyDetail().getCorrespondenceAddress() == null
-                ? applicant.getPartyDetail().getPrimaryAddress() : applicant.getPartyDetail().getCorrespondenceAddress();
+                ? applicant.getPartyDetail().getPrimaryAddress() : applicant.getPartyDetail()
+                .getCorrespondenceAddress();
         defendantAddress = givenRespondent.getCorrespondenceAddress() == null
                 ? givenRespondent.getPrimaryAddress() : givenRespondent.getCorrespondenceAddress();
-
-       partyName = respondent.getPartyName() != null
+        partyName = respondent.getPartyName() != null
                 ? respondent.getPartyName() :
                 respondent.getClaimantProvidedPartyName();
     }
@@ -103,6 +103,7 @@ public class PaperDefenceLetterBodyMapperTest {
     @Nested
     @DisplayName("Tests for ocon form")
     class OconFormTests {
+
         @Test
         void shouldMapCommonTemplateBody() {
             DocAssemblyTemplateBody requestBody = paperDefenceLetterBodyMapper
@@ -121,6 +122,7 @@ public class PaperDefenceLetterBodyMapperTest {
                     .build();
             assertThat(requestBody).isEqualTo(expectedBody);
         }
+
         @Test
         void shouldMapTemplateBodyWhenIndividualWithDQs() {
             ccdCase.setPreferredDQCourt(HEARING_COURT);
@@ -142,6 +144,7 @@ public class PaperDefenceLetterBodyMapperTest {
 
             assertThat(requestBody).isEqualTo(expectedBody);
         }
+
         @Test
         void shouldMapTemplateBodyWhenCompanyWithDQs() {
             ccdCase.setPreferredDQCourt(HEARING_COURT);
@@ -164,6 +167,7 @@ public class PaperDefenceLetterBodyMapperTest {
 
             assertThat(requestBody).isEqualTo(expectedBody);
         }
+
         @Test
         void shouldMapTemplateBodyWhenCompanyWithoutDQs() {
             DocAssemblyTemplateBody requestBody = paperDefenceLetterBodyMapper
@@ -184,6 +188,7 @@ public class PaperDefenceLetterBodyMapperTest {
 
             assertThat(requestBody).isEqualTo(expectedBody);
         }
+
         @Test
         void shouldMapTemplateBodyWhenSoleTraderWithDQs() {
             ccdCase.setPreferredDQCourt(HEARING_COURT);
@@ -207,6 +212,7 @@ public class PaperDefenceLetterBodyMapperTest {
             assertThat(requestBody).isEqualTo(expectedBody);
 
         }
+
         @Test
         void shouldMapTemplateBodyWhenSoleTraderWithoutDQs() {
             DocAssemblyTemplateBody requestBody = paperDefenceLetterBodyMapper
@@ -226,7 +232,6 @@ public class PaperDefenceLetterBodyMapperTest {
                     .build();
 
             assertThat(requestBody).isEqualTo(expectedBody);
-
         }
     }
 }

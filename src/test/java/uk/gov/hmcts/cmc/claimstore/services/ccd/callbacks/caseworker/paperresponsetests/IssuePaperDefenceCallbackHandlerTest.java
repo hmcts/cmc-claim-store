@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.PaperResponseTests;
+package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.paperresponsetests;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -82,7 +82,6 @@ public class IssuePaperDefenceCallbackHandlerTest {
     private IssuePaperDefenceCallbackHandler issuePaperDefenceCallbackHandler;
     private CCDCase ccdCase;
     private CallbackParams callbackParams;
-
 
     @BeforeEach
     void setUp() {
@@ -181,7 +180,7 @@ public class IssuePaperDefenceCallbackHandlerTest {
                 .thenReturn(date);
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
-        when(documentPublishService.publishDocuments(ccdCase,claim,AUTHORISATION,LocalDate.now()))
+        when(documentPublishService.publishDocuments(ccdCase, claim, AUTHORISATION, LocalDate.now()))
                 .thenThrow(DocumentGenerationFailedException.class);
         AboutToStartOrSubmitCallbackResponse actualResponse =
                 (AboutToStartOrSubmitCallbackResponse) issuePaperDefenceCallbackHandler.handle(callbackParams);
