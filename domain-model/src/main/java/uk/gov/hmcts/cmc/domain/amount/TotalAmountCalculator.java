@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.amount;
 
+import org.apache.commons.lang3.time.DateUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Interest;
@@ -42,7 +43,7 @@ public class TotalAmountCalculator {
     }
 
     public static Optional<BigDecimal> amountWithInterestUntilIssueDate(Claim claim) {
-        return Optional.ofNullable(calculateTotalAmount(claim, claim.getIssuedOn(), false));
+        return claim.getIssuedOn().map(issuedOn -> calculateTotalAmount(claim, issuedOn, false));
     }
 
     public static Optional<BigDecimal> totalTillToday(Claim claim) {
@@ -53,7 +54,7 @@ public class TotalAmountCalculator {
     }
 
     public static Optional<BigDecimal> totalTillDateOfIssue(Claim claim) {
-        return Optional.ofNullable(calculateTotalAmount(claim, claim.getIssuedOn(), true));
+        return claim.getIssuedOn().map(issuedOn -> calculateTotalAmount(claim, issuedOn, true));
     }
 
     public static Optional<BigDecimal> calculateInterestForClaim(Claim claim, LocalDate localDate) {
@@ -116,7 +117,9 @@ public class TotalAmountCalculator {
         Amount amount = claim.getClaimData().getAmount();
         if (amount instanceof AmountBreakDown) {
             BigDecimal claimAmount = ((AmountBreakDown) amount).getTotalAmount();
-            return calculateBreakdownInterest(interest, interestDate, claimAmount, claim.getIssuedOn(), toDate);
+            return claim.getIssuedOn()
+                .map(issuedOn -> calculateBreakdownInterest(interest, interestDate, claimAmount, issuedOn, toDate))
+                .orElseThrow(() -> new IllegalStateException("Unable to calculate breakdown interest"));
         }
 
         return ZERO;
@@ -176,16 +179,17 @@ public class TotalAmountCalculator {
         if (amount instanceof AmountBreakDown) {
             BigDecimal claimAmount = ((AmountBreakDown) amount).getTotalAmount();
             BigDecimal rate = data.getInterest().getRate();
-            LocalDate fromDate = getFromDate(claim);
-            return calculateInterest(claimAmount, rate, fromDate, toDate);
+            Optional<LocalDate> fromDateOpt = getFromDate(claim);
+            return fromDateOpt.map(fromDate -> calculateInterest(claimAmount, rate, fromDate, toDate))
+                .orElseThrow(() -> new IllegalStateException("Unable to calculate fixed rate interest"));
         }
 
         return ZERO;
     }
 
-    private static LocalDate getFromDate(Claim claim) {
+    private static Optional<LocalDate> getFromDate(Claim claim) {
         return claim.getClaimData().getInterest().getInterestDate().isCustom()
-            ? claim.getClaimData().getInterest().getInterestDate().getDate()
+            ? Optional.ofNullable(claim.getClaimData().getInterest().getInterestDate().getDate())
             : claim.getIssuedOn();
     }
 
@@ -193,11 +197,8 @@ public class TotalAmountCalculator {
         if (claim.getCountyCourtJudgmentRequestedAt() != null) {
             return Optional.of(claim.getCountyCourtJudgmentRequestedAt().toLocalDate());
         }
-        LocalDate issuedOn = claim.getIssuedOn();
-        if (issuedOn == null) {
-            return Optional.empty();
-        }
-        return Optional.of(LocalDate.now().isAfter(claim.getIssuedOn()) ? LocalDate.now() : claim.getIssuedOn());
+        return claim.getIssuedOn()
+            .map(issuedOn -> LocalDate.now().isAfter(issuedOn) ? LocalDate.now() : issuedOn);
     }
 
     private static BigDecimal daysBetween(LocalDate startDate, LocalDate endDate) {

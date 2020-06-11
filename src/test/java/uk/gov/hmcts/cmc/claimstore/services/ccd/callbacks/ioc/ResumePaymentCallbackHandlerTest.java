@@ -217,7 +217,7 @@ public class ResumePaymentCallbackHandlerTest {
         verify(caseMapper).to(claimArgumentCaptor.capture());
 
         Claim toBeSaved = claimArgumentCaptor.getValue();
-        assertThat(toBeSaved.getIssuedOn()).isEqualTo(date);
+        assertThat(toBeSaved.getIssuedOn()).contains(date);
         assertThat(toBeSaved.getServiceDate()).isEqualTo(date.plusDays(5));
         assertThat(toBeSaved.getResponseDeadline()).isEqualTo(date);
 

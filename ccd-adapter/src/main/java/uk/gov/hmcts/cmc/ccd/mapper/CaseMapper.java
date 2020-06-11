@@ -51,6 +51,9 @@ public class CaseMapper {
 
         claimMapper.to(claim, builder);
 
+        claim.getIssuedOn()
+            .ifPresent(builder::issuedOn);
+
         claim.getClaimDocumentCollection()
             .ifPresent(claimDocumentCollection -> claimDocumentCollectionMapper.to(claimDocumentCollection, builder));
 
@@ -76,7 +79,6 @@ public class CaseMapper {
             .previousServiceCaseReference(claim.getReferenceNumber())
             .submitterId(claim.getSubmitterId())
             .submitterEmail(claim.getSubmitterEmail())
-            .issuedOn(claim.getIssuedOn())
             .currentInterestAmount(
                 claim.getTotalInterestTillDateOfIssue()
                     .map(interest -> String.valueOf(MonetaryConversions.poundsToPennies(interest)))

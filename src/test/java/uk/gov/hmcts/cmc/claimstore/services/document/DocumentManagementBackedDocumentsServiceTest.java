@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
+import uk.gov.hmcts.cmc.claimstore.documents.DraftClaimReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.ReviewOrderService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
@@ -64,6 +65,8 @@ public class DocumentManagementBackedDocumentsServiceTest {
     @Mock
     private ClaimIssueReceiptService claimIssueReceiptService;
     @Mock
+    private DraftClaimReceiptService draftClaimReceiptService;
+    @Mock
     private DefendantResponseReceiptService defendantResponseReceiptService;
     @Mock
     private SettlementAgreementCopyService settlementAgreementCopyService;
@@ -80,6 +83,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
             claimService,
             documentManagementService,
             sealedClaimPdfService,
+            draftClaimReceiptService,
             claimIssueReceiptService,
             defendantResponseReceiptService,
             settlementAgreementCopyService,

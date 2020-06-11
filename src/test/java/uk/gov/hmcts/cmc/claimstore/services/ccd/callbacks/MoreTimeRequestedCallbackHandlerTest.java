@@ -127,7 +127,8 @@ class MoreTimeRequestedCallbackHandlerTest {
         );
         claim = SampleClaim.getDefault();
         claim = Claim.builder()
-            .claimData(SampleClaimData.builder().build())
+            .issuedOn(LocalDate.now())
+            .claimData(SampleClaimData.builder().withHelpWithFeesNumber("HWF012345").build())
             .defendantEmail("email@email.com")
             .defendantId("id")
             .submitterEmail("email@email.com")
@@ -178,7 +179,7 @@ class MoreTimeRequestedCallbackHandlerTest {
                 .request(callbackRequest)
                 .build();
 
-            when(responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn()))
+            when(responseDeadlineCalculator.calculatePostponedResponseDeadline(any(LocalDate.class)))
                 .thenReturn(deadline);
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
 
@@ -348,10 +349,11 @@ class MoreTimeRequestedCallbackHandlerTest {
                 .request(callbackRequest)
                 .build();
 
+            LocalDate now = LocalDate.now();
             claim = claim.toBuilder()
                 .referenceNumber("reference")
-                .issuedOn(LocalDate.now())
-                .responseDeadline(LocalDate.now().plusDays(28))
+                .issuedOn(now)
+                .responseDeadline(now.plusDays(28))
                 .claimData(SampleClaimData.submittedByClaimant())
                 .defendantEmail(null).defendantId(null).build();
 
@@ -364,8 +366,7 @@ class MoreTimeRequestedCallbackHandlerTest {
             when(notificationsProperties.getTemplates()).thenReturn(templates);
             when(templates.getEmail()).thenReturn(emailTemplates);
             when(notificationsProperties.getFrontendBaseUrl()).thenReturn(FRONTEND_BASE_URL);
-            when(responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn()))
-                .thenReturn(deadline);
+            when(responseDeadlineCalculator.calculatePostponedResponseDeadline(now)).thenReturn(deadline);
         }
 
         @Test

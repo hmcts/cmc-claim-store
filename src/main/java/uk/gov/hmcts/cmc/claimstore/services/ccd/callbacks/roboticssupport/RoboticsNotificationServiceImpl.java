@@ -102,7 +102,8 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
         return resendRPA(referenceNumber, user.getAuthorisation(), Claim::isMoreTimeRequested,
             claim -> moreTimeRequestedNotificationService.notifyRobotics(new MoreTimeRequestedEvent(
                 claim,
-                responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn()),
+                responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn()
+                    .orElseThrow(() -> new IllegalStateException("Missing issuedOn date"))),
                 claim.getDefendantEmail())),
             "Failed to send more time request to RPA");
     }

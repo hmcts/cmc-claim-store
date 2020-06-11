@@ -147,7 +147,7 @@ public class CreateCitizenClaimCallbackHandlerTest {
         verify(caseMapper).to(claimArgumentCaptor.capture());
 
         Claim toBeSaved = claimArgumentCaptor.getValue();
-        assertThat(toBeSaved.getIssuedOn()).isEqualTo(ISSUE_DATE);
+        assertThat(toBeSaved.getIssuedOn()).contains(ISSUE_DATE);
         assertThat(toBeSaved.getServiceDate()).isEqualTo(ISSUE_DATE.plusDays(5));
         assertThat(toBeSaved.getReferenceNumber()).isEqualTo(REFERENCE_NO);
         assertThat(toBeSaved.getResponseDeadline()).isEqualTo(RESPONSE_DEADLINE);

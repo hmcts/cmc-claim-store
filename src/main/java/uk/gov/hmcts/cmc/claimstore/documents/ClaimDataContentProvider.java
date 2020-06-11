@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -56,13 +57,14 @@ public class ClaimDataContentProvider {
 
         InterestContent interestContent = null;
 
+        LocalDate issuedOn = claim.getIssuedOn().orElseThrow(() -> new IllegalStateException("Missing issuedOn date"));
         if (!Objects.equals(claim.getClaimData().getInterest().getType(), Interest.InterestType.NO_INTEREST)) {
             interestContent = interestContentProvider.createContent(
                 claim.getClaimData().getInterest(),
                 claim.getClaimData().getInterest().getInterestDate(),
                 amountBreakDown.getTotalAmount(),
-                claim.getIssuedOn(),
-                claim.getIssuedOn()
+                issuedOn,
+                issuedOn
             );
 
             totalAmountComponents.add(interestContent.getAmountRealValue());
@@ -83,7 +85,7 @@ public class ClaimDataContentProvider {
         return new ClaimContent(
             claim.getReferenceNumber(),
             formatDateTime(claim.getCreatedAt()),
-            formatDate(claim.getIssuedOn()),
+            formatDate(issuedOn),
             split(claim.getClaimData().getReason()),
             formatMoney(amountBreakDown.getTotalAmount()),
             formatMoney(claim.getClaimData().getFeesPaidInPounds().orElse(ZERO)),

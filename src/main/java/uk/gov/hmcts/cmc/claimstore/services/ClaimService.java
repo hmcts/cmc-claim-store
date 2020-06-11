@@ -319,7 +319,8 @@ public class ClaimService {
     public Claim requestMoreTimeForResponse(String externalId, String authorisation) {
         Claim claim = getClaimByExternalId(externalId, authorisation);
 
-        LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
+        LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn()
+            .orElseThrow(() -> new IllegalStateException("Missing issuedOn date")));
 
         this.moreTimeRequestRule.assertMoreTimeCanBeRequested(claim);
 

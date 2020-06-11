@@ -508,7 +508,7 @@ public class TotalAmountCalculatorTest {
     @Test
     public void calculateInterestForClaimShouldStopAtProvidedDate() {
         Claim claim = claimWithCCJ();
-        assertThat(TotalAmountCalculator.calculateInterestForClaim(claim, claim.getIssuedOn()))
+        assertThat(TotalAmountCalculator.calculateInterestForClaim(claim, claim.getIssuedOn().orElseThrow()))
             .isEqualTo(Optional.of(format(new BigDecimal("0.02"))));
     }
 

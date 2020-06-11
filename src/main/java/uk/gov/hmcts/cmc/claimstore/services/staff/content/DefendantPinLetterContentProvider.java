@@ -9,11 +9,8 @@ import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.time.LocalDate;
 import java.util.Map;
-import java.util.Objects;
 
 import static java.math.BigDecimal.ZERO;
 import static java.util.Objects.requireNonNull;
@@ -43,55 +40,33 @@ public class DefendantPinLetterContentProvider {
         requireNonNull(claim);
         requireNonBlank(defendantPin);
 
-        List<BigDecimal> totalAmountComponents = new ArrayList<>();
-        totalAmountComponents.add(((AmountBreakDown) claim.getClaimData()
-            .getAmount())
-            .getTotalAmount());
-        totalAmountComponents.add(claim.getClaimData()
-            .getFeesPaidInPounds().orElse(ZERO));
+        BigDecimal totalAmount = ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount();
+        BigDecimal fees = claim.getClaimData().getFeesPaidInPounds().orElse(ZERO);
+        BigDecimal interest = ZERO;
 
-        if (!claim.getClaimData()
-            .getInterest()
-            .getType()
-            .equals(Interest.InterestType.NO_INTEREST)) {
+        if (!Interest.InterestType.NO_INTEREST.equals(claim.getClaimData().getInterest().getType())) {
+            LocalDate issuedOn = claim.getIssuedOn()
+                .orElseThrow(() -> new IllegalStateException("Missing issuedOn date"));
             InterestContent interestContent = interestContentProvider.createContent(
-                claim.getClaimData()
-                    .getInterest(),
-                claim.getClaimData()
-                    .getInterest()
-                    .getInterestDate(),
-                ((AmountBreakDown) claim.getClaimData()
-                    .getAmount())
-                    .getTotalAmount(),
-                claim.getIssuedOn(),
-                claim.getIssuedOn()
+                claim.getClaimData().getInterest(),
+                claim.getClaimData().getInterest().getInterestDate(),
+                ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount(),
+                issuedOn,
+                issuedOn
             );
-            totalAmountComponents.add(interestContent.getAmountRealValue());
+            interest = interestContent.getAmountRealValue();
         }
 
-        Map<String, Object> content = new HashMap<>();
-        content.put("claimantFullName", getPartyNameFor(claim.getClaimData()
-            .getClaimant())
+        return Map.of(
+            "claimantFullName", getPartyNameFor(claim.getClaimData().getClaimant()),
+            "defendantFullName", claim.getClaimData().getDefendant().getName(),
+            "claimTotalAmount", formatMoney(totalAmount.add(fees).add(interest)),
+            "respondToClaimUrl", notificationsProperties.getRespondToClaimUrl(),
+            "claimReferenceNumber", claim.getReferenceNumber(),
+            "defendantPin", defendantPin,
+            "responseDeadline", formatDate(claim.getResponseDeadline()),
+            "defendantAddress", claim.getClaimData().getDefendant().getAddress(),
+            "hmctsEmail", staffEmailProperties.getRecipient()
         );
-        content.put("defendantFullName", claim.getClaimData()
-            .getDefendant()
-            .getName()
-        );
-        content.put("claimTotalAmount", formatMoney(
-            totalAmountComponents.stream()
-                .filter(Objects::nonNull)
-                .reduce(ZERO, BigDecimal::add))
-        );
-        content.put("respondToClaimUrl", notificationsProperties.getRespondToClaimUrl());
-        content.put("claimReferenceNumber", claim.getReferenceNumber());
-        content.put("defendantPin", defendantPin);
-        content.put("responseDeadline", formatDate(claim.getResponseDeadline()));
-        content.put("defendantAddress", claim.getClaimData()
-            .getDefendant()
-            .getAddress()
-        );
-        content.put("hmctsEmail", staffEmailProperties.getRecipient());
-
-        return content;
     }
 }
