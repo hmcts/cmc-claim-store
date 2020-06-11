@@ -226,6 +226,9 @@ public class Claim {
     }
 
     public Optional<BigDecimal> getTotalInterestTillDateOfIssue() {
+        if (issuedOn == null) {
+            return Optional.empty();
+        }
         return TotalAmountCalculator.calculateInterestForClaim(this, issuedOn);
     }
 

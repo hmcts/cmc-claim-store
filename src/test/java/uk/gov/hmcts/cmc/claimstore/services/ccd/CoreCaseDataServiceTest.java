@@ -204,6 +204,43 @@ public class CoreCaseDataServiceTest {
     }
 
     @Test
+    public void createNewHelpWithFeesCaseShouldReturnClaim() {
+        Claim providedClaim = SampleClaim.getDefault().toBuilder()
+            .issuedOn(null).build();
+        Claim expectedClaim = SampleClaim.claim(providedClaim.getClaimData(), null);
+
+        when(ccdCreateCaseService.startCreate(
+            eq(AUTHORISATION),
+            any(EventRequestData.class),
+            eq(false)
+        ))
+            .thenReturn(StartEventResponse.builder()
+                .caseDetails(CaseDetails.builder().build())
+                .eventId("eventId")
+                .token("token")
+                .build());
+
+        when(ccdCreateCaseService.submitCreate(
+            eq(AUTHORISATION),
+            any(EventRequestData.class),
+            any(CaseDataContent.class),
+            eq(false)
+        ))
+            .thenReturn(CaseDetails.builder()
+                .id(SampleClaim.CLAIM_ID)
+                .data(new HashMap<>())
+                .build());
+
+        when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(expectedClaim);
+
+        Claim returnedClaim = service.createNewHelpWithFeesCase(USER, providedClaim);
+
+        assertEquals(expectedClaim, returnedClaim);
+
+    }
+
+    @Test
     public void submitRepresentedClaimShouldReturnLegalRepClaim() {
         Claim providedLegalRepClaim = SampleClaim.getDefaultForLegal();
         Claim expectedLegalRepClaim = SampleClaim.claim(providedLegalRepClaim.getClaimData(), "012LR345");

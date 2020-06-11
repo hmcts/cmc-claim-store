@@ -46,6 +46,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -166,6 +167,22 @@ class MoreTimeRequestedCallbackHandlerTest {
                 .eventId(CaseEvent.RESPONSE_MORE_TIME.getValue())
                 .caseDetails(caseDetails)
                 .build();
+    }
+
+    @Test
+    void aboutToStartShouldThrowExceptionWhenMissingIssuedOnDate() {
+        claim = claim.toBuilder().issuedOn(null).build();
+        callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_START)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
+            .request(callbackRequest)
+            .build();
+
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+
+        assertThatThrownBy(() -> moreTimeRequestedCallbackHandler.handle(callbackParams))
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessage("Missing issuedOn date");
     }
 
     @Nested

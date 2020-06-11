@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
@@ -229,5 +230,14 @@ public class CaseMapperTest {
 
         assertEquals(claim.getProceedOfflineReason().get().name(), ccdCase.getProceedOnPaperReason().name());
         assertEquals(claim.getProceedOfflineOtherReasonDescription(), ccdCase.getProceedOnPaperOtherReason());
+    }
+
+    @Test
+    public void shouldMapIssuedDateWhenMissing() {
+        Claim claim = SampleClaim.getDefault().toBuilder()
+            .issuedOn(null).build();
+        CCDCase ccdCase = ccdCaseMapper.to(claim);
+
+        assertNull(ccdCase.getIssuedOn());
     }
 }

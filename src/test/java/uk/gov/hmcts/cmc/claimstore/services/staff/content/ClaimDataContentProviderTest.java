@@ -116,6 +116,14 @@ public class ClaimDataContentProviderTest {
         assertThat(claimContent.getStatementOfTruth().getSignerRole()).containsSequence("Director");
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void shouldThrowExceptionWhenIssuedDateMissing() {
+        Claim claim = SampleClaim.builder()
+            .withIssuedOn(null)
+            .build();
+        provider.createContent(claim);
+    }
+
     private void testReason(String inputReason, String... expectations) {
         Claim claim = SampleClaim.builder()
             .withClaimData(SampleClaimData.builder().withReason(inputReason).build())

@@ -29,7 +29,7 @@ public class DefendantPinLetterContentProviderTest {
     private static final String RESPOND_TO_CLAIM_URL = "https://moneyclaim.hmcts.net/first-contact/start";
     private static final String STAFF_NOTIFICATIONS_RECIPIENT = "email@domain.gov";
 
-    private final Claim claim = SampleClaim.getDefault();
+    private Claim claim;
 
     @Mock
     private NotificationsProperties notificationsProperties;
@@ -41,6 +41,7 @@ public class DefendantPinLetterContentProviderTest {
 
     @Before
     public void beforeEachTest() {
+        claim = SampleClaim.getDefault();
         provider = new DefendantPinLetterContentProvider(
             notificationsProperties,
             staffEmailProperties,
@@ -65,6 +66,12 @@ public class DefendantPinLetterContentProviderTest {
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowIllegalArgumentWhenGivenEmptyDefendantPin() {
         provider.createContent(claim, "");
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldThrowExceptionWhenIssuedOnDateIsMissing() {
+        claim = claim.toBuilder().issuedOn(null).build();
+        provider.createContent(claim, DEFENDANT_PIN);
     }
 
     @Test

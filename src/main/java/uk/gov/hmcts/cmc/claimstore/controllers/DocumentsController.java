@@ -45,7 +45,6 @@ public class DocumentsController {
         @PathVariable("externalId") @NotBlank String externalId,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        System.out.println("WIBBLE!");
         ClaimDocumentType claimDocumentType = ClaimDocumentType.fromValue(documentType);
 
         logger.info("Received request to create/download pdf of type " + claimDocumentType.name());
