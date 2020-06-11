@@ -90,7 +90,7 @@ public class PaperDefenceLetterBodyMapper {
             .build();
     }
 
-    private DocAssemblyTemplateBody oconFormCommonTemplateMapper(CCDCase ccdCase, LocalDate extendedResponseDeadline) {
+    public DocAssemblyTemplateBody oconFormCommonTemplateMapper(CCDCase ccdCase, LocalDate extendedResponseDeadline) {
         CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
         CCDApplicant applicant = ccdCase.getApplicants().get(0).getValue();
         CCDParty givenRespondent = respondent.getClaimantProvidedDetail();
