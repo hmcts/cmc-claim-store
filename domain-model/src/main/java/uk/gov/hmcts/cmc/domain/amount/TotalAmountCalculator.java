@@ -92,7 +92,7 @@ public class TotalAmountCalculator {
         if (interest.getType() == Interest.InterestType.BREAKDOWN) {
             return Optional.ofNullable(calculateBreakdownInterest(claim, toDate));
         } else if (interest.getType() != Interest.InterestType.NO_INTEREST) {
-            return Optional.ofNullable(calculateFixedRateInterest(claim, toDate));
+            return calculateFixedRateInterest(claim, toDate);
         }
 
         return Optional.of(ZERO);
@@ -171,7 +171,7 @@ public class TotalAmountCalculator {
         return null;
     }
 
-    private static BigDecimal calculateFixedRateInterest(Claim claim, LocalDate toDate) {
+    private static Optional<BigDecimal> calculateFixedRateInterest(Claim claim, LocalDate toDate) {
         ClaimData data = claim.getClaimData();
         Amount amount = data.getAmount();
 
@@ -179,11 +179,10 @@ public class TotalAmountCalculator {
             BigDecimal claimAmount = ((AmountBreakDown) amount).getTotalAmount();
             BigDecimal rate = data.getInterest().getRate();
             Optional<LocalDate> fromDateOpt = getFromDate(claim);
-            return fromDateOpt.map(fromDate -> calculateInterest(claimAmount, rate, fromDate, toDate))
-                .orElseThrow(() -> new IllegalStateException("Unable to calculate fixed rate interest"));
+            return fromDateOpt.map(fromDate -> calculateInterest(claimAmount, rate, fromDate, toDate));
         }
 
-        return ZERO;
+        return Optional.of(ZERO);
     }
 
     private static Optional<LocalDate> getFromDate(Claim claim) {

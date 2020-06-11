@@ -666,9 +666,6 @@ public class ClaimServiceTest {
             .withExternalId(externalId)
             .withHelpWithFeesNumber("HWF01234").build();
 
-        when(userService.getUserDetails(AUTHORISATION)).thenReturn(VALID_CLAIMANT);
-        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any())).thenReturn(Optional.empty());
-
         claimService.saveHelpWithFeesClaim(USER_ID, claimData, AUTHORISATION, singletonList(ADMISSIONS.getValue()));
 
         verify(caseRepository).saveHelpWithFeesClaim(any(), any());
@@ -679,7 +676,6 @@ public class ClaimServiceTest {
     public void saveHelpWithFeesClaimShouldThrowConflictExceptionIfAlreadyExists() {
         ClaimData claimData = SampleClaimData.builder().withHelpWithFeesNumber("HWF01234").build();
 
-        when(userService.getUserDetails(AUTHORISATION)).thenReturn(VALID_CLAIMANT);
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
             .thenReturn(Optional.of(mock(Claim.class)));
 

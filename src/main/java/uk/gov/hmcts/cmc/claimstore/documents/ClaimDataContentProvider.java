@@ -57,8 +57,10 @@ public class ClaimDataContentProvider {
 
         InterestContent interestContent = null;
 
-        LocalDate issuedOn = claim.getIssuedOn().orElseThrow(() -> new IllegalStateException("Missing issuedOn date"));
-        if (!Objects.equals(claim.getClaimData().getInterest().getType(), Interest.InterestType.NO_INTEREST)) {
+        LocalDate issuedOn = claim.getIssuedOn().orElse(null);
+        if (!Objects.equals(claim.getClaimData().getInterest().getType(), Interest.InterestType.NO_INTEREST)
+            && issuedOn != null) {
+
             interestContent = interestContentProvider.createContent(
                 claim.getClaimData().getInterest(),
                 claim.getClaimData().getInterest().getInterestDate(),
