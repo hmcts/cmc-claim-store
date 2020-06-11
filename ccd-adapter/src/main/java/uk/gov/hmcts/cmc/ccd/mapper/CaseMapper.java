@@ -132,6 +132,10 @@ public class CaseMapper {
             builder.channel(ChannelType.valueOf(ccdCase.getChannel().name()));
         }
 
+        if (ccdCase.getPreferredDQCourt() != null) {
+            builder.preferredDQCourt(ccdCase.getPreferredDQCourt());
+        }
+
         return builder.build();
     }
 }
