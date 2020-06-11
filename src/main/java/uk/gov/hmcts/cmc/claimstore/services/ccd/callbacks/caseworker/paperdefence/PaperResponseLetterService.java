@@ -91,7 +91,7 @@ public class PaperResponseLetterService {
 
     private PaperResponseLetter formForCorrectDefendantType(CCDCase ccdCase, Claim claim, LocalDate extendedDeadline) {
         PaperResponseLetter.PaperResponseLetterBuilder paperResponseLetter = PaperResponseLetter.builder();
-        CCDPartyType partyType = ccdCase.getRespondents().get(0).getValue().getPartyDetail().getType();
+        CCDPartyType partyType = ccdCase.getRespondents().get(0).getValue().getClaimantProvidedDetail().getType();
         switch (partyType) {
             case INDIVIDUAL:
                 if (FeaturesUtils.isOnlineDQ(claim)) {

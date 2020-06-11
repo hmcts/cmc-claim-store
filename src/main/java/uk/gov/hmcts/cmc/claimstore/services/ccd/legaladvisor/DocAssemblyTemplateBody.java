@@ -57,8 +57,12 @@ public class DocAssemblyTemplateBody implements FormPayload {
 
     private boolean hasSecondOrderDirections;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate responseDeadline;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate updatedResponseDeadline;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
