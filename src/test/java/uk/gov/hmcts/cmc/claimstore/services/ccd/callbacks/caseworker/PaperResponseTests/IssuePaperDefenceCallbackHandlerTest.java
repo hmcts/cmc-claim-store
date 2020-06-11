@@ -36,7 +36,6 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
-import static java.util.Map.entry;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -141,12 +140,8 @@ public class IssuePaperDefenceCallbackHandlerTest {
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
 
-        AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
-                issuePaperDefenceCallbackHandler.handle(callbackParams);
-        //empty map...
-        assertThat(response.getData()).contains(entry("caseDocuments", ImmutableList.of(CLAIM_DOCUMENT, DOCUMENT)));
-        //fit case/claim details?
-        verify(documentPublishService).publishDocuments(any(CCDCase.class), any(Claim.class), eq(AUTHORISATION), eq(date));
+        verify(documentPublishService).publishDocuments(any(CCDCase.class), any(Claim.class), eq(AUTHORISATION),
+                eq(date));
         verify(issuePaperResponseNotificationService).notifyClaimant(any(Claim.class));
     }
 

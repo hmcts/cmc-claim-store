@@ -11,8 +11,6 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplate
 import java.time.Clock;
 import java.time.LocalDate;
 
-import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
-
 @Component
 public class PaperDefenceLetterBodyMapper {
     private final Clock clock;
@@ -32,7 +30,7 @@ public class PaperDefenceLetterBodyMapper {
             ? givenRespondent.getPrimaryAddress() : givenRespondent.getCorrespondenceAddress();
         CCDApplicant applicant = ccdCase.getApplicants().get(0).getValue();
 
-        LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
+        LocalDate currentDate = LocalDate.now();
 
         // TODO how to create party name either based on title + first name + last name or just party name
         String partyName = respondent.getPartyName() != null
@@ -97,7 +95,6 @@ public class PaperDefenceLetterBodyMapper {
         CCDParty givenRespondent = respondent.getClaimantProvidedDetail();
         CCDAddress claimantAddress = applicant.getPartyDetail().getCorrespondenceAddress() == null
             ? applicant.getPartyDetail().getPrimaryAddress() : applicant.getPartyDetail().getCorrespondenceAddress();
-        //does this work if the defendant is a company
         CCDAddress defendantAddress = givenRespondent.getCorrespondenceAddress() == null
             ? givenRespondent.getPrimaryAddress() : givenRespondent.getCorrespondenceAddress();
 
