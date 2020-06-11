@@ -28,18 +28,21 @@ public class CaseDetailsConverter {
     private final JsonMapper jsonMapper;
     private final int intentionToProceedDeadline;
     private final WorkingDayIndicator workingDayIndicator;
+    private final boolean ctscEnabled;
 
     public CaseDetailsConverter(
         CaseMapper caseMapper,
         JsonMapper jsonMapper,
         WorkingDayIndicator workingDayIndicator,
-        @Value("${intention.to.proceed.deadline:33}") int intentionToProceedDeadline
+        @Value("${intention.to.proceed.deadline:33}") int intentionToProceedDeadline,
+        @Value("${feature_toggles.ctsc_enabled}") boolean ctscEnabled
     ) {
 
         this.caseMapper = caseMapper;
         this.jsonMapper = jsonMapper;
         this.intentionToProceedDeadline = intentionToProceedDeadline;
         this.workingDayIndicator = workingDayIndicator;
+        this.ctscEnabled = ctscEnabled;
     }
 
     public Claim extractClaim(CaseDetails caseDetails) {
@@ -60,7 +63,7 @@ public class CaseDetailsConverter {
     }
 
     private Response updateResponseMethod(Response response, CCDCase ccdCase) {
-        if (response == null || response.getResponseMethod().isPresent()) {
+        if (!ctscEnabled || response == null || response.getResponseMethod().isPresent()) {
             return response;
         }
 

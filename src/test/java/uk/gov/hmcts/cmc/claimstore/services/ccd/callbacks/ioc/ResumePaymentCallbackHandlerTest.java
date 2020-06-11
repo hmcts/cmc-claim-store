@@ -81,7 +81,7 @@ public class ResumePaymentCallbackHandlerTest {
         when(caseMapper.to(any(Claim.class))).thenReturn(ccdCase);
         JsonMapper jsonMapper = new JsonMapper(new JacksonConfiguration().objectMapper());
         caseDetailsConverter
-            = new CaseDetailsConverter(caseMapper, jsonMapper, workingDayIndicator, 12);
+            = new CaseDetailsConverter(caseMapper, jsonMapper, workingDayIndicator, 12, false);
         handler = new ResumePaymentCallbackHandler(
             paymentsService,
             caseDetailsConverter,
