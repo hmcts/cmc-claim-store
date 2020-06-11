@@ -23,7 +23,9 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -38,7 +40,16 @@ public class DocumentPublishServiceTest {
     private static final String DOC_URL = "http://success.test";
     private static final String DOC_URL_BINARY = "http://success.test/binary";
     private static final String DOC_NAME = "doc-name";
-    private static final CCDDocument CCD_DOCUMENT = CCDDocument
+    private static Map<String, Object> VALUES = Collections.emptyMap();
+    private static final Document COVER_DOCUMENT = new Document(DOC_URL, VALUES);
+    private static final Document OCON_DOCUMENT = new Document(DOC_URL, VALUES);
+    private static final CCDDocument COVER_LETTER = CCDDocument
+            .builder()
+            .documentUrl(DOC_URL)
+            .documentBinaryUrl(DOC_URL_BINARY)
+            .documentFileName(DOC_NAME)
+            .build();
+    private static final CCDDocument OCON_FORM = CCDDocument
             .builder()
             .documentUrl(DOC_URL)
             .documentBinaryUrl(DOC_URL_BINARY)
@@ -47,7 +58,7 @@ public class DocumentPublishServiceTest {
     private static final CCDCollectionElement<CCDClaimDocument> CLAIM_DOCUMENT =
             CCDCollectionElement.<CCDClaimDocument>builder()
                     .value(CCDClaimDocument.builder()
-                            .documentLink(CCD_DOCUMENT)
+                            .documentLink(COVER_LETTER)
                             .createdDatetime(DATE)
                             .documentType(CCDClaimDocumentType.GENERAL_LETTER)
                             .build())
@@ -99,12 +110,15 @@ public class DocumentPublishServiceTest {
         CCDCase updatedCCDCase = documentPublishService.publishDocuments(ccdCase,
                 claim, AUTHORISATION, DATE.toLocalDate());
         when(paperResponseLetterService.createCoverLetter(ccdCase, AUTHORISATION, DATE.toLocalDate()))
-                .thenReturn(CCD_DOCUMENT);
-        //needs document?
-       // when(printableDocumentService.process(CCD_DOCUMENT, AUTHORISATION)).thenReturn();
+                .thenReturn(COVER_LETTER);
+        when(paperResponseLetterService.createOconForm(ccdCase, claim, AUTHORISATION, DATE.toLocalDate()))
+                .thenReturn(OCON_FORM);
+        when(printableDocumentService.process(COVER_LETTER, AUTHORISATION)).thenReturn(COVER_DOCUMENT);
+        when(printableDocumentService.process(OCON_FORM, AUTHORISATION)).thenReturn(OCON_DOCUMENT);
 
         verify(paperResponseLetterService).createCoverLetter(eq(ccdCase), eq(AUTHORISATION), eq(DATE.toLocalDate()));
-        verify(printableDocumentService).process(CCD_DOCUMENT, AUTHORISATION);
+        verify(printableDocumentService).process(COVER_LETTER, AUTHORISATION);
+        verify(printableDocumentService).process(OCON_FORM, AUTHORISATION);
         verify(eventProducer).createPaperDefenceEvent(claim, any(Document.class), any(Document.class));
         assertThat(updatedCCDCase.getCaseDocuments()).contains(CLAIM_DOCUMENT);
     }

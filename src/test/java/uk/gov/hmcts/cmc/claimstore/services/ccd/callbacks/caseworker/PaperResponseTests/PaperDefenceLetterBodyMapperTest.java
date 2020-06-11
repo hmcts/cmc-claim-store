@@ -15,8 +15,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
-import uk.gov.hmcts.cmc.claimstore.services.DirectionOrderService;
-import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.paperdefence.PaperDefenceLetterBodyMapper;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
 
@@ -25,24 +23,26 @@ import java.time.LocalDate;
 import java.util.Collections;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 
 @ExtendWith(MockitoExtension.class)
 public class PaperDefenceLetterBodyMapperTest {
     protected static final String AUTHORISATION_TOKEN = "Bearer token";
     private static final String CASEWORKER = "Caseworker name";
     private static final LocalDate EXTENDED_RESPONSE_DEADLINE = LocalDate.now();
+    private static final String HEARING_COURT = "Shoreditch";
 
     @Mock
     private Clock clock;
-    @Mock
-    private DirectionOrderService directionOrderService;
-    @Mock
-    private WorkingDayIndicator workingDayIndicator;
 
     private PaperDefenceLetterBodyMapper paperDefenceLetterBodyMapper;
     private DocAssemblyTemplateBody.DocAssemblyTemplateBodyBuilder docAssemblyTemplateBodyBuilder;
     private CCDCase ccdCase;
+    private CCDRespondent respondent;
+    private CCDApplicant applicant;
+    private CCDParty givenRespondent;
+    private CCDAddress claimantAddress;
+    private CCDAddress defendantAddress;
+    private String partyName;
 
     @BeforeEach
     void setUp() {
@@ -63,26 +63,26 @@ public class PaperDefenceLetterBodyMapperTest {
                                 .value(SampleData.getCCDApplicantIndividual())
                                 .build()
                 ));
+
+        respondent = ccdCase.getRespondents().get(0).getValue();
+        applicant = ccdCase.getApplicants().get(0).getValue();
+        givenRespondent = respondent.getClaimantProvidedDetail();
+        claimantAddress = applicant.getPartyDetail().getCorrespondenceAddress() == null
+                ? applicant.getPartyDetail().getPrimaryAddress() : applicant.getPartyDetail().getCorrespondenceAddress();
+        defendantAddress = givenRespondent.getCorrespondenceAddress() == null
+                ? givenRespondent.getPrimaryAddress() : givenRespondent.getCorrespondenceAddress();
+
+       partyName = respondent.getPartyName() != null
+                ? respondent.getPartyName() :
+                respondent.getClaimantProvidedPartyName();
     }
 
     @Nested
-    @DisplayName("Tests for cover letter")
+    @DisplayName("Test for cover letter")
     class CoverLetterTests {
         @Test
         void shouldMapTemplateBodyWhenCoverLetterForDefendant() {
-
-            CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
-            CCDParty givenRespondent = respondent.getClaimantProvidedDetail();
-            CCDAddress defendantAddress = givenRespondent.getCorrespondenceAddress() == null
-                    ? givenRespondent.getPrimaryAddress() : givenRespondent.getCorrespondenceAddress();
-            CCDApplicant applicant = ccdCase.getApplicants().get(0).getValue();
-
-            LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
-
-            String partyName = respondent.getPartyName() != null
-                    ? respondent.getPartyName() :
-                    respondent.getClaimantProvidedPartyName();
-
+            LocalDate currentDate = LocalDate.now();
             DocAssemblyTemplateBody requestBody = paperDefenceLetterBodyMapper
                     .coverLetterTemplateMapper(ccdCase, CASEWORKER, EXTENDED_RESPONSE_DEADLINE);
             DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
@@ -105,19 +105,6 @@ public class PaperDefenceLetterBodyMapperTest {
     class OconFormTests {
         @Test
         void shouldMapCommonTemplateBody() {
-            CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
-            CCDApplicant applicant = ccdCase.getApplicants().get(0).getValue();
-            CCDParty givenRespondent = respondent.getClaimantProvidedDetail();
-            CCDAddress claimantAddress = applicant.getPartyDetail().getCorrespondenceAddress() == null
-                    ? applicant.getPartyDetail().getPrimaryAddress() : applicant.getPartyDetail().getCorrespondenceAddress();
-            //does this work if the defendant is a company
-            CCDAddress defendantAddress = givenRespondent.getCorrespondenceAddress() == null
-                    ? givenRespondent.getPrimaryAddress() : givenRespondent.getCorrespondenceAddress();
-
-            String partyName = respondent.getPartyName() != null
-                    ? respondent.getPartyName() :
-                    respondent.getClaimantProvidedPartyName();
-
             DocAssemblyTemplateBody requestBody = paperDefenceLetterBodyMapper
                     .oconFormCommonTemplateMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE);
             DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
@@ -128,7 +115,7 @@ public class PaperDefenceLetterBodyMapperTest {
                     .partyName(partyName)
                     .partyAddress(defendantAddress)
                     .claimantName(applicant.getPartyName())
-                    .claimantPhone(applicant.getPartyDetail().getTelephoneNumber().toString())
+                    .claimantPhone(applicant.getPartyDetail().getTelephoneNumber().getTelephoneNumber())
                     .claimantEmail(applicant.getPartyDetail().getEmailAddress())
                     .claimantAddress(claimantAddress)
                     .build();
@@ -136,26 +123,109 @@ public class PaperDefenceLetterBodyMapperTest {
         }
         @Test
         void shouldMapTemplateBodyWhenIndividualWithDQs() {
+            ccdCase.setPreferredDQCourt(HEARING_COURT);
+            DocAssemblyTemplateBody requestBody = paperDefenceLetterBodyMapper
+                    .oconFormIndividualWithDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE);
+            DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
+                    .referenceNumber(ccdCase.getPreviousServiceCaseReference())
+                    .responseDeadline(respondent.getResponseDeadline())
+                    .updatedResponseDeadline(EXTENDED_RESPONSE_DEADLINE)
+                    .claimAmount(ccdCase.getTotalAmount())
+                    .partyName(partyName)
+                    .partyAddress(defendantAddress)
+                    .claimantName(applicant.getPartyName())
+                    .claimantPhone(applicant.getPartyDetail().getTelephoneNumber().getTelephoneNumber())
+                    .claimantEmail(applicant.getPartyDetail().getEmailAddress())
+                    .claimantAddress(claimantAddress)
+                    .preferredCourt(HEARING_COURT)
+                    .build();
 
-        }
-        @Test
-        void shouldMapTemplateBodyWhenIndividualWithouthDQs() {
-
+            assertThat(requestBody).isEqualTo(expectedBody);
         }
         @Test
         void shouldMapTemplateBodyWhenCompanyWithDQs() {
+            ccdCase.setPreferredDQCourt(HEARING_COURT);
+            DocAssemblyTemplateBody requestBody = paperDefenceLetterBodyMapper
+                    .oconFormOrganisationWithDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE);
+            DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
+                    .referenceNumber(ccdCase.getPreviousServiceCaseReference())
+                    .responseDeadline(respondent.getResponseDeadline())
+                    .updatedResponseDeadline(EXTENDED_RESPONSE_DEADLINE)
+                    .claimAmount(ccdCase.getTotalAmount())
+                    .partyName(partyName)
+                    .partyAddress(defendantAddress)
+                    .claimantName(applicant.getPartyName())
+                    .claimantPhone(applicant.getPartyDetail().getTelephoneNumber().getTelephoneNumber())
+                    .claimantEmail(applicant.getPartyDetail().getEmailAddress())
+                    .claimantAddress(claimantAddress)
+                    .preferredCourt(HEARING_COURT)
+                    .organisationName(applicant.getPartyName())
+                    .build();
 
+            assertThat(requestBody).isEqualTo(expectedBody);
         }
         @Test
         void shouldMapTemplateBodyWhenCompanyWithoutDQs() {
+            DocAssemblyTemplateBody requestBody = paperDefenceLetterBodyMapper
+                    .oconFormOrganisationWithoutDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE);
+            DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
+                    .referenceNumber(ccdCase.getPreviousServiceCaseReference())
+                    .responseDeadline(respondent.getResponseDeadline())
+                    .updatedResponseDeadline(EXTENDED_RESPONSE_DEADLINE)
+                    .claimAmount(ccdCase.getTotalAmount())
+                    .partyName(partyName)
+                    .partyAddress(defendantAddress)
+                    .claimantName(applicant.getPartyName())
+                    .claimantPhone(applicant.getPartyDetail().getTelephoneNumber().getTelephoneNumber())
+                    .claimantEmail(applicant.getPartyDetail().getEmailAddress())
+                    .claimantAddress(claimantAddress)
+                    .organisationName(applicant.getPartyName())
+                    .build();
 
+            assertThat(requestBody).isEqualTo(expectedBody);
         }
         @Test
         void shouldMapTemplateBodyWhenSoleTraderWithDQs() {
+            ccdCase.setPreferredDQCourt(HEARING_COURT);
+            DocAssemblyTemplateBody requestBody = paperDefenceLetterBodyMapper
+                    .oconFormSoleTraderWithDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE);
+            DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
+                    .referenceNumber(ccdCase.getPreviousServiceCaseReference())
+                    .responseDeadline(respondent.getResponseDeadline())
+                    .updatedResponseDeadline(EXTENDED_RESPONSE_DEADLINE)
+                    .claimAmount(ccdCase.getTotalAmount())
+                    .partyName(partyName)
+                    .partyAddress(defendantAddress)
+                    .claimantName(applicant.getPartyName())
+                    .claimantPhone(applicant.getPartyDetail().getTelephoneNumber().getTelephoneNumber())
+                    .claimantEmail(applicant.getPartyDetail().getEmailAddress())
+                    .claimantAddress(claimantAddress)
+                    .preferredCourt(HEARING_COURT)
+                    .soleTradingTraderName(respondent.getPartyDetail().getBusinessName())
+                    .build();
+
+            assertThat(requestBody).isEqualTo(expectedBody);
 
         }
         @Test
         void shouldMapTemplateBodyWhenSoleTraderWithoutDQs() {
+            DocAssemblyTemplateBody requestBody = paperDefenceLetterBodyMapper
+                    .oconFormSoleTraderWithoutDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE);
+            DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
+                    .referenceNumber(ccdCase.getPreviousServiceCaseReference())
+                    .responseDeadline(respondent.getResponseDeadline())
+                    .updatedResponseDeadline(EXTENDED_RESPONSE_DEADLINE)
+                    .claimAmount(ccdCase.getTotalAmount())
+                    .partyName(partyName)
+                    .partyAddress(defendantAddress)
+                    .claimantName(applicant.getPartyName())
+                    .claimantPhone(applicant.getPartyDetail().getTelephoneNumber().getTelephoneNumber())
+                    .claimantEmail(applicant.getPartyDetail().getEmailAddress())
+                    .claimantAddress(claimantAddress)
+                    .soleTradingTraderName(respondent.getPartyDetail().getBusinessName())
+                    .build();
+
+            assertThat(requestBody).isEqualTo(expectedBody);
 
         }
     }
