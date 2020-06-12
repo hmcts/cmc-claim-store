@@ -117,7 +117,7 @@ public class PaperResponseOCON9xFormCallbackHandler  extends CallbackHandler {
 
         LocalDateTime mostRecentDeliveryDate = updatedScannedDocuments.stream()
             .map(CCDCollectionElement::getValue)
-            .filter(d -> d.getSubtype().equals(OCON9X_SUBTYPE))
+            .filter(d -> OCON9X_SUBTYPE.equals(d.getSubtype()))
             .map(CCDScannedDocument::getDeliveryDate)
             .max(LocalDateTime::compareTo)
             .orElseThrow(IllegalStateException::new);
