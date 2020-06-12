@@ -31,19 +31,22 @@ public class CaseMapper {
     private final ClaimDocumentCollectionMapper claimDocumentCollectionMapper;
     private final ReviewOrderMapper reviewOrderMapper;
     private final DirectionOrderMapper directionOrderMapper;
+    private final TransferContentMapper transferContentMapper;
 
     public CaseMapper(
         ClaimMapper claimMapper,
         @Value("${migration.cases.flag:false}") boolean isMigrated,
         ClaimDocumentCollectionMapper claimDocumentCollectionMapper,
         ReviewOrderMapper reviewOrderMapper,
-        DirectionOrderMapper directionOrderMapper
+        DirectionOrderMapper directionOrderMapper,
+        TransferContentMapper transferContentMapper
     ) {
         this.claimMapper = claimMapper;
         this.isMigrated = isMigrated;
         this.claimDocumentCollectionMapper = claimDocumentCollectionMapper;
         this.reviewOrderMapper = reviewOrderMapper;
         this.directionOrderMapper = directionOrderMapper;
+        this.transferContentMapper = transferContentMapper;
     }
 
     public CCDCase to(Claim claim) {
@@ -117,7 +120,8 @@ public class CaseMapper {
             .dateReferredForDirections(ccdCase.getDateReferredForDirections())
             .paperResponse(MapperUtil.hasPaperResponse.apply(ccdCase))
             .proceedOfflineOtherReasonDescription(ccdCase.getProceedOnPaperOtherReason())
-            .mediationOutcome(getMediationOutcome(ccdCase));
+            .mediationOutcome(getMediationOutcome(ccdCase))
+            .transferContent(transferContentMapper.from(ccdCase.getTransferContent()));
 
         Optional.ofNullable(ccdCase.getProceedOnPaperReason())
             .map(CCDProceedOnPaperReasonType::name)

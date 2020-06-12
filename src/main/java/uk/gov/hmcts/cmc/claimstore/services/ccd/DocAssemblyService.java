@@ -7,8 +7,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -49,6 +51,27 @@ public class DocAssemblyService {
         this.judgeTemplateId = judgeTemplateId;
     }
 
+    public CCDDocument generateDocument(String authorisation,
+                                        DocAssemblyTemplateBody formPayload,
+                                        String templateId) {
+
+        DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
+            .templateId(templateId)
+            .outputType(OutputType.PDF)
+            .formPayload(formPayload)
+            .build();
+
+        var docAssemblyResponse = docAssemblyClient.generateOrder(
+            authorisation,
+            authTokenGenerator.generate(),
+            docAssemblyRequest
+        );
+
+        return CCDDocument.builder()
+          .documentUrl(docAssemblyResponse.getRenditionOutputLocation())
+          .build();
+    }
+
     public DocAssemblyResponse createOrder(CCDCase ccdCase, String authorisation) {
         UserDetails userDetails = userService.getUserDetails(authorisation);
 
@@ -69,7 +92,7 @@ public class DocAssemblyService {
         );
     }
 
-    public DocAssemblyResponse  changeContactLetter(CCDCase ccdCase, String authorisation, String templateId) {
+    public DocAssemblyResponse changeContactLetter(CCDCase ccdCase, String authorisation, String templateId) {
         logger.info("Doc assembly service: creating general letter request for doc assembly for external id: {}",
             ccdCase.getExternalId());
 
@@ -94,7 +117,7 @@ public class DocAssemblyService {
         }
     }
 
-    public DocAssemblyResponse  createGeneralLetter(CCDCase ccdCase, String authorisation, String templateId) {
+    public DocAssemblyResponse createGeneralLetter(CCDCase ccdCase, String authorisation, String templateId) {
         logger.info("Doc assembly service: creating general letter request for doc assembly for external id: {}",
             ccdCase.getExternalId());
 
