@@ -165,10 +165,11 @@ public class DocumentManagementService {
     public Document getDocumentMetaData(String authorisation, String documentPath) {
         try {
             UserDetails userDetails = userService.getUserDetails(authorisation);
+            String userRoles = String.join(",", this.userRoles);
             return documentMetadataDownloadClient.getDocumentMetadata(
                 authorisation,
                 authTokenGenerator.generate(),
-                String.join(",", this.userRoles),
+                userRoles,
                 userDetails.getId(),
                 documentPath
             );

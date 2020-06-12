@@ -27,7 +27,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -43,25 +42,25 @@ public class DocumentPublishServiceTest {
     private static final Document COVER_DOCUMENT = new Document(DOC_URL, VALUES);
     private static final Document OCON_DOCUMENT = new Document(DOC_URL, VALUES);
     private static final CCDDocument COVER_LETTER = CCDDocument
-            .builder()
-            .documentUrl(DOC_URL)
-            .documentBinaryUrl(DOC_URL_BINARY)
-            .documentFileName(DOC_NAME)
-            .build();
+        .builder()
+        .documentUrl(DOC_URL)
+        .documentBinaryUrl(DOC_URL_BINARY)
+        .documentFileName(DOC_NAME)
+        .build();
     private static final CCDDocument OCON_FORM = CCDDocument
-            .builder()
-            .documentUrl(DOC_URL)
-            .documentBinaryUrl(DOC_URL_BINARY)
-            .documentFileName(DOC_NAME)
-            .build();
+        .builder()
+        .documentUrl(DOC_URL + "form")
+        .documentBinaryUrl(DOC_URL_BINARY)
+        .documentFileName(DOC_NAME + "form")
+        .build();
     private static final CCDCollectionElement<CCDClaimDocument> CLAIM_DOCUMENT =
-            CCDCollectionElement.<CCDClaimDocument>builder()
-                    .value(CCDClaimDocument.builder()
-                            .documentLink(COVER_LETTER)
-                            .createdDatetime(DATE)
-                            .documentType(CCDClaimDocumentType.GENERAL_LETTER)
-                            .build())
-                    .build();
+        CCDCollectionElement.<CCDClaimDocument>builder()
+            .value(CCDClaimDocument.builder()
+                .documentLink(COVER_LETTER)
+                .createdDatetime(DATE)
+                .documentType(CCDClaimDocumentType.GENERAL_LETTER)
+                .build())
+            .build();
     private static final String AUTHORISATION = "auth";
 
     @Mock
@@ -76,49 +75,58 @@ public class DocumentPublishServiceTest {
     @BeforeEach
     void setUp() {
         documentPublishService = new DocumentPublishService(
-                paperResponseLetterService,
-                printableDocumentService,
-                eventProducer
+            paperResponseLetterService,
+            printableDocumentService,
+            eventProducer
         );
     }
 
     @Test
     void shouldPublishDocuments() {
         CCDCase ccdCase = CCDCase.builder()
-                .previousServiceCaseReference("000MC001")
-                .respondents(ImmutableList.of(
-                        CCDCollectionElement.<CCDRespondent>builder()
-                                .value(SampleData.getIndividualRespondentWithDQInClaimantResponse())
-                                .build()
-                ))
-                .applicants(List.of(
-                        CCDCollectionElement.<CCDApplicant>builder()
-                                .value(SampleData.getCCDApplicantIndividual())
-                                .build()
-                ))
-                .build();
+            .previousServiceCaseReference("000MC001")
+            .respondents(ImmutableList.of(
+                CCDCollectionElement.<CCDRespondent>builder()
+                    .value(SampleData.getIndividualRespondentWithDQInClaimantResponse())
+                    .build()
+            ))
+            .applicants(List.of(
+                CCDCollectionElement.<CCDApplicant>builder()
+                    .value(SampleData.getCCDApplicantIndividual())
+                    .build()
+            ))
+            .build();
 
         Claim claim = Claim.builder()
-                .claimData(SampleClaimData.builder().build())
-                .defendantEmail("email@email.com")
-                .defendantId("id")
-                .submitterEmail("email@email.com")
-                .referenceNumber("ref. number")
-                .build();
+            .claimData(SampleClaimData.builder().build())
+            .defendantEmail("email@email.com")
+            .defendantId("id")
+            .submitterEmail("email@email.com")
+            .referenceNumber("ref. number")
+            .build();
 
-        CCDCase updatedCCDCase = documentPublishService.publishDocuments(ccdCase,
-                claim, AUTHORISATION, DATE.toLocalDate());
-        when(paperResponseLetterService.createCoverLetter(ccdCase, AUTHORISATION, DATE.toLocalDate()))
-                .thenReturn(COVER_LETTER);
-        when(paperResponseLetterService.createOconForm(ccdCase, claim, AUTHORISATION, DATE.toLocalDate()))
-                .thenReturn(OCON_FORM);
-        when(printableDocumentService.process(COVER_LETTER, AUTHORISATION)).thenReturn(COVER_DOCUMENT);
-        when(printableDocumentService.process(OCON_FORM, AUTHORISATION)).thenReturn(OCON_DOCUMENT);
+        when(paperResponseLetterService
+            .createCoverLetter(eq(ccdCase), eq(AUTHORISATION), eq(DATE.toLocalDate())))
+            .thenReturn(COVER_LETTER);
+        when(paperResponseLetterService
+            .createOconForm(eq(ccdCase), eq(claim), eq(AUTHORISATION), eq(DATE.toLocalDate())))
+            .thenReturn(OCON_FORM);
+        when(printableDocumentService.process(eq(COVER_LETTER), eq(AUTHORISATION))).thenReturn(COVER_DOCUMENT);
+        when(printableDocumentService.process(eq(OCON_FORM), eq(AUTHORISATION))).thenReturn(OCON_DOCUMENT);
+
+        when(paperResponseLetterService
+            .addCoverLetterToCaseWithDocuments(eq(ccdCase), eq(claim), eq(COVER_LETTER), eq(AUTHORISATION)))
+            .thenReturn(ccdCase);
+
+        documentPublishService.publishDocuments(ccdCase,
+            claim, AUTHORISATION, DATE.toLocalDate());
 
         verify(paperResponseLetterService).createCoverLetter(eq(ccdCase), eq(AUTHORISATION), eq(DATE.toLocalDate()));
-        verify(printableDocumentService).process(COVER_LETTER, AUTHORISATION);
-        verify(printableDocumentService).process(OCON_FORM, AUTHORISATION);
-        verify(eventProducer).createPaperDefenceEvent(claim, any(Document.class), any(Document.class));
-        assertThat(updatedCCDCase.getCaseDocuments()).contains(CLAIM_DOCUMENT);
+        verify(printableDocumentService).process(eq(COVER_LETTER), eq(AUTHORISATION));
+        verify(printableDocumentService).process(eq(OCON_FORM), eq(AUTHORISATION));
+        verify(eventProducer).createPaperDefenceEvent(eq(claim), any(Document.class), any(Document.class));
+
+        verify(paperResponseLetterService)
+            .addCoverLetterToCaseWithDocuments(eq(ccdCase), eq(claim), eq(COVER_LETTER), eq(AUTHORISATION));
     }
 }

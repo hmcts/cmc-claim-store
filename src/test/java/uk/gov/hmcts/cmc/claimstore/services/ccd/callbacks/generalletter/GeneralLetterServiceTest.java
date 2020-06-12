@@ -106,7 +106,8 @@ class GeneralLetterServiceTest {
             new PrintableDocumentService(documentManagementService),
             clock,
             userService,
-            documentManagementService);
+            documentManagementService
+        );
 
         String documentUrl = DOCUMENT_URI.toString();
         CCDDocument document = new CCDDocument(documentUrl, documentUrl, GENERAL_LETTER_PDF);

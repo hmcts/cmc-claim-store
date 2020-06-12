@@ -37,6 +37,9 @@ spring:
     password: ${CMC_DB_PASSWORD:-}
     url: jdbc:postgresql://${CMC_DB_HOST:}:${CMC_DB_PORT:}/${CMC_DB_NAME:cmc}${CMC_DB_CONNECTION_OPTIONS:}
 
+launchdarkly:
+  sdk-key: "${LAUNCH_DARKLY_SDK_KEY:sdk-c732c882-b5df-4e9b-9ec1-679836b93907}"
+
 quartzProperties:
   org.quartz:
     scheduler:
@@ -99,6 +102,8 @@ doc_assembly:
   judgeTemplateId: "CV-CMC-GOR-ENG-00219-1.docx"
   generalLetterTemplateId: "CV-CMC-GOR-ENG-0005.docx"
   contactChangeTemplateId: "CV-CMC-GOR-ENG-0006.docx"
+  noticeOfTransferSentToDefendantTemplateId: "CV-CMC-GOR-ENG-0008.docx"
+  noticeOfTransferSentToCourtTemplateId: "CV-CMC-GOR-ENG-0009.docx"
   paperDefenceCoverLetterTemplateID: "CV-CMC-GOR-ENG-0007.docx"
   oconFormIndividualWithDQs: "CV-CMC-GOR-ENG-0010.docx"
   oconFormSoleTraderWithDQs: "CV-CMC-GOR-ENG-0011.docx"
@@ -197,6 +202,7 @@ notifications:
       claimantPaperResponseReceived: "b8bc5ed5-3362-4bcc-b678-c4298f149560"
       defendantContactDetailsChanged: "39b8c7a0-6d8a-4bee-8b79-e0f1df73d249"
       claimantContactDetailsChanged: "bc227831-a2f5-4399-bfa4-06a392bc5a80"
+      caseTransferred: "841843ef-2d49-4c6b-8179-6e42443e049d"
       defendantAskedToRespondByPost: "18bfc30c-7ad1-44eb-b05c-eef63482e3be"
 
 staff-notifications:

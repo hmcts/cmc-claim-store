@@ -49,21 +49,21 @@ public class IssuePaperDefenceCallbackHandlerTest {
     private static final String DOC_NAME = "doc-name";
     private static final LocalDateTime DATE = LocalDateTime.parse("2020-11-16T13:15:30");
     private static final CCDDocument DOCUMENT = CCDDocument
-            .builder()
-            .documentUrl(DOC_URL)
-            .documentBinaryUrl(DOC_URL_BINARY)
-            .documentFileName(DOC_NAME)
-            .build();
+        .builder()
+        .documentUrl(DOC_URL)
+        .documentBinaryUrl(DOC_URL_BINARY)
+        .documentFileName(DOC_NAME)
+        .build();
     private static final CCDCollectionElement<CCDClaimDocument> CLAIM_DOCUMENT =
-            CCDCollectionElement.<CCDClaimDocument>builder()
-                    .value(CCDClaimDocument.builder()
-                            .documentLink(DOCUMENT)
-                            .createdDatetime(DATE)
-                            .documentType(CCDClaimDocumentType.GENERAL_LETTER)
-                            .build())
-                    .build();
+        CCDCollectionElement.<CCDClaimDocument>builder()
+            .value(CCDClaimDocument.builder()
+                .documentLink(DOCUMENT)
+                .createdDatetime(DATE)
+                .documentType(CCDClaimDocumentType.GENERAL_LETTER)
+                .build())
+            .build();
     private static final String ERROR_MESSAGE = "There was a technical problem. Nothing has been sent."
-            + " You need to try again.";
+        + " You need to try again.";
     private static final String AUTHORISATION = "auth";
 
     @Mock
@@ -86,104 +86,109 @@ public class IssuePaperDefenceCallbackHandlerTest {
     @BeforeEach
     void setUp() {
         issuePaperDefenceCallbackHandler = new IssuePaperDefenceCallbackHandler(
-                caseDetailsConverter,
-                responseDeadlineCalculator,
-                issueDateCalculator,
-                issuePaperResponseNotificationService,
-                documentPublishService
+            caseDetailsConverter,
+            responseDeadlineCalculator,
+            issueDateCalculator,
+            issuePaperResponseNotificationService,
+            documentPublishService
         );
         claim = Claim.builder()
-                .claimData(SampleClaimData.builder().build())
-                .defendantEmail("email@email.com")
-                .defendantId("id")
-                .submitterEmail("email@email.com")
-                .referenceNumber("ref. number")
-                .build();
+            .claimData(SampleClaimData.builder().build())
+            .defendantEmail("email@email.com")
+            .defendantId("id")
+            .submitterEmail("email@email.com")
+            .referenceNumber("ref. number")
+            .build();
         //not working??
     }
 
     @Test
     void shouldHandleAboutToSubmitCallback() {
         ccdCase = CCDCase.builder()
-                .previousServiceCaseReference("000MC001")
-                .respondents(ImmutableList.of(
-                        CCDCollectionElement.<CCDRespondent>builder()
-                                .value(SampleData.getIndividualRespondentWithDQInClaimantResponse())
-                                .build()
-                ))
-                .applicants(List.of(
-                        CCDCollectionElement.<CCDApplicant>builder()
-                                .value(SampleData.getCCDApplicantIndividual())
-                                .build()
-                ))
-                .build();
-        CaseDetails caseDetails = CaseDetails.builder()
-                .id(10L)
-                .data(Collections.emptyMap())
-                .build();
-        callbackRequest =
-                CallbackRequest.builder()
-                        .eventId(CaseEvent.ISSUE_PAPER_DEFENSE_FORMS.getValue())
-                        .caseDetails(caseDetails)
-                        .build();
-        CallbackParams callbackParams = CallbackParams.builder()
-                .type(CallbackType.ABOUT_TO_SUBMIT)
-                .request(callbackRequest)
-                .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
-                .build();
+            .previousServiceCaseReference("000MC001")
+            .respondents(ImmutableList.of(
+                CCDCollectionElement.<CCDRespondent>builder()
+                    .value(SampleData.getIndividualRespondentWithDQInClaimantResponse())
+                    .build()
+            ))
+            .applicants(List.of(
+                CCDCollectionElement.<CCDApplicant>builder()
+                    .value(SampleData.getCCDApplicantIndividual())
+                    .build()
+            ))
+            .build();
+
         LocalDate date = LocalDate.now();
         when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(date);
         when(responseDeadlineCalculator.calculateResponseDeadline(any(LocalDate.class))).thenReturn(date);
         when(responseDeadlineCalculator.calculatePostponedResponseDeadline(any(LocalDate.class)))
-                .thenReturn(date);
+            .thenReturn(date);
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
 
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(10L)
+            .data(Collections.emptyMap())
+            .build();
+        callbackRequest =
+            CallbackRequest.builder()
+                .eventId(CaseEvent.ISSUE_PAPER_DEFENSE_FORMS.getValue())
+                .caseDetails(caseDetails)
+                .build();
+
+        CallbackParams callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_SUBMIT)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
+            .build();
+
+        issuePaperDefenceCallbackHandler.handle(callbackParams);
+
         verify(documentPublishService).publishDocuments(any(CCDCase.class), any(Claim.class), eq(AUTHORISATION),
-                eq(date));
+            eq(date));
         verify(issuePaperResponseNotificationService).notifyClaimant(any(Claim.class));
     }
 
     @Test
     void shouldSendErrorsWhenExceptionThrownForCallback() {
         ccdCase = CCDCase.builder()
-                .previousServiceCaseReference("000MC001")
-                .respondents(ImmutableList.of(
-                        CCDCollectionElement.<CCDRespondent>builder()
-                                .value(SampleData.getIndividualRespondentWithDQInClaimantResponse())
-                                .build()
-                ))
-                .applicants(List.of(
-                        CCDCollectionElement.<CCDApplicant>builder()
-                                .value(SampleData.getCCDApplicantIndividual())
-                                .build()
-                ))
-                .build();
+            .previousServiceCaseReference("000MC001")
+            .respondents(ImmutableList.of(
+                CCDCollectionElement.<CCDRespondent>builder()
+                    .value(SampleData.getIndividualRespondentWithDQInClaimantResponse())
+                    .build()
+            ))
+            .applicants(List.of(
+                CCDCollectionElement.<CCDApplicant>builder()
+                    .value(SampleData.getCCDApplicantIndividual())
+                    .build()
+            ))
+            .build();
         CaseDetails caseDetails = CaseDetails.builder()
-                .id(10L)
-                .data(Collections.emptyMap())
-                .build();
+            .id(10L)
+            .data(Collections.emptyMap())
+            .build();
         callbackRequest =
-                CallbackRequest.builder()
-                        .eventId(CaseEvent.ISSUE_PAPER_DEFENSE_FORMS.getValue())
-                        .caseDetails(caseDetails)
-                        .build();
-        CallbackParams callbackParams = CallbackParams.builder()
-                .type(CallbackType.ABOUT_TO_SUBMIT)
-                .request(callbackRequest)
-                .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
+            CallbackRequest.builder()
+                .eventId(CaseEvent.ISSUE_PAPER_DEFENSE_FORMS.getValue())
+                .caseDetails(caseDetails)
                 .build();
+        CallbackParams callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_SUBMIT)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
+            .build();
         LocalDate date = LocalDate.now();
         when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(date);
         when(responseDeadlineCalculator.calculateResponseDeadline(any(LocalDate.class))).thenReturn(date);
         when(responseDeadlineCalculator.calculatePostponedResponseDeadline(any(LocalDate.class)))
-                .thenReturn(date);
+            .thenReturn(date);
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
         when(documentPublishService.publishDocuments(ccdCase, claim, AUTHORISATION, LocalDate.now()))
-                .thenThrow(DocumentGenerationFailedException.class);
+            .thenThrow(DocumentGenerationFailedException.class);
         AboutToStartOrSubmitCallbackResponse actualResponse =
-                (AboutToStartOrSubmitCallbackResponse) issuePaperDefenceCallbackHandler.handle(callbackParams);
+            (AboutToStartOrSubmitCallbackResponse) issuePaperDefenceCallbackHandler.handle(callbackParams);
         assertThat(actualResponse.getErrors().get(0)).isEqualTo(ERROR_MESSAGE);
     }
 }
