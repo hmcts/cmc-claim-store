@@ -145,4 +145,16 @@ public class DocumentNameUtils {
 
         return format("%s-request-redeterm-%s", caseRef, partyType);
     }
+
+    public static String buildNoticeOfTransferForCourtFileBaseName(String caseRef) {
+        requireNonBlank(caseRef);
+
+        return format("%s-notice-of-transfer-for-court", caseRef);
+    }
+
+    public static String buildNoticeOfTransferForDefendantFileBaseName(String caseRef) {
+        requireNonBlank(caseRef);
+
+        return format("%s-notice-of-transfer-for-defendant", caseRef);
+    }
 }
