@@ -75,7 +75,8 @@ public class CCDCase {
     private List<CCDCollectionElement<CCDEvidenceRow>> evidence;
     private String features;
     private CCDYesNoOption migratedFromClaimStore;
-    private List<CCDCollectionElement<CCDClaimDocument>> caseDocuments;
+    @Builder.Default
+    private List<CCDCollectionElement<CCDClaimDocument>> caseDocuments = Collections.emptyList();
     private List<CCDCollectionElement<CCDScannedDocument>> scannedDocuments;
     private List<CCDCollectionElement<CCDClaimDocument>> staffUploadedDocuments;
     private String caseName;
@@ -142,5 +143,8 @@ public class CCDCase {
     private CCDLaList assignedTo;
     private CCDContactPartyType contactChangeParty;
     private CCDContactChangeContent contactChangeContent;
+    private CCDProceedOnPaperReasonType proceedOnPaperReason;
+    private String proceedOnPaperOtherReason;
     private LocalDate calculatedResponseDeadline;
+    private CCDTransferContent transferContent;
 }

@@ -173,5 +173,8 @@ public class EmailTemplates {
     private String defendantContactDetailsChanged;
 
     @NotEmpty
+    private String caseTransferred;
+
+    @NotEmpty
     private String defendantAskedToRespondByPost;
 }

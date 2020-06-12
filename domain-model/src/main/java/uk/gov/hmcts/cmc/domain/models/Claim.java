@@ -27,7 +27,8 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @JsonIgnoreProperties(
     value = {"totalClaimAmount", "totalAmountTillToday", "totalAmountTillDateOfIssue",
         "amountWithInterestUntilIssueDate", "totalInterestTillDateOfIssue", "totalInterest",
-        "serviceDate", "amountWithInterest", "directionsQuestionnaireDeadline", "claimSubmissionOperationIndicators"},
+        "serviceDate", "amountWithInterest", "directionsQuestionnaireDeadline", "claimSubmissionOperationIndicators",
+        "proceedOfflineOtherReasonDescription"},
     allowGetters = true
 )
 @Getter
@@ -78,6 +79,9 @@ public class Claim {
     private final YesNoOption paperResponse;
     private final LocalDateTime dateReferredForDirections;
     private final String preferredDQCourt;
+    private final ProceedOfflineReasonType proceedOfflineReason;
+    private final String proceedOfflineOtherReasonDescription;
+    private final TransferContent transferContent;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -123,7 +127,10 @@ public class Claim {
         LocalDateTime mediationSettlementReachedAt,
         YesNoOption paperResponse,
         LocalDateTime dateReferredForDirections,
-        String preferredDQCourt
+        String preferredDQCourt,
+        ProceedOfflineReasonType proceedOfflineReason,
+        String proceedOfflineOtherReasonDescription,
+        TransferContent transferContent
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -167,6 +174,9 @@ public class Claim {
         this.paperResponse = paperResponse;
         this.dateReferredForDirections = dateReferredForDirections;
         this.preferredDQCourt = preferredDQCourt;
+        this.proceedOfflineReason = proceedOfflineReason;
+        this.proceedOfflineOtherReasonDescription = proceedOfflineOtherReasonDescription;
+        this.transferContent = transferContent;
     }
 
     public Optional<Response> getResponse() {
@@ -276,6 +286,10 @@ public class Claim {
 
     public Optional<String> getPreferredDQCourt() {
         return Optional.ofNullable(preferredDQCourt);
+    }
+
+    public Optional<ProceedOfflineReasonType> getProceedOfflineReason() {
+        return Optional.ofNullable(proceedOfflineReason);
     }
 
     @Override

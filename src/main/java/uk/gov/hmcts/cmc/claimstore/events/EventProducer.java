@@ -29,6 +29,7 @@ import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Component
 public class EventProducer {
@@ -130,5 +131,13 @@ public class EventProducer {
 
     public void createReviewOrderEvent(String authorisation, Claim claim) {
         publisher.publishEvent(new ReviewOrderEvent(authorisation, claim));
+    }
+
+    public void createBulkPrintTransferEvent(
+        Claim claim,
+        Document coverLetter,
+        List<BulkPrintTransferEvent.PrintableDocument> caseDocuments
+    ) {
+        publisher.publishEvent(new BulkPrintTransferEvent(claim, coverLetter, caseDocuments));
     }
 }

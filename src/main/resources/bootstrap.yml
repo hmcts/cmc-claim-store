@@ -22,3 +22,4 @@ spring:
         rpa-email-response: rpa.notifications.responseRecipient
         rpa-email-ccj: rpa.notifications.countyCourtJudgementRecipient
         rpa-email-paid-in-full: rpa.notifications.paidInFullRecipient
+        launchDarkly-sdk-key: LAUNCH_DARKLY_SDK_KEY

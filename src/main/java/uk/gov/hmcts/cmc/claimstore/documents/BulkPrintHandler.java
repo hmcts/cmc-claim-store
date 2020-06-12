@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.Printable;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintablePdf;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintableTemplate;
+import uk.gov.hmcts.cmc.claimstore.events.BulkPrintTransferEvent;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.events.GeneralLetterReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.events.legaladvisor.DirectionsOrderReadyToPrintEvent;
@@ -15,8 +16,13 @@ import uk.gov.hmcts.cmc.claimstore.events.response.PaperDefenceReadyToPrintEvent
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.BULK_PRINT_TRANSFER_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.DIRECTION_ORDER_LETTER_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.GENERAL_LETTER_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.PAPER_DEFENCE_TYPE;
@@ -88,6 +94,25 @@ public class BulkPrintHandler {
             ),
             GENERAL_LETTER_TYPE
         );
+    }
+
+    @EventListener
+    public void print(BulkPrintTransferEvent event) {
+        requireNonNull(event);
+        Claim claim = event.getClaim();
+
+        PrintablePdf coverLetter = new PrintablePdf(
+            event.getCoverLetter(),
+            buildCoverSheetFileBaseName(claim.getReferenceNumber()));
+
+        List<Printable> printableDocs = new ArrayList<>(List.of(coverLetter));
+        printableDocs.addAll(event.getCaseDocuments()
+            .stream()
+            .map(d -> new PrintablePdf(d.getDocument(), d.getFileName()))
+            .collect(Collectors.toList())
+        );
+
+        bulkPrintService.printPdf(claim, Collections.unmodifiableList(printableDocs), BULK_PRINT_TRANSFER_TYPE);
     }
 
     @EventListener
