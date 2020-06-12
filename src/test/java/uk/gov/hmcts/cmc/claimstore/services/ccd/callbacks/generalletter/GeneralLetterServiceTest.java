@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter;
 
 import com.google.common.collect.ImmutableList;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.cmc.claimstore.events.GeneralLetterReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.PrintableDocumentService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -24,6 +26,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 import uk.gov.hmcts.reform.docassembly.exception.DocumentGenerationFailedException;
+import uk.gov.hmcts.reform.document.domain.Document;
 
 import java.net.URI;
 import java.time.Clock;
@@ -100,9 +103,9 @@ class GeneralLetterServiceTest {
         generalLetterService = new GeneralLetterService(
             docAssemblyService,
             publisher,
-            documentManagementService,
+            new PrintableDocumentService(documentManagementService),
             clock,
-            userService);
+            userService, documentManagementService);
 
         String documentUrl = DOCUMENT_URI.toString();
         CCDDocument document = new CCDDocument(documentUrl, documentUrl, GENERAL_LETTER_PDF);
@@ -168,10 +171,23 @@ class GeneralLetterServiceTest {
         when(documentManagementService.downloadDocument(anyString(), any(ClaimDocument.class)))
             .thenReturn(PDF_BYTES);
 
+        when(documentManagementService.getDocumentMetaData(anyString(), anyString()))
+            .thenReturn(getLinks());
+
         CCDCase updatedCase = generalLetterService
             .publishLetter(ccdCase, claim, BEARER_TOKEN.name(), GENERAL_DOCUMENT_NAME);
         verify(documentManagementService, once()).downloadDocument(eq(BEARER_TOKEN.name()), any(ClaimDocument.class));
         assertThat(updatedCase).isEqualTo(expected);
+    }
+
+    @NotNull
+    private Document getLinks() {
+        Document document = new Document();
+        Document.Links links = new Document.Links();
+        links.binary = new Document.Link();
+        links.binary.href = DOC_URL_BINARY;
+        document.links = links;
+        return document;
     }
 
     @Test
