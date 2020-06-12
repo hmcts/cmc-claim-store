@@ -114,5 +114,7 @@ public class DocAssemblyTemplateBody implements FormPayload {
     private boolean claimantPhoneRemoved;
     private boolean claimantEmailRemoved;
     private boolean claimantContactAddressRemoved;
-
+    private String reasonForTransfer;
+    private boolean orderDrawnByJudge;
+    private boolean orderDrawnByLA;
 }
