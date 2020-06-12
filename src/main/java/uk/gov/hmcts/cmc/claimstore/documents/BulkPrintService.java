@@ -8,11 +8,15 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.Printable;
+import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.BulkPrintStaffNotificationService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.PrintLetterType;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.reform.sendletter.api.Document;
@@ -21,6 +25,7 @@ import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
+import java.time.LocalDate;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
@@ -54,6 +59,7 @@ public class BulkPrintService implements PrintService {
     private final AppInsights appInsights;
     private final BulkPrintStaffNotificationService bulkPrintStaffNotificationService;
     private final PDFServiceClient pdfServiceClient;
+    private final ClaimService claimService;
 
     @Autowired
     public BulkPrintService(
@@ -61,13 +67,15 @@ public class BulkPrintService implements PrintService {
         AuthTokenGenerator authTokenGenerator,
         BulkPrintStaffNotificationService bulkPrintStaffNotificationService,
         AppInsights appInsights,
-        PDFServiceClient pdfServiceClient
+        PDFServiceClient pdfServiceClient,
+        ClaimService claimService
     ) {
         this.sendLetterApi = sendLetterApi;
         this.authTokenGenerator = authTokenGenerator;
         this.appInsights = appInsights;
         this.bulkPrintStaffNotificationService = bulkPrintStaffNotificationService;
         this.pdfServiceClient = pdfServiceClient;
+        this.claimService = claimService;
     }
 
     @LogExecutionTime
@@ -76,7 +84,7 @@ public class BulkPrintService implements PrintService {
         backoff = @Backoff(delay = 200)
     )
     @Override
-    public void print(Claim claim, List<Printable> documents) {
+    public void print(Claim claim, List<Printable> documents, String authorisation) {
         requireNonNull(claim);
         List<Document> docs = documents.stream()
             .filter(Objects::nonNull)
@@ -91,6 +99,22 @@ public class BulkPrintService implements PrintService {
                 wrapInDetailsInMap(claim, FIRST_CONTACT_LETTER_TYPE)
             )
         );
+        List<BulkPrintDetails> bulkPrintCollection = claim.getBulkPrintDetails();
+
+        bulkPrintCollection.add(
+            BulkPrintDetails.builder()
+                .printLetterId(sendLetterResponse.letterId.toString())
+                .printLetterType(PrintLetterType.CLAIM_ISSUED)
+                .printedDate(LocalDate.now())
+                .build()
+        );
+
+        claimService.addBulkPrintDetails(
+            authorisation,
+            bulkPrintCollection,
+            CaseEvent.ADD_BULK_PRINT_DETAILS,
+            claim
+        );
 
         logger.info("Defendant first contact pack letter {} created for claim reference {}",
             sendLetterResponse.letterId,
@@ -102,7 +126,8 @@ public class BulkPrintService implements PrintService {
     public void notifyStaffForBulkPrintFailure(
         RuntimeException exception,
         Claim claim,
-        List<Printable> documents
+        List<Printable> documents,
+        String authorisation
     ) {
         bulkPrintStaffNotificationService.notifyFailedBulkPrint(
             documents,
@@ -118,7 +143,7 @@ public class BulkPrintService implements PrintService {
         backoff = @Backoff(delay = 200)
     )
     @Override
-    public void printPdf(Claim claim, List<Printable> documents, String letterType) {
+    public void printPdf(Claim claim, List<Printable> documents, String letterType, String authorisation) {
         requireNonNull(claim);
         String info = "";
         if (letterType.equals(DIRECTION_ORDER_LETTER_TYPE)) {
@@ -141,6 +166,22 @@ public class BulkPrintService implements PrintService {
                 XEROX_TYPE_PARAMETER,
                 wrapInDetailsInMap(claim, letterType)
             )
+        );
+
+        List<BulkPrintDetails> bulkPrintDetails = claim.getBulkPrintDetails();
+        bulkPrintDetails.add(
+            BulkPrintDetails.builder()
+                .printLetterId(sendLetterResponse.letterId.toString())
+                .printLetterType(PrintLetterType.ORDER_ISSUED)
+                .printedDate(LocalDate.now())
+                .build()
+        );
+
+        claimService.addBulkPrintDetails(
+            authorisation,
+            bulkPrintDetails,
+            CaseEvent.ADD_BULK_PRINT_DETAILS,
+            claim
         );
 
         logger.info(info,

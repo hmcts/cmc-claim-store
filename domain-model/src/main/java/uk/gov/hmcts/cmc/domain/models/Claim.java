@@ -9,6 +9,7 @@ import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.amount.TotalAmountCalculator;
 import uk.gov.hmcts.cmc.domain.constraints.DateNotInTheFuture;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
@@ -82,6 +83,7 @@ public class Claim {
     private final ProceedOfflineReasonType proceedOfflineReason;
     private final String proceedOfflineOtherReasonDescription;
     private final TransferContent transferContent;
+    private final List<BulkPrintDetails> bulkPrintDetails;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -130,7 +132,8 @@ public class Claim {
         String preferredDQCourt,
         ProceedOfflineReasonType proceedOfflineReason,
         String proceedOfflineOtherReasonDescription,
-        TransferContent transferContent
+        TransferContent transferContent,
+        List<BulkPrintDetails> bulkPrintDetails
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -177,6 +180,7 @@ public class Claim {
         this.proceedOfflineReason = proceedOfflineReason;
         this.proceedOfflineOtherReasonDescription = proceedOfflineOtherReasonDescription;
         this.transferContent = transferContent;
+        this.bulkPrintDetails = bulkPrintDetails;
     }
 
     public Optional<Response> getResponse() {

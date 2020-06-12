@@ -26,6 +26,7 @@ import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DummyBulkPrintServiceTest {
+    private static final String AUTHORISATION = "Bearer: let me in";
     private final Logger log = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
     @Mock
@@ -56,7 +57,9 @@ public class DummyBulkPrintServiceTest {
             ImmutableList.of(
                 new PrintableTemplate(defendantLetterDocument, "filename"),
                 new PrintableTemplate(sealedClaimDocument, "filename")
-            ));
+            ),
+            AUTHORISATION
+        );
         assertWasLogged("No bulk print operation need to be performed as 'Bulk print url' is switched off.");
     }
 

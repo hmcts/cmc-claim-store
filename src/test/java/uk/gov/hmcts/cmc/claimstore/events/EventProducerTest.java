@@ -184,9 +184,9 @@ public class EventProducerTest {
         Document coverLetter = mock(Document.class);
         List<BulkPrintTransferEvent.PrintableDocument> caseDocuments = mock(List.class);
 
-        BulkPrintTransferEvent event = new BulkPrintTransferEvent(CLAIM, coverLetter, caseDocuments);
+        BulkPrintTransferEvent event = new BulkPrintTransferEvent(CLAIM, coverLetter, caseDocuments, AUTHORISATION);
 
-        eventProducer.createBulkPrintTransferEvent(CLAIM, coverLetter, caseDocuments);
+        eventProducer.createBulkPrintTransferEvent(CLAIM, coverLetter, caseDocuments, AUTHORISATION);
 
         verify(publisher).publishEvent(eq(event));
     }

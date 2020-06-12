@@ -53,7 +53,8 @@ public class LegalOrderService {
             publisher.publishEvent(new DirectionsOrderReadyToPrintEvent(
                 claim,
                 coverSheetForClaimant,
-                legalOrder
+                legalOrder,
+                authorisation
             ));
 
             Document coverSheetForDefendant = new Document(
@@ -63,7 +64,8 @@ public class LegalOrderService {
             publisher.publishEvent(new DirectionsOrderReadyToPrintEvent(
                 claim,
                 coverSheetForDefendant,
-                legalOrder
+                legalOrder,
+                authorisation
             ));
         } catch (URISyntaxException e) {
             logger.warn("Problem download legal advisor document from doc store, won't print");

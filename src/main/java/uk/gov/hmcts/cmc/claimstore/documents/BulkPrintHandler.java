@@ -54,7 +54,8 @@ public class BulkPrintHandler {
                 new PrintableTemplate(
                     event.getSealedClaimDocument(),
                     buildSealedClaimFileBaseName(claim.getReferenceNumber()))
-            )
+            ),
+            event.getAuthorisation()
         );
     }
 
@@ -72,7 +73,8 @@ public class BulkPrintHandler {
                     event.getDirectionsOrder(),
                     buildDirectionsOrderFileBaseName(claim.getReferenceNumber()))
             ),
-            DIRECTION_ORDER_LETTER_TYPE
+            DIRECTION_ORDER_LETTER_TYPE,
+            event.getAuthorisation()
         );
     }
 
@@ -88,7 +90,8 @@ public class BulkPrintHandler {
                     buildLetterFileBaseName(claim.getReferenceNumber(),
                         String.valueOf(LocalDate.now())))
             ),
-            GENERAL_LETTER_TYPE
+            GENERAL_LETTER_TYPE,
+            event.getAuthorisation()
         );
     }
 
@@ -108,6 +111,7 @@ public class BulkPrintHandler {
             .collect(Collectors.toList())
         );
 
-        bulkPrintService.printPdf(claim, Collections.unmodifiableList(printableDocs), BULK_PRINT_TRANSFER_TYPE);
+        bulkPrintService.printPdf(claim, Collections.unmodifiableList(printableDocs),
+            BULK_PRINT_TRANSFER_TYPE, event.getAuthorisation());
     }
 }

@@ -73,6 +73,7 @@ class TransferCaseLetterSenderTest {
 
         transferCaseLetterSender.sendAllCaseDocumentsToCourt(AUTHORISATION, ccdCase, claim, noticeForCourt);
 
-        verify(eventProducer).createBulkPrintTransferEvent(eq(claim), eq(coverLetterDoc), eq(caseDocuments));
+        verify(eventProducer)
+            .createBulkPrintTransferEvent(eq(claim), eq(coverLetterDoc), eq(caseDocuments), eq(AUTHORISATION));
     }
 }

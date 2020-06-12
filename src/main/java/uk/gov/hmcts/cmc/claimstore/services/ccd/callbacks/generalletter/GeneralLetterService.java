@@ -139,7 +139,6 @@ public class GeneralLetterService {
 
     public void printLetter(String authorisation, CCDDocument document, Claim claim) {
         Document downloadedLetter = printableDocumentService.process(document, authorisation);
-        GeneralLetterReadyToPrintEvent event = new GeneralLetterReadyToPrintEvent(claim, downloadedLetter);
-        publisher.publishEvent(event);
+        publisher.publishEvent(new GeneralLetterReadyToPrintEvent(claim, downloadedLetter, authorisation));
     }
 }

@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.TransferContent;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
@@ -113,6 +114,7 @@ public final class SampleClaim {
     private final YesNoOption offlineJourney = NO;
     private MediationOutcome mediationOutcome;
     private TransferContent transferContent;
+    private String bulkPrintLetterId = UUID.randomUUID().toString();
 
     private SampleClaim() {
     }
@@ -610,8 +612,9 @@ public final class SampleClaim {
             null,
             null,
             null,
-            transferContent
-            );
+            transferContent,
+            List.of(BulkPrintDetails.builder().printLetterId(bulkPrintLetterId).build())
+        );
     }
 
     public SampleClaim withSubmitterId(String userId) {

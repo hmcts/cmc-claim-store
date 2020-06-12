@@ -44,7 +44,12 @@ public class DocumentGenerator {
         Document sealedClaimDoc = citizenServiceDocumentsService.sealedClaimDocument(event.getClaim());
         Document defendantLetterDoc = citizenServiceDocumentsService.pinLetterDocument(event.getClaim(),
             event.getPin());
-        publisher.publishEvent(new DocumentReadyToPrintEvent(event.getClaim(), defendantLetterDoc, sealedClaimDoc));
+        publisher.publishEvent(
+            new DocumentReadyToPrintEvent(
+                event.getClaim(),
+                defendantLetterDoc,
+                sealedClaimDoc,
+                event.getAuthorisation()));
 
         PDF sealedClaim = sealedClaimPdfService.createPdf(event.getClaim());
         PDF defendantLetter = new PDF(buildDefendantLetterFileBaseName(event.getClaim().getReferenceNumber()),

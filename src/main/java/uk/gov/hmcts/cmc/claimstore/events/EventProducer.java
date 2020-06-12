@@ -131,8 +131,9 @@ public class EventProducer {
     public void createBulkPrintTransferEvent(
         Claim claim,
         Document coverLetter,
-        List<BulkPrintTransferEvent.PrintableDocument> caseDocuments
+        List<BulkPrintTransferEvent.PrintableDocument> caseDocuments,
+        String authorisation
     ) {
-        publisher.publishEvent(new BulkPrintTransferEvent(claim, coverLetter, caseDocuments));
+        publisher.publishEvent(new BulkPrintTransferEvent(claim, coverLetter, caseDocuments, authorisation));
     }
 }

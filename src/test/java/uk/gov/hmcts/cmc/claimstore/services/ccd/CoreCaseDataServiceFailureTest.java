@@ -29,6 +29,7 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
@@ -47,6 +48,8 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 
 import java.net.URI;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
 
 import static java.time.LocalDate.now;
 import static org.junit.Assert.assertNotNull;
@@ -621,6 +624,20 @@ public class CoreCaseDataServiceFailureTest {
 
         service.saveClaimSubmissionOperationIndicators(claim.getId(), operationIndicators, AUTHORISATION,
             PIN_GENERATION_OPERATIONS);
+    }
+
+    @Test(expected = CoreCaseDataStoreException.class)
+    public void addBulkPrintClaimToClaimEventFailure() {
+        Claim claim = SampleClaim.getDefault();
+
+        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(CCDCase.builder().build());
+        when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
+
+        service.addBulkPrintDetailsToClaim(
+            AUTHORISATION,
+            List.of(BulkPrintDetails.builder().printLetterId(UUID.randomUUID().toString()).build()),
+            CaseEvent.ADD_BULK_PRINT_DETAILS,
+            claim.getId());
     }
 
 }
