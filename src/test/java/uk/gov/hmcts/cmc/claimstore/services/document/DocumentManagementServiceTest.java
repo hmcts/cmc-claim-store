@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.document;
 
-import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,6 +35,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementDownloadResponse;
@@ -159,7 +159,6 @@ public class DocumentManagementServiceTest {
             .downloadBinary(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString());
     }
 
-    @NotNull
     private URI setupDocumentDownloadClient() {
         when(documentMetadataDownloadClient
             .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString())
@@ -178,7 +177,7 @@ public class DocumentManagementServiceTest {
 
     @Test
     public void downloadDocumentFromDocumentManagementThrowException() {
-        URI docUri = URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4");
+        URI docUri = mock(URI.class);
         expectedException.expect(DocumentManagementException.class);
         expectedException.expectMessage(
             String.format("Unable to download document %s from document management", docUri));
