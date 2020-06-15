@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -20,8 +21,10 @@ import uk.gov.hmcts.reform.docassembly.domain.OutputType;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -69,6 +72,27 @@ public class DocAssemblyServiceTest {
         when(userService.getUserDetails(eq(BEARER_TOKEN))).thenReturn(JUDGE);
         when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
         when(authTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
+    }
+
+    @Test
+    public void shouldGenerateDocument() {
+
+        DocAssemblyTemplateBody formPayload = mock(DocAssemblyTemplateBody.class);
+        final String templateId = "templateId";
+
+        DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
+            .templateId(templateId)
+            .outputType(OutputType.PDF)
+            .formPayload(formPayload)
+            .build();
+
+        when(docAssemblyClient
+            .generateOrder(eq(BEARER_TOKEN), eq(SERVICE_TOKEN), eq(docAssemblyRequest)))
+            .thenReturn(docAssemblyResponse);
+
+        CCDDocument document = docAssemblyService.generateDocument(BEARER_TOKEN, formPayload, templateId);
+
+        assertEquals(DOC_URL, document.getDocumentUrl());
     }
 
     @Test

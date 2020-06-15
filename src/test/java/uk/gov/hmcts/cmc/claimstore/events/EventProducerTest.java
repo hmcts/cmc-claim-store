@@ -21,6 +21,9 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDet
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
+import uk.gov.hmcts.reform.sendletter.api.Document;
+
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -171,6 +174,19 @@ public class EventProducerTest {
         ReviewOrderEvent event = new ReviewOrderEvent(AUTHORISATION, CLAIM);
 
         eventProducer.createReviewOrderEvent(AUTHORISATION, CLAIM);
+
+        verify(publisher).publishEvent(eq(event));
+    }
+
+    @Test
+    public void shouldCreateBulkPrintTransferEvent() {
+
+        Document coverLetter = mock(Document.class);
+        List<BulkPrintTransferEvent.PrintableDocument> caseDocuments = mock(List.class);
+
+        BulkPrintTransferEvent event = new BulkPrintTransferEvent(CLAIM, coverLetter, caseDocuments);
+
+        eventProducer.createBulkPrintTransferEvent(CLAIM, coverLetter, caseDocuments);
 
         verify(publisher).publishEvent(eq(event));
     }
