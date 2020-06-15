@@ -6,9 +6,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.context.ApplicationEventPublisher;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
+import uk.gov.hmcts.cmc.claimstore.documents.BulkPrintHandler;
 import uk.gov.hmcts.cmc.claimstore.events.legaladvisor.DirectionsOrderReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -41,7 +41,7 @@ public class LegalOrderServiceTest {
     @Mock
     private DocumentTemplates documentTemplates;
     @Mock
-    private ApplicationEventPublisher applicationEventPublisher;
+    private BulkPrintHandler bulkPrintHandler;
     @Mock
     private LegalOrderCoverSheetContentProvider legalOrderCoverSheetContentProvider;
 
@@ -55,7 +55,7 @@ public class LegalOrderServiceTest {
             documentTemplates,
             legalOrderCoverSheetContentProvider,
             documentManagementService,
-            applicationEventPublisher
+            bulkPrintHandler
         );
         claim = SampleClaim.builder().build();
         when(documentTemplates.getLegalOrderCoverSheet()).thenReturn("coverSheet".getBytes());
@@ -83,7 +83,7 @@ public class LegalOrderServiceTest {
             "coverSheet",
             ImmutableMap.of("content", "CLAIMANT"));
 
-        verify(applicationEventPublisher).publishEvent(
+        verify(bulkPrintHandler).print(
             new DirectionsOrderReadyToPrintEvent(
                 claim,
                 coverSheetForClaimant,
@@ -93,7 +93,7 @@ public class LegalOrderServiceTest {
         Document coverSheetForDefendant = new Document(
             "coverSheet",
             ImmutableMap.of("content", "DEFENDANT"));
-        verify(applicationEventPublisher).publishEvent(
+        verify(bulkPrintHandler).print(
             new DirectionsOrderReadyToPrintEvent(
                 claim,
                 coverSheetForDefendant,

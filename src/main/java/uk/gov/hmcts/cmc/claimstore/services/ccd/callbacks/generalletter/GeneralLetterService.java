@@ -5,19 +5,22 @@ import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CCDBulkPrintDetails;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.GeneralLetterContent;
+import uk.gov.hmcts.cmc.ccd.mapper.BulkPrintDetailsMapper;
+import uk.gov.hmcts.cmc.claimstore.documents.BulkPrintHandler;
 import uk.gov.hmcts.cmc.claimstore.events.GeneralLetterReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.PrintableDocumentService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.docassembly.exception.DocumentGenerationFailedException;
@@ -38,26 +41,29 @@ public class GeneralLetterService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final DocAssemblyService docAssemblyService;
-    private final ApplicationEventPublisher publisher;
+    private final BulkPrintHandler bulkPrintHandler;
     private final PrintableDocumentService printableDocumentService;
     private final Clock clock;
     private final UserService userService;
     private final DocumentManagementService documentManagementService;
+    private final BulkPrintDetailsMapper bulkPrintDetailsMapper;
 
     public GeneralLetterService(
         DocAssemblyService docAssemblyService,
-        ApplicationEventPublisher publisher,
+        BulkPrintHandler bulkPrintHandler,
         PrintableDocumentService printableDocumentService,
         Clock clock,
         UserService userService,
-        DocumentManagementService documentManagementService
+        DocumentManagementService documentManagementService,
+        BulkPrintDetailsMapper bulkPrintDetailsMapper
     ) {
         this.docAssemblyService = docAssemblyService;
-        this.publisher = publisher;
+        this.bulkPrintHandler = bulkPrintHandler;
         this.printableDocumentService = printableDocumentService;
         this.clock = clock;
         this.userService = userService;
         this.documentManagementService = documentManagementService;
+        this.bulkPrintDetailsMapper = bulkPrintDetailsMapper;
     }
 
     public CallbackResponse prepopulateData(String authorisation) {
@@ -80,15 +86,27 @@ public class GeneralLetterService {
 
     public CCDCase publishLetter(CCDCase ccdCase, Claim claim, String authorisation, String documentName) {
         var draftLetterDoc = ccdCase.getDraftLetterDoc();
-        printLetter(authorisation, draftLetterDoc, claim);
+        BulkPrintDetails bulkPrintDetails = printLetter(authorisation, draftLetterDoc, claim);
 
         return ccdCase.toBuilder()
             .caseDocuments(updateCaseDocumentsWithGeneralLetter(ccdCase, draftLetterDoc, documentName, authorisation))
+            .bulkPrintDetails(addToBulkPrintDetails(ccdCase, bulkPrintDetails))
             .draftLetterDoc(null)
             .contactChangeParty(null)
             .contactChangeContent(null)
             .generalLetterContent(null)
             .build();
+    }
+
+    public List<CCDCollectionElement<CCDBulkPrintDetails>> addToBulkPrintDetails(
+        CCDCase ccdCase,
+        BulkPrintDetails input
+    ) {
+        ImmutableList.Builder<CCDCollectionElement<CCDBulkPrintDetails>> printDetails = ImmutableList.builder();
+        printDetails.addAll(ccdCase.getBulkPrintDetails());
+        printDetails.add(bulkPrintDetailsMapper.to(input));
+
+        return printDetails.build();
     }
 
     public CCDCase attachGeneralLetterToCase(
@@ -137,8 +155,8 @@ public class GeneralLetterService {
             .build();
     }
 
-    public void printLetter(String authorisation, CCDDocument document, Claim claim) {
+    public BulkPrintDetails printLetter(String authorisation, CCDDocument document, Claim claim) {
         Document downloadedLetter = printableDocumentService.process(document, authorisation);
-        publisher.publishEvent(new GeneralLetterReadyToPrintEvent(claim, downloadedLetter, authorisation));
+        return bulkPrintHandler.print(new GeneralLetterReadyToPrintEvent(claim, downloadedLetter, authorisation));
     }
 }

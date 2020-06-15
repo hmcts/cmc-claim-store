@@ -29,6 +29,7 @@ import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionOrderService;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireService;
 import uk.gov.hmcts.cmc.claimstore.services.LegalOrderGenerationDeadlinesCalculator;
@@ -107,6 +108,8 @@ public class GenerateOrderCallbackHandlerTest {
     private DirectionOrderService directionOrderService;
     @Mock
     private DocumentManagementService documentManagementService;
+    @Mock
+    private ClaimService claimService;
 
     private CallbackRequest callbackRequest;
     private GenerateOrderCallbackHandler generateOrderCallbackHandler;
@@ -118,7 +121,8 @@ public class GenerateOrderCallbackHandlerTest {
             pilotCourtService);
 
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
-            caseDetailsConverter, legalOrderService, appInsights, directionOrderService, documentManagementService);
+            caseDetailsConverter, legalOrderService, appInsights, directionOrderService,
+            documentManagementService, claimService);
 
         generateOrderCallbackHandler = new GenerateOrderCallbackHandler(orderCreator, orderPostProcessor,
             caseDetailsConverter, appInsights);

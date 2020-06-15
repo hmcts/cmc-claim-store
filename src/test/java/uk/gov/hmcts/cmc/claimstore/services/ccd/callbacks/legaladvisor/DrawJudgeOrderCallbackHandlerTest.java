@@ -32,6 +32,7 @@ import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
+import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionOrderService;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireService;
 import uk.gov.hmcts.cmc.claimstore.services.LegalOrderGenerationDeadlinesCalculator;
@@ -127,6 +128,8 @@ class DrawJudgeOrderCallbackHandlerTest {
     private DirectionOrderService directionOrderService;
     @Mock
     private DocumentManagementService documentManagementService;
+    @Mock
+    private ClaimService claimService;
 
     private CallbackRequest callbackRequest;
     private DrawJudgeOrderCallbackHandler drawJudgeOrderCallbackHandler;
@@ -137,7 +140,8 @@ class DrawJudgeOrderCallbackHandlerTest {
             docAssemblyService, new GenerateOrderRule(), directionsQuestionnaireService, pilotCourtService);
 
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
-            caseDetailsConverter, legalOrderService, appInsights, directionOrderService, documentManagementService);
+            caseDetailsConverter, legalOrderService, appInsights, directionOrderService,
+            documentManagementService, claimService);
 
         drawJudgeOrderCallbackHandler = new DrawJudgeOrderCallbackHandler(orderCreator, orderPostProcessor);
 

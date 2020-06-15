@@ -13,6 +13,8 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.mapper.BulkPrintDetailsMapper;
+import uk.gov.hmcts.cmc.claimstore.documents.BulkPrintHandler;
 import uk.gov.hmcts.cmc.claimstore.events.GeneralLetterReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -94,6 +96,10 @@ class GeneralLetterServiceTest {
     private Clock clock;
     @Mock
     private UserService userService;
+    @Mock
+    private BulkPrintDetailsMapper bulkPrintDetailsMapper;
+    @Mock
+    private BulkPrintHandler bulkPrintHandler;
 
     private GeneralLetterService generalLetterService;
     private UserDetails userDetails;
@@ -102,10 +108,12 @@ class GeneralLetterServiceTest {
     void setUp() {
         generalLetterService = new GeneralLetterService(
             docAssemblyService,
-            publisher,
+            bulkPrintHandler,
             new PrintableDocumentService(documentManagementService),
             clock,
-            userService, documentManagementService);
+            userService,
+            documentManagementService,
+            bulkPrintDetailsMapper);
 
         String documentUrl = DOCUMENT_URI.toString();
         CCDDocument document = new CCDDocument(documentUrl, documentUrl, GENERAL_LETTER_PDF);

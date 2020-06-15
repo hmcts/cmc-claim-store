@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.Notifications
 import uk.gov.hmcts.cmc.claimstore.documents.PrintService;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintableTemplate;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
+import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimIssuedStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -71,6 +72,8 @@ public class PinOrchestrationServiceTest {
     private ClaimCreationEventsStatusService eventsStatusService;
     @Mock
     private DocumentOrchestrationService documentOrchestrationService;
+    @Mock
+    private ClaimService claimService;
 
     private final GeneratedDocuments generatedDocuments = GeneratedDocuments.builder()
         .defendantPinLetterDoc(defendantPinLetterDocument)
@@ -89,8 +92,8 @@ public class PinOrchestrationServiceTest {
             claimIssuedNotificationService,
             notificationsProperties,
             eventsStatusService,
-            documentOrchestrationService
-        );
+            documentOrchestrationService,
+            claimService);
 
         given(notificationsProperties.getTemplates()).willReturn(templates);
         given(templates.getEmail()).willReturn(emailTemplates);

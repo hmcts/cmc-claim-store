@@ -6,13 +6,16 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.PrintService;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintableTemplate;
+import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimIssuedStaffNotificationService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ADD_BULK_PRINT_DETAILS;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
@@ -22,6 +25,7 @@ public class PinOrchestrationService {
     private final ClaimIssuedNotificationService claimIssuedNotificationService;
     private final NotificationsProperties notificationsProperties;
     private final DocumentOrchestrationService documentOrchestrationService;
+    private final ClaimService claimService;
     private final ClaimCreationEventsStatusService eventsStatusService;
     private final PrintService bulkPrintService;
     private final ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService;
@@ -32,7 +36,8 @@ public class PinOrchestrationService {
         ClaimIssuedNotificationService claimIssuedNotificationService,
         NotificationsProperties notificationsProperties,
         ClaimCreationEventsStatusService eventsStatusService,
-        DocumentOrchestrationService documentOrchestrationService
+        DocumentOrchestrationService documentOrchestrationService,
+        ClaimService claimService
     ) {
         this.bulkPrintService = bulkPrintService;
         this.claimIssuedStaffNotificationService = claimIssuedStaffNotificationService;
@@ -40,6 +45,7 @@ public class PinOrchestrationService {
         this.notificationsProperties = notificationsProperties;
         this.eventsStatusService = eventsStatusService;
         this.documentOrchestrationService = documentOrchestrationService;
+        this.claimService = claimService;
     }
 
     @LogExecutionTime
@@ -49,12 +55,12 @@ public class PinOrchestrationService {
 
         ClaimSubmissionOperationIndicators.ClaimSubmissionOperationIndicatorsBuilder updatedOperationIndicator =
             claim.getClaimSubmissionOperationIndicators().toBuilder()
-            .bulkPrint(NO)
-            .staffNotification(NO)
-            .defendantNotification(NO);
+                .bulkPrint(NO)
+                .staffNotification(NO)
+                .defendantNotification(NO);
 
         try {
-            bulkPrintService.print(
+            BulkPrintDetails bulkPrintDetails = bulkPrintService.print(
                 updatedClaim,
                 ImmutableList.of(
                     new PrintableTemplate(
@@ -65,6 +71,15 @@ public class PinOrchestrationService {
                         buildSealedClaimFileBaseName(claim.getReferenceNumber()))),
                 authorisation
             );
+
+            ImmutableList<BulkPrintDetails> printDetails = ImmutableList.<BulkPrintDetails>builder()
+                .addAll(claim.getBulkPrintDetails())
+                .add(bulkPrintDetails)
+                .build();
+
+            updatedClaim = claimService
+                .addBulkPrintDetails(authorisation, printDetails, ADD_BULK_PRINT_DETAILS, updatedClaim);
+
             updatedOperationIndicator.bulkPrint(YesNoOption.YES);
 
             claimIssuedStaffNotificationService.notifyStaffOfClaimIssue(

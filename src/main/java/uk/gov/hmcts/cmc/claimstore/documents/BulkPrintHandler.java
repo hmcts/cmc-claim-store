@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.events.GeneralLetterReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.events.legaladvisor.DirectionsOrderReadyToPrintEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -39,10 +40,10 @@ public class BulkPrintHandler {
     }
 
     @EventListener
-    public void print(DocumentReadyToPrintEvent event) {
+    public BulkPrintDetails BulkPrintDetails(DocumentReadyToPrintEvent event) {
         requireNonNull(event);
         Claim claim = event.getClaim();
-        bulkPrintService.print(
+        return bulkPrintService.print(
             claim,
             ImmutableList.of(
                 new PrintableTemplate(
@@ -57,10 +58,10 @@ public class BulkPrintHandler {
     }
 
     @EventListener
-    public void print(DirectionsOrderReadyToPrintEvent event) {
+    public BulkPrintDetails print(DirectionsOrderReadyToPrintEvent event) {
         requireNonNull(event);
         Claim claim = event.getClaim();
-        bulkPrintService.printPdf(
+        return bulkPrintService.printPdf(
             claim,
             ImmutableList.of(
                 new PrintableTemplate(
@@ -76,10 +77,10 @@ public class BulkPrintHandler {
     }
 
     @EventListener
-    public void print(GeneralLetterReadyToPrintEvent event) {
+    public BulkPrintDetails print(GeneralLetterReadyToPrintEvent event) {
         requireNonNull(event);
         Claim claim = event.getClaim();
-        bulkPrintService.printPdf(
+        return bulkPrintService.printPdf(
             claim,
             ImmutableList.of(
                 new PrintablePdf(
@@ -93,7 +94,7 @@ public class BulkPrintHandler {
     }
 
     @EventListener
-    public void print(BulkPrintTransferEvent event) {
+    public BulkPrintDetails print(BulkPrintTransferEvent event) {
         requireNonNull(event);
         Claim claim = event.getClaim();
 
@@ -108,7 +109,7 @@ public class BulkPrintHandler {
             .collect(Collectors.toList())
         );
 
-        bulkPrintService.printPdf(claim, Collections.unmodifiableList(printableDocs),
+        return bulkPrintService.printPdf(claim, Collections.unmodifiableList(printableDocs),
             BulkPrintRequestType.BULK_PRINT_TRANSFER_TYPE, event.getAuthorisation());
     }
 }

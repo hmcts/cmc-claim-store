@@ -9,7 +9,6 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.Printable;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
@@ -80,7 +79,7 @@ public class BulkPrintService implements PrintService {
         backoff = @Backoff(delay = 200)
     )
     @Override
-    public void print(Claim claim, List<Printable> documents, String authorisation) {
+    public BulkPrintDetails print(Claim claim, List<Printable> documents, String authorisation) {
         requireNonNull(claim);
         List<Document> docs = documents.stream()
             .filter(Objects::nonNull)
@@ -95,32 +94,21 @@ public class BulkPrintService implements PrintService {
                 wrapInDetailsInMap(claim, BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE.value)
             )
         );
-        ImmutableList.Builder<BulkPrintDetails> bulkPrintDetails = ImmutableList.builder();
-        bulkPrintDetails.addAll(claim.getBulkPrintDetails());
-
-        bulkPrintDetails.add(
-            BulkPrintDetails.builder()
-                .printRequestId(sendLetterResponse.letterId.toString())
-                .printRequestType(BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE.printRequestType)
-                .printRequestedAt(LocalDate.now())
-                .build()
-        );
-
-        claimService.addBulkPrintDetails(
-            authorisation,
-            bulkPrintDetails.build(),
-            CaseEvent.ADD_BULK_PRINT_DETAILS,
-            claim
-        );
 
         logger.info(BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE.logInfo,
             sendLetterResponse.letterId,
             claim.getReferenceNumber()
         );
+
+        return BulkPrintDetails.builder()
+            .printRequestId(sendLetterResponse.letterId.toString())
+            .printRequestType(BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE.printRequestType)
+            .printRequestedAt(LocalDate.now())
+            .build();
     }
 
     @Recover
-    public void notifyStaffForBulkPrintFailure(
+    public BulkPrintDetails notifyStaffForBulkPrintFailure(
         RuntimeException exception,
         Claim claim,
         List<Printable> documents,
@@ -140,7 +128,7 @@ public class BulkPrintService implements PrintService {
         backoff = @Backoff(delay = 200)
     )
     @Override
-    public void printPdf(
+    public BulkPrintDetails printPdf(
         Claim claim,
         List<Printable> documents,
         BulkPrintRequestType letterType,
@@ -163,28 +151,11 @@ public class BulkPrintService implements PrintService {
             )
         );
 
-        ImmutableList.Builder<BulkPrintDetails> bulkPrintDetails = ImmutableList.builder();
-        bulkPrintDetails.addAll(claim.getBulkPrintDetails());
-        bulkPrintDetails.add(
-            BulkPrintDetails.builder()
-                .printRequestId(sendLetterResponse.letterId.toString())
-                .printRequestType(letterType.printRequestType)
-                .printRequestedAt(LocalDate.now())
-                .build()
-        );
-
-        claimService.addBulkPrintDetails(
-            authorisation,
-            bulkPrintDetails.build(),
-            CaseEvent.ADD_BULK_PRINT_DETAILS,
-            claim
-        );
-
-        logger.info(letterType.logInfo,
-            sendLetterResponse.letterId,
-            letterType,
-            claim.getReferenceNumber()
-        );
+        return BulkPrintDetails.builder()
+            .printRequestId(sendLetterResponse.letterId.toString())
+            .printRequestType(letterType.printRequestType)
+            .printRequestedAt(LocalDate.now())
+            .build();
     }
 
     private String readDocuments(Document document) {

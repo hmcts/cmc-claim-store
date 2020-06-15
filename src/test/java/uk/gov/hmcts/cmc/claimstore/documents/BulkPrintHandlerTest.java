@@ -46,7 +46,7 @@ public class BulkPrintHandlerTest {
             = new DocumentReadyToPrintEvent(claim, defendantLetterDocument, sealedClaimDocument, AUTHORISATION);
 
         //when
-        bulkPrintHandler.print(printEvent);
+        bulkPrintHandler.BulkPrintDetails(printEvent);
 
         //verify
         verify(bulkPrintService).print(

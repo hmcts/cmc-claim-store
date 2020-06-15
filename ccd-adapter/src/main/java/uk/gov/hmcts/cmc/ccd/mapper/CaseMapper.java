@@ -24,6 +24,7 @@ import static uk.gov.hmcts.cmc.ccd.mapper.ClaimSubmissionOperationIndicatorMappe
 import static uk.gov.hmcts.cmc.ccd.mapper.ClaimSubmissionOperationIndicatorMapper.mapFromCCDClaimSubmissionOperationIndicators;
 import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.getMediationOutcome;
 import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.toCaseName;
+import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
 
 @Component
 public class CaseMapper {
@@ -78,8 +79,7 @@ public class CaseMapper {
             .map(CCDProceedOnPaperReasonType::valueOf)
             .ifPresent(builder::proceedOnPaperReason);
 
-        builder.bulkPrintDetails(claim.getBulkPrintDetails()
-            .stream()
+        builder.bulkPrintDetails(asStream(claim.getBulkPrintDetails())
             .map(bulkPrintDetailsMapper::to)
             .filter(Objects::nonNull)
             .collect(Collectors.toList())
@@ -152,8 +152,7 @@ public class CaseMapper {
             builder.preferredDQCourt(ccdCase.getPreferredDQCourt());
         }
 
-        builder.bulkPrintDetails(ccdCase.getBulkPrintDetails()
-            .stream()
+        builder.bulkPrintDetails(asStream(ccdCase.getBulkPrintDetails())
             .map(bulkPrintDetailsMapper::from)
             .filter(Objects::nonNull)
             .collect(Collectors.toList())
