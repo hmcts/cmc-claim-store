@@ -22,9 +22,9 @@ import java.util.List;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.BULK_PRINT_TRANSFER_TYPE;
-import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.DIRECTION_ORDER_LETTER_TYPE;
-import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.GENERAL_LETTER_TYPE;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.BULK_PRINT_TRANSFER_TYPE;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.DIRECTION_ORDER_LETTER_TYPE;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.GENERAL_LETTER_TYPE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BulkPrintHandlerTest {

@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.TransferContent;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.PrintRequestType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
@@ -613,7 +614,10 @@ public final class SampleClaim {
             null,
             null,
             transferContent,
-            List.of(BulkPrintDetails.builder().printLetterId(bulkPrintLetterId).build())
+            List.of(BulkPrintDetails.builder()
+                .printRequestType(PrintRequestType.PIN_LETTER_TO_DEFENDANT)
+                .printRequestedAt(LocalDate.now())
+                .printRequestId(bulkPrintLetterId).build())
         );
     }
 

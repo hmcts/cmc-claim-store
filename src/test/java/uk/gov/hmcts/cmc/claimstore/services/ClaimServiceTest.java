@@ -469,7 +469,7 @@ public class ClaimServiceTest {
     public void addBulkPrintDetailsToClaimShouldCallCaseRepository() {
         String letterId = UUID.randomUUID().toString();
         List<BulkPrintDetails> printCollection
-            = List.of(BulkPrintDetails.builder().printLetterId(letterId).build());
+            = List.of(BulkPrintDetails.builder().printRequestId(letterId).build());
         claimService.addBulkPrintDetails(
             AUTHORISATION, printCollection, CaseEvent.ADD_BULK_PRINT_DETAILS, claim);
 

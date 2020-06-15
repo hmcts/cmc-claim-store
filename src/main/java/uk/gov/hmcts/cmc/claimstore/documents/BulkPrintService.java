@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.documents;
 
+import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,6 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.BulkPrintStaffNotificationServ
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
-import uk.gov.hmcts.cmc.domain.models.bulkprint.PrintLetterType;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.reform.sendletter.api.Document;
@@ -47,10 +47,6 @@ public class BulkPrintService implements PrintService {
     public static final String XEROX_TYPE_PARAMETER = "CMC001";
 
     protected static final String ADDITIONAL_DATA_LETTER_TYPE_KEY = "letterType";
-    protected static final String FIRST_CONTACT_LETTER_TYPE = "first-contact-pack";
-    protected static final String DIRECTION_ORDER_LETTER_TYPE = "direction-order-pack";
-    protected static final String BULK_PRINT_TRANSFER_TYPE = "bulk-print-transfer-pack";
-    protected static final String GENERAL_LETTER_TYPE = "general-letter";
     protected static final String ADDITIONAL_DATA_CASE_IDENTIFIER_KEY = "caseIdentifier";
     protected static final String ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY = "caseReferenceNumber";
 
@@ -96,27 +92,28 @@ public class BulkPrintService implements PrintService {
             new Letter(
                 docs,
                 XEROX_TYPE_PARAMETER,
-                wrapInDetailsInMap(claim, FIRST_CONTACT_LETTER_TYPE)
+                wrapInDetailsInMap(claim, BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE.value)
             )
         );
-        List<BulkPrintDetails> bulkPrintCollection = claim.getBulkPrintDetails();
+        ImmutableList.Builder<BulkPrintDetails> bulkPrintDetails = ImmutableList.builder();
+        bulkPrintDetails.addAll(claim.getBulkPrintDetails());
 
-        bulkPrintCollection.add(
+        bulkPrintDetails.add(
             BulkPrintDetails.builder()
-                .printLetterId(sendLetterResponse.letterId.toString())
-                .printLetterType(PrintLetterType.CLAIM_ISSUED)
-                .printedDate(LocalDate.now())
+                .printRequestId(sendLetterResponse.letterId.toString())
+                .printRequestType(BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE.printRequestType)
+                .printRequestedAt(LocalDate.now())
                 .build()
         );
 
         claimService.addBulkPrintDetails(
             authorisation,
-            bulkPrintCollection,
+            bulkPrintDetails.build(),
             CaseEvent.ADD_BULK_PRINT_DETAILS,
             claim
         );
 
-        logger.info("Defendant first contact pack letter {} created for claim reference {}",
+        logger.info(BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE.logInfo,
             sendLetterResponse.letterId,
             claim.getReferenceNumber()
         );
@@ -143,15 +140,13 @@ public class BulkPrintService implements PrintService {
         backoff = @Backoff(delay = 200)
     )
     @Override
-    public void printPdf(Claim claim, List<Printable> documents, String letterType, String authorisation) {
+    public void printPdf(
+        Claim claim,
+        List<Printable> documents,
+        BulkPrintRequestType letterType,
+        String authorisation
+    ) {
         requireNonNull(claim);
-        String info = "";
-        if (letterType.equals(DIRECTION_ORDER_LETTER_TYPE)) {
-            info = "Direction order pack letter {} created for letter type {} claim reference {}";
-        }
-        if (letterType.equals(GENERAL_LETTER_TYPE)) {
-            info = "General Letter {} created for letter type {} claim reference {}";
-        }
 
         List<String> docs = documents.stream()
             .filter(Objects::nonNull)
@@ -164,27 +159,28 @@ public class BulkPrintService implements PrintService {
             new LetterWithPdfsRequest(
                 docs,
                 XEROX_TYPE_PARAMETER,
-                wrapInDetailsInMap(claim, letterType)
+                wrapInDetailsInMap(claim, letterType.value)
             )
         );
 
-        List<BulkPrintDetails> bulkPrintDetails = claim.getBulkPrintDetails();
+        ImmutableList.Builder<BulkPrintDetails> bulkPrintDetails = ImmutableList.builder();
+        bulkPrintDetails.addAll(claim.getBulkPrintDetails());
         bulkPrintDetails.add(
             BulkPrintDetails.builder()
-                .printLetterId(sendLetterResponse.letterId.toString())
-                .printLetterType(PrintLetterType.ORDER_ISSUED)
-                .printedDate(LocalDate.now())
+                .printRequestId(sendLetterResponse.letterId.toString())
+                .printRequestType(letterType.printRequestType)
+                .printRequestedAt(LocalDate.now())
                 .build()
         );
 
         claimService.addBulkPrintDetails(
             authorisation,
-            bulkPrintDetails,
+            bulkPrintDetails.build(),
             CaseEvent.ADD_BULK_PRINT_DETAILS,
             claim
         );
 
-        logger.info(info,
+        logger.info(letterType.logInfo,
             sendLetterResponse.letterId,
             letterType,
             claim.getReferenceNumber()

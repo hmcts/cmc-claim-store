@@ -36,10 +36,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BULK_PRINT_FAILED;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.DIRECTION_ORDER_LETTER_TYPE;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.GENERAL_LETTER_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.ADDITIONAL_DATA_CASE_IDENTIFIER_KEY;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.ADDITIONAL_DATA_LETTER_TYPE_KEY;
-import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.FIRST_CONTACT_LETTER_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.XEROX_TYPE_PARAMETER;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -75,7 +77,7 @@ public class BulkPrintServiceTest {
     @Before
     public void beforeEachTest() {
         when(authTokenGenerator.generate()).thenReturn(AUTH_VALUE);
-        additionalData.put(ADDITIONAL_DATA_LETTER_TYPE_KEY, FIRST_CONTACT_LETTER_TYPE);
+        additionalData.put(ADDITIONAL_DATA_LETTER_TYPE_KEY, FIRST_CONTACT_LETTER_TYPE.value);
         additionalData.put(ADDITIONAL_DATA_CASE_IDENTIFIER_KEY, CLAIM.getId());
         additionalData.put(ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY, CLAIM.getReferenceNumber());
 
@@ -138,7 +140,7 @@ public class BulkPrintServiceTest {
             new PrintableTemplate(coversheetForClaimant, "filename"),
             new PrintableTemplate(legalOrderDocument, "filename")
             ),
-            "general-order",
+            DIRECTION_ORDER_LETTER_TYPE,
             AUTHORISATION);
 
         verify(sendLetterApi).sendLetter(eq(AUTH_VALUE), any(LetterWithPdfsRequest.class));
@@ -164,7 +166,7 @@ public class BulkPrintServiceTest {
         bulkPrintService.printPdf(CLAIM, ImmutableList.of(
             new PrintableTemplate(generalLetter, "filename")
             ),
-            "general-letter",
+            GENERAL_LETTER_TYPE,
             AUTHORISATION
         );
 
@@ -187,6 +189,7 @@ public class BulkPrintServiceTest {
             pdfServiceClient,
             claimService
         );
+
         try {
             bulkPrintService.print(
                 CLAIM,

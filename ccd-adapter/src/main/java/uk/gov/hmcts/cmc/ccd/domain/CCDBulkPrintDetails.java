@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.domain.models.bulkprint;
+package uk.gov.hmcts.cmc.ccd.domain;
 
 import lombok.Builder;
 import lombok.Value;
@@ -7,9 +7,8 @@ import java.time.LocalDate;
 
 @Value
 @Builder
-public class BulkPrintDetails {
-    private String id;
+public class CCDBulkPrintDetails {
     private String printRequestId;
-    private PrintRequestType printRequestType;
+    private CCDPrintRequestType printRequestType;
     private LocalDate printRequestedAt;
 }

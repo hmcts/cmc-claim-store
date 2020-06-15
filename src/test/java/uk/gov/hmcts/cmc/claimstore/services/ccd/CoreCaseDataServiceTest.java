@@ -667,11 +667,11 @@ public class CoreCaseDataServiceTest {
     public void addBulkPrintDetailsToClaimShouldBeSuccessful() {
         Claim claim = SampleClaim.getDefault();
 
-        when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
 
         service.addBulkPrintDetailsToClaim(
             AUTHORISATION,
-            List.of(BulkPrintDetails.builder().printLetterId(UUID.randomUUID().toString()).build()),
+            List.of(BulkPrintDetails.builder().printRequestId(UUID.randomUUID().toString()).build()),
             ADD_BULK_PRINT_DETAILS,
             claim.getId());
 

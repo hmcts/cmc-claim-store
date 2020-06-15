@@ -21,9 +21,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.BULK_PRINT_TRANSFER_TYPE;
-import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.DIRECTION_ORDER_LETTER_TYPE;
-import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.GENERAL_LETTER_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildCoverSheetFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDirectionsOrderFileBaseName;
@@ -73,7 +70,7 @@ public class BulkPrintHandler {
                     event.getDirectionsOrder(),
                     buildDirectionsOrderFileBaseName(claim.getReferenceNumber()))
             ),
-            DIRECTION_ORDER_LETTER_TYPE,
+            BulkPrintRequestType.DIRECTION_ORDER_LETTER_TYPE,
             event.getAuthorisation()
         );
     }
@@ -90,7 +87,7 @@ public class BulkPrintHandler {
                     buildLetterFileBaseName(claim.getReferenceNumber(),
                         String.valueOf(LocalDate.now())))
             ),
-            GENERAL_LETTER_TYPE,
+            BulkPrintRequestType.GENERAL_LETTER_TYPE,
             event.getAuthorisation()
         );
     }
@@ -112,6 +109,6 @@ public class BulkPrintHandler {
         );
 
         bulkPrintService.printPdf(claim, Collections.unmodifiableList(printableDocs),
-            BULK_PRINT_TRANSFER_TYPE, event.getAuthorisation());
+            BulkPrintRequestType.BULK_PRINT_TRANSFER_TYPE, event.getAuthorisation());
     }
 }

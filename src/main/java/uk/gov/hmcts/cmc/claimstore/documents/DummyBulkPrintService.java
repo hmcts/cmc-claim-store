@@ -20,7 +20,7 @@ public class DummyBulkPrintService implements PrintService {
     }
 
     @Override
-    public void printPdf(Claim claim, List<Printable> documents, String letterType, String authorisation) {
+    public void printPdf(Claim claim, List<Printable> documents, BulkPrintRequestType type, String authorisation) {
         logger.info("No bulk print operation need to be performed as 'Bulk print url' is switched off.");
     }
 }

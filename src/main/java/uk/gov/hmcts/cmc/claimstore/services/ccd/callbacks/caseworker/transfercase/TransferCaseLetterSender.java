@@ -42,7 +42,7 @@ public class TransferCaseLetterSender {
 
         Document coverLetterDoc = printableDocumentService.process(coverDoc, authorisation);
         List<BulkPrintTransferEvent.PrintableDocument> caseDocuments = getAllCaseDocuments(ccdCase, authorisation);
-        eventProducer.createBulkPrintTransferEvent(claim, coverLetterDoc, caseDocuments,authorisation);
+        eventProducer.createBulkPrintTransferEvent(claim, coverLetterDoc, caseDocuments, authorisation);
     }
 
     private List<BulkPrintTransferEvent.PrintableDocument> getAllCaseDocuments(CCDCase ccdCase, String authorisation) {

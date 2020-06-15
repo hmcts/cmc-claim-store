@@ -630,12 +630,9 @@ public class CoreCaseDataServiceFailureTest {
     public void addBulkPrintClaimToClaimEventFailure() {
         Claim claim = SampleClaim.getDefault();
 
-        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(CCDCase.builder().build());
-        when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
-
         service.addBulkPrintDetailsToClaim(
             AUTHORISATION,
-            List.of(BulkPrintDetails.builder().printLetterId(UUID.randomUUID().toString()).build()),
+            List.of(BulkPrintDetails.builder().printRequestId(UUID.randomUUID().toString()).build()),
             CaseEvent.ADD_BULK_PRINT_DETAILS,
             claim.getId());
     }
