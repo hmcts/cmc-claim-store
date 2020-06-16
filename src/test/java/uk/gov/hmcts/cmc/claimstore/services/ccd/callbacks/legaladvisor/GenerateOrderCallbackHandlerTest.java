@@ -106,6 +106,8 @@ public class GenerateOrderCallbackHandlerTest {
     @Mock
     private DirectionOrderService directionOrderService;
     @Mock
+    private OrderRenderer orderRenderer;
+    @Mock
     private DocumentManagementService documentManagementService;
 
     private CallbackRequest callbackRequest;
@@ -114,8 +116,7 @@ public class GenerateOrderCallbackHandlerTest {
     @BeforeEach
     void setUp() {
         OrderCreator orderCreator = new OrderCreator(legalOrderGenerationDeadlinesCalculator, caseDetailsConverter,
-            docAssemblyService, new GenerateOrderRule(), directionsQuestionnaireService,
-            pilotCourtService);
+            new GenerateOrderRule(), directionsQuestionnaireService, pilotCourtService, orderRenderer);
 
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
             caseDetailsConverter, legalOrderService, appInsights, directionOrderService, documentManagementService);
@@ -151,7 +152,7 @@ public class GenerateOrderCallbackHandlerTest {
 
             DocAssemblyResponse docAssemblyResponse = Mockito.mock(DocAssemblyResponse.class);
             when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
-            when(docAssemblyService.createOrder(eq(ccdCase), eq(BEARER_TOKEN)))
+            when(orderRenderer.renderOrder(eq(ccdCase), eq(BEARER_TOKEN)))
                 .thenReturn(docAssemblyResponse);
 
             CallbackParams callbackParams = CallbackParams.builder()
