@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.docassembly.DocAssemblyClient;
@@ -29,6 +31,23 @@ public class DocAssemblyService {
     ) {
         this.authTokenGenerator = authTokenGenerator;
         this.docAssemblyClient = docAssemblyClient;
+    }
+
+    public CCDDocument generateDocument(CCDCase ccdCase,
+                                        String authorisation,
+                                        DocAssemblyTemplateBody formPayload,
+                                        String templateId) {
+
+        var docAssemblyResponse = renderTemplate(
+            ccdCase,
+            authorisation,
+            templateId,
+            formPayload
+            );
+
+        return CCDDocument.builder()
+          .documentUrl(docAssemblyResponse.getRenditionOutputLocation())
+          .build();
     }
 
     public DocAssemblyResponse renderTemplate(CCDCase ccdCase,
