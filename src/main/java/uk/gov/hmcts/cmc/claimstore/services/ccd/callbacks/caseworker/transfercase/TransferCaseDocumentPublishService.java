@@ -56,7 +56,8 @@ public class TransferCaseDocumentPublishService {
             noticeOfTransferLetterTemplateMapper.noticeOfTransferLetterBodyForDefendant(
                 ccdCase, authorisation);
 
-        CCDDocument defendantLetter = docAssemblyService.generateDocument(authorisation,
+        CCDDocument defendantLetter = docAssemblyService.generateDocument(ccdCase,
+            authorisation,
             formPayloadForDefendant,
             defendantLetterTemplateId)
             .toBuilder()
@@ -72,7 +73,8 @@ public class TransferCaseDocumentPublishService {
         DocAssemblyTemplateBody formPayloadForCourt =
             noticeOfTransferLetterTemplateMapper.noticeOfTransferLetterBodyForCourt(ccdCase, authorisation);
 
-        CCDDocument coverDoc = docAssemblyService.generateDocument(authorisation,
+        CCDDocument coverDoc = docAssemblyService.generateDocument(ccdCase,
+            authorisation,
             formPayloadForCourt,
             courtLetterTemplateId)
             .toBuilder()
