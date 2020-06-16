@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
@@ -18,7 +17,6 @@ import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 
 import java.util.Collections;
 import java.util.List;
@@ -35,18 +33,18 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
     private static final String DRAFT_ORDER_DOC = "draftOrderDoc";
 
     private final CaseDetailsConverter caseDetailsConverter;
-    private final DocAssemblyService docAssemblyService;
     private final OrderPostProcessor orderPostProcessor;
+    private final OrderRenderer orderRenderer;
 
     @Autowired
     public DrawOrderCallbackHandler(
         OrderPostProcessor orderPostProcessor,
         CaseDetailsConverter caseDetailsConverter,
-        DocAssemblyService docAssemblyService
+        OrderRenderer orderRenderer
     ) {
         this.orderPostProcessor = orderPostProcessor;
         this.caseDetailsConverter = caseDetailsConverter;
-        this.docAssemblyService = docAssemblyService;
+        this.orderRenderer = orderRenderer;
     }
 
     @Override
@@ -72,7 +70,8 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
-        DocAssemblyResponse docAssemblyResponse = docAssemblyService.createOrder(ccdCase, authorisation);
+
+        var docAssemblyResponse = orderRenderer.renderLegalAdvisorOrder(ccdCase, authorisation);
 
         return AboutToStartOrSubmitCallbackResponse
             .builder()
