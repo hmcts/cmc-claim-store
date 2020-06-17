@@ -171,4 +171,7 @@ public class EmailTemplates {
 
     @NotEmpty
     private String defendantContactDetailsChanged;
+
+    @NotEmpty
+    private String caseTransferred;
 }

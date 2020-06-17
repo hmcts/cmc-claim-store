@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.CourtDetails;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -22,6 +23,8 @@ import javax.validation.constraints.NotNull;
     produces = MediaType.APPLICATION_JSON_VALUE
 )
 public class CourtFinderController {
+
+    public static final String MONEY_CLAIM_AOL = "Money claims";
 
     private final CourtFinderApi courtFinderApi;
 
@@ -39,6 +42,18 @@ public class CourtFinderController {
     @GetMapping(value = "/court-details/{court-slug}")
     public CourtDetails getCourtDetails(@NotEmpty @NotNull @PathVariable("court-slug") String courtNameSlug) {
         return courtFinderApi.getCourtDetailsFromNameSlug(courtNameSlug);
+    }
+
+    @GetMapping(value = "/search-name/{name}")
+    public List<Court> searchByName(
+        @NotEmpty @NotNull @PathVariable("name") String name) {
+        return courtFinderApi.findMoneyClaimCourtByName(name)
+            .stream()
+            .filter(
+                c -> c.getAreasOfLaw()
+                    .stream()
+                    .anyMatch(a -> a.getName().equalsIgnoreCase(MONEY_CLAIM_AOL))
+            ).collect(Collectors.toList());
     }
 
 }

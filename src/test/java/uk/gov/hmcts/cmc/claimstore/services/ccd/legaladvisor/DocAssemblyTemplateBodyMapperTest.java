@@ -22,6 +22,7 @@ import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionOrderService;
+import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
@@ -57,6 +58,8 @@ class DocAssemblyTemplateBodyMapperTest {
     private DirectionOrderService directionOrderService;
     @Mock
     private WorkingDayIndicator workingDayIndicator;
+    @Mock
+    private ResponseDeadlineCalculator responseDeadlineCalculator;
 
     private DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
     private CCDCase ccdCase;
@@ -68,7 +71,10 @@ class DocAssemblyTemplateBodyMapperTest {
     @BeforeEach
     void setUp() {
         docAssemblyTemplateBodyMapper
-            = new DocAssemblyTemplateBodyMapper(clock, directionOrderService, workingDayIndicator);
+            = new DocAssemblyTemplateBodyMapper(clock,
+            directionOrderService,
+            workingDayIndicator,
+            responseDeadlineCalculator);
 
         ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
         ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
@@ -163,12 +169,6 @@ class DocAssemblyTemplateBodyMapperTest {
             .expertReportInstructionDefendant(Collections.emptyList())
             .grantExpertReportPermission(true)
             .expertReportInstruction(SUBMIT_MORE_DOCS_INSTRUCTION);
-
-        //when
-        when(clock.instant()).thenReturn(LocalDate.parse("2019-04-24")
-            .atStartOfDay().toInstant(ZoneOffset.UTC));
-        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
-        when(clock.withZone(UTC_ZONE)).thenReturn(clock);
     }
 
     @Nested
@@ -252,6 +252,12 @@ class DocAssemblyTemplateBodyMapperTest {
                 .grantExpertReportPermission(true)
                 .expertReportInstruction(SUBMIT_MORE_DOCS_INSTRUCTION)
                 .build();
+
+            //when
+            when(clock.instant()).thenReturn(LocalDate.parse("2019-04-24")
+                .atStartOfDay().toInstant(ZoneOffset.UTC));
+            when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+            when(clock.withZone(UTC_ZONE)).thenReturn(clock);
         }
     }
 
@@ -272,6 +278,12 @@ class DocAssemblyTemplateBodyMapperTest {
                         .build()
                     )
                     .build());
+
+            //when
+            when(clock.instant()).thenReturn(LocalDate.parse("2019-04-24")
+                .atStartOfDay().toInstant(ZoneOffset.UTC));
+            when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+            when(clock.withZone(UTC_ZONE)).thenReturn(clock);
         }
 
         @Test
@@ -326,6 +338,16 @@ class DocAssemblyTemplateBodyMapperTest {
     @Nested
     @DisplayName("General Tests for General Letter")
     class GeneralTestsForGeneralLetter {
+
+        @BeforeEach
+        void setUp() {
+            //when
+            when(clock.instant()).thenReturn(LocalDate.parse("2019-04-24")
+                .atStartOfDay().toInstant(ZoneOffset.UTC));
+            when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+            when(clock.withZone(UTC_ZONE)).thenReturn(clock);
+        }
+
         @Test
         void shouldMapTemplateBodyWhenGeneralLetterForDefendant() {
             letterContent.issueLetterContact(CCDContactPartyType.DEFENDANT);
@@ -368,6 +390,146 @@ class DocAssemblyTemplateBodyMapperTest {
                 .caseName("case name")
                 .caseworkerName("Judge McJudge")
                 .body(LETTER_CONTENT)
+                .build();
+            assertThat(requestBody).isEqualTo(expectedBody);
+        }
+    }
+
+    @Nested
+    class PaperDefenceFormTests {
+        private String hearingCourt;
+        private LocalDate deadline;
+        private LocalDate extendedDeadline;
+        private String totalAmount;
+
+        @BeforeEach
+        void setUp() {
+            deadline = LocalDate.now();
+            totalAmount = "100";
+            hearingCourt = "hearing court";
+            ccdCase.setHearingCourtName(hearingCourt);
+            ccdCase.setCalculatedResponseDeadline(deadline);
+            ccdCase.setTotalAmount(totalAmount);
+
+            extendedDeadline = deadline.plusDays(14);
+            when(responseDeadlineCalculator.calculatePostponedResponseDeadline(ccdCase.getIssuedOn()))
+                .thenReturn(extendedDeadline);
+        }
+
+        @Test
+        void shouldMapTemplateBodyIndividualYesToNewFeature() {
+            DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.paperDefenceForm(ccdCase);
+            DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
+                .referenceNumber("ref no")
+                .responseDeadline(ccdCase.getRespondents().get(0).getValue().getResponseDeadline())
+                .extendedResponseDeadline(extendedDeadline)
+                .partyName("Individual")
+                .partyAddress(CCDAddress.builder()
+                    .addressLine1("line1")
+                    .addressLine2("line2")
+                    .addressLine3("line3")
+                    .postCode("postcode")
+                    .postTown("city")
+                    .build()
+                )
+                .totalAmount(totalAmount)
+                .claimantName("Individual")
+                .claimantAddress(CCDAddress.builder()
+                    .addressLine1("line1")
+                    .addressLine2("line2")
+                    .addressLine3("line3")
+                    .postCode("postcode")
+                    .postTown("city")
+                    .build())
+                .claimantEmail("my@email.com")
+                .hearingCourtName(hearingCourt)
+                .build();
+            assertThat(requestBody).isEqualTo(expectedBody);
+        }
+
+        @Test
+        void shouldMapTemplateBodySoleTraderYesToNewFeature() {
+            LocalDate now = LocalDate.now();
+            CCDRespondent ccdRespondentSoleTrader = SampleData.getCCDRespondentSoleTrader()
+                    .toBuilder()
+                    .responseDeadline(now)
+                    .build();
+            ccdCase.setRespondents(
+                ImmutableList.of(
+                    CCDCollectionElement.<CCDRespondent>builder()
+                        .value(ccdRespondentSoleTrader)
+                        .build()
+                ));
+
+            DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.paperDefenceForm(ccdCase);
+            DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
+                .referenceNumber("ref no")
+                .responseDeadline(now)
+                .extendedResponseDeadline(extendedDeadline)
+                .partyName("SoleTrader")
+                .partyAddress(CCDAddress.builder()
+                    .addressLine1("line1")
+                    .addressLine2("line2")
+                    .addressLine3("line3")
+                    .postCode("postcode")
+                    .postTown("city")
+                    .build()
+                )
+                .totalAmount(totalAmount)
+                .claimantName("Individual")
+                .claimantAddress(CCDAddress.builder()
+                    .addressLine1("line1")
+                    .addressLine2("line2")
+                    .addressLine3("line3")
+                    .postCode("postcode")
+                    .postTown("city")
+                    .build())
+                .claimantEmail("my@email.com")
+                .hearingCourtName(hearingCourt)
+                .businessName("My Trade")
+                .build();
+            assertThat(requestBody).isEqualTo(expectedBody);
+        }
+
+        @Test
+        void shouldMapTemplateBodyCompanyYesToNewFeature() {
+            LocalDate now = LocalDate.now();
+            CCDRespondent ccdRespondentCompany = SampleData.getCCDRespondentCompany()
+                .toBuilder()
+                .responseDeadline(now)
+                .build();
+            ccdCase.setRespondents(
+                ImmutableList.of(
+                    CCDCollectionElement.<CCDRespondent>builder()
+                        .value(ccdRespondentCompany)
+                        .build()
+                ));
+
+            DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.paperDefenceForm(ccdCase);
+            DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
+                .referenceNumber("ref no")
+                .responseDeadline(now)
+                .extendedResponseDeadline(extendedDeadline)
+                .partyName("Abc Ltd")
+                .partyAddress(CCDAddress.builder()
+                    .addressLine1("line1")
+                    .addressLine2("line2")
+                    .addressLine3("line3")
+                    .postCode("postcode")
+                    .postTown("city")
+                    .build()
+                )
+                .totalAmount(totalAmount)
+                .claimantName("Individual")
+                .claimantAddress(CCDAddress.builder()
+                    .addressLine1("line1")
+                    .addressLine2("line2")
+                    .addressLine3("line3")
+                    .postCode("postcode")
+                    .postTown("city")
+                    .build())
+                .claimantEmail("my@email.com")
+                .hearingCourtName(hearingCourt)
                 .build();
             assertThat(requestBody).isEqualTo(expectedBody);
         }

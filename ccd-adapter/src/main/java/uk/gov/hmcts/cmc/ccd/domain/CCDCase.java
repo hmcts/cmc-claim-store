@@ -75,7 +75,8 @@ public class CCDCase {
     private List<CCDCollectionElement<CCDEvidenceRow>> evidence;
     private String features;
     private CCDYesNoOption migratedFromClaimStore;
-    private List<CCDCollectionElement<CCDClaimDocument>> caseDocuments;
+    @Builder.Default
+    private List<CCDCollectionElement<CCDClaimDocument>> caseDocuments = Collections.emptyList();
     @Builder.Default
     private List<CCDCollectionElement<CCDScannedDocument>> scannedDocuments = Collections.emptyList();
     private String ocon9xForm;
@@ -148,7 +149,7 @@ public class CCDCase {
     private CCDProceedOnPaperReasonType proceedOnPaperReason;
     private String proceedOnPaperOtherReason;
     private LocalDate calculatedResponseDeadline;
-
+    private CCDTransferContent transferContent;
     /**
      * Temporary variables that are not to be persisted to case data but are only used during events
      */
