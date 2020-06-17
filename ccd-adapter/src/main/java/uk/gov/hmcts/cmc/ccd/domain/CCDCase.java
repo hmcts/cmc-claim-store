@@ -151,7 +151,7 @@ public class CCDCase {
     private LocalDate calculatedResponseDeadline;
     private CCDTransferContent transferContent;
     /**
-     * Temporary variables that are not to be persisted to case data but are only used during events
+     * Temporary variables that are not to be persisted to case data but are only used during events.
      */
     @Builder.Default
     private List<CCDCollectionElement<CCDScannedDocument>> temporaryScannedDocuments = Collections.emptyList();
