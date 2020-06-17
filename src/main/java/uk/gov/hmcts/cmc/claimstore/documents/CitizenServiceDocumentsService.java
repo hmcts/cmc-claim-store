@@ -35,4 +35,8 @@ public class CitizenServiceDocumentsService {
             letterContentProvider.createContent(claim, defendantPin)
         );
     }
+
+    public Document draftClaimDocument(Claim claim) {
+        return new Document(new String(documentTemplates.getDraftClaim()), claimContentProvider.createContent(claim));
+    }
 }

@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimantResponseFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDraftClaimFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForInterlocutoryJudgmentFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForJudgmentByAdmissionOrDeterminationFileBaseName;
@@ -123,5 +124,11 @@ public class DocumentNameUtilsTest {
     public void shouldBuildRequestOrgRepaymentFileBaseName() {
         assertThat(buildRequestOrgRepaymentFileBaseName("000MC001"))
             .isEqualTo("000MC001-request-org-repayment-amount");
+    }
+
+    @Test
+    public void shouldBuildDraftClaimFileBaseName() {
+        assertThat(buildDraftClaimFileBaseName("externalId"))
+            .isEqualTo("draft-claim-externalId");
     }
 }

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
+import uk.gov.hmcts.cmc.claimstore.documents.DraftClaimReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.PdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.ReviewOrderService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
@@ -31,6 +32,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     private final ClaimService claimService;
     private final DocumentManagementService documentManagementService;
     private final SealedClaimPdfService sealedClaimPdfService;
+    private final DraftClaimReceiptService draftClaimReceiptService;
     private final ClaimIssueReceiptService claimIssueReceiptService;
     private final DefendantResponseReceiptService defendantResponseReceiptService;
     private final SettlementAgreementCopyService settlementAgreementCopyService;
@@ -45,6 +47,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         ClaimService claimService,
         DocumentManagementService documentManagementService,
         SealedClaimPdfService sealedClaimPdfService,
+        DraftClaimReceiptService draftClaimReceiptService,
         ClaimIssueReceiptService claimIssueReceiptService,
         DefendantResponseReceiptService defendantResponseReceiptService,
         SettlementAgreementCopyService settlementAgreementCopyService,
@@ -55,6 +58,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         this.claimService = claimService;
         this.documentManagementService = documentManagementService;
         this.sealedClaimPdfService = sealedClaimPdfService;
+        this.draftClaimReceiptService = draftClaimReceiptService;
         this.claimIssueReceiptService = claimIssueReceiptService;
         this.defendantResponseReceiptService = defendantResponseReceiptService;
         this.settlementAgreementCopyService = settlementAgreementCopyService;
@@ -67,6 +71,8 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         switch (claimDocumentType) {
             case CLAIM_ISSUE_RECEIPT:
                 return claimIssueReceiptService;
+            case DRAFT_CLAIM_RECEIPT:
+                return draftClaimReceiptService;
             case SEALED_CLAIM:
                 return sealedClaimPdfService;
             case DEFENDANT_RESPONSE_RECEIPT:

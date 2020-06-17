@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
+import uk.gov.hmcts.cmc.claimstore.documents.DraftClaimReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.ReviewOrderService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
@@ -23,6 +24,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -38,6 +40,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIMANT_DIRECTIONS_QUESTIONNAIRE;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DRAFT_CLAIM_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.MEDIATION_AGREEMENT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.ORDER_DIRECTIONS;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.ORDER_SANCTIONS;
@@ -73,6 +76,8 @@ public class DocumentManagementBackedDocumentsServiceTest {
     private ClaimantDirectionsQuestionnairePdfService claimantDirectionsQuestionnairePdfService;
     @Mock
     private UserService userService;
+    @Mock
+    private DraftClaimReceiptService draftClaimReceiptService;
 
     @Before
     public void setUp() {
@@ -80,6 +85,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
             claimService,
             documentManagementService,
             sealedClaimPdfService,
+            draftClaimReceiptService,
             claimIssueReceiptService,
             defendantResponseReceiptService,
             settlementAgreementCopyService,
@@ -185,6 +191,29 @@ public class DocumentManagementBackedDocumentsServiceTest {
         byte[] pdf = documentManagementBackedDocumentsService.generateDocument(
             claim.getExternalId(),
             REVIEW_ORDER,
+            AUTHORISATION);
+        verifyCommon(pdf);
+    }
+
+    @Test
+    public void shouldGenerateDraftClaim() {
+        Claim claim = SampleClaim.builder()
+            .withIssuedOn(null)
+            .withClaimData(SampleClaimData.builder()
+                .withHelpWithFeesNumber("HWF01234")
+                .build())
+            .build();
+
+        when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(CLAIMANT)))
+            .thenReturn(claim);
+        when(draftClaimReceiptService.createPdf(any(Claim.class))).thenReturn(new PDF(
+            "draftClaim",
+            PDF_BYTES,
+            DRAFT_CLAIM_RECEIPT
+        ));
+        byte[] pdf = documentManagementBackedDocumentsService.generateDocument(
+            claim.getExternalId(),
+            DRAFT_CLAIM_RECEIPT,
             AUTHORISATION);
         verifyCommon(pdf);
     }

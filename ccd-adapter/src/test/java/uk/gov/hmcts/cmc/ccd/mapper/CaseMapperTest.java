@@ -25,6 +25,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
@@ -41,6 +42,15 @@ public class CaseMapperTest {
     private CaseMapper ccdCaseMapper;
 
     private static final String PREFERRED_COURT  = "preferred-court";
+
+    @Test
+    public void shouldMapIssuedDateWhenMissing() {
+        Claim claim = SampleClaim.getDefault().toBuilder()
+            .issuedOn(null).build();
+        CCDCase ccdCase = ccdCaseMapper.to(claim);
+
+        assertNull(ccdCase.getIssuedOn());
+    }
 
     @Test
     public void shouldMapLegalClaimToCCD() {

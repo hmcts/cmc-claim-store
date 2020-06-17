@@ -157,4 +157,10 @@ public class DocumentNameUtils {
 
         return format("%s-notice-of-transfer-for-defendant", caseRef);
     }
+
+    public static String buildDraftClaimFileBaseName(String number) {
+        requireNonBlank(number);
+
+        return format("draft-claim-%s", number);
+    }
 }
