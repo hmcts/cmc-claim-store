@@ -75,7 +75,7 @@ class TransferCaseDocumentPublishServiceTest {
         when(noticeOfTransferLetterTemplateMapper.noticeOfTransferLetterBodyForCourt(ccdCase, AUTHORISATION))
             .thenReturn(formPayloadForCourt);
 
-        when(docAssemblyService.generateDocument(AUTHORISATION, formPayloadForCourt, COURT_LETTER_TEMPLATE_ID))
+        when(docAssemblyService.generateDocument(ccdCase, AUTHORISATION, formPayloadForCourt, COURT_LETTER_TEMPLATE_ID))
             .thenReturn(generatedCoverDoc);
 
         CCDDocument namedCoverDoc = generatedCoverDoc.toBuilder()
