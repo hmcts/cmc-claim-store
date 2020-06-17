@@ -7,7 +7,8 @@ import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import java.util.List;
 
 public interface PrintService {
-    BulkPrintDetails print(Claim claim, List<Printable> documents, String authorisation);
+    BulkPrintDetails printHtmlLetter(Claim claim, List<Printable> documents,
+                                     BulkPrintRequestType letterType, String authorisation);
 
     BulkPrintDetails printPdf(Claim claim, List<Printable> documents,
                               BulkPrintRequestType letterType, String authorisation);

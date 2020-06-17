@@ -26,6 +26,7 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDet
 import uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
@@ -45,6 +46,7 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponse;
+import static uk.gov.hmcts.cmc.domain.models.bulkprint.PrintRequestType.LEGAL_ORDER;
 
 @TestPropertySource(
     properties = {
@@ -94,6 +96,11 @@ public class DrawOrderCallbackHandlerTest extends BaseMockSpringTest {
         UserDetails userDetails = SampleUserDetails.builder().withRoles("caseworker-cmc-legaladvisor").build();
         given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
         given(directionOrderService.getHearingCourt(any())).willReturn(HearingCourt.builder().build());
+        given(legalOrderService.print(eq(AUTHORISATION_TOKEN), any(Claim.class), any(CCDDocument.class)))
+            .willReturn(List.of(
+                BulkPrintDetails.builder().printRequestType(LEGAL_ORDER).printRequestId("coverId").build(),
+                BulkPrintDetails.builder().printRequestType(LEGAL_ORDER).printRequestId("orderId").build())
+            );
     }
 
     @SuppressWarnings("unchecked")

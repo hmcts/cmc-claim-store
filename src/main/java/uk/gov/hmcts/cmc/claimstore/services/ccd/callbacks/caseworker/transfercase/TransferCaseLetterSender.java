@@ -50,7 +50,7 @@ public class TransferCaseLetterSender {
     ) {
         Document coverLetterDoc = printableDocumentService.process(coverDoc, authorisation);
         List<BulkPrintTransferEvent.PrintableDocument> caseDocuments = getAllCaseDocuments(ccdCase, authorisation);
-        return bulkPrintHandler.print(new BulkPrintTransferEvent(claim, coverLetterDoc, caseDocuments, authorisation));
+        return bulkPrintHandler.printBulkTransferDocs(claim, coverLetterDoc, caseDocuments, authorisation);
     }
 
     private List<BulkPrintTransferEvent.PrintableDocument> getAllCaseDocuments(CCDCase ccdCase, String authorisation) {

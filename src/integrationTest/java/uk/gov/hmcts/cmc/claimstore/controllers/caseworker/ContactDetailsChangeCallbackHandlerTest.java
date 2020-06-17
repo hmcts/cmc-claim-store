@@ -39,6 +39,7 @@ import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -72,8 +73,6 @@ public class ContactDetailsChangeCallbackHandlerTest extends BaseMockSpringTest 
     private static final String DOCUMENT_URL = "http://bla.test";
     private static final String DOCUMENT_BINARY_URL = "http://bla.test/binary";
     private static final String DOCUMENT_FILE_NAME = "contact-letter.pdf";
-    @Mock
-    private SendLetterResponse sendLetterResponse;
 
     @Before
     public void setUp() {
@@ -117,7 +116,8 @@ public class ContactDetailsChangeCallbackHandlerTest extends BaseMockSpringTest 
 
         given(documentManagementService.getDocumentMetaData(anyString(), anyString())).willReturn(getLinks());
 
-        given(sendLetterApi.sendLetter(anyString(), any(LetterWithPdfsRequest.class))).willReturn(sendLetterResponse);
+        given(sendLetterApi.sendLetter(anyString(), any(LetterWithPdfsRequest.class)))
+            .willReturn(new SendLetterResponse(UUID.randomUUID()));
 
         MvcResult mvcResult = makeRequest(ABOUT_TO_SUBMIT.getValue())
             .andExpect(status().isOk())

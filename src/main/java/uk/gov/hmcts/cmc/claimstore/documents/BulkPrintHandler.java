@@ -10,10 +10,10 @@ import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintablePdf;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintableTemplate;
 import uk.gov.hmcts.cmc.claimstore.events.BulkPrintTransferEvent;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
-import uk.gov.hmcts.cmc.claimstore.events.GeneralLetterReadyToPrintEvent;
-import uk.gov.hmcts.cmc.claimstore.events.legaladvisor.DirectionsOrderReadyToPrintEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.PrintRequestType;
+import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -40,10 +40,10 @@ public class BulkPrintHandler {
     }
 
     @EventListener
-    public BulkPrintDetails BulkPrintDetails(DocumentReadyToPrintEvent event) {
+    public BulkPrintDetails print(DocumentReadyToPrintEvent event) {
         requireNonNull(event);
         Claim claim = event.getClaim();
-        return bulkPrintService.print(
+        return bulkPrintService.printHtmlLetter(
             claim,
             ImmutableList.of(
                 new PrintableTemplate(
@@ -53,63 +53,71 @@ public class BulkPrintHandler {
                     event.getSealedClaimDocument(),
                     buildSealedClaimFileBaseName(claim.getReferenceNumber()))
             ),
+            BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE,
             event.getAuthorisation()
         );
     }
 
-    @EventListener
-    public BulkPrintDetails print(DirectionsOrderReadyToPrintEvent event) {
-        requireNonNull(event);
-        Claim claim = event.getClaim();
+    public BulkPrintDetails printDirectionOrder(Claim claim, Document coverSheet,
+                                                Document directionsOrder, String authorisation) {
+        requireNonNull(claim);
+        requireNonNull(coverSheet);
+        requireNonNull(directionsOrder);
+        requireNonNull(authorisation);
         return bulkPrintService.printPdf(
             claim,
             ImmutableList.of(
                 new PrintableTemplate(
-                    event.getCoverSheet(),
+                    coverSheet,
                     buildCoverSheetFileBaseName(claim.getReferenceNumber())),
                 new PrintablePdf(
-                    event.getDirectionsOrder(),
+                    directionsOrder,
                     buildDirectionsOrderFileBaseName(claim.getReferenceNumber()))
             ),
             BulkPrintRequestType.DIRECTION_ORDER_LETTER_TYPE,
-            event.getAuthorisation()
+            authorisation
         );
     }
 
-    @EventListener
-    public BulkPrintDetails print(GeneralLetterReadyToPrintEvent event) {
-        requireNonNull(event);
-        Claim claim = event.getClaim();
+    public BulkPrintDetails printGeneralLetter(Claim claim, Document generalLetterDocument, String authorisation) {
+        requireNonNull(claim);
+        requireNonNull(generalLetterDocument);
+        requireNonNull(authorisation);
+
         return bulkPrintService.printPdf(
             claim,
             ImmutableList.of(
                 new PrintablePdf(
-                    event.getGeneralLetterDocument(),
+                    generalLetterDocument,
                     buildLetterFileBaseName(claim.getReferenceNumber(),
                         String.valueOf(LocalDate.now())))
             ),
             BulkPrintRequestType.GENERAL_LETTER_TYPE,
-            event.getAuthorisation()
+            authorisation
         );
     }
 
-    @EventListener
-    public BulkPrintDetails print(BulkPrintTransferEvent event) {
-        requireNonNull(event);
-        Claim claim = event.getClaim();
+    public BulkPrintDetails printBulkTransferDocs(Claim claim,
+                                                  Document coverLetter,
+                                                  List<BulkPrintTransferEvent.PrintableDocument> caseDocuments,
+                                                  String authorisation) {
+        requireNonNull(claim);
+        requireNonNull(coverLetter);
+        requireNonNull(authorisation);
+        requireNonNull(caseDocuments);
 
-        PrintablePdf coverLetter = new PrintablePdf(
-            event.getCoverLetter(),
+        PrintablePdf coverLetterPrint = new PrintablePdf(
+            coverLetter,
             buildCoverSheetFileBaseName(claim.getReferenceNumber()));
 
-        List<Printable> printableDocs = new ArrayList<>(List.of(coverLetter));
-        printableDocs.addAll(event.getCaseDocuments()
+        List<Printable> printableDocs = new ArrayList<>(List.of(coverLetterPrint));
+        printableDocs.addAll(caseDocuments
             .stream()
             .map(d -> new PrintablePdf(d.getDocument(), d.getFileName()))
             .collect(Collectors.toList())
         );
 
         return bulkPrintService.printPdf(claim, Collections.unmodifiableList(printableDocs),
-            BulkPrintRequestType.BULK_PRINT_TRANSFER_TYPE, event.getAuthorisation());
+            BulkPrintRequestType.BULK_PRINT_TRANSFER_TYPE, authorisation);
     }
 }

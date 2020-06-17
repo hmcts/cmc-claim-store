@@ -16,7 +16,8 @@ public class DummyBulkPrintService implements PrintService {
     private static final Logger logger = LoggerFactory.getLogger(DummyBulkPrintService.class);
 
     @Override
-    public BulkPrintDetails print(Claim claim, List<Printable> documents, String authorisation) {
+    public BulkPrintDetails printHtmlLetter(Claim claim, List<Printable> documents,
+                                            BulkPrintRequestType type, String authorisation) {
         logger.info("No bulk print operation need to be performed as 'Bulk print url' is switched off.");
         return BulkPrintDetails.builder().build();
     }

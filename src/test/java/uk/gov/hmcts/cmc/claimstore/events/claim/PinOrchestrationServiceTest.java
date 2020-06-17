@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplate
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.PrintService;
+import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.Printable;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintableTemplate;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
@@ -18,11 +19,13 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificatio
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimIssuedStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -32,8 +35,11 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ADD_BULK_PRINT_DETAILS;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
+import static uk.gov.hmcts.cmc.domain.models.bulkprint.PrintRequestType.PIN_LETTER_TO_DEFENDANT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PinOrchestrationServiceTest {
@@ -53,7 +59,14 @@ public class PinOrchestrationServiceTest {
     private final Map<String, Object> claimContents = new HashMap<>();
     private final String claimTemplate = "claimTemplate";
     private final Document sealedClaimLetterDocument = new Document(claimTemplate, claimContents);
-
+    private final ImmutableList<Printable> printAbles = ImmutableList.of(
+        new PrintableTemplate(
+            defendantPinLetterDocument,
+            CLAIM.getReferenceNumber() + "-defendant-pin-letter"),
+        new PrintableTemplate(
+            sealedClaimLetterDocument,
+            CLAIM.getReferenceNumber() + "-claim-form")
+    );
     private PinOrchestrationService pinOrchestrationService;
 
     @Mock
@@ -84,6 +97,15 @@ public class PinOrchestrationServiceTest {
         .claim(CLAIM)
         .build();
 
+    private final BulkPrintDetails bulkPrintDetails = BulkPrintDetails.builder()
+        .printRequestType(PIN_LETTER_TO_DEFENDANT).printRequestId("requestId").build();
+    private final ImmutableList<BulkPrintDetails> printDetails = ImmutableList.<BulkPrintDetails>builder()
+        .addAll(CLAIM.getBulkPrintDetails())
+        .add(bulkPrintDetails)
+        .build();
+    private final Claim claimWithBulkPrintDetails
+        = CLAIM.toBuilder().bulkPrintDetails(List.of(bulkPrintDetails)).build();
+
     @Before
     public void before() {
         pinOrchestrationService = new PinOrchestrationService(
@@ -98,6 +120,15 @@ public class PinOrchestrationServiceTest {
         given(notificationsProperties.getTemplates()).willReturn(templates);
         given(templates.getEmail()).willReturn(emailTemplates);
         given(emailTemplates.getDefendantClaimIssued()).willReturn(DEFENDANT_EMAIL_TEMPLATE);
+
+        given(bulkPrintService
+            .printHtmlLetter(eq(CLAIM), eq(printAbles), eq(FIRST_CONTACT_LETTER_TYPE), eq(AUTHORISATION)))
+            .willReturn(bulkPrintDetails);
+
+        given(claimService.addBulkPrintDetails(eq(AUTHORISATION), eq(printDetails),
+            eq(ADD_BULK_PRINT_DETAILS), eq(CLAIM)))
+            .willReturn(claimWithBulkPrintDetails);
+
     }
 
     @Test
@@ -110,23 +141,17 @@ public class PinOrchestrationServiceTest {
         pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
 
         //then
-        verify(bulkPrintService).print(
+        verify(bulkPrintService).printHtmlLetter(
             eq(CLAIM),
-            eq(ImmutableList.of(
-                new PrintableTemplate(
-                    defendantPinLetterDocument,
-                    CLAIM.getReferenceNumber() + "-defendant-pin-letter"),
-                new PrintableTemplate(
-                    sealedClaimLetterDocument,
-                    CLAIM.getReferenceNumber() + "-claim-form")
-            )),
+            eq(printAbles),
+            eq(FIRST_CONTACT_LETTER_TYPE),
             eq(AUTHORISATION));
 
-        verify(claimIssuedStaffNotificationService)
-            .notifyStaffOfClaimIssue(eq(CLAIM), eq(ImmutableList.of(sealedClaim, defendantPinLetter)));
+        verify(claimIssuedStaffNotificationService).notifyStaffOfClaimIssue(eq(claimWithBulkPrintDetails),
+            eq(ImmutableList.of(sealedClaim, defendantPinLetter)));
 
         verify(claimIssuedNotificationService).sendMail(
-            eq(CLAIM),
+            eq(claimWithBulkPrintDetails),
             eq(CLAIM.getClaimData().getDefendant().getEmail().orElse(null)),
             eq(PIN),
             eq(DEFENDANT_EMAIL_TEMPLATE),
@@ -150,8 +175,8 @@ public class PinOrchestrationServiceTest {
         given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION)))
             .willReturn(generatedDocuments);
 
-        doThrow(new RuntimeException("bulk print failed")).when(bulkPrintService).print(
-            any(), anyList(), anyString());
+        doThrow(new RuntimeException("bulk print failed")).when(bulkPrintService).printHtmlLetter(
+            any(), anyList(), eq(FIRST_CONTACT_LETTER_TYPE), anyString());
 
         //when
         try {

@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
+import uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType;
 import uk.gov.hmcts.cmc.claimstore.documents.PrintService;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintableTemplate;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
@@ -60,7 +61,7 @@ public class PinOrchestrationService {
                 .defendantNotification(NO);
 
         try {
-            BulkPrintDetails bulkPrintDetails = bulkPrintService.print(
+            BulkPrintDetails bulkPrintDetails = bulkPrintService.printHtmlLetter(
                 updatedClaim,
                 ImmutableList.of(
                     new PrintableTemplate(
@@ -69,6 +70,7 @@ public class PinOrchestrationService {
                     new PrintableTemplate(
                         documents.getSealedClaimDoc(),
                         buildSealedClaimFileBaseName(claim.getReferenceNumber()))),
+                BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE,
                 authorisation
             );
 

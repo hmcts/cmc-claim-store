@@ -82,9 +82,8 @@ public class TransferCaseDocumentPublishService {
         DocAssemblyTemplateBody formPayloadForCourt =
             noticeOfTransferLetterTemplateMapper.noticeOfTransferLetterBodyForCourt(ccdCase, authorisation);
 
-        CCDDocument coverDoc = docAssemblyService.generateDocument(authorisation,
-            formPayloadForCourt,
-            courtLetterTemplateId)
+        CCDDocument coverDoc = docAssemblyService
+            .generateDocument(authorisation, formPayloadForCourt, courtLetterTemplateId)
             .toBuilder()
             .documentFileName(buildNoticeOfTransferLetterFileName(ccdCase, FOR_COURT))
             .build();
@@ -92,16 +91,15 @@ public class TransferCaseDocumentPublishService {
         BulkPrintDetails bulkPrintDetails
             = transferCaseLetterSender.sendAllCaseDocumentsToCourt(authorisation, ccdCase, claim, coverDoc);
 
-        CCDCase updated = addToBulkPrintDetails(ccdCase, bulkPrintDetails);
-
-        return transferCaseDocumentService.attachNoticeOfTransfer(updated, coverDoc, authorisation);
+        CCDCase updated = transferCaseDocumentService.attachNoticeOfTransfer(ccdCase, coverDoc, authorisation);
+        return addToBulkPrintDetails(updated, bulkPrintDetails);
     }
 
     private boolean isDefendantLinked(CCDCase ccdCase) {
         return !StringUtils.isBlank(ccdCase.getRespondents().get(0).getValue().getDefendantId());
     }
 
-    public CCDCase addToBulkPrintDetails(
+    private CCDCase addToBulkPrintDetails(
         CCDCase ccdCase,
         BulkPrintDetails input
     ) {

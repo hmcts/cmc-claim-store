@@ -9,7 +9,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintableTemplate;
-import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.BulkPrintStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -69,8 +68,6 @@ public class BulkPrintServiceTest {
     private BulkPrintStaffNotificationService bulkPrintStaffNotificationService;
     @Mock
     private PDFServiceClient pdfServiceClient;
-    @Mock
-    private ClaimService claimService;
 
     private Letter letter;
 
@@ -97,16 +94,16 @@ public class BulkPrintServiceTest {
             authTokenGenerator,
             bulkPrintStaffNotificationService,
             appInsights,
-            pdfServiceClient,
-            claimService
+            pdfServiceClient
         );
 
         //when
-        bulkPrintService.print(CLAIM,
+        bulkPrintService.printHtmlLetter(CLAIM,
             ImmutableList.of(
                 new PrintableTemplate(defendantLetterDocument, "filename"),
                 new PrintableTemplate(sealedClaimDocument, "filename")
             ),
+            FIRST_CONTACT_LETTER_TYPE,
             AUTHORISATION
         );
         //then
@@ -132,8 +129,7 @@ public class BulkPrintServiceTest {
             authTokenGenerator,
             bulkPrintStaffNotificationService,
             appInsights,
-            pdfServiceClient,
-            claimService
+            pdfServiceClient
         );
         //when
         bulkPrintService.printPdf(CLAIM, ImmutableList.of(
@@ -159,8 +155,7 @@ public class BulkPrintServiceTest {
             authTokenGenerator,
             bulkPrintStaffNotificationService,
             appInsights,
-            pdfServiceClient,
-            claimService
+            pdfServiceClient
         );
         //when
         bulkPrintService.printPdf(CLAIM, ImmutableList.of(
@@ -186,17 +181,17 @@ public class BulkPrintServiceTest {
             authTokenGenerator,
             bulkPrintStaffNotificationService,
             appInsights,
-            pdfServiceClient,
-            claimService
+            pdfServiceClient
         );
 
         try {
-            bulkPrintService.print(
+            bulkPrintService.printHtmlLetter(
                 CLAIM,
                 ImmutableList.of(
                     new PrintableTemplate(defendantLetterDocument, "filename"),
                     new PrintableTemplate(sealedClaimDocument, "filename")
                 ),
+                FIRST_CONTACT_LETTER_TYPE,
                 AUTHORISATION);
         } finally {
             //then
@@ -215,8 +210,7 @@ public class BulkPrintServiceTest {
             authTokenGenerator,
             bulkPrintStaffNotificationService,
             appInsights,
-            pdfServiceClient,
-            claimService
+            pdfServiceClient
         );
         ReflectionTestUtils.setField(bulkPrintService,
             "feature_toggles.async_event_operations_enabled",
@@ -230,6 +224,7 @@ public class BulkPrintServiceTest {
                         new PrintableTemplate(defendantLetterDocument, "filename"),
                         new PrintableTemplate(sealedClaimDocument, "filename")
                     ),
+                    FIRST_CONTACT_LETTER_TYPE,
                     AUTHORISATION);
         } finally {
             //then
