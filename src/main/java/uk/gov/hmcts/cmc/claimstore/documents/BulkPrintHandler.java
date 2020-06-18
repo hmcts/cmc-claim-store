@@ -12,7 +12,6 @@ import uk.gov.hmcts.cmc.claimstore.events.BulkPrintTransferEvent;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
-import uk.gov.hmcts.cmc.domain.models.bulkprint.PrintRequestType;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.time.LocalDate;
