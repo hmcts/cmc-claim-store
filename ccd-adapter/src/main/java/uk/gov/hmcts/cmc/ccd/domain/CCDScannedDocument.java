@@ -5,7 +5,7 @@ import lombok.Value;
 
 import java.time.LocalDateTime;
 
-@Builder
+@Builder(toBuilder = true)
 @Value
 public class CCDScannedDocument {
 
