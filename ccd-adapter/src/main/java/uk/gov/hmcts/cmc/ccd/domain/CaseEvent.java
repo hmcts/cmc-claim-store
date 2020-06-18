@@ -73,6 +73,7 @@ public enum CaseEvent {
     RESEND_RPA("ResendRpa"),
     PROCEEDS_IN_CASEMAN("CaseProceedsInCaseman"),
     ATTACH_SCANNED_DOCS("attachScannedDocs"),
+    PAPER_RESPONSE_OCON_9X_FORM("PaperResponseOCON9xForm"),
     UPDATE_CLAIM("UpdateClaim"),
     RESET_PIN("ResetPin"),
     ISSUE_GENERAL_LETTER("IssueGeneralLetter"),

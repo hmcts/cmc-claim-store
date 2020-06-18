@@ -614,6 +614,7 @@ public final class SampleClaim {
             null,
             null,
             transferContent,
+            null,
             List.of(BulkPrintDetails.builder()
                 .printRequestType(PrintRequestType.PIN_LETTER_TO_DEFENDANT)
                 .printRequestedAt(LocalDate.now())

@@ -77,12 +77,15 @@ public class CCDCase {
     private CCDYesNoOption migratedFromClaimStore;
     @Builder.Default
     private List<CCDCollectionElement<CCDClaimDocument>> caseDocuments = Collections.emptyList();
-    private List<CCDCollectionElement<CCDScannedDocument>> scannedDocuments;
+    @Builder.Default
+    private List<CCDCollectionElement<CCDScannedDocument>> scannedDocuments = Collections.emptyList();
+    private String ocon9xForm;
     private List<CCDCollectionElement<CCDClaimDocument>> staffUploadedDocuments;
     private String caseName;
     private CCDClaimSubmissionOperationIndicators claimSubmissionOperationIndicators;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String state;
+    private CCDYesNoOption evidenceHandled;
 
     private LocalDate docUploadDeadline;
 
@@ -147,7 +150,11 @@ public class CCDCase {
     private String proceedOnPaperOtherReason;
     private LocalDate calculatedResponseDeadline;
     private CCDTransferContent transferContent;
-
     @Builder.Default
     private List<CCDCollectionElement<CCDBulkPrintDetails>> bulkPrintDetails = Collections.emptyList();
+    /**
+     * Temporary variables that are not to be persisted to case data but are only used during events.
+     */
+    @Builder.Default
+    private List<CCDCollectionElement<CCDScannedDocument>> temporaryScannedDocuments = Collections.emptyList();
 }

@@ -6,11 +6,13 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDChannelType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDProceedOnPaperReasonType;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.util.MapperUtil;
 import uk.gov.hmcts.cmc.domain.models.ChannelType;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.ProceedOfflineReasonType;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
 
 import java.util.Arrays;
@@ -104,6 +106,7 @@ public class CaseMapper {
                 mapClaimSubmissionOperationIndicatorsToCCD.apply(claim.getClaimSubmissionOperationIndicators()))
             .intentionToProceedDeadline(claim.getIntentionToProceedDeadline())
             .proceedOnPaperOtherReason(claim.getProceedOfflineOtherReasonDescription())
+            .evidenceHandled(convertYesNo(claim.getEvidenceHandled()))
             .build();
     }
 
@@ -131,6 +134,7 @@ public class CaseMapper {
             .reviewOrder(reviewOrderMapper.from(ccdCase.getReviewOrder()))
             .dateReferredForDirections(ccdCase.getDateReferredForDirections())
             .paperResponse(MapperUtil.hasPaperResponse.apply(ccdCase))
+            .evidenceHandled(convertCCDYesNo(ccdCase.getEvidenceHandled()))
             .proceedOfflineOtherReasonDescription(ccdCase.getProceedOnPaperOtherReason())
             .mediationOutcome(getMediationOutcome(ccdCase))
             .transferContent(transferContentMapper.from(ccdCase.getTransferContent()));
@@ -159,5 +163,17 @@ public class CaseMapper {
         );
 
         return builder.build();
+    }
+
+    private YesNoOption convertCCDYesNo(CCDYesNoOption ccdYesNoOption) {
+        return Optional.ofNullable(ccdYesNoOption)
+            .map(e -> EnumUtils.getEnumIgnoreCase(YesNoOption.class, e.name()))
+            .orElse(null);
+    }
+
+    private CCDYesNoOption convertYesNo(YesNoOption ccdYesNoOption) {
+        return Optional.ofNullable(ccdYesNoOption)
+            .map(e -> EnumUtils.getEnumIgnoreCase(CCDYesNoOption.class, e.name()))
+            .orElse(null);
     }
 }
