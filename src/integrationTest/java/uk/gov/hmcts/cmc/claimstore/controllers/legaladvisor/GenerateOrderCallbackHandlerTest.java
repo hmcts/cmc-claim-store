@@ -22,6 +22,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
@@ -208,6 +209,7 @@ public class    GenerateOrderCallbackHandlerTest extends BaseMockSpringTest {
         data.put("estimatedHearingDuration", "HALF_HOUR");
 
         CaseDetails caseDetails = CaseDetails.builder()
+            .state(ClaimState.OPEN.getValue())
             .id(caseDetailsTemp.getId())
             .data(data)
             .build();

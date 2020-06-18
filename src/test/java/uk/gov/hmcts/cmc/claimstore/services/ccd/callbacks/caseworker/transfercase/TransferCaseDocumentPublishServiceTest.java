@@ -86,7 +86,7 @@ class TransferCaseDocumentPublishServiceTest {
             .thenReturn(formPayloadForCourt);
 
         when(docAssemblyService
-            .generateDocument(eq(AUTHORISATION), eq(formPayloadForCourt), eq(COURT_LETTER_TEMPLATE_ID)))
+            .generateDocument(eq(ccdCase), eq(AUTHORISATION), eq(formPayloadForCourt), eq(COURT_LETTER_TEMPLATE_ID)))
             .thenReturn(generatedCoverDoc);
 
         CCDDocument namedCoverDoc = generatedCoverDoc.toBuilder()

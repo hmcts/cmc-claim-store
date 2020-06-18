@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.claimstore.documents.BulkPrintHandler;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.PrintableDocumentService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
@@ -44,6 +45,7 @@ public class GeneralLetterService {
     private final PrintableDocumentService printableDocumentService;
     private final Clock clock;
     private final UserService userService;
+    private final DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
     private final DocumentManagementService documentManagementService;
     private final BulkPrintDetailsMapper bulkPrintDetailsMapper;
 
@@ -53,6 +55,7 @@ public class GeneralLetterService {
         PrintableDocumentService printableDocumentService,
         Clock clock,
         UserService userService,
+        DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper,
         DocumentManagementService documentManagementService,
         BulkPrintDetailsMapper bulkPrintDetailsMapper
     ) {
@@ -61,6 +64,7 @@ public class GeneralLetterService {
         this.printableDocumentService = printableDocumentService;
         this.clock = clock;
         this.userService = userService;
+        this.docAssemblyTemplateBodyMapper = docAssemblyTemplateBodyMapper;
         this.documentManagementService = documentManagementService;
         this.bulkPrintDetailsMapper = bulkPrintDetailsMapper;
     }
@@ -79,7 +83,8 @@ public class GeneralLetterService {
     public String generateLetter(CCDCase ccdCase, String authorisation, String templateId)
         throws DocumentGenerationFailedException {
         logger.info("General Letter: creating general letter");
-        var docAssemblyResponse = docAssemblyService.createGeneralLetter(ccdCase, authorisation, templateId);
+        var docAssemblyResponse = docAssemblyService.renderTemplate(ccdCase, authorisation, templateId,
+            docAssemblyTemplateBodyMapper.generalLetterBody(ccdCase));
         return docAssemblyResponse.getRenditionOutputLocation();
     }
 

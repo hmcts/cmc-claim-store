@@ -19,6 +19,8 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.PrintableDocumentService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -96,6 +98,8 @@ class GeneralLetterServiceTest {
     private UserService userService;
     @Mock
     private BulkPrintHandler bulkPrintHandler;
+    @Mock
+    private DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
 
     private GeneralLetterService generalLetterService;
     private UserDetails userDetails;
@@ -109,6 +113,7 @@ class GeneralLetterServiceTest {
             new PrintableDocumentService(documentManagementService),
             clock,
             userService,
+            docAssemblyTemplateBodyMapper,
             documentManagementService,
             bulkPrintDetailsMapper);
 
@@ -141,17 +146,28 @@ class GeneralLetterServiceTest {
     @Test
     void shouldCreateAndPreviewLetter() {
         when(docAssemblyService
-            .createGeneralLetter(any(CCDCase.class), anyString(), anyString())).thenReturn(docAssemblyResponse);
+            .renderTemplate(any(CCDCase.class), anyString(), anyString(), any(DocAssemblyTemplateBody.class)))
+            .thenReturn(docAssemblyResponse);
+
+        DocAssemblyTemplateBody docAssemblyTemplateBody = DocAssemblyTemplateBody.builder().build();
+        when(docAssemblyTemplateBodyMapper.generalLetterBody(any(CCDCase.class))).thenReturn(docAssemblyTemplateBody);
         when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
+
         generalLetterService.generateLetter(ccdCase, BEARER_TOKEN.name(), GENERAL_LETTER_TEMPLATE_ID);
-        verify(docAssemblyService, once()).createGeneralLetter(eq(ccdCase), eq(BEARER_TOKEN.name()),
-            eq(GENERAL_LETTER_TEMPLATE_ID));
+
+        verify(docAssemblyService, once()).renderTemplate(eq(ccdCase), eq(BEARER_TOKEN.name()),
+            eq(GENERAL_LETTER_TEMPLATE_ID), eq(docAssemblyTemplateBody));
     }
 
     @Test
     void shouldThrowExceptionWhenDocAssemblyFails() {
-        when(docAssemblyService.createGeneralLetter(any(CCDCase.class), anyString(), anyString()))
+        when(docAssemblyService
+            .renderTemplate(any(CCDCase.class), anyString(), anyString(), any(DocAssemblyTemplateBody.class)))
             .thenThrow(new DocumentGenerationFailedException(new RuntimeException("exception")));
+
+        DocAssemblyTemplateBody docAssemblyTemplateBody = DocAssemblyTemplateBody.builder().build();
+        when(docAssemblyTemplateBodyMapper.generalLetterBody(any(CCDCase.class))).thenReturn(docAssemblyTemplateBody);
+
         assertThrows(DocumentGenerationFailedException.class,
             () -> generalLetterService.generateLetter(ccdCase, BEARER_TOKEN.name(),
                 GENERAL_LETTER_TEMPLATE_ID));
@@ -209,8 +225,13 @@ class GeneralLetterServiceTest {
 
     @Test
     void shouldThrowExceptionWhenPrintAndUpdateCaseDocumentFails() {
-        when(docAssemblyService.createGeneralLetter(any(CCDCase.class), anyString(), anyString()))
+        when(docAssemblyService
+            .renderTemplate(any(CCDCase.class), anyString(), anyString(), any(DocAssemblyTemplateBody.class)))
             .thenThrow(new RuntimeException("exception"));
+
+        DocAssemblyTemplateBody docAssemblyTemplateBody = DocAssemblyTemplateBody.builder().build();
+        when(docAssemblyTemplateBodyMapper.generalLetterBody(any(CCDCase.class))).thenReturn(docAssemblyTemplateBody);
+
         assertThrows(RuntimeException.class,
             () -> generalLetterService.generateLetter(ccdCase, BEARER_TOKEN.name(),
                 GENERAL_LETTER_TEMPLATE_ID));
