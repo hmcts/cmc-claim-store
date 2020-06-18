@@ -280,4 +280,16 @@ public class NotificationReferenceBuilder {
             return reference(TEMPLATE, otherParty.toLowerCase(), claimReferenceNumber);
         }
     }
+
+    public static class CaseTransferred {
+        public static final String TEMPLATE = "to-%s-case-transferred-%s";
+
+        private CaseTransferred() {
+            // do not instantiate
+        }
+
+        public static String referenceForCaseTransferred(String claimReferenceNumber, String otherParty) {
+            return reference(TEMPLATE, otherParty.toLowerCase(), claimReferenceNumber);
+        }
+    }
 }

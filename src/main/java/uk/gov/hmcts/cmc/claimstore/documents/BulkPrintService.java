@@ -44,6 +44,7 @@ public class BulkPrintService implements PrintService {
     protected static final String ADDITIONAL_DATA_LETTER_TYPE_KEY = "letterType";
     protected static final String FIRST_CONTACT_LETTER_TYPE = "first-contact-pack";
     protected static final String DIRECTION_ORDER_LETTER_TYPE = "direction-order-pack";
+    protected static final String BULK_PRINT_TRANSFER_TYPE = "bulk-print-transfer-pack";
     protected static final String GENERAL_LETTER_TYPE = "general-letter";
     protected static final String ADDITIONAL_DATA_CASE_IDENTIFIER_KEY = "caseIdentifier";
     protected static final String ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY = "caseReferenceNumber";
