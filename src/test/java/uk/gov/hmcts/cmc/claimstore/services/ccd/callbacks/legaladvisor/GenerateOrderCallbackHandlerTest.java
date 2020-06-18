@@ -38,6 +38,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackVersion;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.rules.GenerateOrderRule;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
+import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
@@ -104,6 +105,10 @@ public class GenerateOrderCallbackHandlerTest {
     private LegalOrderService legalOrderService;
     @Mock
     private DirectionOrderService directionOrderService;
+    @Mock
+    private OrderRenderer orderRenderer;
+    @Mock
+    private DocumentManagementService documentManagementService;
 
     private CallbackRequest callbackRequest;
     private GenerateOrderCallbackHandler generateOrderCallbackHandler;
@@ -111,11 +116,10 @@ public class GenerateOrderCallbackHandlerTest {
     @BeforeEach
     void setUp() {
         OrderCreator orderCreator = new OrderCreator(legalOrderGenerationDeadlinesCalculator, caseDetailsConverter,
-            docAssemblyService, new GenerateOrderRule(), directionsQuestionnaireService,
-            pilotCourtService);
+            new GenerateOrderRule(), directionsQuestionnaireService, pilotCourtService, orderRenderer);
 
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
-            caseDetailsConverter, legalOrderService, appInsights, directionOrderService);
+            caseDetailsConverter, legalOrderService, appInsights, directionOrderService, documentManagementService);
 
         generateOrderCallbackHandler = new GenerateOrderCallbackHandler(orderCreator, orderPostProcessor,
             caseDetailsConverter, appInsights);
@@ -148,7 +152,7 @@ public class GenerateOrderCallbackHandlerTest {
 
             DocAssemblyResponse docAssemblyResponse = Mockito.mock(DocAssemblyResponse.class);
             when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
-            when(docAssemblyService.createOrder(eq(ccdCase), eq(BEARER_TOKEN)))
+            when(orderRenderer.renderOrder(eq(ccdCase), eq(BEARER_TOKEN)))
                 .thenReturn(docAssemblyResponse);
 
             CallbackParams callbackParams = CallbackParams.builder()

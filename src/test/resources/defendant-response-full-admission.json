@@ -1,6 +1,5 @@
 {
   "responseType": "FULL_ADMISSION",
-  "responseMethod": "DIGITAL",
   "moreTimeNeeded": "no",
   "defendant": {
     "id": "acd82549-d279-4adc-b38c-d195dd0db0d6",

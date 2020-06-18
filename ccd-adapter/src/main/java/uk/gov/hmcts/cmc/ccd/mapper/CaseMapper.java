@@ -6,11 +6,13 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDChannelType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDProceedOnPaperReasonType;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.util.MapperUtil;
 import uk.gov.hmcts.cmc.domain.models.ChannelType;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.ProceedOfflineReasonType;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
 
 import java.util.Arrays;
@@ -31,19 +33,22 @@ public class CaseMapper {
     private final ClaimDocumentCollectionMapper claimDocumentCollectionMapper;
     private final ReviewOrderMapper reviewOrderMapper;
     private final DirectionOrderMapper directionOrderMapper;
+    private final TransferContentMapper transferContentMapper;
 
     public CaseMapper(
         ClaimMapper claimMapper,
         @Value("${migration.cases.flag:false}") boolean isMigrated,
         ClaimDocumentCollectionMapper claimDocumentCollectionMapper,
         ReviewOrderMapper reviewOrderMapper,
-        DirectionOrderMapper directionOrderMapper
+        DirectionOrderMapper directionOrderMapper,
+        TransferContentMapper transferContentMapper
     ) {
         this.claimMapper = claimMapper;
         this.isMigrated = isMigrated;
         this.claimDocumentCollectionMapper = claimDocumentCollectionMapper;
         this.reviewOrderMapper = reviewOrderMapper;
         this.directionOrderMapper = directionOrderMapper;
+        this.transferContentMapper = transferContentMapper;
     }
 
     public CCDCase to(Claim claim) {
@@ -89,6 +94,7 @@ public class CaseMapper {
                 mapClaimSubmissionOperationIndicatorsToCCD.apply(claim.getClaimSubmissionOperationIndicators()))
             .intentionToProceedDeadline(claim.getIntentionToProceedDeadline())
             .proceedOnPaperOtherReason(claim.getProceedOfflineOtherReasonDescription())
+            .evidenceHandled(convertYesNo(claim.getEvidenceHandled()))
             .build();
     }
 
@@ -116,8 +122,10 @@ public class CaseMapper {
             .reviewOrder(reviewOrderMapper.from(ccdCase.getReviewOrder()))
             .dateReferredForDirections(ccdCase.getDateReferredForDirections())
             .paperResponse(MapperUtil.hasPaperResponse.apply(ccdCase))
+            .evidenceHandled(convertCCDYesNo(ccdCase.getEvidenceHandled()))
             .proceedOfflineOtherReasonDescription(ccdCase.getProceedOnPaperOtherReason())
-            .mediationOutcome(getMediationOutcome(ccdCase));
+            .mediationOutcome(getMediationOutcome(ccdCase))
+            .transferContent(transferContentMapper.from(ccdCase.getTransferContent()));
 
         Optional.ofNullable(ccdCase.getProceedOnPaperReason())
             .map(CCDProceedOnPaperReasonType::name)
@@ -132,6 +140,22 @@ public class CaseMapper {
             builder.channel(ChannelType.valueOf(ccdCase.getChannel().name()));
         }
 
+        if (ccdCase.getPreferredDQCourt() != null) {
+            builder.preferredDQCourt(ccdCase.getPreferredDQCourt());
+        }
+
         return builder.build();
+    }
+
+    private YesNoOption convertCCDYesNo(CCDYesNoOption ccdYesNoOption) {
+        return Optional.ofNullable(ccdYesNoOption)
+            .map(e -> EnumUtils.getEnumIgnoreCase(YesNoOption.class, e.name()))
+            .orElse(null);
+    }
+
+    private CCDYesNoOption convertYesNo(YesNoOption ccdYesNoOption) {
+        return Optional.ofNullable(ccdYesNoOption)
+            .map(e -> EnumUtils.getEnumIgnoreCase(CCDYesNoOption.class, e.name()))
+            .orElse(null);
     }
 }

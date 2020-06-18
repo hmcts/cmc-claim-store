@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class ClaimDocumentsAccessRuleTest {
 
     private static final User DEFENDANT = SampleUser.getDefaultDefendant();
+    private static final User CASEWORKER = SampleUser.getDefaultCaseworker();
     private static final User CLAIMANT = SampleUser.getDefaultClaimant();
     private static final User SOLICITOR = SampleUser.getDefaultSolicitor();
     private static final Claim CLAIM = SampleClaim.getDefault();
@@ -83,6 +84,17 @@ class ClaimDocumentsAccessRuleTest {
     void allowsSealedClaimAccessableToSolicitor(ClaimDocumentType documentType) {
         Claim claimWithDefendant = CLAIM.toBuilder().submitterId(SOLICITOR.getUserDetails().getId()).build();
         ClaimDocumentsAccessRule.assertDocumentCanBeAccessedByUser(claimWithDefendant, documentType, SOLICITOR);
+    }
+
+    @ParameterizedTest
+    @EnumSource(
+        value = ClaimDocumentType.class,
+        names = {"CCJ_REQUEST", "CLAIM_ISSUE_RECEIPT", "SEALED_CLAIM",
+        "DEFENDANT_PIN_LETTER", "DEFENDANT_RESPONSE_RECEIPT"},
+        mode = EnumSource.Mode.INCLUDE)
+    void allowsAllClaimDocumentsAccessibleToCaseworker(ClaimDocumentType documentType) {
+        Claim claimWithDefendant = CLAIM.toBuilder().submitterId(SOLICITOR.getUserDetails().getId()).build();
+        ClaimDocumentsAccessRule.assertDocumentCanBeAccessedByUser(claimWithDefendant, documentType, CASEWORKER);
     }
 
     @ParameterizedTest
