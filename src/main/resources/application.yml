@@ -38,7 +38,10 @@ spring:
     url: jdbc:postgresql://${CMC_DB_HOST:}:${CMC_DB_PORT:}/${CMC_DB_NAME:cmc}${CMC_DB_CONNECTION_OPTIONS:}
 
 launchdarkly:
-  sdk-key: "${LAUNCH_DARKLY_SDK_KEY:***REMOVED***}"
+  sdk-key: "${LAUNCH_DARKLY_SDK_KEY:}"
+
+sendgrid:
+  api-key: "${SENDGRID_API_KEY:}"
 
 quartzProperties:
   org.quartz:
