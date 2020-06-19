@@ -39,16 +39,7 @@ public class EmailService {
 
     @Retryable(value = EmailSendFailedException.class, backoff = @Backoff(delay = 100, maxDelay = 500))
     public void sendEmail(String from, EmailData emailData) {
-        try {
-            sendGridClient.sendEmail(from, emailData);
-        } catch (IOException e) {
-            throw new EmailSendFailedException(e);
-        }
-        // sendGridClient may throw EmailSendFailedException directly - let it bubble past
-    }
-
-    private void sendEmailMTA(String from, EmailData emailData) {
-        try {
+       try {
             sendGridClient.sendEmail(from, emailData);
         } catch (IOException e) {
             throw new EmailSendFailedException(e);
