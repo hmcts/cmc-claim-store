@@ -12,7 +12,10 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.email.sendgrid.SendGridClient;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 
+import java.io.IOException;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
@@ -28,20 +31,34 @@ public class EmailService {
     private final TelemetryClient telemetryClient;
     private final JavaMailSender sender;
     private final boolean asyncEventOperationEnabled;
+    private final SendGridClient sendGridClient;
+    private final LaunchDarklyClient launchDarklyClient;
 
     @Autowired
     public EmailService(
         TelemetryClient telemetryClient,
         JavaMailSender sender,
-        @Value("${feature_toggles.async_event_operations_enabled:false}") boolean asyncEventOperationEnabled
+        @Value("${feature_toggles.async_event_operations_enabled:false}") boolean asyncEventOperationEnabled,
+        SendGridClient sendGridClient,
+        LaunchDarklyClient launchDarklyClient
     ) {
         this.telemetryClient = telemetryClient;
         this.sender = sender;
         this.asyncEventOperationEnabled = asyncEventOperationEnabled;
+        this.sendGridClient = sendGridClient;
+        this.launchDarklyClient = launchDarklyClient;
     }
 
     @Retryable(value = EmailSendFailedException.class, backoff = @Backoff(delay = 100, maxDelay = 500))
     public void sendEmail(String from, EmailData emailData) {
+        if (launchDarklyClient.isFeatureEnabled("sendgrid-roc-7497", LaunchDarklyClient.CLAIM_STORE_USER)) {
+            sendEmailSendGrid(from, emailData);
+        } else {
+            sendEmailMTA(from, emailData);
+        }
+    }
+
+    private void sendEmailMTA(String from, EmailData emailData) {
         try {
             MimeMessage message = sender.createMimeMessage();
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true);
@@ -63,6 +80,16 @@ public class EmailService {
         }
     }
 
+    private void sendEmailSendGrid(String from, EmailData emailData) {
+        try {
+            sendGridClient.sendEmail(from, emailData);
+        } catch (IOException e) {
+            throw new EmailSendFailedException(e);
+        }
+        // sendGridClient may throw EmailSendFailedException directly - let it bubble past
+    }
+
+    @SuppressWarnings("unused")
     @Recover
     public void logSendMessageWithAttachmentFailure(
         EmailSendFailedException exception,

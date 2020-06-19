@@ -40,6 +40,9 @@ spring:
 launchdarkly:
   sdk-key: "${LAUNCH_DARKLY_SDK_KEY:}"
 
+sendgrid:
+  api-key: "${SENDGRID_API_KEY:}"
+
 quartzProperties:
   org.quartz:
     scheduler:
