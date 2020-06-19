@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.email.sendgrid.SendGridClient;
 
 import java.io.IOException;
+import java.io.IOException;
 
 import static java.util.Collections.singletonMap;
 
@@ -39,15 +40,6 @@ public class EmailService {
 
     @Retryable(value = EmailSendFailedException.class, backoff = @Backoff(delay = 100, maxDelay = 500))
     public void sendEmail(String from, EmailData emailData) {
-        try {
-            sendGridClient.sendEmail(from, emailData);
-        } catch (IOException e) {
-            throw new EmailSendFailedException(e);
-        }
-        // sendGridClient may throw EmailSendFailedException directly - let it bubble past
-    }
-
-    private void sendEmailMTA(String from, EmailData emailData) {
         try {
             sendGridClient.sendEmail(from, emailData);
         } catch (IOException e) {

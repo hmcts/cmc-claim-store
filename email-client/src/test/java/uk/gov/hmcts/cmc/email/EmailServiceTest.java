@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.email;
 
+import com.launchdarkly.client.LDUser;
 import com.microsoft.applicationinsights.TelemetryClient;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,6 +14,8 @@ import java.io.IOException;
 
 import static java.util.Collections.singletonMap;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
