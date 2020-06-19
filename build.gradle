@@ -386,6 +386,7 @@ sonarqube {
         "**/MapperUtil.java",
         "**/CCDCaseApi.java",
         "launch-darkly-client/**",
+        "email-client/**",
         "rpa-mapper/**"
       ].join(",")
   }
