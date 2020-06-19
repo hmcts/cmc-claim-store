@@ -1,14 +1,14 @@
 dependencies:
   - name: java
-    version: ~2.17.3
+    version: 2.17.3
     repository: '@hmctspublic'
 
   - name: postgresql
-    version: ~6.3.5
+    version: 6.3.5
     repository: '@stable'
     condition: postgresql.enabled
 
   - name: ccd
-    version: ~4.3.2
+    version: 4.3.2
     repository: '@hmctspublic'
     condition: ccd.enabled
