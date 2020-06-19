@@ -23,3 +23,4 @@ spring:
         rpa-email-ccj: rpa.notifications.countyCourtJudgementRecipient
         rpa-email-paid-in-full: rpa.notifications.paidInFullRecipient
         launchDarkly-sdk-key: LAUNCH_DARKLY_SDK_KEY
+        sendgrid-api-key: SENDGRID_API_KEY

@@ -55,7 +55,10 @@ oidc:
   issuer: ${OIDC_ISSUER:http://fr-am:8080/openam/oauth2/hmcts}
 
 launchdarkly:
-  sdk-key: "${LAUNCH_DARKLY_SDK_KEY:sdk-c732c882-b5df-4e9b-9ec1-679836b93907}"
+  sdk-key: "${LAUNCH_DARKLY_SDK_KEY:}"
+
+sendgrid:
+  api-key: "${SENDGRID_API_KEY:}"
 
 quartzProperties:
   org.quartz:
