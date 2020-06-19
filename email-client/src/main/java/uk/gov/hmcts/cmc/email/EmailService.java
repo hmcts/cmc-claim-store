@@ -47,6 +47,15 @@ public class EmailService {
         // sendGridClient may throw EmailSendFailedException directly - let it bubble past
     }
 
+    private void sendEmailMTA(String from, EmailData emailData) {
+        try {
+            sendGridClient.sendEmail(from, emailData);
+        } catch (IOException e) {
+            throw new EmailSendFailedException(e);
+        }
+        // sendGridClient may throw EmailSendFailedException directly - let it bubble past
+    }
+
     @SuppressWarnings("unused")
     @Recover
     public void logSendMessageWithAttachmentFailure(
