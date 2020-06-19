@@ -80,8 +80,8 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
     public List<Claim> getClaimsReadyForTransfer(User user) {
         Query readyForTransferQuery = new Query(QueryBuilders.boolQuery()
             .must(QueryBuilders.termQuery("state", ClaimState.READY_FOR_TRANSFER.getValue().toLowerCase()))
-            .mustNot(QueryBuilders.termQuery("data.hearingCourt", null))
-            .mustNot(QueryBuilders.termQuery("data.hearingCourtName", null)), 1000);
+            .must(QueryBuilders.existsQuery("data.hearingCourt"))
+            .must(QueryBuilders.existsQuery("data.hearingCourtName")), 1000);
         return searchClaimsWith(user, readyForTransferQuery);
     }
 
