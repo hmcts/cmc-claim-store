@@ -15,16 +15,15 @@ import uk.gov.hmcts.cmc.scheduler.model.CronJob;
 @DisallowConcurrentExecution
 public class BulkPrintTransferJob implements CronJob {
 
+    @Value("${claimsReadyForTransfer.schedule:0 0 8 ? * * *}")
     private String cronExpression;
 
     private BulkPrintTransferService bulkPrintTransferService;
 
     @Autowired
     public BulkPrintTransferJob(
-        @Value("${claimsReadyForTransfer.schedule:0 0 8 ? * * *}") String cronExpression,
         BulkPrintTransferService bulkPrintTransferService
     ) {
-        this.cronExpression = cronExpression;
         this.bulkPrintTransferService = bulkPrintTransferService;
     }
 
