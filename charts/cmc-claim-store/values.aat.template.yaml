@@ -5,4 +5,3 @@ java:
   environment:
     MILO_CSV_SCHEDULE: "0 0 8 * * ?"
     CLAIM_STAYED_SCHEDULE: "0 0 16 ? * MON-FRI *"
-
