@@ -48,8 +48,7 @@ public class BulkPrintTransferService {
     public void bulkPrintTransfer() {
         User user = userService.authenticateAnonymousCaseWorker();
         String authorisation = user.getAuthorisation();
-        List<Claim> claimsReadyForTransfer = caseSearchApi
-            .getClaimsReadyForTransfer(user);
+        List<Claim> claimsReadyForTransfer = caseSearchApi.getClaimsReadyForTransfer(user);
         Map<Claim, CCDCase> ccdCaseMap = new HashMap<>();
         claimsReadyForTransfer.forEach(claim -> ccdCaseMap.put(claim, caseMapper.to(claim)));
         ccdCaseMap.forEach((claim, ccdCase) -> transferCaseLetterSender
