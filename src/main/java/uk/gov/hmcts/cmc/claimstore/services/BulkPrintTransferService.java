@@ -55,7 +55,7 @@ public class BulkPrintTransferService {
             .sendAllCaseDocumentsToCourt(
                 user.getAuthorisation(),
                 ccdCase,
-                claim, coverLetterGenerator
-                    .generate(ccdCase, authorisation, FOR_COURT, courtLetterTemplateId)));
+                claim, 
+                coverLetterGenerator.generate(ccdCase, authorisation, FOR_COURT, courtLetterTemplateId)));
     }
 }
