@@ -14,14 +14,12 @@ public class CoverLetterGenerator {
     private final DocAssemblyService docAssemblyService;
     private final NoticeOfTransferLetterTemplateMapper noticeOfTransferLetterTemplateMapper;
 
-
     public CoverLetterGenerator(
         DocAssemblyService docAssemblyService,
         NoticeOfTransferLetterTemplateMapper noticeOfTransferLetterTemplateMapper) {
         this.docAssemblyService = docAssemblyService;
         this.noticeOfTransferLetterTemplateMapper = noticeOfTransferLetterTemplateMapper;
     }
-
 
     public CCDDocument generate(CCDCase ccdCase,
                                 String authorisation,
@@ -56,9 +54,6 @@ public class CoverLetterGenerator {
                 throw new IllegalArgumentException(noticeOfTransferLetterType
                     + " noticeOfTransferLetterType unable to be handled");
         }
-
         return String.format("%s.pdf", basename);
     }
-
-
 }

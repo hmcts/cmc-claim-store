@@ -68,7 +68,11 @@ public class CoverLetterGeneratorTest {
             null,
             null,
             "ref no-notice-of-transfer-for-defendant.pdf");
-        when(docAssemblyService.generateDocument(ccdCase, AUTHORISATION, formPayloadForCourt, DEFENDANT_LETTER_TEMPLATE_ID))
+        when(docAssemblyService.generateDocument(
+            ccdCase,
+            AUTHORISATION,
+            formPayloadForCourt,
+            DEFENDANT_LETTER_TEMPLATE_ID))
             .thenReturn(generatedCoverDoc);
         CCDDocument coverLetter = coverLetterGenerator
             .generate(ccdCase, AUTHORISATION, FOR_DEFENDANT, DEFENDANT_LETTER_TEMPLATE_ID);
