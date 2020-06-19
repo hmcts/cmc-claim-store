@@ -13,17 +13,15 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTransferContent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.List;
 
 import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase.NoticeOfTransferLetterType.FOR_COURT;
 
 @ExtendWith(MockitoExtension.class)
 class TransferCaseDocumentPublishServiceTest {
@@ -43,13 +41,10 @@ class TransferCaseDocumentPublishServiceTest {
     private TransferCaseDocumentService transferCaseDocumentService;
 
     @Mock
-    private DocAssemblyService docAssemblyService;
-
-    @Mock
-    private NoticeOfTransferLetterTemplateMapper noticeOfTransferLetterTemplateMapper;
-
-    @Mock
     private Claim claim;
+
+    @Mock
+    private CoverLetterGenerator coverLetterGenerator;
 
     private CCDCase ccdCase;
 
@@ -70,16 +65,12 @@ class TransferCaseDocumentPublishServiceTest {
         givenDefendantIsLinked(true);
 
         CCDDocument generatedCoverDoc = CCDDocument.builder().build();
-        DocAssemblyTemplateBody formPayloadForCourt = mock(DocAssemblyTemplateBody.class);
-
-        when(noticeOfTransferLetterTemplateMapper.noticeOfTransferLetterBodyForCourt(ccdCase, AUTHORISATION))
-            .thenReturn(formPayloadForCourt);
-
-        when(docAssemblyService.generateDocument(ccdCase, AUTHORISATION, formPayloadForCourt, COURT_LETTER_TEMPLATE_ID))
-            .thenReturn(generatedCoverDoc);
 
         CCDDocument namedCoverDoc = generatedCoverDoc.toBuilder()
             .documentFileName(ccdCase.getPreviousServiceCaseReference() + "-notice-of-transfer-for-court.pdf").build();
+
+        when(coverLetterGenerator.generate(ccdCase, AUTHORISATION, FOR_COURT, COURT_LETTER_TEMPLATE_ID))
+            .thenReturn(namedCoverDoc);
 
         when(transferCaseDocumentService.attachNoticeOfTransfer(ccdCase, namedCoverDoc,
             AUTHORISATION)).thenReturn(ccdCase);
