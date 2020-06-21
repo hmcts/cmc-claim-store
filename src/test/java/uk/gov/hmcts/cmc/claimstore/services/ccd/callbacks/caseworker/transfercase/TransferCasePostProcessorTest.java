@@ -81,7 +81,7 @@ class TransferCasePostProcessorTest {
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = (AboutToStartOrSubmitCallbackResponse)
-            transferCasePostProcessor.completeCaseTransfer(callbackParams);
+            transferCasePostProcessor.transferToCourt(callbackParams);
 
         verify(transferCaseNotificationsService).sendClaimUpdatedEmailToClaimant(claim);
 

@@ -157,4 +157,14 @@ public class DocumentNameUtils {
 
         return format("%s-notice-of-transfer-for-defendant", caseRef);
     }
+
+    public static String buildNoticeOfTransferToCcbcForDefendantFileName(String caseRef) {
+        return getFileName("defendant-case-handoff", caseRef);
+    }
+
+    private static String getFileName(String caseRef, String fileNameSuffix) {
+        requireNonBlank(caseRef);
+        return format("%s-%s", caseRef, fileNameSuffix);
+    }
+
 }

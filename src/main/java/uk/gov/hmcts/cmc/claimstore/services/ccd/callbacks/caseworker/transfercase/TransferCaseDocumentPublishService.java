@@ -10,9 +10,11 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplate
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase.NoticeOfTransferLetterType.FOR_COURT;
-import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase.NoticeOfTransferLetterType.FOR_DEFENDANT;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase.NoticeOfTransferLetterType.TO_CCBC_FOR_DEFENDANT;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase.NoticeOfTransferLetterType.TO_COURT_FOR_DEFENDANT;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildNoticeOfTransferForCourtFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildNoticeOfTransferForDefendantFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildNoticeOfTransferToCcbcForDefendantFileName;
 
 @Service
 public class TransferCaseDocumentPublishService {
@@ -30,7 +32,8 @@ public class TransferCaseDocumentPublishService {
         DocAssemblyService docAssemblyService,
         NoticeOfTransferLetterTemplateMapper noticeOfTransferLetterTemplateMapper,
         @Value("${doc_assembly.noticeOfTransferSentToCourtTemplateId}") String courtLetterTemplateId,
-        @Value("${doc_assembly.noticeOfTransferSentToDefendantTemplateId}") String defendantLetterTemplateId
+        @Value("${doc_assembly.noticeOfTransferSentToDefendantTemplateId}") String defendantLetterTemplateId,
+        @Value("${doc_assembly.noticeOfTransferToCcbcSentToDefendantTemplateId}") String ccbctransferLetterId
     ) {
         this.transferCaseLetterSender = transferCaseLetterSender;
         this.transferCaseDocumentService = transferCaseDocumentService;
@@ -42,12 +45,17 @@ public class TransferCaseDocumentPublishService {
 
     public CCDCase publishCaseDocuments(CCDCase ccdCase, String authorisation, Claim claim) {
 
-        CCDCase updated = publishLetterToDefendant(ccdCase, authorisation, claim);
+        CCDCase updated = publishLetterToDefendant(ccdCase, authorisation, claim, TO_COURT_FOR_DEFENDANT);
 
         return publishCaseDocumentsToCourt(updated, authorisation, claim);
     }
 
-    private CCDCase publishLetterToDefendant(CCDCase ccdCase, String authorisation, Claim claim) {
+    public CCDCase publishDefendentDocuments(CCDCase ccdCase, String authorisation, Claim claim) {
+        return publishLetterToDefendant(ccdCase, authorisation, claim, TO_CCBC_FOR_DEFENDANT);
+    }
+
+    private CCDCase publishLetterToDefendant(CCDCase ccdCase, String authorisation, Claim claim,
+                                             NoticeOfTransferLetterType letterType) {
         if (isDefendantLinked(ccdCase)) {
             return ccdCase;
         }
@@ -60,7 +68,7 @@ public class TransferCaseDocumentPublishService {
             formPayloadForDefendant,
             defendantLetterTemplateId)
             .toBuilder()
-            .documentFileName(buildNoticeOfTransferLetterFileName(ccdCase, FOR_DEFENDANT))
+            .documentFileName(buildNoticeOfTransferLetterFileName(ccdCase, letterType))
             .build();
 
         transferCaseLetterSender.sendNoticeOfTransferForDefendant(authorisation, defendantLetter, claim);
@@ -98,8 +106,11 @@ public class TransferCaseDocumentPublishService {
             case FOR_COURT:
                 basename = buildNoticeOfTransferForCourtFileBaseName(ccdCase.getPreviousServiceCaseReference());
                 break;
-            case FOR_DEFENDANT:
+            case TO_COURT_FOR_DEFENDANT:
                 basename = buildNoticeOfTransferForDefendantFileBaseName(ccdCase.getPreviousServiceCaseReference());
+                break;
+            case TO_CCBC_FOR_DEFENDANT:
+                basename = buildNoticeOfTransferToCcbcForDefendantFileName(ccdCase.getPreviousServiceCaseReference());
                 break;
             default:
                 throw new IllegalArgumentException(noticeOfTransferLetterType
