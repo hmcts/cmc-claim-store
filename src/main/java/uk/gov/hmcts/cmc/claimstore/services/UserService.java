@@ -64,7 +64,7 @@ public class UserService {
 
     public User authenticateUser(String username, String password) {
 
-        String authorisation = getIdamOauth2Token(username, password);
+        String authorisation = getAuthorisationToken(username, password);
         UserDetails userDetails = getUserDetails(authorisation);
         return new User(authorisation, userDetails);
     }
@@ -80,15 +80,10 @@ public class UserService {
         return idamApi.generatePin(new GeneratePinRequest(name), authorisation);
     }
 
-    public String getBasicAuthHeader(String username, String password) {
-        String authorisation = username + ":" + password;
-        return BASIC + Base64.getEncoder().encodeToString(authorisation.getBytes());
-    }
-
-    public String getIdamOauth2Token(String username, String password) {
+    public String getAuthorisationToken(String username, String password) {
         String authorisation = username + ":" + password;
         String base64Authorisation = Base64.getEncoder().encodeToString(authorisation.getBytes());
-        logger.info("idam details are as {}", idamApi.toString());
+        logger.info("IDAM details are as {}", idamApi.toString());
         AuthenticateUserResponse authenticateUserResponse = idamApi.authenticateUser(
             BASIC + base64Authorisation,
             CODE,
@@ -96,7 +91,7 @@ public class UserService {
             oauth2.getRedirectUrl()
         );
 
-        TokenExchangeResponse tokenExchangeResponse = idamApi.exchangeCode(
+        TokenExchangeResponse tokenExchangeResponse = idamApi.exchangeToken(
             authenticateUserResponse.getCode(),
             AUTHORIZATION_CODE,
             oauth2.getRedirectUrl(),
@@ -110,6 +105,8 @@ public class UserService {
     @LogExecutionTime
     @Cacheable(value = "userInfoCache")
     public UserInfo getUserInfo(String bearerToken) {
+        logger.info("IDAM details are as {}", idamApi.toString());
+        logger.info("User info invoked for {}", bearerToken);
         return idamApi.retrieveUserInfo(bearerToken);
     }
 

@@ -94,7 +94,7 @@ public class IdamTestService {
 
                 AuthenticateUserResponse pinUserCode = authenticatePinUser(pin.getBody());
 
-                TokenExchangeResponse exchangeResponse = idamApi.exchangeCode(
+                TokenExchangeResponse exchangeResponse = idamApi.exchangeToken(
                     pinUserCode.getCode(),
                     AUTHORIZATION_CODE,
                     oauth2.getRedirectUrl(),
@@ -124,7 +124,7 @@ public class IdamTestService {
 
         String code = getCodeFromRedirect(response);
 
-        idamApi.exchangeCode(
+        idamApi.exchangeToken(
             code,
             AUTHORIZATION_CODE,
             oauth2.getRedirectUrl(),
