@@ -6,7 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.quartz.JobExecutionException;
-import uk.gov.hmcts.cmc.claimstore.services.BulkPrintTransferService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase.BulkPrintTransferService;
 
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;

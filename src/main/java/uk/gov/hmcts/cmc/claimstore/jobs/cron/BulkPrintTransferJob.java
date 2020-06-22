@@ -7,7 +7,7 @@ import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.claimstore.services.BulkPrintTransferService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase.BulkPrintTransferService;
 import uk.gov.hmcts.cmc.scheduler.model.CronJob;
 
 @Component
@@ -18,7 +18,7 @@ public class BulkPrintTransferJob implements CronJob {
     @Value("${claimsReadyForTransfer.schedule:0 * * ? * *}")
     private String cronExpression;
 
-    private BulkPrintTransferService bulkPrintTransferService;
+    private final BulkPrintTransferService bulkPrintTransferService;
 
     @Autowired
     public BulkPrintTransferJob(

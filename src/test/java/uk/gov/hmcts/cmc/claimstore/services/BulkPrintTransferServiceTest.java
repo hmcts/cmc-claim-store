@@ -10,9 +10,8 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseSearchApi;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase.CoverLetterGenerator;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase.NoticeOfTransferLetterType;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase.TransferCaseLetterSender;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase.*;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
@@ -36,7 +35,11 @@ public class BulkPrintTransferServiceTest {
     @Mock
     private CaseMapper caseMapper;
     @Mock
-    private CoverLetterGenerator coverLetterGenerator;
+    private TransferCaseDocumentPublishService transferCaseDocumentPublishService;
+    @Mock
+    private TransferCaseNotificationsService transferCaseNotificationsService;
+    @Mock
+    private CoreCaseDataService coreCaseDataService;
 
     private static final String COURT_LETTER_TEMPLATE_ID = "courtLetterTemplateId";
     private static final String AUTHORISATION = "authorisation";
@@ -56,10 +59,10 @@ public class BulkPrintTransferServiceTest {
         bulkPrintTransferService = new BulkPrintTransferService(
             caseSearchApi,
             userService,
-            transferCaseLetterSender,
             caseMapper,
-            COURT_LETTER_TEMPLATE_ID,
-            coverLetterGenerator);
+            transferCaseDocumentPublishService,
+            transferCaseNotificationsService,
+            coreCaseDataService);
 
         when(userService.authenticateAnonymousCaseWorker())
             .thenReturn(USER);
@@ -67,12 +70,6 @@ public class BulkPrintTransferServiceTest {
             .thenReturn(Collections.singletonList(SAMPLE_CLAIM));
         when(caseMapper.to(SAMPLE_CLAIM))
             .thenReturn(SAMPLE_CCD_CASE);
-        when(coverLetterGenerator.generate(
-            SAMPLE_CCD_CASE,
-            AUTHORISATION,
-            NoticeOfTransferLetterType.FOR_COURT,
-            COURT_LETTER_TEMPLATE_ID))
-            .thenReturn(NAMED_COVER_DOC);
         doNothing().when(transferCaseLetterSender)
             .sendAllCaseDocumentsToCourt(AUTHORISATION, SAMPLE_CCD_CASE, SAMPLE_CLAIM, NAMED_COVER_DOC);
     }
@@ -82,10 +79,6 @@ public class BulkPrintTransferServiceTest {
         bulkPrintTransferService.bulkPrintTransfer();
         verify(userService).authenticateAnonymousCaseWorker();
         verify(caseSearchApi).getClaimsReadyForTransfer(USER);
-        verify(coverLetterGenerator).generate(SAMPLE_CCD_CASE,
-            AUTHORISATION,
-            NoticeOfTransferLetterType.FOR_COURT,
-            COURT_LETTER_TEMPLATE_ID);
         verify(transferCaseLetterSender)
             .sendAllCaseDocumentsToCourt(AUTHORISATION, SAMPLE_CCD_CASE, SAMPLE_CLAIM, NAMED_COVER_DOC);
     }
