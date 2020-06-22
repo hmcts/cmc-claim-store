@@ -7,6 +7,8 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefenceType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
+import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
@@ -26,6 +28,8 @@ import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.PAPER_RESPONSE_FULL_DEFENCE;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.Params.BEARER_TOKEN;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.PaperResponseOCON9xFormCallbackHandler.OCON9X_SUBTYPE;
 
 @Service
 public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
@@ -34,10 +38,15 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
 
     private final CaseDetailsConverter caseDetailsConverter;
     private final Clock clock;
+    private final EventProducer eventProducer;
+    private final CaseMapper caseMapper;
 
-    public PaperResponseFullDefenceCallbackHandler(CaseDetailsConverter caseDetailsConverter, Clock clock) {
+    public PaperResponseFullDefenceCallbackHandler(CaseDetailsConverter caseDetailsConverter, Clock clock,
+                                                   EventProducer eventProducer, CaseMapper caseMapper) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.clock = clock;
+        this.eventProducer = eventProducer;
+        this.caseMapper = caseMapper;
     }
 
     protected Map<CallbackType, Callback> callbacks() {
@@ -70,7 +79,7 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
 
         var updatedScannedDocuments = ccdCase.getScannedDocuments()
             .stream()
-            .map(e -> e.getValue().getSubtype().equals("OCON9x") ? updateFilename(e, ccdCase) : e)
+            .map(e -> e.getValue().getSubtype().equals(OCON9X_SUBTYPE) ? updateFilename(e, ccdCase) : e)
             .collect(Collectors.toList());
 
         LocalDate intentionToProceedDeadline =
@@ -81,6 +90,9 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
             .scannedDocuments(updatedScannedDocuments)
             .intentionToProceedDeadline(intentionToProceedDeadline)
             .build();
+
+        String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
+        eventProducer.createDefendantPaperResponseEvent(caseMapper.from(updatedCcdCase), authorisation);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetailsConverter.convertToMap(updatedCcdCase))

@@ -18,9 +18,12 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefenceType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
+import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
@@ -40,11 +43,19 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class PaperResponseFullDefenceCallbackHandlerTest {
 
+    private static final String BEARER_TOKEN = "Bearer let me in";
+
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
 
     @Mock
     private Clock clock;
+
+    @Mock
+    private CaseMapper caseMapper;
+
+    @Mock
+    private EventProducer eventProducer;
 
     @InjectMocks
     private PaperResponseFullDefenceCallbackHandler handler;
@@ -70,6 +81,7 @@ class PaperResponseFullDefenceCallbackHandlerTest {
 
             callbackParams = CallbackParams.builder()
                 .type(CallbackType.ABOUT_TO_SUBMIT)
+                .params(Map.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
                 .request(request)
                 .build();
 
@@ -231,6 +243,21 @@ class PaperResponseFullDefenceCallbackHandlerTest {
             verify(caseDetailsConverter).convertToMap(ccdCaseArgumentCaptor.capture());
 
             assertThat(ccdCaseArgumentCaptor.getValue().getIntentionToProceedDeadline()).isEqualTo(DATE.toLocalDate());
+        }
+
+        @Test
+        void shouldProduceDefencePaperResponseEvent() {
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(this.ccdCase);
+
+            when(caseDetailsConverter.calculateIntentionToProceedDeadline(any(LocalDateTime.class)))
+                .thenReturn(DATE.toLocalDate());
+
+            Claim claim = Claim.builder().referenceNumber("ref").build();
+            when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
+
+            handler.handle(callbackParams);
+
+            verify(eventProducer).createDefendantPaperResponseEvent(claim, BEARER_TOKEN);
         }
     }
 }
