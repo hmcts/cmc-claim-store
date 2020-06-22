@@ -54,6 +54,7 @@ public class BulkPrintTransferServiceTest {
     private static final String HEARING_COURT_NAME = "court";
     private static final CCDAddress HEARING_COURT_ADDRESS = CCDAddress.builder().build();
     private static final String AUTHORISATION = "authorisation";
+    private static final String REASON = "For directions";
     private static final User USER = new User(AUTHORISATION, null);
     private static final Claim SAMPLE_CLAIM = SampleClaim.builder()
         .withResponse(SampleResponse.FullDefence.validDefaults())
@@ -74,7 +75,7 @@ public class BulkPrintTransferServiceTest {
             .transferCourtName(HEARING_COURT_NAME)
             .transferCourtAddress(HEARING_COURT_ADDRESS)
             .transferReason(CCDTransferReason.OTHER)
-            .transferReasonOther("other").build();
+            .transferReasonOther(REASON).build();
         transferredCCDCase = sampleCcdCase.toBuilder()
             .state(ClaimState.TRANSFERRED.getValue())
             .transferContent(transferContent)

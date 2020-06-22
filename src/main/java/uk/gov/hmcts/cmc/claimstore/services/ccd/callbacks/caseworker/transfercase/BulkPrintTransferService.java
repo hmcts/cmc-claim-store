@@ -31,6 +31,7 @@ public class BulkPrintTransferService {
     private final TransferCaseDocumentPublishService transferCaseDocumentPublishService;
     private final TransferCaseNotificationsService transferCaseNotificationsService;
     private final CoreCaseDataService coreCaseDataService;
+    private static final String REASON = "For directions";
 
     @Autowired
     public BulkPrintTransferService(
@@ -74,7 +75,7 @@ public class BulkPrintTransferService {
                 .transferCourtName(ccdCase.getHearingCourtName())
                 .transferCourtAddress(ccdCase.getHearingCourtAddress())
                 .transferReason(CCDTransferReason.OTHER)
-                .transferReasonOther("other").build())
+                .transferReasonOther(REASON).build())
             .build();
     }
 
