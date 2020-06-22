@@ -15,7 +15,7 @@ import uk.gov.hmcts.cmc.scheduler.model.CronJob;
 @DisallowConcurrentExecution
 public class BulkPrintTransferJob implements CronJob {
 
-    @Value("${claimsReadyForTransfer.schedule:0 * * ? * *}")
+    @Value("${schedule.transfer-claims}")
     private String cronExpression;
 
     private final BulkPrintTransferService bulkPrintTransferService;

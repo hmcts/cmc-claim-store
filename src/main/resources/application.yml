@@ -123,6 +123,7 @@ schedule:
   state-transition:
     waiting-transfer: ""
     stay-claim: ""
+    transfer-claims: ""
 
 dateCalculations:
   endOfBusinessDayHour: 16
