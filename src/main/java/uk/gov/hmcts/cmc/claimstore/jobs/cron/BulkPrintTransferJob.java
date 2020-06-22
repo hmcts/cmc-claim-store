@@ -30,7 +30,7 @@ public class BulkPrintTransferJob implements CronJob {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
-            bulkPrintTransferService.bulkPrintTransfer();
+            bulkPrintTransferService.findCasesAndTransfer();
 
         } catch (Exception e) {
             throw new JobExecutionException(e);

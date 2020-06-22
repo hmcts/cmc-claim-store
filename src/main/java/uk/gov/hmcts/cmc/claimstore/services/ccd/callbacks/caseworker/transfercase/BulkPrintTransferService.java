@@ -4,6 +4,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDTransferContent;
+import uk.gov.hmcts.cmc.ccd.domain.CCDTransferReason;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
@@ -47,30 +49,49 @@ public class BulkPrintTransferService {
         this.coreCaseDataService = coreCaseDataService;
     }
 
-    public void bulkPrintTransfer() {
+    public void findCasesAndTransfer() {
         User user = userService.authenticateAnonymousCaseWorker();
         String authorisation = user.getAuthorisation();
         List<Claim> claimsReadyForTransfer = caseSearchApi.getClaimsReadyForTransfer(user);
         Map<Claim, CCDCase> ccdCaseMap = new HashMap<>();
         claimsReadyForTransfer.forEach(claim -> ccdCaseMap.put(claim, caseMapper.to(claim)));
         ccdCaseMap.forEach((claim, ccdCase) -> {
-            CCDCase ccdCaseUpdated = transferCase(ccdCase, claim, authorisation);
+            CCDCase ccdCaseTransferred = transferCase(ccdCase, claim, authorisation);
+            CCDCase ccdCaseUpdated =  updateTransferContent(ccdCaseTransferred);
             updateCaseInCCD(ccdCaseUpdated, authorisation);
         });
     }
 
-    protected CCDCase transferCase(CCDCase ccdCase, Claim claim, String authorisation) {
-        transferCaseDocumentPublishService.publishCaseDocuments(ccdCase, authorisation, claim);
-        sendEmailNotifications(ccdCase, claim);
-        ccdCase = updateCaseData(ccdCase);
-        return ccdCase;
+    public CCDCase transferCase(CCDCase ccdCase, Claim claim, String authorisation) {
+        CCDCase updated = transferCaseDocumentPublishService.publishCaseDocuments(ccdCase, authorisation, claim);
+        sendEmailNotifications(updated, claim);
+        return updateCaseData(updated);
+    }
+
+    private CCDCase updateTransferContent(CCDCase ccdCase) {
+        return ccdCase.toBuilder()
+            .transferContent(ccdCase.getTransferContent().toBuilder()
+                .transferCourtName(ccdCase.getHearingCourtName())
+                .transferCourtAddress(ccdCase.getHearingCourtAddress())
+                .transferReason(CCDTransferReason.OTHER)
+                .transferReasonOther("other").build())
+            .build();
     }
 
     private CCDCase updateCaseData(CCDCase ccdCase) {
 
+        CCDTransferContent transferContent;
+        if (ccdCase.getTransferContent() != null) {
+            transferContent = ccdCase.getTransferContent().toBuilder()
+                .dateOfTransfer(LocalDate.now()).build();
+        } else {
+            transferContent = CCDTransferContent.builder()
+                .dateOfTransfer(LocalDate.now()).build();
+        }
         return ccdCase.toBuilder()
-            .transferContent(ccdCase.getTransferContent().toBuilder().dateOfTransfer(LocalDate.now()).build())
+            .transferContent(transferContent)
             .build();
+
     }
 
     private void sendEmailNotifications(CCDCase ccdCase, Claim claim) {

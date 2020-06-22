@@ -23,12 +23,12 @@ public class BulkPrintTransferJobTest {
     @BeforeEach
     public void beforeEach() {
         bulkPrintTransferJob = new BulkPrintTransferJob(bulkPrintTransferService);
-        doNothing().when(bulkPrintTransferService).bulkPrintTransfer();
+        doNothing().when(bulkPrintTransferService).findCasesAndTransfer();
     }
 
     @Test
     void executeShouldBulkPrintTransfer() throws JobExecutionException {
         bulkPrintTransferJob.execute(null);
-        verify(bulkPrintTransferService, times(1)).bulkPrintTransfer();
+        verify(bulkPrintTransferService, times(1)).findCasesAndTransfer();
     }
 }
