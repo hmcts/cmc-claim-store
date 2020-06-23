@@ -120,10 +120,10 @@ milo:
   sender: ${MILO_CSV_SENDER:}
 
 schedule:
+  transfer-claims: ""
   state-transition:
     waiting-transfer: ""
     stay-claim: ""
-    transfer-claims: ""
 
 dateCalculations:
   endOfBusinessDayHour: 16
