@@ -610,7 +610,8 @@ public final class SampleClaim {
             null,
             null,
             null,
-            transferContent
+            transferContent,
+            null
             );
     }
 

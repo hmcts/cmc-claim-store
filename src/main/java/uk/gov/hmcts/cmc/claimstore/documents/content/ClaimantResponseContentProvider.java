@@ -10,18 +10,22 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
+import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_CLAIMANT_RESPONSE;
 import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDateTime;
+import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.CCJ;
+import static uk.gov.hmcts.cmc.domain.utils.ClaimantResponseUtils.isCompanyOrOrganisationWithCCJDetermination;
 
 @Component
 public class ClaimantResponseContentProvider {
@@ -80,14 +84,29 @@ public class ClaimantResponseContentProvider {
 
         switch (claimantResponse.getType()) {
             case ACCEPTATION: {
-                content.put("defendantAdmissionAccepted", "I accept this amount");
                 ResponseAcceptation responseAcceptation = (ResponseAcceptation) claimantResponse;
-                content.putAll(responseAcceptationContentProvider.createContent(responseAcceptation));
-                responseAcceptation.getFormaliseOption()
-                    .map(FormaliseOption::getDescription)
-                    .ifPresent(
-                        x -> content.put("formaliseOption", x)
-                    );
+                content.putAll(responseAcceptationContentProvider.createContent(claim));
+                String admissionStatus = "this amount";
+
+                if (isCompanyOrOrganisationWithCCJDetermination(claim, responseAcceptation)) {
+                    admissionStatus = getDefendantAdmissionStatus(defendantResponse);
+                    content.put("formaliseOption", "Please enter judgment by determination");
+                } else {
+                    responseAcceptation.getFormaliseOption()
+                        .map(FormaliseOption::getDescription)
+                        .ifPresent(
+                            selectedOption -> content.put("formaliseOption", selectedOption)
+                        );
+
+                    if (claim.getReDeterminationRequestedAt().isPresent()
+                        || responseAcceptation.getFormaliseOption()
+                        .filter(Predicate.isEqual(FormaliseOption.REFER_TO_JUDGE)).isPresent()) {
+                        admissionStatus = getDefendantAdmissionStatus(defendantResponse);
+                    }
+                }
+
+                content.put("defendantAdmissionAccepted", String.format("I accept %s", admissionStatus));
+
                 claim.getTotalAmountTillDateOfIssue()
                     .map(totalAmount ->
                         totalAmount.subtract(claimantResponse.getAmountPaid().orElse(BigDecimal.ZERO))
@@ -98,7 +117,8 @@ public class ClaimantResponseContentProvider {
             }
             break;
             case REJECTION:
-                content.put("defendantAdmissionAccepted", "I reject this amount");
+                content.put("defendantAdmissionAccepted", String.format("I reject %s",
+                    getDefendantAdmissionStatus(defendantResponse)));
                 content.putAll(responseRejectionContentProvider.createContent((ResponseRejection) claimantResponse));
                 break;
             default:
@@ -118,6 +138,17 @@ public class ClaimantResponseContentProvider {
             .orElseThrow(() -> new IllegalArgumentException("Missing formalisation option"));
         if (formalisationOption == CCJ) {
             content.put("ccj", claim.getCountyCourtJudgment());
+        }
+    }
+
+    private String getDefendantAdmissionStatus(Response response) {
+        switch (response.getResponseType()) {
+            case PART_ADMISSION:
+                return formatMoney(((PartAdmissionResponse) response).getAmount());
+            case FULL_ADMISSION:
+                return "full admission";
+            default:
+                return "this amount";
         }
     }
 }
