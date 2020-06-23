@@ -34,7 +34,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class BulkPrintTransferServiceTest {
+class BulkPrintTransferServiceTest {
 
     private BulkPrintTransferService bulkPrintTransferService;
 
