@@ -109,7 +109,6 @@ public class BulkPrintTransferService {
     }
 
     private void updateCaseInCCD(CCDCase ccdCase, String authorisation) {
-        ccdCase.setState(ClaimState.TRANSFERRED.getValue());
         coreCaseDataService.update(authorisation, ccdCase, CaseEvent.AUTOMATED_TRANSFER);
     }
 }
