@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class SampleParty {
 
@@ -25,6 +26,7 @@ public class SampleParty {
     private Representative representative = SampleRepresentative.builder().build();
     private String companiesHouseNumber;
     private String collectionId = "acd82549-d279-4adc-b38c-d195dd0db0d6";
+    private UUID pcqId = UUID.fromString("acd82549-d279-4adc-b38c-d195dd0db0d6");
 
     public static SampleParty builder() {
         return new SampleParty();
@@ -87,12 +89,12 @@ public class SampleParty {
 
     public Party party() {
         return new Individual(collectionId, name, address, correspondenceAddress, phone, null,
-            representative, dateOfBirth);
+            representative, dateOfBirth,pcqId);
     }
 
     public Individual individual() {
         return new Individual(collectionId, name, address, correspondenceAddress, phone, null,
-            representative, dateOfBirth);
+            representative, dateOfBirth,pcqId);
     }
 
     public List<Party> individualDetails(int count) {
@@ -100,7 +102,7 @@ public class SampleParty {
         for (int i = 0; i < count; i++) {
             individualDetailsList.add(
                 new Individual(collectionId, name, address, correspondenceAddress, phone, null,
-                    representative, dateOfBirth)
+                    representative, dateOfBirth,pcqId)
             );
         }
         return individualDetailsList;
@@ -108,16 +110,16 @@ public class SampleParty {
 
     public SoleTrader soleTrader() {
         return new SoleTrader(collectionId, name, address, correspondenceAddress, phone, null,
-            representative, title, businessName);
+            representative, title, businessName,pcqId);
     }
 
     public Company company() {
         return new Company(collectionId, name, address, correspondenceAddress, phone, null,
-            representative, contactPerson);
+            representative, contactPerson,pcqId);
     }
 
     public Organisation organisation() {
         return new Organisation(collectionId, name, address, correspondenceAddress, phone, null,
-            representative, contactPerson, companiesHouseNumber);
+            representative, contactPerson, companiesHouseNumber,pcqId);
     }
 }

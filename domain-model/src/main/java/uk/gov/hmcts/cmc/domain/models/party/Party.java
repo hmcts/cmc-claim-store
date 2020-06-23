@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.domain.models.CollectionId;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 
 import java.util.Optional;
+import java.util.UUID;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -50,6 +51,8 @@ public abstract class Party extends CollectionId implements NamedParty {
     @Valid
     private final Representative representative;
 
+    private final UUID pcqId;
+
     public Party(
         String id,
         String name,
@@ -57,7 +60,8 @@ public abstract class Party extends CollectionId implements NamedParty {
         Address correspondenceAddress,
         String phone,
         String mobilePhone,
-        Representative representative
+        Representative representative,
+        UUID pcqId
     ) {
         super(id);
         this.name = name;
@@ -65,6 +69,7 @@ public abstract class Party extends CollectionId implements NamedParty {
         this.correspondenceAddress = correspondenceAddress;
         this.phone = Optional.ofNullable(phone).orElse(mobilePhone);
         this.representative = representative;
+        this.pcqId = pcqId;
     }
 
     @Override
@@ -87,6 +92,8 @@ public abstract class Party extends CollectionId implements NamedParty {
     public Optional<Representative> getRepresentative() {
         return Optional.ofNullable(representative);
     }
+
+    public UUID getPcqId() { return pcqId; }
 
     @Override
     public String toString() {
