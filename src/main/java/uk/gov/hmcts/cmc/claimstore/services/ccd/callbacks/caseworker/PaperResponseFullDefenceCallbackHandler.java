@@ -79,7 +79,7 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
 
         var updatedScannedDocuments = ccdCase.getScannedDocuments()
             .stream()
-            .map(e -> e.getValue().getSubtype().equals(OCON9X_SUBTYPE) ? updateFilename(e, ccdCase) : e)
+            .map(e -> OCON9X_SUBTYPE.equals(e.getValue().getSubtype()) ? updateFilename(e, ccdCase) : e)
             .collect(Collectors.toList());
 
         LocalDate intentionToProceedDeadline =
