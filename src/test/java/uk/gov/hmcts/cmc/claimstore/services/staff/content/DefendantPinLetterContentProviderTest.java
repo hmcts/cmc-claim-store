@@ -28,6 +28,7 @@ public class DefendantPinLetterContentProviderTest {
     private static final String DEFENDANT_PIN = "dsf4dd2";
     private static final String RESPOND_TO_CLAIM_URL = "https://moneyclaim.hmcts.net/first-contact/start";
     private static final String STAFF_NOTIFICATIONS_RECIPIENT = "email@domain.gov";
+    private static final String NEW_FEATURES = "newFeatures";
 
     private final Claim claim = SampleClaim.getDefault();
 
@@ -138,6 +139,13 @@ public class DefendantPinLetterContentProviderTest {
         Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
 
         assertThat(content).containsEntry("hmctsEmail", STAFF_NOTIFICATIONS_RECIPIENT);
+    }
+
+    @Test
+    public void shouldProvideHmctsNewFeatureConsent() {
+        Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
+
+        assertThat(content).containsEntry(NEW_FEATURES, Boolean.TRUE);
     }
 
 }
