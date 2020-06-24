@@ -48,6 +48,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SamplePayment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -61,6 +62,7 @@ import static java.time.LocalDate.now;
 import static java.util.Collections.singletonList;
 import static java.util.Optional.empty;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.BIG_DECIMAL;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -606,7 +608,7 @@ public class ClaimServiceTest {
 
         assertThat(argumentCaptorValue.getClaimData().getFeeAccountNumber().orElse("")).isEqualTo("NEW_ACCOUNT");
         AmountBreakDown finalAmount = (AmountBreakDown) argumentCaptorValue.getClaimData().getAmount();
-        assertThat(finalAmount.getTotalAmount()).isEqualTo("1000.99");
+        assertThat(finalAmount.getTotalAmount()).isEqualTo(new BigDecimal("1000.99"));
         assertThat(argumentCaptorValue.getClaimData()).isEqualTo(claimDataToBeUpdated);
     }
 
