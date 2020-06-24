@@ -47,7 +47,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
 
     private static final List<CaseEvent> EVENTS = List.of(PAPER_RESPONSE_ADMISSION);
     private static final List<Role> ROLES = List.of(CASEWORKER);
-    private static final String FORMNAME = "OCON9x";
+    private static final String FORM_NAME = "OCON9x";
     private final CaseDetailsConverter caseDetailsConverter;
     private final DefendantResponseNotificationService defendantResponseNotificationService;
     private final CaseMapper caseMapper;
@@ -86,7 +86,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackParams.getRequest().getCaseDetails());
         List<CCDCollectionElement<CCDScannedDocument>> updatedCCDScannedDocs = ccdCase.getScannedDocuments()
             .stream()
-            .map(e -> e.getValue().getSubtype().equals(FORMNAME) ? renameFile(e, ccdCase) : e)
+            .map(e -> e.getValue().getSubtype().equals(FORM_NAME) ? renameFile(e, ccdCase) : e)
             .collect(Collectors.toList());
 
         List<CCDCollectionElement<CCDRespondent>> updatedRespondent = ccdCase.getRespondents()
@@ -100,7 +100,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
                         .build())
                     .responseSubmittedOn(updatedCCDScannedDocs.stream()
                         .map(CCDCollectionElement::getValue)
-                        .filter(s -> s.getSubtype().equals(FORMNAME))
+                        .filter(s -> s.getSubtype().equals(FORM_NAME))
                         .map(CCDScannedDocument::getDeliveryDate)
                         .max(LocalDateTime::compareTo)
                         .orElseThrow(IllegalStateException::new))

@@ -202,10 +202,10 @@ public class DocAssemblyTemplateBodyMapper {
 
     public DocAssemblyTemplateBody paperResponseAdmissionLetter(CCDCase ccdCase, String caseworkerName) {
         LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
-        String partyName = ccdCase.getRespondents().get(0)
-            .getValue().getPartyName() != null
-            ? ccdCase.getRespondents().get(0).getValue().getPartyName() :
-            ccdCase.getRespondents().get(0).getValue().getClaimantProvidedPartyName();
+        CCDRespondent defendant =  ccdCase.getRespondents().get(0).getValue();
+        String partyName = defendant.getPartyName() != null
+            ? defendant.getPartyName()
+            :  defendant.getClaimantProvidedPartyName();
         CCDAddress partyAddress = getDefendantAddress(ccdCase.getRespondents().get(0).getValue());
 
         return DocAssemblyTemplateBody.builder()

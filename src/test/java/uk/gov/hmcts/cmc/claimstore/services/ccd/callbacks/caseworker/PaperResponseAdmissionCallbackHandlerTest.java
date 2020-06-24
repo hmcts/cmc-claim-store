@@ -61,7 +61,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Paper Response Admission handler")
-public class PaperResponseAdmissionCallbackHandlerTest {
+class PaperResponseAdmissionCallbackHandlerTest {
 
     private static final String AUTHORISATION = "Bearer: aaaa";
     private static final String DOC_URL = "http://success.test";
@@ -89,7 +89,7 @@ public class PaperResponseAdmissionCallbackHandlerTest {
     private UserDetails userDetails;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         String paperResponseAdmissionTemplateId = "CV-CMC-GOR-ENG-0016.docx";
         handler = new PaperResponseAdmissionCallbackHandler(caseDetailsConverter,
             defendantResponseNotificationService, caseMapper, docAssemblyService, docAssemblyTemplateBodyMapper,
@@ -181,7 +181,7 @@ public class PaperResponseAdmissionCallbackHandlerTest {
     }
 
     @Test
-    public void shouldNotChangeFileNameForOtherForm() {
+    void shouldNotChangeFileNameForOtherForm() {
 
         CCDCase ccdCase = getCCDCase(PART_ADMISSION, CCDRespondent.builder(), "XXXXX");
 
@@ -193,7 +193,7 @@ public class PaperResponseAdmissionCallbackHandlerTest {
     }
 
     @Test
-    public void notifyClaimant() {
+    void notifyClaimant() {
 
         CCDCase ccdCase = getCCDCase(PART_ADMISSION, CCDRespondent.builder()
             .defendantId("1234"), "OCON9x");
@@ -213,7 +213,7 @@ public class PaperResponseAdmissionCallbackHandlerTest {
     }
 
     @Test
-    public void notifyDefendant() {
+    void shouldNotifyDefendantByEmail() {
 
         CCDCase ccdCase = getCCDCase(PART_ADMISSION, CCDRespondent.builder()
             .defendantId("1234"), "OCON9x");
@@ -232,32 +232,6 @@ public class PaperResponseAdmissionCallbackHandlerTest {
             any(String.class),
             any(String.class)
         );
-    }
-
-    @Test
-    void shouldPrepopulateUser() {
-
-        CCDCase ccdCase = getCCDCase(PART_ADMISSION, CCDRespondent.builder(), "OCON9x");
-
-        Claim claim = Claim.builder()
-            .referenceNumber("XXXXX")
-            .build();
-        when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
-        when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetails);
-        when(docAssemblyService
-            .renderTemplate(any(CCDCase.class), anyString(), anyString(), any(DocAssemblyTemplateBody.class)))
-            .thenReturn(docAssemblyResponse);
-        when(docAssemblyTemplateBodyMapper.paperResponseAdmissionLetter(any(CCDCase.class), any(String.class)))
-            .thenReturn(DocAssemblyTemplateBody.builder().build());
-        when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
-        when(documentManagementService.getDocumentMetaData(anyString(), anyString())).thenReturn(getLinks());
-        when(clock.instant()).thenReturn(LocalDate.parse("2020-06-22").atStartOfDay().toInstant(ZoneOffset.UTC));
-        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
-        when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);
-        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-
-        handler.handle(callbackParams);
-        verify(userService, times(1)).getUserDetails(anyString());
     }
 
     @Test
@@ -319,12 +293,12 @@ public class PaperResponseAdmissionCallbackHandlerTest {
     }
 
     @Test
-    public void shouldHaveCorrectCaseworkerRole() {
+    void shouldHaveCorrectCaseworkerRole() {
         assertThat(handler.getSupportedRoles()).containsOnly(CASEWORKER);
     }
 
     @Test
-    public void shouldHaveCorrectCaseworkerEvent() {
+    void shouldHaveCorrectCaseworkerEvent() {
         assertThat(handler.handledEvents()).containsOnly(PAPER_RESPONSE_ADMISSION);
     }
 
