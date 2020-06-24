@@ -19,7 +19,6 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercas
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase.TransferCaseDocumentPublishService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase.TransferCaseNotificationsService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
@@ -77,7 +76,6 @@ class BulkPrintTransferServiceTest {
             .transferReason(CCDTransferReason.OTHER)
             .transferReasonOther(REASON).build();
         transferredCCDCase = sampleCcdCase.toBuilder()
-            .state(ClaimState.TRANSFERRED.getValue())
             .transferContent(transferContent)
             .build();
 
