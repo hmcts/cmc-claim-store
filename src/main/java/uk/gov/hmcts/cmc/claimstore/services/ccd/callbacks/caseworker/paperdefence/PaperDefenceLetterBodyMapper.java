@@ -44,7 +44,7 @@ public class PaperDefenceLetterBodyMapper {
             .currentDate(currentDate)
             .referenceNumber(ccdCase.getPreviousServiceCaseReference())
             .responseDeadline(respondent.getResponseDeadline())
-            .updatedResponseDeadline(extendedResponseDeadline)
+            .extendedResponseDeadline(extendedResponseDeadline)
             .caseworkerName(caseworkerName)
             .caseName(ccdCase.getCaseName())
             .build();
@@ -105,7 +105,7 @@ public class PaperDefenceLetterBodyMapper {
         return DocAssemblyTemplateBody.builder()
             .referenceNumber(ccdCase.getPreviousServiceCaseReference())
             .responseDeadline(respondent.getResponseDeadline())
-            .updatedResponseDeadline(extendedResponseDeadline)
+            .extendedResponseDeadline(extendedResponseDeadline)
             .claimAmount(ccdCase.getTotalAmount())
             .partyName(partyName)
             .partyAddress(defendantAddress)
