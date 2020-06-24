@@ -30,6 +30,7 @@ java:
         - rpa-email-ccj
         - rpa-email-paid-in-full
         - launchDarkly-sdk-key
+        - sendgrid-api-key
   environment:
     REFORM_TEAM: cmc
     REFORM_SERVICE_NAME: claim-store
