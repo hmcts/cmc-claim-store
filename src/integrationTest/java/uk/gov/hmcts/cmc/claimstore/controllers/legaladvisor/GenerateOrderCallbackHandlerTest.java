@@ -51,7 +51,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
         "doc_assembly.url=http://doc-assembly-api"
     }
 )
-public class    GenerateOrderCallbackHandlerTest extends BaseMockSpringTest {
+public class GenerateOrderCallbackHandlerTest extends BaseMockSpringTest {
 
     @MockBean
     protected EmailService emailService;
