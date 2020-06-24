@@ -125,6 +125,7 @@ public class UserServiceTest {
     }
 
     @Test
+    @Ignore("Enable this when using /o/userinfo")
     public void authenticateUserShouldReturnUser() {
 
         when(idamApi.authenticateUser(anyString(), eq(CODE), any(), any()))
