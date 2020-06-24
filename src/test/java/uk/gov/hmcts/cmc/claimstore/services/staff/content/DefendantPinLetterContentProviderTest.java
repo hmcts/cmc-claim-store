@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 
 import java.time.Clock;
+import java.util.Collections;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -142,10 +143,18 @@ public class DefendantPinLetterContentProviderTest {
     }
 
     @Test
-    public void shouldProvideHmctsNewFeatureConsent() {
+    public void newFeatureFlagShouldBeTrueIfClaimHasFeatures() {
         Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
 
         assertThat(content).containsEntry(NEW_FEATURES, Boolean.TRUE);
+    }
+
+    @Test
+    public void newFeatureFlagShouldBeFalseIfClaimHasNoFeatures() {
+        Claim claim = SampleClaim.builder().withFeatures(Collections.emptyList()).build();
+        Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
+
+        assertThat(content).containsEntry(NEW_FEATURES, Boolean.FALSE);
     }
 
 }

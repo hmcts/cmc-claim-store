@@ -93,7 +93,7 @@ public class DefendantPinLetterContentProvider {
             .getAddress()
         );
         content.put("hmctsEmail", staffEmailProperties.getRecipient());
-        content.put(NEW_FEATURES, claim.getFeatures() == null || claim.getFeatures().isEmpty() ? false : true);
+        content.put(NEW_FEATURES, claim.getFeatures() != null && !claim.getFeatures().isEmpty());
 
         return content;
     }
