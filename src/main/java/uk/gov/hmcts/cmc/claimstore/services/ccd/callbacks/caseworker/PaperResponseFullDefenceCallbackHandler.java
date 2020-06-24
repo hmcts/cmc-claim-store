@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefenceType;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
@@ -59,28 +60,9 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
 
-        var updatedRespondents = ccdCase.getRespondents()
-            .stream()
-            .map(r -> r.toBuilder()
-                .value(r.getValue()
-                    .toBuilder()
-                    .responseType(CCDResponseType.FULL_DEFENCE)
-                    .responseDefenceType(CCDDefenceType.valueOf((String)caseDetails.getData().get("defenceType")))
-                    .partyDetail(r.getValue()
-                        .getPartyDetail()
-                        .toBuilder()
-                        .type(r.getValue()
-                            .getClaimantProvidedDetail()
-                            .getType()).build()
-                    )
-                    .build())
-                .build())
-            .collect(Collectors.toList());
+        List<CCDCollectionElement<CCDRespondent>> updatedRespondents = updateRespondents(caseDetails, ccdCase);
 
-        var updatedScannedDocuments = ccdCase.getScannedDocuments()
-            .stream()
-            .map(e -> OCON9X_SUBTYPE.equals(e.getValue().getSubtype()) ? updateFilename(e, ccdCase) : e)
-            .collect(Collectors.toList());
+        List<CCDCollectionElement<CCDScannedDocument>> updatedScannedDocuments = updateScannedDocuments(ccdCase);
 
         LocalDate intentionToProceedDeadline =
             caseDetailsConverter.calculateIntentionToProceedDeadline(LocalDateTime.now(clock));
@@ -97,6 +79,47 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetailsConverter.convertToMap(updatedCcdCase))
             .build();
+    }
+
+    private List<CCDCollectionElement<CCDScannedDocument>> updateScannedDocuments(CCDCase ccdCase) {
+        return ccdCase.getScannedDocuments()
+            .stream()
+            .map(e -> OCON9X_SUBTYPE.equals(e.getValue().getSubtype()) ? updateFilename(e, ccdCase) : e)
+            .collect(Collectors.toList());
+    }
+
+    private List<CCDCollectionElement<CCDRespondent>> updateRespondents(CaseDetails caseDetails, CCDCase ccdCase) {
+
+        LocalDateTime respondedDate = getResponseDate(ccdCase);
+
+        return ccdCase.getRespondents()
+            .stream()
+            .map(r -> r.toBuilder()
+                .value(r.getValue()
+                    .toBuilder()
+                    .responseType(CCDResponseType.FULL_DEFENCE)
+                    .responseDefenceType(CCDDefenceType.valueOf((String)caseDetails.getData().get("defenceType")))
+                    .partyDetail(r.getValue()
+                        .getPartyDetail()
+                        .toBuilder()
+                        .type(r.getValue()
+                            .getClaimantProvidedDetail()
+                            .getType()).build()
+                    )
+                    .responseSubmittedOn(respondedDate)
+                    .build())
+                .build())
+            .collect(Collectors.toList());
+    }
+
+    private LocalDateTime getResponseDate(CCDCase ccdCase) {
+        return ccdCase.getScannedDocuments()
+                .stream()
+                .filter(e -> OCON9X_SUBTYPE.equals(e.getValue().getSubtype()))
+                .map(CCDCollectionElement::getValue)
+                .map(CCDScannedDocument::getDeliveryDate)
+                .max(LocalDateTime::compareTo)
+                .orElseThrow(() -> new IllegalStateException("No OCON9x form found"));
     }
 
     private CCDCollectionElement<CCDScannedDocument> updateFilename(CCDCollectionElement<CCDScannedDocument> element,
