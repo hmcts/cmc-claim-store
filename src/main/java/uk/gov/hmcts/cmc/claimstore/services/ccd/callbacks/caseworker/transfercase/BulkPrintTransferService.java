@@ -54,12 +54,14 @@ public class BulkPrintTransferService {
         String authorisation = user.getAuthorisation();
         List<Claim> claimsReadyForTransfer = caseSearchApi.getClaimsReadyForTransfer(user);
         Map<Claim, CCDCase> ccdCaseMap = new HashMap<>();
-        claimsReadyForTransfer.forEach(claim -> ccdCaseMap.put(claim, caseMapper.to(claim)));
-        ccdCaseMap.forEach((claim, ccdCase) -> {
-            CCDCase ccdCaseTransferred = transferCase(ccdCase, claim, authorisation);
-            CCDCase ccdCaseUpdated =  updateTransferContent(ccdCaseTransferred);
-            updateCaseInCCD(ccdCaseUpdated, authorisation);
-        });
+        if (!claimsReadyForTransfer.isEmpty()) {
+            claimsReadyForTransfer.forEach(claim -> ccdCaseMap.put(claim, caseMapper.to(claim)));
+            ccdCaseMap.forEach((claim, ccdCase) -> {
+                CCDCase ccdCaseTransferred = transferCase(ccdCase, claim, authorisation);
+                CCDCase ccdCaseUpdated = updateTransferContent(ccdCaseTransferred);
+                updateCaseInCCD(ccdCaseUpdated, authorisation);
+            });
+        }
     }
 
     public CCDCase transferCase(CCDCase ccdCase, Claim claim, String authorisation) {

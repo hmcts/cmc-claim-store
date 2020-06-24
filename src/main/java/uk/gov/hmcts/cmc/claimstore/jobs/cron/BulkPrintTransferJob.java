@@ -20,22 +20,19 @@ public class BulkPrintTransferJob implements CronJob {
     @Value("${schedule.transfer-claims}")
     private String cronExpression;
 
-    private final BulkPrintTransferService bulkPrintTransferService;
-
-    @Autowired
-    public BulkPrintTransferJob(
-        BulkPrintTransferService bulkPrintTransferService
-    ) {
-        this.bulkPrintTransferService = bulkPrintTransferService;
-    }
+    private  BulkPrintTransferService bulkPrintTransferService;
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
             bulkPrintTransferService.findCasesAndTransfer();
-
         } catch (Exception e) {
             throw new JobExecutionException(e);
         }
+    }
+
+    @Autowired
+    public void setBulkPrintTransferService(BulkPrintTransferService bulkPrintTransferService) {
+        this.bulkPrintTransferService = bulkPrintTransferService;
     }
 }

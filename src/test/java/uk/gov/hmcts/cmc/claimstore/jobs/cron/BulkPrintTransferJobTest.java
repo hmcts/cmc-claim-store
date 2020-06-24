@@ -22,7 +22,8 @@ class BulkPrintTransferJobTest {
 
     @BeforeEach
     public void beforeEach() {
-        bulkPrintTransferJob = new BulkPrintTransferJob(bulkPrintTransferService);
+        bulkPrintTransferJob = new BulkPrintTransferJob();
+        bulkPrintTransferJob.setBulkPrintTransferService(bulkPrintTransferService);
         doNothing().when(bulkPrintTransferService).findCasesAndTransfer();
     }
 
