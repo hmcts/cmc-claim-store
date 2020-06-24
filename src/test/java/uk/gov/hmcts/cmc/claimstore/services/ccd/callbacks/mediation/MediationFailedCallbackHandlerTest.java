@@ -82,7 +82,7 @@ public class MediationFailedCallbackHandlerTest {
 
     private CallbackParams callbackParams;
     private static final String AUTHORISATION = "Bearer: aaaa";
-    private static final String INSTANT_EXPECTED = "2020-06-23T10:10:10Z";
+    private static final String INSTANT_EXPECTED = "2020-06-23T10:10:10";
     private static final String DATE_REFERRED_FOR_DIRECTIONS = "dateReferredForDirections";
     private static final String REFERENCE = "reference";
     private static final String REFERENCE_KEY = "previousServiceCaseReference";
@@ -91,9 +91,6 @@ public class MediationFailedCallbackHandlerTest {
     private final Claim claimSetForMediation =
         SampleClaim.getWithClaimantResponseRejectionForPartAdmissionAndMediation();
     private CallbackRequest callbackRequest;
-
-    @Mock
-    private Clock clock;
 
     //TODO Clean up these tests
 
@@ -312,8 +309,7 @@ public class MediationFailedCallbackHandlerTest {
 
     @Test
     public void testReadyForDirectionsDateForMediationUnsuccessful() {
-        clock = Clock.fixed(Instant.parse(INSTANT_EXPECTED), ZoneId.of("UTC"));
-        LocalDateTime dateTime = LocalDateTime.now(clock);
+        var dateTime = LocalDateTime.parse(INSTANT_EXPECTED);
 
         Claim claim = claimSetForMediation.toBuilder()
             .response(
@@ -323,13 +319,11 @@ public class MediationFailedCallbackHandlerTest {
         when(caseMapper.to(any(Claim.class))).thenReturn(getCcdCase(dateTime));
         when(caseDetailsConverter.convertToMap(any(CCDCase.class))).thenReturn(getCcdCaseMap(dateTime));
 
-        AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
-            mediationFailedCallbackHandler
-                .handle(callbackParams);
+        var response = (AboutToStartOrSubmitCallbackResponse) mediationFailedCallbackHandler.handle(callbackParams);
 
-        CCDCase ccdCase = (CCDCase) response.getData().get("dateReferredForDirections");
+        CCDCase ccdCase = (CCDCase) response.getData().get(DATE_REFERRED_FOR_DIRECTIONS);
 
-        assertEquals(ccdCase.getDateReferredForDirections(), dateTime);
+        assertEquals(dateTime, ccdCase.getDateReferredForDirections());
     }
 
 
