@@ -9,6 +9,7 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
@@ -30,7 +31,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -39,6 +39,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocumentType.form;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.PaperResponseOCON9xFormCallbackHandler.OCON9X_SUBTYPE;
 
 @ExtendWith(MockitoExtension.class)
 class PaperResponseFullDefenceCallbackHandlerTest {
@@ -95,9 +97,19 @@ class PaperResponseFullDefenceCallbackHandlerTest {
                             .partyDetail(CCDParty.builder().build())
                             .claimantProvidedDetail(CCDParty.builder().build())
                             .build())
-                        .build())
+                        .build()
+                    )
                 )
-                .scannedDocuments(Collections.emptyList())
+                .scannedDocuments(List.of(
+                    CCDCollectionElement.<CCDScannedDocument>builder()
+                        .value(CCDScannedDocument.builder()
+                            .type(form)
+                            .subtype(OCON9X_SUBTYPE)
+                            .deliveryDate(LocalDateTime.now())
+                            .build()
+                        ).build()
+                    )
+                )
                 .build();
 
         }
@@ -169,19 +181,8 @@ class PaperResponseFullDefenceCallbackHandlerTest {
 
         @Test
         void shouldSetNewFilenameOnOcon9xForm() {
-            String filename = "filename";
-            String subtype = "OCON9x";
 
             ccdCase = ccdCase.toBuilder()
-                .scannedDocuments(List.of(
-                    CCDCollectionElement.<CCDScannedDocument>builder().value(
-                        CCDScannedDocument.builder()
-                            .fileName(filename)
-                            .subtype(subtype)
-                            .build()
-                    )
-                    .build()
-                ))
                 .previousServiceCaseReference("reference")
                 .build();
 
@@ -205,16 +206,17 @@ class PaperResponseFullDefenceCallbackHandlerTest {
             String subtype = "NON_OCON9x";
 
             ccdCase = ccdCase.toBuilder()
-                .scannedDocuments(List.of(
-                    CCDCollectionElement.<CCDScannedDocument>builder().value(
-                        CCDScannedDocument.builder()
-                            .fileName(filename)
-                            .subtype(subtype)
-                            .build()
-                    )
-                        .build()
-                ))
-                .previousServiceCaseReference("reference")
+                .scannedDocuments(ImmutableList.<CCDCollectionElement<CCDScannedDocument>>builder()
+                   .addAll(ccdCase.getScannedDocuments())
+                    .add(CCDCollectionElement.<CCDScannedDocument>builder()
+                        .value(
+                            CCDScannedDocument.builder()
+                                .fileName(filename)
+                                .subtype(subtype)
+                                .build()
+                            )
+                        .build())
+                   .build())
                 .build();
 
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(this.ccdCase);
@@ -226,6 +228,7 @@ class PaperResponseFullDefenceCallbackHandlerTest {
             assertThat(ccdCaseArgumentCaptor.getValue()
                 .getScannedDocuments().stream()
                 .map(CCDCollectionElement::getValue)
+                .filter(d -> d.getSubtype().equals(subtype))
                 .map(CCDScannedDocument::getFileName)
                 .collect(Collectors.toSet())
             ).containsExactly(filename);
