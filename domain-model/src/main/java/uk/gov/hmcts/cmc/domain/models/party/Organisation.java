@@ -7,7 +7,6 @@ import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @EqualsAndHashCode(callSuper = true)
@@ -27,9 +26,9 @@ public class Organisation extends Party implements HasContactPerson {
         Representative representative,
         String contactPerson,
         String companiesHouseNumber,
-        UUID pcqId
+        String pcqId
     ) {
-        super(id, name, address, correspondenceAddress, phone, mobilePhone, representative,pcqId);
+        super(id, name, address, correspondenceAddress, phone, mobilePhone, representative, pcqId);
         this.contactPerson = contactPerson;
         this.companiesHouseNumber = companiesHouseNumber;
     }

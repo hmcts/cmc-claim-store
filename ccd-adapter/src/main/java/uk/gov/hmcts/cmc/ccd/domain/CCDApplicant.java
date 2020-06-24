@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Value;
 
-import java.util.UUID;
-
 @Value
 @Builder(toBuilder = true)
 public class CCDApplicant {
@@ -17,7 +15,7 @@ public class CCDApplicant {
     private String representativeOrganisationEmail;
     private String representativeOrganisationDxAddress;
     private CCDYesNoOption leadApplicantIndicator;
-    private UUID pcqId;
+    private String pcqId;
 
     @JsonIgnore
     public boolean hasRepresentative() {

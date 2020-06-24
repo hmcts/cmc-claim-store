@@ -7,7 +7,6 @@ import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 
 import java.util.Optional;
-import java.util.UUID;
 import javax.validation.constraints.Size;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -30,9 +29,9 @@ public class SoleTrader extends Party implements TitledParty {
         Representative representative,
         String title,
         String businessName,
-        UUID pcqId
+        String pcqId
     ) {
-        super(id, name, address, correspondenceAddress, phone, mobilePhone, representative,pcqId);
+        super(id, name, address, correspondenceAddress, phone, mobilePhone, representative, pcqId);
         this.title = title;
         this.businessName = businessName;
     }

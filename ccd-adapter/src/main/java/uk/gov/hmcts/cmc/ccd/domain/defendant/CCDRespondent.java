@@ -20,7 +20,6 @@ import uk.gov.hmcts.cmc.ccd.domain.offers.CCDMadeBy;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Value
 @Builder(toBuilder = true)
@@ -93,7 +92,7 @@ public class CCDRespondent {
     private String mediationFailedReason;
     private LocalDateTime mediationSettlementReachedAt;
 
-    private UUID pcqId;
+    private String pcqId;
 
     @JsonIgnore
     public boolean hasRepresentative() {
