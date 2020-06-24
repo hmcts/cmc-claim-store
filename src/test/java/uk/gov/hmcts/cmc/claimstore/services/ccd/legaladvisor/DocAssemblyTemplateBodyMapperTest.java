@@ -25,6 +25,7 @@ import uk.gov.hmcts.cmc.claimstore.services.DirectionOrderService;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 
 import java.time.Clock;
@@ -533,5 +534,29 @@ class DocAssemblyTemplateBodyMapperTest {
                 .build();
             assertThat(requestBody).isEqualTo(expectedBody);
         }
+    }
+
+    @Test
+    void shouldMapTemplateBodyWhenPaperResponseAdmissionLetter() {
+        when(clock.instant()).thenReturn(LocalDate.parse("2020-06-22").atStartOfDay().toInstant(ZoneOffset.UTC));
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);
+        DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper
+            .paperResponseAdmissionLetter(ccdCase, "John S");
+        DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
+            .currentDate(LocalDate.parse("2020-06-22"))
+            .partyName("Mary Richards")
+            .partyAddress(CCDAddress.builder()
+                .addressLine1("line1")
+                .addressLine2("line2")
+                .addressLine3("line3")
+                .postCode("postcode")
+                .postTown("city")
+                .build())
+            .referenceNumber("ref no")
+            .caseName("case name")
+            .caseworkerName("John S")
+            .build();
+        assertThat(requestBody).isEqualTo(expectedBody);
     }
 }
