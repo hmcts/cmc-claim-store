@@ -29,11 +29,8 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
-import java.time.Clock;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -86,7 +83,6 @@ public class MediationFailedCallbackHandlerTest {
     private static final String DATE_REFERRED_FOR_DIRECTIONS = "dateReferredForDirections";
     private static final String REFERENCE = "reference";
     private static final String REFERENCE_KEY = "previousServiceCaseReference";
-
 
     private final Claim claimSetForMediation =
         SampleClaim.getWithClaimantResponseRejectionForPartAdmissionAndMediation();
@@ -326,7 +322,6 @@ public class MediationFailedCallbackHandlerTest {
         assertEquals(dateTime, ccdCase.getDateReferredForDirections());
     }
 
-
     private void handleSubmittedCallback() {
         CallbackRequest callbackRequest = CallbackRequest
             .builder()
@@ -342,7 +337,6 @@ public class MediationFailedCallbackHandlerTest {
 
         mediationFailedCallbackHandler.handle(callbackParams);
     }
-
 
     private CCDCase getCcdCase(LocalDateTime dateTime) {
         return CCDCase.builder()
