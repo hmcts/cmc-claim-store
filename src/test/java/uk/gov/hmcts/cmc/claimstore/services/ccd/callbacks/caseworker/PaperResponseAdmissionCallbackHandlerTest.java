@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -110,74 +111,6 @@ class PaperResponseAdmissionCallbackHandlerTest {
             .withSurname("Surname")
             .withRoles("caseworker-cmc")
             .build();
-    }
-
-    @Test
-    void shouldChangeFileNameForOCON9xFormForFullAdmission() {
-
-        CCDCase ccdCase = getCCDCase(FULL_ADMISSION, CCDRespondent.builder(), "OCON9x");
-
-        Claim claim = Claim.builder()
-            .referenceNumber("XXXXX")
-            .build();
-        when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
-        when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetails);
-
-        when(docAssemblyService
-            .renderTemplate(any(CCDCase.class), anyString(), anyString(), any(DocAssemblyTemplateBody.class)))
-            .thenReturn(docAssemblyResponse);
-        when(docAssemblyTemplateBodyMapper.paperResponseAdmissionLetter(any(CCDCase.class), any(String.class)))
-            .thenReturn(DocAssemblyTemplateBody.builder().build());
-        when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
-        when(documentManagementService.getDocumentMetaData(anyString(), anyString())).thenReturn(getLinks());
-        when(clock.instant()).thenReturn(LocalDate.parse("2020-06-22").atStartOfDay().toInstant(ZoneOffset.UTC));
-        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
-        when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);
-        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-
-        ArgumentCaptor<CCDCase> ccdDataArgumentCaptor = ArgumentCaptor.forClass(CCDCase.class);
-        handler.handle(callbackParams);
-
-        verify(caseDetailsConverter).convertToMap(ccdDataArgumentCaptor.capture());
-        assertEquals("CMC-scanned-OCON9x-full-admission.pdf",
-            ccdDataArgumentCaptor.getValue().getScannedDocuments().get(0).getValue().getFileName());
-        assertNull(ccdDataArgumentCaptor.getValue().getPaperAdmissionType());
-        assertEquals(LocalDateTime.of(2020, Month.JUNE, 17, 11, 30, 57),
-            ccdDataArgumentCaptor.getValue().getRespondents().get(0).getValue().getResponseSubmittedOn());
-        assertEquals(1, ccdDataArgumentCaptor.getValue().getScannedDocuments().size());
-    }
-
-    @Test
-    void shouldChangeFileNameForOCON9xFormForPartAdmission() {
-        CCDCase ccdCase = getCCDCase(PART_ADMISSION, CCDRespondent.builder(), "OCON9x");
-
-        Claim claim = Claim.builder()
-            .referenceNumber("XXXXX")
-            .build();
-        when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
-        when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetails);
-        when(docAssemblyService
-            .renderTemplate(any(CCDCase.class), anyString(), anyString(), any(DocAssemblyTemplateBody.class)))
-            .thenReturn(docAssemblyResponse);
-        when(docAssemblyTemplateBodyMapper.paperResponseAdmissionLetter(any(CCDCase.class), any(String.class)))
-            .thenReturn(DocAssemblyTemplateBody.builder().build());
-        when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
-        when(documentManagementService.getDocumentMetaData(anyString(), anyString())).thenReturn(getLinks());
-        when(clock.instant()).thenReturn(LocalDate.parse("2020-06-22").atStartOfDay().toInstant(ZoneOffset.UTC));
-        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
-        when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);
-        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-        ArgumentCaptor<CCDCase> ccdDataArgumentCaptor = ArgumentCaptor.forClass(CCDCase.class);
-
-        handler.handle(callbackParams);
-        verify(caseDetailsConverter).convertToMap(ccdDataArgumentCaptor.capture());
-
-        assertEquals("CMC-scanned-OCON9x-part-admission.pdf",
-            ccdDataArgumentCaptor.getValue().getScannedDocuments().get(0).getValue().getFileName());
-        assertNull(ccdDataArgumentCaptor.getValue().getPaperAdmissionType());
-        assertEquals(LocalDateTime.of(2020, Month.JUNE, 17, 11, 30, 57),
-            ccdDataArgumentCaptor.getValue().getRespondents().get(0).getValue().getResponseSubmittedOn());
-        assertEquals(1, ccdDataArgumentCaptor.getValue().getScannedDocuments().size());
     }
 
     @Test
@@ -336,5 +269,67 @@ class PaperResponseAdmissionCallbackHandlerTest {
                     .build())
                 .build()))
             .build();
+    }
+
+    @Nested
+    class CheckFileName {
+
+        @BeforeEach
+        void setUp() {
+
+            Claim claim = Claim.builder()
+                .referenceNumber("XXXXX")
+                .build();
+            when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
+
+            when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetails);
+            when(docAssemblyService
+                .renderTemplate(any(CCDCase.class), anyString(), anyString(), any(DocAssemblyTemplateBody.class)))
+                .thenReturn(docAssemblyResponse);
+            when(docAssemblyTemplateBodyMapper.paperResponseAdmissionLetter(any(CCDCase.class), any(String.class)))
+                .thenReturn(DocAssemblyTemplateBody.builder().build());
+            when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
+            when(documentManagementService.getDocumentMetaData(anyString(), anyString())).thenReturn(getLinks());
+            when(clock.instant()).thenReturn(LocalDate.parse("2020-06-22").atStartOfDay().toInstant(ZoneOffset.UTC));
+            when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+            when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);
+        }
+
+        @Test
+        void shouldChangeFileNameForOCON9xFormForFullAdmission() {
+
+            CCDCase ccdCase = getCCDCase(FULL_ADMISSION, CCDRespondent.builder(), "OCON9x");
+
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+
+            ArgumentCaptor<CCDCase> ccdDataArgumentCaptor = ArgumentCaptor.forClass(CCDCase.class);
+            handler.handle(callbackParams);
+
+            verify(caseDetailsConverter).convertToMap(ccdDataArgumentCaptor.capture());
+            assertEquals("CMC-scanned-OCON9x-full-admission.pdf",
+                ccdDataArgumentCaptor.getValue().getScannedDocuments().get(0).getValue().getFileName());
+            assertNull(ccdDataArgumentCaptor.getValue().getPaperAdmissionType());
+            assertEquals(LocalDateTime.of(2020, Month.JUNE, 17, 11, 30, 57),
+                ccdDataArgumentCaptor.getValue().getRespondents().get(0).getValue().getResponseSubmittedOn());
+            assertEquals(1, ccdDataArgumentCaptor.getValue().getScannedDocuments().size());
+        }
+
+        @Test
+        void shouldChangeFileNameForOCON9xFormForPartAdmission() {
+            CCDCase ccdCase = getCCDCase(PART_ADMISSION, CCDRespondent.builder(), "OCON9x");
+
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            ArgumentCaptor<CCDCase> ccdDataArgumentCaptor = ArgumentCaptor.forClass(CCDCase.class);
+
+            handler.handle(callbackParams);
+            verify(caseDetailsConverter).convertToMap(ccdDataArgumentCaptor.capture());
+
+            assertEquals("CMC-scanned-OCON9x-part-admission.pdf",
+                ccdDataArgumentCaptor.getValue().getScannedDocuments().get(0).getValue().getFileName());
+            assertNull(ccdDataArgumentCaptor.getValue().getPaperAdmissionType());
+            assertEquals(LocalDateTime.of(2020, Month.JUNE, 17, 11, 30, 57),
+                ccdDataArgumentCaptor.getValue().getRespondents().get(0).getValue().getResponseSubmittedOn());
+            assertEquals(1, ccdDataArgumentCaptor.getValue().getScannedDocuments().size());
+        }
     }
 }
