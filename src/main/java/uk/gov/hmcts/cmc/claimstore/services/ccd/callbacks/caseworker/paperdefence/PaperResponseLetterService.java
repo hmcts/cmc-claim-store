@@ -67,7 +67,8 @@ public class PaperResponseLetterService {
             paperDefenceLetterBodyMapper.coverLetterTemplateMapper(
                 ccdCase, getCaseWorkerName(authorisation), extendedResponseDeadline);
 
-        return docAssemblyService.generateDocument(authorisation,
+        return docAssemblyService.generateDocument(ccdCase,
+            authorisation,
             formPayloadForCoverLetter,
             paperDefenceCoverLetterTemplateID);
     }
@@ -84,7 +85,8 @@ public class PaperResponseLetterService {
         LocalDate extendedResponseDeadline
     ) {
         var paperResponseLetter = formForCorrectDefendantType(ccdCase, claim, extendedResponseDeadline);
-        return docAssemblyService.generateDocument(authorisation,
+        return docAssemblyService.generateDocument(ccdCase,
+            authorisation,
             paperResponseLetter.payload,
             paperResponseLetter.templateId);
     }

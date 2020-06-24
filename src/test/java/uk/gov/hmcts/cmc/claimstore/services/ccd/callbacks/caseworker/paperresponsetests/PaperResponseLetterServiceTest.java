@@ -42,7 +42,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.LA_PILOT_FLAG;
 @ExtendWith(MockitoExtension.class)
 public class PaperResponseLetterServiceTest {
     private static final String OCON_INDIVIDUAL_DQS = "indDqTemplateID";
-    private static final String OCON_INDIVIDUAL  = "indDqTemplateID";
+    private static final String OCON_INDIVIDUAL = "indDqTemplateID";
     private static final String OCON_COMPANY_DQS = "oconCompDqTemplateID";
     private static final String OCON_COMPANY = "oconCompTemplateID";
     private static final String OCON_SOLE_TRADER_DQS = "oconSoleDqTemplateID";
@@ -51,8 +51,8 @@ public class PaperResponseLetterServiceTest {
     protected static final String AUTHORISATION_TOKEN = "Bearer token";
     private static final LocalDate EXTENDED_RESPONSE_DEADLINE = LocalDate.now();
     private static final UserDetails CITIZEN_DETAILS = SampleUserDetails.builder()
-            .withRoles(Role.CITIZEN.getRole())
-            .withUserId(SampleClaim.USER_ID).build();
+        .withRoles(Role.CITIZEN.getRole())
+        .withUserId(SampleClaim.USER_ID).build();
 
     private PaperResponseLetterService paperResponseLetterService;
     @Mock
@@ -70,27 +70,27 @@ public class PaperResponseLetterServiceTest {
     @BeforeEach
     void setUp() {
         paperResponseLetterService = new PaperResponseLetterService(
-                COVER_LETTER,
-                OCON_INDIVIDUAL_DQS,
-                OCON_INDIVIDUAL,
-                OCON_COMPANY_DQS,
-                OCON_COMPANY,
-                OCON_SOLE_TRADER_DQS,
-                OCON_SOLE_TRADER,
-                paperDefenceLetterBodyMapper,
-                docAssemblyService,
-                userService,
-                generalLetterService
+            COVER_LETTER,
+            OCON_INDIVIDUAL_DQS,
+            OCON_INDIVIDUAL,
+            OCON_COMPANY_DQS,
+            OCON_COMPANY,
+            OCON_SOLE_TRADER_DQS,
+            OCON_SOLE_TRADER,
+            paperDefenceLetterBodyMapper,
+            docAssemblyService,
+            userService,
+            generalLetterService
         );
 
         ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
         ccdCase.setCaseName("case name");
         ccdCase.setApplicants(
-                ImmutableList.of(
-                        CCDCollectionElement.<CCDApplicant>builder()
-                                .value(SampleData.getCCDApplicantIndividual())
-                                .build()
-                ));
+            ImmutableList.of(
+                CCDCollectionElement.<CCDApplicant>builder()
+                    .value(SampleData.getCCDApplicantIndividual())
+                    .build()
+            ));
         docAssemblyTemplateBody = DocAssemblyTemplateBody.builder().build();
     }
 
@@ -100,20 +100,20 @@ public class PaperResponseLetterServiceTest {
         CCDDocument ccdDocument = CCDDocument.builder().build();
 
         when(paperDefenceLetterBodyMapper
-                .coverLetterTemplateMapper(any(CCDCase.class), anyString(), any(LocalDate.class)))
-                .thenReturn(docAssemblyTemplateBody);
+            .coverLetterTemplateMapper(any(CCDCase.class), anyString(), any(LocalDate.class)))
+            .thenReturn(docAssemblyTemplateBody);
         when(docAssemblyService
-                .generateDocument(anyString(), any(DocAssemblyTemplateBody.class), anyString()))
-                .thenReturn(ccdDocument);
+            .generateDocument(any(CCDCase.class), anyString(), any(DocAssemblyTemplateBody.class), anyString()))
+            .thenReturn(ccdDocument);
 
         given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(CITIZEN_DETAILS);
 
         paperResponseLetterService.createCoverLetter(ccdCase, AUTHORISATION_TOKEN, LocalDate.now());
 
         verify(paperDefenceLetterBodyMapper).coverLetterTemplateMapper(eq(ccdCase),
-                eq(CITIZEN_DETAILS.getFullName()), eq(LocalDate.now()));
-        verify(docAssemblyService).generateDocument(eq(AUTHORISATION_TOKEN),
-                eq(docAssemblyTemplateBody), anyString());
+            eq(CITIZEN_DETAILS.getFullName()), eq(LocalDate.now()));
+        verify(docAssemblyService).generateDocument(any(CCDCase.class), eq(AUTHORISATION_TOKEN),
+            eq(docAssemblyTemplateBody), anyString());
     }
 
     @Nested
@@ -123,67 +123,67 @@ public class PaperResponseLetterServiceTest {
         @BeforeEach
         void setUp() {
             claim = SampleClaim.builder()
-                    .withFeatures(ImmutableList.of(DQ_FLAG.getValue(), LA_PILOT_FLAG.getValue()))
-                    .withResponseDeadline(LocalDate.now().minusMonths(2))
-                    .withResponse(SampleResponse.PartAdmission.builder().buildWithDirectionsQuestionnaire())
-                    .build();
+                .withFeatures(ImmutableList.of(DQ_FLAG.getValue(), LA_PILOT_FLAG.getValue()))
+                .withResponseDeadline(LocalDate.now().minusMonths(2))
+                .withResponse(SampleResponse.PartAdmission.builder().buildWithDirectionsQuestionnaire())
+                .build();
         }
 
         @Test
         void shouldCreateOconFormForIndividualWithDQs() {
             ccdCase.setRespondents(
-                    ImmutableList.of(
-                            CCDCollectionElement.<CCDRespondent>builder()
-                                    .value(SampleData.getCCDRespondentIndividual())
-                                    .build()
-                    ));
+                ImmutableList.of(
+                    CCDCollectionElement.<CCDRespondent>builder()
+                        .value(SampleData.getCCDRespondentIndividual())
+                        .build()
+                ));
             when(paperDefenceLetterBodyMapper
-                    .oconFormIndividualWithDQsMapper(any(CCDCase.class), any(LocalDate.class)))
-                    .thenReturn(docAssemblyTemplateBody);
+                .oconFormIndividualWithDQsMapper(any(CCDCase.class), any(LocalDate.class)))
+                .thenReturn(docAssemblyTemplateBody);
             paperResponseLetterService.createOconForm(ccdCase, claim, AUTHORISATION_TOKEN,
-                    EXTENDED_RESPONSE_DEADLINE);
+                EXTENDED_RESPONSE_DEADLINE);
             verify(paperDefenceLetterBodyMapper)
-                    .oconFormIndividualWithDQsMapper(eq(ccdCase), eq(EXTENDED_RESPONSE_DEADLINE));
-            verify(docAssemblyService).generateDocument(eq(AUTHORISATION_TOKEN),
-                    eq(docAssemblyTemplateBody), anyString());
+                .oconFormIndividualWithDQsMapper(eq(ccdCase), eq(EXTENDED_RESPONSE_DEADLINE));
+            verify(docAssemblyService).generateDocument(eq(ccdCase), eq(AUTHORISATION_TOKEN),
+                eq(docAssemblyTemplateBody), anyString());
         }
 
         @Test
         void shouldCreateOconFormForSoleTraderWthDQs() {
             ccdCase.setRespondents(
-                    ImmutableList.of(
-                            CCDCollectionElement.<CCDRespondent>builder()
-                                    .value(SampleData.getCCDRespondentSoleTrader())
-                                    .build()
-                    ));
+                ImmutableList.of(
+                    CCDCollectionElement.<CCDRespondent>builder()
+                        .value(SampleData.getCCDRespondentSoleTrader())
+                        .build()
+                ));
             when(paperDefenceLetterBodyMapper
-                    .oconFormSoleTraderWithDQsMapper(any(CCDCase.class), any(LocalDate.class)))
-                    .thenReturn(docAssemblyTemplateBody);
+                .oconFormSoleTraderWithDQsMapper(any(CCDCase.class), any(LocalDate.class)))
+                .thenReturn(docAssemblyTemplateBody);
             paperResponseLetterService.createOconForm(ccdCase, claim, AUTHORISATION_TOKEN,
-                    EXTENDED_RESPONSE_DEADLINE);
+                EXTENDED_RESPONSE_DEADLINE);
             verify(paperDefenceLetterBodyMapper)
-                    .oconFormSoleTraderWithDQsMapper(eq(ccdCase), eq(EXTENDED_RESPONSE_DEADLINE));
-            verify(docAssemblyService).generateDocument(eq(AUTHORISATION_TOKEN),
-                    eq(docAssemblyTemplateBody), anyString());
+                .oconFormSoleTraderWithDQsMapper(eq(ccdCase), eq(EXTENDED_RESPONSE_DEADLINE));
+            verify(docAssemblyService).generateDocument(eq(ccdCase), eq(AUTHORISATION_TOKEN),
+                eq(docAssemblyTemplateBody), anyString());
         }
 
         @Test
         void shouldCreateOconFormForCompanyWithDQs() {
             ccdCase.setRespondents(
-                    ImmutableList.of(
-                            CCDCollectionElement.<CCDRespondent>builder()
-                                    .value(SampleData.getCCDRespondentCompany())
-                                    .build()
-                    ));
+                ImmutableList.of(
+                    CCDCollectionElement.<CCDRespondent>builder()
+                        .value(SampleData.getCCDRespondentCompany())
+                        .build()
+                ));
             when(paperDefenceLetterBodyMapper
-                    .oconFormOrganisationWithDQsMapper(any(CCDCase.class), any(LocalDate.class)))
-                    .thenReturn(docAssemblyTemplateBody);
+                .oconFormOrganisationWithDQsMapper(any(CCDCase.class), any(LocalDate.class)))
+                .thenReturn(docAssemblyTemplateBody);
             paperResponseLetterService.createOconForm(ccdCase, claim, AUTHORISATION_TOKEN,
-                    EXTENDED_RESPONSE_DEADLINE);
+                EXTENDED_RESPONSE_DEADLINE);
             verify(paperDefenceLetterBodyMapper)
-                    .oconFormOrganisationWithDQsMapper(eq(ccdCase), eq(EXTENDED_RESPONSE_DEADLINE));
-            verify(docAssemblyService).generateDocument(eq(AUTHORISATION_TOKEN),
-                    eq(docAssemblyTemplateBody), anyString());
+                .oconFormOrganisationWithDQsMapper(eq(ccdCase), eq(EXTENDED_RESPONSE_DEADLINE));
+            verify(docAssemblyService).generateDocument(eq(ccdCase), eq(AUTHORISATION_TOKEN),
+                eq(docAssemblyTemplateBody), anyString());
         }
 
     }
@@ -195,46 +195,46 @@ public class PaperResponseLetterServiceTest {
         @BeforeEach
         void setUp() {
             claim = SampleClaim.builder()
-                    .build();
+                .build();
         }
 
         @Test
         void shouldCreateOconFormForIndividualWithoutDQs() {
             ccdCase.setRespondents(
-                    ImmutableList.of(
-                            CCDCollectionElement.<CCDRespondent>builder()
-                                    .value(SampleData.getCCDRespondentIndividual())
-                                    .build()
-                    ));
+                ImmutableList.of(
+                    CCDCollectionElement.<CCDRespondent>builder()
+                        .value(SampleData.getCCDRespondentIndividual())
+                        .build()
+                ));
             when(paperDefenceLetterBodyMapper
-                    .oconFormIndividualWithoutDQsMapper(any(CCDCase.class), any(LocalDate.class)))
-                    .thenReturn(docAssemblyTemplateBody);
+                .oconFormIndividualWithoutDQsMapper(any(CCDCase.class), any(LocalDate.class)))
+                .thenReturn(docAssemblyTemplateBody);
             paperResponseLetterService.createOconForm(ccdCase, claim, AUTHORISATION_TOKEN,
-                    EXTENDED_RESPONSE_DEADLINE);
+                EXTENDED_RESPONSE_DEADLINE);
             verify(paperDefenceLetterBodyMapper)
-                    .oconFormIndividualWithoutDQsMapper(eq(ccdCase), eq(EXTENDED_RESPONSE_DEADLINE));
-            verify(docAssemblyService).generateDocument(eq(AUTHORISATION_TOKEN),
-                    eq(docAssemblyTemplateBody), anyString());
+                .oconFormIndividualWithoutDQsMapper(eq(ccdCase), eq(EXTENDED_RESPONSE_DEADLINE));
+            verify(docAssemblyService).generateDocument(eq(ccdCase), eq(AUTHORISATION_TOKEN),
+                eq(docAssemblyTemplateBody), anyString());
 
         }
 
         @Test
         void shouldCreateOconFormForSoleTraderWithoutDQs() {
             ccdCase.setRespondents(
-                    ImmutableList.of(
-                            CCDCollectionElement.<CCDRespondent>builder()
-                                    .value(SampleData.getCCDRespondentSoleTrader())
-                                    .build()
-                    ));
+                ImmutableList.of(
+                    CCDCollectionElement.<CCDRespondent>builder()
+                        .value(SampleData.getCCDRespondentSoleTrader())
+                        .build()
+                ));
             when(paperDefenceLetterBodyMapper
-                    .oconFormSoleTraderWithoutDQsMapper(any(CCDCase.class), any(LocalDate.class)))
-                    .thenReturn(docAssemblyTemplateBody);
+                .oconFormSoleTraderWithoutDQsMapper(any(CCDCase.class), any(LocalDate.class)))
+                .thenReturn(docAssemblyTemplateBody);
             paperResponseLetterService.createOconForm(ccdCase, claim, AUTHORISATION_TOKEN,
-                    EXTENDED_RESPONSE_DEADLINE);
+                EXTENDED_RESPONSE_DEADLINE);
             verify(paperDefenceLetterBodyMapper)
-                    .oconFormSoleTraderWithoutDQsMapper(eq(ccdCase), eq(EXTENDED_RESPONSE_DEADLINE));
-            verify(docAssemblyService).generateDocument(eq(AUTHORISATION_TOKEN),
-                    eq(docAssemblyTemplateBody), anyString());
+                .oconFormSoleTraderWithoutDQsMapper(eq(ccdCase), eq(EXTENDED_RESPONSE_DEADLINE));
+            verify(docAssemblyService).generateDocument(eq(ccdCase), eq(AUTHORISATION_TOKEN),
+                eq(docAssemblyTemplateBody), anyString());
 
         }
 
@@ -242,20 +242,20 @@ public class PaperResponseLetterServiceTest {
         void shouldCreateOconFormForCompanyWithoutDQs() {
             docAssemblyTemplateBody = DocAssemblyTemplateBody.builder().build();
             ccdCase.setRespondents(
-                    ImmutableList.of(
-                            CCDCollectionElement.<CCDRespondent>builder()
-                                    .value(SampleData.getCCDRespondentOrganisation())
-                                    .build()
-                    ));
+                ImmutableList.of(
+                    CCDCollectionElement.<CCDRespondent>builder()
+                        .value(SampleData.getCCDRespondentOrganisation())
+                        .build()
+                ));
             when(paperDefenceLetterBodyMapper
-                    .oconFormOrganisationWithoutDQsMapper(any(CCDCase.class), any(LocalDate.class)))
-                    .thenReturn(docAssemblyTemplateBody);
+                .oconFormOrganisationWithoutDQsMapper(any(CCDCase.class), any(LocalDate.class)))
+                .thenReturn(docAssemblyTemplateBody);
             paperResponseLetterService.createOconForm(ccdCase, claim, AUTHORISATION_TOKEN,
-                    EXTENDED_RESPONSE_DEADLINE);
+                EXTENDED_RESPONSE_DEADLINE);
             verify(paperDefenceLetterBodyMapper)
-                    .oconFormOrganisationWithoutDQsMapper(eq(ccdCase), eq(EXTENDED_RESPONSE_DEADLINE));
-            verify(docAssemblyService).generateDocument(eq(AUTHORISATION_TOKEN),
-                    eq(docAssemblyTemplateBody), anyString());
+                .oconFormOrganisationWithoutDQsMapper(eq(ccdCase), eq(EXTENDED_RESPONSE_DEADLINE));
+            verify(docAssemblyService).generateDocument(eq(ccdCase), eq(AUTHORISATION_TOKEN),
+                eq(docAssemblyTemplateBody), anyString());
 
         }
     }
