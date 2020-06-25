@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
 import net.logstash.logback.encoder.org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocument;
@@ -11,6 +12,8 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
+import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
@@ -18,6 +21,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
+import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -25,6 +29,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -43,19 +48,51 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
     private final Clock clock;
     private final EventProducer eventProducer;
     private final CaseMapper caseMapper;
+    private final CourtFinderApi courtFinderApi;
 
     public PaperResponseFullDefenceCallbackHandler(CaseDetailsConverter caseDetailsConverter, Clock clock,
-                                                   EventProducer eventProducer, CaseMapper caseMapper) {
+                                                   EventProducer eventProducer, CaseMapper caseMapper,
+                                                   CourtFinderApi courtFinderApi) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.clock = clock;
         this.eventProducer = eventProducer;
         this.caseMapper = caseMapper;
+        this.courtFinderApi = courtFinderApi;
     }
 
     protected Map<CallbackType, Callback> callbacks() {
         return Map.of(
+            CallbackType.ABOUT_TO_START, this::aboutToStart,
             CallbackType.ABOUT_TO_SUBMIT, this::aboutToSubmit
         );
+    }
+
+    private CallbackResponse aboutToStart(CallbackParams callbackParams) {
+        CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
+        Map<String, Object> data = new HashMap<>(caseDetailsConverter.convertToMap(ccdCase));
+
+        if (FeaturesUtils.isOnlineDQ(caseDetailsConverter.extractClaim(caseDetails))
+            && StringUtils.isBlank(ccdCase.getPreferredCourt())) {
+
+            CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
+            CCDAddress address = respondent.getPartyDetail() != null
+                && respondent.getPartyDetail().getPrimaryAddress() != null
+                ? respondent.getPartyDetail().getPrimaryAddress()
+                : respondent.getClaimantProvidedDetail().getPrimaryAddress();
+
+            String courtName = courtFinderApi.findMoneyClaimCourtByPostcode(address.getPostCode())
+                .stream()
+                .map(Court::getName)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("No court found"));
+
+            data.put("preferredDQCourt", courtName);
+        }
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(data)
+            .build();
     }
 
     private CallbackResponse aboutToSubmit(CallbackParams callbackParams) {
