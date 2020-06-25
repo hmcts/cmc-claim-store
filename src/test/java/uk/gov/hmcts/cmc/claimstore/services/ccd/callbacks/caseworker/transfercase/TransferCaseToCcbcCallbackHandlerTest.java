@@ -15,7 +15,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType.ABOUT_TO_SUBMIT;
 
 @ExtendWith(MockitoExtension.class)
-public class TransferCaseToCcbcCallbackHandlerTest {
+class TransferCaseToCcbcCallbackHandlerTest {
 
     private static final String COURT_NAME = "Bristol";
 
