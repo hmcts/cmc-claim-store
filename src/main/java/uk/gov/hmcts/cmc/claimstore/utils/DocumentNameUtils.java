@@ -159,7 +159,7 @@ public class DocumentNameUtils {
     }
 
     public static String buildNoticeOfTransferToCcbcForDefendantFileName(String caseRef) {
-        return getFileName("defendant-case-handoff", caseRef);
+        return getFileName(caseRef, "defendant-case-handoff");
     }
 
     private static String getFileName(String caseRef, String fileNameSuffix) {

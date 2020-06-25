@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase;
 
-import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.common.TriFunction;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -12,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.time.LocalDate;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import static java.time.LocalDate.now;
@@ -33,18 +33,20 @@ public class TransferCasePostProcessor {
     }
 
     public CallbackResponse transferToCCBC(CallbackParams callbackParams) {
-        return completeCaseTransfer(callbackParams, transferCaseDocumentPublishService::publishDefendentDocuments,
+        return completeCaseTransfer(callbackParams,
+            transferCaseDocumentPublishService::publishDefendentDocuments,
+            transferCaseNotificationsService::sendTransferToCcbcEmail,
             ccdCase -> ccdCase.toBuilder().dateOfHandoff(now()).build());
     }
 
     public CallbackResponse transferToCourt(CallbackParams callbackParams) {
         return completeCaseTransfer(callbackParams, transferCaseDocumentPublishService::publishCaseDocuments,
-            this::updateCaseData);
+            transferCaseNotificationsService::sendTransferToCourtEmail, this::updateCaseData);
     }
 
     public CallbackResponse completeCaseTransfer(CallbackParams callbackParams,
             TriFunction<CCDCase, String, Claim, CCDCase> transferCaseDocumentPublishService,
-            Function<CCDCase, CCDCase> updateCaseData) {
+            BiConsumer<CCDCase, Claim> sendEmailNotifications, Function<CCDCase, CCDCase> updateCaseData) {
 
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
@@ -53,7 +55,7 @@ public class TransferCasePostProcessor {
 
         ccdCase = transferCaseDocumentPublishService.apply(ccdCase, authorisation, claim);
 
-        sendEmailNotifications(ccdCase, claim);
+        sendEmailNotifications.accept(ccdCase, claim);
 
         ccdCase = updateCaseData.apply(ccdCase);
 
@@ -64,22 +66,9 @@ public class TransferCasePostProcessor {
     }
 
     private CCDCase updateCaseData(CCDCase ccdCase) {
-
         return ccdCase.toBuilder()
             .transferContent(ccdCase.getTransferContent().toBuilder().dateOfTransfer(LocalDate.now()).build())
             .build();
     }
 
-    private void sendEmailNotifications(CCDCase ccdCase, Claim claim) {
-
-        transferCaseNotificationsService.sendClaimUpdatedEmailToClaimant(claim);
-
-        if (isDefendantLinked(ccdCase)) {
-            transferCaseNotificationsService.sendClaimUpdatedEmailToDefendant(claim);
-        }
-    }
-
-    private boolean isDefendantLinked(CCDCase ccdCase) {
-        return !StringUtils.isBlank(ccdCase.getRespondents().get(0).getValue().getDefendantId());
-    }
 }

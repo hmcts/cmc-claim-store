@@ -9,6 +9,8 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
+import java.util.function.BiFunction;
+
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase.NoticeOfTransferLetterType.FOR_COURT;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase.NoticeOfTransferLetterType.TO_CCBC_FOR_DEFENDANT;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase.NoticeOfTransferLetterType.TO_COURT_FOR_DEFENDANT;
@@ -25,6 +27,7 @@ public class TransferCaseDocumentPublishService {
     private final NoticeOfTransferLetterTemplateMapper noticeOfTransferLetterTemplateMapper;
     private final String courtLetterTemplateId;
     private final String defendantLetterTemplateId;
+    private final String ccbcTransferTemplateId;
 
     public TransferCaseDocumentPublishService(
         TransferCaseLetterSender transferCaseLetterSender,
@@ -33,7 +36,7 @@ public class TransferCaseDocumentPublishService {
         NoticeOfTransferLetterTemplateMapper noticeOfTransferLetterTemplateMapper,
         @Value("${doc_assembly.noticeOfTransferSentToCourtTemplateId}") String courtLetterTemplateId,
         @Value("${doc_assembly.noticeOfTransferSentToDefendantTemplateId}") String defendantLetterTemplateId,
-        @Value("${doc_assembly.noticeOfTransferToCcbcSentToDefendantTemplateId}") String ccbctransferLetterId
+        @Value("${doc_assembly.noticeOfTransferToCcbcSentToDefendantTemplateId}") String ccbcTransferTemplateId
     ) {
         this.transferCaseLetterSender = transferCaseLetterSender;
         this.transferCaseDocumentService = transferCaseDocumentService;
@@ -41,32 +44,35 @@ public class TransferCaseDocumentPublishService {
         this.noticeOfTransferLetterTemplateMapper = noticeOfTransferLetterTemplateMapper;
         this.courtLetterTemplateId = courtLetterTemplateId;
         this.defendantLetterTemplateId = defendantLetterTemplateId;
+        this.ccbcTransferTemplateId = ccbcTransferTemplateId;
     }
 
     public CCDCase publishCaseDocuments(CCDCase ccdCase, String authorisation, Claim claim) {
 
-        CCDCase updated = publishLetterToDefendant(ccdCase, authorisation, claim, TO_COURT_FOR_DEFENDANT);
+        CCDCase updated = publishLetterToDefendant(ccdCase, authorisation, claim, TO_COURT_FOR_DEFENDANT,
+            defendantLetterTemplateId, noticeOfTransferLetterTemplateMapper::noticeOfTransferLetterBodyForDefendant);
 
         return publishCaseDocumentsToCourt(updated, authorisation, claim);
     }
 
     public CCDCase publishDefendentDocuments(CCDCase ccdCase, String authorisation, Claim claim) {
-        return publishLetterToDefendant(ccdCase, authorisation, claim, TO_CCBC_FOR_DEFENDANT);
+        return publishLetterToDefendant(ccdCase, authorisation, claim, TO_CCBC_FOR_DEFENDANT, ccbcTransferTemplateId,
+            noticeOfTransferLetterTemplateMapper::noticeOfTransferToCcbcLetterBodyForDefendant);
     }
 
     private CCDCase publishLetterToDefendant(CCDCase ccdCase, String authorisation, Claim claim,
-                                             NoticeOfTransferLetterType letterType) {
+                         NoticeOfTransferLetterType letterType, String letterTemplateId,
+                         BiFunction<CCDCase, String, DocAssemblyTemplateBody> noticeOfTransferLetterTemplateMapper) {
         if (isDefendantLinked(ccdCase)) {
             return ccdCase;
         }
 
         DocAssemblyTemplateBody formPayloadForDefendant =
-            noticeOfTransferLetterTemplateMapper.noticeOfTransferLetterBodyForDefendant(
-                ccdCase, authorisation);
+            noticeOfTransferLetterTemplateMapper.apply(ccdCase, authorisation);
 
         CCDDocument defendantLetter = docAssemblyService.generateDocument(authorisation,
             formPayloadForDefendant,
-            defendantLetterTemplateId)
+            letterTemplateId)
             .toBuilder()
             .documentFileName(buildNoticeOfTransferLetterFileName(ccdCase, letterType))
             .build();
