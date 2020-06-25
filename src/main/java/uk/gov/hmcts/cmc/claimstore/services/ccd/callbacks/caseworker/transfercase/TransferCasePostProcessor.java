@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.time.LocalDate;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import static java.time.LocalDate.now;
 
@@ -49,7 +49,7 @@ public class TransferCasePostProcessor {
 
     public CallbackResponse completeCaseTransfer(CallbackParams callbackParams,
             TriFunction<CCDCase, String, Claim, CCDCase> transferCaseDocumentPublishService,
-            BiConsumer<CCDCase, Claim> sendEmailNotifications, Function<CCDCase, CCDCase> updateCaseData) {
+            BiConsumer<CCDCase, Claim> sendEmailNotifications, UnaryOperator<CCDCase> updateCaseData) {
 
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
