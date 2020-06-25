@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
+import net.logstash.logback.encoder.org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
@@ -8,6 +9,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefenceType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
+import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
@@ -98,18 +100,30 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
                 .value(r.getValue()
                     .toBuilder()
                     .responseType(CCDResponseType.FULL_DEFENCE)
-                    .responseDefenceType(CCDDefenceType.valueOf((String)caseDetails.getData().get("defenceType")))
+                    .responseDefenceType(CCDDefenceType.valueOf(getCaseDetailsProperty(caseDetails, "defenceType")))
                     .partyDetail(r.getValue()
                         .getPartyDetail()
                         .toBuilder()
-                        .type(r.getValue()
-                            .getClaimantProvidedDetail()
-                            .getType()).build()
-                    )
+                        .emailAddress(getEmailAddress(r))
+                        .type(r.getValue().getClaimantProvidedDetail().getType())
+                        .build())
                     .responseSubmittedOn(respondedDate)
+                    .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder()
+                        .hearingLocation(getCaseDetailsProperty(caseDetails, "preferredDQCourt"))
+                        .build())
                     .build())
                 .build())
             .collect(Collectors.toList());
+    }
+
+    private String getCaseDetailsProperty(CaseDetails caseDetails, String preferredDQCourt) {
+        return (String) caseDetails.getData().get(preferredDQCourt);
+    }
+
+    private String getEmailAddress(CCDCollectionElement<CCDRespondent> r) {
+        return !StringUtils.isBlank(r.getValue().getPartyDetail().getEmailAddress())
+            ? r.getValue().getPartyDetail().getEmailAddress()
+            : r.getValue().getClaimantProvidedDetail().getEmailAddress();
     }
 
     private LocalDateTime getResponseDate(CCDCase ccdCase) {
