@@ -3,6 +3,8 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transferca
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -21,9 +23,10 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Collections.singletonList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static java.time.LocalDate.now;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -41,64 +44,94 @@ class TransferCasePostProcessorTest {
     private CaseDetailsConverter caseDetailsConverter;
 
     @Mock
-    private CallbackRequest callbackRequest;
+    private TransferCaseDocumentPublishService transferCaseDocumentPublishService;
 
     @Mock
-    private BulkPrintTransferService bulkPrintTransferService;
+    private TransferCaseNotificationsService transferCaseNotificationsService;
+
+    @Mock
+    private CallbackRequest callbackRequest;
 
     @Mock
     private Claim claim;
 
+    @Mock
     private CCDCase ccdCase;
+
+    @Captor
+    ArgumentCaptor<CCDCase> ccdCaptor;
+
+    private CallbackParams callbackParams;
 
     @BeforeEach
     public void beforeEach() {
+
         ccdCase = SampleData.getCCDLegalCase();
     }
 
-    @Test
-    void shouldCompleteCaseTransferForLinkedDefendants() {
-
-        givenDefendantIsLinked(true);
+        callbackParams = CallbackParams.builder()
+            .request(callbackRequest)
+            .params(Map.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
+            .build();
 
         Map<String, Object> mappedCaseData = mock(Map.class);
         when(caseDetailsConverter.convertToMap(any(CCDCase.class))).thenReturn(mappedCaseData);
+
+        ccdCase = ccdCase.toBuilder().transferContent(CCDTransferContent.builder().build()).build();
 
         CaseDetails caseDetails = mock(CaseDetails.class);
         when(callbackRequest.getCaseDetails()).thenReturn(caseDetails);
         when(caseDetailsConverter.extractCCDCase(caseDetails)).thenReturn(ccdCase);
         when(caseDetailsConverter.extractClaim(caseDetails)).thenReturn(claim);
+    //        when(bulkPrintTransferService.transferCase(ccdCase, claim, AUTHORISATION))
 
-        when(bulkPrintTransferService.transferCase(ccdCase, claim, AUTHORISATION))
+        lenient().when(transferCaseDocumentPublishService.publishCaseDocuments(ccdCase, AUTHORISATION, claim))
+            .thenReturn(ccdCase);
+        lenient().when(transferCaseDocumentPublishService.publishDefendentDocuments(ccdCase, AUTHORISATION, claim))
             .thenReturn(ccdCase);
 
-        CallbackParams callbackParams = CallbackParams.builder()
-            .request(callbackRequest)
-            .params(Map.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
-            .build();
+///////////////
+AboutToStartOrSubmitCallbackResponse callbackResponse = (AboutToStartOrSubmitCallbackResponse)
+    transferCasePostProcessor.completeCaseTransfer(callbackParams);
 
+    verify(bulkPrintTransferService).transferCase(ccdCase, claim, AUTHORISATION);
+
+    assertEquals(mappedCaseData, callbackResponse.getData());
+///////////////////
+}
+
+    @Test
+    void shouldTransferCaseToCcbcAndUpdateTheHandOffDate() {
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = (AboutToStartOrSubmitCallbackResponse)
+            transferCasePostProcessor.transferToCCBC(callbackParams);
+
+        verify(transferCaseNotificationsService).sendTransferToCcbcEmail(ccdCase, claim);
+        verify(transferCaseDocumentPublishService).publishDefendentDocuments(ccdCase, AUTHORISATION, claim);
+        verify(caseDetailsConverter).convertToMap(ccdCaptor.capture());
+
+        assertEquals(now().toString(), ccdCaptor.getValue().getDateOfHandoff().toString());
+    }
+
+    @Test
+    void shouldCompleteCaseTransferForLinkedDefendants() {
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = (AboutToStartOrSubmitCallbackResponse)
+            transferCasePostProcessor.transferToCourt(callbackParams);
+
+        //////
         AboutToStartOrSubmitCallbackResponse callbackResponse = (AboutToStartOrSubmitCallbackResponse)
             transferCasePostProcessor.completeCaseTransfer(callbackParams);
 
         verify(bulkPrintTransferService).transferCase(ccdCase, claim, AUTHORISATION);
 
-        assertEquals(mappedCaseData, callbackResponse.getData());
-    }
+        /////////////
 
-    private void givenDefendantIsLinked(boolean isLinked) {
 
-        CCDRespondent.CCDRespondentBuilder defendantBuilder = CCDRespondent.builder();
+        verify(transferCaseNotificationsService).sendTransferToCourtEmail(ccdCase, claim);
+        verify(transferCaseDocumentPublishService).publishCaseDocuments(ccdCase, AUTHORISATION, claim);
+        verify(caseDetailsConverter).convertToMap(ccdCaptor.capture());
 
-        if (isLinked) {
-            defendantBuilder.defendantId(DEFENDANT_ID);
-        }
-
-        List<CCDCollectionElement<CCDRespondent>> respondents
-            = singletonList(CCDCollectionElement.<CCDRespondent>builder().value(
-            defendantBuilder.build()).build());
-
-        ccdCase = ccdCase.toBuilder().respondents(respondents)
-            .transferContent(CCDTransferContent.builder().build())
-            .build();
+        assertEquals(now().toString(), ccdCaptor.getValue().getTransferContent().getDateOfTransfer().toString());
     }
 }
