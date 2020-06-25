@@ -16,7 +16,7 @@ dependencies:
     repository: '@hmctspublic'
 
   - name: postgresql
-    version: 8.9.8
+    version: 8.10.8
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 
