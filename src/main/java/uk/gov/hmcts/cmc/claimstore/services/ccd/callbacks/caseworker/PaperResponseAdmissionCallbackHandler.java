@@ -19,6 +19,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.DefendantResponseNotificationService;
@@ -57,6 +58,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
     private final UserService userService;
     private final DocumentManagementService documentManagementService;
     private final Clock clock;
+    private final GeneralLetterService generalLetterService;
 
     private final Map<CallbackType, Callback> callbacks = Map.of(
         CallbackType.ABOUT_TO_SUBMIT, this::aboutToSubmit
@@ -70,7 +72,8 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
              @Value("${doc_assembly.paperResponseAdmissionTemplateId}") String paperResponseAdmissionTemplateId,
              UserService userService,
              DocumentManagementService documentManagementService,
-             Clock clock) {
+             Clock clock,
+             GeneralLetterService generalLetterService) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.defendantResponseNotificationService = defendantResponseNotificationService;
         this.caseMapper = caseMapper;
@@ -80,6 +83,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
         this.userService = userService;
         this.documentManagementService = documentManagementService;
         this.clock = clock;
+        this.generalLetterService = generalLetterService;
     }
 
     private CallbackResponse aboutToSubmit(CallbackParams callbackParams) {
@@ -115,10 +119,10 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
             .build();
 
         Claim claim = caseMapper.from(updatedCCDCase);
-        if (!StringUtils.isBlank(updatedCCDCase.getRespondents().get(0).getValue().getDefendantId())) {
+        if (isDefendentLinked(updatedCCDCase)) {
             sendDefendantEmail(updatedCCDCase, claim);
         } else {
-            updatedCCDCase = sendDefendantLetter(callbackParams, updatedCCDCase);
+            updatedCCDCase = sendDefendantLetter(callbackParams, updatedCCDCase, claim);
         }
 
         sendClaimantEmail(claim);
@@ -128,6 +132,10 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
             .build();
     }
 
+    private boolean isDefendentLinked(CCDCase updatedCCDCase) {
+        return !StringUtils.isBlank(updatedCCDCase.getRespondents().get(0).getValue().getDefendantId());
+    }
+
     private void sendClaimantEmail(Claim claim) {
         defendantResponseNotificationService.notifyClaimant(
             claim,
@@ -135,7 +143,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
         );
     }
 
-    private CCDCase sendDefendantLetter(CallbackParams callbackParams, CCDCase updatedCCDCase) {
+    private CCDCase sendDefendantLetter(CallbackParams callbackParams, CCDCase updatedCCDCase, Claim claim) {
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
         var docAssemblyResponse = docAssemblyService.renderTemplate(updatedCCDCase, authorisation,
             paperResponseAdmissionTemplateId,
@@ -149,13 +157,18 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
 
         String documentName = String.format("%s-defendant-case-handoff.pdf",
             updatedCCDCase.getPreviousServiceCaseReference());
+
+        CCDDocument ccdDocument = CCDDocument.builder()
+            .documentFileName(documentName)
+            .documentBinaryUrl(documentMetadata.links.binary.href)
+            .documentUrl(docAssemblyResponse.getRenditionOutputLocation())
+            .build();
+
+        printLetter(claim, authorisation, ccdDocument);
+
         CCDCollectionElement<CCDClaimDocument> claimDocument = CCDCollectionElement.<CCDClaimDocument>builder()
             .value(CCDClaimDocument.builder()
-                .documentLink(CCDDocument.builder()
-                    .documentFileName(documentName)
-                    .documentBinaryUrl(documentMetadata.links.binary.href)
-                    .documentUrl(docAssemblyResponse.getRenditionOutputLocation())
-                    .build())
+                .documentLink(ccdDocument)
                 .documentName(documentName)
                 .createdDatetime(LocalDateTime.now(clock.withZone(UTC_ZONE)))
                 .size(documentMetadata.size)
@@ -169,6 +182,10 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
                 .add(claimDocument)
                 .build())
             .build();
+    }
+
+    private void printLetter(Claim claim, String authorisation, CCDDocument ccdDocument) {
+        generalLetterService.printLetter(authorisation, ccdDocument, claim);
     }
 
     private void sendDefendantEmail(CCDCase updatedCCDCase, Claim claim) {

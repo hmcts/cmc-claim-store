@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
@@ -50,6 +52,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -87,6 +90,8 @@ class PaperResponseAdmissionCallbackHandlerTest {
     private UserService userService;
     @Mock
     private DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
+    @Mock
+    private GeneralLetterService generalLetterService;
     private UserDetails userDetails;
 
     @BeforeEach
@@ -94,7 +99,7 @@ class PaperResponseAdmissionCallbackHandlerTest {
         String paperResponseAdmissionTemplateId = "CV-CMC-GOR-ENG-0016.docx";
         handler = new PaperResponseAdmissionCallbackHandler(caseDetailsConverter,
             defendantResponseNotificationService, caseMapper, docAssemblyService, docAssemblyTemplateBodyMapper,
-            paperResponseAdmissionTemplateId, userService, documentManagementService, clock);
+            paperResponseAdmissionTemplateId, userService, documentManagementService, clock, generalLetterService);
         CallbackRequest callbackRequest = CallbackRequest
             .builder()
             .caseDetails(CaseDetails.builder().data(Collections.EMPTY_MAP).build())
@@ -187,6 +192,7 @@ class PaperResponseAdmissionCallbackHandlerTest {
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
         when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+        doNothing().when(generalLetterService).printLetter(anyString(), any(CCDDocument.class), any(Claim.class));
         ArgumentCaptor<CCDCase> ccdDataArgumentCaptor = ArgumentCaptor.forClass(CCDCase.class);
         handler.handle(callbackParams);
         verify(caseDetailsConverter).convertToMap(ccdDataArgumentCaptor.capture());
@@ -293,6 +299,7 @@ class PaperResponseAdmissionCallbackHandlerTest {
             when(clock.instant()).thenReturn(LocalDate.parse("2020-06-22").atStartOfDay().toInstant(ZoneOffset.UTC));
             when(clock.getZone()).thenReturn(ZoneOffset.UTC);
             when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);
+            doNothing().when(generalLetterService).printLetter(anyString(), any(CCDDocument.class), any(Claim.class));
         }
 
         @Test
@@ -330,6 +337,14 @@ class PaperResponseAdmissionCallbackHandlerTest {
             assertEquals(LocalDateTime.of(2020, Month.JUNE, 17, 11, 30, 57),
                 ccdDataArgumentCaptor.getValue().getRespondents().get(0).getValue().getResponseSubmittedOn());
             assertEquals(1, ccdDataArgumentCaptor.getValue().getScannedDocuments().size());
+        }
+
+        @Test
+        void shouldPrintLetter() {
+            CCDCase ccdCase = getCCDCase(PART_ADMISSION, CCDRespondent.builder(), "OCON9x");
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            handler.handle(callbackParams);
+            verify(generalLetterService).printLetter(anyString(), any(CCDDocument.class), any(Claim.class));
         }
     }
 }
