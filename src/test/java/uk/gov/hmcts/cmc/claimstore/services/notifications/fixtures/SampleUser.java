@@ -53,4 +53,14 @@ public class SampleUser {
             .build();
     }
 
+    public static User getDefaultCaseworker() {
+        return builder()
+            .withUserDetails(SampleUserDetails.builder().withUserId(DEFAULT_CLAIMANT_ID)
+                .withMail("caseworker@work.com")
+                .withRoles("caseworker-cmc")
+                .build()
+            )
+            .build();
+    }
+
 }
