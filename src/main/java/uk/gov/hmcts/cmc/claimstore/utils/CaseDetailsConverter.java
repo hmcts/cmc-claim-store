@@ -98,7 +98,7 @@ public class CaseDetailsConverter {
         return (Map<String, Object>) jsonMapper.convertValue(ccdCase, Map.class);
     }
 
-    private LocalDate calculateIntentionToProceedDeadline(LocalDateTime respondedDate) {
+    public LocalDate calculateIntentionToProceedDeadline(LocalDateTime respondedDate) {
         LocalDate deadline = respondedDate.toLocalDate().plusDays(this.intentionToProceedDeadline);
         deadline = workingDayIndicator.getNextWorkingDay(deadline);
 

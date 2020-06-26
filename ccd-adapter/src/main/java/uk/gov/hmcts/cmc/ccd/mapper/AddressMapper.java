@@ -9,6 +9,9 @@ public class AddressMapper implements Mapper<CCDAddress, Address> {
 
     @Override
     public CCDAddress to(Address address) {
+        if (address == null) {
+            return null;
+        }
         return CCDAddress
             .builder()
             .addressLine1(address.getLine1())
