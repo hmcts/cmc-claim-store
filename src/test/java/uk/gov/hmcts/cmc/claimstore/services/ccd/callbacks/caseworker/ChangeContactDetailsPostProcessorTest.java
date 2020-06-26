@@ -152,7 +152,7 @@ public class ChangeContactDetailsPostProcessorTest {
 
         changeContactDetailsPostProcessor.performPostProcesses(callbackParams);
 
-        verify(changeContactLetterService).publishLetter(eq(ccdCase), eq(claim), eq(AUTHORISATION_TOKEN));
+        verify(changeContactLetterService).publishLetter(eq(ccdCase), eq(claim), eq(AUTHORISATION_TOKEN), letterDoc);
     }
 
     @Test
