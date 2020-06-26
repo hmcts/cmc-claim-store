@@ -64,7 +64,7 @@ public interface IdamApi {
 
     @RequestMapping(
         method = RequestMethod.POST,
-        value = "/o/token",
+        value = "/oauth2/token",
         consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
     )
     TokenExchangeResponse exchangeToken(
