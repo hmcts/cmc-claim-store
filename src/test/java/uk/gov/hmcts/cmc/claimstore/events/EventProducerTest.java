@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferAcceptedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferMadeEvent;
+import uk.gov.hmcts.cmc.claimstore.events.response.DefendantPaperResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.revieworder.ReviewOrderEvent;
@@ -92,6 +93,19 @@ public class EventProducerTest {
 
         //when
         eventProducer.createDefendantResponseEvent(CLAIM, AUTHORISATION);
+
+        //then
+        verify(publisher).publishEvent(eq(expectedEvent));
+    }
+
+    @Test
+    public void shouldCreateDefendantPaperResponseEvent() {
+        //given
+        DefendantPaperResponseEvent expectedEvent
+            = new DefendantPaperResponseEvent(CLAIM, AUTHORISATION);
+
+        //when
+        eventProducer.createDefendantPaperResponseEvent(CLAIM, AUTHORISATION);
 
         //then
         verify(publisher).publishEvent(eq(expectedEvent));
