@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -27,20 +26,30 @@ public class TransferCaseNotificationsService {
 
     private static final String CCBC = "County Court Business Centre";
 
-    @Autowired
-    private NotificationService notificationService;
+    private final NotificationService notificationService;
 
-    @Value("${notifications.frontendBaseUrl}")
-    private String frontendBaseUrl;
+    private final String frontendBaseUrl;
 
-    @Value("${notifications.templates.email.caseTransferToCourt}")
-    private String caseTransferToCourtTemplate;
+    private final String caseTransferToCourtTemplate;
 
-    @Value("${notifications.templates.email.caseTransferToCcbcForClaimant}")
-    private String caseTransferToCcbcForClaimantTemplate;
+    private final String caseTransferToCcbcForClaimantTemplate;
 
-    @Value("${notifications.templates.email.caseTransferToCcbcForDefendant}")
-    private String caseTransferToCcbcForDefendantTemplate;
+    private final String caseTransferToCcbcForDefendantTemplate;
+
+    public TransferCaseNotificationsService(NotificationService notificationService,
+                                            @Value("${notifications.frontendBaseUrl}") String frontendBaseUrl,
+                                            @Value("${notifications.templates.email.caseTransferToCourt}")
+                                                String caseTransferToCourtTemplate,
+                                            @Value("${notifications.templates.email.caseTransferToCcbcForClaimant}")
+                                                String caseTransferToCcbcForClaimantTemplate,
+                                            @Value("${notifications.templates.email.caseTransferToCcbcForDefendant}")
+                                                String caseTransferToCcbcForDefendantTemplate) {
+        this.notificationService = notificationService;
+        this.frontendBaseUrl = frontendBaseUrl;
+        this.caseTransferToCourtTemplate = caseTransferToCourtTemplate;
+        this.caseTransferToCcbcForClaimantTemplate = caseTransferToCcbcForClaimantTemplate;
+        this.caseTransferToCcbcForDefendantTemplate = caseTransferToCcbcForDefendantTemplate;
+    }
 
     public void sendTransferToCourtEmail(CCDCase ccdCase, Claim claim) {
         String courtName = claim.getTransferContent().getHearingCourtName();
