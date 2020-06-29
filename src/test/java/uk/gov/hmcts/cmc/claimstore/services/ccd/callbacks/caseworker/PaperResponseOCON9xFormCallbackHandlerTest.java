@@ -10,13 +10,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
-import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocument;
-import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocumentType;
-import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
-import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.ccd.domain.*;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseMethod;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
@@ -27,13 +21,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -126,6 +114,7 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
                         .map(CCDScannedDocument::getType)
                         .collect(Collectors.toSet());
 
+                assertThat(scannedDocumentTypes).isNotEmpty();
                 assertThat(scannedDocumentTypes).doesNotContain(type);
             }
         }
@@ -187,6 +176,7 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
                         .map(CCDCollectionElement::getValue)
                         .collect(Collectors.toSet());
 
+                assertThat(scannedDocuments).isNotEmpty();
                 assertThat(scannedDocuments).doesNotContain(subtypeForm);
             }
         }
