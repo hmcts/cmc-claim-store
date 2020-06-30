@@ -24,6 +24,7 @@ public enum ClaimState {
     READY_FOR_PAPER_DQ("readyForPaperDQ"),
     JUDGMENT_DECIDE_AMOUNT("judgmentDecideAmount"),
     REDETERMINATION_REQUESTED("redeterminationRequested"),
+    HWF_APPLICATION_PENDING("hwfApplicationPending"),
     JUDGMENT_REQUESTED("judgmentRequested");
 
     private final String state;
