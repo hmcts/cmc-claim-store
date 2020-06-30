@@ -17,6 +17,24 @@ import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.RESPONSE_DEADLINE;
 public class ClaimTest {
 
     @Test
+    public void getScannedDocument() {
+
+        ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
+        ScannedDocument expectedScannedDocument = ScannedDocument.builder()
+            .documentType(ScannedDocumentType.FORM)
+            .subtype(ScannedDocumentSubtype.OCON9X.value)
+            .build();
+        claimDocumentCollection.addScannedDocument(expectedScannedDocument);
+
+        Claim claim = SampleClaim.getDefault().toBuilder().claimDocumentCollection(claimDocumentCollection).build();
+
+        ScannedDocument scannedDocument =
+            claim.getScannedDocument(ScannedDocumentType.FORM, ScannedDocumentSubtype.OCON9X).orElse(null);
+
+        assertThat(scannedDocument).isEqualTo(expectedScannedDocument);
+    }
+
+    @Test
     public void isEqualWhenTheSameObjectWithDefaultValuesIsGiven() {
         Claim claim = SampleClaim.getDefault();
         assertThat(claim).isEqualTo(claim);
