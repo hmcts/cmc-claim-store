@@ -124,8 +124,7 @@ public class IdamTestService {
 
         String code = getCodeFromRedirect(response);
 
-        logger.info("Uplift user '{}' using OAuth2 endpoint until SIDM-4453 is resolved", email);
-        idamApi.exchangeCodeLegacy(
+        idamApi.exchangeCode(
             code,
             AUTHORIZATION_CODE,
             oauth2.getRedirectUrl(),
