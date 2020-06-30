@@ -120,7 +120,7 @@ milo:
   sender: ${MILO_CSV_SENDER:}
 
 schedule:
-  transfer-claims: "0 * * ? * *"
+  transfer-claims: ""
   state-transition:
     waiting-transfer: ""
     stay-claim: ""
