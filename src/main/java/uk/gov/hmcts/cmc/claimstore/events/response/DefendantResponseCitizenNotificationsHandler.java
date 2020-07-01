@@ -46,7 +46,20 @@ public class DefendantResponseCitizenNotificationsHandler {
     public void notifyClaimantResponse(DefendantResponseEvent event) {
         Claim claim = event.getClaim();
         requireNonNull(claim, "Claim must be present");
-        if (!claim.getResponse().isPresent()) {
+        if (claim.getResponse().isEmpty()) {
+            throw new IllegalArgumentException("Response must be present");
+        }
+        defendantResponseNotificationService.notifyClaimant(
+            claim,
+            referenceForClaimant(claim.getReferenceNumber())
+        );
+    }
+
+    @EventListener
+    public void notifyClaimantResponse(DefendantPaperResponseEvent event) {
+        Claim claim = event.getClaim();
+        requireNonNull(claim, "Claim must be present");
+        if (claim.getResponse().isEmpty()) {
             throw new IllegalArgumentException("Response must be present");
         }
         defendantResponseNotificationService.notifyClaimant(

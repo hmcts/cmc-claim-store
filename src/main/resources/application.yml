@@ -108,6 +108,7 @@ doc_assembly:
   noticeOfTransferSentToDefendantTemplateId: "CV-CMC-GOR-ENG-0008.docx"
   noticeOfTransferSentToCourtTemplateId: "CV-CMC-GOR-ENG-0009.docx"
   noticeOfTransferToCcbcSentToDefendantTemplateId: "CV-CMC-GOR-ENG-0016.docx"
+  paperResponseAdmissionTemplateId: "CV-CMC-GOR-ENG-0016.docx"
 
 nonworking-days:
   datafile: ${NONWORKINGDAYS_DATAFILE:/data/non-working_days.dat}
