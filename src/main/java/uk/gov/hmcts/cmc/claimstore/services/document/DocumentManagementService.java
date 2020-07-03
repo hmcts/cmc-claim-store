@@ -116,6 +116,7 @@ public class DocumentManagementService {
     ) {
         String filename = pdf.getFilename();
         logger.info(exception.getMessage() + " " + exception.getCause(), exception);
+        logger.info("test");
         appInsights.trackEvent(DOCUMENT_MANAGEMENT_UPLOAD_FAILURE, DOCUMENT_NAME, filename);
         throw exception;
     }
