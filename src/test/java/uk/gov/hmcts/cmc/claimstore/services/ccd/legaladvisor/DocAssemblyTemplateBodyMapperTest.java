@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -76,7 +77,6 @@ class DocAssemblyTemplateBodyMapperTest {
             directionOrderService,
             workingDayIndicator,
             responseDeadlineCalculator);
-
         ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
         ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
         ccdCase.setHearingCourt("BIRMINGHAM");
@@ -101,6 +101,9 @@ class DocAssemblyTemplateBodyMapperTest {
             .withForename("Judge")
             .withSurname("McJudge")
             .build();
+        ReflectionTestUtils.setField(docAssemblyTemplateBodyMapper, "directionDeadLineNumberOfDays", 7);
+        ReflectionTestUtils.setField(docAssemblyTemplateBodyMapper,
+            "directionDeadlineChangeDate", "2020-07-27T11:00:00");
         docAssemblyTemplateBodyBuilder = DocAssemblyTemplateBody.builder()
             .paperDetermination(false)
             .hasFirstOrderDirections(true)
@@ -303,6 +306,7 @@ class DocAssemblyTemplateBodyMapperTest {
 
         @Test
         void shouldMapTemplateBody() {
+
             DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
                 ccdCase,
                 userDetails
@@ -312,6 +316,30 @@ class DocAssemblyTemplateBodyMapperTest {
 
             assertThat(requestBody).isEqualTo(expectedBody);
             verify(directionOrderService).getHearingCourt(any());
+        }
+
+        @Test
+        void shouldMapTemplateBodyDirectionDeadLineBefore() {
+            when(workingDayIndicator.getNextWorkingDay(any())).thenReturn(LocalDate.parse("2020-07-28"));
+            DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
+                ccdCase,
+                userDetails
+            );
+            DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
+                .directionDeadline(LocalDate.parse("2020-07-28")).build();
+            assertThat(requestBody.getDirectionDeadline()).isEqualTo(expectedBody.getDirectionDeadline());
+        }
+
+        @Test
+        void shouldMapTemplateBodyDirectionDeadLineAfter() {
+            when(workingDayIndicator.getNextWorkingDay(any())).thenReturn(LocalDate.parse("2020-07-28"));
+            DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
+                ccdCase,
+                userDetails
+            );
+            DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
+                .directionDeadline(LocalDate.parse("2020-07-28")).build();
+            assertThat(requestBody.getDirectionDeadline()).isEqualTo(expectedBody.getDirectionDeadline());
         }
 
         @Test
@@ -452,9 +480,9 @@ class DocAssemblyTemplateBodyMapperTest {
         void shouldMapTemplateBodySoleTraderYesToNewFeature() {
             LocalDate now = LocalDate.now();
             CCDRespondent ccdRespondentSoleTrader = SampleData.getCCDRespondentSoleTrader()
-                    .toBuilder()
-                    .responseDeadline(now)
-                    .build();
+                .toBuilder()
+                .responseDeadline(now)
+                .build();
             ccdCase.setRespondents(
                 ImmutableList.of(
                     CCDCollectionElement.<CCDRespondent>builder()
@@ -559,4 +587,5 @@ class DocAssemblyTemplateBodyMapperTest {
             .build();
         assertThat(requestBody).isEqualTo(expectedBody);
     }
+
 }
