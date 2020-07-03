@@ -34,7 +34,7 @@ public class DocAssemblyTemplateBodyMapper {
     @Value("${directionDeadline.changeDate}")
     private String directionDeadlineChangeDate;
 
-    public long DIRECTION_DEADLINE_NO_OF_DAYS = 19L;
+    public long directionDeadlineDaysBefore = 19L;
     public static final long CHANGE_ORDER_DEADLINE_NO_OF_DAYS = 12L;
     private final Clock clock;
     private final DirectionOrderService directionOrderService;
@@ -59,9 +59,9 @@ public class DocAssemblyTemplateBodyMapper {
         HearingCourt hearingCourt = directionOrderService.getHearingCourt(ccdCase);
 
         LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
-
-        if(directionDeadlineChangeDate != null &&  LocalDateTime.now().isAfter(LocalDateTime.parse(directionDeadlineChangeDate))){
-            DIRECTION_DEADLINE_NO_OF_DAYS=directionDeadLineNumberOfDays;
+        if (directionDeadlineChangeDate != null
+            && LocalDateTime.now().isAfter(LocalDateTime.parse(directionDeadlineChangeDate))) {
+            directionDeadlineDaysBefore = directionDeadLineNumberOfDays;
         }
 
         return DocAssemblyTemplateBody.builder()
@@ -109,7 +109,7 @@ public class DocAssemblyTemplateBodyMapper {
                     .build())
                 .collect(Collectors.toList()))
             .directionDeadline(workingDayIndicator.getNextWorkingDay(
-                currentDate.plusDays(DIRECTION_DEADLINE_NO_OF_DAYS)))
+                currentDate.plusDays(directionDeadlineDaysBefore)))
             .changeOrderDeadline(workingDayIndicator.getNextWorkingDay(
                 currentDate.plusDays(CHANGE_ORDER_DEADLINE_NO_OF_DAYS)))
             .expertReportInstruction(ccdCase.getExpertReportInstruction())
