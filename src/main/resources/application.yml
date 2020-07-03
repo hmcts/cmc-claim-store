@@ -139,6 +139,10 @@ dateCalculations:
   waitingTransferDeadlineInDays: 19
   claimantCcjReminderDays: 10
 
+directionDeadline:
+  changeDate: "2020-06-27T11:00:00"
+  numberOfDays: 7
+
 notifications:
   govNotifyApiKey: ${GOV_NOTIFY_API_KEY:}
   frontendBaseUrl: "${FRONTEND_BASE_URL:}"

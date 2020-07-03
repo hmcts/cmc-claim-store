@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
@@ -26,7 +28,13 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 @Component
 public class DocAssemblyTemplateBodyMapper {
 
-    public static final long DIRECTION_DEADLINE_NO_OF_DAYS = 19L;
+    @Value("${directionDeadline.numberOfDays}")
+    private long directionDeadLineNumberOfDays;
+
+    @Value("${directionDeadline.changeDate}")
+    private String directionDeadlineChangeDate;
+
+    public long DIRECTION_DEADLINE_NO_OF_DAYS = 19L;
     public static final long CHANGE_ORDER_DEADLINE_NO_OF_DAYS = 12L;
     private final Clock clock;
     private final DirectionOrderService directionOrderService;
@@ -51,6 +59,11 @@ public class DocAssemblyTemplateBodyMapper {
         HearingCourt hearingCourt = directionOrderService.getHearingCourt(ccdCase);
 
         LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
+
+        if(directionDeadlineChangeDate != null &&  LocalDateTime.now().isAfter(LocalDateTime.parse(directionDeadlineChangeDate))){
+            DIRECTION_DEADLINE_NO_OF_DAYS=directionDeadLineNumberOfDays;
+        }
+
         return DocAssemblyTemplateBody.builder()
             .claimant(Party.builder()
                 .partyName(ccdCase.getApplicants()
