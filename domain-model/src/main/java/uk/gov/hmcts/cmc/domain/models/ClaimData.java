@@ -94,6 +94,8 @@ public class ClaimData {
 
     private final String helpWithFeesNumber;
 
+    private final String helpWithFeesType;
+
     @Builder(toBuilder = true)
     @SuppressWarnings("squid:S00107") // Number of method parameters
     public ClaimData(
@@ -114,7 +116,8 @@ public class ClaimData {
         String feeCode,
         Timeline timeline,
         Evidence evidence,
-        String helpWithFeesNumber
+        String helpWithFeesNumber,
+        String helpWithFeesType
     ) {
         this.externalId = externalId != null ? externalId : UUID.randomUUID();
         this.claimants = claimants;
@@ -134,6 +137,7 @@ public class ClaimData {
         this.timeline = timeline;
         this.evidence = evidence;
         this.helpWithFeesNumber = helpWithFeesNumber;
+        this.helpWithFeesType = helpWithFeesType;
     }
 
     public List<Party> getClaimants() {
@@ -237,6 +241,8 @@ public class ClaimData {
     public Optional<String> getHelpWithFeesNumber() {
         return Optional.ofNullable(helpWithFeesNumber);
     }
+
+    public Optional<String> gethelpWithFeesType() { return Optional.ofNullable(helpWithFeesType); }
 
     @Override
     public String toString() {

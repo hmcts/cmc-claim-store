@@ -664,7 +664,8 @@ public class ClaimServiceTest {
         UUID externalId = UUID.randomUUID();
         ClaimData claimData = SampleClaimData.builder()
             .withExternalId(externalId)
-            .withHelpWithFeesNumber("HWF01234").build();
+            .withHelpWithFeesNumber("HWF01234")
+            .withhelpWithFeesType("ClaimIssue").build();
 
         claimService.saveHelpWithFeesClaim(USER_ID, claimData, AUTHORISATION, singletonList(ADMISSIONS.getValue()));
 
@@ -674,7 +675,7 @@ public class ClaimServiceTest {
 
     @Test(expected = ConflictException.class)
     public void saveHelpWithFeesClaimShouldThrowConflictExceptionIfAlreadyExists() {
-        ClaimData claimData = SampleClaimData.builder().withHelpWithFeesNumber("HWF01234").build();
+        ClaimData claimData = SampleClaimData.builder().withHelpWithFeesNumber("HWF01234").withhelpWithFeesType("ClaimIssue").build();
 
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
             .thenReturn(Optional.of(mock(Claim.class)));

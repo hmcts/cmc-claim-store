@@ -64,6 +64,7 @@ public class CitizenServiceDocumentsServiceTest {
         Claim claim = SampleClaim.getDefault();
         Map<String, Object> documentContent = new HashMap<>();
         documentContent.put("helpWithFeesNumber", "HWF01234");
+        documentContent.put("helpWithFeesType", "ClaimIssue");
         when(claimContentProvider.createContent(claim)).thenReturn(documentContent);
         //when
         Document result = citizenServiceDocumentsService.draftClaimDocument(claim);

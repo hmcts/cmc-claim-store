@@ -42,7 +42,7 @@ public class SampleClaimData {
     private Timeline timeline = SampleTimeline.validDefaults();
     private Evidence evidence = SampleEvidence.validDefaults();
     private String helpWithFeesNumber = "HWF012345";
-
+    private String helpWithFeesType = "ClaimIssue";
     private HousingDisrepair housingDisrepair = new HousingDisrepair(
         DamagesExpectation.MORE_THAN_THOUSAND_POUNDS,
         DamagesExpectation.MORE_THAN_THOUSAND_POUNDS
@@ -194,6 +194,11 @@ public class SampleClaimData {
         return this;
     }
 
+    public SampleClaimData withhelpWithFeesType(String helpWithFeesType) {
+        this.helpWithFeesType = helpWithFeesType;
+        return this;
+    }
+
     public ClaimData build() {
         return new ClaimData(
             externalId,
@@ -213,7 +218,8 @@ public class SampleClaimData {
             feeCode,
             timeline,
             evidence,
-            helpWithFeesNumber);
+            helpWithFeesNumber,
+            helpWithFeesType);
     }
 
     public static ClaimData validDefaults() {

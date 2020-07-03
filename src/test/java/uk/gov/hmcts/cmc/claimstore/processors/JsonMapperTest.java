@@ -165,6 +165,7 @@ public class JsonMapperTest {
             .withPayment(null)
             .withEvidence(null)
             .withHelpWithFeesNumber(null)
+            .withhelpWithFeesType(null)
             .build();
         assertThat(output).isEqualTo(expected);
     }

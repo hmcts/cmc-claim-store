@@ -167,6 +167,7 @@ public class ClaimControllerTest {
         //given
         ClaimData claimData = SampleClaimData.builder()
             .withHelpWithFeesNumber("HWF012345")
+            .withhelpWithFeesType("ClaimIssue")
             .build();
         Claim expectedResponse = Claim.builder().claimData(claimData).build();
         when(claimService.saveHelpWithFeesClaim(USER_ID, claimData, AUTHORISATION, FEATURES))

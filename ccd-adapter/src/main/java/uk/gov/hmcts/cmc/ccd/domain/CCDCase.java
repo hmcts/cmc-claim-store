@@ -146,4 +146,5 @@ public class CCDCase {
     private String proceedOnPaperOtherReason;
     private LocalDate calculatedResponseDeadline;
     private String helpWithFeesNumber;
+    private String helpWithFeesType;
 }
