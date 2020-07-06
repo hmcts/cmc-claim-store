@@ -74,4 +74,38 @@ public class DefendantResponseCitizenNotificationsHandlerTest {
 
         defendantResponseCitizenNotificationsHandler.notifyClaimantResponse(responseEventWithNullClaim);
     }
+
+    public void notifyDefendantPaperResponseSendsNotificationsToClaimant() {
+        DefendantPaperResponseEvent responseEvent = new DefendantPaperResponseEvent(
+            SampleClaimIssuedEvent.CLAIM_WITH_RESPONSE,
+            AUTHORISATION
+        );
+
+        defendantResponseCitizenNotificationsHandler.notifyClaimantResponse(responseEvent);
+
+        verify(defendantResponseNotificationService, once()).notifyClaimant(
+            eq(SampleClaimIssuedEvent.CLAIM_WITH_RESPONSE),
+            eq("claimant-response-notification-" + RESPONSE_EVENT.getClaim().getReferenceNumber())
+        );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void throwExceptionWhenResponseNotPresentDefendantPaperResponse() {
+
+        DefendantPaperResponseEvent responseEventWithoutResponse = new DefendantPaperResponseEvent(
+            SampleClaimIssuedEvent.CLAIM_NO_RESPONSE,
+            AUTHORISATION
+        );
+
+        defendantResponseCitizenNotificationsHandler.notifyClaimantResponse(responseEventWithoutResponse);
+
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void throwExceptionResponseEventIsGeneratedWithNullClaimDefendantPaperResponse() {
+
+        DefendantPaperResponseEvent responseEventWithNullClaim = new DefendantPaperResponseEvent(null, AUTHORISATION);
+
+        defendantResponseCitizenNotificationsHandler.notifyClaimantResponse(responseEventWithNullClaim);
+    }
 }
