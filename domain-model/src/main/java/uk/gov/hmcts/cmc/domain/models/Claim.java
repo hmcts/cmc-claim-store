@@ -200,6 +200,13 @@ public class Claim {
             .flatMap(c -> c.getDocument(claimDocumentType));
     }
 
+    @JsonIgnore
+    public Optional<ScannedDocument> getScannedDocument(ScannedDocumentType scannedDocumentType,
+                                                        ScannedDocumentSubtype subtype) {
+        return Optional.ofNullable(claimDocumentCollection)
+            .flatMap(c -> c.getScannedDocument(scannedDocumentType, subtype));
+    }
+
     public LocalDate getServiceDate() {
         if (serviceDate != null) {
             return serviceDate;

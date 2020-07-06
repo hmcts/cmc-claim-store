@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
+import uk.gov.hmcts.cmc.domain.models.ScannedDocument;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.reform.document.DocumentMetadataDownloadClientApi;
@@ -34,6 +35,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementDownloadResponse;
@@ -120,9 +122,44 @@ public class DocumentManagementServiceTest {
     }
 
     @Test
-    public void shouldDownloadDocumentFromDocumentManagement() {
-        URI docUri = URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4");
+    public void shouldDownloadScannedDocumentFromDocumentManagement() {
 
+        URI docUri = setupDocumentDownloadClient();
+
+        ScannedDocument claimDocument = ScannedDocument.builder()
+            .documentManagementUrl(docUri)
+            .build();
+
+        byte[] pdf = documentManagementService.downloadScannedDocument("auth string", claimDocument);
+
+        assertDocumentDownloadSuccessful(pdf);
+    }
+
+    @Test
+    public void shouldDownloadDocumentFromDocumentManagement() {
+
+        URI docUri = setupDocumentDownloadClient();
+
+        ClaimDocument claimDocument = ClaimDocument.builder()
+            .documentManagementUrl(docUri)
+            .documentName("0000-claim")
+            .build();
+        byte[] pdf = documentManagementService.downloadDocument("auth string", claimDocument);
+
+        assertDocumentDownloadSuccessful(pdf);
+    }
+
+    private void assertDocumentDownloadSuccessful(byte[] pdf) {
+        assertNotNull(pdf);
+        assertArrayEquals("test".getBytes(), pdf);
+
+        verify(documentMetadataDownloadClient)
+            .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString());
+        verify(documentDownloadClient)
+            .downloadBinary(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString());
+    }
+
+    private URI setupDocumentDownloadClient() {
         when(documentMetadataDownloadClient
             .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString())
         ).thenReturn(successfulDocumentManagementDownloadResponse());
@@ -135,26 +172,15 @@ public class DocumentManagementServiceTest {
         when(documentDownloadClient
             .downloadBinary(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString())
         ).thenReturn(responseEntity);
-
-        ClaimDocument claimDocument = ClaimDocument.builder()
-            .documentManagementUrl(docUri)
-            .documentName("0000-claim")
-            .build();
-        byte[] pdf = documentManagementService.downloadDocument("auth string", claimDocument);
-        assertNotNull(pdf);
-        assertArrayEquals("test".getBytes(), pdf);
-
-        verify(documentMetadataDownloadClient)
-            .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString());
-        verify(documentDownloadClient)
-            .downloadBinary(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString());
+        return URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4");
     }
 
     @Test
     public void downloadDocumentFromDocumentManagementThrowException() {
+        URI docUri = mock(URI.class);
         expectedException.expect(DocumentManagementException.class);
-        expectedException.expectMessage("Unable to download document 0000-claim from document management");
-        URI docUri = URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4");
+        expectedException.expectMessage(
+            String.format("Unable to download document %s from document management", docUri));
 
         UserDetails userDetails = new UserDetails("id", "mail@mail.com",
             "userFirstName", "userLastName", Collections.singletonList("role"));

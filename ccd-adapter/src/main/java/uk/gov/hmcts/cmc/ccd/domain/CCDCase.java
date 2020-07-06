@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
@@ -149,6 +150,7 @@ public class CCDCase {
     private CCDProceedOnPaperReasonType proceedOnPaperReason;
     private String proceedOnPaperOtherReason;
     private LocalDate calculatedResponseDeadline;
+    private CCDResponseType paperAdmissionType;
     private CCDTransferContent transferContent;
     @Builder.Default
     private List<CCDCollectionElement<CCDBulkPrintDetails>> bulkPrintDetails = Collections.emptyList();
