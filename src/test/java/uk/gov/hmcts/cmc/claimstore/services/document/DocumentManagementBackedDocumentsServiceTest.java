@@ -84,8 +84,8 @@ public class DocumentManagementBackedDocumentsServiceTest {
         documentManagementBackedDocumentsService = new DocumentManagementBackedDocumentsService(
             claimService,
             documentManagementService,
-            sealedClaimPdfService,
             draftClaimReceiptService,
+            sealedClaimPdfService,
             claimIssueReceiptService,
             defendantResponseReceiptService,
             settlementAgreementCopyService,

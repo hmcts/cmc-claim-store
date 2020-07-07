@@ -42,7 +42,7 @@ public class SampleClaimData {
     private Timeline timeline = SampleTimeline.validDefaults();
     private Evidence evidence = SampleEvidence.validDefaults();
     private String helpWithFeesNumber = "HWF012345";
-    private String helpWithFeesType = "ClaimIssue";
+    private String helpWithFeesType = "Claim Issue";
     private HousingDisrepair housingDisrepair = new HousingDisrepair(
         DamagesExpectation.MORE_THAN_THOUSAND_POUNDS,
         DamagesExpectation.MORE_THAN_THOUSAND_POUNDS

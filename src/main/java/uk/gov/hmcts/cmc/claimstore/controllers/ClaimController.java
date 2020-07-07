@@ -115,6 +115,17 @@ public class ClaimController {
         return claimService.saveHelpWithFeesClaim(submitterId, claimData, authorisation, features);
     }
 
+    @PutMapping(value = "/{submitterId}/hwf", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Resume the claim with hwf submission")
+    public Claim updateHelpWithFeesClaim(
+        @Valid @NotNull @RequestBody ClaimData claimData,
+        @PathVariable("submitterId") String submitterId,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
+        @RequestHeader(value = "Features", required = false) List<String> features
+    ) {
+        return claimService.updateHelpWithFeesClaim(submitterId, claimData, authorisation, features);
+    }
+
     @PostMapping(value = "/{submitterId}/create-legal-rep-claim", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Creates a new legal rep claim")
     public Claim saveLegalRepresentedClaim(

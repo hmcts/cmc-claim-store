@@ -34,6 +34,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     private final SealedClaimPdfService sealedClaimPdfService;
     private final DraftClaimReceiptService draftClaimReceiptService;
     private final ClaimIssueReceiptService claimIssueReceiptService;
+    private final DraftClaimReceiptService draftClaimReceiptService;
     private final DefendantResponseReceiptService defendantResponseReceiptService;
     private final SettlementAgreementCopyService settlementAgreementCopyService;
     private final ReviewOrderService reviewOrderService;
@@ -46,6 +47,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     public DocumentManagementBackedDocumentsService(
         ClaimService claimService,
         DocumentManagementService documentManagementService,
+        DraftClaimReceiptService draftClaimReceiptService,
         SealedClaimPdfService sealedClaimPdfService,
         DraftClaimReceiptService draftClaimReceiptService,
         ClaimIssueReceiptService claimIssueReceiptService,
@@ -60,6 +62,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         this.sealedClaimPdfService = sealedClaimPdfService;
         this.draftClaimReceiptService = draftClaimReceiptService;
         this.claimIssueReceiptService = claimIssueReceiptService;
+        this.draftClaimReceiptService = draftClaimReceiptService;
         this.defendantResponseReceiptService = defendantResponseReceiptService;
         this.settlementAgreementCopyService = settlementAgreementCopyService;
         this.reviewOrderService = reviewOrderService;
@@ -75,6 +78,8 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
                 return draftClaimReceiptService;
             case SEALED_CLAIM:
                 return sealedClaimPdfService;
+            case DRAFT_CLAIM_RECEIPT:
+                return draftClaimReceiptService;
             case DEFENDANT_RESPONSE_RECEIPT:
                 return defendantResponseReceiptService;
             case SETTLEMENT_AGREEMENT:

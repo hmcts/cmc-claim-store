@@ -43,6 +43,10 @@ public class DocumentTemplates {
         return readBytes("/staff/templates/document/countyCourtJudgmentDetails.html");
     }
 
+    public byte[] getDraftClaim() {
+        return readBytes("/staff/templates/document/draftClaim.html");
+    }
+
     public byte[] getSettlementAgreement() {
         return readBytes("/staff/templates/document/settlementAgreement.html");
     }

@@ -75,6 +75,8 @@ public class JsonMapperTest {
                 .withServiceAddress(null)
                 .withDateOfBirth(null)
                 .individualDetails())
+            .withHelpWithFeesNumber(null)
+            .withhelpWithFeesType(null)
             .withFeeCode("X0012")
             .build();
 
@@ -120,6 +122,8 @@ public class JsonMapperTest {
                 .withServiceAddress(null)
                 .withDateOfBirth(null)
                 .individualDetails())
+            .withHelpWithFeesNumber(null)
+            .withhelpWithFeesType(null)
             .withTimeline(SampleTimeline.validDefaults())
             .withEvidence(SampleEvidence.validDefaults())
             .build();
