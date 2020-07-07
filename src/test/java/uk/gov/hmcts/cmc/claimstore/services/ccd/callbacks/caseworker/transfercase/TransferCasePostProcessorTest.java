@@ -41,13 +41,10 @@ class TransferCasePostProcessorTest {
     private CaseDetailsConverter caseDetailsConverter;
 
     @Mock
-    private TransferCaseDocumentPublishService transferCaseDocumentPublishService;
-
-    @Mock
-    private TransferCaseNotificationsService transferCaseNotificationsService;
-
-    @Mock
     private CallbackRequest callbackRequest;
+
+    @Mock
+    private BulkPrintTransferService bulkPrintTransferService;
 
     @Mock
     private Claim claim;
@@ -72,7 +69,7 @@ class TransferCasePostProcessorTest {
         when(caseDetailsConverter.extractCCDCase(caseDetails)).thenReturn(ccdCase);
         when(caseDetailsConverter.extractClaim(caseDetails)).thenReturn(claim);
 
-        when(transferCaseDocumentPublishService.publishCaseDocuments(ccdCase, AUTHORISATION, claim))
+        when(bulkPrintTransferService.transferCase(ccdCase, claim, AUTHORISATION))
             .thenReturn(ccdCase);
 
         CallbackParams callbackParams = CallbackParams.builder()
@@ -83,7 +80,7 @@ class TransferCasePostProcessorTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = (AboutToStartOrSubmitCallbackResponse)
             transferCasePostProcessor.completeCaseTransfer(callbackParams);
 
-        verify(transferCaseNotificationsService).sendClaimUpdatedEmailToClaimant(claim);
+        verify(bulkPrintTransferService).transferCase(ccdCase, claim, AUTHORISATION);
 
         assertEquals(mappedCaseData, callbackResponse.getData());
     }
