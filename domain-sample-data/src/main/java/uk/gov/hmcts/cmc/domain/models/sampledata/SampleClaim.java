@@ -14,6 +14,8 @@ import uk.gov.hmcts.cmc.domain.models.MediationOutcome;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.ScannedDocument;
+import uk.gov.hmcts.cmc.domain.models.ScannedDocumentType;
 import uk.gov.hmcts.cmc.domain.models.TransferContent;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
@@ -800,6 +802,18 @@ public final class SampleClaim {
             .createdBy(OCMC)
             .build();
         this.claimDocumentCollection.addClaimDocument(claimDocument);
+        return this;
+    }
+
+    public SampleClaim withOcon9xScannedDocument(URI uri) {
+        ScannedDocument scannedDocument = ScannedDocument.builder()
+            .documentManagementUrl(uri)
+            .fileName("OCON9X-form.pdf")
+            .documentType(ScannedDocumentType.FORM)
+            .subtype("OCON9x")
+            .scannedDate(LocalDateTimeFactory.nowInLocalZone())
+            .build();
+        this.claimDocumentCollection.addScannedDocument(scannedDocument);
         return this;
     }
 

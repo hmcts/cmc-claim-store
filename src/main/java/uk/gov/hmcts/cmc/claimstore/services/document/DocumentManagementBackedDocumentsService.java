@@ -24,6 +24,7 @@ import uk.gov.hmcts.cmc.domain.models.ScannedDocumentType;
 
 import java.util.Optional;
 
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.GENERAL_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.MEDIATION_AGREEMENT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.ORDER_DIRECTIONS;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.ORDER_SANCTIONS;
@@ -87,12 +88,12 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     }
 
     @Override
-    public byte[] getOCON9xForm(String externalId, String authorisation) {
-
+    public byte[] generateScannedDocument(String externalId, ScannedDocumentType scannedDocumentType,
+                                          ScannedDocumentSubtype scannedDocumentSubtype, String authorisation) {
         User user = userService.getUser(authorisation);
         Claim claim = claimService.getClaimByExternalId(externalId, user);
 
-        ScannedDocument oconDocument = claim.getScannedDocument(ScannedDocumentType.FORM, ScannedDocumentSubtype.OCON9X)
+        ScannedDocument oconDocument = claim.getScannedDocument(scannedDocumentType, scannedDocumentSubtype)
             .orElseThrow(() -> new IllegalArgumentException("Document is not available for download."));
 
         return documentManagementService.downloadScannedDocument(authorisation, oconDocument);
@@ -100,22 +101,32 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
 
     @Override
     public byte[] generateDocument(String externalId, ClaimDocumentType claimDocumentType, String authorisation) {
+        return generateDocument(externalId, claimDocumentType, null, authorisation);
+    }
+
+    @Override
+    public byte[] generateDocument(String externalId, ClaimDocumentType claimDocumentType,
+                                   String claimDocumentId, String authorisation) {
         User user = userService.getUser(authorisation);
 
         Claim claim = claimService.getClaimByExternalId(externalId, user);
         ClaimDocumentsAccessRule.assertDocumentCanBeAccessedByUser(claim, claimDocumentType, user);
 
-        return processRequest(claim, authorisation, claimDocumentType);
-    }
-
-    private byte[] processRequest(Claim claim, String authorisation, ClaimDocumentType claimDocumentType) {
-
         if (claimDocumentType == ORDER_DIRECTIONS || claimDocumentType == ORDER_SANCTIONS
             || claimDocumentType == MEDIATION_AGREEMENT) {
             return getOrderDocuments(claim, authorisation, claimDocumentType);
+        } else if (claimDocumentType == GENERAL_LETTER) {
+            return getGeneralLetters(claim, authorisation, claimDocumentId);
         } else {
             return getClaimJourneyDocuments(claim, authorisation, claimDocumentType);
         }
+    }
+
+    private byte[] getGeneralLetters(Claim claim, String authorisation, String claimDocumentId) {
+        Optional<ClaimDocument> claimDocument = claim.getClaimDocument(claimDocumentId);
+        return claimDocument
+            .map(document -> documentManagementService.downloadDocument(authorisation, document))
+            .orElseThrow(() -> new IllegalArgumentException("Document is not available for download."));
     }
 
     private byte[] getOrderDocuments(Claim claim, String authorisation, ClaimDocumentType claimDocumentType) {

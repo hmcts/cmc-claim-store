@@ -37,6 +37,7 @@ class DocumentsFilterTest {
             .withClaimIssueReceiptDocument(URI.create("http://localhost/doc.pdf"))
             .withSealedClaimDocument(URI.create("http://localhost/doc.pdf"))
             .withSettlementAgreementDocument(URI.create("http://localhost/doc.pdf"))
+            .withOcon9xScannedDocument(URI.create("http://localhost/doc.pdf"))
             .build();
     }
 
@@ -122,6 +123,16 @@ class DocumentsFilterTest {
             .map(ClaimDocumentCollection::getClaimDocuments)
             .orElse(Collections.emptyList())
             .isEmpty());
+    }
+
+    @Test
+    void filterOcon9XScannedFormDocument() {
+        Claim filteredClaimForDefendant = DocumentsFilter.filterDocuments(claim, VALID_DEFENDANT);
+
+        assertEquals(1, filteredClaimForDefendant.getClaimDocumentCollection()
+            .map(ClaimDocumentCollection::getScannedDocuments)
+            .orElse(Collections.emptyList())
+            .size());
     }
 
 }

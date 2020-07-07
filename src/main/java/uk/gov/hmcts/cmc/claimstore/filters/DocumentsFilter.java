@@ -9,6 +9,8 @@ import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.claimstore.rules.ClaimDocumentsAccessRule.claimantViewableDocsType;
 import static uk.gov.hmcts.cmc.claimstore.rules.ClaimDocumentsAccessRule.defendantViewableDocsType;
+import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentSubtype.OCON9X;
+import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentType.FORM;
 
 public class DocumentsFilter {
 
@@ -34,6 +36,9 @@ public class DocumentsFilter {
         claimDocs.getClaimDocuments().stream()
             .filter(filterByRole(claim, userDetails))
             .forEach(docsToReturn::addClaimDocument);
+
+        claim.getScannedDocument(FORM, OCON9X).stream()
+            .forEach(docsToReturn::addScannedDocument);
 
         return claim.toBuilder()
             .claimDocumentCollection(docsToReturn)

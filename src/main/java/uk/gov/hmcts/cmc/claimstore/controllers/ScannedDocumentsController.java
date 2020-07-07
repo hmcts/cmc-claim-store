@@ -16,8 +16,12 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
+import uk.gov.hmcts.cmc.domain.models.ScannedDocumentSubtype;
+import uk.gov.hmcts.cmc.domain.models.ScannedDocumentType;
 
 import javax.validation.constraints.NotBlank;
+
+import static java.lang.String.format;
 
 @Api
 @RestController
@@ -27,26 +31,35 @@ public class ScannedDocumentsController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final DocumentsService documentsService;
 
+    private static final String SCANNED_DOC_LOG_MSG = "Received request to download pdf of type %s and subtype %s";
+
     @Autowired
     public ScannedDocumentsController(DocumentsService documentsService) {
 
         this.documentsService = documentsService;
     }
 
-    @ApiOperation("Returns the OCON9x scanned form for the given claim")
+    @ApiOperation("Returns a scanned pdf for a given claim external id")
     @GetMapping(
-        value = "/{externalId}/OCON9X",
+        value = "/{externalId}/{documentType}/{documentSubtype}",
         produces = MediaType.APPLICATION_PDF_VALUE
     )
-    public ResponseEntity<ByteArrayResource> ocon9xForm(
+    public ResponseEntity<ByteArrayResource> scannedDocument(
         @ApiParam("Claim external id")
         @PathVariable("externalId") @NotBlank String externalId,
+        @ApiParam("Claim document type")
+        @PathVariable("documentType") @NotBlank String documentType,
+        @ApiParam("Claim document subtype")
+        @PathVariable("documentSubtype") @NotBlank String documentSubtype,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
+        ScannedDocumentType scannedDocumentType = ScannedDocumentType.fromValue(documentType);
+        ScannedDocumentSubtype scannedDocumentSubtype = ScannedDocumentSubtype.valueOf(documentSubtype.toUpperCase());
 
-        logger.info("Received request to download OCON9x form");
+        logger.info(format(SCANNED_DOC_LOG_MSG, scannedDocumentType.name(), scannedDocumentSubtype));
 
-        byte[] pdfDocument = documentsService.getOCON9xForm(externalId, authorisation);
+        byte[] pdfDocument = documentsService.generateScannedDocument(externalId, scannedDocumentType,
+            scannedDocumentSubtype, authorisation);
 
         return ResponseEntity
             .ok()
