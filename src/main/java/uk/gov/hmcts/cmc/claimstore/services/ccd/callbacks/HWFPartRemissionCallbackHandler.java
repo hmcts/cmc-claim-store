@@ -96,17 +96,27 @@ public class HWFPartRemissionCallbackHandler extends CallbackHandler {
 
     private String  validationResultForRemittedFee(Claim claim) {
         String validationMessage = null;
-        BigDecimal feedPaidInPounds = claim.getClaimData().getFeesPaidInPounds().get();
-        BigInteger feedPaidInPennies = MonetaryConversions.poundsToPennies(feedPaidInPounds);
-        BigDecimal remittedFeesInPounds = claim.getClaimData().getRemittedFeesInPounds().get();
-        BigInteger remittedFeesInPennies = MonetaryConversions.poundsToPennies(remittedFeesInPounds);
-
-        int value = feedPaidInPennies.compareTo(remittedFeesInPennies);
-        if (value == 0) {
-            validationMessage = "Remitted fee is same as the total fee. "
-                + "For full remission, please cancel and select the next step as \"Full remission HWF-granted\"";
-        } else if (value == -1) {
-            validationMessage = "Remitted fee should be less than the total fee";
+        BigDecimal feedPaidInPounds;
+        BigInteger feedPaidInPennies = null;
+        BigDecimal remittedFeesInPounds;
+        BigInteger remittedFeesInPennies = null;
+        if (claim.getClaimData().getFeesPaidInPounds().isPresent()) {
+            feedPaidInPounds = claim.getClaimData().getFeesPaidInPounds().get();
+            feedPaidInPennies = MonetaryConversions.poundsToPennies(feedPaidInPounds);
+        }
+        if (claim.getClaimData().getRemittedFeesInPounds().isPresent()) {
+            remittedFeesInPounds = claim.getClaimData().getRemittedFeesInPounds().get();
+            remittedFeesInPennies = MonetaryConversions.poundsToPennies(remittedFeesInPounds);
+        }
+        int value;
+        if (null != feedPaidInPennies && null != remittedFeesInPennies) {
+            value = feedPaidInPennies.compareTo(remittedFeesInPennies);
+            if (value == 0) {
+                validationMessage = "Remitted fee is same as the total fee. "
+                    + "For full remission, please cancel and select the next step as \"Full remission HWF-granted\"";
+            } else if (value < 0) {
+                validationMessage = "Remitted fee should be less than the total fee";
+            }
         }
         return validationMessage;
     }
