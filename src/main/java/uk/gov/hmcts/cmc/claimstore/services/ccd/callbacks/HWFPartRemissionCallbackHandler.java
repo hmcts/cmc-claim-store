@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
@@ -100,12 +101,14 @@ public class HWFPartRemissionCallbackHandler extends CallbackHandler {
         BigInteger feedPaidInPennies = null;
         BigDecimal remittedFeesInPounds;
         BigInteger remittedFeesInPennies = null;
-        if (claim.getClaimData().getFeesPaidInPounds().isPresent()) {
-            feedPaidInPounds = claim.getClaimData().getFeesPaidInPounds().get();
+        Optional<BigDecimal> feesPaid = claim.getClaimData().getFeesPaidInPounds();
+        Optional<BigDecimal> remittedFees = claim.getClaimData().getRemittedFeesInPounds();
+        if (feesPaid.isPresent()) {
+            feedPaidInPounds = feesPaid.get();
             feedPaidInPennies = MonetaryConversions.poundsToPennies(feedPaidInPounds);
         }
-        if (claim.getClaimData().getRemittedFeesInPounds().isPresent()) {
-            remittedFeesInPounds = claim.getClaimData().getRemittedFeesInPounds().get();
+        if (remittedFees.isPresent()) {
+            remittedFeesInPounds = remittedFees.get();
             remittedFeesInPennies = MonetaryConversions.poundsToPennies(remittedFeesInPounds);
         }
         int value;
