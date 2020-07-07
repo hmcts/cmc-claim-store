@@ -103,7 +103,7 @@ ccd:
       environment:
         DEFINITION_STORE_IDAM_KEY: ${DEFINITION_STORE_S2S_KEY}
         DEFINITION_STORE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_gw,ccd_admin,cmc_claim_store
-        IDAM_USER_URL: https://idam-api.aat.platform.hmcts.net
+        IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
         OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts
 
   ccd-data-store-api:
@@ -126,12 +126,12 @@ ccd:
       CCD_DEF_CLAIM_STORE_BASE_URL: http://${SERVICE_NAME}-java
     definitionFilename: cmc-ccd.xlsx
     userRoles:
-    - citizen
-    - caseworker-cmc
-    - caseworker-cmc-solicitor
-    - caseworker-cmc-systemupdate
-    - letter-holder
-    - caseworker-autotest1
-    - caseworker-cmc-anonymouscitizen
-    - caseworker-cmc-judge
-    - caseworker-cmc-legaladvisor
+      - citizen
+      - caseworker-cmc
+      - caseworker-cmc-solicitor
+      - caseworker-cmc-systemupdate
+      - letter-holder
+      - caseworker-autotest1
+      - caseworker-cmc-anonymouscitizen
+      - caseworker-cmc-judge
+      - caseworker-cmc-legaladvisor
