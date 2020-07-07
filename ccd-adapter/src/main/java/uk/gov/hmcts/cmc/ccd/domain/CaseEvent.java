@@ -86,7 +86,8 @@ public enum CaseEvent {
     CLAIMANT_RESPONSE_RECEIPT_UPLOAD("ClaimantResponseReceiptUpload"),
     REVIEW_JUDGE_COMMENTS("ReviewJudgeComments"),
     CCJ_REQUEST_UPLOAD("CCJRequestUpload"),
-    CHANGE_CONTACT_DETAILS("ChangeContactDetails");
+    CHANGE_CONTACT_DETAILS("ChangeContactDetails"),
+    HWF_PART_REMISSION_GRANTED("HWFPartRemission");
 
     private final String value;
 
