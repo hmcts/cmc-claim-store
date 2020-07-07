@@ -108,7 +108,7 @@ ccd:
 
   ccd-data-store-api:
     java:
-      image: hmctspublic.azurecr.io/ccd/data-store-api:stable
+      image: hmctspublic.azurecr.io/ccd/data-store-api:latest
       keyVaults:
       environment:
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
