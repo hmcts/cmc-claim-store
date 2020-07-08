@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -39,6 +40,8 @@ public class HWFFeeRemittedCallbackHandler extends CallbackHandler {
     private final DirectionsQuestionnaireDeadlineCalculator deadlineCalculator;
 
     private final CaseMapper caseMapper;
+
+    private Optional<BigDecimal> feeRemitted = Optional.empty();
 
     @Autowired
     public HWFFeeRemittedCallbackHandler(CaseDetailsConverter caseDetailsConverter,
@@ -78,9 +81,10 @@ public class HWFFeeRemittedCallbackHandler extends CallbackHandler {
         }
 
         Map<String, Object> dataMap = caseDetailsConverter.convertToMap(caseMapper.to(claim));
-        if (Optional.of(claim.getClaimData().getFeesPaidInPounds().get().toString()).isPresent()) {
+        feeRemitted = Optional.of(claim.getClaimData().getFeesPaidInPounds().get());
+        if (feeRemitted.isPresent()) {
             dataMap.put("feeRemitted",
-                MonetaryConversions.poundsToPennies(claim.getClaimData().getFeesPaidInPounds().get()).toString());
+                MonetaryConversions.poundsToPennies(feeRemitted.get()).toString());
         }
         return AboutToStartOrSubmitCallbackResponse
             .builder()
