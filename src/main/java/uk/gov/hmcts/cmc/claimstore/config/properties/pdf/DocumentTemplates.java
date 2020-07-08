@@ -27,10 +27,6 @@ public class DocumentTemplates {
         return readBytes("/staff/templates/document/sealedClaim.html");
     }
 
-    public byte[] getDraftClaim() {
-        return readBytes("/staff/templates/document/draftClaim.html");
-    }
-
     public byte[] getDefendantPinLetter() {
         return readBytes("/staff/templates/document/defendantPinLetter.html");
     }

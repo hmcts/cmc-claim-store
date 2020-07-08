@@ -1145,44 +1145,6 @@ public class CoreCaseDataService {
         }
     }
 
-    public Claim updateCaseEventHelpWithFeeIOC(User user, Claim claim, CaseEvent caseEvent) {
-        try {
-            UserDetails userDetails = user.getUserDetails();
-
-            EventRequestData eventRequestData = eventRequest(caseEvent, userDetails.getId());
-
-            StartEventResponse startEventResponse = startUpdate(
-                user.getAuthorisation(),
-                eventRequestData,
-                claim.getId(),
-                isRepresented(userDetails)
-            );
-
-            CCDCase ccdCase = caseMapper.to(claim);
-
-            CaseDataContent caseDataContent = caseDataContent(startEventResponse, ccdCase);
-
-            CaseDetails caseDetails = submitUpdate(user.getAuthorisation(),
-                eventRequestData,
-                caseDataContent,
-                claim.getId(),
-                isRepresented(userDetails)
-            );
-            return caseDetailsConverter.extractClaim(caseDetails);
-        } catch (FeignException.UnprocessableEntity unprocessableEntity) {
-            logger.warn("Event {} Ambiguous 422 from CCD, swallow this until fix for RDM-6411 is released", caseEvent);
-            return claim;
-        } catch (Exception exception) {
-            throw new CoreCaseDataStoreException(
-                String.format(
-                    CCD_UPDATE_FAILURE_MESSAGE,
-                    claim.getId(),
-                    caseEvent
-                ), exception
-            );
-        }
-    }
-
     private Claim sendCaseEvent(String authorisation, CaseEvent caseEvent, Long caseId) {
         UserDetails userDetails = userService.getUserDetails(authorisation);
 

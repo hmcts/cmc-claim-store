@@ -179,22 +179,4 @@ public class ClaimControllerTest {
         //then
         assertThat(output).isEqualTo(expectedResponse);
     }
-
-    @Test
-    public void shouldUpdateHelpWithFeeClaim() {
-        //given
-        ClaimData claimData = SampleClaimData.builder()
-            .withHelpWithFeesNumber("HWF012345")
-            .withhelpWithFeesType("Claim Issue")
-            .build();
-        Claim expectedResponse = Claim.builder().claimData(claimData).build();
-        when(claimService.updateHelpWithFeesClaim(USER_ID, claimData, AUTHORISATION, FEATURES))
-            .thenReturn((expectedResponse));
-
-        //when
-        Claim output = claimController.updateHelpWithFeesClaim(claimData, USER_ID, AUTHORISATION, FEATURES);
-
-        //then
-        assertThat(output).isEqualTo(expectedResponse);
-    }
 }

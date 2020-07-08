@@ -75,8 +75,8 @@ public class JsonMapperTest {
                 .withServiceAddress(null)
                 .withDateOfBirth(null)
                 .individualDetails())
-            .withHelpWithFeesNumber(null)
-            .withhelpWithFeesType(null)
+            .withHelpWithFeesNumber("HWF012345")
+            .withhelpWithFeesType("Claim Issue")
             .withFeeCode("X0012")
             .build();
 
@@ -122,8 +122,8 @@ public class JsonMapperTest {
                 .withServiceAddress(null)
                 .withDateOfBirth(null)
                 .individualDetails())
-            .withHelpWithFeesNumber(null)
-            .withhelpWithFeesType(null)
+            .withHelpWithFeesNumber("HWF012345")
+            .withhelpWithFeesType("Claim Issue")
             .withTimeline(SampleTimeline.validDefaults())
             .withEvidence(SampleEvidence.validDefaults())
             .build();

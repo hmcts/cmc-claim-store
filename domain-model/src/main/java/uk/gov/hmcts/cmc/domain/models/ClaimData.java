@@ -242,7 +242,9 @@ public class ClaimData {
         return Optional.ofNullable(helpWithFeesNumber);
     }
 
-    public Optional<String> gethelpWithFeesType() { return Optional.ofNullable(helpWithFeesType); }
+    public Optional<String> gethelpWithFeesType() {
+        return Optional.ofNullable(helpWithFeesType);
+    }
 
     @Override
     public String toString() {

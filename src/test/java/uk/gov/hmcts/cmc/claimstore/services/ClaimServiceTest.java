@@ -73,7 +73,6 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.UPDATE_HELP_WITH_FEE_CLAIM;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.HWF_CLAIM_CREATED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NUMBER_OF_RECONSIDERATION;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
@@ -671,29 +670,6 @@ public class ClaimServiceTest {
         claimService.saveHelpWithFeesClaim(USER_ID, claimData, AUTHORISATION, singletonList(ADMISSIONS.getValue()));
 
         verify(caseRepository).saveHelpWithFeesClaim(any(), any());
-        verify(appInsights).trackEvent(HWF_CLAIM_CREATED, AppInsights.CLAIM_EXTERNAL_ID, externalId.toString());
-    }
-
-    @Test
-    public void testUpdateHelpWithFeesClaim() {
-        UUID externalId = UUID.randomUUID();
-        ClaimData claimData = SampleClaimData.builder()
-            .withExternalId(externalId)
-            .withHelpWithFeesNumber("HWF01234")
-            .withhelpWithFeesType("Claim Issue").build();
-
-        Claim claim = SampleClaim.builder()
-            .withExternalId(EXTERNAL_ID)
-            .withClaimData(claimData)
-            .build();
-        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
-            .thenReturn(Optional.of(claim));
-        when(caseRepository.updateHelpWithFeesClaim(eq(USER), any(), eq(UPDATE_HELP_WITH_FEE_CLAIM)))
-            .thenReturn(claim);
-
-        claimService.updateHelpWithFeesClaim(USER_ID, claimData, AUTHORISATION, singletonList(ADMISSIONS.getValue()));
-
-        verify(caseRepository).updateHelpWithFeesClaim(any(), any(), eq(UPDATE_HELP_WITH_FEE_CLAIM));
         verify(appInsights).trackEvent(HWF_CLAIM_CREATED, AppInsights.CLAIM_EXTERNAL_ID, externalId.toString());
     }
 

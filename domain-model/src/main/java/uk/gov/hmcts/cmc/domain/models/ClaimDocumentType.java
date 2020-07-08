@@ -8,7 +8,6 @@ public enum ClaimDocumentType {
     ORDER_SANCTIONS("orderSanctions"),
     SEALED_CLAIM("legalSealedClaim", "sealedClaim"),
     CLAIM_ISSUE_RECEIPT("claimIssueReceipt"),
-    DRAFT_CLAIM_RECEIPT("draftClaimReceipt"),
     DEFENDANT_RESPONSE_RECEIPT("defendantResponseReceipt"),
     CCJ_REQUEST("ccjRequest"),
     CLAIMANT_RESPONSE_RECEIPT("claimantResponseReceipt"),

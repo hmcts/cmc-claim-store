@@ -29,10 +29,6 @@ public class CitizenServiceDocumentsService {
         return new Document(new String(documentTemplates.getSealedClaim()), claimContentProvider.createContent(claim));
     }
 
-    public Document draftClaimDocument(Claim claim) {
-        return new Document(new String(documentTemplates.getDraftClaim()), claimContentProvider.createContent(claim));
-    }
-
     public Document pinLetterDocument(Claim claim, String defendantPin) {
         return new Document(
             new String(documentTemplates.getDefendantPinLetter()),
