@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
@@ -77,9 +78,10 @@ public class HWFFeeRemittedCallbackHandler extends CallbackHandler {
         }
 
         Map<String, Object> dataMap = caseDetailsConverter.convertToMap(caseMapper.to(claim));
-        dataMap.put("feeRemitted",
-            MonetaryConversions.poundsToPennies(claim.getClaimData().getFeesPaidInPounds().get()).toString());
-
+        if (Optional.of(claim.getClaimData().getFeesPaidInPounds().get().toString()).isPresent()) {
+            dataMap.put("feeRemitted",
+                MonetaryConversions.poundsToPennies(claim.getClaimData().getFeesPaidInPounds().get()).toString());
+        }
         return AboutToStartOrSubmitCallbackResponse
             .builder()
             .data(dataMap)
