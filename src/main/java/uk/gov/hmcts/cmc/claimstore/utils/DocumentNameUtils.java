@@ -139,12 +139,6 @@ public class DocumentNameUtils {
         return format("%s-ccj-request-%s", caseRef, ccjType);
     }
 
-    public static String buildDraftClaimFileBaseName(String number) {
-        requireNonBlank(number);
-
-        return format("draft-claim-%s", number);
-    }
-
     public static String buildRequestForInterlocutoryJudgmentFileBaseName(String caseRef) {
         requireNonBlank(caseRef);
 
