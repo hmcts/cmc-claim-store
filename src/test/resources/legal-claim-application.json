@@ -106,5 +106,6 @@
   },
   "externalReferenceNumber": "CLAIM234324",
   "preferredCourt": "LONDON COUNTY COUNCIL",
-  "feeCode": "X0012"
+  "feeCode": "X0012",
+  "feeRemitted": "500"
 }
