@@ -74,22 +74,20 @@ public class HWFPartRemissionCallbackHandler extends CallbackHandler {
         CallbackRequest callbackRequest = callbackParams.getRequest();
 
         Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
-
-        if (!FeaturesUtils.isOnlineDQ(claim)) {
-            LocalDate deadline = deadlineCalculator.calculate(LocalDateTime.now());
-            claim = claim.toBuilder().directionsQuestionnaireDeadline(deadline).build();
-        }
-
-        Map<String, Object> dataMap = caseDetailsConverter.convertToMap(caseMapper.to(claim));
-
-        var responseBuilder = AboutToStartOrSubmitCallbackResponse.builder();
-
         String validationResult = validationResultForRemittedFee(claim);
         List<String> errors = new ArrayList<>();
+        var responseBuilder = AboutToStartOrSubmitCallbackResponse.builder();
         if (null != validationResult) {
             errors.add(validationResult);
             responseBuilder.errors(errors);
         } else {
+            if (!FeaturesUtils.isOnlineDQ(claim)) {
+                LocalDate deadline = deadlineCalculator.calculate(LocalDateTime.now());
+                claim = claim.toBuilder().directionsQuestionnaireDeadline(deadline).build();
+            }
+
+            Map<String, Object> dataMap = caseDetailsConverter.convertToMap(caseMapper.to(claim));
+
             responseBuilder.data(dataMap);
         }
         return responseBuilder.build();

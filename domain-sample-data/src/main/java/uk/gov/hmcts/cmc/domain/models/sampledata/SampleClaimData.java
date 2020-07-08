@@ -139,6 +139,11 @@ public class SampleClaimData {
         return this;
     }
 
+    public SampleClaimData withFeeRemitted(BigInteger feeRemitted) {
+        this.feeRemitted = feeRemitted;
+        return this;
+    }
+
     public SampleClaimData withInterest(Interest interest) {
         this.interest = interest;
         return this;
