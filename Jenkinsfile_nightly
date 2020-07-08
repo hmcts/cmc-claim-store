@@ -40,7 +40,7 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 
 // Vars needed for AKS testing
 env.FRONTEND_BASE_URL = 'https://moneyclaims.aat.platform.hmcts.net'
-env.IDAM_API_URL = 'https://idam-web-public.aat.platform.hmcts.net'
+env.IDAM_API_URL = 'https://idam-api.aat.platform.hmcts.net'
 env.S2S_URL = 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
 env.PDF_SERVICE_URL = 'http://cmc-pdf-service-aat.service.core-compute-aat.internal'
 
