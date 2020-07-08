@@ -94,7 +94,6 @@ public class ClaimData {
 
     private String feeRemitted;
 
-
     @Builder(toBuilder = true)
     @SuppressWarnings("squid:S00107") // Number of method parameters
     public ClaimData(
@@ -148,6 +147,7 @@ public class ClaimData {
     public Optional<BigInteger> getFeeAmountInPennies() {
         return Optional.ofNullable(feeAmountInPennies);
     }
+
     public Optional<String> getFeeRemitted() {
         return Optional.ofNullable(feeRemitted);
     }

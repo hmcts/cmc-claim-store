@@ -43,7 +43,6 @@ public class SampleClaimData {
     private Evidence evidence = SampleEvidence.validDefaults();
     private String feeRemitted = "500";
 
-
     private HousingDisrepair housingDisrepair = new HousingDisrepair(
         DamagesExpectation.MORE_THAN_THOUSAND_POUNDS,
         DamagesExpectation.MORE_THAN_THOUSAND_POUNDS
