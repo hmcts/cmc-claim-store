@@ -53,6 +53,10 @@ public class ClaimDocumentsAccessRule {
             return solicitorViewableDocsType;
         }
 
+        if (userDetails.isCaseworker()) {
+            return caseworkerViewableDocsType;
+        }
+
         if (userDetails.getId().equals(claim.getDefendantId())) {
             return defendantViewableDocsType.get();
         }
