@@ -3,8 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -26,10 +24,7 @@ import javax.validation.constraints.NotBlank;
 @RequestMapping("/scanned-documents")
 public class ScannedDocumentsController {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final DocumentsService documentsService;
-
-    private static final String SCANNED_DOC_LOG_MSG = "Received request to download pdf of type %s and subtype %s";
 
     @Autowired
     public ScannedDocumentsController(DocumentsService documentsService) {
