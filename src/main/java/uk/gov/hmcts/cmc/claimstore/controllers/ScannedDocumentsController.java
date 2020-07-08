@@ -21,8 +21,6 @@ import uk.gov.hmcts.cmc.domain.models.ScannedDocumentType;
 
 import javax.validation.constraints.NotBlank;
 
-import static java.lang.String.format;
-
 @Api
 @RestController
 @RequestMapping("/scanned-documents")
@@ -55,8 +53,6 @@ public class ScannedDocumentsController {
     ) {
         ScannedDocumentType scannedDocumentType = ScannedDocumentType.fromValue(documentType);
         ScannedDocumentSubtype scannedDocumentSubtype = ScannedDocumentSubtype.valueOf(documentSubtype.toUpperCase());
-
-        logger.info(format(SCANNED_DOC_LOG_MSG, scannedDocumentType.name(), scannedDocumentSubtype));
 
         byte[] pdfDocument = documentsService.generateScannedDocument(externalId, scannedDocumentType,
             scannedDocumentSubtype, authorisation);

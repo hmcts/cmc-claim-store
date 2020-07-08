@@ -42,6 +42,8 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     private final ClaimantDirectionsQuestionnairePdfService claimantDirectionsQuestionnairePdfService;
     private final UserService userService;
 
+    public static final String DOCUMENT_IS_NOT_AVAILABLE_FOR_DOWNLOAD = "Document is not available for download.";
+
     @Autowired
     @SuppressWarnings("squid:S00107")
     // Content providers are formatted values and aren't worth splitting into multiple models.
@@ -94,7 +96,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         Claim claim = claimService.getClaimByExternalId(externalId, user);
 
         ScannedDocument oconDocument = claim.getScannedDocument(scannedDocumentType, scannedDocumentSubtype)
-            .orElseThrow(() -> new IllegalArgumentException("Document is not available for download."));
+            .orElseThrow(() -> new IllegalArgumentException(DOCUMENT_IS_NOT_AVAILABLE_FOR_DOWNLOAD));
 
         return documentManagementService.downloadScannedDocument(authorisation, oconDocument);
     }
@@ -126,14 +128,14 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         Optional<ClaimDocument> claimDocument = claim.getClaimDocument(claimDocumentId);
         return claimDocument
             .map(document -> documentManagementService.downloadDocument(authorisation, document))
-            .orElseThrow(() -> new IllegalArgumentException("Document is not available for download."));
+            .orElseThrow(() -> new IllegalArgumentException(DOCUMENT_IS_NOT_AVAILABLE_FOR_DOWNLOAD));
     }
 
     private byte[] getOrderDocuments(Claim claim, String authorisation, ClaimDocumentType claimDocumentType) {
         Optional<ClaimDocument> claimDocument = claim.getClaimDocument(claimDocumentType);
         return claimDocument
             .map(document -> documentManagementService.downloadDocument(authorisation, document))
-            .orElseThrow(() -> new IllegalArgumentException("Document is not available for download."));
+            .orElseThrow(() -> new IllegalArgumentException(DOCUMENT_IS_NOT_AVAILABLE_FOR_DOWNLOAD));
     }
 
     private byte[] getClaimJourneyDocuments(Claim claim, String authorisation, ClaimDocumentType claimDocumentType) {

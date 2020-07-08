@@ -48,7 +48,7 @@ public class DocumentsController {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
 
-        logger.info("Received request to create/download pdf of type " + documentType);
+        logger.info("Received request to create/download pdf");
 
         byte[] pdfDocument = null;
 
