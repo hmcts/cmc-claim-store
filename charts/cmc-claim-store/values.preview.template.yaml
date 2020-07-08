@@ -112,7 +112,9 @@ ccd:
       keyVaults:
       environment:
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
-        ISSUER-URI: "https://idam-api.aat.platform.hmcts.net/o"
+        ISSUER_URI: https://idam-api.aat.platform.hmcts.net/o
+        IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
+        OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts
 
   ccd-user-profile-importer:
     image: hmctspublic.azurecr.io/ccd/user-profile-importer:db2r9a
