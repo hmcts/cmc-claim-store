@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static java.util.function.Predicate.not;
@@ -18,12 +19,12 @@ public class ClaimDocumentsAccessRule {
 
     private static final List<ClaimDocumentType> solicitorViewableDocsType = List.of(ClaimDocumentType.SEALED_CLAIM);
 
-    public static final List<ClaimDocumentType> defendantViewableDocsType =
+    public static final Supplier<List<ClaimDocumentType>> defendantViewableDocsType = () ->
         Arrays.stream(ClaimDocumentType.values())
             .filter(not(ClaimDocumentType.CLAIM_ISSUE_RECEIPT::equals))
             .collect(Collectors.toList());
 
-    public static final List<ClaimDocumentType> claimantViewableDocsType =
+    public static final Supplier<List<ClaimDocumentType>> claimantViewableDocsType = () ->
         Arrays.stream(ClaimDocumentType.values())
             .filter(not(ClaimDocumentType.SEALED_CLAIM::equals))
             .collect(Collectors.toList());
@@ -52,11 +53,11 @@ public class ClaimDocumentsAccessRule {
         }
 
         if (userDetails.getId().equals(claim.getDefendantId())) {
-            return defendantViewableDocsType;
+            return defendantViewableDocsType.get();
         }
 
         if (userDetails.getId().equals(claim.getSubmitterId())) {
-            return claimantViewableDocsType;
+            return claimantViewableDocsType.get();
         }
 
         return Collections.emptyList();

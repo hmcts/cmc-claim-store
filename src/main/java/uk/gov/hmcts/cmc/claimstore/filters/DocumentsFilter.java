@@ -12,11 +12,11 @@ import static uk.gov.hmcts.cmc.claimstore.rules.ClaimDocumentsAccessRule.defenda
 
 public class DocumentsFilter {
 
-    private static final Predicate<ClaimDocument> docsForDefendant =
-        claimDocument -> defendantViewableDocsType.contains(claimDocument.getDocumentType());
+    private static Predicate<ClaimDocument> docsForDefendant =
+        claimDocument -> defendantViewableDocsType.get().contains(claimDocument.getDocumentType());
 
-    private static final Predicate<ClaimDocument> docsForClaimant =
-        claimDocument -> claimantViewableDocsType.contains(claimDocument.getDocumentType());
+    private static Predicate<ClaimDocument> docsForClaimant =
+        claimDocument -> claimantViewableDocsType.get().contains(claimDocument.getDocumentType());
 
     private DocumentsFilter() {
         // Do nothing constructor
