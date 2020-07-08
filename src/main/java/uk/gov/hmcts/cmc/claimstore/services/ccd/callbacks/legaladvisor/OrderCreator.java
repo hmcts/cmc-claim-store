@@ -18,7 +18,6 @@ import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestion
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDResponseSubjectType;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireService;
 import uk.gov.hmcts.cmc.claimstore.services.LegalOrderGenerationDeadlinesCalculator;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackVersion;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.rules.GenerateOrderRule;
@@ -30,7 +29,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
-import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -77,25 +75,25 @@ public class OrderCreator {
 
     private final LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator;
     private final CaseDetailsConverter caseDetailsConverter;
-    private final DocAssemblyService docAssemblyService;
     private final GenerateOrderRule generateOrderRule;
     private final DirectionsQuestionnaireService directionsQuestionnaireService;
     private final PilotCourtService pilotCourtService;
+    private final OrderRenderer orderRenderer;
 
     public OrderCreator(
         LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator,
         CaseDetailsConverter caseDetailsConverter,
-        DocAssemblyService docAssemblyService,
         GenerateOrderRule generateOrderRule,
         DirectionsQuestionnaireService directionsQuestionnaireService,
-        PilotCourtService pilotCourtService
+        PilotCourtService pilotCourtService,
+        OrderRenderer orderRenderer
     ) {
         this.legalOrderGenerationDeadlinesCalculator = legalOrderGenerationDeadlinesCalculator;
         this.caseDetailsConverter = caseDetailsConverter;
-        this.docAssemblyService = docAssemblyService;
         this.generateOrderRule = generateOrderRule;
         this.directionsQuestionnaireService = directionsQuestionnaireService;
         this.pilotCourtService = pilotCourtService;
+        this.orderRenderer = orderRenderer;
     }
 
     public CallbackResponse prepopulateOrder(CallbackParams callbackParams) {
@@ -183,7 +181,9 @@ public class OrderCreator {
         }
 
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
-        DocAssemblyResponse docAssemblyResponse = docAssemblyService.createOrder(ccdCase, authorisation);
+
+        var docAssemblyResponse = orderRenderer.renderOrder(ccdCase, authorisation);
+
         logger.info("Order creator: received response from doc assembly");
 
         return AboutToStartOrSubmitCallbackResponse
@@ -258,7 +258,7 @@ public class OrderCreator {
         List<Map<String, String>> listItems = pilotCourtService.getPilotHearingCourts(pilot, claimCreatedDate).stream()
             .sorted(Comparator.comparing(HearingCourt::getName))
             .map(hearingCourt -> {
-                String id =  pilotCourtService.getPilotCourtId(hearingCourt);
+                String id = pilotCourtService.getPilotCourtId(hearingCourt);
                 return ImmutableMap.of(DYNAMIC_LIST_CODE, id, DYNAMIC_LIST_LABEL, hearingCourt.getName());
             })
             .collect(Collectors.toList());

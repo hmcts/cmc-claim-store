@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
+import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactChangeContent;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionOrderService;
+import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 
 import java.time.Clock;
@@ -29,16 +31,19 @@ public class DocAssemblyTemplateBodyMapper {
     private final Clock clock;
     private final DirectionOrderService directionOrderService;
     private final WorkingDayIndicator workingDayIndicator;
+    private final ResponseDeadlineCalculator responseDeadlineCalculator;
 
     @Autowired
     public DocAssemblyTemplateBodyMapper(
         Clock clock,
         DirectionOrderService directionOrderService,
-        WorkingDayIndicator workingDayIndicator
+        WorkingDayIndicator workingDayIndicator,
+        ResponseDeadlineCalculator responseDeadlineCalculator
     ) {
         this.clock = clock;
         this.directionOrderService = directionOrderService;
         this.workingDayIndicator = workingDayIndicator;
+        this.responseDeadlineCalculator = responseDeadlineCalculator;
     }
 
     public DocAssemblyTemplateBody from(CCDCase ccdCase, UserDetails userDetails) {
@@ -163,9 +168,53 @@ public class DocAssemblyTemplateBodyMapper {
             .build();
     }
 
+    public DocAssemblyTemplateBody paperDefenceForm(CCDCase ccdCase) {
+        CCDRespondent defendant = ccdCase.getRespondents().get(0).getValue();
+        String defendantName = defendant.getClaimantProvidedPartyName();
+        CCDAddress defendantAddress = getDefendantAddress(defendant);
+
+        CCDApplicant claimant = ccdCase.getApplicants().get(0).getValue();
+
+        //Temporarily calculated to display to defendant in form
+        LocalDate extendedResponseDeadline =
+            responseDeadlineCalculator.calculatePostponedResponseDeadline(ccdCase.getIssuedOn());
+
+        return DocAssemblyTemplateBody.builder()
+            .referenceNumber(ccdCase.getPreviousServiceCaseReference())
+            .responseDeadline(defendant.getResponseDeadline())
+            .extendedResponseDeadline(extendedResponseDeadline)
+            .partyName(defendantName)
+            .partyAddress(defendantAddress)
+            .businessName(defendant.getClaimantProvidedDetail().getBusinessName())
+            .claimantName(claimant.getPartyName())
+            .claimantAddress(claimant.getRepresentativeOrganisationAddress())
+            .claimantEmail(claimant.getRepresentativeOrganisationEmail())
+            .totalAmount(ccdCase.getTotalAmount())
+            .hearingCourtName(ccdCase.getHearingCourtName())
+            .build();
+    }
+
     private CCDAddress getDefendantAddress(CCDRespondent respondent) {
         return respondent.getPartyDetail() != null
             ? respondent.getPartyDetail().getPrimaryAddress()
             : respondent.getClaimantProvidedDetail().getPrimaryAddress();
+    }
+
+    public DocAssemblyTemplateBody paperResponseAdmissionLetter(CCDCase ccdCase, String caseworkerName) {
+        LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
+        CCDRespondent defendant =  ccdCase.getRespondents().get(0).getValue();
+        String partyName = defendant.getPartyName() != null
+            ? defendant.getPartyName()
+            :  defendant.getClaimantProvidedPartyName();
+        CCDAddress partyAddress = getDefendantAddress(ccdCase.getRespondents().get(0).getValue());
+
+        return DocAssemblyTemplateBody.builder()
+            .currentDate(currentDate)
+            .referenceNumber(ccdCase.getPreviousServiceCaseReference())
+            .caseworkerName(caseworkerName)
+            .caseName(ccdCase.getCaseName())
+            .partyName(partyName)
+            .partyAddress(partyAddress)
+            .build();
     }
 }

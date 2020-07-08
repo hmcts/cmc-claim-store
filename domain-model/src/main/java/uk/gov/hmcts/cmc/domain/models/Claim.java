@@ -81,6 +81,8 @@ public class Claim {
     private final String preferredDQCourt;
     private final ProceedOfflineReasonType proceedOfflineReason;
     private final String proceedOfflineOtherReasonDescription;
+    private final TransferContent transferContent;
+    private final YesNoOption evidenceHandled;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -128,7 +130,9 @@ public class Claim {
         LocalDateTime dateReferredForDirections,
         String preferredDQCourt,
         ProceedOfflineReasonType proceedOfflineReason,
-        String proceedOfflineOtherReasonDescription
+        String proceedOfflineOtherReasonDescription,
+        TransferContent transferContent,
+        YesNoOption evidenceHandled
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -174,6 +178,8 @@ public class Claim {
         this.preferredDQCourt = preferredDQCourt;
         this.proceedOfflineReason = proceedOfflineReason;
         this.proceedOfflineOtherReasonDescription = proceedOfflineOtherReasonDescription;
+        this.transferContent = transferContent;
+        this.evidenceHandled = evidenceHandled;
     }
 
     public Optional<LocalDate> getIssuedOn() {
@@ -192,6 +198,13 @@ public class Claim {
     public Optional<ClaimDocument> getClaimDocument(ClaimDocumentType claimDocumentType) {
         return Optional.ofNullable(claimDocumentCollection)
             .flatMap(c -> c.getDocument(claimDocumentType));
+    }
+
+    @JsonIgnore
+    public Optional<ScannedDocument> getScannedDocument(ScannedDocumentType scannedDocumentType,
+                                                        ScannedDocumentSubtype subtype) {
+        return Optional.ofNullable(claimDocumentCollection)
+            .flatMap(c -> c.getScannedDocument(scannedDocumentType, subtype));
     }
 
     public LocalDate getServiceDate() {

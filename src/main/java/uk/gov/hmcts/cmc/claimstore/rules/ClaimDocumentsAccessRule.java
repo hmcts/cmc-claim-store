@@ -18,6 +18,8 @@ public class ClaimDocumentsAccessRule {
 
     private static final List<ClaimDocumentType> solicitorViewableDocsType = List.of(ClaimDocumentType.SEALED_CLAIM);
 
+    private static final List<ClaimDocumentType> caseworkerViewableDocsType = List.of(ClaimDocumentType.values());
+
     public static final List<ClaimDocumentType> defendantViewableDocsType =
         Arrays.stream(ClaimDocumentType.values())
             .filter(not(ClaimDocumentType.CLAIM_ISSUE_RECEIPT::equals))
@@ -49,6 +51,10 @@ public class ClaimDocumentsAccessRule {
 
         if (userDetails.isSolicitor()) {
             return solicitorViewableDocsType;
+        }
+
+        if (userDetails.isCaseworker()) {
+            return caseworkerViewableDocsType;
         }
 
         if (userDetails.getId().equals(claim.getDefendantId())) {
