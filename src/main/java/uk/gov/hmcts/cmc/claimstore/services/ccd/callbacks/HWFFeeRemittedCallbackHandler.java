@@ -31,7 +31,6 @@ public class HWFFeeRemittedCallbackHandler extends CallbackHandler {
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
     private static final List<CaseEvent> EVENTS = ImmutableList.of(CaseEvent.HWF_FULL_REMISSION_GRANTED);
 
-
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final CaseDetailsConverter caseDetailsConverter;
@@ -67,7 +66,7 @@ public class HWFFeeRemittedCallbackHandler extends CallbackHandler {
     }
 
     private CallbackResponse updateFeeRemitted(CallbackParams callbackParams) {
-        logger.info("Mediation failure about-to-submit callback: state determination start");
+        logger.info("HWF Remittance fee about-to-submit callback ");
         CallbackRequest callbackRequest = callbackParams.getRequest();
 
         Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());

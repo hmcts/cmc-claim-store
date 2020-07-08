@@ -92,6 +92,9 @@ public class ClaimData {
     @Size(max = 80, message = "must be at most {max} characters")
     private final String preferredCourt;
 
+    private String feeRemitted;
+
+
     @Builder(toBuilder = true)
     @SuppressWarnings("squid:S00107") // Number of method parameters
     public ClaimData(
@@ -111,7 +114,8 @@ public class ClaimData {
         String preferredCourt,
         String feeCode,
         Timeline timeline,
-        Evidence evidence
+        Evidence evidence,
+        String feeRemitted
     ) {
         this.externalId = externalId != null ? externalId : UUID.randomUUID();
         this.claimants = claimants;
@@ -130,6 +134,7 @@ public class ClaimData {
         this.feeCode = feeCode;
         this.timeline = timeline;
         this.evidence = evidence;
+        this.feeRemitted = feeRemitted;
     }
 
     public List<Party> getClaimants() {
@@ -142,6 +147,9 @@ public class ClaimData {
 
     public Optional<BigInteger> getFeeAmountInPennies() {
         return Optional.ofNullable(feeAmountInPennies);
+    }
+    public Optional<String> getFeeRemitted() {
+        return Optional.ofNullable(feeRemitted);
     }
 
     public Interest getInterest() {

@@ -41,6 +41,8 @@ public class SampleClaimData {
     private String feeCode = "X0012";
     private Timeline timeline = SampleTimeline.validDefaults();
     private Evidence evidence = SampleEvidence.validDefaults();
+    private String feeRemitted = "500";
+
 
     private HousingDisrepair housingDisrepair = new HousingDisrepair(
         DamagesExpectation.MORE_THAN_THOUSAND_POUNDS,
@@ -188,6 +190,11 @@ public class SampleClaimData {
         return this;
     }
 
+    public SampleClaimData withFeeRemitted(String feeRemitted) {
+        this.feeRemitted = feeRemitted;
+        return this;
+    }
+
     public ClaimData build() {
         return new ClaimData(
             externalId,
@@ -206,7 +213,9 @@ public class SampleClaimData {
             preferredCourt,
             feeCode,
             timeline,
-            evidence);
+            evidence,
+            feeRemitted
+        );
     }
 
     public static ClaimData validDefaults() {
@@ -239,7 +248,8 @@ public class SampleClaimData {
                 .withPhone("0776655443322")
                 .individualDetails())
             .withTimeline(SampleTimeline.validDefaults())
-            .withEvidence(SampleEvidence.validDefaults());
+            .withEvidence(SampleEvidence.validDefaults())
+            .withFeeRemitted(null);
     }
 
     public static ClaimData submittedByLegalRepresentative() {
