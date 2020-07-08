@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.claimstore.events.offer.OfferAcceptedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferMadeEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferRejectedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
+import uk.gov.hmcts.cmc.claimstore.events.response.DefendantPaperResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.revieworder.ReviewOrderEvent;
@@ -25,8 +26,10 @@ import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimCreatedEvent
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
+import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Component
 public class EventProducer {
@@ -58,8 +61,12 @@ public class EventProducer {
         publisher.publishEvent(new RepresentedClaimCreatedEvent(claim, submitterName, authorisation));
     }
 
-    public void createDefendantResponseEvent(Claim claim, String authorization) {
-        publisher.publishEvent(new DefendantResponseEvent(claim, authorization));
+    public void createDefendantResponseEvent(Claim claim, String authorisation) {
+        publisher.publishEvent(new DefendantResponseEvent(claim, authorisation));
+    }
+
+    public void createDefendantPaperResponseEvent(Claim claim, String authorisation) {
+        publisher.publishEvent(new DefendantPaperResponseEvent(claim, authorisation));
     }
 
     public void createMoreTimeForResponseRequestedEvent(
@@ -124,5 +131,13 @@ public class EventProducer {
 
     public void createReviewOrderEvent(String authorisation, Claim claim) {
         publisher.publishEvent(new ReviewOrderEvent(authorisation, claim));
+    }
+
+    public void createBulkPrintTransferEvent(
+        Claim claim,
+        Document coverLetter,
+        List<BulkPrintTransferEvent.PrintableDocument> caseDocuments
+    ) {
+        publisher.publishEvent(new BulkPrintTransferEvent(claim, coverLetter, caseDocuments));
     }
 }

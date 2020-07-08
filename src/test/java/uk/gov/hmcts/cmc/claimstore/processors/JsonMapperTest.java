@@ -232,6 +232,7 @@ public class JsonMapperTest {
             .submitterId("2")
             .submittedOn(timestamp)
             .externalId(uuid)
+            .scannedDocuments(Collections.emptyList())
             .build();
 
         assertThat(ccdCase).isEqualTo(expected);

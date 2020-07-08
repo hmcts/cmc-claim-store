@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferAcceptedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferMadeEvent;
+import uk.gov.hmcts.cmc.claimstore.events.response.DefendantPaperResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.revieworder.ReviewOrderEvent;
@@ -21,6 +22,9 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDet
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
+import uk.gov.hmcts.reform.sendletter.api.Document;
+
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -89,6 +93,19 @@ public class EventProducerTest {
 
         //when
         eventProducer.createDefendantResponseEvent(CLAIM, AUTHORISATION);
+
+        //then
+        verify(publisher).publishEvent(eq(expectedEvent));
+    }
+
+    @Test
+    public void shouldCreateDefendantPaperResponseEvent() {
+        //given
+        DefendantPaperResponseEvent expectedEvent
+            = new DefendantPaperResponseEvent(CLAIM, AUTHORISATION);
+
+        //when
+        eventProducer.createDefendantPaperResponseEvent(CLAIM, AUTHORISATION);
 
         //then
         verify(publisher).publishEvent(eq(expectedEvent));
@@ -171,6 +188,19 @@ public class EventProducerTest {
         ReviewOrderEvent event = new ReviewOrderEvent(AUTHORISATION, CLAIM);
 
         eventProducer.createReviewOrderEvent(AUTHORISATION, CLAIM);
+
+        verify(publisher).publishEvent(eq(event));
+    }
+
+    @Test
+    public void shouldCreateBulkPrintTransferEvent() {
+
+        Document coverLetter = mock(Document.class);
+        List<BulkPrintTransferEvent.PrintableDocument> caseDocuments = mock(List.class);
+
+        BulkPrintTransferEvent event = new BulkPrintTransferEvent(CLAIM, coverLetter, caseDocuments);
+
+        eventProducer.createBulkPrintTransferEvent(CLAIM, coverLetter, caseDocuments);
 
         verify(publisher).publishEvent(eq(event));
     }

@@ -18,6 +18,7 @@ import static java.util.function.Predicate.not;
 public class ClaimDocumentsAccessRule {
 
     private static final List<ClaimDocumentType> solicitorViewableDocsType = List.of(ClaimDocumentType.SEALED_CLAIM);
+    private static final List<ClaimDocumentType> caseworkerViewableDocsType = List.of(ClaimDocumentType.values());
 
     public static final Supplier<List<ClaimDocumentType>> defendantViewableDocsType = () ->
         Arrays.stream(ClaimDocumentType.values())

@@ -86,6 +86,16 @@ public class DocAssemblyTemplateBody implements FormPayload {
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate changeOrderDeadline;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    @JsonSerialize(using = LocalDateSerializer.class)
+    private LocalDate responseDeadline;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    @JsonSerialize(using = LocalDateSerializer.class)
+    private LocalDate extendedResponseDeadline;
+
+    private String totalAmount;
+
     private boolean expertReportPermissionPartyAskedByClaimant;
     private boolean expertReportPermissionPartyAskedByDefendant;
     private boolean grantExpertReportPermission;
@@ -98,6 +108,7 @@ public class DocAssemblyTemplateBody implements FormPayload {
     private List<CCDCollectionElement<String>> expertReportInstructionDefendant;
 
     private String partyName;
+    private String businessName;
     private CCDAddress partyAddress;
     private String body;
     private String caseName;
@@ -114,5 +125,7 @@ public class DocAssemblyTemplateBody implements FormPayload {
     private boolean claimantPhoneRemoved;
     private boolean claimantEmailRemoved;
     private boolean claimantContactAddressRemoved;
-
+    private String reasonForTransfer;
+    private boolean orderDrawnByJudge;
+    private boolean orderDrawnByLA;
 }
