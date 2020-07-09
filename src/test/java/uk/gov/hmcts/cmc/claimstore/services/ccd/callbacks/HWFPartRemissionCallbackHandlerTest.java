@@ -79,7 +79,7 @@ class HWFPartRemissionCallbackHandlerTest {
         AboutToStartOrSubmitCallbackResponse response
             = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
         Map<String, Object> data = response.getData();
-        assertThat(data.get("feeRemitted")).isEqualTo(4000);
+        assertThat(data).containsEntry("feeRemitted", 4000);
     }
 
     @Test
