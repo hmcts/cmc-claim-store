@@ -81,7 +81,7 @@ public class HWFFeeRemittedCallbackHandler extends CallbackHandler {
 
         if (claim.getClaimData().getFeesPaidInPounds().isPresent()) {
             dataMap.put("feeRemitted", MonetaryConversions
-                .poundsToPennies(claim.getClaimData().getFeesPaidInPounds().get()));
+                .poundsToPennies(claim.getClaimData().getFeesPaidInPounds().get()).toString());
         }
         return AboutToStartOrSubmitCallbackResponse
             .builder()
