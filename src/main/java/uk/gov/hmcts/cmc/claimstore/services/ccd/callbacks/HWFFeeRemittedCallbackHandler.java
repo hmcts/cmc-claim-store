@@ -77,12 +77,11 @@ public class HWFFeeRemittedCallbackHandler extends CallbackHandler {
             LocalDate deadline = deadlineCalculator.calculate(LocalDateTime.now());
             claim = claim.toBuilder().directionsQuestionnaireDeadline(deadline).build();
         }
-
         Map<String, Object> dataMap = caseDetailsConverter.convertToMap(caseMapper.to(claim));
-        feeRemitted = (MonetaryConversions
-            .poundsToPennies(claim.getClaimData().getFeesPaidInPounds().get())).toString();
-        if (!feeRemitted.isEmpty()) {
-            dataMap.put("feeRemitted", feeRemitted);
+
+        if (claim.getClaimData().getFeesPaidInPounds().isPresent()) {
+            dataMap.put("feeRemitted", MonetaryConversions
+                .poundsToPennies(claim.getClaimData().getFeesPaidInPounds().get()));
         }
         return AboutToStartOrSubmitCallbackResponse
             .builder()
