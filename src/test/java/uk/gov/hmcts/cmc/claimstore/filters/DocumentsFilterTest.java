@@ -38,20 +38,21 @@ class DocumentsFilterTest {
             .withSealedClaimDocument(URI.create("http://localhost/doc.pdf"))
             .withSettlementAgreementDocument(URI.create("http://localhost/doc.pdf"))
             .withOcon9xScannedDocument(URI.create("http://localhost/doc.pdf"))
+            .withGeneralLetter(URI.create("http://localhost/doc.pdf"))
             .build();
     }
 
     @Test
     void filterDefendantViewableDocs() {
 
-        Claim filteredClaimForDefendant = DocumentsFilter.filterDocuments(claim, VALID_DEFENDANT);
+        Claim filteredClaimForDefendant = DocumentsFilter.filterDocuments(claim, VALID_DEFENDANT, true);
 
         List<ClaimDocument> claimDocsFromFilter = filteredClaimForDefendant.getClaimDocumentCollection()
             .map(ClaimDocumentCollection::getClaimDocuments)
             .orElse(Collections.emptyList());
 
         assertAll(
-            () -> assertEquals(3, claimDocsFromFilter
+            () -> assertEquals(4, claimDocsFromFilter
                 .size()),
             () -> assertTrue(claimDocsFromFilter.stream()
                 .map(ClaimDocument::getDocumentType)
@@ -69,14 +70,14 @@ class DocumentsFilterTest {
         UserDetails validClaimant
             = SampleUserDetails.builder().withUserId(USER_ID).withMail(SUBMITTER_EMAIL).build();
 
-        Claim filteredClaimForDefendant = DocumentsFilter.filterDocuments(claim, validClaimant);
+        Claim filteredClaimForDefendant = DocumentsFilter.filterDocuments(claim, validClaimant, true);
 
         List<ClaimDocument> claimDocsFromFilter = filteredClaimForDefendant.getClaimDocumentCollection()
             .map(ClaimDocumentCollection::getClaimDocuments)
             .orElse(Collections.emptyList());
 
         assertAll(
-            () -> assertEquals(3, claimDocsFromFilter
+            () -> assertEquals(4, claimDocsFromFilter
                 .size()),
             () -> assertTrue(claimDocsFromFilter.stream()
                 .map(ClaimDocument::getDocumentType)
@@ -93,9 +94,9 @@ class DocumentsFilterTest {
         UserDetails validCaseworker
             = SampleUserDetails.builder().withUserId("5").withMail("cw@worker.com")
             .withRoles("caseworker-cmc").build();
-        Claim filteredClaimForDefendant = DocumentsFilter.filterDocuments(claim, validCaseworker);
+        Claim filteredClaimForDefendant = DocumentsFilter.filterDocuments(claim, validCaseworker, true);
 
-        assertEquals(4, filteredClaimForDefendant.getClaimDocumentCollection()
+        assertEquals(5, filteredClaimForDefendant.getClaimDocumentCollection()
             .map(ClaimDocumentCollection::getClaimDocuments)
             .orElse(Collections.emptyList())
             .size());
@@ -106,7 +107,7 @@ class DocumentsFilterTest {
         UserDetails unrelatedUser
             = SampleUserDetails.builder().withUserId("18").withMail("unknown@worker.com")
             .build();
-        Claim filteredClaimForDefendant = DocumentsFilter.filterDocuments(claim, unrelatedUser);
+        Claim filteredClaimForDefendant = DocumentsFilter.filterDocuments(claim, unrelatedUser, true);
 
         assertTrue(filteredClaimForDefendant.getClaimDocumentCollection()
             .map(ClaimDocumentCollection::getClaimDocuments)
@@ -117,7 +118,7 @@ class DocumentsFilterTest {
     @Test
     void filterClaimThatHasNoDocuments() {
         Claim claimNoDoc = SampleClaim.builder().build();
-        Claim filteredClaimForDefendant = DocumentsFilter.filterDocuments(claimNoDoc, VALID_DEFENDANT);
+        Claim filteredClaimForDefendant = DocumentsFilter.filterDocuments(claimNoDoc, VALID_DEFENDANT, true);
 
         assertTrue(filteredClaimForDefendant.getClaimDocumentCollection()
             .map(ClaimDocumentCollection::getClaimDocuments)
@@ -126,13 +127,35 @@ class DocumentsFilterTest {
     }
 
     @Test
-    void filterOcon9XScannedFormDocument() {
-        Claim filteredClaimForDefendant = DocumentsFilter.filterDocuments(claim, VALID_DEFENDANT);
+    void shouldIncludeGeneralLetterAndOcon9XScannedFormDocumentIfCtscEnabled() {
+        Claim filteredClaimForDefendant = DocumentsFilter.filterDocuments(claim, VALID_DEFENDANT, true);
+
+        assertEquals(4, filteredClaimForDefendant.getClaimDocumentCollection()
+            .map(ClaimDocumentCollection::getClaimDocuments)
+            .orElse(Collections.emptyList())
+            .size());
 
         assertEquals(1, filteredClaimForDefendant.getClaimDocumentCollection()
             .map(ClaimDocumentCollection::getScannedDocuments)
             .orElse(Collections.emptyList())
             .size());
     }
+
+    @Test
+    void shouldNotIncludeGeneralLetterAndOcon9XScannedFormDocumentIfCtscNotEnabled() {
+        Claim filteredClaimForDefendant = DocumentsFilter.filterDocuments(claim, VALID_DEFENDANT, false);
+
+        assertEquals(3, filteredClaimForDefendant.getClaimDocumentCollection()
+            .map(ClaimDocumentCollection::getClaimDocuments)
+            .orElse(Collections.emptyList())
+            .size());
+
+        assertEquals(0, filteredClaimForDefendant.getClaimDocumentCollection()
+            .map(ClaimDocumentCollection::getScannedDocuments)
+            .orElse(Collections.emptyList())
+            .size());
+    }
+
+
 
 }
