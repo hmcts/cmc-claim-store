@@ -30,7 +30,9 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Paper Response Admission handler")
 class HWFPartRemissionCallbackHandlerTest {
-
+    private static final String PART_REMISSION_EQUAL_ERROR_MESSAGE = "Remitted fee is same as the total fee. For full remission, "
+        + "please cancel and select the next step as \"Full remission HWF-granted\"";
+    private static final String PART_REMISSION_IS_MORE_ERROR_MESSAGE = "Remitted fee should be less than the total fee";
     private static final String AUTHORISATION = "Bearer: aaaa";
     private static final String DOC_URL = "http://success.test";
     private static final String DOC_URL_BINARY = "http://success.test/binary";
@@ -67,7 +69,7 @@ class HWFPartRemissionCallbackHandlerTest {
     }
 
     @Test
-    public void shouldUpdateFeeRemitted() {
+     void shouldUpdateFeeRemitted() {
         Claim claim = SampleClaim.getClaimWithFullAdmission();
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
         Map<String, Object> mappedCaseData = new HashMap<>();
@@ -80,24 +82,23 @@ class HWFPartRemissionCallbackHandlerTest {
     }
 
     @Test
-    public void feeRemittedIsMoreThanFee() {
+    void feeRemittedIsMoreThanFee() {
         Claim claim = SampleClaim.getClaimWhenFeeRemittedIsMoreThanFee();
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
         AboutToStartOrSubmitCallbackResponse response
             = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
         Assertions.assertNotNull(response.getErrors());
-        assertThat(response.getErrors().get(0)).isEqualTo("Remitted fee should be less than the total fee");
+        assertThat(response.getErrors().get(0)).isEqualTo(PART_REMISSION_IS_MORE_ERROR_MESSAGE);
     }
 
     @Test
-    public void feeRemittedIsEqualToFee() {
-        String errorMessage = "Remitted fee is same as the total fee. For full remission, "
-            + "please cancel and select the next step as \"Full remission HWF-granted\"";
+    void feeRemittedIsEqualToFee() {
+
         Claim claim = SampleClaim.getClaimWhenFeeRemittedIsEqualToFee();
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
         AboutToStartOrSubmitCallbackResponse response
             = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
         Assertions.assertNotNull(response.getErrors());
-        assertThat(response.getErrors().get(0)).isEqualTo(errorMessage);
+        assertThat(response.getErrors().get(0)).isEqualTo(PART_REMISSION_EQUAL_ERROR_MESSAGE);
     }
 }
