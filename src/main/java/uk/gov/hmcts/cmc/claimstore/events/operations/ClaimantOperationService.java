@@ -29,15 +29,26 @@ public class ClaimantOperationService {
 
     @LogExecutionTime
     public Claim notifyCitizen(Claim claim, String submitterName, String authorisation) {
-
-        claimIssuedNotificationService.sendMail(
-            claim,
-            claim.getSubmitterEmail(),
-            null,
-            notificationsProperties.getTemplates().getEmail().getClaimantClaimIssued(),
-            "claimant-issue-notification-" + claim.getReferenceNumber(),
-            submitterName
-        );
+        Boolean isClaimSubmittedWithHwf = false;
+        if (claim.getClaimData().getHelpWithFeesNumber() != null && claim.getClaimData().getHelpWithFeesType() != null) {
+            claimIssuedNotificationService.sendMail(
+                claim,
+                claim.getSubmitterEmail(),
+                null,
+                notificationsProperties.getTemplates().getEmail().getClaimantClaimIssuedWithHwf(),
+                "claimant-issue-notification-" + claim.getReferenceNumber(),
+                submitterName
+            );
+        } else {
+            claimIssuedNotificationService.sendMail(
+                claim,
+                claim.getSubmitterEmail(),
+                null,
+                notificationsProperties.getTemplates().getEmail().getClaimantClaimIssued(),
+                "claimant-issue-notification-" + claim.getReferenceNumber(),
+                submitterName
+            );
+        }
 
         return eventsStatusService.updateClaimOperationCompletion(authorisation, claim, SENDING_CLAIMANT_NOTIFICATION);
     }
