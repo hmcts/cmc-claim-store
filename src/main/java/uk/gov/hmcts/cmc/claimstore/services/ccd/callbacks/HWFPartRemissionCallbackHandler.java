@@ -41,8 +41,6 @@ public class HWFPartRemissionCallbackHandler extends CallbackHandler {
 
     private static final List<CaseEvent> EVENTS = ImmutableList.of(CaseEvent.HWF_PART_REMISSION_GRANTED);
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     private final CaseDetailsConverter caseDetailsConverter;
 
     private final DirectionsQuestionnaireDeadlineCalculator deadlineCalculator;
@@ -76,7 +74,6 @@ public class HWFPartRemissionCallbackHandler extends CallbackHandler {
     }
 
     private CallbackResponse updateFeeRemitted(CallbackParams callbackParams) {
-        logger.info("HWFPartRemissionCallbackHandler : updateFeeRemitted");
         CallbackRequest callbackRequest = callbackParams.getRequest();
 
         Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
