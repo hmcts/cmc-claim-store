@@ -18,13 +18,11 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
@@ -41,7 +39,7 @@ public class HWFFeeRemittedCallbackHandler extends CallbackHandler {
 
     private final CaseMapper caseMapper;
 
-    private Optional<BigDecimal> feeRemitted = Optional.empty();
+    private String feeRemitted;
 
     @Autowired
     public HWFFeeRemittedCallbackHandler(CaseDetailsConverter caseDetailsConverter,
@@ -81,10 +79,10 @@ public class HWFFeeRemittedCallbackHandler extends CallbackHandler {
         }
 
         Map<String, Object> dataMap = caseDetailsConverter.convertToMap(caseMapper.to(claim));
-        feeRemitted = Optional.of(claim.getClaimData().getFeesPaidInPounds().get());
-        if (feeRemitted.isPresent()) {
-            dataMap.put("feeRemitted",
-                MonetaryConversions.poundsToPennies(feeRemitted.get()).toString());
+        feeRemitted = (MonetaryConversions
+            .poundsToPennies(claim.getClaimData().getFeesPaidInPounds().get())).toString();
+        if (!feeRemitted.isEmpty()) {
+            dataMap.put("feeRemitted", feeRemitted);
         }
         return AboutToStartOrSubmitCallbackResponse
             .builder()
