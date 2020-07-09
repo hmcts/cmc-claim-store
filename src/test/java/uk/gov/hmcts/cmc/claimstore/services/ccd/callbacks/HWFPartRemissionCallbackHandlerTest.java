@@ -28,9 +28,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("Paper Response Admission handler")
+@DisplayName("HWF Part Remission Callback Handler")
 class HWFPartRemissionCallbackHandlerTest {
-    private static final String PART_REMISSION_EQUAL_ERROR_MESSAGE = "Remitted fee is same as the total fee. For full remission, "
+    private static final String PART_REMISSION_EQUAL_ERROR_MESSAGE =
+        "Remitted fee is same as the total fee. For full remission, "
         + "please cancel and select the next step as \"Full remission HWF-granted\"";
     private static final String PART_REMISSION_IS_MORE_ERROR_MESSAGE = "Remitted fee should be less than the total fee";
     private static final String AUTHORISATION = "Bearer: aaaa";

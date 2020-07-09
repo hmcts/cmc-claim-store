@@ -32,7 +32,13 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
 @Service
 public class HWFPartRemissionCallbackHandler extends CallbackHandler {
+    private static final String PART_REMISSION_EQUAL_ERROR_MESSAGE =
+        "Remitted fee is same as the total fee. For full remission, "
+            + "please cancel and select the next step as \"Full remission HWF-granted\"";
+    private static final String PART_REMISSION_IS_MORE_ERROR_MESSAGE = "Remitted fee should be less than the total fee";
+
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
+
     private static final List<CaseEvent> EVENTS = ImmutableList.of(CaseEvent.HWF_PART_REMISSION_GRANTED);
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -113,10 +119,9 @@ public class HWFPartRemissionCallbackHandler extends CallbackHandler {
         if (null != feedPaidInPennies && null != remittedFeesInPennies) {
             value = feedPaidInPennies.compareTo(remittedFeesInPennies);
             if (value == 0) {
-                validationMessage = "Remitted fee is same as the total fee. "
-                    + "For full remission, please cancel and select the next step as \"Full remission HWF-granted\"";
+                validationMessage = PART_REMISSION_EQUAL_ERROR_MESSAGE;
             } else if (value < 0) {
-                validationMessage = "Remitted fee should be less than the total fee";
+                validationMessage = PART_REMISSION_IS_MORE_ERROR_MESSAGE;
             }
         }
         return validationMessage;
