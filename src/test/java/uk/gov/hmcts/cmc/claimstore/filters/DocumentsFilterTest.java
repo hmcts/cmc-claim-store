@@ -156,6 +156,4 @@ class DocumentsFilterTest {
             .size());
     }
 
-
-
 }

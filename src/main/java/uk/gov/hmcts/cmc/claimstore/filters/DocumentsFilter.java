@@ -39,11 +39,10 @@ public class DocumentsFilter {
             .filter(document -> ctscEnabled || ! (document.getDocumentType() == GENERAL_LETTER))
             .forEach(docsToReturn::addClaimDocument);
 
-        if(ctscEnabled){
+        if (ctscEnabled) {
             claim.getScannedDocument(FORM, OCON9X).stream()
                 .forEach(docsToReturn::addScannedDocument);
         }
-
 
         return claim.toBuilder()
             .claimDocumentCollection(docsToReturn)
