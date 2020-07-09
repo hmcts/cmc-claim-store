@@ -29,7 +29,6 @@ public class ClaimantOperationService {
 
     @LogExecutionTime
     public Claim notifyCitizen(Claim claim, String submitterName, String authorisation) {
-        Boolean isClaimSubmittedWithHwf = false;
         if (claim.getClaimData().getHelpWithFeesNumber() != null && claim.getClaimData().getHelpWithFeesType() != null) {
             claimIssuedNotificationService.sendMail(
                 claim,
