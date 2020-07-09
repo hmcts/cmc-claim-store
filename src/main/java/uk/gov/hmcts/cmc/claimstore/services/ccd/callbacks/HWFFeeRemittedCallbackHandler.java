@@ -18,11 +18,13 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
@@ -78,10 +80,11 @@ public class HWFFeeRemittedCallbackHandler extends CallbackHandler {
             claim = claim.toBuilder().directionsQuestionnaireDeadline(deadline).build();
         }
         Map<String, Object> dataMap = caseDetailsConverter.convertToMap(caseMapper.to(claim));
+        Optional<BigDecimal> feesPaid = claim.getClaimData().getFeesPaidInPounds();
 
-        if (claim.getClaimData().getFeesPaidInPounds().isPresent()) {
+        if (feesPaid.isPresent()) {
             dataMap.put("feeRemitted", MonetaryConversions
-                .poundsToPennies(claim.getClaimData().getFeesPaidInPounds().get()).toString());
+                .poundsToPennies(feesPaid.get()).toString());
         }
         return AboutToStartOrSubmitCallbackResponse
             .builder()
