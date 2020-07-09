@@ -28,7 +28,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("HWF Remiitance Fee calculator Handler ")
+@DisplayName("HWF Full Remiitance Fee calculator Handler ")
 class HWFFeeRemittedCallbackHandlerTest {
 
     private static final String AUTHORISATION = "Bearer: aaaa";
@@ -67,7 +67,7 @@ class HWFFeeRemittedCallbackHandlerTest {
     }
 
     @Test
-    public void shouldUpdateFeeRemitted() {
+     void shouldUpdateFeeRemitted() {
         Claim claim = SampleClaim.getClaimWithFullAdmission();
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
         Map<String, Object> mappedCaseData = new HashMap<>();

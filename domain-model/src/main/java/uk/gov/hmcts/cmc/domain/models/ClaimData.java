@@ -58,6 +58,8 @@ public class ClaimData {
     @Min(0)
     private final BigInteger feeAmountInPennies;
 
+    private final BigInteger feeRemitted;
+
     private final String feeCode;
 
     @Valid
@@ -92,8 +94,6 @@ public class ClaimData {
     @Size(max = 80, message = "must be at most {max} characters")
     private final String preferredCourt;
 
-    private String feeRemitted;
-
     @Builder(toBuilder = true)
     @SuppressWarnings("squid:S00107") // Number of method parameters
     public ClaimData(
@@ -114,7 +114,7 @@ public class ClaimData {
         String feeCode,
         Timeline timeline,
         Evidence evidence,
-        String feeRemitted
+        BigInteger feeRemitted
     ) {
         this.externalId = externalId != null ? externalId : UUID.randomUUID();
         this.claimants = claimants;
@@ -148,7 +148,7 @@ public class ClaimData {
         return Optional.ofNullable(feeAmountInPennies);
     }
 
-    public Optional<String> getFeeRemitted() {
+    public Optional<BigInteger> getFeeRemitted() {
         return Optional.ofNullable(feeRemitted);
     }
 
@@ -182,6 +182,13 @@ public class ClaimData {
     @JsonIgnore
     public Optional<BigDecimal> getFeesPaidInPounds() {
         return Optional.ofNullable(feeAmountInPennies)
+            .map(BigDecimal::new)
+            .map(MonetaryConversions::penniesToPounds);
+    }
+
+    @JsonIgnore
+    public Optional<BigDecimal> getRemittedFeesInPounds() {
+        return Optional.ofNullable(feeRemitted)
             .map(BigDecimal::new)
             .map(MonetaryConversions::penniesToPounds);
     }

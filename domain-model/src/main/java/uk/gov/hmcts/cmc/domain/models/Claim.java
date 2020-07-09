@@ -34,6 +34,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @Getter
 @EqualsAndHashCode
 public class Claim {
+
     private final Long id;
     private final String submitterId;
     private final String letterHolderId;

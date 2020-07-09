@@ -62,8 +62,8 @@
     ]
   },
   "feeAmountInPennies": 4000,
+  "feeRemitted": 3000,
   "feeCode": "X0012",
-  "feeRemitted": "500",
   "interest": {
     "type": "standard",
     "rate": 8,
