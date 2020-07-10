@@ -18,6 +18,9 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
+import uk.gov.hmcts.cmc.domain.models.ScannedDocument;
+import uk.gov.hmcts.cmc.domain.models.ScannedDocumentSubtype;
+import uk.gov.hmcts.cmc.domain.models.ScannedDocumentType;
 
 import java.util.Optional;
 
@@ -81,6 +84,18 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
                 throw new IllegalArgumentException(
                     "Unknown document service for document of type " + claimDocumentType.name());
         }
+    }
+
+    @Override
+    public byte[] getOCON9xForm(String externalId, String authorisation) {
+
+        User user = userService.getUser(authorisation);
+        Claim claim = claimService.getClaimByExternalId(externalId, user);
+
+        ScannedDocument oconDocument = claim.getScannedDocument(ScannedDocumentType.FORM, ScannedDocumentSubtype.OCON9X)
+            .orElseThrow(() -> new IllegalArgumentException("Document is not available for download."));
+
+        return documentManagementService.downloadScannedDocument(authorisation, oconDocument);
     }
 
     @Override

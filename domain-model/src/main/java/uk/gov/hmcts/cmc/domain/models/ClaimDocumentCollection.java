@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.domain.models;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -32,5 +33,13 @@ public class ClaimDocumentCollection {
         return Stream.concat(claimDocuments.stream(), staffUploadedDocuments.stream())
             .filter(claimDocument -> claimDocument.getDocumentType().equals(claimDocumentType))
             .findFirst();
+    }
+
+    public Optional<ScannedDocument> getScannedDocument(ScannedDocumentType scannedDocumentType,
+                                                        ScannedDocumentSubtype subtype) {
+        return scannedDocuments.stream()
+            .filter(scannedDocument -> scannedDocument.getDocumentType().equals(scannedDocumentType))
+            .filter(scannedDocument -> scannedDocument.getSubtype().equals(subtype.value))
+            .max(Comparator.comparing(ScannedDocument::getDeliveryDate));
     }
 }
