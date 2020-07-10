@@ -150,8 +150,16 @@ public class DefendantPinLetterContentProviderTest {
     }
 
     @Test
-    public void newFeatureFlagShouldBeFalseIfClaimHasNoFeatures() {
+    public void newFeatureFlagShouldBeFalseIfClaimHasZeroFeatures() {
         Claim claim = SampleClaim.builder().withFeatures(Collections.emptyList()).build();
+        Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
+
+        assertThat(content).containsEntry(NEW_FEATURES, Boolean.FALSE);
+    }
+
+    @Test
+    public void newFeatureFlagShouldBeFalseIfClaimHasNoFeatures() {
+        Claim claim = SampleClaim.builder().withFeatures(null).build();
         Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
 
         assertThat(content).containsEntry(NEW_FEATURES, Boolean.FALSE);
