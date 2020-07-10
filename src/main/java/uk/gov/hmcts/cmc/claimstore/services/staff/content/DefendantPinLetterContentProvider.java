@@ -22,6 +22,8 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Preconditions.requireNonBlank;
 @Component
 public class DefendantPinLetterContentProvider {
 
+    public static final String NEW_FEATURES = "newFeatures";
+
     private final NotificationsProperties notificationsProperties;
     private final StaffEmailProperties staffEmailProperties;
     private final InterestContentProvider interestContentProvider;
