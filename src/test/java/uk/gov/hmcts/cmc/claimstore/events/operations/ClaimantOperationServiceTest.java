@@ -52,7 +52,7 @@ public class ClaimantOperationServiceTest {
     @Test
     public void shouldNotifyCitizen() {
         //given
-        given(emailTemplates.getClaimantClaimIssued()).willReturn(CLAIMANT_EMAIL_TEMPLATE);
+        given(emailTemplates.getClaimantClaimIssuedWithHwf()).willReturn(CLAIMANT_EMAIL_TEMPLATE);
 
         //when
         claimantOperationService.notifyCitizen(CLAIM, SUBMITTER_NAME, AUTHORISATION);

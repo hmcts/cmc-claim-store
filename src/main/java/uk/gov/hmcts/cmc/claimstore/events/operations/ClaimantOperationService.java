@@ -29,7 +29,8 @@ public class ClaimantOperationService {
 
     @LogExecutionTime
     public Claim notifyCitizen(Claim claim, String submitterName, String authorisation) {
-        if (claim.getClaimData().getHelpWithFeesNumber() != null && claim.getClaimData().getHelpWithFeesType() != null) {
+        if (claim.getClaimData().getHelpWithFeesNumber() != null
+            && claim.getClaimData().gethelpWithFeesType() != null) {
             claimIssuedNotificationService.sendMail(
                 claim,
                 claim.getSubmitterEmail(),
