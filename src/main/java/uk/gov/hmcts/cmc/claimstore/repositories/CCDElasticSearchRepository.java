@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.claimstore.utils.DateUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
@@ -73,6 +74,15 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
 
         return searchClaimsWith(user, mediationQuery);
 
+    }
+
+    @Override
+    public List<Claim> getClaimsReadyForTransfer(User user) {
+        Query readyForTransferQuery = new Query(QueryBuilders.boolQuery()
+            .must(QueryBuilders.termQuery("state", ClaimState.READY_FOR_TRANSFER.getValue().toLowerCase()))
+            .must(QueryBuilders.existsQuery("data.hearingCourtName"))
+            .must(QueryBuilders.existsQuery("data.hearingCourtAddress")), 1000);
+        return searchClaimsWith(user, readyForTransferQuery);
     }
 
     @Override
