@@ -107,6 +107,7 @@ doc_assembly:
   contactChangeTemplateId: "CV-CMC-GOR-ENG-0006.docx"
   noticeOfTransferSentToDefendantTemplateId: "CV-CMC-GOR-ENG-0008.docx"
   noticeOfTransferSentToCourtTemplateId: "CV-CMC-GOR-ENG-0009.docx"
+  paperResponseAdmissionTemplateId: "CV-CMC-GOR-ENG-0016.docx"
 
 nonworking-days:
   datafile: ${NONWORKINGDAYS_DATAFILE:/data/non-working_days.dat}
@@ -120,6 +121,7 @@ milo:
   sender: ${MILO_CSV_SENDER:}
 
 schedule:
+  transfer-claims: ""
   state-transition:
     waiting-transfer: ""
     stay-claim: ""

@@ -59,6 +59,7 @@ public enum CaseEvent {
     ORDER_REVIEW_REQUESTED("OrderReviewRequested"),
     WAITING_TRANSFER("WaitingTransfer"),
     TRANSFER("Transfer"),
+    AUTOMATED_TRANSFER("AutomatedTransfer"),
     LIFT_STAY("LiftStay"),
     REFER_TO_JUDGE("ReferToJudge"),
     //inversion of control
@@ -77,6 +78,7 @@ public enum CaseEvent {
     PAPER_RESPONSE_OCON_9X_FORM("PaperResponseOCON9xForm"),
     UPDATE_CLAIM("UpdateClaim"),
     RESET_PIN("ResetPin"),
+    PAPER_RESPONSE_ADMISSION("PaperResponseAdmission"),
     ISSUE_GENERAL_LETTER("IssueGeneralLetter"),
     RESPONSE_MORE_TIME("ResponseMoreTime"),
     PROVIDE_DIRECTIONS("ProvideDirections"),

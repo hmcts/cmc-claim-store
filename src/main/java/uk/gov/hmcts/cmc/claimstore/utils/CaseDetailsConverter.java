@@ -86,15 +86,11 @@ public class CaseDetailsConverter {
         tempData.put("id", caseDetails.getId());
         tempData.put("state", caseDetails.getState());
 
-        return extractCCDCase(tempData);
+        return jsonMapper.fromMap(tempData, CCDCase.class);
     }
 
     public CCDCase convertTo(Claim claim) {
         return caseMapper.to(claim);
-    }
-
-    private CCDCase extractCCDCase(Map<String, Object> mapData) {
-        return jsonMapper.fromMap(mapData, CCDCase.class);
     }
 
     @SuppressWarnings("unchecked")

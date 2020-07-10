@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
+import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
@@ -29,6 +30,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -62,6 +64,10 @@ public class ChangeContactDetailsPostProcessorTest {
     private ChangeContactDetailsPostProcessor changeContactDetailsPostProcessor;
     private CallbackRequest callbackRequest;
     private CallbackParams callbackParams;
+    @Mock
+    private CCDCaseApi ccdCaseApi;
+
+    private static final String AUTHORISATION = "Bearer: aaaa";
 
     @BeforeEach
     void setUp() {
@@ -70,14 +76,15 @@ public class ChangeContactDetailsPostProcessorTest {
             changeContactLetterService,
             changeContactDetailsNotificationService,
             new LetterContentBuilder(),
-            userService
+            userService,
+            ccdCaseApi
         );
     }
 
     @Test
     public void shouldReturnNewContactDetails() {
         CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
-        when(caseDetailsConverter.extractCCDCase(caseDetailsBefore)).thenReturn(ccdCase);
+        Claim claim = Claim.builder().build();
 
         CCDCase updatedCCDCase = ccdCase.toBuilder()
             .contactChangeParty(CCDContactPartyType.CLAIMANT)
@@ -89,10 +96,11 @@ public class ChangeContactDetailsPostProcessorTest {
             .build();
 
         when(caseDetailsConverter.extractCCDCase(caseDetails)).thenReturn(updatedCCDCase);
+        when(caseDetailsConverter.convertTo(claim)).thenReturn(ccdCase);
+        when(ccdCaseApi.getByExternalId(anyString(), anyString())).thenReturn(Optional.of(claim));
 
         callbackRequest = CallbackRequest
             .builder()
-            .caseDetailsBefore(caseDetailsBefore)
             .caseDetails(caseDetails)
             .build();
 
@@ -100,11 +108,6 @@ public class ChangeContactDetailsPostProcessorTest {
             .request(callbackRequest)
             .params(ImmutableMap.of(BEARER_TOKEN, BEARER_TOKEN))
             .build();
-
-        given(userService.getUserDetails(anyString())).willReturn(SampleUserDetails.getDefault());
-
-        given(changeContactLetterService.createGeneralLetter(any(CCDCase.class), anyString()))
-            .willReturn(DOC_URL);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse
             = (AboutToStartOrSubmitCallbackResponse) changeContactDetailsPostProcessor
@@ -122,8 +125,7 @@ public class ChangeContactDetailsPostProcessorTest {
                 .telephoneRemoved(CCDYesNoOption.NO)
                 .primaryEmailRemoved(CCDYesNoOption.NO)
                 .correspondenceAddressRemoved(CCDYesNoOption.NO)
-                .build()))
-            .contains(Maps.immutableEntry("draftLetterDoc", CCDDocument.builder().documentUrl(DOC_URL).build()));
+                .build()));
     }
 
     @Test
@@ -132,6 +134,17 @@ public class ChangeContactDetailsPostProcessorTest {
         CCDCase ccdCase = SampleData.getCCDCitizenCaseWithRespondent(CCDRespondent.builder().defendantId(null)
             .build()).toBuilder()
             .contactChangeParty(CCDContactPartyType.CLAIMANT)
+            .contactChangeContent(CCDContactChangeContent.builder()
+                .telephone("0776655443322")
+                .isTelephoneModified(CCDYesNoOption.YES)
+                .primaryEmail("some@mail.com")
+                .isEmailModified(CCDYesNoOption.YES)
+                .isPrimaryAddressModified(CCDYesNoOption.NO)
+                .isCorrespondenceAddressModified(CCDYesNoOption.NO)
+                .telephoneRemoved(CCDYesNoOption.NO)
+                .primaryEmailRemoved(CCDYesNoOption.NO)
+                .correspondenceAddressRemoved(CCDYesNoOption.NO)
+                .build())
             .draftLetterDoc(draftLetterDoc)
             .build();
 
@@ -139,11 +152,9 @@ public class ChangeContactDetailsPostProcessorTest {
 
         when(caseDetailsConverter.extractCCDCase(caseDetails)).thenReturn(ccdCase);
         when(caseDetailsConverter.extractClaim(caseDetails)).thenReturn(claim);
+        given(userService.getUserDetails(anyString())).willReturn(SampleUserDetails.getDefault());
 
-        callbackRequest = CallbackRequest
-            .builder()
-            .caseDetails(caseDetails)
-            .build();
+        callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
 
         callbackParams = CallbackParams.builder()
             .request(callbackRequest)
@@ -152,7 +163,8 @@ public class ChangeContactDetailsPostProcessorTest {
 
         changeContactDetailsPostProcessor.performPostProcesses(callbackParams);
 
-        verify(changeContactLetterService).publishLetter(eq(ccdCase), eq(claim), eq(AUTHORISATION_TOKEN), letterDoc);
+        verify(changeContactLetterService).publishLetter(any(CCDCase.class), any(Claim.class), any(String.class),
+            any(CCDDocument.class));
     }
 
     @Test
@@ -209,12 +221,13 @@ public class ChangeContactDetailsPostProcessorTest {
     @Test
     public void shouldReturnErrorIfNoContactDetailsWereChanged() {
         CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
-        when(caseDetailsConverter.extractCCDCase(caseDetailsBefore)).thenReturn(ccdCase);
-        when(caseDetailsConverter.extractCCDCase(caseDetails)).thenReturn(ccdCase);
 
+        Claim claim = Claim.builder().build();
+        when(caseDetailsConverter.extractCCDCase(caseDetails)).thenReturn(ccdCase);
+        when(caseDetailsConverter.convertTo(claim)).thenReturn(ccdCase);
+        when(ccdCaseApi.getByExternalId(anyString(), anyString())).thenReturn(Optional.of(claim));
         callbackRequest = CallbackRequest
             .builder()
-            .caseDetailsBefore(caseDetailsBefore)
             .caseDetails(caseDetails)
             .build();
 
