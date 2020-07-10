@@ -10,11 +10,8 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
-import java.time.LocalDate;
 import java.util.function.BiConsumer;
 import java.util.function.UnaryOperator;
-
-import static java.time.LocalDate.now;
 
 @Service
 public class TransferCasePostProcessor {
@@ -39,15 +36,16 @@ public class TransferCasePostProcessor {
         return completeCaseTransfer(callbackParams,
             transferCaseDocumentPublishService::publishDefendentDocuments,
             transferCaseNotificationsService::sendTransferToCcbcEmail,
-            ccdCase -> ccdCase.toBuilder().dateOfHandoff(now()).build());
+            bulkPrintTransferService::updateCaseDataWithHandOffDate
+        );
     }
 
     public CallbackResponse transferToCourt(CallbackParams callbackParams) {
         return completeCaseTransfer(callbackParams, transferCaseDocumentPublishService::publishCaseDocuments,
-            transferCaseNotificationsService::sendTransferToCourtEmail, this::updateCaseData);
+            transferCaseNotificationsService::sendTransferToCourtEmail, bulkPrintTransferService::updateCaseData);
     }
 
-    public CallbackResponse completeCaseTransfer(CallbackParams callbackParams,
+    private CallbackResponse completeCaseTransfer(CallbackParams callbackParams,
             TriFunction<CCDCase, String, Claim, CCDCase> transferCaseDocumentPublishService,
             BiConsumer<CCDCase, Claim> sendEmailNotifications, UnaryOperator<CCDCase> updateCaseData) {
 
@@ -55,24 +53,13 @@ public class TransferCasePostProcessor {
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
-/////////
-        ccdCase = transferCaseDocumentPublishService.apply(ccdCase, authorisation, claim);
 
-        sendEmailNotifications.accept(ccdCase, claim);
+        ccdCase = bulkPrintTransferService.transferCase(ccdCase, claim, authorisation,
+            transferCaseDocumentPublishService, sendEmailNotifications, updateCaseData);
 
-        ccdCase = updateCaseData.apply(ccdCase);
-//////////////
-        ccdCase = bulkPrintTransferService.transferCase(ccdCase, claim, authorisation);
-////////////////
         return AboutToStartOrSubmitCallbackResponse
             .builder()
             .data(caseDetailsConverter.convertToMap(ccdCase))
-            .build();
-    }
-
-    private CCDCase updateCaseData(CCDCase ccdCase) {
-        return ccdCase.toBuilder()
-            .transferContent(ccdCase.getTransferContent().toBuilder().dateOfTransfer(LocalDate.now()).build())
             .build();
     }
 

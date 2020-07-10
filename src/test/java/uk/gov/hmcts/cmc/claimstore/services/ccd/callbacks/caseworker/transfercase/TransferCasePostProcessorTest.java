@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase;
 
+import org.elasticsearch.common.TriFunction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,9 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTransferContent;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -20,11 +19,10 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
-import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.UnaryOperator;
 
-import static java.time.LocalDate.now;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
@@ -50,6 +48,9 @@ class TransferCasePostProcessorTest {
     private TransferCaseNotificationsService transferCaseNotificationsService;
 
     @Mock
+    private BulkPrintTransferService bulkPrintTransferService;
+
+    @Mock
     private CallbackRequest callbackRequest;
 
     @Mock
@@ -67,7 +68,6 @@ class TransferCasePostProcessorTest {
     public void beforeEach() {
 
         ccdCase = SampleData.getCCDLegalCase();
-    }
 
         callbackParams = CallbackParams.builder()
             .request(callbackRequest)
@@ -75,30 +75,20 @@ class TransferCasePostProcessorTest {
             .build();
 
         Map<String, Object> mappedCaseData = mock(Map.class);
-        when(caseDetailsConverter.convertToMap(any(CCDCase.class))).thenReturn(mappedCaseData);
+        lenient().doReturn(mappedCaseData).when(caseDetailsConverter).convertToMap(any(CCDCase.class));
 
         ccdCase = ccdCase.toBuilder().transferContent(CCDTransferContent.builder().build()).build();
 
-        CaseDetails caseDetails = mock(CaseDetails.class);
-        when(callbackRequest.getCaseDetails()).thenReturn(caseDetails);
+        CaseDetails caseDetails = CaseDetails.builder().id(1L).build();
         when(caseDetailsConverter.extractCCDCase(caseDetails)).thenReturn(ccdCase);
         when(caseDetailsConverter.extractClaim(caseDetails)).thenReturn(claim);
-    //        when(bulkPrintTransferService.transferCase(ccdCase, claim, AUTHORISATION))
 
-        lenient().when(transferCaseDocumentPublishService.publishCaseDocuments(ccdCase, AUTHORISATION, claim))
-            .thenReturn(ccdCase);
-        lenient().when(transferCaseDocumentPublishService.publishDefendentDocuments(ccdCase, AUTHORISATION, claim))
-            .thenReturn(ccdCase);
+        when(callbackRequest.getCaseDetails()).thenReturn(caseDetails);
 
-///////////////
-AboutToStartOrSubmitCallbackResponse callbackResponse = (AboutToStartOrSubmitCallbackResponse)
-    transferCasePostProcessor.completeCaseTransfer(callbackParams);
+        when(bulkPrintTransferService.transferCase(any(CCDCase.class), any(Claim.class), any(String.class),
+            any(TriFunction.class), any(BiConsumer.class), any(UnaryOperator.class))).thenReturn(ccdCase);
 
-    verify(bulkPrintTransferService).transferCase(ccdCase, claim, AUTHORISATION);
-
-    assertEquals(mappedCaseData, callbackResponse.getData());
-///////////////////
-}
+    }
 
     @Test
     void shouldTransferCaseToCcbcAndUpdateTheHandOffDate() {
@@ -106,11 +96,9 @@ AboutToStartOrSubmitCallbackResponse callbackResponse = (AboutToStartOrSubmitCal
         AboutToStartOrSubmitCallbackResponse callbackResponse = (AboutToStartOrSubmitCallbackResponse)
             transferCasePostProcessor.transferToCCBC(callbackParams);
 
-        verify(transferCaseNotificationsService).sendTransferToCcbcEmail(ccdCase, claim);
-        verify(transferCaseDocumentPublishService).publishDefendentDocuments(ccdCase, AUTHORISATION, claim);
-        verify(caseDetailsConverter).convertToMap(ccdCaptor.capture());
+        verify(bulkPrintTransferService).transferCase(any(CCDCase.class), any(Claim.class), any(String.class),
+            any(TriFunction.class), any(BiConsumer.class), any(UnaryOperator.class));
 
-        assertEquals(now().toString(), ccdCaptor.getValue().getDateOfHandoff().toString());
     }
 
     @Test
@@ -119,19 +107,7 @@ AboutToStartOrSubmitCallbackResponse callbackResponse = (AboutToStartOrSubmitCal
         AboutToStartOrSubmitCallbackResponse callbackResponse = (AboutToStartOrSubmitCallbackResponse)
             transferCasePostProcessor.transferToCourt(callbackParams);
 
-        //////
-        AboutToStartOrSubmitCallbackResponse callbackResponse = (AboutToStartOrSubmitCallbackResponse)
-            transferCasePostProcessor.completeCaseTransfer(callbackParams);
-
-        verify(bulkPrintTransferService).transferCase(ccdCase, claim, AUTHORISATION);
-
-        /////////////
-
-
-        verify(transferCaseNotificationsService).sendTransferToCourtEmail(ccdCase, claim);
-        verify(transferCaseDocumentPublishService).publishCaseDocuments(ccdCase, AUTHORISATION, claim);
-        verify(caseDetailsConverter).convertToMap(ccdCaptor.capture());
-
-        assertEquals(now().toString(), ccdCaptor.getValue().getTransferContent().getDateOfTransfer().toString());
+        verify(bulkPrintTransferService).transferCase(any(CCDCase.class), any(Claim.class), any(String.class),
+            any(TriFunction.class), any(BiConsumer.class), any(UnaryOperator.class));
     }
 }

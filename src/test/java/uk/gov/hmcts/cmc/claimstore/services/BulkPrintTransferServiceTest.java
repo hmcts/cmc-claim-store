@@ -24,13 +24,14 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
-import java.time.LocalDate;
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static java.time.LocalDate.now;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDTransferContent.builder;
 
 @ExtendWith(MockitoExtension.class)
 class BulkPrintTransferServiceTest {
@@ -69,8 +70,8 @@ class BulkPrintTransferServiceTest {
 
     @BeforeEach
     public void beforeEach() {
-        CCDTransferContent transferContent = CCDTransferContent.builder()
-            .dateOfTransfer(LocalDate.now())
+        CCDTransferContent transferContent = builder()
+            .dateOfTransfer(now())
             .transferCourtName(HEARING_COURT_NAME)
             .transferCourtAddress(HEARING_COURT_ADDRESS)
             .transferReason(CCDTransferReason.OTHER)
@@ -86,11 +87,6 @@ class BulkPrintTransferServiceTest {
             transferCaseDocumentPublishService,
             transferCaseNotificationsService,
             coreCaseDataService);
-        when(transferCaseDocumentPublishService
-            .publishCaseDocuments(sampleCcdCase, AUTHORISATION, SAMPLE_CLAIM))
-            .thenReturn(sampleCcdCase);
-        doNothing().when(transferCaseNotificationsService)
-            .sendClaimUpdatedEmailToClaimant(SAMPLE_CLAIM);
     }
 
     @Test
@@ -103,27 +99,36 @@ class BulkPrintTransferServiceTest {
             .thenReturn(sampleCcdCase);
         when(coreCaseDataService.update(AUTHORISATION, transferredCCDCase, CaseEvent.AUTOMATED_TRANSFER))
             .thenReturn(SAMPLE_CASE_DETAILS);
+        when(transferCaseDocumentPublishService
+            .publishCaseDocuments(sampleCcdCase, AUTHORISATION, SAMPLE_CLAIM))
+            .thenReturn(sampleCcdCase);
+        doNothing().when(transferCaseNotificationsService)
+            .sendTransferToCourtEmail(sampleCcdCase, SAMPLE_CLAIM);
         bulkPrintTransferService.findCasesAndTransfer();
         verify(userService).authenticateAnonymousCaseWorker();
         verify(caseSearchApi).getClaimsReadyForTransfer(USER);
         verify(transferCaseDocumentPublishService)
             .publishCaseDocuments(sampleCcdCase, AUTHORISATION, SAMPLE_CLAIM);
         verify(transferCaseNotificationsService)
-            .sendClaimUpdatedEmailToClaimant(SAMPLE_CLAIM);
+            .sendTransferToCourtEmail(sampleCcdCase, SAMPLE_CLAIM);
         verify(coreCaseDataService)
             .update(AUTHORISATION, transferredCCDCase, CaseEvent.AUTOMATED_TRANSFER);
     }
 
     @Test
-    void shouldTransferCase() {
-        CCDTransferContent transferContent = CCDTransferContent.builder()
-            .dateOfTransfer(LocalDate.now()).build();
-        CCDCase ccdCaseExpected = sampleCcdCase.toBuilder().transferContent(transferContent).build();
-        CCDCase ccdCase = bulkPrintTransferService.transferCase(sampleCcdCase, SAMPLE_CLAIM, AUTHORISATION);
-        verify(transferCaseDocumentPublishService)
-            .publishCaseDocuments(sampleCcdCase, AUTHORISATION, SAMPLE_CLAIM);
-        verify(transferCaseNotificationsService)
-            .sendClaimUpdatedEmailToClaimant(SAMPLE_CLAIM);
-        assertEquals(ccdCaseExpected, ccdCase);
+    void updateCaseDataWithHandOffDate() {
+        CCDCase ccdCase = bulkPrintTransferService.updateCaseDataWithHandOffDate(sampleCcdCase);
+        assertEquals(now(), ccdCase.getDateOfHandoff());
+    }
+
+    @Test
+    void shouldUpdateCaseData() {
+        CCDCase ccdCase = bulkPrintTransferService.updateCaseData(sampleCcdCase);
+        assertEquals(now(), ccdCase.getTransferContent().getDateOfTransfer());
+
+        CCDTransferContent transferContent = builder().dateOfTransfer(now()).build();
+        CCDCase ccdCaseWithTransferContent = sampleCcdCase.toBuilder().transferContent(transferContent).build();
+        ccdCase = bulkPrintTransferService.updateCaseData(ccdCaseWithTransferContent);
+        assertEquals(now(), ccdCase.getTransferContent().getDateOfTransfer());
     }
 }
