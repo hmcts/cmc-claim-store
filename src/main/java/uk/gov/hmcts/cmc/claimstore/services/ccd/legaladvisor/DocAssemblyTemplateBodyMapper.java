@@ -199,4 +199,22 @@ public class DocAssemblyTemplateBodyMapper {
             ? respondent.getPartyDetail().getPrimaryAddress()
             : respondent.getClaimantProvidedDetail().getPrimaryAddress();
     }
+
+    public DocAssemblyTemplateBody paperResponseAdmissionLetter(CCDCase ccdCase, String caseworkerName) {
+        LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
+        CCDRespondent defendant =  ccdCase.getRespondents().get(0).getValue();
+        String partyName = defendant.getPartyName() != null
+            ? defendant.getPartyName()
+            :  defendant.getClaimantProvidedPartyName();
+        CCDAddress partyAddress = getDefendantAddress(ccdCase.getRespondents().get(0).getValue());
+
+        return DocAssemblyTemplateBody.builder()
+            .currentDate(currentDate)
+            .referenceNumber(ccdCase.getPreviousServiceCaseReference())
+            .caseworkerName(caseworkerName)
+            .caseName(ccdCase.getCaseName())
+            .partyName(partyName)
+            .partyAddress(partyAddress)
+            .build();
+    }
 }
