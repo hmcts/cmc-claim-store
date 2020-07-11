@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
+import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -27,6 +28,7 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Map;
 
+import static java.lang.String.format;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType.CLAIMANT;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.Params.BEARER_TOKEN;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildLetterFileBaseName;
@@ -70,7 +72,8 @@ public class ChangeContactDetailsPostProcessor {
         var callbackResponse = AboutToStartOrSubmitCallbackResponse.builder();
         CCDCase caseNow = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
         CCDCase caseBefore = caseDetailsConverter
-            .convertTo(ccdCaseApi.getByExternalId(caseNow.getExternalId(), authorisation).get());
+            .convertTo(ccdCaseApi.getByExternalId(caseNow.getExternalId(), authorisation)
+                .orElseThrow(() -> new NotFoundException(format("Claim %s does not exist", caseNow.getExternalId()))));
         CCDContactPartyType contactChangeParty = caseNow.getContactChangeParty();
         CCDParty partyBefore = getPartyDetail(caseBefore, contactChangeParty);
         CCDParty partyNow = getPartyDetail(caseNow, contactChangeParty);
