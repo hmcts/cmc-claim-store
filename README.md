@@ -148,6 +148,8 @@ Add the `-parameters` setting to your compiler arguments in your IDE (Make sure 
 This is because we use a feature of jackson for automatically deserialising based on the constructor.  
 For more info see: https://github.com/FasterXML/jackson-modules-java8/blob/a0d102fa0aea5c2fc327250868e1c1f6d523856d/parameter-names/README.md
 
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
+
