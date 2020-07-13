@@ -41,8 +41,6 @@ public class HWFFeeRemittedCallbackHandler extends CallbackHandler {
 
     private final CaseMapper caseMapper;
 
-    private String feeRemitted;
-
     @Autowired
     public HWFFeeRemittedCallbackHandler(CaseDetailsConverter caseDetailsConverter,
                                          DirectionsQuestionnaireDeadlineCalculator deadlineCalculator,
