@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
@@ -35,6 +36,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType.AB
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType.MID;
 
 @Service
+@ConditionalOnProperty("feature_toggles.oconform_enabled")
 public class PaperResponseOCON9xFormCallbackHandler  extends CallbackHandler {
 
     private static final String DYNAMIC_LIST_CODE = "code";

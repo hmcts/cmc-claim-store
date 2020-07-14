@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
@@ -44,6 +45,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationRef
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 
 @Service
+@ConditionalOnProperty("feature_toggles.oconform_enabled")
 public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
 
     private static final List<CaseEvent> EVENTS = List.of(PAPER_RESPONSE_ADMISSION);
