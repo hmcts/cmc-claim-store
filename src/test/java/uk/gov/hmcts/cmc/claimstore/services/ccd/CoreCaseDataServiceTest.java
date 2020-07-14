@@ -74,6 +74,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.PIN_GENERATION_OPERATIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFER_TO_JUDGE_BY_CLAIMANT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.UPDATE_HELP_WITH_FEE_CLAIM;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.getWithClaimantResponse;
@@ -238,6 +239,27 @@ public class CoreCaseDataServiceTest {
 
         assertEquals(expectedClaim, returnedClaim);
 
+    }
+
+    @Test
+    public void updateHelpWithFeesCaseShouldReturnClaim() {
+        Claim providedClaim = SampleClaim.getDefault().toBuilder()
+            .issuedOn(null).build();
+
+        when(coreCaseDataApi.submitEventForCitizen(
+            eq(AUTHORISATION),
+            eq(AUTH_TOKEN),
+            eq(USER_DETAILS.getId()),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(SampleClaim.CLAIM_ID.toString()),
+            anyBoolean(),
+            any()
+        )).thenThrow(new FeignException.UnprocessableEntity("Status 422 from CCD", request, null));
+
+        Claim returnedClaim = service.updateCaseEventHelpWithFeeIOC(USER, providedClaim, UPDATE_HELP_WITH_FEE_CLAIM);
+
+        assertEquals(providedClaim, returnedClaim);
     }
 
     @Test

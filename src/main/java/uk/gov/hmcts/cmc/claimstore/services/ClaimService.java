@@ -42,6 +42,7 @@ import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.UPDATE_HELP_WITH_FEE_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.CLAIM_EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
@@ -278,6 +279,24 @@ public class ClaimService {
         Claim claim = buildClaimFrom(user, submitterId, claimData, features, true);
         trackHelpWithFeesClaimCreated(externalId);
         return caseRepository.saveHelpWithFeesClaim(user, claim);
+    }
+
+    @LogExecutionTime
+    public Claim updateHelpWithFeesClaim(
+        String authorisation,
+        ClaimData claimData,
+        List<String> features
+    ) {
+        String externalId = claimData.getExternalId().toString();
+        User user = userService.getUser(authorisation);
+        Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), user)
+            .toBuilder()
+            .claimData(claimData)
+            .features(features)
+            .build();
+
+        trackHelpWithFeesClaimCreated(externalId);
+        return caseRepository.updateHelpWithFeesClaim(user, claim, UPDATE_HELP_WITH_FEE_CLAIM);
     }
 
     @LogExecutionTime

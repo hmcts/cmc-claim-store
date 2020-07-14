@@ -185,6 +185,11 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
+    public Claim updateHelpWithFeesClaim(User user, Claim claim, CaseEvent caseEvent) {
+        return coreCaseDataService.updateCaseEventHelpWithFeeIOC(user, claim, caseEvent);
+    }
+
+    @Override
     @LogExecutionTime
     public Claim saveRepresentedClaim(User user, Claim claim) {
         return coreCaseDataService.createRepresentedClaim(user, claim);
