@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.UPDATE_HELP_WITH_FEE_CLAIM;
 
 @ExtendWith(MockitoExtension.class)
-public class ResumeHelpWithFeeClaimSubmissionCallbackHandlerTest {
+ class ResumeHelpWithFeeClaimSubmissionCallbackHandlerTest {
 
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
@@ -48,7 +48,7 @@ public class ResumeHelpWithFeeClaimSubmissionCallbackHandlerTest {
     }
 
     @Test
-    public void shouldResumeHelpWithFeeClaimSubmissionCallbackReturnError() {
+    void shouldResumeHelpWithFeeClaimSubmissionCallbackReturnError() {
         CCDCase ccdCase = SampleData.getCCDCitizenCaseAwaitingayment();
         when(caseDetailsConverter.extractCCDCase(caseDetails)).thenReturn(ccdCase);
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
@@ -57,7 +57,7 @@ public class ResumeHelpWithFeeClaimSubmissionCallbackHandlerTest {
     }
 
     @Test
-    public void shouldResumeHelpWithFeeClaimSubmissionCallbackReturnPayment() {
+    void shouldResumeHelpWithFeeClaimSubmissionCallbackReturnPayment() {
         CCDCase ccdCase = SampleData.getCCDCitizenCaseAwaitingayment();
         when(caseDetailsConverter.extractCCDCase(caseDetails)).thenReturn(ccdCase);
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)

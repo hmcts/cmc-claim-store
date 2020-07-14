@@ -242,27 +242,6 @@ public class CoreCaseDataServiceTest {
     }
 
     @Test
-    public void updateHelpWithFeesCaseShouldReturnClaim() {
-        Claim providedClaim = SampleClaim.getDefault().toBuilder()
-            .issuedOn(null).build();
-
-        when(coreCaseDataApi.submitEventForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(SampleClaim.CLAIM_ID.toString()),
-            anyBoolean(),
-            any()
-        )).thenThrow(new FeignException.UnprocessableEntity("Status 422 from CCD", request, null));
-
-        Claim returnedClaim = service.updateCaseEventHelpWithFeeIOC(USER, providedClaim, UPDATE_HELP_WITH_FEE_CLAIM);
-
-        assertEquals(providedClaim, returnedClaim);
-    }
-
-    @Test
     public void submitRepresentedClaimShouldReturnLegalRepClaim() {
         Claim providedLegalRepClaim = SampleClaim.getDefaultForLegal();
         Claim expectedLegalRepClaim = SampleClaim.claim(providedLegalRepClaim.getClaimData(), "012LR345");
@@ -735,7 +714,9 @@ public class CoreCaseDataServiceTest {
             .thenThrow(new FeignException.UnprocessableEntity("Status 422 from CCD", request, null));
 
         Claim returnedClaim = service.saveCaseEventIOC(USER, providedClaim, CREATE_CITIZEN_CLAIM);
+        Claim hwfClaim = service.saveCaseEventIOC(USER, providedClaim, UPDATE_HELP_WITH_FEE_CLAIM);
 
         assertEquals(providedClaim, returnedClaim);
+        assertEquals(providedClaim, hwfClaim);
     }
 }
