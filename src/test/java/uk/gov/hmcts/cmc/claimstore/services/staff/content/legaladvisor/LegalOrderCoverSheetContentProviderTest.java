@@ -31,7 +31,8 @@ public class LegalOrderCoverSheetContentProviderTest {
     @Before
     public void beforeEachTest() {
         provider = new LegalOrderCoverSheetContentProvider(
-            staffEmailProperties
+            staffEmailProperties,
+            false
         );
         when(staffEmailProperties.getRecipient()).thenReturn(STAFF_NOTIFICATIONS_RECIPIENT);
     }
