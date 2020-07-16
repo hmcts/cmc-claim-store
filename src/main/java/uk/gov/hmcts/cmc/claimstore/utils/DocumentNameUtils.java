@@ -16,6 +16,12 @@ public class DocumentNameUtils {
         return format("%s-claim-form", number);
     }
 
+    public static String buildDraftClaimFileBaseName(String number) {
+        requireNonBlank(number);
+
+        return format("draft-claim-%s", number);
+    }
+
     public static String buildClaimIssueReceiptFileBaseName(String number) {
         requireNonBlank(number);
 
