@@ -34,7 +34,7 @@ public class TransferCasePostProcessor {
 
     public CallbackResponse transferToCCBC(CallbackParams callbackParams) {
         return completeCaseTransfer(callbackParams,
-            transferCaseDocumentPublishService::publishLetterToDefendant,
+            transferCaseDocumentPublishService::publishDefendentDocuments,
             transferCaseNotificationsService::sendTransferToCcbcEmail,
             bulkPrintTransferService::updateCaseDataWithHandOffDate
         );
