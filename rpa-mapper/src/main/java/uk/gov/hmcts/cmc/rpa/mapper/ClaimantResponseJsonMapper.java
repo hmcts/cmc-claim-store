@@ -7,14 +7,12 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.rpa.DateFormatter;
 import uk.gov.hmcts.cmc.rpa.mapper.json.NullAwareJsonObjectBuilder;
 
-import javax.json.JsonObject;
 import java.time.LocalDateTime;
+import javax.json.JsonObject;
 
 @Component
 @SuppressWarnings({"LineLength"})
 public class ClaimantResponseJsonMapper {
-
-
 
     @Autowired
     private final AddressJsonMapper address;
@@ -30,11 +28,10 @@ public class ClaimantResponseJsonMapper {
         LocalDateTime claimantRespondedAt = claim.getClaimantRespondedAt().orElse(null);
         return new NullAwareJsonObjectBuilder()
             .add("caseNumber", claim.getReferenceNumber())
-            .add("responseSubmittedOn",DateFormatter.format(claimantRespondedAt))
+            .add("responseSubmittedOn", DateFormatter.format(claimantRespondedAt))
             .add("claimantResponse", response.getType().toString())
-            .add("claimant",mapClaimantDetails(claim))
+            .add("claimant", mapClaimantDetails(claim))
             .build();
-
     }
 
     private JsonObject mapClaimantDetails(Claim claim) {

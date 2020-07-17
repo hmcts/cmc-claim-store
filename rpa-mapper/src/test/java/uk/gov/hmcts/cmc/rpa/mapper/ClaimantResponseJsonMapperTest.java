@@ -12,11 +12,8 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
-import uk.gov.hmcts.cmc.rpa.DateFormatter;
 import uk.gov.hmcts.cmc.rpa.config.ModuleConfiguration;
-import uk.gov.hmcts.cmc.rpa.mapper.json.NullAwareJsonObjectBuilder;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
@@ -35,7 +32,7 @@ public class ClaimantResponseJsonMapperTest {
     private ClaimantResponseJsonMapper mapper;
 
     @Test
-    public void ShouldMapClaimantResponseAcception() throws JSONException {
+    public void shouldMapClaimantResponseAcception() throws JSONException {
         Claim claim = SampleClaim.builder().withResponse(SampleResponse.validDefaults())
             .withReferenceNumber(REFERENCE_NUMBER)
             .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
@@ -44,11 +41,10 @@ public class ClaimantResponseJsonMapperTest {
 
         String expected = new ResourceReader().read(ACCEPTATION_INDIVIDUAL).trim();
         assertEquals(expected, mapper.map(claim).toString(), STRICT);
-
-     }
+    }
 
     @Test
-    public void ShouldMapClaimantResponseRejection() throws JSONException {
+    public void shouldMapClaimantResponseRejection() throws JSONException {
         Claim claim = SampleClaim.builder().withResponse(SampleResponse.validDefaults())
             .withReferenceNumber(REFERENCE_NUMBER)
             .withClaimantResponse(SampleClaimantResponse.validDefaultRejection())
@@ -57,7 +53,6 @@ public class ClaimantResponseJsonMapperTest {
 
         String expected = new ResourceReader().read(REJECTION_INDIVIDUAL).trim();
         assertEquals(expected, mapper.map(claim).toString(), STRICT);
-
     }
 }
 
