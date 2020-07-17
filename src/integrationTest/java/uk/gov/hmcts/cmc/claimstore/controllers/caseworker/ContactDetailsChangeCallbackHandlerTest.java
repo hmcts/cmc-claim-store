@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.controllers.caseworker;
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -17,8 +16,10 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDContactChangeContent;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
@@ -27,7 +28,10 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.ChangeContactLetterService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -38,8 +42,10 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -63,6 +69,9 @@ public class ContactDetailsChangeCallbackHandlerTest extends BaseMockSpringTest 
     @MockBean
     protected EmailService emailService;
 
+    @MockBean
+    private CCDCaseApi ccdCaseApi;
+
     private static final UserDetails USER_DETAILS = SampleUserDetails.builder()
         .withForename("cmc")
         .withSurname("caseworker")
@@ -73,8 +82,31 @@ public class ContactDetailsChangeCallbackHandlerTest extends BaseMockSpringTest 
     private static final String DOCUMENT_URL = "http://bla.test";
     private static final String DOCUMENT_BINARY_URL = "http://bla.test/binary";
     private static final String DOCUMENT_FILE_NAME = "contact-letter.pdf";
+    private static final LocalDateTime DATE = LocalDateTime.parse("2020-11-16T13:15:30");
+    private static final String DOC_URL_BINARY = "http://success.test/binary";
+    private static final String DOC_NAME = "doc-name";
+    public static final String GENERAL_DOCUMENT_NAME = "document-name";
+    private static final CCDDocument DOCUMENT = CCDDocument
+        .builder()
+        .documentUrl(DOCUMENT_URL)
+        .documentBinaryUrl(DOC_URL_BINARY)
+        .documentFileName(GENERAL_DOCUMENT_NAME)
+        .build();
+    private static final CCDCollectionElement<CCDClaimDocument> CLAIM_DOCUMENT =
+        CCDCollectionElement.<CCDClaimDocument>builder()
+            .value(CCDClaimDocument.builder()
+                .documentLink(DOCUMENT)
+                .createdDatetime(DATE)
+                .documentName(GENERAL_DOCUMENT_NAME)
+                .documentType(CCDClaimDocumentType.GENERAL_LETTER)
+                .build())
+            .build();
+
     @Mock
     private SendLetterResponse sendLetterResponse;
+
+    @MockBean
+    private ChangeContactLetterService changeContactLetterService;
 
     @Before
     public void setUp() {
@@ -91,10 +123,10 @@ public class ContactDetailsChangeCallbackHandlerTest extends BaseMockSpringTest 
             any())).willReturn(docAssemblyResponse);
     }
 
-    @Ignore
     @SuppressWarnings("unchecked")
     @Test
     public void shouldProcessMidEvent() throws Exception {
+
         MvcResult mvcResult = makeRequestContactDetailsChangeRequest(MID.getValue())
             .andExpect(status().isOk())
             .andReturn();
@@ -103,24 +135,34 @@ public class ContactDetailsChangeCallbackHandlerTest extends BaseMockSpringTest 
             mvcResult,
             AboutToStartOrSubmitCallbackResponse.class
         ).getData();
-        assertThat(responseData).hasSize(2);
-        Map<String, String> document = (Map<String, String>) responseData.get("draftLetterDoc");
-        assertThat(document.get("document_url")).isEqualTo(DOCUMENT_URL);
+        assertThat(responseData).hasSize(1);
         Map<String, String> contactChangeContent = (Map<String, String>) responseData.get("contactChangeContent");
         assertThat(contactChangeContent.get("primaryEmail")).isEqualTo("some@mail.com");
         assertThat(contactChangeContent.get("isEmailModified")).isEqualTo("YES");
     }
 
-    @Ignore
     @SuppressWarnings("unchecked")
     @Test
     public void shouldProcessAboutToSubmitEvent() throws Exception {
+
+        CaseDetails caseDetailsTemp = successfulCoreCaseDataStoreSubmitResponse();
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetailsTemp);
+        CCDCase expected = ccdCase.toBuilder()
+            .caseDocuments(ImmutableList.<CCDCollectionElement<CCDClaimDocument>>builder()
+                .addAll(ccdCase.getCaseDocuments())
+                .add(CLAIM_DOCUMENT)
+                .build())
+            .build();
+
         given(documentManagementService.downloadDocument(anyString(), any(ClaimDocument.class)))
             .willReturn(new byte[] {1, 2, 3, 4});
 
         given(documentManagementService.getDocumentMetaData(anyString(), anyString())).willReturn(getLinks());
 
         given(sendLetterApi.sendLetter(anyString(), any(LetterWithPdfsRequest.class))).willReturn(sendLetterResponse);
+
+        given(changeContactLetterService.publishLetter(any(CCDCase.class), any(Claim.class), any(String.class),
+            any(CCDDocument.class))).willReturn(expected);
 
         MvcResult mvcResult = makeRequest(ABOUT_TO_SUBMIT.getValue())
             .andExpect(status().isOk())
@@ -132,8 +174,8 @@ public class ContactDetailsChangeCallbackHandlerTest extends BaseMockSpringTest 
         ).getData();
         List<Map<String, Object>> documents = (List<Map<String, Object>>) responseData.get("caseDocuments");
 
-        assertThat(documents).hasSize(2);
-        Map<String, Object> value = documents.get(1);
+        assertThat(documents).hasSize(1);
+        Map<String, Object> value = documents.get(0);
         Map<String, Object> claimDocument = (Map<String, Object>) value.get("value");
         assertThat(claimDocument.get("documentType")).isEqualTo(CCDClaimDocumentType.GENERAL_LETTER.name());
         Map<String, Object> document = (Map<String, Object>) claimDocument.get("documentLink");
@@ -185,6 +227,17 @@ public class ContactDetailsChangeCallbackHandlerTest extends BaseMockSpringTest 
                         .documentType(CCDClaimDocumentType.SEALED_CLAIM)
                         .build())
                     .build()))
+                .contactChangeContent(CCDContactChangeContent.builder()
+                    .telephone("0776655443322")
+                    .isTelephoneModified(CCDYesNoOption.YES)
+                    .primaryEmail("some@mail.com")
+                    .isEmailModified(CCDYesNoOption.YES)
+                    .isPrimaryAddressModified(CCDYesNoOption.NO)
+                    .isCorrespondenceAddressModified(CCDYesNoOption.NO)
+                    .telephoneRemoved(CCDYesNoOption.NO)
+                    .primaryEmailRemoved(CCDYesNoOption.NO)
+                    .correspondenceAddressRemoved(CCDYesNoOption.NO)
+                    .build())
                 .contactChangeParty(CCDContactPartyType.CLAIMANT)
                 .draftLetterDoc(CCDDocument.builder()
                     .documentBinaryUrl(DOCUMENT_BINARY_URL)
@@ -212,6 +265,9 @@ public class ContactDetailsChangeCallbackHandlerTest extends BaseMockSpringTest 
     private ResultActions makeRequestContactDetailsChangeRequest(String callbackType) throws Exception {
         CaseDetails caseDetailsTemp = successfulCoreCaseDataStoreSubmitResponse();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetailsTemp);
+
+        Claim claim = caseMapper.from(ccdCase);
+        given(ccdCaseApi.getByExternalId(anyString(), anyString())).willReturn(Optional.of(claim));
 
         CaseDetails caseDetailsBefore = caseDetailsTemp.toBuilder()
             .data(caseDetailsConverter.convertToMap(ccdCase.toBuilder()
