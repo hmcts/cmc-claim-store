@@ -50,6 +50,8 @@ public abstract class Party extends CollectionId implements NamedParty {
     @Valid
     private final Representative representative;
 
+    private final String pcqId;
+
     public Party(
         String id,
         String name,
@@ -57,7 +59,8 @@ public abstract class Party extends CollectionId implements NamedParty {
         Address correspondenceAddress,
         String phone,
         String mobilePhone,
-        Representative representative
+        Representative representative,
+        String pcqId
     ) {
         super(id);
         this.name = name;
@@ -65,6 +68,7 @@ public abstract class Party extends CollectionId implements NamedParty {
         this.correspondenceAddress = correspondenceAddress;
         this.phone = Optional.ofNullable(phone).orElse(mobilePhone);
         this.representative = representative;
+        this.pcqId = pcqId;
     }
 
     @Override
@@ -86,6 +90,10 @@ public abstract class Party extends CollectionId implements NamedParty {
 
     public Optional<Representative> getRepresentative() {
         return Optional.ofNullable(representative);
+    }
+
+    public String getPcqId() {
+        return pcqId;
     }
 
     @Override
