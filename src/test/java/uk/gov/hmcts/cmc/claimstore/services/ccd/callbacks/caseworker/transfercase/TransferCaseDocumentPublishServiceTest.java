@@ -1,36 +1,29 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase;
 
-import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.cmc.ccd.domain.CCDBulkPrintDetails;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTransferContent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
-import uk.gov.hmcts.cmc.ccd.mapper.BulkPrintDetailsMapper;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 
 import java.util.List;
 
 import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.domain.models.bulkprint.PrintRequestType.BULK_PRINT_TRANSFER;
 
 @ExtendWith(MockitoExtension.class)
 class TransferCaseDocumentPublishServiceTest {
@@ -42,9 +35,6 @@ class TransferCaseDocumentPublishServiceTest {
 
     @InjectMocks
     private TransferCaseDocumentPublishService transferCaseDocumentPublishService;
-
-    @Spy
-    private BulkPrintDetailsMapper bulkPrintDetailsMapper = new BulkPrintDetailsMapper();
 
     @Mock
     private TransferCaseLetterSender transferCaseLetterSender;
@@ -82,40 +72,23 @@ class TransferCaseDocumentPublishServiceTest {
         CCDDocument generatedCoverDoc = CCDDocument.builder().build();
         DocAssemblyTemplateBody formPayloadForCourt = mock(DocAssemblyTemplateBody.class);
 
-        when(noticeOfTransferLetterTemplateMapper.noticeOfTransferLetterBodyForCourt(eq(ccdCase), eq(AUTHORISATION)))
+        when(noticeOfTransferLetterTemplateMapper.noticeOfTransferLetterBodyForCourt(ccdCase, AUTHORISATION))
             .thenReturn(formPayloadForCourt);
 
-        when(docAssemblyService
-            .generateDocument(eq(ccdCase), eq(AUTHORISATION), eq(formPayloadForCourt), eq(COURT_LETTER_TEMPLATE_ID)))
+        when(docAssemblyService.generateDocument(ccdCase, AUTHORISATION, formPayloadForCourt, COURT_LETTER_TEMPLATE_ID))
             .thenReturn(generatedCoverDoc);
 
         CCDDocument namedCoverDoc = generatedCoverDoc.toBuilder()
             .documentFileName(ccdCase.getPreviousServiceCaseReference() + "-notice-of-transfer-for-court.pdf").build();
 
-        when(transferCaseDocumentService.attachNoticeOfTransfer(eq(ccdCase), eq(namedCoverDoc), eq(AUTHORISATION)))
-            .thenReturn(ccdCase);
-
-        BulkPrintDetails bulkPrintDetails = BulkPrintDetails.builder().printRequestType(BULK_PRINT_TRANSFER)
-            .printRequestId("requestId")
-            .build();
-        when(transferCaseLetterSender
-            .sendAllCaseDocumentsToCourt(eq(AUTHORISATION), eq(ccdCase), eq(claim), eq(namedCoverDoc)))
-            .thenReturn(bulkPrintDetails);
+        when(transferCaseDocumentService.attachNoticeOfTransfer(ccdCase, namedCoverDoc,
+            AUTHORISATION)).thenReturn(ccdCase);
 
         CCDCase returnedCase = transferCaseDocumentPublishService.publishCaseDocuments(ccdCase, AUTHORISATION, claim);
 
-        verify(transferCaseLetterSender)
-            .sendAllCaseDocumentsToCourt(eq(AUTHORISATION), eq(ccdCase), eq(claim), eq(namedCoverDoc));
+        verify(transferCaseLetterSender).sendAllCaseDocumentsToCourt(AUTHORISATION, ccdCase, claim, namedCoverDoc);
 
-        assertEquals(addBulkPrintDeatils(ccdCase, bulkPrintDetails), returnedCase);
-    }
-
-    private CCDCase addBulkPrintDeatils(CCDCase ccdCase, BulkPrintDetails input) {
-        ImmutableList.Builder<CCDCollectionElement<CCDBulkPrintDetails>> printDetails = ImmutableList.builder();
-        printDetails.addAll(ccdCase.getBulkPrintDetails());
-        printDetails.add(bulkPrintDetailsMapper.to(input));
-
-        return ccdCase.toBuilder().bulkPrintDetails(printDetails.build()).build();
+        assertEquals(ccdCase, returnedCase);
     }
 
     private void givenDefendantIsLinked(boolean isLinked) {

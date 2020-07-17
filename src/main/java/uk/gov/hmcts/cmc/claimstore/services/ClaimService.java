@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
@@ -67,6 +68,9 @@ public class ClaimService {
     private final ClaimAuthorisationRule claimAuthorisationRule;
     private final ReviewOrderRule reviewOrderRule;
 
+    @Value("${feature_toggles.ctsc_enabled}")
+    private boolean ctscEnabled;
+
     @SuppressWarnings("squid:S00107")
     @Autowired
     public ClaimService(
@@ -111,7 +115,7 @@ public class ClaimService {
     public Claim getFilteredClaimByExternalId(String externalId, String authorisation) {
         User user = userService.getUser(authorisation);
         return DocumentsFilter.filterDocuments(
-            getClaimByExternalId(externalId, user), user.getUserDetails()
+            getClaimByExternalId(externalId, user), user.getUserDetails(), ctscEnabled
         );
     }
 
