@@ -52,6 +52,7 @@ public class DefendantPartyMapper {
         party.getPhone()
             .ifPresent(telephoneNo -> defendantDetail.telephoneNumber(telephoneMapper.to(telephoneNo)));
         party.getRepresentative().ifPresent(representative -> toRepresentative(builder, representative));
+        builder.pcqId(party.getPcqId());
 
         if (party instanceof Individual) {
             toIndividual(defendantDetail, (Individual) party);
@@ -176,6 +177,7 @@ public class DefendantPartyMapper {
             .phone(telephoneMapper.from(partyDetail.getTelephoneNumber()))
             .dateOfBirth(partyDetail.getDateOfBirth())
             .representative(extractRepresentative(respondent))
+            .pcqId(respondent.getPcqId())
             .build();
     }
 
