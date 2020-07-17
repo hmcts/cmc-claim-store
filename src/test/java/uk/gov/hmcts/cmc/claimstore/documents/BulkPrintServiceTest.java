@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.documents;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -64,7 +63,9 @@ public class BulkPrintServiceTest {
 
     @Mock
     private AuthTokenGenerator authTokenGenerator;
+
     private BulkPrintService bulkPrintService;
+
     @Mock
     private BulkPrintStaffNotificationService bulkPrintStaffNotificationService;
     @Mock
@@ -83,7 +84,6 @@ public class BulkPrintServiceTest {
         letter = new Letter(documents, XEROX_TYPE_PARAMETER, additionalData);
     }
 
-    @Ignore
     @Test
     public void shouldSendLetterWithDocumentsAsInGivenOrder() {
         //given
@@ -170,7 +170,6 @@ public class BulkPrintServiceTest {
         verify(sendLetterApi).sendLetter(eq(AUTH_VALUE), any(LetterWithPdfsRequest.class));
     }
 
-    @Ignore
     @Test(expected = RuntimeException.class)
     public void shouldNotifyStaffOnPrintFailure() {
         //given

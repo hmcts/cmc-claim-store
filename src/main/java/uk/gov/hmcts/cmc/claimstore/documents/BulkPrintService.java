@@ -189,7 +189,7 @@ public class BulkPrintService implements PrintService {
 
     private static Map<String, Object> wrapInDetailsInMap(Claim claim, BulkPrintRequestType letterType) {
         Map<String, Object> additionalData = new HashMap<>();
-        additionalData.put(ADDITIONAL_DATA_LETTER_TYPE_KEY, letterType);
+        additionalData.put(ADDITIONAL_DATA_LETTER_TYPE_KEY, letterType.value);
         additionalData.put(ADDITIONAL_DATA_CASE_IDENTIFIER_KEY, claim.getId());
         additionalData.put(ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY, claim.getReferenceNumber());
         return additionalData;
