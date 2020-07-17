@@ -35,6 +35,12 @@ public class ClaimDocumentCollection {
             .findFirst();
     }
 
+    public Optional<ClaimDocument> getDocument(String claimDocumentId) {
+        return Stream.concat(claimDocuments.stream(), staffUploadedDocuments.stream())
+            .filter(claimDocument -> claimDocument.getId().equals(claimDocumentId))
+            .findFirst();
+    }
+
     public Optional<ScannedDocument> getScannedDocument(ScannedDocumentType scannedDocumentType,
                                                         ScannedDocumentSubtype subtype) {
         return scannedDocuments.stream()
