@@ -21,6 +21,7 @@ import java.util.List;
 
 import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -32,6 +33,7 @@ class TransferCaseDocumentPublishServiceTest {
     private static final String AUTHORISATION = "Bearer:auth_token";
     private static final String COURT_LETTER_TEMPLATE_ID = "courtLetterTemplateId";
     private static final String DEFENDANT_LETTER_TEMPLATE_ID = "defendantLetterTemplateId";
+    private static final String DEFENDANT_CCBC_LETTER_TEMPLATE_ID = "ccbcTransferTemplateId";
 
     @InjectMocks
     private TransferCaseDocumentPublishService transferCaseDocumentPublishService;
@@ -62,6 +64,8 @@ class TransferCaseDocumentPublishServiceTest {
             COURT_LETTER_TEMPLATE_ID, true);
         FieldUtils.writeField(transferCaseDocumentPublishService, "defendantLetterTemplateId",
             DEFENDANT_LETTER_TEMPLATE_ID, true);
+        FieldUtils.writeField(transferCaseDocumentPublishService, "ccbcTransferTemplateId",
+            DEFENDANT_CCBC_LETTER_TEMPLATE_ID, true);
     }
 
     @Test
@@ -89,6 +93,32 @@ class TransferCaseDocumentPublishServiceTest {
         verify(transferCaseLetterSender).sendAllCaseDocumentsToCourt(AUTHORISATION, ccdCase, claim, namedCoverDoc);
 
         assertEquals(ccdCase, returnedCase);
+    }
+
+    @Test
+    void shouldPublishNoticesOfTransferToDefendant() {
+        givenDefendantIsLinked(false);
+
+        CCDDocument generatedCoverDoc = CCDDocument.builder().build();
+        DocAssemblyTemplateBody formPayloadForCourt = mock(DocAssemblyTemplateBody.class);
+
+        when(noticeOfTransferLetterTemplateMapper.noticeOfTransferToCcbcLetterBodyForDefendant(ccdCase, AUTHORISATION))
+            .thenReturn(formPayloadForCourt);
+        when(docAssemblyService.generateDocument(ccdCase, AUTHORISATION, formPayloadForCourt,
+            DEFENDANT_CCBC_LETTER_TEMPLATE_ID)).thenReturn(generatedCoverDoc);
+
+        CCDDocument namedCoverDoc = generatedCoverDoc.toBuilder()
+            .documentFileName(ccdCase.getPreviousServiceCaseReference() + "-defendant-case-handoff.pdf").build();
+
+        doNothing().when(transferCaseLetterSender)
+            .sendNoticeOfTransferForDefendant(AUTHORISATION, namedCoverDoc, claim);
+
+        CCDCase returnedCase = transferCaseDocumentPublishService
+            .publishDefendentDocuments(ccdCase, AUTHORISATION, claim);
+
+        verify(transferCaseLetterSender).sendNoticeOfTransferForDefendant(AUTHORISATION, namedCoverDoc, claim);
+        verify(docAssemblyService).generateDocument(ccdCase, AUTHORISATION, formPayloadForCourt,
+            DEFENDANT_CCBC_LETTER_TEMPLATE_ID);
     }
 
     private void givenDefendantIsLinked(boolean isLinked) {
