@@ -162,7 +162,7 @@ public class RoboticsSupportController {
             .collect(toMap(Function.identity(), ref -> resendRPA(
                 ref,
                 authorisation,
-                claim -> claim.getResponse().isPresent(),
+                claim -> claim.getClaimantResponse().isPresent(),
                 claim -> claimantResponseNotificationService.notifyRobotics(
                     new ClaimantResponseEvent(claim, authorisation)),
                 "Failed to send response to RPA"

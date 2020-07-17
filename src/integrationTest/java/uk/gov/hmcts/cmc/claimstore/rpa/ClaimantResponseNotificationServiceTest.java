@@ -59,7 +59,6 @@ public class ClaimantResponseNotificationServiceTest extends BaseMockSpringTest 
 
         event = new ClaimantResponseEvent(claim, "AUTH_CODE");
 
-        given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).willReturn(PDF_CONTENT);
     }
 
     @Test(expected = NullPointerException.class)

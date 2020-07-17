@@ -26,10 +26,12 @@ import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
@@ -229,14 +231,18 @@ public class RoboticsSupportControllerTest {
         when(claimService.getClaimByReference("002MC001", "authorisation"))
             .thenReturn(Optional.of(SampleClaim.builder()
                 .withReferenceNumber("002MC001")
-                .withResponse(SampleResponse.validDefaults()).build()));
+                .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
+                .withClaimantRespondedAt(LocalDateTime.of(2018, 4, 26, 1, 1))
+                .build()));
         when(claimService.getClaimByReference("002MC002", "authorisation"))
             .thenReturn(Optional.of(SampleClaim.builder()
                 .withReferenceNumber("002MC002").build()));
         when(claimService.getClaimByReference("002MC003", "authorisation"))
             .thenReturn(Optional.of(SampleClaim.builder()
                 .withReferenceNumber("002MC003")
-                .withResponse(SampleResponse.validDefaults()).build()));
+                .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
+                .withClaimantRespondedAt(LocalDateTime.of(2018, 4, 26, 1, 1))
+                .build()));
 
         doNothing()
             .doThrow(new RuntimeException("reason"))
