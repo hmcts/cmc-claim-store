@@ -21,9 +21,6 @@ import uk.gov.hmcts.cmc.email.EmailService;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.cmc.claimstore.rpa.ClaimIssuedNotificationService.JSON_EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildJsonClaimantResponseFileBaseName;
