@@ -59,6 +59,12 @@ public class DocumentNameUtils {
         return format("%s-json-paid-in-full", number);
     }
 
+    public static String buildJsonClaimantResponseFileBaseName(String number) {
+        requireNonBlank(number);
+
+        return format("%s-json-claimant-response", number);
+    }
+
     public static String buildResponseFileBaseName(String caseRef) {
         requireNonBlank(caseRef);
 

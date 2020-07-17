@@ -9,12 +9,14 @@ import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsExceptionLogger;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentGenerator;
+import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.rpa.ClaimantResponseNotificationService;
 import uk.gov.hmcts.cmc.claimstore.rpa.DefenceResponseNotificationService;
 import uk.gov.hmcts.cmc.claimstore.rpa.MoreTimeRequestedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.rpa.PaidInFullNotificationService;
@@ -58,6 +60,8 @@ public class RoboticsSupportControllerTest {
     @Mock
     private DefenceResponseNotificationService defenceResponseNotificationService;
     @Mock
+    private ClaimantResponseNotificationService claimantResponseNotificationService;
+    @Mock
     private RequestForJudgmentNotificationService ccjNotificationService;
     @Mock
     private PaidInFullNotificationService paidInFullNotificationService;
@@ -78,6 +82,7 @@ public class RoboticsSupportControllerTest {
             userService,
             moreTimeRequestedNotificationService,
             defenceResponseNotificationService,
+            claimantResponseNotificationService,
             ccjNotificationService,
             paidInFullNotificationService,
             responseDeadlineCalculator,
@@ -217,6 +222,37 @@ public class RoboticsSupportControllerTest {
         );
 
         verify(defenceResponseNotificationService, times(2)).notifyRobotics(any(DefendantResponseEvent.class));
+    }
+
+    @Test
+    public void testRAP_ClaimantResponseNotifications() {
+        when(claimService.getClaimByReference("002MC001", "authorisation"))
+            .thenReturn(Optional.of(SampleClaim.builder()
+                .withReferenceNumber("002MC001")
+                .withResponse(SampleResponse.validDefaults()).build()));
+        when(claimService.getClaimByReference("002MC002", "authorisation"))
+            .thenReturn(Optional.of(SampleClaim.builder()
+                .withReferenceNumber("002MC002").build()));
+        when(claimService.getClaimByReference("002MC003", "authorisation"))
+            .thenReturn(Optional.of(SampleClaim.builder()
+                .withReferenceNumber("002MC003")
+                .withResponse(SampleResponse.validDefaults()).build()));
+
+        doNothing()
+            .doThrow(new RuntimeException("reason"))
+            .when(claimantResponseNotificationService).notifyRobotics(any(ClaimantResponseEvent.class));
+
+        Map<String, String> results = controller.rpaClaimantResponseNotifications(
+            asList("002MC001", "002MC002", "002MC003", "002MC004"));
+
+        assertThat(results).contains(
+            entry("002MC001", "succeeded"),
+            entry("002MC002", "invalid"),
+            entry("002MC003", "failed: reason"),
+            entry("002MC004", "missing")
+        );
+
+        verify(claimantResponseNotificationService, times(2)).notifyRobotics(any(ClaimantResponseEvent.class));
     }
 
     @Test

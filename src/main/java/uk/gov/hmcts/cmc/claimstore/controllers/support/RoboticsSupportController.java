@@ -10,11 +10,13 @@ import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsExceptionLogger;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentGenerator;
+import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.claimstore.rpa.ClaimantResponseNotificationService;
 import uk.gov.hmcts.cmc.claimstore.rpa.DefenceResponseNotificationService;
 import uk.gov.hmcts.cmc.claimstore.rpa.MoreTimeRequestedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.rpa.PaidInFullNotificationService;
@@ -46,6 +48,7 @@ public class RoboticsSupportController {
     private final ClaimService claimService;
     private final MoreTimeRequestedNotificationService moreTimeRequestedNotificationService;
     private final DefenceResponseNotificationService defenceResponseNotificationService;
+    private final ClaimantResponseNotificationService claimantResponseNotificationService;
     private final RequestForJudgmentNotificationService ccjNotificationService;
     private final PaidInFullNotificationService paidInFullNotificationService;
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
@@ -59,6 +62,7 @@ public class RoboticsSupportController {
         UserService userService,
         MoreTimeRequestedNotificationService moreTimeRequestedNotificationService,
         DefenceResponseNotificationService defenceResponseNotificationService,
+        ClaimantResponseNotificationService claimantResponseNotificationService,
         RequestForJudgmentNotificationService ccjNotificationService,
         PaidInFullNotificationService paidInFullNotificationService,
         ResponseDeadlineCalculator responseDeadlineCalculator,
@@ -69,6 +73,7 @@ public class RoboticsSupportController {
         this.userService = userService;
         this.moreTimeRequestedNotificationService = moreTimeRequestedNotificationService;
         this.defenceResponseNotificationService = defenceResponseNotificationService;
+        this.claimantResponseNotificationService = claimantResponseNotificationService;
         this.ccjNotificationService = ccjNotificationService;
         this.paidInFullNotificationService = paidInFullNotificationService;
         this.responseDeadlineCalculator = responseDeadlineCalculator;
@@ -141,6 +146,25 @@ public class RoboticsSupportController {
                 claim -> claim.getResponse().isPresent(),
                 claim -> defenceResponseNotificationService.notifyRobotics(
                     new DefendantResponseEvent(claim, authorisation)),
+                "Failed to send response to RPA"
+            )));
+    }
+
+    @PutMapping("/claimant-response")
+    @ApiOperation("Send RPA notifications for multiple responses")
+    public Map<String, String> rpaClaimantResponseNotifications(@RequestBody List<String> referenceNumbers) {
+        if (referenceNumbers == null || referenceNumbers.isEmpty()) {
+            throw new IllegalArgumentException("Reference numbers not supplied");
+        }
+        User user = userService.authenticateAnonymousCaseWorker();
+        String authorisation = user.getAuthorisation();
+        return referenceNumbers.stream()
+            .collect(toMap(Function.identity(), ref -> resendRPA(
+                ref,
+                authorisation,
+                claim -> claim.getResponse().isPresent(),
+                claim -> claimantResponseNotificationService.notifyRobotics(
+                    new ClaimantResponseEvent(claim, authorisation)),
                 "Failed to send response to RPA"
             )));
     }

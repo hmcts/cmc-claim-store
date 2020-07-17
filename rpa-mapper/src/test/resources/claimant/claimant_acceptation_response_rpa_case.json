@@ -1,0 +1,16 @@
+{
+  "caseNumber": "000MC001",
+  "responseSubmittedOn": "26-Apr-2018",
+  "claimantResponse": "ACCEPTATION",
+  "claimant": {
+    "type": "Individual",
+    "name": "John Rambo",
+    "address": {
+      "line1": "52",
+      "line2": "Down Street",
+      "line3": "Salford",
+      "city": "Manchester",
+      "postcode": "DF1 3LJ"
+    }
+  }
+}

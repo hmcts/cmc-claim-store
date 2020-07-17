@@ -29,6 +29,9 @@ public class EmailProperties {
     @NotBlank
     private String paidInFullRecipient;
 
+    @NotBlank
+    private String claimantResponseRecipient;
+
     public String getSender() {
         return sender;
     }
@@ -75,5 +78,13 @@ public class EmailProperties {
 
     public void setPaidInFullRecipient(String paidInFullRecipient) {
         this.paidInFullRecipient = paidInFullRecipient;
+    }
+
+    public String getClaimantResponseRecipient() {
+        return claimantResponseRecipient;
+    }
+
+    public void setClaimantResponseRecipient(String claimantResponseRecipient) {
+        this.claimantResponseRecipient = claimantResponseRecipient;
     }
 }
