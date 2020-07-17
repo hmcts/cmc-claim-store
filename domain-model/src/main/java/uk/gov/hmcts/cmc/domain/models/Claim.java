@@ -197,6 +197,12 @@ public class Claim {
     }
 
     @JsonIgnore
+    public Optional<ClaimDocument> getClaimDocument(String claimDocumentId) {
+        return Optional.ofNullable(claimDocumentCollection)
+            .flatMap(c -> c.getDocument(claimDocumentId));
+    }
+
+    @JsonIgnore
     public Optional<ScannedDocument> getScannedDocument(ScannedDocumentType scannedDocumentType,
                                                         ScannedDocumentSubtype subtype) {
         return Optional.ofNullable(claimDocumentCollection)
