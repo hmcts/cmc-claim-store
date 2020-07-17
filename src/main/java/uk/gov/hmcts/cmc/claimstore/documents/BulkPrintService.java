@@ -127,6 +127,9 @@ public class BulkPrintService implements PrintService {
         if (letterType.equals(GENERAL_LETTER_TYPE)) {
             info = "General Letter {} created for letter type {} claim reference {}";
         }
+        if (letterType.equals(BULK_PRINT_TRANSFER_TYPE)) {
+            info = "Bulk print request {} created for request    type {} claim reference {}";
+        }
 
         List<String> docs = documents.stream()
             .filter(Objects::nonNull)
