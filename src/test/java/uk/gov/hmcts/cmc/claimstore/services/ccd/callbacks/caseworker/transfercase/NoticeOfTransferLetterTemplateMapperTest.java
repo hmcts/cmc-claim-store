@@ -156,6 +156,23 @@ class NoticeOfTransferLetterTemplateMapperTest {
         assertEquals(expectedRequestBody, requestBody);
     }
 
+    @Test
+    void shouldMapNoticeOfTransferToCcbcLetterBodyForDefendant() {
+
+        DocAssemblyTemplateBody requestBody = noticeOfTransferLetterTemplateMapper
+            .noticeOfTransferToCcbcLetterBodyForDefendant(ccdCase, AUTHORISATION);
+
+        DocAssemblyTemplateBody expectedRequestBody = baseExpectedRequestBodyBuilder()
+            .partyName(DEFENDANT_NAME)
+            .partyAddress(defendantAddress)
+            .hearingCourtName(null)
+            .hearingCourtAddress(null)
+            .reasonForTransfer(null)
+            .build();
+
+        assertEquals(expectedRequestBody, requestBody);
+    }
+
     private DocAssemblyTemplateBody.DocAssemblyTemplateBodyBuilder baseExpectedRequestBodyBuilder() {
 
         DocAssemblyTemplateBody.DocAssemblyTemplateBodyBuilder bodyBuilder = DocAssemblyTemplateBody
