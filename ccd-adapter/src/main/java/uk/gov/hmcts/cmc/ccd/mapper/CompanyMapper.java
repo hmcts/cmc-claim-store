@@ -43,7 +43,6 @@ public class CompanyMapper {
 
         builder
             .partyName(company.getName())
-            .pcqId(company.getPcqId())
             .partyDetail(applicantPartyDetail.build());
 
     }
@@ -54,7 +53,6 @@ public class CompanyMapper {
         return Company.builder()
             .id(company.getId())
             .name(applicant.getPartyName())
-            .pcqId(applicant.getPcqId())
             .address(addressMapper.from(partyDetail.getPrimaryAddress()))
             .correspondenceAddress(addressMapper.from(partyDetail.getCorrespondenceAddress()))
             .phone(telephoneMapper.from(partyDetail.getTelephoneNumber()))
