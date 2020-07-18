@@ -16,7 +16,9 @@ import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
@@ -24,6 +26,7 @@ import static uk.gov.hmcts.cmc.ccd.mapper.ClaimSubmissionOperationIndicatorMappe
 import static uk.gov.hmcts.cmc.ccd.mapper.ClaimSubmissionOperationIndicatorMapper.mapFromCCDClaimSubmissionOperationIndicators;
 import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.getMediationOutcome;
 import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.toCaseName;
+import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
 
 @Component
 public class CaseMapper {
@@ -34,6 +37,7 @@ public class CaseMapper {
     private final ReviewOrderMapper reviewOrderMapper;
     private final DirectionOrderMapper directionOrderMapper;
     private final TransferContentMapper transferContentMapper;
+    private final BulkPrintDetailsMapper bulkPrintDetailsMapper;
 
     public CaseMapper(
         ClaimMapper claimMapper,
@@ -41,7 +45,8 @@ public class CaseMapper {
         ClaimDocumentCollectionMapper claimDocumentCollectionMapper,
         ReviewOrderMapper reviewOrderMapper,
         DirectionOrderMapper directionOrderMapper,
-        TransferContentMapper transferContentMapper
+        TransferContentMapper transferContentMapper,
+        BulkPrintDetailsMapper bulkPrintDetailsMapper
     ) {
         this.claimMapper = claimMapper;
         this.isMigrated = isMigrated;
@@ -49,6 +54,7 @@ public class CaseMapper {
         this.reviewOrderMapper = reviewOrderMapper;
         this.directionOrderMapper = directionOrderMapper;
         this.transferContentMapper = transferContentMapper;
+        this.bulkPrintDetailsMapper = bulkPrintDetailsMapper;
     }
 
     public CCDCase to(Claim claim) {
@@ -74,6 +80,12 @@ public class CaseMapper {
             .map(ProceedOfflineReasonType::name)
             .map(CCDProceedOnPaperReasonType::valueOf)
             .ifPresent(builder::proceedOnPaperReason);
+
+        builder.bulkPrintDetails(asStream(claim.getBulkPrintDetails())
+            .map(bulkPrintDetailsMapper::to)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList())
+        );
 
         return builder
             .id(claim.getId())
@@ -143,6 +155,12 @@ public class CaseMapper {
         if (ccdCase.getPreferredDQCourt() != null) {
             builder.preferredDQCourt(ccdCase.getPreferredDQCourt());
         }
+
+        builder.bulkPrintDetails(asStream(ccdCase.getBulkPrintDetails())
+            .map(bulkPrintDetailsMapper::from)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList())
+        );
 
         return builder.build();
     }
