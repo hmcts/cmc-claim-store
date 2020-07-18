@@ -23,10 +23,9 @@ public class Company extends Party implements HasContactPerson {
         String phone,
         String mobilePhone,
         Representative representative,
-        String contactPerson,
-        String pcqId
+        String contactPerson
     ) {
-        super(id, name, address, correspondenceAddress, phone, mobilePhone, representative, pcqId);
+        super(id, name, address, correspondenceAddress, phone, mobilePhone, representative);
         this.contactPerson = contactPerson;
     }
 
