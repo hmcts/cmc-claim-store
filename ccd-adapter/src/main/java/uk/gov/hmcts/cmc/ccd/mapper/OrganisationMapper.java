@@ -37,7 +37,6 @@ public class OrganisationMapper {
         applicantPartyDetail.primaryAddress(addressMapper.to(organisation.getAddress()));
         builder
             .partyName(organisation.getName())
-            .pcqId(organisation.getPcqId())
             .partyDetail(applicantPartyDetail.build());
 
     }
@@ -48,7 +47,6 @@ public class OrganisationMapper {
         return Organisation.builder()
             .id(organisation.getId())
             .name(applicant.getPartyName())
-            .pcqId(applicant.getPcqId())
             .address(addressMapper.from(partyDetail.getPrimaryAddress()))
             .correspondenceAddress(addressMapper.from(partyDetail.getCorrespondenceAddress()))
             .phone(telephoneMapper.from(partyDetail.getTelephoneNumber()))

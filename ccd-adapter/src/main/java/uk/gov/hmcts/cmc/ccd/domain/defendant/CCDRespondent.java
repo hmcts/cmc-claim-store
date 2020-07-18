@@ -92,8 +92,6 @@ public class CCDRespondent {
     private String mediationFailedReason;
     private LocalDateTime mediationSettlementReachedAt;
 
-    private String pcqId;
-
     @JsonIgnore
     public boolean hasRepresentative() {
         return representativeOrganisationName != null
