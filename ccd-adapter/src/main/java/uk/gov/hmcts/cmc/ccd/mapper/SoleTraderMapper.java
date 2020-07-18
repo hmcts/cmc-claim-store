@@ -37,6 +37,7 @@ public class SoleTraderMapper {
         applicantPartyDetail.primaryAddress(addressMapper.to(soleTrader.getAddress()));
         builder
             .partyName(soleTrader.getName())
+            .pcqId(soleTrader.getPcqId())
             .partyDetail(applicantPartyDetail.build());
     }
 
@@ -46,6 +47,7 @@ public class SoleTraderMapper {
         return SoleTrader.builder()
             .id(soletrader.getId())
             .name(applicant.getPartyName())
+            .pcqId(applicant.getPcqId())
             .address(addressMapper.from(partyDetail.getPrimaryAddress()))
             .correspondenceAddress(addressMapper.from(partyDetail.getCorrespondenceAddress()))
             .phone(telephoneMapper.from(partyDetail.getTelephoneNumber()))
