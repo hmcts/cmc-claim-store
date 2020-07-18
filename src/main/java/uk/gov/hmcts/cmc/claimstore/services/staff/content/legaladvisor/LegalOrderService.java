@@ -1,23 +1,25 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor;
 
+import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
-import uk.gov.hmcts.cmc.claimstore.events.legaladvisor.DirectionsOrderReadyToPrintEvent;
+import uk.gov.hmcts.cmc.claimstore.documents.BulkPrintHandler;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
@@ -27,7 +29,7 @@ public class LegalOrderService {
 
     private final DocumentTemplates documentTemplates;
     private final LegalOrderCoverSheetContentProvider legalOrderCoverSheetContentProvider;
-    private final ApplicationEventPublisher publisher;
+    private final BulkPrintHandler bulkPrintHandler;
     private final DocumentManagementService documentManagementService;
 
     @Autowired
@@ -35,39 +37,44 @@ public class LegalOrderService {
         DocumentTemplates documentTemplates,
         LegalOrderCoverSheetContentProvider legalOrderCoverSheetContentProvider,
         DocumentManagementService documentManagementService,
-        ApplicationEventPublisher publisher) {
+        BulkPrintHandler bulkPrintHandler
+    ) {
         this.documentTemplates = documentTemplates;
-        this.publisher = publisher;
+        this.bulkPrintHandler = bulkPrintHandler;
         this.legalOrderCoverSheetContentProvider = legalOrderCoverSheetContentProvider;
         this.documentManagementService = documentManagementService;
     }
 
-    public void print(String authorisation, Claim claim, CCDDocument ccdLegalOrder) {
+    public List<BulkPrintDetails> print(String authorisation, Claim claim, CCDDocument ccdLegalOrder) {
         requireNonNull(claim);
+        ImmutableList.Builder<BulkPrintDetails> bulkPrintDetails = ImmutableList.<BulkPrintDetails>builder();
         try {
             Document legalOrder = downloadLegalOrder(authorisation, ccdLegalOrder);
             Document coverSheetForClaimant = new Document(
                 new String(documentTemplates.getLegalOrderCoverSheet()),
                 legalOrderCoverSheetContentProvider.createContentForClaimant(claim));
 
-            publisher.publishEvent(new DirectionsOrderReadyToPrintEvent(
+            bulkPrintDetails.add(bulkPrintHandler.printDirectionOrder(
                 claim,
                 coverSheetForClaimant,
-                legalOrder
+                legalOrder,
+                authorisation
             ));
 
             Document coverSheetForDefendant = new Document(
                 new String(documentTemplates.getLegalOrderCoverSheet()),
                 legalOrderCoverSheetContentProvider.createContentForDefendant(claim));
 
-            publisher.publishEvent(new DirectionsOrderReadyToPrintEvent(
+            bulkPrintDetails.add(bulkPrintHandler.printDirectionOrder(
                 claim,
                 coverSheetForDefendant,
-                legalOrder
+                legalOrder,
+                authorisation
             ));
         } catch (URISyntaxException e) {
             logger.warn("Problem download legal advisor document from doc store, won't print");
         }
+        return bulkPrintDetails.build();
     }
 
     private Document downloadLegalOrder(String authorisation, CCDDocument ccdLegalOrder) throws URISyntaxException {

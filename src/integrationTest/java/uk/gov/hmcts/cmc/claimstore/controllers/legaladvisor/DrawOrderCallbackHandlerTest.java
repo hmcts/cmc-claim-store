@@ -26,10 +26,12 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDet
 import uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.time.LocalDateTime;
@@ -39,12 +41,16 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponse;
+import static uk.gov.hmcts.cmc.domain.models.bulkprint.PrintRequestType.LEGAL_ORDER;
 
 @TestPropertySource(
     properties = {
@@ -78,6 +84,7 @@ public class DrawOrderCallbackHandlerTest extends BaseMockSpringTest {
                 .documentType(CCDClaimDocumentType.ORDER_DIRECTIONS)
                 .build())
             .build();
+    private UserDetails userDetails;
 
     @Before
     public void setUp() {
@@ -91,9 +98,15 @@ public class DrawOrderCallbackHandlerTest extends BaseMockSpringTest {
                 eq(AUTHORISATION_TOKEN),
                 any(String.class))).willReturn(ResourceLoader.successfulDocumentManagementDownloadResponse());
 
-        UserDetails userDetails = SampleUserDetails.builder().withRoles("caseworker-cmc-legaladvisor").build();
+        userDetails = SampleUserDetails.builder().withRoles("caseworker-cmc-legaladvisor", "caseworker-cmc").build();
         given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
+        when(authTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
         given(directionOrderService.getHearingCourt(any())).willReturn(HearingCourt.builder().build());
+        given(legalOrderService.print(eq(AUTHORISATION_TOKEN), any(Claim.class), any(CCDDocument.class)))
+            .willReturn(List.of(
+                BulkPrintDetails.builder().printRequestType(LEGAL_ORDER).printRequestId("coverId").build(),
+                BulkPrintDetails.builder().printRequestType(LEGAL_ORDER).printRequestId("orderId").build())
+            );
     }
 
     @SuppressWarnings("unchecked")
@@ -155,12 +168,47 @@ public class DrawOrderCallbackHandlerTest extends BaseMockSpringTest {
             .caseDetails(caseDetails)
             .build();
 
+        givenForStartOfEvent(caseDetails);
+
+        givenForSubmitEvent(caseDetails);
+
         return webClient
             .perform(post("/cases/callbacks/" + callbackType)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
                 .content(jsonMappingHelper.toJson(callbackRequest))
             );
+    }
+
+    private void givenForSubmitEvent(CaseDetails caseDetails) {
+        when(coreCaseDataApi.submitEventForCaseWorker(
+            eq(AUTHORISATION_TOKEN),
+            eq(SERVICE_TOKEN),
+            anyString(),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(caseDetails.getData().get("id").toString()),
+            anyBoolean(),
+            any()
+        ))
+            .thenReturn(caseDetails);
+    }
+
+    private void givenForStartOfEvent(CaseDetails caseDetails) {
+        when(coreCaseDataApi.startEventForCaseWorker(
+            eq(AUTHORISATION_TOKEN),
+            eq(SERVICE_TOKEN),
+            anyString(),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(caseDetails.getData().get("id").toString()),
+            anyString()
+        ))
+            .thenReturn(StartEventResponse.builder()
+                .caseDetails(caseDetails)
+                .eventId("eventId")
+                .token("token")
+                .build());
     }
 
     @Test
