@@ -8,11 +8,12 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocument;
+import uk.gov.hmcts.cmc.claimstore.documents.BulkPrintHandler;
 import uk.gov.hmcts.cmc.claimstore.events.BulkPrintTransferEvent;
-import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.PrintableDocumentService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.util.List;
@@ -23,26 +24,33 @@ public class TransferCaseLetterSender {
 
     private final GeneralLetterService generalLetterService;
     private final PrintableDocumentService printableDocumentService;
-    private final EventProducer eventProducer;
+    private final BulkPrintHandler bulkPrintHandler;
 
     public TransferCaseLetterSender(GeneralLetterService generalLetterService,
                                     PrintableDocumentService printableDocumentService,
-                                    EventProducer eventProducer) {
+                                    BulkPrintHandler bulkPrintHandler) {
         this.generalLetterService = generalLetterService;
         this.printableDocumentService = printableDocumentService;
-        this.eventProducer = eventProducer;
+        this.bulkPrintHandler = bulkPrintHandler;
     }
 
-    public void sendNoticeOfTransferForDefendant(String authorisation, CCDDocument ccdDocument, Claim claim) {
-
-        generalLetterService.printLetter(authorisation, ccdDocument, claim);
+    public BulkPrintDetails sendNoticeOfTransferForDefendant(
+        String authorisation,
+        CCDDocument ccdDocument,
+        Claim claim
+    ) {
+        return generalLetterService.printLetter(authorisation, ccdDocument, claim);
     }
 
-    public void sendAllCaseDocumentsToCourt(String authorisation, CCDCase ccdCase, Claim claim, CCDDocument coverDoc) {
-
+    public BulkPrintDetails sendAllCaseDocumentsToCourt(
+        String authorisation,
+        CCDCase ccdCase,
+        Claim claim,
+        CCDDocument coverDoc
+    ) {
         Document coverLetterDoc = printableDocumentService.process(coverDoc, authorisation);
         List<BulkPrintTransferEvent.PrintableDocument> caseDocuments = getAllCaseDocuments(ccdCase, authorisation);
-        eventProducer.createBulkPrintTransferEvent(claim, coverLetterDoc, caseDocuments);
+        return bulkPrintHandler.printBulkTransferDocs(claim, coverLetterDoc, caseDocuments, authorisation);
     }
 
     private List<BulkPrintTransferEvent.PrintableDocument> getAllCaseDocuments(CCDCase ccdCase, String authorisation) {

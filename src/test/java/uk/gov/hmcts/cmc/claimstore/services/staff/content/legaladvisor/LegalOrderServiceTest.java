@@ -6,13 +6,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.context.ApplicationEventPublisher;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
-import uk.gov.hmcts.cmc.claimstore.events.legaladvisor.DirectionsOrderReadyToPrintEvent;
+import uk.gov.hmcts.cmc.claimstore.documents.BulkPrintHandler;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
@@ -22,8 +22,10 @@ import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.domain.models.bulkprint.PrintRequestType.PIN_LETTER_TO_DEFENDANT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LegalOrderServiceTest {
@@ -41,7 +43,7 @@ public class LegalOrderServiceTest {
     @Mock
     private DocumentTemplates documentTemplates;
     @Mock
-    private ApplicationEventPublisher applicationEventPublisher;
+    private BulkPrintHandler bulkPrintHandler;
     @Mock
     private LegalOrderCoverSheetContentProvider legalOrderCoverSheetContentProvider;
 
@@ -49,13 +51,16 @@ public class LegalOrderServiceTest {
 
     private Claim claim;
 
+    private BulkPrintDetails bulkPrintDetails = BulkPrintDetails.builder()
+        .printRequestType(PIN_LETTER_TO_DEFENDANT).printRequestId("requestId").build();
+
     @Before
     public void setUp() {
         legalOrderService = new LegalOrderService(
             documentTemplates,
             legalOrderCoverSheetContentProvider,
             documentManagementService,
-            applicationEventPublisher
+            bulkPrintHandler
         );
         claim = SampleClaim.builder().build();
         when(documentTemplates.getLegalOrderCoverSheet()).thenReturn("coverSheet".getBytes());
@@ -63,6 +68,7 @@ public class LegalOrderServiceTest {
             .thenReturn(ImmutableMap.of("content", "CLAIMANT"));
         when(legalOrderCoverSheetContentProvider.createContentForDefendant(claim))
             .thenReturn(ImmutableMap.of("content", "DEFENDANT"));
+
     }
 
     @Test
@@ -70,11 +76,6 @@ public class LegalOrderServiceTest {
         when(documentManagementService.downloadDocument(
             eq(BEARER_TOKEN),
             any(ClaimDocument.class))).thenReturn("legalOrder".getBytes());
-        legalOrderService.print(
-            BEARER_TOKEN,
-            claim,
-            DOCUMENT
-        );
 
         Document legalOrder = new Document(
             Base64.getEncoder().encodeToString("legalOrder".getBytes()),
@@ -83,20 +84,35 @@ public class LegalOrderServiceTest {
             "coverSheet",
             ImmutableMap.of("content", "CLAIMANT"));
 
-        verify(applicationEventPublisher).publishEvent(
-            new DirectionsOrderReadyToPrintEvent(
-                claim,
-                coverSheetForClaimant,
-                legalOrder));
+        given(bulkPrintHandler
+            .printDirectionOrder(eq(claim), eq(coverSheetForClaimant), eq(legalOrder), eq(BEARER_TOKEN)))
+            .willReturn(bulkPrintDetails);
 
         Document coverSheetForDefendant = new Document(
             "coverSheet",
             ImmutableMap.of("content", "DEFENDANT"));
-        verify(applicationEventPublisher).publishEvent(
-            new DirectionsOrderReadyToPrintEvent(
-                claim,
-                coverSheetForDefendant,
-                legalOrder));
+
+        given(bulkPrintHandler
+            .printDirectionOrder(eq(claim), eq(coverSheetForDefendant), eq(legalOrder), eq(BEARER_TOKEN)))
+            .willReturn(bulkPrintDetails);
+
+        legalOrderService.print(
+            BEARER_TOKEN,
+            claim,
+            DOCUMENT
+        );
+
+        verify(bulkPrintHandler).printDirectionOrder(
+            claim,
+            coverSheetForClaimant,
+            legalOrder,
+            BEARER_TOKEN);
+
+        verify(bulkPrintHandler).printDirectionOrder(
+            claim,
+            coverSheetForDefendant,
+            legalOrder,
+            BEARER_TOKEN);
     }
 
     @Test(expected = Exception.class)

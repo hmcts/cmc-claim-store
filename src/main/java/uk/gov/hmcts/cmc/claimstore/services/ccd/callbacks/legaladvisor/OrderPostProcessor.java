@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
+import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionOrderService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDraw
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
@@ -47,6 +49,7 @@ public class OrderPostProcessor {
     private final LegalOrderService legalOrderService;
     private final DirectionOrderService directionOrderService;
     private final DocumentManagementService documentManagementService;
+    private final ClaimService claimService;
     private AppInsights appInsights;
 
     public OrderPostProcessor(
@@ -56,7 +59,8 @@ public class OrderPostProcessor {
         LegalOrderService legalOrderService,
         AppInsights appInsights,
         DirectionOrderService directionOrderService,
-        DocumentManagementService documentManagementService
+        DocumentManagementService documentManagementService,
+        ClaimService claimService
     ) {
         this.clock = clock;
         this.orderDrawnNotificationService = orderDrawnNotificationService;
@@ -65,6 +69,7 @@ public class OrderPostProcessor {
         this.directionOrderService = directionOrderService;
         this.appInsights = appInsights;
         this.documentManagementService = documentManagementService;
+        this.claimService = claimService;
     }
 
     public CallbackResponse copyDraftToCaseDocument(CallbackParams callbackParams) {
@@ -163,7 +168,12 @@ public class OrderPostProcessor {
 
     private CallbackResponse printOrder(String authorisation, Claim claim, CCDCase ccdCase) {
         CCDDocument draftOrderDoc = ccdCase.getDraftOrderDoc();
-        legalOrderService.print(authorisation, claim, draftOrderDoc);
+        List<BulkPrintDetails> bulkPrintDetails = legalOrderService.print(authorisation, claim, draftOrderDoc);
+        ImmutableList.Builder<BulkPrintDetails> printDetails = ImmutableList.builder();
+        printDetails.addAll(claim.getBulkPrintDetails());
+        printDetails.addAll(bulkPrintDetails);
+        claimService.addBulkPrintDetails(authorisation, printDetails.build(), CaseEvent.ADD_BULK_PRINT_DETAILS, claim);
+
         return SubmittedCallbackResponse.builder().build();
     }
 
