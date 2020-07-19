@@ -89,48 +89,65 @@ public class ClaimantResponseService {
         ClaimantResponse claimantResponse,
         String authorization
     ) {
-        Claim claim = claimService.getClaimByExternalId(externalId, authorization);
-        claimantResponseRule.assertCanBeRequested(claim, claimantId);
-
-        Response response = claim.getResponse().orElseThrow(() -> new IllegalStateException(MISSING_RESPONSE));
-        if (claim.getState().equals(ClaimState.STAYED) && ResponseUtils.isAdmissionResponse(response)) {
-            claim = caseRepository.saveCaseEvent(authorization, claim, LIFT_STAY);
-        }
-
-        Claim updatedClaim = caseRepository.saveClaimantResponse(claim, claimantResponse, authorization);
-
-        claimantResponseRule.isValid(updatedClaim);
-        formaliseResponseAcceptance(claimantResponse, response, updatedClaim, authorization);
-
-        if (isFullDefenseDisputeAcceptation(response, claimantResponse)) {
-            appInsights.trackEvent(AppInsightsEvent.CLAIM_STAYED, REFERENCE_NUMBER, updatedClaim.getReferenceNumber());
-
-            caseRepository.saveCaseEvent(authorization, updatedClaim, CaseEvent.STAY_CLAIM);
-        }
-
-        CaseEvent caseEvent = null;
-        if (claimantResponse.getType() == REJECTION) {
-            ResponseRejection responseRejection = (ResponseRejection) claimantResponse;
-            caseEvent = directionsQuestionnaireService.prepareCaseEvent(responseRejection, updatedClaim);
-
-            if (caseEvent == DIRECTIONS_QUESTIONNAIRE_DEADLINE) {
-                LocalDate deadline = directionsQuestionnaireDeadlineCalculator.calculate(LocalDateTime.now(clock));
-                caseRepository.updateDirectionsQuestionnaireDeadline(claim, deadline, authorization);
-                updatedClaim = claimService.getClaimByExternalId(externalId, authorization);
-            } else {
-                caseRepository.saveCaseEvent(authorization, updatedClaim, caseEvent);
+        try {
+            System.out.println("Testsssssssss----------");
+            Claim claim = claimService.getClaimByExternalId(externalId, authorization);
+            claimantResponseRule.assertCanBeRequested(claim, claimantId);
+            System.out.println("Testsssssssss-33333333333333");
+            Response response = claim.getResponse().orElseThrow(() -> new IllegalStateException(MISSING_RESPONSE));
+            if (claim.getState().equals(ClaimState.STAYED) && ResponseUtils.isAdmissionResponse(response)) {
+                System.out.println("Testsssssssss-7685858");
+                claim = caseRepository.saveCaseEvent(authorization, claim, LIFT_STAY);
             }
+            System.out.println("Testsssssssss-090909090ew24242");
+            Claim updatedClaim = caseRepository.saveClaimantResponse(claim, claimantResponse, authorization);
+            System.out.println("Testsssssssss-2222222");
+            claimantResponseRule.isValid(updatedClaim);
+            formaliseResponseAcceptance(claimantResponse, response, updatedClaim, authorization);
+            System.out.println("Testsssssssss-26424621343687967");
+            if (isFullDefenseDisputeAcceptation(response, claimantResponse)) {
+                appInsights.trackEvent(AppInsightsEvent.CLAIM_STAYED, REFERENCE_NUMBER, updatedClaim.getReferenceNumber());
+                System.out.println("Testsssssssss-5555555");
+                caseRepository.saveCaseEvent(authorization, updatedClaim, CaseEvent.STAY_CLAIM);
+            }
+            System.out.println("Testsssssssss-4576458960734569803");
+            CaseEvent caseEvent = null;
+            if (claimantResponse.getType() == REJECTION) {
+                System.out.println("Testsssssssss-128917398274870431741");
+                ResponseRejection responseRejection = (ResponseRejection) claimantResponse;
+                System.out.println("Testsssssssss-48967489475048572");
+                caseEvent = directionsQuestionnaireService.prepareCaseEvent(responseRejection, updatedClaim);
+                System.out.println("Testsssssssss-878787878");
+                if (caseEvent == DIRECTIONS_QUESTIONNAIRE_DEADLINE) {
+                    System.out.println("Testsssssssss-09090909");
+                    LocalDate deadline = directionsQuestionnaireDeadlineCalculator.calculate(LocalDateTime.now(clock));
+                    System.out.println("Testsssssssss-475240572430534750289");
+                    caseRepository.updateDirectionsQuestionnaireDeadline(claim, deadline, authorization);
+                    System.out.println("Testsssssssss-3345723059834750295034525823405739850");
+                    updatedClaim = claimService.getClaimByExternalId(externalId, authorization);
+                } else {
+                    System.out.println("Testsssssssss-666666666");
+                    caseRepository.saveCaseEvent(authorization, updatedClaim, caseEvent);
+                }
+            }
+            System.out.println("Testsssssssss-834572405734852734054");
+            if (!isSettlementAgreement(response, claimantResponse)) {
+                System.out.println("Testsssssssss-3434343443");
+                eventProducer.createClaimantResponseEvent(updatedClaim, authorization);
+            }
+            System.out.println("Testsssssssss-dgdgsdgfdggdgfdg");
+            if (isSettlePreJudgment(claimantResponse)) {
+                System.out.println("Testsssssssss-2323123123123123");
+                caseRepository.saveCaseEvent(authorization, updatedClaim, SETTLED_PRE_JUDGMENT);
+            }
+            System.out.println("Testsssssssss-070707070700");
+            raiseAppInsightEvents(updatedClaim, response, claimantResponse, caseEvent);
+            System.out.println("Testsssssssss-wrtw4398753498057");
+        } catch (Exception e) {
+            System.out.println("Testsssssssss-12121212121212211");
+            e.printStackTrace();
+            throw e;
         }
-
-        if (!isSettlementAgreement(response, claimantResponse)) {
-            eventProducer.createClaimantResponseEvent(updatedClaim, authorization);
-        }
-
-        if (isSettlePreJudgment(claimantResponse)) {
-            caseRepository.saveCaseEvent(authorization, updatedClaim, SETTLED_PRE_JUDGMENT);
-        }
-
-        raiseAppInsightEvents(updatedClaim, response, claimantResponse, caseEvent);
 
     }
 

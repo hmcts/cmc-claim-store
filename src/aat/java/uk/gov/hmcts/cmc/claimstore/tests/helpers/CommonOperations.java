@@ -207,6 +207,10 @@ public class CommonOperations {
         String claimExternalId,
         User claimant
     ) {
+        System.out.println("Testsssssssss-" + jsonMapper.toJson(response));
+        System.out.println("Testsssssssss-" + claimExternalId);
+        System.out.println("Testsssssssss-" + claimant.getUserDetails().getId());
+
         return RestAssured
             .given()
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
