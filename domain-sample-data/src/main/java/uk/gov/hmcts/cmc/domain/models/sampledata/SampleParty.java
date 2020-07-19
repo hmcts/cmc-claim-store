@@ -25,7 +25,6 @@ public class SampleParty {
     private Representative representative = SampleRepresentative.builder().build();
     private String companiesHouseNumber;
     private String collectionId = "acd82549-d279-4adc-b38c-d195dd0db0d6";
-    private String pcqId = "acd82549-d279-4adc-b38c-d195dd0db0d6";
 
     public static SampleParty builder() {
         return new SampleParty();
@@ -88,12 +87,12 @@ public class SampleParty {
 
     public Party party() {
         return new Individual(collectionId, name, address, correspondenceAddress, phone, null,
-            representative, dateOfBirth, pcqId);
+            representative, dateOfBirth, null);
     }
 
     public Individual individual() {
         return new Individual(collectionId, name, address, correspondenceAddress, phone, null,
-            representative, dateOfBirth, pcqId);
+            representative, dateOfBirth, null);
     }
 
     public List<Party> individualDetails(int count) {
@@ -101,7 +100,7 @@ public class SampleParty {
         for (int i = 0; i < count; i++) {
             individualDetailsList.add(
                 new Individual(collectionId, name, address, correspondenceAddress, phone, null,
-                    representative, dateOfBirth, pcqId)
+                    representative, dateOfBirth, null)
             );
         }
         return individualDetailsList;
@@ -109,16 +108,16 @@ public class SampleParty {
 
     public SoleTrader soleTrader() {
         return new SoleTrader(collectionId, name, address, correspondenceAddress, phone, null,
-            representative, title, businessName, pcqId);
+            representative, title, businessName, null);
     }
 
     public Company company() {
         return new Company(collectionId, name, address, correspondenceAddress, phone, null,
-            representative, contactPerson, pcqId);
+            representative, contactPerson, null);
     }
 
     public Organisation organisation() {
         return new Organisation(collectionId, name, address, correspondenceAddress, phone, null,
-            representative, contactPerson, companiesHouseNumber, pcqId);
+            representative, contactPerson, companiesHouseNumber, null);
     }
 }
