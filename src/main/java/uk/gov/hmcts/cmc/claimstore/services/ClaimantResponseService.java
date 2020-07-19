@@ -106,7 +106,8 @@ public class ClaimantResponseService {
             formaliseResponseAcceptance(claimantResponse, response, updatedClaim, authorization);
             System.out.println("Testsssssssss-26424621343687967");
             if (isFullDefenseDisputeAcceptation(response, claimantResponse)) {
-                appInsights.trackEvent(AppInsightsEvent.CLAIM_STAYED, REFERENCE_NUMBER, updatedClaim.getReferenceNumber());
+                appInsights.trackEvent(AppInsightsEvent.CLAIM_STAYED, REFERENCE_NUMBER,
+                    updatedClaim.getReferenceNumber());
                 System.out.println("Testsssssssss-5555555");
                 caseRepository.saveCaseEvent(authorization, updatedClaim, CaseEvent.STAY_CLAIM);
             }
