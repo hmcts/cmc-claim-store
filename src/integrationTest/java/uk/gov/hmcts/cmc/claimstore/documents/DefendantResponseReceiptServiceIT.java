@@ -7,8 +7,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.helper.HTMLTemplateProcessor;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
@@ -21,10 +23,9 @@ import static java.nio.file.Files.readString;
 import static java.nio.file.Files.write;
 import static java.nio.file.Path.of;
 import static java.nio.file.Paths.get;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static wiremock.org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.xmlunit.matchers.CompareMatcher.isIdenticalTo;
 
 public class DefendantResponseReceiptServiceIT extends BaseMockSpringTest {
@@ -68,8 +69,38 @@ public class DefendantResponseReceiptServiceIT extends BaseMockSpringTest {
             "src/integrationTest/resources/documents/expectedDefendantResponseReceipt.html"));
 
         assertThat(actualHtml, isIdenticalTo(expectedHtml).ignoreWhitespace());
+    }
 
-        // assertXMLEqual(actualHtml, expectedHtml);
+    @Test
+    public void shouldGenerateDefenceResponseForClaimWithFullDefenceAlreadyPaidWithNone() throws Exception {
+        provideLocalPdfService();
+
+        DirectionsQuestionnaire directionsQuestionnaire = SampleDirectionsQuestionnaire
+            .builder().withRequireSupport(null).build();
+
+        Claim claim = SampleClaim.builder()
+            .withResponse(
+                SampleResponse.FullDefence
+                    .builder()
+                    .withDefenceType(DefenceType.ALREADY_PAID)
+                    .withDirectionsQuestionnaire(directionsQuestionnaire)
+                    .withMediation(null)
+                    .build()
+            )
+            .withRespondedAt(LocalDateTime.now())
+            .build();
+
+        byte[] actualHtmlBytes = defendantResponseReceiptService.createHtml(claim);
+
+        String actualHtml = replaceTimestampsWithFixedValues(new String(actualHtmlBytes));
+
+        // Useful for debugging test ie diff comparison of actual with expected HTML file
+        write(get("build", "tmp", "actual.html"), actualHtml.getBytes());
+
+        String expectedHtml = readString(of(
+            "src/integrationTest/resources/documents/expectedDefendantResponseWithNoHearingSupportReceipt.html"));
+
+        assertThat(actualHtml, isIdenticalTo(expectedHtml).ignoreWhitespace());
     }
 
     private PDFServiceClient provideLocalPdfService() {

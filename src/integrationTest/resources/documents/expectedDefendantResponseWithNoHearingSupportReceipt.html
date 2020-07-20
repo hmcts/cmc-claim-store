@@ -1,0 +1,670 @@
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <title>Money Claim response receipt</title>
+  <style>
+    @page :first {
+      size: 8.5in 11in;
+      margin: 10%;
+      @top-right {
+        /*noinspection CssNoGenericFontName*/
+        font-family: "Open Sans";
+      }
+    }
+
+
+    .dqSection {
+      page: dqSection;
+      page-break-after: avoid;
+    }
+
+    @page {
+      size: 8.5in 11in;
+      margin: 10%;
+
+      @top-right {
+        content: "Claim number: 000MC001";
+        font-size: 12px;
+        /*noinspection CssNoGenericFontName*/
+        font-family: "Open Sans";
+      }
+      @bottom-left {
+        content: "OCON9B";
+        /*noinspection CssNoGenericFontName*/
+        font-family: "Open Sans";
+        font-size: 10px;
+        font-weight: bold;
+      }
+      @bottom-center {
+        content: "For further details of the courts www.gov.uk/find-court-tribunal";
+        font-size: 10px;
+      }
+
+      @bottom-right {
+        content: "&#169; Crown copyright Page " counter(page) " of " counter(pages);
+        font-size: 10px;
+        padding-left: 50px;
+      }
+
+    }
+
+
+    @page dqSection {
+
+      @bottom-left {
+        content: "OCON180";
+        /*noinspection CssNoGenericFontName*/
+        font-family: "Open Sans";
+        font-size: 10px;
+        font-weight: bold;
+      }
+
+    }
+
+    html {
+      /*noinspection CssNoGenericFontName*/
+      font-family: "Open Sans";
+    }
+
+    body {
+      counter-reset: section;
+    }
+
+    .section {
+      margin-bottom: 25px;
+    }
+
+    .section .section-heading {
+      margin-bottom: 10px;
+      font-size: large;
+      page-break-after: avoid;
+    }
+
+    .section .section-heading strong:before {
+      counter-increment: section;
+      content: counter(section) ". ";
+    }
+
+    .next-steps .section-heading strong:before {
+      content: "";
+    }
+
+    .no-border tr, .no-border th, .no-border td {
+      border: none;
+    }
+
+    table {
+      width: 100%;
+      border-spacing: 0;
+    }
+
+    table td {
+      border-top: 1px solid #999;
+      padding: 5px;
+    }
+
+    table tr:last-child td {
+      border-bottom: 1px solid #999;
+    }
+
+    table td:first-child {
+      width: 220px;
+      vertical-align: top;
+    }
+
+    table td:last-child {
+      width: auto;
+    }
+
+    header table td, header table tr:last-child td {
+      border: none;
+    }
+
+    div table tr td:first-child {
+      font-weight: bold;
+    }
+
+    header p, header h2 {
+      text-align: right;
+      margin: 0;
+      padding: 0;
+    }
+
+    header td {
+      margin: 0;
+      padding: 0;
+    }
+
+    ol.enumerate {
+      margin-top: 0;
+      counter-reset: enumerated;
+      list-style: none;
+    }
+
+    ol.enumerate li::before {
+      content: counter(section) "." counter(enumerated) ". ";
+      counter-increment: enumerated;
+      color: #888;
+    }
+
+    ol.enumerate li {
+      margin-bottom: 5px;
+    }
+
+    .spacing-bottom {
+      padding-bottom: 20px;
+    }
+
+    .normal-font {
+      font-weight: normal;
+    }
+
+    .no-border tr, .no-border th, .no-border td {
+      border: none;
+    }
+
+    td.single-cell {
+      font-weight: 100 !important;
+    }
+
+    .no-padding-right {
+      padding-right: 0;
+    }
+
+    .keep-formatting {
+      white-space: pre-line;
+    }
+
+    .heading-medium {
+      padding-bottom: 0;
+      margin-bottom: 0.4em;
+      margin-top: 1.5em;
+      font-size: 22px;
+    }
+
+    .new-dq h2 span {
+      color: #fff;
+      background-color: #5D514D;
+      padding: 5px;
+    }
+
+    table.new-dq td:last-child div {
+      border: 1px solid gray;
+      padding: 5px;
+      min-height: 18px;
+    }
+
+    table.new-dq tr {
+      border: none;
+    }
+
+    table.new-dq td {
+      padding: 0.63158em 1.05263em 0.67368em 0;
+      border-top: none;
+      border-bottom: none !important;
+      min-height: 18px;
+    }
+
+    .new-dq h2 {
+      color: #000;
+      background-color: #EDEDED;
+      font-size: 21px !important;
+    }
+
+    .heading-medium {
+      padding-bottom: 0;
+      margin-bottom: 0.4em;
+      margin-top: 1.5em;
+      font-size: 22px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <table>
+    <tr>
+      <td colspan="2" class="spacing-bottom"><h2 class="normal-font">Defendant&#8217;s response</h2></td>
+    </tr>
+    <tr>
+      <td colspan="2"><p>In the County Court Business Centre</p></td>
+    </tr>
+    <tr>
+      <td colspan="2" class="spacing-bottom"><p>Online Civil Money Claims</p></td>
+    </tr>
+    <tr>
+      <td colspan="2"><p><strong>Claim number: </strong>000MC001</p></td>
+    </tr>
+    <tr>
+      <td colspan="2"><p><strong>Issued on: </strong>
+        <span data-type="timestamp">TIMESTAMP</span>
+      </p></td>
+    </tr>
+    <tr>
+      <td colspan="2" class="spacing-bottom"><strong>Response received on: </strong>
+        <span data-type="timestamp">TIMESTAMP</span>
+      </td>
+    </tr>
+  </table>
+</header>
+
+<br/>
+
+<!-- 1. Defendant's details -->
+<div class="section">
+  <div class="section-heading">
+    <strong>Defendant&#8217;s details</strong>
+  </div>
+  <div class="section-body">
+    <table>
+      <tr>
+        <td>Name</td>
+        <td>
+          John Rambo        </td>
+      </tr>
+                  <tr>
+        <td class="keep-formatting">Address
+                  </td>
+        <td>
+          52          <br/>
+                    Down Street          <br/>
+                              Salford          <br/>
+                    Manchester          <br/>
+          DF1 3LJ        </td>
+      </tr>
+            <tr class="no-border">
+        <td>Correspondence address</td>
+        <td>
+          52          <br/>
+                    Down Street          <br/>
+                              Salford          <br/>
+                    Manchester          <br/>
+          DF1 3LJ        </td>
+      </tr>
+                  <tr>
+        <td>Date of birth</td>
+        <td>
+          2 January 1968        </td>
+      </tr>
+                  <tr>
+        <td>Telephone</td>
+        <td>
+          07873727165          (as amended)
+                  </td>
+      </tr>
+            <tr>
+        <td>Email</td>
+        <td>
+                  </td>
+      </tr>
+    </table>
+  </div>
+</div>
+<!-- 2. Defendant’s response to the claim -->
+<div class="section">
+  <div class="section-heading">
+    <strong>Defendant&#8217;s response to the claim</strong>
+  </div>
+  <div class="section-body">
+    <table>
+      <tr>
+        <td>Defendant&#8217;s response</td>
+        <td>
+          I have paid what I believe I owe        </td>
+      </tr>
+
+                        <tr>
+            <td>Amount they have paid</td>
+            <td>
+              £100.99            </td>
+          </tr>
+                      <tr>
+              <td>When they paid this amount</td>
+              <td>
+                2 January 2016              </td>
+            </tr>
+                                <tr>
+              <td>How they paid the amount</td>
+              <td>
+                Paid cash              </td>
+            </tr>
+                          <tr>
+        <td class="no-border" colspan="2"><strong>Why they dispute the claim</strong></td>
+      </tr>
+      <tr class="no-border">
+        <td colspan="2" class="single-cell">
+          <ol class="enumerate">
+                        <li>defence string</li>
+                      </ol>
+        </td>
+      </tr>
+
+            <tr>
+        <td colspan="2" style="white-space: pre-line"><strong>Defendant&#8217;s timeline of what happened</strong></td>
+      </tr>
+            <tr class="subsection no-border">
+        <td class="no-border single-cell">
+          Last Year        </td>
+        <td class="no-border single-cell">
+          signed a contract        </td>
+      </tr>
+
+            <tr class="no-border">
+        <td><strong>Comments about claimant&#8217;s timeline</strong></td>
+        <td>
+          More information        </td>
+      </tr>
+
+            <tr>
+        <td colspan="2" style="white-space: pre-line"><strong>Defendant&#8217;s evidence</strong></td>
+      </tr>
+            <tr class="subsection no-border">
+        <td class="no-border single-cell">
+          Letters, emails and other correspondence        </td>
+        <td class="no-border single-cell">
+          description        </td>
+      </tr>
+
+            <tr class="no-border">
+        <td><strong>Comments about claimant&#8217;s evidence</strong></td>
+        <td>
+          More information        </td>
+      </tr>
+
+    </table>
+  </div>
+</div>
+
+
+<!-- 3. Mediation -->
+
+<!-- 4. Statement of truth -->
+<div class="section">
+  <div class="section-heading">
+    <strong>Statement of truth</strong>
+  </div>
+  <div class="section-body">
+    <table>
+      <tr>
+        <td></td>
+        <td class="no-border no-padding-right">
+          <p>I believe the facts stated in this response are true.</p>
+          <p>I understand that proceedings for contempt of court may be brought against anyone who makes,
+            or causes to be made, a false statement in a document verified by a statement of truth without
+            an honest belief in its truth.</p>
+        </td>
+      </tr>
+            <tr class="no-border">
+        <td></td>
+        <td class="no-border">John Rambo</td>
+      </tr>
+
+            <tr class="no-border">
+        <td class="no-border"></td>
+        <td class="no-border">
+          <span data-type="timestamp">TIMESTAMP</span>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<div class="section">
+  <h3>What happens next</h3>
+</div>
+
+<div class="section-body">
+  <table>
+    <tr>
+      <td><strong>Settle the claim</strong></td>
+      <td><p>
+        Unless you&#8217;ve been asked not to, you can still contact defendant directly.
+        If you can reach an agreement you may not have to go to a hearing.
+      </p></td>
+    </tr>
+    <tr>
+      <td><strong>Mediation</strong></td>
+      <td>
+        <p>If the defendant has asked for mediation then the claimant will be asked if they want to mediate.</p>
+        <p>
+          If the defendant hasn&#8217;t asked for mediation then the case will be reviewed by a judge and might go to a
+          hearing. The claimant and defendant will be contacted if a hearing date is scheduled and it will be explained
+          what they need to do to prepare.
+        </p>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<div class="dqSection">
+  <header>
+    <table>
+      <tr>
+        <td colspan="2" class="spacing-bottom"><h2 class="normal-font">Directions Questionnaire Online</h2></td>
+      </tr>
+      <tr>
+        <td colspan="2"><p>In the County Court Business Centre</p></td>
+      </tr>
+      <tr>
+        <td colspan="2" class="spacing-bottom"><p>Online Civil Money Claims</p></td>
+      </tr>
+      <tr>
+        <td colspan="2"><p><strong>Claim number: </strong>000MC001</p></td>
+      </tr>
+      <tr>
+        <td colspan="2"><p><strong>Issued on: </strong>
+          <span data-type="timestamp">TIMESTAMP</span>
+        </p></td>
+      </tr>
+      <tr>
+        <td colspan="2" class="spacing-bottom"><strong>Response received on: </strong>
+          <span data-type="timestamp">TIMESTAMP</span>
+        </td>
+      </tr>
+    </table>
+  </header>
+  <table style="width: 80%" class="new-dq">
+    <thead>
+    <tr>
+      <th colspan="2">
+        <h2 class="heading-medium" id="name">
+          <span>A</span> Your details - Defendant
+        </h2>
+      </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td>
+        <div>
+          <strong>Name:</strong></div>
+      </td>
+      <td>
+        <div>John Rambo</div>
+      </td>
+    </tr>
+    <tr>
+    </tr>
+    <tr>
+      <td>
+        Address:
+      </td>
+      <td>
+        <div>
+          52          <br/>
+                    Down Street          <br/>
+                              Salford          <br/>
+                    Manchester          <br/>
+          DF1 3LJ        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <div>
+          Date of birth:
+        </div>
+      </td>
+      <td>
+        <div>
+          2 January 1968        </div>
+      </td>
+    </tr>
+    <tr></tr>
+    <tr>
+      <td>
+        <div>
+          Telephone:
+        </div>
+      </td>
+      <td>
+        <div>
+                  </div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <div>
+          Email:
+        </div>
+      </td>
+      <td>
+        <div></div>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <table style="width: 80%" class="new-dq">
+    <thead>
+    <tr>
+      <th colspan="2">
+        <h2 class="heading-medium">
+          <span>B</span> About the hearing
+        </h2>
+      </th>
+    </tr>
+    </thead>
+    <tbody>
+
+        <tr>
+      <td>
+        <div>
+          Support required for a hearing
+        </div>
+      </td>
+      <td>
+        <div>
+                    None
+                  </div>
+      </td>
+    </tr>
+
+        <tr>
+      <td><b>Hearing location</b></td>
+    </tr>
+    <tr>
+      <td>
+        Preferred hearing centre
+      </td>
+      <td>
+        <div>A Court</div>
+      </td>
+    </tr>
+
+
+          <tr>
+        <td><b>Expert evidence</b></td>
+      </tr>
+
+              <tr>
+          <td>
+            Have you already got a report written by an expert?
+          </td>
+          <td>
+            <div>
+              Yes            </div>
+          </td>
+        </tr>
+
+                <tr>
+          <td>
+            <div>
+              Report 1            </div>
+          </td>
+          <td>
+            <div>
+              expert1 <br/>
+              1 January 2040            </div>
+          </td>
+        </tr>
+
+    <tr>
+      <td><b>Witnesses</b></td>
+    </tr>
+    <tr>
+      <td>
+        <div>
+          Do you want to give evidence?
+        </div>
+      </td>
+      <td>
+        <div>
+          YES        </div>
+      </td>
+
+    </tr>
+
+
+    <tr>
+      <td>
+        <div>
+          Other witnesses
+        </div>
+      </td>
+      <td>
+                <div>Optional[1]</div>
+              </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div>Dates unavailable</div>
+      </td>
+      <td>
+                <div>
+                      <span data-type="timestamp">TIMESTAMP</span>
+            <br/>
+                  </div>
+              </td>
+    </tr>
+
+    </tbody>
+  </table>
+
+  <table style="width: 80%" class="new-dq">
+    <thead>
+    <tr>
+      <th colspan="2">
+        <h2 class="heading-medium">
+          <span>C</span> Signature
+        </h2>
+      </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td>Signed</td>
+      <td>
+        <div>
+                    John Rambo
+
+          <br/>
+          <span data-type="timestamp">TIMESTAMP</span>
+        </div>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+</body>
+</html>
