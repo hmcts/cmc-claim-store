@@ -186,6 +186,10 @@ public class Claim {
         this.bulkPrintDetails = bulkPrintDetails;
     }
 
+    public Optional<LocalDate> getIssuedOn() {
+        return Optional.ofNullable(issuedOn);
+    }
+
     public Optional<Response> getResponse() {
         return Optional.ofNullable(response);
     }
@@ -245,6 +249,9 @@ public class Claim {
     }
 
     public Optional<BigDecimal> getTotalInterestTillDateOfIssue() {
+        if (issuedOn == null) {
+            return Optional.empty();
+        }
         return TotalAmountCalculator.calculateInterestForClaim(this, issuedOn);
     }
 

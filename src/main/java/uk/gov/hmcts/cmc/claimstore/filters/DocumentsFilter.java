@@ -15,11 +15,11 @@ import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentType.FORM;
 
 public class DocumentsFilter {
 
-    private static Predicate<ClaimDocument> docsForDefendant = claimDocument -> defendantViewableDocsType.get()
-        .contains(claimDocument.getDocumentType());
+    private static Predicate<ClaimDocument> docsForDefendant =
+        claimDocument -> defendantViewableDocsType.get().contains(claimDocument.getDocumentType());
 
-    private static Predicate<ClaimDocument> docsForClaimant = claimDocument -> claimantViewableDocsType.get()
-        .contains(claimDocument.getDocumentType());
+    private static Predicate<ClaimDocument> docsForClaimant =
+        claimDocument -> claimantViewableDocsType.get().contains(claimDocument.getDocumentType());
 
     private DocumentsFilter() {
         // Do nothing constructor
@@ -52,7 +52,8 @@ public class DocumentsFilter {
     private static Predicate<ClaimDocument> filterByRole(Claim claim, UserDetails userLoggedIn) {
         if (userLoggedIn.getId().equals(claim.getDefendantId())) {
             return docsForDefendant;
-        } else if (userLoggedIn.getId().equals(claim.getSubmitterId())) {
+        }
+        if (userLoggedIn.getId().equals(claim.getSubmitterId())) {
             return docsForClaimant;
         }
         return x -> false;

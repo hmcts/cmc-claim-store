@@ -150,6 +150,8 @@ public class CCDCase {
     private CCDProceedOnPaperReasonType proceedOnPaperReason;
     private String proceedOnPaperOtherReason;
     private LocalDate calculatedResponseDeadline;
+    private String helpWithFeesNumber;
+    private String helpWithFeesType;
     private CCDResponseType paperAdmissionType;
     private CCDTransferContent transferContent;
     @Builder.Default

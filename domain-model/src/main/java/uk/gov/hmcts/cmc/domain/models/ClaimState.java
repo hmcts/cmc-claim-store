@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 public enum ClaimState {
     CREATE("create"),
+    HWF_APPLICATION_PENDING("hwfApplicationPending"),
     OPEN("open"),
     CLOSED("closed"),
     SETTLED("settled"),

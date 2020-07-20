@@ -103,6 +103,12 @@ public class ClaimMapper {
             .map(BigInteger::toString)
             .ifPresent(builder::feeAmountInPennies);
 
+        claimData.getHelpWithFeesNumber()
+            .ifPresent(builder::helpWithFeesNumber);
+
+        claimData.gethelpWithFeesType()
+            .ifPresent(builder::helpWithFeesType);
+
         builder
             .reason(claimData.getReason());
     }
@@ -135,7 +141,9 @@ public class ClaimMapper {
                 ccdCase.getPreferredCourt(),
                 ccdCase.getFeeCode(),
                 timelineMapper.from(ccdCase),
-                evidenceMapper.from(ccdCase)
+                evidenceMapper.from(ccdCase),
+                ccdCase.getHelpWithFeesNumber(),
+                ccdCase.getHelpWithFeesType()
             )
         );
     }

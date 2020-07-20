@@ -191,7 +191,7 @@ public class CaseMetadataControllerTest {
         assertEquals(dto.getExternalId(), metadata.getExternalId());
         assertEquals(dto.getReferenceNumber(), metadata.getReferenceNumber());
         assertEquals(dto.getCreatedAt(), metadata.getCreatedAt());
-        assertEquals(dto.getIssuedOn(), metadata.getIssuedOn());
+        assertEquals(dto.getIssuedOn().orElseThrow(), metadata.getIssuedOn());
         assertEquals(dto.getResponseDeadline(), metadata.getResponseDeadline());
         assertEquals(dto.isMoreTimeRequested(), metadata.getMoreTimeRequested());
         assertEquals(dto.getIntentionToProceedDeadline(), metadata.getIntentionToProceedDeadline());

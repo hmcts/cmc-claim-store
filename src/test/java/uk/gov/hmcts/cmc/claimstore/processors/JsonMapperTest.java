@@ -75,6 +75,8 @@ public class JsonMapperTest {
                 .withServiceAddress(null)
                 .withDateOfBirth(null)
                 .individualDetails())
+            .withHelpWithFeesNumber("HWF012345")
+            .withhelpWithFeesType("Claim Issue")
             .withFeeCode("X0012")
             .build();
 
@@ -120,6 +122,8 @@ public class JsonMapperTest {
                 .withServiceAddress(null)
                 .withDateOfBirth(null)
                 .individualDetails())
+            .withHelpWithFeesNumber("HWF012345")
+            .withhelpWithFeesType("Claim Issue")
             .withTimeline(SampleTimeline.validDefaults())
             .withEvidence(SampleEvidence.validDefaults())
             .build();
@@ -164,6 +168,8 @@ public class JsonMapperTest {
             .withTimeline(null)
             .withPayment(null)
             .withEvidence(null)
+            .withHelpWithFeesNumber(null)
+            .withhelpWithFeesType(null)
             .build();
         assertThat(output).isEqualTo(expected);
     }
