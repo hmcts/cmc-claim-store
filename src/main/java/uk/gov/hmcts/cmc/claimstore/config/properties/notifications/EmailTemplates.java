@@ -176,5 +176,11 @@ public class EmailTemplates {
     private String defendantContactDetailsChanged;
 
     @NotEmpty
-    private String caseTransferred;
+    private String caseTransferToCourt;
+
+    @NotEmpty
+    private String caseTransferToCcbcForClaimant;
+
+    @NotEmpty
+    private String caseTransferToCcbcForDefendant;
 }

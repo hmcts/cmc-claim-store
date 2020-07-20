@@ -33,6 +33,7 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
@@ -47,6 +48,7 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
@@ -1139,6 +1141,48 @@ public class CoreCaseDataService {
                 String.format(
                     CCD_UPDATE_FAILURE_MESSAGE,
                     claim.getId(),
+                    caseEvent
+                ), exception
+            );
+        }
+    }
+
+    public Claim addBulkPrintDetailsToClaim(
+        String authorisation,
+        List<BulkPrintDetails> bulkPrintDetails,
+        CaseEvent caseEvent,
+        Long caseId
+    ) {
+        try {
+            UserDetails userDetails = userService.getUserDetails(authorisation);
+
+            EventRequestData eventRequestData = eventRequest(caseEvent, userDetails.getId());
+
+            StartEventResponse startEventResponse = startUpdate(
+                authorisation,
+                eventRequestData,
+                caseId,
+                isRepresented(userDetails)
+            );
+
+            Claim updatedClaim = toClaimBuilder(startEventResponse)
+                .bulkPrintDetails(bulkPrintDetails)
+                .build();
+
+            CaseDataContent caseDataContent = caseDataContent(startEventResponse, updatedClaim);
+
+            CaseDetails caseDetails = submitUpdate(authorisation,
+                eventRequestData,
+                caseDataContent,
+                caseId,
+                isRepresented(userDetails)
+            );
+            return caseDetailsConverter.extractClaim(caseDetails);
+        } catch (Exception exception) {
+            throw new CoreCaseDataStoreException(
+                String.format(
+                    CCD_UPDATE_FAILURE_MESSAGE,
+                    caseId,
                     caseEvent
                 ), exception
             );

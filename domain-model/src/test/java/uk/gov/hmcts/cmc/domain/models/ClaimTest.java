@@ -1,15 +1,20 @@
 package uk.gov.hmcts.cmc.domain.models;
 
+import org.junit.Assert;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocument.builder;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.COVER_SHEET;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.GENERAL_LETTER;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.ISSUE_DATE;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.NOW_IN_LOCAL_ZONE;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.RESPONSE_DEADLINE;
@@ -32,6 +37,35 @@ public class ClaimTest {
             claim.getScannedDocument(ScannedDocumentType.FORM, ScannedDocumentSubtype.OCON9X).orElse(null);
 
         assertThat(scannedDocument).isEqualTo(expectedScannedDocument);
+    }
+
+    private Claim getClaimWithDocuments() {
+        ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
+        claimDocumentCollection.addClaimDocument(builder().documentType(GENERAL_LETTER).id("123").build());
+        claimDocumentCollection.addClaimDocument(builder().documentType(COVER_SHEET).id("12345").build());
+        return SampleClaim.getDefault().toBuilder().claimDocumentCollection(claimDocumentCollection).build();
+    }
+
+    @Test
+    public void shouldGetDocumentForProvidedDocumentType() {
+        Claim claim = getClaimWithDocuments();
+
+        Optional<ClaimDocument> claimDocument = claim.getClaimDocument(COVER_SHEET);
+        Assert.assertTrue(claimDocument.isPresent());
+
+        claimDocument = claim.getClaimDocument(ClaimDocumentType.CLAIM_ISSUE_RECEIPT);
+        Assert.assertTrue(claimDocument.isEmpty());
+    }
+
+    @Test
+    public void shouldGetDocumentForProvidedDocumentId() {
+        Claim claim = getClaimWithDocuments();
+
+        Optional<ClaimDocument> claimDocument = claim.getClaimDocument("12345");
+        Assert.assertTrue(claimDocument.isPresent());
+
+        claimDocument = claim.getClaimDocument("456");
+        Assert.assertTrue(claimDocument.isEmpty());
     }
 
     @Test

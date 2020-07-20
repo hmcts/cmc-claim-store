@@ -16,9 +16,11 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 
 import javax.validation.constraints.NotBlank;
+
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.GENERAL_LETTER;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.fromValue;
 
 @Api
 @RestController
@@ -45,11 +47,17 @@ public class DocumentsController {
         @PathVariable("externalId") @NotBlank String externalId,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        ClaimDocumentType claimDocumentType = ClaimDocumentType.fromValue(documentType);
 
-        logger.info("Received request to create/download pdf of type " + claimDocumentType.name());
+        logger.info("Received request to create/download pdf");
 
-        byte[] pdfDocument = documentsService.generateDocument(externalId, claimDocumentType, authorisation);
+        byte[] pdfDocument = null;
+
+        if (documentType.contains(GENERAL_LETTER.name())) {
+            pdfDocument = documentsService.generateDocument(externalId, GENERAL_LETTER,
+                documentType.split(":")[1], authorisation);
+        } else {
+            pdfDocument = documentsService.generateDocument(externalId, fromValue(documentType), authorisation);
+        }
 
         return ResponseEntity
             .ok()

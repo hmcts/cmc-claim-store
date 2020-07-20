@@ -9,6 +9,7 @@ import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.amount.TotalAmountCalculator;
 import uk.gov.hmcts.cmc.domain.constraints.DateNotInTheFuture;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
@@ -83,6 +84,7 @@ public class Claim {
     private final String proceedOfflineOtherReasonDescription;
     private final TransferContent transferContent;
     private final YesNoOption evidenceHandled;
+    private final List<BulkPrintDetails> bulkPrintDetails;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -132,7 +134,8 @@ public class Claim {
         ProceedOfflineReasonType proceedOfflineReason,
         String proceedOfflineOtherReasonDescription,
         TransferContent transferContent,
-        YesNoOption evidenceHandled
+        YesNoOption evidenceHandled,
+        List<BulkPrintDetails> bulkPrintDetails
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -180,6 +183,11 @@ public class Claim {
         this.proceedOfflineOtherReasonDescription = proceedOfflineOtherReasonDescription;
         this.transferContent = transferContent;
         this.evidenceHandled = evidenceHandled;
+        this.bulkPrintDetails = bulkPrintDetails;
+    }
+
+    public Optional<LocalDate> getIssuedOn() {
+        return Optional.ofNullable(issuedOn);
     }
 
     public Optional<LocalDate> getIssuedOn() {
@@ -198,6 +206,12 @@ public class Claim {
     public Optional<ClaimDocument> getClaimDocument(ClaimDocumentType claimDocumentType) {
         return Optional.ofNullable(claimDocumentCollection)
             .flatMap(c -> c.getDocument(claimDocumentType));
+    }
+
+    @JsonIgnore
+    public Optional<ClaimDocument> getClaimDocument(String claimDocumentId) {
+        return Optional.ofNullable(claimDocumentCollection)
+            .flatMap(c -> c.getDocument(claimDocumentId));
     }
 
     @JsonIgnore

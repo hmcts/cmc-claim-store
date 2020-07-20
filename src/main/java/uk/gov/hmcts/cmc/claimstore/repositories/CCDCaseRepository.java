@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
@@ -185,6 +186,11 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
+    public Claim updateHelpWithFeesClaim(User user, Claim claim, CaseEvent caseEvent) {
+        return coreCaseDataService.saveCaseEventIOC(user, claim, caseEvent);
+    }
+
+    @Override
     @LogExecutionTime
     public Claim saveRepresentedClaim(User user, Claim claim) {
         return coreCaseDataService.createRepresentedClaim(user, claim);
@@ -244,5 +250,20 @@ public class CCDCaseRepository implements CaseRepository {
         } else {
             throw new UnsupportedOperationException("State transition not allowed for " + state.name());
         }
+    }
+
+    @Override
+    public Claim addBulkPrintDetailsToClaim(
+        String authorisation,
+        List<BulkPrintDetails> bulkPrintCollection,
+        CaseEvent caseEvent,
+        Claim claim
+    ) {
+        return coreCaseDataService.addBulkPrintDetailsToClaim(
+            authorisation,
+            bulkPrintCollection,
+            caseEvent,
+            claim.getId()
+        );
     }
 }

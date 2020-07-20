@@ -107,6 +107,7 @@ doc_assembly:
   contactChangeTemplateId: "CV-CMC-GOR-ENG-0006.docx"
   noticeOfTransferSentToDefendantTemplateId: "CV-CMC-GOR-ENG-0008.docx"
   noticeOfTransferSentToCourtTemplateId: "CV-CMC-GOR-ENG-0009.docx"
+  noticeOfTransferToCcbcSentToDefendantTemplateId: "CV-CMC-GOR-ENG-0016.docx"
   paperResponseAdmissionTemplateId: "CV-CMC-GOR-ENG-0016.docx"
 
 nonworking-days:
@@ -200,7 +201,9 @@ notifications:
       claimantPaperResponseReceived: "b8bc5ed5-3362-4bcc-b678-c4298f149560"
       defendantContactDetailsChanged: "39b8c7a0-6d8a-4bee-8b79-e0f1df73d249"
       claimantContactDetailsChanged: "bc227831-a2f5-4399-bfa4-06a392bc5a80"
-      caseTransferred: "841843ef-2d49-4c6b-8179-6e42443e049d"
+      caseTransferToCourt: "841843ef-2d49-4c6b-8179-6e42443e049d"
+      caseTransferToCcbcForClaimant: "16b5fefb-1bf3-40ec-ae34-97e3b933e85f"
+      caseTransferToCcbcForDefendant: "92a1f6b1-d4bd-4a34-bb5d-7988054b5b16"
 
 staff-notifications:
   sender:
@@ -213,6 +216,7 @@ feature_toggles:
   ctsc_enabled: false
   staff_emails_enabled: true
   auto_cancel_payments: "${FEATURE_AUTO_CANCEL_PAYMENTS:false}"
+  bulk_print_transfer_enabled: false
 
 feign:
   httpclient:
