@@ -24,6 +24,8 @@ import static java.nio.file.Paths.get;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static wiremock.org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.xmlunit.matchers.CompareMatcher.isIdenticalTo;
 
 public class DefendantResponseReceiptServiceIT extends BaseMockSpringTest {
 
@@ -65,7 +67,9 @@ public class DefendantResponseReceiptServiceIT extends BaseMockSpringTest {
         String expectedHtml = readString(of(
             "src/integrationTest/resources/documents/expectedDefendantResponseReceipt.html"));
 
-        assertXMLEqual(actualHtml, expectedHtml);
+        assertThat(actualHtml, isIdenticalTo(expectedHtml).ignoreWhitespace());
+
+        // assertXMLEqual(actualHtml, expectedHtml);
     }
 
     private PDFServiceClient provideLocalPdfService() {
