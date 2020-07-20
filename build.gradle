@@ -101,8 +101,8 @@ allprojects {
       mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
     dependencies {
-      // CVE-2020-11996
-      dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.36') {
+      // CVE-2020-13935
+      dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.37') {
         entry 'tomcat-embed-core'
         entry 'tomcat-embed-el'
         entry 'tomcat-embed-websocket'

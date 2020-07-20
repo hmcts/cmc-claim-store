@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -100,6 +101,12 @@ public interface CaseRepository {
     Claim linkLetterHolder(Long claimId, String letterHolderId);
 
     Claim saveReviewOrder(Long caseId, ReviewOrder reviewOrder, String authorisation);
+
+    Claim addBulkPrintDetailsToClaim(
+        String authorisation,
+        List<BulkPrintDetails> bulkPrintDetails,
+        CaseEvent caseEvent,
+        Claim claim);
 
 }
 
