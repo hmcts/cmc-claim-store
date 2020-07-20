@@ -122,6 +122,11 @@ public class RoboticsSupportControllerTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
+    public void testRPA_ClaimantResponseNotifications_NullArgument() {
+        controller.rpaClaimantResponseNotifications(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
     public void testRPA_ClaimNotifications_EmptyArgument() {
         controller.rpaClaimNotifications(emptyList());
     }
@@ -139,6 +144,11 @@ public class RoboticsSupportControllerTest {
     @Test(expected = IllegalArgumentException.class)
     public void testRPA_CCJNotifications_EmptyArgument() {
         controller.rpaCCJNotifications(emptyList());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testRPA_ClaimantResponseNotifications_EmptyArgument() {
+        controller.rpaClaimantResponseNotifications(emptyList());
     }
 
     @Test(expected = IllegalArgumentException.class)
