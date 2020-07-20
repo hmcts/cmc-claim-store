@@ -58,6 +58,8 @@ public class ClaimData {
     @Min(0)
     private final BigInteger feeAmountInPennies;
 
+    private final BigInteger feeRemitted;
+
     private final String feeCode;
 
     @Valid
@@ -92,6 +94,9 @@ public class ClaimData {
     @Size(max = 80, message = "must be at most {max} characters")
     private final String preferredCourt;
 
+    private final String helpWithFeesNumber;
+
+
     @Builder(toBuilder = true)
     @SuppressWarnings("squid:S00107") // Number of method parameters
     public ClaimData(
@@ -101,6 +106,7 @@ public class ClaimData {
         Payment payment,
         Amount amount,
         BigInteger feeAmountInPennies,
+        BigInteger feeRemitted,
         Interest interest,
         PersonalInjury personalInjury,
         HousingDisrepair housingDisrepair,
@@ -111,6 +117,7 @@ public class ClaimData {
         String preferredCourt,
         String feeCode,
         Timeline timeline,
+        String helpWithFeesNumber,
         Evidence evidence
     ) {
         this.externalId = externalId != null ? externalId : UUID.randomUUID();
@@ -119,6 +126,7 @@ public class ClaimData {
         this.payment = payment;
         this.amount = amount;
         this.feeAmountInPennies = feeAmountInPennies;
+        this.feeRemitted = feeRemitted;
         this.interest = interest;
         this.personalInjury = personalInjury;
         this.housingDisrepair = housingDisrepair;
@@ -130,6 +138,7 @@ public class ClaimData {
         this.feeCode = feeCode;
         this.timeline = timeline;
         this.evidence = evidence;
+        this.helpWithFeesNumber = helpWithFeesNumber;
     }
 
     public List<Party> getClaimants() {
@@ -142,6 +151,10 @@ public class ClaimData {
 
     public Optional<BigInteger> getFeeAmountInPennies() {
         return Optional.ofNullable(feeAmountInPennies);
+    }
+
+    public Optional<BigInteger> getFeeRemitted() {
+        return Optional.ofNullable(feeRemitted);
     }
 
     public Interest getInterest() {
@@ -174,6 +187,13 @@ public class ClaimData {
     @JsonIgnore
     public Optional<BigDecimal> getFeesPaidInPounds() {
         return Optional.ofNullable(feeAmountInPennies)
+            .map(BigDecimal::new)
+            .map(MonetaryConversions::penniesToPounds);
+    }
+
+    @JsonIgnore
+    public Optional<BigDecimal> getRemittedFeesInPounds() {
+        return Optional.ofNullable(feeRemitted)
             .map(BigDecimal::new)
             .map(MonetaryConversions::penniesToPounds);
     }
@@ -228,6 +248,10 @@ public class ClaimData {
 
     public Optional<Evidence> getEvidence() {
         return Optional.ofNullable(evidence);
+    }
+
+    public Optional<String> getHelpWithFeesNumber() {
+        return Optional.ofNullable(helpWithFeesNumber);
     }
 
     @Override
