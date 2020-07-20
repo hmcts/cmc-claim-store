@@ -93,5 +93,7 @@
         "description": "description"
       }
     ]
-  }
+  },
+  "helpWithFeesNumber": "HWF012345",
+  "helpWithFeesType": "Claim Issue"
 }

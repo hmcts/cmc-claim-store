@@ -7,8 +7,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.claimstore.documents.BulkPrintHandler;
 import uk.gov.hmcts.cmc.claimstore.events.BulkPrintTransferEvent;
-import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.PrintableDocumentService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -36,7 +36,7 @@ class TransferCaseLetterSenderTest {
     private PrintableDocumentService printableDocumentService;
 
     @Mock
-    private EventProducer eventProducer;
+    private BulkPrintHandler bulkPrintHandler;
 
     @Mock
     private CCDCase ccdCase;
@@ -69,10 +69,11 @@ class TransferCaseLetterSenderTest {
         when(ccdCase.getCaseDocuments()).thenReturn(List.of());
         when(ccdCase.getScannedDocuments()).thenReturn(List.of());
         when(ccdCase.getStaffUploadedDocuments()).thenReturn(List.of());
-        when(printableDocumentService.process(noticeForCourt, AUTHORISATION)).thenReturn(coverLetterDoc);
+        when(printableDocumentService.process(eq(noticeForCourt), eq(AUTHORISATION))).thenReturn(coverLetterDoc);
 
         transferCaseLetterSender.sendAllCaseDocumentsToCourt(AUTHORISATION, ccdCase, claim, noticeForCourt);
 
-        verify(eventProducer).createBulkPrintTransferEvent(eq(claim), eq(coverLetterDoc), eq(caseDocuments));
+        verify(bulkPrintHandler)
+            .printBulkTransferDocs(eq(claim), eq(coverLetterDoc), eq(caseDocuments), eq(AUTHORISATION));
     }
 }

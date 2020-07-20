@@ -151,11 +151,16 @@ public class CCDCase {
     private CCDProceedOnPaperReasonType proceedOnPaperReason;
     private String proceedOnPaperOtherReason;
     private LocalDate calculatedResponseDeadline;
+    private String helpWithFeesNumber;
+    private String helpWithFeesType;
     private CCDResponseType paperAdmissionType;
     private CCDTransferContent transferContent;
+    @Builder.Default
+    private List<CCDCollectionElement<CCDBulkPrintDetails>> bulkPrintDetails = Collections.emptyList();
     /**
      * Temporary variables that are not to be persisted to case data but are only used during events.
      */
     @Builder.Default
     private List<CCDCollectionElement<CCDScannedDocument>> temporaryScannedDocuments = Collections.emptyList();
+    private LocalDate dateOfHandoff;
 }

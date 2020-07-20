@@ -17,8 +17,7 @@ import static java.util.function.Predicate.not;
 
 public class ClaimDocumentsAccessRule {
 
-    private static final List<ClaimDocumentType> solicitortViewableDocsType = List.of(ClaimDocumentType.SEALED_CLAIM);
-
+    private static final List<ClaimDocumentType> solicitorViewableDocsType = List.of(ClaimDocumentType.SEALED_CLAIM);
     private static final List<ClaimDocumentType> caseworkerViewableDocsType = List.of(ClaimDocumentType.values());
 
     public static final Supplier<List<ClaimDocumentType>> defendantViewableDocsType = () ->
@@ -42,17 +41,16 @@ public class ClaimDocumentsAccessRule {
             throw new DocumentDownloadForbiddenException(FORBIDDEN_ACTION_MESSAGE);
         }
 
-        if (!findViewableDocsList(claim, user)
-            .contains(docToDownload)) {
+        if (!findViewableDocsList(claim, user).contains(docToDownload)) {
             throw new DocumentDownloadForbiddenException(FORBIDDEN_ACTION_MESSAGE);
         }
     }
 
     private static List<ClaimDocumentType> findViewableDocsList(Claim claim, User user) {
-
         UserDetails userDetails = user.getUserDetails();
+
         if (userDetails.isSolicitor()) {
-            return solicitortViewableDocsType;
+            return solicitorViewableDocsType;
         }
 
         if (userDetails.isCaseworker()) {
@@ -61,9 +59,12 @@ public class ClaimDocumentsAccessRule {
 
         if (userDetails.getId().equals(claim.getDefendantId())) {
             return defendantViewableDocsType.get();
-        } else if (userDetails.getId().equals(claim.getSubmitterId())) {
+        }
+
+        if (userDetails.getId().equals(claim.getSubmitterId())) {
             return claimantViewableDocsType.get();
         }
+
         return Collections.emptyList();
     }
 }

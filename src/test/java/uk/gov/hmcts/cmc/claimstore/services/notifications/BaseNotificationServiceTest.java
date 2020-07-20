@@ -48,7 +48,7 @@ public abstract class BaseNotificationServiceTest {
     protected static final String USER_EMAIL = "user@example.com";
     protected static final String USER_FULLNAME = "Steven Patrick";
 
-    protected final Claim claim = SampleClaim.getDefault().toBuilder().respondedAt(LocalDateTime.now()).build();
+    protected Claim claim = SampleClaim.getDefault().toBuilder().respondedAt(LocalDateTime.now()).build();
 
     protected final Logger log = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 

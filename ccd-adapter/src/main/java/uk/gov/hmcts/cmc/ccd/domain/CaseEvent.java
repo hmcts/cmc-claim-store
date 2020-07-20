@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 public enum CaseEvent {
     CREATE_CASE("CreateClaim"),
+    CREATE_HWF_CASE("CreateHelpWithFeesClaim"),
     ISSUE_CASE("IssueClaim"),
     MORE_TIME_REQUESTED_PAPER("MoreTimeRequestedPaper"),
     TEST_SUPPORT_UPDATE("TestSupportUpdate"),
@@ -59,12 +60,14 @@ public enum CaseEvent {
     ORDER_REVIEW_REQUESTED("OrderReviewRequested"),
     WAITING_TRANSFER("WaitingTransfer"),
     TRANSFER("Transfer"),
+    TRANSFER_TO_CCBC("CaseMovedOffline"),
     AUTOMATED_TRANSFER("AutomatedTransfer"),
     LIFT_STAY("LiftStay"),
     REFER_TO_JUDGE("ReferToJudge"),
     //inversion of control
     INITIATE_CLAIM_PAYMENT_CITIZEN("InitiateClaimPaymentCitizen"),
     RESUME_CLAIM_PAYMENT_CITIZEN("ResumeClaimPaymentCitizen"),
+    UPDATE_HELP_WITH_FEE_CLAIM("ResumeHelpWithFeeClaimSubmission"),
     CREATE_LEGAL_REP_CLAIM("CreateLegalRepClaim"),
     STAY_CLAIM("StayClaim"),
     CREATE_CITIZEN_CLAIM("CreateCitizenClaim"),
@@ -86,6 +89,8 @@ public enum CaseEvent {
     CLAIMANT_RESPONSE_RECEIPT_UPLOAD("ClaimantResponseReceiptUpload"),
     REVIEW_JUDGE_COMMENTS("ReviewJudgeComments"),
     CCJ_REQUEST_UPLOAD("CCJRequestUpload"),
+    CHANGE_CONTACT_DETAILS("ChangeContactDetails"),
+    ADD_BULK_PRINT_DETAILS("UpdateBulkPrintDetails");
     CHANGE_CONTACT_DETAILS("ChangeContactDetails"),
     HWF_PART_REMISSION_GRANTED("HWFPartRemission");
 

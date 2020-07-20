@@ -111,7 +111,8 @@ public class ClaimIssuedNotificationService {
             parameters.put(CLAIMANT_NAME, submitterName);
         }
 
-        parameters.put(ISSUED_ON, Formatting.formatDate(claim.getIssuedOn()));
+        parameters.put(ISSUED_ON, Formatting.formatDate(claim.getIssuedOn()
+            .orElseThrow(() -> new IllegalStateException("Missing issuedOn date"))));
         parameters.put(RESPONSE_DEADLINE, Formatting.formatDate(claim.getResponseDeadline()));
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
         parameters.put(RESPOND_TO_CLAIM_URL, notificationsProperties.getRespondToClaimUrl());

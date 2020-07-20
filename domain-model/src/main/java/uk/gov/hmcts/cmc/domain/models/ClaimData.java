@@ -94,6 +94,10 @@ public class ClaimData {
     @Size(max = 80, message = "must be at most {max} characters")
     private final String preferredCourt;
 
+    private final String helpWithFeesNumber;
+
+    private final String helpWithFeesType;
+
     @Builder(toBuilder = true)
     @SuppressWarnings("squid:S00107") // Number of method parameters
     public ClaimData(
@@ -114,7 +118,9 @@ public class ClaimData {
         String preferredCourt,
         String feeCode,
         Timeline timeline,
-        Evidence evidence
+        Evidence evidence,
+        String helpWithFeesNumber,
+        String helpWithFeesType
     ) {
         this.externalId = externalId != null ? externalId : UUID.randomUUID();
         this.claimants = claimants;
@@ -134,6 +140,8 @@ public class ClaimData {
         this.feeCode = feeCode;
         this.timeline = timeline;
         this.evidence = evidence;
+        this.helpWithFeesNumber = helpWithFeesNumber;
+        this.helpWithFeesType = helpWithFeesType;
     }
 
     public List<Party> getClaimants() {
@@ -243,6 +251,14 @@ public class ClaimData {
 
     public Optional<Evidence> getEvidence() {
         return Optional.ofNullable(evidence);
+    }
+
+    public Optional<String> getHelpWithFeesNumber() {
+        return Optional.ofNullable(helpWithFeesNumber);
+    }
+
+    public Optional<String> gethelpWithFeesType() {
+        return Optional.ofNullable(helpWithFeesType);
     }
 
     @Override

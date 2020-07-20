@@ -29,6 +29,7 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
@@ -49,6 +50,8 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,6 +66,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ADD_BULK_PRINT_DETAILS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CLAIMANT_RESPONSE_ACCEPTATION;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CLAIMANT_RESPONSE_REJECTION;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
@@ -74,6 +78,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.PIN_GENERATION_OPERATIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFER_TO_JUDGE_BY_CLAIMANT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.UPDATE_HELP_WITH_FEE_CLAIM;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.getWithClaimantResponse;
@@ -201,6 +206,43 @@ public class CoreCaseDataServiceTest {
         Claim returnedClaim = service.createNewCase(USER, providedClaim);
 
         assertEquals(expectedClaim, returnedClaim);
+    }
+
+    @Test
+    public void createNewHelpWithFeesCaseShouldReturnClaim() {
+        Claim providedClaim = SampleClaim.getDefault().toBuilder()
+            .issuedOn(null).build();
+        Claim expectedClaim = SampleClaim.claim(providedClaim.getClaimData(), null);
+
+        when(ccdCreateCaseService.startCreate(
+            eq(AUTHORISATION),
+            any(EventRequestData.class),
+            eq(false)
+        ))
+            .thenReturn(StartEventResponse.builder()
+                .caseDetails(CaseDetails.builder().build())
+                .eventId("eventId")
+                .token("token")
+                .build());
+
+        when(ccdCreateCaseService.submitCreate(
+            eq(AUTHORISATION),
+            any(EventRequestData.class),
+            any(CaseDataContent.class),
+            eq(false)
+        ))
+            .thenReturn(CaseDetails.builder()
+                .id(SampleClaim.CLAIM_ID)
+                .data(new HashMap<>())
+                .build());
+
+        when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(expectedClaim);
+
+        Claim returnedClaim = service.createNewHelpWithFeesCase(USER, providedClaim);
+
+        assertEquals(expectedClaim, returnedClaim);
+
     }
 
     @Test
@@ -660,6 +702,24 @@ public class CoreCaseDataServiceTest {
     }
 
     @Test
+    public void addBulkPrintDetailsToClaimShouldBeSuccessful() {
+        Claim claim = SampleClaim.getDefault();
+
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+
+        service.addBulkPrintDetailsToClaim(
+            AUTHORISATION,
+            List.of(BulkPrintDetails.builder().printRequestId(UUID.randomUUID().toString()).build()),
+            ADD_BULK_PRINT_DETAILS,
+            claim.getId());
+
+        verify(coreCaseDataApi).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
+            anyString(), anyString(), eq(ADD_BULK_PRINT_DETAILS.getValue()));
+        verify(coreCaseDataApi).submitEventForCitizen(anyString(), anyString(), anyString(), anyString(),
+            anyString(), anyString(), eq(true), any(CaseDataContent.class));
+    }
+
+    @Test
     public void createClaimShouldSwallowUnprocessableEntityAndReturnClaim() {
         Claim providedClaim = SampleClaim.getDefault();
 
@@ -676,7 +736,9 @@ public class CoreCaseDataServiceTest {
             .thenThrow(new FeignException.UnprocessableEntity("Status 422 from CCD", request, null));
 
         Claim returnedClaim = service.saveCaseEventIOC(USER, providedClaim, CREATE_CITIZEN_CLAIM);
+        Claim hwfClaim = service.saveCaseEventIOC(USER, providedClaim, UPDATE_HELP_WITH_FEE_CLAIM);
 
         assertEquals(providedClaim, returnedClaim);
+        assertEquals(providedClaim, hwfClaim);
     }
 }

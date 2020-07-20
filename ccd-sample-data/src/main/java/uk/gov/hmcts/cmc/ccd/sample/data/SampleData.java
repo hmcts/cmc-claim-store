@@ -76,6 +76,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOtherDirectionHeaderTy
 import static uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDClaimSubmissionOperationIndicators.defaultCCDClaimSubmissionOperationIndicators;
 import static uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDTelephone.withDefaultPhoneNumber;
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.AWAITING_CITIZEN_PAYMENT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOUSAND_POUNDS_OR_LESS;
@@ -563,7 +564,7 @@ public class SampleData {
             .state(OPEN.getValue())
             .build();
     }
-    
+
     public static CCDCase addContactChangePartyClaimant(CCDCase ccdCase) {
         return ccdCase.toBuilder()
             .contactChangeParty(CCDContactPartyType.CLAIMANT)
@@ -592,6 +593,22 @@ public class SampleData {
             .paymentReference(null)
             .applicants(applicants)
             .respondents(respondents)
+            .build();
+    }
+
+    public static CCDCase getCCDCitizenCaseAwaitingayment() {
+        List<CCDCollectionElement<CCDApplicant>> applicants
+            = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
+        List<CCDCollectionElement<CCDRespondent>> respondents
+            = singletonList(CCDCollectionElement.<CCDRespondent>builder().value(getCCDRespondentIndividual()).build());
+
+        return ccdBuilderWithDefault()
+            .amountBreakDown(getAmountBreakDown())
+            .helpWithFeesNumber("HWF12345")
+            .helpWithFeesType("Claim Issue")
+            .applicants(applicants)
+            .respondents(respondents)
+            .state(AWAITING_CITIZEN_PAYMENT.getValue())
             .build();
     }
 

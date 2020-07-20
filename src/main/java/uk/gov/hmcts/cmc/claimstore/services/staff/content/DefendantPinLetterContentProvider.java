@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
@@ -9,6 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,18 +27,23 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Preconditions.requireNonBlank;
 @Component
 public class DefendantPinLetterContentProvider {
 
+    public static final String NEW_FEATURES = "newFeatures";
+
     private final NotificationsProperties notificationsProperties;
     private final StaffEmailProperties staffEmailProperties;
     private final InterestContentProvider interestContentProvider;
+    private final boolean ctscEnabled;
 
     public DefendantPinLetterContentProvider(
         NotificationsProperties notificationsProperties,
         StaffEmailProperties staffEmailProperties,
-        InterestContentProvider interestContentProvider
+        InterestContentProvider interestContentProvider,
+        @Value("${feature_toggles.ctsc_enabled}") boolean ctscEnabled
     ) {
         this.notificationsProperties = notificationsProperties;
         this.staffEmailProperties = staffEmailProperties;
         this.interestContentProvider = interestContentProvider;
+        this.ctscEnabled = ctscEnabled;
     }
 
     public Map<String, Object> createContent(Claim claim, String defendantPin) {
@@ -54,17 +61,14 @@ public class DefendantPinLetterContentProvider {
             .getInterest()
             .getType()
             .equals(Interest.InterestType.NO_INTEREST)) {
+            LocalDate issuedOn = claim.getIssuedOn()
+                .orElseThrow(() -> new IllegalStateException("Missing issuedOn date"));
             InterestContent interestContent = interestContentProvider.createContent(
-                claim.getClaimData()
-                    .getInterest(),
-                claim.getClaimData()
-                    .getInterest()
-                    .getInterestDate(),
-                ((AmountBreakDown) claim.getClaimData()
-                    .getAmount())
-                    .getTotalAmount(),
-                claim.getIssuedOn(),
-                claim.getIssuedOn()
+                claim.getClaimData().getInterest(),
+                claim.getClaimData().getInterest().getInterestDate(),
+                ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount(),
+                issuedOn,
+                issuedOn
             );
             totalAmountComponents.add(interestContent.getAmountRealValue());
         }
@@ -91,7 +95,8 @@ public class DefendantPinLetterContentProvider {
             .getAddress()
         );
         content.put("hmctsEmail", staffEmailProperties.getRecipient());
-
+        content.put(NEW_FEATURES, claim.getFeatures() != null && !claim.getFeatures().isEmpty());
+        content.put("ctscEnabled", ctscEnabled);
         return content;
     }
 }
