@@ -261,7 +261,6 @@
   </thead>
   <tbody>
 
-  {% if hearingContent.supportRequired is not empty %}
   <tr>
     <td>
       <div>
@@ -269,14 +268,19 @@
       </div>
     </td>
     <td>
+      {% if hearingContent.supportRequired is not empty %}
       <div>
         {% for support in hearingContent.supportRequired %}
         {{ support }}<br/>
         {% endfor %}
       </div>
+      {% else %}
+      <div>
+        None
+      </div>
+      {% endif %}
     </td>
   </tr>
-  {% endif %}
 
   {% if hearingContent.hearingLocation is not empty %}
   <tr>
