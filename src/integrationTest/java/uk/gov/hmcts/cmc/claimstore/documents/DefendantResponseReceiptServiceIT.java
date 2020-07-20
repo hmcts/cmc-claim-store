@@ -69,7 +69,6 @@ public class DefendantResponseReceiptServiceIT extends BaseMockSpringTest {
 
         assertThat(actualHtml, isIdenticalTo(expectedHtml).ignoreWhitespace());
 
-        // assertXMLEqual(actualHtml, expectedHtml);
     }
 
     private PDFServiceClient provideLocalPdfService() {
