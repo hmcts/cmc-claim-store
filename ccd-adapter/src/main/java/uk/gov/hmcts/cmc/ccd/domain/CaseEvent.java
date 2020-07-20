@@ -90,6 +90,7 @@ public enum CaseEvent {
     REVIEW_JUDGE_COMMENTS("ReviewJudgeComments"),
     CCJ_REQUEST_UPLOAD("CCJRequestUpload"),
     CHANGE_CONTACT_DETAILS("ChangeContactDetails"),
+    MORE_INFO_REQUIRED_FOR_HWF("MoreInfoRequiredForHWF"),
     ADD_BULK_PRINT_DETAILS("UpdateBulkPrintDetails");
 
     private final String value;

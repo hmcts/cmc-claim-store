@@ -151,6 +151,7 @@ public class CCDCase {
     private String proceedOnPaperOtherReason;
     private LocalDate calculatedResponseDeadline;
     private String helpWithFeesNumber;
+    private String moreInfoDetails;
     private String helpWithFeesType;
     private CCDResponseType paperAdmissionType;
     private CCDTransferContent transferContent;

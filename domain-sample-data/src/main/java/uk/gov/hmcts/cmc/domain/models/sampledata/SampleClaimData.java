@@ -33,6 +33,7 @@ public class SampleClaimData {
     private Interest interest = SampleInterest.standard();
     private String reason = "reason";
     private BigInteger feeAmount = BigInteger.valueOf(4000);
+    private String moreInfoDetails = "Info";
     private String feeAccountNumber = "PBA1234567";
     private StatementOfTruth statementOfTruth;
     private PersonalInjury personalInjury = new PersonalInjury(DamagesExpectation.MORE_THAN_THOUSAND_POUNDS);
@@ -199,6 +200,11 @@ public class SampleClaimData {
         return this;
     }
 
+    public SampleClaimData withMoreInfoDetails(String moreInfoDetails) {
+        this.moreInfoDetails = moreInfoDetails;
+        return this;
+    }
+
     public ClaimData build() {
         return new ClaimData(
             externalId,
@@ -219,6 +225,7 @@ public class SampleClaimData {
             timeline,
             evidence,
             helpWithFeesNumber,
+            moreInfoDetails,
             helpWithFeesType);
     }
 

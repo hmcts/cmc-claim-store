@@ -94,6 +94,8 @@ public class ClaimData {
 
     private final String helpWithFeesNumber;
 
+    private final String moreInfoDetails;
+
     private final String helpWithFeesType;
 
     @Builder(toBuilder = true)
@@ -117,6 +119,7 @@ public class ClaimData {
         Timeline timeline,
         Evidence evidence,
         String helpWithFeesNumber,
+        String moreInfoDetails,
         String helpWithFeesType
     ) {
         this.externalId = externalId != null ? externalId : UUID.randomUUID();
@@ -137,6 +140,7 @@ public class ClaimData {
         this.timeline = timeline;
         this.evidence = evidence;
         this.helpWithFeesNumber = helpWithFeesNumber;
+        this.moreInfoDetails = moreInfoDetails;
         this.helpWithFeesType = helpWithFeesType;
     }
 
@@ -240,6 +244,10 @@ public class ClaimData {
 
     public Optional<String> getHelpWithFeesNumber() {
         return Optional.ofNullable(helpWithFeesNumber);
+    }
+
+    public Optional<String> getMoreInfoDetails() {
+        return Optional.ofNullable(moreInfoDetails);
     }
 
     public Optional<String> gethelpWithFeesType() {

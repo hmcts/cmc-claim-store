@@ -106,6 +106,9 @@ public class ClaimMapper {
         claimData.getHelpWithFeesNumber()
             .ifPresent(builder::helpWithFeesNumber);
 
+        claimData.getMoreInfoDetails()
+            .ifPresent(builder::moreInfoDetails);
+
         claimData.gethelpWithFeesType()
             .ifPresent(builder::helpWithFeesType);
 
@@ -143,6 +146,7 @@ public class ClaimMapper {
                 timelineMapper.from(ccdCase),
                 evidenceMapper.from(ccdCase),
                 ccdCase.getHelpWithFeesNumber(),
+                ccdCase.getMoreInfoDetails(),
                 ccdCase.getHelpWithFeesType()
             )
         );
