@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.CourtLocationType;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.RequireSupport;
 
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
