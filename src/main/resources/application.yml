@@ -148,6 +148,7 @@ notifications:
   templates:
     email:
       claimantClaimIssued: "f034e121-e9d4-441a-91b9-52d0c7d14d73"
+      claimantClaimIssuedWithHwfVerficationPending: "61193c4e-b1f8-4780-8567-21476bdbfc44"
       defendantClaimIssued: "b261ef40-ca55-4f36-b8ff-7f1f34347058"
       defendantResponseIssued: "128bfa11-0b09-4162-bb1e-36fa167af191"
       defendantResponseNeeded: "15f9985a-1775-4f64-a6c7-7616bdbabb1c"

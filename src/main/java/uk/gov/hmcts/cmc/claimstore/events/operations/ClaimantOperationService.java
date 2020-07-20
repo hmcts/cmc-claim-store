@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SENDING_CLAIMANT_NOTIFICATION;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.HWF_APPLICATION_PENDING;
 
 @Component
 public class ClaimantOperationService {
@@ -30,14 +31,26 @@ public class ClaimantOperationService {
     @LogExecutionTime
     public Claim notifyCitizen(Claim claim, String submitterName, String authorisation) {
 
-        claimIssuedNotificationService.sendMail(
-            claim,
-            claim.getSubmitterEmail(),
-            null,
-            notificationsProperties.getTemplates().getEmail().getClaimantClaimIssued(),
-            "claimant-issue-notification-" + claim.getReferenceNumber(),
-            submitterName
-        );
+        if (claim.getState().equals(HWF_APPLICATION_PENDING) && claim.getClaimData().getHelpWithFeesNumber() != null
+            && claim.getClaimData().gethelpWithFeesType() != null) {
+            claimIssuedNotificationService.sendMail(
+                claim,
+                claim.getSubmitterEmail(),
+                null,
+                notificationsProperties.getTemplates().getEmail().getClaimantClaimIssuedWithHwfVerficationPending(),
+                "claimant-issue-notification-" + claim.getReferenceNumber(),
+                submitterName
+            );
+        } else {
+            claimIssuedNotificationService.sendMail(
+                claim,
+                claim.getSubmitterEmail(),
+                null,
+                notificationsProperties.getTemplates().getEmail().getClaimantClaimIssued(),
+                "claimant-issue-notification-" + claim.getReferenceNumber(),
+                submitterName
+            );
+        }
 
         return eventsStatusService.updateClaimOperationCompletion(authorisation, claim, SENDING_CLAIMANT_NOTIFICATION);
     }

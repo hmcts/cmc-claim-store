@@ -190,6 +190,10 @@ public class Claim {
         return Optional.ofNullable(issuedOn);
     }
 
+    public Optional<LocalDate> getIssuedOn() {
+        return Optional.ofNullable(issuedOn);
+    }
+
     public Optional<Response> getResponse() {
         return Optional.ofNullable(response);
     }
