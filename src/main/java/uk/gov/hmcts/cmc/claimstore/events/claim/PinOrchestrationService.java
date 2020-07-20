@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.HWF_APPLICATION_PENDING;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 
 @Service
@@ -49,9 +50,9 @@ public class PinOrchestrationService {
 
         ClaimSubmissionOperationIndicators.ClaimSubmissionOperationIndicatorsBuilder updatedOperationIndicator =
             claim.getClaimSubmissionOperationIndicators().toBuilder()
-            .bulkPrint(NO)
-            .staffNotification(NO)
-            .defendantNotification(NO);
+                .bulkPrint(NO)
+                .staffNotification(NO)
+                .defendantNotification(NO);
 
         try {
             bulkPrintService.print(
@@ -83,7 +84,7 @@ public class PinOrchestrationService {
     }
 
     private void notifyDefendant(Claim claim, String submitterName, GeneratedDocuments generatedDocuments) {
-        if (!claim.getClaimData().isClaimantRepresented()) {
+        if (!claim.getClaimData().isClaimantRepresented() && !(claim.getState().equals(HWF_APPLICATION_PENDING))) {
             claim.getClaimData().getDefendant().getEmail().ifPresent(defendantEmail ->
                 claimIssuedNotificationService.sendMail(
                     claim,
