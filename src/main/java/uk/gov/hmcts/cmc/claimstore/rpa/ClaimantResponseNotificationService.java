@@ -19,6 +19,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.JSON_EXTENSION
 @Service("rpa/claimant-response-notification-service")
 public class ClaimantResponseNotificationService {
 
+    public static final String J_CLAIMANT_RESPONSE = "J claimant response ";
     private final EmailService emailService;
     private final EmailProperties emailProperties;
     private final ClaimantResponseJsonMapper responseJsonMapper;
@@ -45,7 +46,7 @@ public class ClaimantResponseNotificationService {
         requireNonNull(claim);
         EmailAttachment responsePDFAttachment = createClaimantResponseAttachment(claim);
         return new EmailData(emailProperties.getClaimantResponseRecipient(),
-            "J claimant response " + claim.getReferenceNumber(),
+            J_CLAIMANT_RESPONSE + claim.getReferenceNumber(),
             "",
             Lists.newArrayList(responsePDFAttachment)
         );
