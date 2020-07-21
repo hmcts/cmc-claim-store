@@ -9,7 +9,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
-import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.DefendantResponseNotificationService;
@@ -50,8 +49,6 @@ class HWFMoreInfoRemissionCallbackHandlerTest {
     @Mock
     private ClaimService claimService;
 
-
-
     @BeforeEach
     public void setUp() {
         handler = new HWFMoreInfoRemissionCallbackHandler(caseDetailsConverter, deadlineCalculator, caseMapper);
@@ -72,16 +69,14 @@ class HWFMoreInfoRemissionCallbackHandlerTest {
         Claim claim = SampleClaim.getClaimWithFullAdmission();
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
         Map<String, Object> mappedCaseData = new HashMap<>();
-        mappedCaseData.put("helpWithFeesNumber", 1234);
+        mappedCaseData.put("helpWithFeesNumber", "1234");
         mappedCaseData.put("moreInfoDetails", "Details");
         when(caseDetailsConverter.convertToMap(caseMapper.to(claim))).thenReturn(mappedCaseData);
         AboutToStartOrSubmitCallbackResponse response
             = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
         Map<String, Object> data = response.getData();
-
-        assertThat(data).containsEntry("helpWithFeesNumber", 1234);
+        assertThat(data).containsEntry("helpWithFeesNumber", "1234");
         assertThat(data).containsEntry("moreInfoDetails", "Details");
-
     }
 
 }

@@ -76,6 +76,7 @@ public class JsonMapperTest {
                 .withDateOfBirth(null)
                 .individualDetails())
             .withHelpWithFeesNumber("HWF012345")
+            .withMoreInfoDetails(null)
             .withhelpWithFeesType("Claim Issue")
             .withFeeCode("X0012")
             .build();
@@ -123,6 +124,7 @@ public class JsonMapperTest {
                 .withDateOfBirth(null)
                 .individualDetails())
             .withHelpWithFeesNumber("HWF012345")
+            .withMoreInfoDetails(null)
             .withhelpWithFeesType("Claim Issue")
             .withTimeline(SampleTimeline.validDefaults())
             .withEvidence(SampleEvidence.validDefaults())
@@ -169,6 +171,7 @@ public class JsonMapperTest {
             .withPayment(null)
             .withEvidence(null)
             .withHelpWithFeesNumber(null)
+            .withMoreInfoDetails(null)
             .withhelpWithFeesType(null)
             .build();
         assertThat(output).isEqualTo(expected);
@@ -265,6 +268,5 @@ public class JsonMapperTest {
             .build();
 
         assertThat(ccdOrderGenerationData).isEqualTo(expected);
-
     }
 }

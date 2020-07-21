@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
 @Service
@@ -50,7 +49,7 @@ public class HWFMoreInfoRemissionCallbackHandler extends CallbackHandler {
     @Override
     protected Map<CallbackType, Callback> callbacks() {
         return ImmutableMap.of(
-            CallbackType.ABOUT_TO_SUBMIT, this::HwfupdateInfo
+            CallbackType.ABOUT_TO_SUBMIT, this::hwfupdateInfo
         );
     }
 
@@ -64,7 +63,7 @@ public class HWFMoreInfoRemissionCallbackHandler extends CallbackHandler {
         return ROLES;
     }
 
-    private CallbackResponse HwfupdateInfo(CallbackParams callbackParams) {
+    private CallbackResponse hwfupdateInfo(CallbackParams callbackParams) {
         CallbackRequest callbackRequest = callbackParams.getRequest();
 
         Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
