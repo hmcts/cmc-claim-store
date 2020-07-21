@@ -9,6 +9,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimantR
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDraftClaimFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildLetterFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildNoticeOfTransferToCcbcForDefendantFileName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForInterlocutoryJudgmentFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForJudgmentByAdmissionOrDeterminationFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForReferToJudgeFileBaseName;
@@ -124,6 +125,12 @@ public class DocumentNameUtilsTest {
     public void shouldBuildClaimantResponseFileBaseName() {
         assertThat(buildClaimantResponseFileBaseName("000MC001"))
             .isEqualTo("000MC001-claimant-response");
+    }
+
+    @Test
+    public void shouldBuildNoticeOfTransferToCcbcForDefendantFileName() {
+        assertThat(buildNoticeOfTransferToCcbcForDefendantFileName("000MC001"))
+            .isEqualTo("000MC001-defendant-case-handoff");
     }
 
     @Test

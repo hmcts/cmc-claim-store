@@ -25,9 +25,10 @@ public class Organisation extends Party implements HasContactPerson {
         String mobilePhone,
         Representative representative,
         String contactPerson,
-        String companiesHouseNumber
+        String companiesHouseNumber,
+        String pcqId
     ) {
-        super(id, name, address, correspondenceAddress, phone, mobilePhone, representative);
+        super(id, name, address, correspondenceAddress, phone, mobilePhone, representative, pcqId);
         this.contactPerson = contactPerson;
         this.companiesHouseNumber = companiesHouseNumber;
     }

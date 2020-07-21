@@ -7,6 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
@@ -36,6 +37,7 @@ import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -46,6 +48,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SamplePayment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -478,6 +481,22 @@ public class ClaimServiceTest {
     }
 
     @Test
+    public void addBulkPrintDetailsToClaimShouldCallCaseRepository() {
+        String letterId = UUID.randomUUID().toString();
+        List<BulkPrintDetails> printCollection
+            = List.of(BulkPrintDetails.builder().printRequestId(letterId).build());
+        claimService.addBulkPrintDetails(
+            AUTHORISATION, printCollection, CaseEvent.ADD_BULK_PRINT_DETAILS, claim);
+
+        verify(caseRepository).addBulkPrintDetailsToClaim(
+            eq(AUTHORISATION),
+            eq(printCollection),
+            eq(CaseEvent.ADD_BULK_PRINT_DETAILS),
+            eq(claim)
+        );
+    }
+
+    @Test
     public void updateClaimSubmissionOperationIndicatorsShouldCallCaseRepository() {
         ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators = ClaimSubmissionOperationIndicators
             .builder().build();
@@ -602,7 +621,7 @@ public class ClaimServiceTest {
 
         assertThat(argumentCaptorValue.getClaimData().getFeeAccountNumber().orElse("")).isEqualTo("NEW_ACCOUNT");
         AmountBreakDown finalAmount = (AmountBreakDown) argumentCaptorValue.getClaimData().getAmount();
-        assertThat(finalAmount.getTotalAmount()).isEqualTo("1000.99");
+        assertThat(finalAmount.getTotalAmount()).isEqualTo(new BigDecimal("1000.99"));
         assertThat(argumentCaptorValue.getClaimData()).isEqualTo(claimDataToBeUpdated);
     }
 

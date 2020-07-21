@@ -9,8 +9,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
+import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CCDProceedOnPaperReasonType;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.ccd.util.MapperUtil;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -20,7 +23,9 @@ import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -84,6 +89,16 @@ public class CaseMapperTest {
         ccdCaseMapper.to(claim);
     }
 
+    private CCDCase getCcdCaseWithClaimantProvidedEmail(CCDCase ccdCase) {
+        CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
+        String email = respondent.getPartyDetail().getEmailAddress();
+        CCDParty detailByClaimant = respondent.getClaimantProvidedDetail().toBuilder().emailAddress(email).build();
+        CCDRespondent individualRespondent = respondent.toBuilder().claimantProvidedDetail(detailByClaimant).build();
+        List<CCDCollectionElement<CCDRespondent>> respondents
+            = singletonList(CCDCollectionElement.<CCDRespondent>builder().value(individualRespondent).build());
+        return ccdCase.toBuilder().respondents(respondents).build();
+    }
+
     @Test
     public void shouldMapLegalClaimFromCCD() {
         //given
@@ -93,7 +108,7 @@ public class CaseMapperTest {
         Claim claim = ccdCaseMapper.from(ccdCase);
 
         //then
-        assertThat(claim).isEqualTo(ccdCase);
+        assertThat(claim).isEqualTo(getCcdCaseWithClaimantProvidedEmail(ccdCase));
         assertEquals(MapperUtil.getMediationOutcome(ccdCase), claim.getMediationOutcome().orElse(null));
     }
 
@@ -106,7 +121,7 @@ public class CaseMapperTest {
         Claim claim = ccdCaseMapper.from(ccdCase);
 
         //then
-        assertThat(claim).isEqualTo(ccdCase);
+        assertThat(claim).isEqualTo(getCcdCaseWithClaimantProvidedEmail(ccdCase));
         assertEquals(ClaimState.OPEN, claim.getState());
     }
 

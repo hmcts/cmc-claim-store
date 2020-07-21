@@ -57,9 +57,9 @@ public class CaseDetailsConverter {
         // to the WorkingDayIndicator here
         LocalDate intentionToProceedDeadline = calculateIntentionToProceedDeadline(claim.getRespondedAt());
         return claim.toBuilder()
-                    .intentionToProceedDeadline(intentionToProceedDeadline)
-                    .response(updateResponseMethod(claim.getResponse().orElse(null), ccdCase))
-                    .build();
+            .intentionToProceedDeadline(intentionToProceedDeadline)
+            .response(updateResponseMethod(claim.getResponse().orElse(null), ccdCase))
+            .build();
     }
 
     private Response updateResponseMethod(Response response, CCDCase ccdCase) {
@@ -72,9 +72,9 @@ public class CaseDetailsConverter {
             ? ResponseMethod.OFFLINE : ResponseMethod.DIGITAL;
 
         if (response instanceof PartAdmissionResponse) {
-            return ((PartAdmissionResponse)response).toBuilder().responseMethod(responseMethod).build();
+            return ((PartAdmissionResponse) response).toBuilder().responseMethod(responseMethod).build();
         } else if (response instanceof FullAdmissionResponse) {
-            return ((FullAdmissionResponse)response).toBuilder().responseMethod(responseMethod).build();
+            return ((FullAdmissionResponse) response).toBuilder().responseMethod(responseMethod).build();
         } else if (response instanceof FullDefenceResponse) {
             return ((FullDefenceResponse) response).toBuilder().responseMethod(responseMethod).build();
         }
@@ -86,11 +86,11 @@ public class CaseDetailsConverter {
         tempData.put("id", caseDetails.getId());
         tempData.put("state", caseDetails.getState());
 
-        return extractCCDCase(tempData);
+        return jsonMapper.fromMap(tempData, CCDCase.class);
     }
 
-    private CCDCase extractCCDCase(Map<String, Object> mapData) {
-        return jsonMapper.fromMap(mapData, CCDCase.class);
+    public CCDCase convertTo(Claim claim) {
+        return caseMapper.to(claim);
     }
 
     @SuppressWarnings("unchecked")

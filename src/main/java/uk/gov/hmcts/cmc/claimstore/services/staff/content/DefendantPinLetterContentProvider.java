@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
@@ -31,15 +32,18 @@ public class DefendantPinLetterContentProvider {
     private final NotificationsProperties notificationsProperties;
     private final StaffEmailProperties staffEmailProperties;
     private final InterestContentProvider interestContentProvider;
+    private final boolean ctscEnabled;
 
     public DefendantPinLetterContentProvider(
         NotificationsProperties notificationsProperties,
         StaffEmailProperties staffEmailProperties,
-        InterestContentProvider interestContentProvider
+        InterestContentProvider interestContentProvider,
+        @Value("${feature_toggles.ctsc_enabled}") boolean ctscEnabled
     ) {
         this.notificationsProperties = notificationsProperties;
         this.staffEmailProperties = staffEmailProperties;
         this.interestContentProvider = interestContentProvider;
+        this.ctscEnabled = ctscEnabled;
     }
 
     public Map<String, Object> createContent(Claim claim, String defendantPin) {
@@ -92,7 +96,7 @@ public class DefendantPinLetterContentProvider {
         );
         content.put("hmctsEmail", staffEmailProperties.getRecipient());
         content.put(NEW_FEATURES, claim.getFeatures() != null && !claim.getFeatures().isEmpty());
-
+        content.put("ctscEnabled", ctscEnabled);
         return content;
     }
 }
