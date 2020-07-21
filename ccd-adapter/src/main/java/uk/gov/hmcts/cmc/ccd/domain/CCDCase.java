@@ -38,7 +38,6 @@ public class CCDCase {
     private String feeCode;
     private String feeAccountNumber;
     private String feeAmountInPennies;
-    private String feeRemitted;
     private String externalReferenceNumber;
     private AmountType amountType;
     private String amountLowerValue;
@@ -152,6 +151,7 @@ public class CCDCase {
     private String proceedOnPaperOtherReason;
     private LocalDate calculatedResponseDeadline;
     private String helpWithFeesNumber;
+    private String helpWithFeesType;
     private String hwfFeeDetailsSummary;
     private String hwfMandatoryDetails;
     private CCDResponseType paperAdmissionType;
@@ -164,7 +164,4 @@ public class CCDCase {
     @Builder.Default
     private List<CCDCollectionElement<CCDScannedDocument>> temporaryScannedDocuments = Collections.emptyList();
     private LocalDate dateOfHandoff;
-
-
-
 }

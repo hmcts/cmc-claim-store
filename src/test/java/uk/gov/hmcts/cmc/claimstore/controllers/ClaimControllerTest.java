@@ -8,6 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -159,6 +160,50 @@ public class ClaimControllerTest {
         Claim output = claimController.createClaim(claimData, AUTHORISATION, FEATURES);
 
         //then
+        assertThat(output).isEqualTo(expectedResponse);
+    }
+
+    @Test
+    public void shouldCreateHelpWithFeesClaim() {
+        //given
+        ClaimData claimData = SampleClaimData.builder()
+            .withHelpWithFeesNumber("HWF012345")
+            .withhelpWithFeesType("Claim Issue")
+            .build();
+        Claim expectedResponse = Claim.builder().claimData(claimData).build();
+        when(claimService.saveHelpWithFeesClaim(USER_ID, claimData, AUTHORISATION, FEATURES))
+            .thenReturn(expectedResponse);
+
+        //when
+        Claim output = claimController.saveHelpWithFeesClaim(claimData, USER_ID, AUTHORISATION, FEATURES);
+
+        //then
+        assertThat(output).isEqualTo(expectedResponse);
+    }
+
+    @Test
+    public void shouldsaveHelpWithFeesClaim() {
+        ClaimData claimData = SampleClaimData.builder()
+            .withHelpWithFeesNumber("HWF012345")
+            .withhelpWithFeesType("Claim Issue")
+            .withPayment(Payment.builder()
+                .amount(null)
+                .transactionId(null)
+                .returnUrl(null)
+                .reference(null)
+                .nextUrl(null)
+                .id(null)
+                .dateCreated(null)
+                .status(null)
+                .feeId(null)
+                .build())
+            .build();
+        Claim expectedResponse = Claim.builder().claimData(claimData).build();
+        when(claimService.updateHelpWithFeesClaim(AUTHORISATION, claimData, FEATURES))
+            .thenReturn(expectedResponse);
+
+        Claim output = claimController.updateHelpWithFeesClaim(claimData, AUTHORISATION, FEATURES);
+
         assertThat(output).isEqualTo(expectedResponse);
     }
 }

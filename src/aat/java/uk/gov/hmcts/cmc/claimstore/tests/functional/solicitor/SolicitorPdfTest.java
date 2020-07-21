@@ -37,7 +37,8 @@ public class SolicitorPdfTest extends BasePdfTest {
         assertThat(pdfAsText).contains("Claim number: " + createdCase.getReferenceNumber());
         assertThat(pdfAsText).contains("Fee account: " + claimData.getFeeAccountNumber()
             .orElseThrow(() -> new AssertionFailedError("Missing fee account number")));
-        assertThat(pdfAsText).contains("Claim issued: " + Formatting.formatDate(createdCase.getIssuedOn()));
+        assertThat(pdfAsText).contains("Claim issued: "
+            + createdCase.getIssuedOn().map(Formatting::formatDate).orElseThrow());
         assertThat(pdfAsText).contains("Claimant " + claimant.getName() + " \n"
             + getFullAddressString(claimant.getAddress()));
         assertThat(pdfAsText).contains("Service address " + claimData.getDefendant().getName()

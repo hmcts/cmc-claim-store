@@ -68,12 +68,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.UPDATE_HELP_WITH_FEE_CLAIM;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.HWF_CLAIM_CREATED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NUMBER_OF_RECONSIDERATION;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
@@ -297,6 +301,16 @@ public class ClaimServiceTest {
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
             .thenReturn(Optional.of(claim));
 
+        claimService.requestMoreTimeForResponse(EXTERNAL_ID, AUTHORISATION);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void requestMoreTimeForResponseThrowsExceptionWhenIssuedDateIsMissing() {
+        Claim claim = SampleClaim.withNoResponse().toBuilder()
+            .issuedOn(null).build();
+
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
+            .thenReturn(Optional.of(claim));
         claimService.requestMoreTimeForResponse(EXTERNAL_ID, AUTHORISATION);
     }
 
@@ -663,6 +677,53 @@ public class ClaimServiceTest {
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any())).thenReturn(empty());
 
         claimService.saveReviewOrder(EXTERNAL_ID, SampleReviewOrder.getDefault(), AUTHORISATION);
+    }
+
+    @Test
+    public void testSaveHelpWithFeesClaim() {
+        UUID externalId = UUID.randomUUID();
+        ClaimData claimData = SampleClaimData.builder()
+            .withExternalId(externalId)
+            .withHelpWithFeesNumber("HWF01234")
+            .withhelpWithFeesType("Claim Issue").build();
+
+        claimService.saveHelpWithFeesClaim(USER_ID, claimData, AUTHORISATION, singletonList(ADMISSIONS.getValue()));
+
+        verify(caseRepository).saveHelpWithFeesClaim(any(), any());
+        verify(appInsights).trackEvent(HWF_CLAIM_CREATED, AppInsights.CLAIM_EXTERNAL_ID, externalId.toString());
+    }
+
+    @Test
+    public void testUpdateHelpWithFeesClaim() {
+
+        when(caseRepository.getClaimByExternalId(VALID_APP.getExternalId().toString(), USER))
+            .thenReturn(Optional.of(claim));
+        when(caseRepository
+            .updateHelpWithFeesClaim(eq(USER), any(Claim.class), eq(UPDATE_HELP_WITH_FEE_CLAIM)))
+            .thenReturn(claim);
+
+        claimService.updateHelpWithFeesClaim(AUTHORISATION,
+            VALID_APP.toBuilder()
+                .helpWithFeesType("Claim Issue")
+            .helpWithFeesNumber("HWF12345").build(), singletonList(ADMISSIONS.getValue()));
+
+        verify(caseRepository).updateHelpWithFeesClaim(any(), any(), eq(UPDATE_HELP_WITH_FEE_CLAIM));
+        verify(appInsights).trackEvent(HWF_CLAIM_CREATED, AppInsights.CLAIM_EXTERNAL_ID,
+            VALID_APP.getExternalId().toString());
+    }
+
+    @Test(expected = ConflictException.class)
+    public void saveHelpWithFeesClaimShouldThrowConflictExceptionIfAlreadyExists() {
+        ClaimData claimData = SampleClaimData.builder()
+            .withHelpWithFeesNumber("HWF01234")
+            .withhelpWithFeesType("ClaimIssue").build();
+
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
+            .thenReturn(Optional.of(mock(Claim.class)));
+
+        claimService.saveHelpWithFeesClaim(USER_ID, claimData, AUTHORISATION, singletonList(ADMISSIONS.getValue()));
+
+        verifyNoInteractions(appInsights);
     }
 
     private static Claim createRepresentedClaimModel(ClaimData claimData) {

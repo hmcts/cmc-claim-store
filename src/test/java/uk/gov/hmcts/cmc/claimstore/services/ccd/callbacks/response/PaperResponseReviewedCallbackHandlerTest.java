@@ -42,6 +42,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.SUBMITTER_EMAIL;
+import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.ISSUE_DATE;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Paper Response Reviewed handler")
@@ -230,7 +231,7 @@ class PaperResponseReviewedCallbackHandlerTest {
             when(caseDetailsConverter.extractClaim(detailsAfterEvent)).thenReturn(claimAfterEvent);
             when(caseDetailsConverter.extractClaim(detailsBeforeEvent)).thenReturn(claim);
             LocalDate newResponseDeadline = LocalDate.now().plusDays(7);
-            when(responseDeadlineCalculator.calculatePostponedResponseDeadline(claimAfterEvent.getIssuedOn()))
+            when(responseDeadlineCalculator.calculatePostponedResponseDeadline(ISSUE_DATE))
                 .thenReturn(newResponseDeadline);
 
             callbackRequest = CallbackRequest.builder()

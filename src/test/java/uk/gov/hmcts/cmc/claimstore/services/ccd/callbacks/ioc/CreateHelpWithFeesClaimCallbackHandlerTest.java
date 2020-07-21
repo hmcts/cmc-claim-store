@@ -42,7 +42,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_HWF_CASE;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.FAILED;
@@ -50,7 +50,7 @@ import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.withFullClaimData;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CreateCitizenClaimCallbackHandlerTest {
+public class CreateHelpWithFeesClaimCallbackHandlerTest {
     private static final String REFERENCE_NO = "000MC001";
     private static final LocalDate ISSUE_DATE = now();
     private static final LocalDate RESPONSE_DEADLINE = ISSUE_DATE.plusDays(14);
@@ -112,7 +112,7 @@ public class CreateCitizenClaimCallbackHandlerTest {
         );
 
         callbackRequest = CallbackRequest.builder()
-            .eventId(CREATE_CITIZEN_CLAIM.getValue())
+            .eventId(CREATE_HWF_CASE.getValue())
             .caseDetails(caseDetails)
             .build();
 

@@ -123,7 +123,8 @@ class PaperResponseReviewedHandler {
 
     private void updateMoreTimeRequestedResponse() {
         Claim claimByEvent = claimAfterEvent.get();
-        LocalDate deadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claimByEvent.getIssuedOn());
+        LocalDate deadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claimByEvent.getIssuedOn()
+            .orElseThrow(() -> new IllegalStateException("Missing issuedOn date")));
 
         errors.addAll(moreTimeRequestRule.validateMoreTimeCanBeRequested(claimByEvent, deadline));
         responseClaim

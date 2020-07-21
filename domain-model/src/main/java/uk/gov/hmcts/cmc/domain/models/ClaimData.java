@@ -94,7 +94,10 @@ public class ClaimData {
 
     private final String helpWithFeesNumber;
 
+    private final String helpWithFeesType;
+
     private final String hwfFeeDetailsSummary;
+
     private final String hwfMandatoryDetails;
 
     @Builder(toBuilder = true)
@@ -116,10 +119,11 @@ public class ClaimData {
         String preferredCourt,
         String feeCode,
         Timeline timeline,
+        Evidence evidence,
         String helpWithFeesNumber,
+        String helpWithFeesType,
         String hwfFeeDetailsSummary,
-        String hwfMandatoryDetails,
-        Evidence evidence
+        String hwfMandatoryDetails
     ) {
         this.externalId = externalId != null ? externalId : UUID.randomUUID();
         this.claimants = claimants;
@@ -138,9 +142,10 @@ public class ClaimData {
         this.feeCode = feeCode;
         this.timeline = timeline;
         this.evidence = evidence;
+        this.helpWithFeesNumber = helpWithFeesNumber;
+        this.helpWithFeesType = helpWithFeesType;
         this.hwfFeeDetailsSummary = hwfFeeDetailsSummary;
         this.hwfMandatoryDetails = hwfMandatoryDetails;
-        this.helpWithFeesNumber = helpWithFeesNumber;
     }
 
     public List<Party> getClaimants() {
@@ -245,6 +250,10 @@ public class ClaimData {
         return Optional.ofNullable(helpWithFeesNumber);
     }
 
+    public Optional<String> gethelpWithFeesType() {
+        return Optional.ofNullable(helpWithFeesType);
+    }
+
     public Optional<String> getHwfFeeDetailsSummary() {
         return Optional.ofNullable(hwfFeeDetailsSummary);
     }
@@ -257,5 +266,4 @@ public class ClaimData {
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ourStyle());
     }
-
 }

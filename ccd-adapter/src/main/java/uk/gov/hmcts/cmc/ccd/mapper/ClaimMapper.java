@@ -106,6 +106,9 @@ public class ClaimMapper {
         claimData.getHelpWithFeesNumber()
             .ifPresent(builder::helpWithFeesNumber);
 
+        claimData.gethelpWithFeesType()
+            .ifPresent(builder::helpWithFeesType);
+
         claimData.getHwfFeeDetailsSummary()
             .ifPresent(builder::hwfFeeDetailsSummary);
 
@@ -144,11 +147,12 @@ public class ClaimMapper {
                 ccdCase.getPreferredCourt(),
                 ccdCase.getFeeCode(),
                 timelineMapper.from(ccdCase),
+                evidenceMapper.from(ccdCase),
                 ccdCase.getHelpWithFeesNumber(),
+                ccdCase.getHelpWithFeesType(),
                 ccdCase.getHwfFeeDetailsSummary(),
-                ccdCase.getHwfMandatoryDetails(),
-                evidenceMapper.from(ccdCase)
-                )
+                ccdCase.getHwfMandatoryDetails()
+            )
         );
     }
 
