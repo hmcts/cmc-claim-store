@@ -96,6 +96,8 @@ public class ClaimData {
 
     private final String helpWithFeesNumber;
 
+    private final String hwfFeeDetailsSummary;
+    private final String hwfMandatoryDetails;
 
     @Builder(toBuilder = true)
     @SuppressWarnings("squid:S00107") // Number of method parameters
@@ -118,6 +120,8 @@ public class ClaimData {
         String feeCode,
         Timeline timeline,
         String helpWithFeesNumber,
+        String hwfFeeDetailsSummary,
+        String hwfMandatoryDetails,
         Evidence evidence
     ) {
         this.externalId = externalId != null ? externalId : UUID.randomUUID();
@@ -138,6 +142,8 @@ public class ClaimData {
         this.feeCode = feeCode;
         this.timeline = timeline;
         this.evidence = evidence;
+        this.hwfFeeDetailsSummary = hwfFeeDetailsSummary;
+        this.hwfMandatoryDetails = hwfMandatoryDetails;
         this.helpWithFeesNumber = helpWithFeesNumber;
     }
 
@@ -253,6 +259,16 @@ public class ClaimData {
     public Optional<String> getHelpWithFeesNumber() {
         return Optional.ofNullable(helpWithFeesNumber);
     }
+
+
+        public Optional<String> getHwfFeeDetailsSummary() {
+        return Optional.ofNullable(hwfFeeDetailsSummary);
+    }
+
+    public Optional<String> getHwfMandatoryDetails() {
+        return Optional.ofNullable(hwfMandatoryDetails);
+    }
+
 
     @Override
     public String toString() {

@@ -21,7 +21,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
     import java.util.Collections;
     import java.util.List;
     import java.util.Map;
-    import java.util.Optional;
+
 
     import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
@@ -50,7 +50,7 @@ public class HWFNoRemissionCallbackHandler extends CallbackHandler {
     @Override
     protected Map<CallbackType, Callback> callbacks() {
         return ImmutableMap.of(
-            CallbackType.ABOUT_TO_SUBMIT, this::updateFeeRemitted
+            CallbackType.ABOUT_TO_SUBMIT, this::updateRejectionReasons
         );
     }
 
@@ -64,7 +64,7 @@ public class HWFNoRemissionCallbackHandler extends CallbackHandler {
         return ROLES;
     }
 
-    private CallbackResponse updateFeeRemitted(CallbackParams callbackParams) {
+    private CallbackResponse updateRejectionReasons(CallbackParams callbackParams) {
         CallbackRequest callbackRequest = callbackParams.getRequest();
 
         Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());

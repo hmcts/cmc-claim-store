@@ -152,6 +152,8 @@ public class CCDCase {
     private String proceedOnPaperOtherReason;
     private LocalDate calculatedResponseDeadline;
     private String helpWithFeesNumber;
+    private String hwfFeeDetailsSummary;
+    private String hwfMandatoryDetails;
     private CCDResponseType paperAdmissionType;
     private CCDTransferContent transferContent;
     @Builder.Default
@@ -163,8 +165,6 @@ public class CCDCase {
     private List<CCDCollectionElement<CCDScannedDocument>> temporaryScannedDocuments = Collections.emptyList();
     private LocalDate dateOfHandoff;
 
-    private HWFFeesSummaryType hwfFeeDetailsSummary;
-    private String hwfReferenceNumber;
-    private String hwfMandatoryDetails;
+
 
 }

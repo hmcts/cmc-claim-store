@@ -42,7 +42,11 @@ public class SampleClaimData {
     private String feeCode = "X0012";
     private Timeline timeline = SampleTimeline.validDefaults();
     private Evidence evidence = SampleEvidence.validDefaults();
+
     private String helpWithFeesNumber = "HWF012345";
+
+    private String hwfFeeDetailsSummary = "Summary";
+    private String hwfMandatoryDetails = "Details";
 
     private HousingDisrepair housingDisrepair = new HousingDisrepair(
         DamagesExpectation.MORE_THAN_THOUSAND_POUNDS,
@@ -200,6 +204,17 @@ public class SampleClaimData {
         return this;
     }
 
+    public SampleClaimData withHwfFeeDetailsSummary(String hwfFeeDetailsSummary) {
+        this.hwfFeeDetailsSummary = hwfFeeDetailsSummary;
+        return this;
+    }
+
+    public SampleClaimData withHwfMandatoryDetails(String hwfMandatoryDetails) {
+        this.hwfMandatoryDetails = hwfMandatoryDetails;
+        return this;
+    }
+
+
     public ClaimData build() {
         return new ClaimData(
             externalId,
@@ -220,6 +235,8 @@ public class SampleClaimData {
             feeCode,
             timeline,
             helpWithFeesNumber,
+            hwfFeeDetailsSummary,
+            hwfMandatoryDetails,
             evidence
         );
     }
