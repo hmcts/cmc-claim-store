@@ -31,8 +31,7 @@ public class ClaimantOperationService {
     @LogExecutionTime
     public Claim notifyCitizen(Claim claim, String submitterName, String authorisation) {
 
-        if (claim.getState().equals(HWF_APPLICATION_PENDING) && claim.getClaimData().getHelpWithFeesNumber() != null
-            && claim.getClaimData().gethelpWithFeesType() != null) {
+        if (claim.getState().equals(HWF_APPLICATION_PENDING)) {
             claimIssuedNotificationService.sendMail(
                 claim,
                 claim.getSubmitterEmail(),

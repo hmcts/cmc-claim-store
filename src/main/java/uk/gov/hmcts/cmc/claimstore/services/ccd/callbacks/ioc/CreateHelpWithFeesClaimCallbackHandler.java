@@ -51,7 +51,6 @@ public class CreateHelpWithFeesClaimCallbackHandler extends CallbackHandler {
     private final ReferenceNumberRepository referenceNumberRepository;
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
     private final CaseMapper caseMapper;
-    private final PaymentsService paymentsService;
     private final EventProducer eventProducer;
     private final UserService userService;
 
@@ -62,7 +61,6 @@ public class CreateHelpWithFeesClaimCallbackHandler extends CallbackHandler {
         ReferenceNumberRepository referenceNumberRepository,
         ResponseDeadlineCalculator responseDeadlineCalculator,
         CaseMapper caseMapper,
-        PaymentsService paymentsService,
         EventProducer eventProducer,
         UserService userService
     ) {
@@ -71,7 +69,6 @@ public class CreateHelpWithFeesClaimCallbackHandler extends CallbackHandler {
         this.referenceNumberRepository = referenceNumberRepository;
         this.responseDeadlineCalculator = responseDeadlineCalculator;
         this.caseMapper = caseMapper;
-        this.paymentsService = paymentsService;
         this.eventProducer = eventProducer;
         this.userService = userService;
     }
@@ -96,7 +93,6 @@ public class CreateHelpWithFeesClaimCallbackHandler extends CallbackHandler {
         logger.info("Created citizen case for callback of type {}, claim with external id {}",
             callbackParams.getType(),
             claim.getExternalId());
-        String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
 
         LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
 
