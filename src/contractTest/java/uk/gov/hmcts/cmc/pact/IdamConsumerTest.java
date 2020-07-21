@@ -9,7 +9,7 @@ import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.model.RequestResponsePact;
 import com.google.common.collect.Maps;
-import net.serenitybdd.rest.SerenityRest;
+import io.restassured.RestAssured;
 import org.apache.http.entity.ContentType;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -61,7 +61,7 @@ public class IdamConsumerTest {
         headers.put(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN);
         //replace with RestAssured? or SuperTest?
         String actualResponseBody =
-            SerenityRest
+            RestAssured
                 .given()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -117,7 +117,7 @@ public class IdamConsumerTest {
 
         String actualResponseBody =
 
-            SerenityRest
+            RestAssured
                 .given()
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
                 .body(createRequestBody())
