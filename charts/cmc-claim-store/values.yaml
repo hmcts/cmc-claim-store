@@ -29,6 +29,7 @@ java:
         - rpa-email-response
         - rpa-email-ccj
         - rpa-email-paid-in-full
+        - rpa-email-claimant-response
         - launchDarkly-sdk-key
         - sendgrid-api-key
   environment:

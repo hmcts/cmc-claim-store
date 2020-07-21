@@ -66,6 +66,11 @@ data "azurerm_key_vault_secret" "rpa_email_paid_in_full" {
   key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
 }
 
+data "azurerm_key_vault_secret" "rpa_email_claimant_response" {
+  name = "rpa-email-claimant-response"
+  key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
+}
+
 data "azurerm_key_vault_secret" "anonymous_caseworker_username" {
   name = "anonymous-caseworker-username"
   key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
