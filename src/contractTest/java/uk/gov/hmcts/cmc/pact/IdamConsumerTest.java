@@ -35,7 +35,7 @@ public class IdamConsumerTest {
     private static final String CLIENT_REDIRECT_URI = "/oauth2redirect";
     private static final String ACCESS_TOKEN = "111";
 
-    @Pact(provider = "Idam_api", consumer = "em_stitching_api")//Producer pacticipant , consumer service
+    @Pact(provider = "idam-api", consumer = "claim-store-api")//Producer pacticipant , consumer service
     public RequestResponsePact executeGetUserDetailsAndGet200(PactDslWithProvider builder) {
 
         Map<String, String> headers = Maps.newHashMap(); //create hashmap
@@ -43,7 +43,7 @@ public class IdamConsumerTest {
 
         return builder
             .given("Idam successfully returns user details")
-            .uponReceiving("Provider receives a GET /details request from an Stitching API")
+            .uponReceiving("Provider receives a GET /details request from an claim-store API")
             .path(IDAM_DETAILS_URL)
             .method(HttpMethod.GET.toString())
             .headers(headers)
@@ -59,7 +59,6 @@ public class IdamConsumerTest {
 
         Map<String, String> headers = Maps.newHashMap();
         headers.put(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN);
-        //replace with RestAssured? or SuperTest?
         String actualResponseBody =
             RestAssured
                 .given()
@@ -91,7 +90,7 @@ public class IdamConsumerTest {
 
     }
 
-    @Pact(provider = "Idam_api", consumer = "em_stitching_api")
+    @Pact(provider = "idam-api", consumer = "claim-store-api")
     public RequestResponsePact executeGetIdamAccessTokenAndGet200(PactDslWithProvider builder) throws JSONException {
 
         Map<String, String> headers = Maps.newHashMap();

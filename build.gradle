@@ -38,7 +38,7 @@ def versions = [
   jackson           : '2.10.0',
   junit             : '5.5.2',
   junitPlatform     : '1.5.2',
-  pact_version      : '3.5.24'
+  pact_version      : '3.5.25'
 ]
 
 allprojects {
@@ -464,7 +464,7 @@ task contract(type: Test) {
 }
 
 task runAndPublishConsumerPactTests(type: Test){
-  logger.lifecycle("Runs pact Tests")
+  logger.lifecycle("Run PACT Tests")
   testClassesDirs = sourceSets.contractTest.output.classesDirs
   classpath = sourceSets.contractTest.runtimeClasspath
 

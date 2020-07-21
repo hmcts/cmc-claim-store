@@ -1,20 +1,20 @@
 {
   "provider": {
-    "name": "Idam_api"
+    "name": "idam-api"
   },
   "consumer": {
-    "name": "cmc_claimstore_api"
+    "name": "claim-store-api"
   },
   "interactions": [
     {
-      "description": "Provider receives a POST /o/token request from an claimstore API",
+      "description": "Provider receives a POST /o/token request from an claim-store API",
       "request": {
         "method": "POST",
         "path": "/o/token",
         "headers": {
           "Content-Type": "application/x-www-form-urlencoded"
         },
-        "body": "{\"grant_type\": \"password\", \"client_id\": \"em\", \"client_secret\": \"some_client_secret\", \"redirect_uri\": \"/oauth2redirect\", \"scope\": \"openid roles profile\", \"username\": \"stitchingusername\", \"password\": \"stitchingpwd\"\n }"
+        "body": "{\"grant_type\": \"password\", \"client_id\": \"em\", \"client_secret\": \"some_client_secret\", \"redirect_uri\": \"/oauth2redirect\", \"scope\": \"openid roles profile\", \"username\": \"claimstoreusername\", \"password\": \"claimstorepwd\"\n }"
       },
       "response": {
         "status": 200,
@@ -100,7 +100,7 @@
       ]
     },
     {
-      "description": "Provider receives a GET /details request from an Stitching API",
+      "description": "Provider receives a GET /details request from an claimstore API",
       "request": {
         "method": "GET",
         "path": "/details",
@@ -115,10 +115,10 @@
         },
         "body": {
           "forename": "Case",
-          "surname": "Officer",
+          "surname": "Worker",
           "roles": "[\"caseofficer-em\"]",
           "id": "123",
-          "email": "em-caseofficer@fake.hmcts.net"
+          "email": "cmc-caseworker-test@test.hmcts.net"
         },
         "matchingRules": {
           "body": {
@@ -188,7 +188,7 @@
       "version": "3.0.0"
     },
     "pact-jvm": {
-      "version": "3.5.24"
+      "version": "3.5.25"
     }
   }
 }
