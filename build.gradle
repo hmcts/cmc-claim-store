@@ -10,6 +10,7 @@ plugins {
   id 'jacoco'
   id 'net.ltgt.apt' version '0.21'
   id 'idea'
+  id 'au.com.dius.pact' version '4.0.4'
 }
 
 dependencyUpdates.resolutionStrategy = {
@@ -37,6 +38,7 @@ def versions = [
   jackson           : '2.10.0',
   junit             : '5.5.2',
   junitPlatform     : '1.5.2',
+  pact_version      : '3.5.24'
 ]
 
 allprojects {
@@ -160,6 +162,7 @@ allprojects {
 configurations {
   aatCompile.extendsFrom(testCompile)
   aatRuntime.extendsFrom(testRuntime)
+  contractTestCompile.extendsFrom(testCompile)
   integrationTestCompile.extendsFrom(testCompile)
   integrationTestRuntime.extendsFrom(testRuntime)
 }
@@ -251,6 +254,18 @@ dependencies {
   testCompile group: 'net.jodah', name: 'failsafe', version: '2.4.0'
   testCompile group: 'org.xmlunit', name: 'xmlunit-core', version: '2.7.0'
   testCompile group: 'org.xmlunit', name: 'xmlunit-matchers', version: '2.6.3'
+
+  //PACT Contract Testing
+
+  compile group: 'au.com.dius', name: 'pact-jvm-consumer-junit5_2.12', version: '3.5.24'
+  compile group: 'au.com.dius', name: 'pact-jvm-consumer-java8_2.12', version: '3.5.24'
+
+  compile("org.junit.jupiter:junit-jupiter-api:5.3.2")
+  runtime("org.junit.jupiter:junit-jupiter-engine:5.3.2")
+  implementation('org.junit.jupiter:junit-jupiter-api:5.3.2')
+
+/*  compile sourceSets.main.runtimeClasspath
+  compile sourceSets.test.runtimeClasspath*/
 }
 
 sourceSets {
@@ -274,6 +289,15 @@ sourceSets {
     resources {
       srcDir('src/aat/resources')
     }
+  }
+
+  contractTest {
+    java {
+      compileClasspath += main.output
+      runtimeClasspath += main.output
+      srcDir file('src/contractTest/java')
+    }
+    resources.srcDir file('src/contactTest/resources')
   }
 }
 
@@ -425,5 +449,41 @@ idea {
     testSourceDirs += project.sourceSets.integrationTest.resources.srcDirs
     testSourceDirs += project.sourceSets.aat.java.srcDirs
     testSourceDirs += project.sourceSets.aat.resources.srcDirs
+  }
+}
+
+task contract(type: Test) {
+  group = 'Delivery pipeline'
+  description = 'Runs the consumer Pact tests'
+  useJUnitPlatform()
+  testClassesDirs = sourceSets.contractTest.output.classesDirs
+  classpath = sourceSets.contractTest.runtimeClasspath
+  include "uk/gov/hmcts/cmc/claimstore/**"
+  systemProperty 'pact.rootDir', "pacts"
+  environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
+}
+
+task runAndPublishConsumerPactTests(type: Test){
+  logger.lifecycle("Runs pact Tests")
+  testClassesDirs = sourceSets.contractTest.output.classesDirs
+  classpath = sourceSets.contractTest.runtimeClasspath
+
+}
+
+project.ext {
+  pactVersion = getCheckedOutGitCommitHash()
+}
+
+def getCheckedOutGitCommitHash() {
+  'git rev-parse --verify --short HEAD'.execute().text.trim()
+}
+
+
+pact {
+  publish {
+    pactDirectory = 'pacts'
+    pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
+    tags = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
+    version = project.pactVersion
   }
 }
