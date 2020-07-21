@@ -1,30 +1,29 @@
 
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 
-    import com.google.common.collect.ImmutableList;
-    import com.google.common.collect.ImmutableMap;
-    import org.springframework.beans.factory.annotation.Autowired;
-    import org.springframework.stereotype.Service;
-    import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-    import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
-    import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
-    import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
-    import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
-    import uk.gov.hmcts.cmc.domain.models.Claim;
-    import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
-    import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-    import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-    import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
+import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
-    import java.time.LocalDate;
-    import java.time.LocalDateTime;
-    import java.util.ArrayList;
-    import java.util.Collections;
-    import java.util.List;
-    import java.util.Map;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
-
-    import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
 @Service
 public class HWFHalfRemissionCallbackHandler extends CallbackHandler {
@@ -41,8 +40,8 @@ public class HWFHalfRemissionCallbackHandler extends CallbackHandler {
 
     @Autowired
     public HWFHalfRemissionCallbackHandler(CaseDetailsConverter caseDetailsConverter,
-                                         DirectionsQuestionnaireDeadlineCalculator deadlineCalculator,
-                                         CaseMapper caseMapper) {
+                                           DirectionsQuestionnaireDeadlineCalculator deadlineCalculator,
+                                           CaseMapper caseMapper) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.deadlineCalculator = deadlineCalculator;
         this.caseMapper = caseMapper;

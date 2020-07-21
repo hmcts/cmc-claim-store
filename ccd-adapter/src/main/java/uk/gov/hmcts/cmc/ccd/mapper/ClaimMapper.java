@@ -112,10 +112,6 @@ public class ClaimMapper {
         claimData.getHwfMandatoryDetails()
             .ifPresent(builder::hwfMandatoryDetails);
 
-        claimData.getFeeRemitted()
-            .map(BigInteger::toString)
-            .ifPresent(builder::feeRemitted);
-
         builder
             .reason(claimData.getReason());
     }
@@ -138,7 +134,6 @@ public class ClaimMapper {
                 paymentMapper.from(ccdCase),
                 amountMapper.from(ccdCase),
                 createBigInteger(ccdCase.getFeeAmountInPennies()),
-                createBigInteger(ccdCase.getFeeRemitted()),
                 interestMapper.from(ccdCase),
                 personalInjuryMapper.from(ccdCase),
                 housingDisrepairMapper.from(ccdCase),

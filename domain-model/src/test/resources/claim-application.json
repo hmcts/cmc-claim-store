@@ -75,6 +75,10 @@
   "feeAmountInPennies": 4000,
   "reason": "reason",
   "feeCode": "X0012",
+  "feeRemitted": "3000",
+  "helpWithFeesNumber": "HWF012345",
+  "hwfFeeDetailsSummary" : "Summary",
+  "hwfMandatoryDetails" : "Details",
   "timeline": {
     "rows": [
       {

@@ -9,7 +9,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
-import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.DefendantResponseNotificationService;
@@ -50,8 +49,6 @@ class HWFFullRemissionCallbackHandlerTest {
     @Mock
     private ClaimService claimService;
 
-
-
     @BeforeEach
     public void setUp() {
         handler = new HWFFullRemissionCallbackHandler(caseDetailsConverter, deadlineCalculator, caseMapper);
@@ -74,7 +71,7 @@ class HWFFullRemissionCallbackHandlerTest {
         Map<String, Object> mappedCaseData = new HashMap<>();
         mappedCaseData.put("helpWithFeesNumber", "139999");
         mappedCaseData.put("hwfFeeDetailsSummary", "NOT_QUALIFY_FEE_ASSISTANCE");
-        mappedCaseData.put("hwfFeeDetailsSummary", "Details");
+        mappedCaseData.put("hwfMandatoryDetails", "Details");
         when(caseDetailsConverter.convertToMap(caseMapper.to(claim))).thenReturn(mappedCaseData);
         AboutToStartOrSubmitCallbackResponse response
             = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
@@ -82,8 +79,7 @@ class HWFFullRemissionCallbackHandlerTest {
 
         assertThat(data).containsEntry("helpWithFeesNumber", "139999");
         assertThat(data).containsEntry("hwfFeeDetailsSummary", "NOT_QUALIFY_FEE_ASSISTANCE");
-        assertThat(data).containsEntry("hwfFeeDetailsSummary", "Details");
-
+        assertThat(data).containsEntry("hwfMandatoryDetails", "Details");
     }
 
 }
