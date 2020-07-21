@@ -235,7 +235,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
             PDF_BYTES,
             DRAFT_CLAIM_RECEIPT
         ));
-        byte[] pdf = documentManagementBackedDocumentsService.generateDocument(
+        byte[] pdf = documentManagementBackendDocumentsService.generateDocument(
             claim.getExternalId(),
             DRAFT_CLAIM_RECEIPT,
             AUTHORISATION);
