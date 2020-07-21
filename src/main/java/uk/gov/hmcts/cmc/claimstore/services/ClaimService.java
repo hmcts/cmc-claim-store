@@ -1,7 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
@@ -29,6 +31,7 @@ import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
@@ -64,6 +67,9 @@ public class ClaimService {
     private final PaidInFullRule paidInFullRule;
     private final ClaimAuthorisationRule claimAuthorisationRule;
     private final ReviewOrderRule reviewOrderRule;
+
+    @Value("${feature_toggles.ctsc_enabled}")
+    private boolean ctscEnabled;
 
     @SuppressWarnings("squid:S00107")
     @Autowired
@@ -109,7 +115,7 @@ public class ClaimService {
     public Claim getFilteredClaimByExternalId(String externalId, String authorisation) {
         User user = userService.getUser(authorisation);
         return DocumentsFilter.filterDocuments(
-            getClaimByExternalId(externalId, user), user.getUserDetails()
+            getClaimByExternalId(externalId, user), user.getUserDetails(), ctscEnabled
         );
     }
 
@@ -398,6 +404,20 @@ public class ClaimService {
         eventProducer.createReviewOrderEvent(authorisation, updatedClaim);
         appInsights.trackEvent(NUMBER_OF_RECONSIDERATION, REFERENCE_NUMBER, claim.getReferenceNumber());
         return updatedClaim;
+    }
+
+    public Claim addBulkPrintDetails(
+        String authorisation,
+        List<BulkPrintDetails> bulkPrintCollection,
+        CaseEvent caseEvent,
+        Claim claim
+    ) {
+        return caseRepository.addBulkPrintDetailsToClaim(
+            authorisation,
+            bulkPrintCollection,
+            caseEvent,
+            claim
+        );
     }
 
     private Claim buildClaimFrom(

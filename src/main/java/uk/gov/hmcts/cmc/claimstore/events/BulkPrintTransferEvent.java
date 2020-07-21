@@ -15,6 +15,7 @@ public class BulkPrintTransferEvent {
     private final Claim claim;
     private final Document coverLetter;
     private final List<PrintableDocument> caseDocuments;
+    private final String authorisation;
 
     public static class PrintableDocument {
         private final Document document;

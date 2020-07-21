@@ -14,6 +14,8 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentSubtype.OCON9X;
+import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentType.FORM;
 
 @ExtendWith(MockitoExtension.class)
 class ScannedDocumentsControllerTest {
@@ -40,11 +42,11 @@ class ScannedDocumentsControllerTest {
 
         byte[] pdfDocument = new byte[]{1, 2, 3};
 
-        when(documentsService.getOCON9xForm(claim.getExternalId(), AUTHORISATION))
+        when(documentsService.generateScannedDocument(claim.getExternalId(), FORM, OCON9X, AUTHORISATION))
             .thenReturn(pdfDocument);
 
-        ResponseEntity<ByteArrayResource> response =
-            scannedDocumentsController.ocon9xForm(claim.getExternalId(), AUTHORISATION);
+        ResponseEntity<ByteArrayResource> response = scannedDocumentsController.scannedDocument(claim.getExternalId(),
+            "FORM", "OCON9X", AUTHORISATION);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(pdfDocument, response.getBody().getByteArray());
