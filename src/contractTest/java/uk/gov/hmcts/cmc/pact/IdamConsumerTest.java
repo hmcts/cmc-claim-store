@@ -154,13 +154,13 @@ public class IdamConsumerTest {
     }
 
     private PactDslJsonBody createUserDetailsResponse() {
-        PactDslJsonArray array = new PactDslJsonArray().stringValue("caseofficer-em");
+        PactDslJsonArray array = new PactDslJsonArray().stringValue("caseworker-cmc");
 
         return new PactDslJsonBody()
             .stringType("id", "123")
-            .stringType("email", "em-caseofficer@fake.hmcts.net")
-            .stringType("forename", "Case")
-            .stringType("surname", "Officer")
+            .stringType("email", "cmc-caseworker@fake.hmcts.net")
+            .stringType("forename", "case")
+            .stringType("surname", "worker")
             .stringType("roles", array.toString());
 
     }
@@ -168,12 +168,12 @@ public class IdamConsumerTest {
     private static String createRequestBody() {
 
         return "{\"grant_type\": \"password\","
-            + " \"client_id\": \"em\","
+            + " \"client_id\": \"cmc\","
             + " \"client_secret\": \"some_client_secret\","
             + " \"redirect_uri\": \"/oauth2redirect\","
             + " \"scope\": \"openid roles profile\","
-            + " \"username\": \"stitchingusername\","
-            + " \"password\": \"stitchingpwd\"\n"
+            + " \"username\": \"cmcusername\","
+            + " \"password\": \"cmcpwd\"\n"
             + " }";
     }
 
