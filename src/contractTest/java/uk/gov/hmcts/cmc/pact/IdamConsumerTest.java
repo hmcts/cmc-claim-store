@@ -149,8 +149,7 @@ public class IdamConsumerTest {
             .stringType("scope", "openid roles profile")
             .stringType("id_token", "some-value")
             .stringType("token_type", "Bearer")
-            .stringType("expires_in","12345");
-
+            .stringType("expires_in", "12345");
     }
 
     private PactDslJsonBody createUserDetailsResponse() {
@@ -162,11 +161,9 @@ public class IdamConsumerTest {
             .stringType("forename", "case")
             .stringType("surname", "worker")
             .stringType("roles", array.toString());
-
     }
 
     private static String createRequestBody() {
-
         return "{\"grant_type\": \"password\","
             + " \"client_id\": \"cmc\","
             + " \"client_secret\": \"some_client_secret\","
@@ -176,7 +173,4 @@ public class IdamConsumerTest {
             + " \"password\": \"cmcpwd\"\n"
             + " }";
     }
-
-
 }
-

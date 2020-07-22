@@ -256,10 +256,8 @@ dependencies {
   testCompile group: 'org.xmlunit', name: 'xmlunit-matchers', version: '2.6.3'
 
   //PACT Contract Testing
-
   testCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit5_2.12', version: versions.pactVersion
   testCompile group: 'au.com.dius', name: 'pact-jvm-consumer-java8_2.12', version: versions.pactVersion
-  
 }
 
 sourceSets {
