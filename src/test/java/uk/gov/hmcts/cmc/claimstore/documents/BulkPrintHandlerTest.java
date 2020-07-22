@@ -9,8 +9,6 @@ import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintablePdf;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintableTemplate;
 import uk.gov.hmcts.cmc.claimstore.events.BulkPrintTransferEvent;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
-import uk.gov.hmcts.cmc.claimstore.events.GeneralLetterReadyToPrintEvent;
-import uk.gov.hmcts.cmc.claimstore.events.legaladvisor.DirectionsOrderReadyToPrintEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.sendletter.api.Document;
@@ -22,15 +20,18 @@ import java.util.List;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.BULK_PRINT_TRANSFER_TYPE;
-import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.DIRECTION_ORDER_LETTER_TYPE;
-import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.GENERAL_LETTER_TYPE;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.BULK_PRINT_TRANSFER_TYPE;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.DIRECTION_ORDER_LETTER_TYPE;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.GENERAL_LETTER_TYPE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BulkPrintHandlerTest {
 
     @Mock
     private BulkPrintService bulkPrintService;
+
+    private static final String AUTHORISATION = "Bearer: let me in";
 
     @Test
     public void notifyStaffForDefendantLetters() {
@@ -41,13 +42,13 @@ public class BulkPrintHandlerTest {
         Document sealedClaimDocument = new Document("sealedClaimTemplate", new HashMap<>());
 
         DocumentReadyToPrintEvent printEvent
-            = new DocumentReadyToPrintEvent(claim, defendantLetterDocument, sealedClaimDocument);
+            = new DocumentReadyToPrintEvent(claim, defendantLetterDocument, sealedClaimDocument, AUTHORISATION);
 
         //when
         bulkPrintHandler.print(printEvent);
 
         //verify
-        verify(bulkPrintService).print(
+        verify(bulkPrintService).printHtmlLetter(
             claim,
             ImmutableList.of(
                 new PrintableTemplate(
@@ -56,7 +57,10 @@ public class BulkPrintHandlerTest {
                 new PrintableTemplate(
                     sealedClaimDocument,
                     claim.getReferenceNumber() + "-claim-form")
-            ));
+            ),
+            FIRST_CONTACT_LETTER_TYPE,
+            AUTHORISATION
+        );
     }
 
     @Test
@@ -67,11 +71,8 @@ public class BulkPrintHandlerTest {
         Document coverSheet = new Document("coverSheet", new HashMap<>());
         Document legalOrder = new Document("legalOrder", new HashMap<>());
 
-        DirectionsOrderReadyToPrintEvent printEvent
-            = new DirectionsOrderReadyToPrintEvent(claim, coverSheet, legalOrder);
-
         //when
-        bulkPrintHandler.print(printEvent);
+        bulkPrintHandler.printDirectionOrder(claim, coverSheet, legalOrder, AUTHORISATION);
 
         //verify
         verify(bulkPrintService).printPdf(
@@ -83,7 +84,9 @@ public class BulkPrintHandlerTest {
                 new PrintablePdf(
                     legalOrder,
                     claim.getReferenceNumber() + "-directions-order")
-            ), DIRECTION_ORDER_LETTER_TYPE);
+            ),
+            DIRECTION_ORDER_LETTER_TYPE,
+            AUTHORISATION);
     }
 
     @Test
@@ -93,11 +96,8 @@ public class BulkPrintHandlerTest {
         Claim claim = SampleClaim.getDefault();
         Document generalLetter = new Document("letter", new HashMap<>());
 
-        GeneralLetterReadyToPrintEvent printEvent
-            = new GeneralLetterReadyToPrintEvent(claim, generalLetter);
-
         //when
-        bulkPrintHandler.print(printEvent);
+        bulkPrintHandler.printGeneralLetter(claim, generalLetter, AUTHORISATION);
 
         //verify
         verify(bulkPrintService).printPdf(
@@ -107,7 +107,10 @@ public class BulkPrintHandlerTest {
                     generalLetter,
                     claim.getReferenceNumber() + "-general-letter-"
                         + LocalDate.now())
-            ), GENERAL_LETTER_TYPE);
+            ),
+            GENERAL_LETTER_TYPE,
+            AUTHORISATION
+        );
     }
 
     @Test
@@ -125,10 +128,8 @@ public class BulkPrintHandlerTest {
             new BulkPrintTransferEvent.PrintableDocument(caseDocument, caseDocumentFileName)
         );
 
-        BulkPrintTransferEvent printEvent = new BulkPrintTransferEvent(claim, coverLetter, caseDocuments);
-
         //when
-        bulkPrintHandler.print(printEvent);
+        bulkPrintHandler.printBulkTransferDocs(claim, coverLetter, caseDocuments, AUTHORISATION);
 
         //verify
         verify(bulkPrintService).printPdf(
@@ -141,6 +142,8 @@ public class BulkPrintHandlerTest {
                     caseDocument,
                     caseDocumentFileName
                 )
-            ), BULK_PRINT_TRANSFER_TYPE);
+            ),
+            BULK_PRINT_TRANSFER_TYPE,
+            AUTHORISATION);
     }
 }

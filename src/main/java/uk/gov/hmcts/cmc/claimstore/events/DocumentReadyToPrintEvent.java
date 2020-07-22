@@ -9,12 +9,18 @@ public class DocumentReadyToPrintEvent {
     private final Claim claim;
     private final Document defendantLetterDocument;
     private final Document sealedClaimDocument;
+    private final String authorisation;
 
-    public DocumentReadyToPrintEvent(Claim claim, Document defendantLetterDocument, Document sealedClaimDocument) {
-
+    public DocumentReadyToPrintEvent(
+        Claim claim,
+        Document defendantLetterDocument,
+        Document sealedClaimDocument,
+        String authorisation
+    ) {
         this.claim = claim;
         this.defendantLetterDocument = defendantLetterDocument;
         this.sealedClaimDocument = sealedClaimDocument;
+        this.authorisation = authorisation;
     }
 
     public Claim getClaim() {
@@ -29,6 +35,10 @@ public class DocumentReadyToPrintEvent {
         return sealedClaimDocument;
     }
 
+    public String getAuthorisation() {
+        return authorisation;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -40,12 +50,13 @@ public class DocumentReadyToPrintEvent {
         DocumentReadyToPrintEvent that = (DocumentReadyToPrintEvent) obj;
         return Objects.equals(claim, that.claim)
             && Objects.equals(defendantLetterDocument, that.defendantLetterDocument)
-            && Objects.equals(sealedClaimDocument, that.sealedClaimDocument);
+            && Objects.equals(sealedClaimDocument, that.sealedClaimDocument)
+            && Objects.equals(authorisation, that.authorisation);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(claim, defendantLetterDocument, sealedClaimDocument);
+        return Objects.hash(claim, defendantLetterDocument, sealedClaimDocument, authorisation);
     }
 }

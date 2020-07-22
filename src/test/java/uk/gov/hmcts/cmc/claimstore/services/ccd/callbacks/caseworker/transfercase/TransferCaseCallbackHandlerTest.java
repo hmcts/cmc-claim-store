@@ -102,7 +102,7 @@ class TransferCaseCallbackHandlerTest {
 
         CallbackParams callbackParams = getCallbackParams(ABOUT_TO_SUBMIT);
 
-        when(transferCasePostProcessor.completeCaseTransfer(callbackParams)).thenReturn(expectedResponse);
+        when(transferCasePostProcessor.transferToCourt(callbackParams)).thenReturn(expectedResponse);
 
         CallbackResponse response = handler.handle(callbackParams);
 
