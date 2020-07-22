@@ -43,7 +43,7 @@ public class TransferCaseCallbackHandler extends CallbackHandler {
     protected Map<CallbackType, Callback> callbacks() {
         return Map.of(
             CallbackType.ABOUT_TO_START, this::prepopulateData,
-            CallbackType.ABOUT_TO_SUBMIT, transferCasePostProcessor::completeCaseTransfer
+            CallbackType.ABOUT_TO_SUBMIT, transferCasePostProcessor::transferToCourt
         );
     }
 

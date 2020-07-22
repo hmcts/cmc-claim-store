@@ -42,6 +42,7 @@ public class IndividualMapper {
 
         builder
             .partyName(individual.getName())
+            .pcqId(individual.getPcqId())
             .partyDetail(applicantPartyDetail.build());
     }
 
@@ -51,6 +52,7 @@ public class IndividualMapper {
         return Individual.builder()
             .id(individual.getId())
             .name(applicant.getPartyName())
+            .pcqId(applicant.getPcqId())
             .address(addressMapper.from(partyDetails.getPrimaryAddress()))
             .correspondenceAddress(addressMapper.from(partyDetails.getCorrespondenceAddress()))
             .phone(telephoneMapper.from(partyDetails.getTelephoneNumber()))

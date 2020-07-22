@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.domain.models.Address;
@@ -19,9 +20,12 @@ public class LegalOrderCoverSheetContentProvider {
     private static final String PARTY_FULL_NAME = "partyFullName";
 
     private final StaffEmailProperties staffEmailProperties;
+    private final boolean ctscEnabled;
 
-    public LegalOrderCoverSheetContentProvider(StaffEmailProperties staffEmailProperties) {
+    public LegalOrderCoverSheetContentProvider(StaffEmailProperties staffEmailProperties,
+                                               @Value("${feature_toggles.ctsc_enabled}") boolean ctscEnabled) {
         this.staffEmailProperties = staffEmailProperties;
+        this.ctscEnabled = ctscEnabled;
     }
 
     public Map<String, Object> createContentForClaimant(Claim claim) {
@@ -50,6 +54,7 @@ public class LegalOrderCoverSheetContentProvider {
         content.put(CLAIM_REFERENCE_NUMBER, claimReferenceNumber);
         content.put(PARTY_ADDRESS, partyAddress);
         content.put(HMCTS_EMAIL, staffEmailProperties.getRecipient());
+        content.put("ctscEnabled", ctscEnabled);
         return content;
     }
 }
