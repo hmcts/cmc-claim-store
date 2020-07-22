@@ -31,19 +31,22 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_HWF_CASE;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.HWF_APPLICATION_PENDING;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
 @Service
 @Conditional(FeesAndPaymentsConfiguration.class)
 public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
-    private static final List<CaseEvent> EVENTS = Collections.singletonList(CREATE_CITIZEN_CLAIM);
+    private static final List<CaseEvent> EVENTS = Arrays.asList(CREATE_CITIZEN_CLAIM, CREATE_HWF_CASE);
     private static final List<Role> ROLES = Collections.singletonList(CITIZEN);
 
     private final ImmutableMap<CallbackType, Callback> callbacks = ImmutableMap.of(
@@ -98,39 +101,51 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
     }
 
     private CallbackResponse createCitizenClaim(CallbackParams callbackParams) {
+        Claim updatedClaim = null;
         Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
         logger.info("Created citizen case for callback of type {}, claim with external id {}",
             callbackParams.getType(),
             claim.getExternalId());
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
-        Payment payment = paymentsService.retrievePayment(authorisation, claim.getClaimData())
-            .orElseThrow(() -> new IllegalStateException(format(
-                "Claim with external id %s has no payment record",
-                claim.getExternalId()))
-            );
 
-        if (payment.getStatus() != PaymentStatus.SUCCESS) {
-            logger.info("Payment not successful for claim with external id {}", claim.getExternalId());
+        if (claim.getState().equals(HWF_APPLICATION_PENDING)) {
+            LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
+            updatedClaim = claim.toBuilder()
+                .channel(ChannelType.CITIZEN)
+                .claimData(claim.getClaimData().toBuilder()
+                    .build())
+                .issuedOn(issuedOn)
+                .referenceNumber(String.valueOf(claim.getId()))
+                .build();
+        } else {
+            Payment payment = paymentsService.retrievePayment(authorisation, claim.getClaimData())
+                .orElseThrow(() -> new IllegalStateException(format(
+                    "Claim with external id %s has no payment record",
+                    claim.getExternalId()))
+                );
 
-            return AboutToStartOrSubmitCallbackResponse.builder()
-                .errors(ImmutableList.of("Payment not successful"))
+            if (payment.getStatus() != PaymentStatus.SUCCESS) {
+                logger.info("Payment not successful for claim with external id {}", claim.getExternalId());
+
+                return AboutToStartOrSubmitCallbackResponse.builder()
+                    .errors(ImmutableList.of("Payment not successful"))
+                    .build();
+            }
+
+            LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
+
+            updatedClaim = claim.toBuilder()
+                .channel(ChannelType.CITIZEN)
+                .claimData(claim.getClaimData().toBuilder()
+                    .payment(payment)
+                    .build())
+                .referenceNumber(referenceNumberRepository.getReferenceNumberForCitizen())
+                .createdAt(LocalDateTimeFactory.nowInUTC())
+                .issuedOn(issuedOn)
+                .serviceDate(issuedOn.plusDays(5))
+                .responseDeadline(responseDeadlineCalculator.calculateResponseDeadline(issuedOn))
                 .build();
         }
-
-        LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
-
-        Claim updatedClaim = claim.toBuilder()
-            .channel(ChannelType.CITIZEN)
-            .claimData(claim.getClaimData().toBuilder()
-                .payment(payment)
-                .build())
-            .referenceNumber(referenceNumberRepository.getReferenceNumberForCitizen())
-            .createdAt(LocalDateTimeFactory.nowInUTC())
-            .issuedOn(issuedOn)
-            .serviceDate(issuedOn.plusDays(5))
-            .responseDeadline(responseDeadlineCalculator.calculateResponseDeadline(issuedOn))
-            .build();
-
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetailsConverter.convertToMap(caseMapper.to(updatedClaim)))
             .build();

@@ -102,7 +102,8 @@ public class PinOrchestrationService {
     }
 
     private void notifyDefendant(Claim claim, String submitterName, GeneratedDocuments generatedDocuments) {
-        if (!(claim.getClaimData().isClaimantRepresented()) && !(claim.getState().equals(HWF_APPLICATION_PENDING))) {
+        if (Boolean.FALSE.equals((claim.getClaimData().isClaimantRepresented()))
+            && !(claim.getState().equals(HWF_APPLICATION_PENDING))) {
             claim.getClaimData().getDefendant().getEmail().ifPresent(defendantEmail ->
                 claimIssuedNotificationService.sendMail(
                     claim,
