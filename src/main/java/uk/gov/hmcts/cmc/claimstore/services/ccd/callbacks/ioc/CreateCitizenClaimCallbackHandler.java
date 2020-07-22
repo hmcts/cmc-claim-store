@@ -37,17 +37,18 @@ import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_HWF_CASE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.*;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.AWAITING_RESPONSE_HWF;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.HWF_APPLICATION_PENDING;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
 @Service
 @Conditional(FeesAndPaymentsConfiguration.class)
 public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
-    private static final List<CaseEvent> EVENTS = Arrays.asList(CREATE_CITIZEN_CLAIM, CREATE_HWF_CASE);
-    private static final List<Role> ROLES = Collections.singletonList(CITIZEN);
+    private static final List<CaseEvent> EVENTS = Arrays.asList(CREATE_CITIZEN_CLAIM, CREATE_HWF_CASE, INVALID_HWF_REFERENCE);
+    private static final List<Role> ROLES = Arrays.asList(CITIZEN, CASEWORKER);
 
     private final ImmutableMap<CallbackType, Callback> callbacks = ImmutableMap.of(
         CallbackType.ABOUT_TO_SUBMIT, this::createCitizenClaim,
@@ -108,13 +109,11 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
             claim.getExternalId());
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
 
-        if (claim.getState().equals(HWF_APPLICATION_PENDING)) {
-            LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
+        if (claim.getState().equals(HWF_APPLICATION_PENDING) || claim.getState().equals(AWAITING_RESPONSE_HWF)) {
             updatedClaim = claim.toBuilder()
                 .channel(ChannelType.CITIZEN)
                 .claimData(claim.getClaimData().toBuilder()
                     .build())
-                .issuedOn(issuedOn)
                 .referenceNumber(String.valueOf(claim.getId()))
                 .build();
         } else {

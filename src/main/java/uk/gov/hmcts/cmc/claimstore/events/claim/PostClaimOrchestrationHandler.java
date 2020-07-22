@@ -21,6 +21,8 @@ import uk.gov.hmcts.cmc.domain.models.ClaimState;
 
 import java.util.function.UnaryOperator;
 
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.AWAITING_RESPONSE_HWF;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.HWF_APPLICATION_PENDING;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 
 @Async("threadPoolTaskExecutor")
@@ -105,23 +107,29 @@ public class PostClaimOrchestrationHandler {
 
             UnaryOperator<Claim> doPinOperation = c -> generatePinOperation.perform(c, event);
 
-            PDF sealedClaimPdf = documentOrchestrationService.getSealedClaimPdf(claim);
-            PDF claimIssueReceiptPdf = documentOrchestrationService.getClaimIssueReceiptPdf(claim);
+            if (claim.getState().equals(HWF_APPLICATION_PENDING) ||
+                claim.getState().equals(AWAITING_RESPONSE_HWF)) {
+                UnaryOperator<Claim> updatedClaim = c -> notifyClaimantOperation.perform(c, event);
+                updatedClaim.apply(claim);
+            } else {
+                PDF sealedClaimPdf = documentOrchestrationService.getSealedClaimPdf(claim);
+                PDF claimIssueReceiptPdf = documentOrchestrationService.getClaimIssueReceiptPdf(claim);
 
-            Claim updatedClaim = doPinOperation
-                .andThen(c -> uploadSealedClaimOperation.perform(c, authorisation, sealedClaimPdf))
-                .andThen(c -> uploadClaimIssueReceiptOperation.perform(c, authorisation, claimIssueReceiptPdf))
-                .andThen(c -> rpaOperation.perform(c, authorisation, sealedClaimPdf))
-                .andThen(c -> notifyClaimantOperation.perform(c, event))
-                .apply(claim);
+                Claim updatedClaim = doPinOperation
+                    .andThen(c -> uploadSealedClaimOperation.perform(c, authorisation, sealedClaimPdf))
+                    .andThen(c -> uploadClaimIssueReceiptOperation.perform(c, authorisation, claimIssueReceiptPdf))
+                    .andThen(c -> rpaOperation.perform(c, authorisation, sealedClaimPdf))
+                    .andThen(c -> notifyClaimantOperation.perform(c, event))
+                    .apply(claim);
 
-            if (updatedClaim.getState() == ClaimState.CREATE) {
-                claimService.updateClaimState(authorisation, updatedClaim, ClaimState.OPEN);
-                appInsights.trackEvent(
-                    AppInsightsEvent.CLAIM_ISSUED_CITIZEN,
-                    AppInsights.REFERENCE_NUMBER,
-                    updatedClaim.getReferenceNumber()
-                );
+                if (updatedClaim.getState() == ClaimState.CREATE) {
+                    claimService.updateClaimState(authorisation, updatedClaim, ClaimState.OPEN);
+                    appInsights.trackEvent(
+                        AppInsightsEvent.CLAIM_ISSUED_CITIZEN,
+                        AppInsights.REFERENCE_NUMBER,
+                        updatedClaim.getReferenceNumber()
+                    );
+                }
             }
         } catch (Exception e) {
             logger.error("Failed operation processing for event {}", event, e);

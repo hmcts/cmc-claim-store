@@ -20,6 +20,9 @@ public class EmailTemplates {
     private String claimantClaimIssuedWithHwfVerficationPending;
 
     @NotEmpty
+    private String claimantHwfUpdate;
+
+    @NotEmpty
     private String defendantClaimIssued;
 
     @NotEmpty
