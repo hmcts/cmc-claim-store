@@ -44,9 +44,6 @@ public class ClaimDataSerializationTest {
             .withHousingDisrepair(null)
             .withPersonalInjury(null)
             .withStatementOfTruth(null)
-            .withHelpWithFeesNumber("HWF012345")
-            .withHwfFeeDetailsSummary("Summary")
-            .withHwfMandatoryDetails("Details")
             .clearClaimants()
             .addClaimant(SampleParty.builder().withRepresentative(null).individual())
             .withDefendant(SampleTheirDetails.builder()
@@ -55,7 +52,9 @@ public class ClaimDataSerializationTest {
                 .withDateOfBirth(null)
                 .individualDetails())
             .withHelpWithFeesNumber("HWF012345")
-            .withhelpWithFeesType("Claim Issue")
+            .withHelpWithFeesType("Claim Issue")
+            .withHwfFeeDetailsSummary("Summary")
+            .withHwfMandatoryDetails("Details")
             .build();
 
         assertThat(claimData).isEqualTo(other);

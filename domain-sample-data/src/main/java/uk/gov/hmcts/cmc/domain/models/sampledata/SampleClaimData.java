@@ -191,6 +191,26 @@ public class SampleClaimData {
         return this;
     }
 
+    public SampleClaimData withHelpWithFeesNumber(String helpWithFeesNumber) {
+        this.evidence = evidence;
+        return this;
+    }
+
+    public SampleClaimData withHelpWithFeesType(String helpWithFeesType) {
+        this.evidence = evidence;
+        return this;
+    }
+
+    public SampleClaimData withHwfFeeDetailsSummary(String hwfFeeDetailsSummary) {
+        this.evidence = evidence;
+        return this;
+    }
+
+    public SampleClaimData withHwfMandatoryDetails(String hwfMandatoryDetails) {
+        this.evidence = evidence;
+        return this;
+    }
+
     public ClaimData build() {
         return new ClaimData(
             externalId,

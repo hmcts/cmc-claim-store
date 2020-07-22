@@ -93,5 +93,7 @@
   },
   "reason": "reason",
   "helpWithFeesNumber": "HWF012345",
-  "helpWithFeesType": "Claim Issue"
+  "helpWithFeesType": "Claim Issue",
+  "hwfFeeDetailsSummary" : "Summary",
+  "hwfMandatoryDetails" : "Details"
 }
