@@ -79,7 +79,7 @@ public class JsonMapperTest {
                 .individualDetails())
             .withHelpWithFeesNumber("HWF012345")
             .withMoreInfoDetails(null)
-            .withhelpWithFeesType("Claim Issue")
+            .withHelpWithFeesType("Claim Issue")
             .withFeeCode("X0012")
             .build();
 
@@ -127,7 +127,7 @@ public class JsonMapperTest {
                 .individualDetails())
             .withHelpWithFeesNumber("HWF012345")
             .withMoreInfoDetails(null)
-            .withhelpWithFeesType("Claim Issue")
+            .withHelpWithFeesType("Claim Issue")
             .withHwfFeeDetailsSummary("Summary")
             .withHwfMandatoryDetails("Details")
             .withTimeline(SampleTimeline.validDefaults())
