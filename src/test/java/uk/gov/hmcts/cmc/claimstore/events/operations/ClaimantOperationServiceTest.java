@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationT
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimCreationEventsStatusService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.HwfClaimNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
@@ -39,11 +40,13 @@ public class ClaimantOperationServiceTest {
     private EmailTemplates emailTemplates;
     @Mock
     private ClaimCreationEventsStatusService eventsStatusService;
+    @Mock
+    private HwfClaimNotificationService hwfClaimNotificationService;
 
     @Before
     public void before() {
         claimantOperationService = new ClaimantOperationService(claimIssuedNotificationService,
-            notificationProperties, eventsStatusService);
+            notificationProperties, eventsStatusService, hwfClaimNotificationService);
 
         given(notificationProperties.getTemplates()).willReturn(templates);
         given(templates.getEmail()).willReturn(emailTemplates);

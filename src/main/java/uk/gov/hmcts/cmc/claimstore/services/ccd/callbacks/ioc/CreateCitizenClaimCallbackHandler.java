@@ -32,12 +32,13 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.*;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_HWF_CASE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INVALID_HWF_REFERENCE;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.AWAITING_RESPONSE_HWF;
@@ -47,7 +48,8 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 @Service
 @Conditional(FeesAndPaymentsConfiguration.class)
 public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
-    private static final List<CaseEvent> EVENTS = Arrays.asList(CREATE_CITIZEN_CLAIM, CREATE_HWF_CASE, INVALID_HWF_REFERENCE);
+    private static final List<CaseEvent> EVENTS = Arrays.asList(CREATE_CITIZEN_CLAIM,
+        CREATE_HWF_CASE, INVALID_HWF_REFERENCE);
     private static final List<Role> ROLES = Arrays.asList(CITIZEN, CASEWORKER);
 
     private final ImmutableMap<CallbackType, Callback> callbacks = ImmutableMap.of(

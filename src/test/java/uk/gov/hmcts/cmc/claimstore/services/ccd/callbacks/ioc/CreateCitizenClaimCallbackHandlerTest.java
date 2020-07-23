@@ -43,6 +43,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.FAILED;
@@ -236,6 +237,6 @@ public class CreateCitizenClaimCallbackHandlerTest {
 
     @Test
     public void shouldHaveCorrectCitizenRepSupportingRole() {
-        assertThat(createCitizenClaimCallbackHandler.getSupportedRoles()).containsOnly(CITIZEN);
+        assertThat(createCitizenClaimCallbackHandler.getSupportedRoles()).contains(CITIZEN, CASEWORKER);
     }
 }

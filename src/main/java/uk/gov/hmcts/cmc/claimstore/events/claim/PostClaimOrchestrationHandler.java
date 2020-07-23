@@ -107,8 +107,8 @@ public class PostClaimOrchestrationHandler {
 
             UnaryOperator<Claim> doPinOperation = c -> generatePinOperation.perform(c, event);
 
-            if (claim.getState().equals(HWF_APPLICATION_PENDING) ||
-                claim.getState().equals(AWAITING_RESPONSE_HWF)) {
+            if (claim.getState().equals(HWF_APPLICATION_PENDING)
+                || claim.getState().equals(AWAITING_RESPONSE_HWF)) {
                 UnaryOperator<Claim> updatedClaim = c -> notifyClaimantOperation.perform(c, event);
                 updatedClaim.apply(claim);
             } else {
