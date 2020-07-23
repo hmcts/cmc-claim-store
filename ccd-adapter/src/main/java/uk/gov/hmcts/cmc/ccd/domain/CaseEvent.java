@@ -91,6 +91,9 @@ public enum CaseEvent {
     REVIEW_JUDGE_COMMENTS("ReviewJudgeComments"),
     CCJ_REQUEST_UPLOAD("CCJRequestUpload"),
     CHANGE_CONTACT_DETAILS("ChangeContactDetails"),
+    HWF_NO_REMISSION("NoRemissionHWF"),
+    PART_REMISSION_HWF_REJECTED("PartRemissionHWFRejected"),
+    FULL_REMISSION_HWF_REJECTED("FullRemissionHWFRejected"),
     ADD_BULK_PRINT_DETAILS("UpdateBulkPrintDetails"),
     HWF_PART_REMISSION_GRANTED("HWFPartRemission");
 

@@ -44,6 +44,8 @@ public class SampleClaimData {
     private Evidence evidence = SampleEvidence.validDefaults();
     private String helpWithFeesNumber = "HWF012345";
     private String helpWithFeesType = "Claim Issue";
+    private String hwfFeeDetailsSummary = "Summary";
+    private String hwfMandatoryDetails = "Details";
     private HousingDisrepair housingDisrepair = new HousingDisrepair(
         DamagesExpectation.MORE_THAN_THOUSAND_POUNDS,
         DamagesExpectation.MORE_THAN_THOUSAND_POUNDS
@@ -200,8 +202,18 @@ public class SampleClaimData {
         return this;
     }
 
-    public SampleClaimData withhelpWithFeesType(String helpWithFeesType) {
+    public SampleClaimData withHelpWithFeesType(String helpWithFeesType) {
         this.helpWithFeesType = helpWithFeesType;
+        return this;
+    }
+
+    public SampleClaimData withHwfFeeDetailsSummary(String hwfFeeDetailsSummary) {
+        this.hwfFeeDetailsSummary = hwfFeeDetailsSummary;
+        return this;
+    }
+
+    public SampleClaimData withHwfMandatoryDetails(String hwfMandatoryDetails) {
+        this.hwfMandatoryDetails = hwfMandatoryDetails;
         return this;
     }
 
@@ -226,7 +238,10 @@ public class SampleClaimData {
             timeline,
             evidence,
             helpWithFeesNumber,
-            helpWithFeesType);
+            helpWithFeesType,
+            hwfFeeDetailsSummary,
+            hwfMandatoryDetails
+            );
     }
 
     public static ClaimData validDefaults() {
@@ -259,6 +274,7 @@ public class SampleClaimData {
                 .withPhone("0776655443322")
                 .individualDetails())
             .withTimeline(SampleTimeline.validDefaults())
+            .withHwfMandatoryDetails(null)
             .withEvidence(SampleEvidence.validDefaults());
     }
 
