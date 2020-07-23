@@ -192,22 +192,22 @@ public class SampleClaimData {
     }
 
     public SampleClaimData withHelpWithFeesNumber(String helpWithFeesNumber) {
-        this.evidence = evidence;
+        this.helpWithFeesNumber = helpWithFeesNumber;
         return this;
     }
 
     public SampleClaimData withHelpWithFeesType(String helpWithFeesType) {
-        this.evidence = evidence;
+        this.helpWithFeesType = helpWithFeesType;
         return this;
     }
 
     public SampleClaimData withHwfFeeDetailsSummary(String hwfFeeDetailsSummary) {
-        this.evidence = evidence;
+        this.hwfFeeDetailsSummary = hwfFeeDetailsSummary;
         return this;
     }
 
     public SampleClaimData withHwfMandatoryDetails(String hwfMandatoryDetails) {
-        this.evidence = evidence;
+        this.hwfMandatoryDetails = hwfMandatoryDetails;
         return this;
     }
 
