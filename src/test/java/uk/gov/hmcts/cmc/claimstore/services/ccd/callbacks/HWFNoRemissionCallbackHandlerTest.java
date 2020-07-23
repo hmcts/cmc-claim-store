@@ -77,9 +77,7 @@ class HWFNoRemissionCallbackHandlerTest {
             = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
         Map<String, Object> data = response.getData();
 
-        assertThat(data).containsEntry("helpWithFeesNumber", "139999");
-        assertThat(data).containsEntry("hwfFeeDetailsSummary", "NOT_QUALIFY_FEE_ASSISTANCE");
-        assertThat(data).containsEntry("hwfMandatoryDetails", "Details");
+        assertThat(data).containsEntry("helpWithFeesNumber", "139999").containsEntry("hwfFeeDetailsSummary", "NOT_QUALIFY_FEE_ASSISTANCE").containsEntry("hwfMandatoryDetails", "Details");
 
     }
 
