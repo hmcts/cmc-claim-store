@@ -96,6 +96,8 @@ public class ClaimData {
 
     private final String helpWithFeesNumber;
 
+    private final String moreInfoDetails;
+
     private final String helpWithFeesType;
 
     private final String hwfFeeDetailsSummary;
@@ -124,6 +126,7 @@ public class ClaimData {
         Timeline timeline,
         Evidence evidence,
         String helpWithFeesNumber,
+        String moreInfoDetails,
         String helpWithFeesType,
         String hwfFeeDetailsSummary,
         String hwfMandatoryDetails
@@ -147,6 +150,7 @@ public class ClaimData {
         this.timeline = timeline;
         this.evidence = evidence;
         this.helpWithFeesNumber = helpWithFeesNumber;
+        this.moreInfoDetails = moreInfoDetails;
         this.helpWithFeesType = helpWithFeesType;
         this.hwfFeeDetailsSummary = hwfFeeDetailsSummary;
         this.hwfMandatoryDetails = hwfMandatoryDetails;
@@ -263,6 +267,10 @@ public class ClaimData {
 
     public Optional<String> getHelpWithFeesNumber() {
         return Optional.ofNullable(helpWithFeesNumber);
+    }
+
+    public Optional<String> getMoreInfoDetails() {
+        return Optional.ofNullable(moreInfoDetails);
     }
 
     public Optional<String> gethelpWithFeesType() {
