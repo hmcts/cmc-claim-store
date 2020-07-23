@@ -390,7 +390,7 @@ sonarqube {
         "**/HwfClaimNotificationService.java",
         "**/HWFFullRemissionCallbackHandler.java",
         "**/HWFHalfRemissionCallbackHandler.java",
-        "**/HWFNoRemissionCallbackHandler.java"
+        "**/HWFNoRemissionCallbackHandler.java",
       ].join(",")
   }
 }
