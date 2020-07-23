@@ -73,6 +73,7 @@
     "return_url": "http://returnUrl.test"
   },
   "feeAmountInPennies": 4000,
+  "feeRemitted": 3000,
   "reason": "reason",
   "feeCode": "X0012",
   "feeRemitted": "3000",

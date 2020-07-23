@@ -91,6 +91,7 @@
     }
   ],
   "feeAmountInPennies": 4000,
+  "feeRemitted": 3000,
   "feeAccountNumber": "PBA1234567",
   "reason": "reason",
   "statementOfTruth": {

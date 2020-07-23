@@ -32,7 +32,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -61,7 +60,7 @@ import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.ISSUE_DATE;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.NOW_IN_LOCAL_ZONE;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.RESPONSE_DEADLINE;
 
-public final class SampleClaim {
+public final class SampleHwfClaim {
 
     public static final String USER_ID = "1";
     public static final String LETTER_HOLDER_ID = "2";
@@ -121,10 +120,10 @@ public final class SampleClaim {
     private TransferContent transferContent;
     private String bulkPrintLetterId = UUID.randomUUID().toString();
 
-    private SampleClaim() {
+    private SampleHwfClaim() {
     }
 
-    public static Claim getDefault() {
+    public static Claim getDefaultAwaitingResponseHwf() {
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimantBuilder().withExternalId(RAND_UUID).build())
             .withCountyCourtJudgment(
@@ -137,7 +136,24 @@ public final class SampleClaim {
                 .withDefenceType(DefenceType.DISPUTE)
                 .withMediation(YES)
                 .build()
-            ).withState(ClaimState.OPEN)
+            ).withState(ClaimState.AWAITING_RESPONSE_HWF)
+            .build();
+    }
+
+    public static Claim getDefaultHwfPending() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimantBuilder().withExternalId(RAND_UUID).build())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .ccjType(CountyCourtJudgmentType.ADMISSIONS)
+                    .paymentOption(IMMEDIATELY)
+                    .build()
+            ).withResponse(SampleResponse.FullDefence
+                .builder()
+                .withDefenceType(DefenceType.DISPUTE)
+                .withMediation(YES)
+                .build()
+            ).withState(ClaimState.HWF_APPLICATION_PENDING)
             .build();
     }
 
@@ -454,27 +470,11 @@ public final class SampleClaim {
 
     public static Claim getClaimWithNoDefendantEmail() {
 
-        return SampleClaim.builder()
+        return SampleHwfClaim.builder()
             .withClaimData(
                 SampleClaimData.builder()
                     .withDefendant(SampleTheirDetails.builder().withPhone(null).withEmail(null).individualDetails())
                     .build()
-            ).build();
-    }
-
-    public static Claim getClaimWhenFeeRemittedIsMoreThanFee() {
-        return SampleClaim.builder()
-            .withClaimData(
-                SampleClaimData.builder()
-                    .withFeeRemitted(BigInteger.valueOf(5000)).build()
-            ).build();
-    }
-
-    public static Claim getClaimWhenFeeRemittedIsEqualToFee() {
-        return SampleClaim.builder()
-            .withClaimData(
-                SampleClaimData.builder()
-                    .withFeeRemitted(BigInteger.valueOf(4000)).build()
             ).build();
     }
 
@@ -583,8 +583,8 @@ public final class SampleClaim {
             .build();
     }
 
-    public static SampleClaim builder() {
-        return new SampleClaim();
+    public static SampleHwfClaim builder() {
+        return new SampleHwfClaim();
     }
 
     public Claim build() {
@@ -642,122 +642,122 @@ public final class SampleClaim {
         );
     }
 
-    public SampleClaim withSubmitterId(String userId) {
+    public SampleHwfClaim withSubmitterId(String userId) {
         this.submitterId = userId;
         return this;
     }
 
-    public SampleClaim withLetterHolderId(String letterHolderId) {
+    public SampleHwfClaim withLetterHolderId(String letterHolderId) {
         this.letterHolderId = letterHolderId;
         return this;
     }
 
-    public SampleClaim withDefendantId(String defendantId) {
+    public SampleHwfClaim withDefendantId(String defendantId) {
         this.defendantId = defendantId;
         return this;
     }
 
-    public SampleClaim withClaimId(Long claimId) {
+    public SampleHwfClaim withClaimId(Long claimId) {
         this.claimId = claimId;
         return this;
     }
 
-    public SampleClaim withCcdCaseId(Long ccdCaseId) {
+    public SampleHwfClaim withCcdCaseId(Long ccdCaseId) {
         this.ccdCaseId = ccdCaseId;
         return this;
     }
 
-    public SampleClaim withReferenceNumber(String referenceNumber) {
+    public SampleHwfClaim withReferenceNumber(String referenceNumber) {
         this.referenceNumber = referenceNumber;
         return this;
     }
 
-    public SampleClaim withExternalId(String externalId) {
+    public SampleHwfClaim withExternalId(String externalId) {
         this.externalId = externalId;
         return this;
     }
 
-    public SampleClaim withMoreTimeRequested(boolean moreTimeRequested) {
+    public SampleHwfClaim withMoreTimeRequested(boolean moreTimeRequested) {
         isMoreTimeRequested = moreTimeRequested;
         return this;
     }
 
-    public SampleClaim withResponseDeadline(LocalDate responseDeadline) {
+    public SampleHwfClaim withResponseDeadline(LocalDate responseDeadline) {
         this.responseDeadline = responseDeadline;
         return this;
     }
 
-    public SampleClaim withSubmitterEmail(String submitterEmail) {
+    public SampleHwfClaim withSubmitterEmail(String submitterEmail) {
         this.submitterEmail = submitterEmail;
         return this;
     }
 
-    public SampleClaim withCreatedAt(LocalDateTime createdAt) {
+    public SampleHwfClaim withCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
         return this;
     }
 
-    public SampleClaim withIssuedOn(LocalDate issuedOn) {
+    public SampleHwfClaim withIssuedOn(LocalDate issuedOn) {
         this.issuedOn = issuedOn;
         return this;
     }
 
-    public SampleClaim withCountyCourtJudgment(CountyCourtJudgment countyCourtJudgment) {
+    public SampleHwfClaim withCountyCourtJudgment(CountyCourtJudgment countyCourtJudgment) {
         this.countyCourtJudgment = countyCourtJudgment;
         return this;
     }
 
-    public SampleClaim withCountyCourtJudgmentRequestedAt(LocalDateTime countyCourtJudgmentRequestedAt) {
+    public SampleHwfClaim withCountyCourtJudgmentRequestedAt(LocalDateTime countyCourtJudgmentRequestedAt) {
         this.countyCourtJudgmentRequestedAt = countyCourtJudgmentRequestedAt;
         return this;
     }
 
-    public SampleClaim withClaimData(ClaimData claimData) {
+    public SampleHwfClaim withClaimData(ClaimData claimData) {
         this.claimData = claimData;
         return this;
     }
 
-    public SampleClaim withRespondedAt(LocalDateTime respondedAt) {
+    public SampleHwfClaim withRespondedAt(LocalDateTime respondedAt) {
         this.respondedAt = respondedAt;
         return this;
     }
 
-    public SampleClaim withResponse(Response response) {
+    public SampleHwfClaim withResponse(Response response) {
         this.response = response;
         return this;
     }
 
-    public SampleClaim withDefendantEmail(String defendantEmail) {
+    public SampleHwfClaim withDefendantEmail(String defendantEmail) {
         this.defendantEmail = defendantEmail;
         return this;
     }
 
-    public SampleClaim withSettlement(Settlement settlement) {
+    public SampleHwfClaim withSettlement(Settlement settlement) {
         this.settlement = settlement;
         return this;
     }
 
-    public SampleClaim withSettlementReachedAt(LocalDateTime settlementReachedAt) {
+    public SampleHwfClaim withSettlementReachedAt(LocalDateTime settlementReachedAt) {
         this.settlementReachedAt = settlementReachedAt;
         return this;
     }
 
-    public SampleClaim withReDetermination(ReDetermination reDetermination) {
+    public SampleHwfClaim withReDetermination(ReDetermination reDetermination) {
         this.reDetermination = reDetermination;
         return this;
     }
 
-    public SampleClaim withReDeterminationRequestedAt(LocalDateTime reDeterminationRequestedAt) {
+    public SampleHwfClaim withReDeterminationRequestedAt(LocalDateTime reDeterminationRequestedAt) {
         this.reDeterminationRequestedAt = reDeterminationRequestedAt;
         return this;
     }
 
-    public SampleClaim withState(ClaimState claimState) {
+    public SampleHwfClaim withState(ClaimState claimState) {
         this.state = claimState;
         return this;
     }
 
-    public SampleClaim withSealedClaimDocument(URI sealedClaimDocument) {
+    public SampleHwfClaim withSealedClaimDocument(URI sealedClaimDocument) {
         ClaimDocument claimDocument = ClaimDocument.builder()
             .documentManagementUrl(sealedClaimDocument)
             .documentName("001CLAIM-FORM")
@@ -769,7 +769,7 @@ public final class SampleClaim {
         return this;
     }
 
-    public SampleClaim withClaimIssueReceiptDocument(URI uri) {
+    public SampleHwfClaim withClaimIssueReceiptDocument(URI uri) {
         ClaimDocument claimDocument = ClaimDocument.builder()
             .documentManagementUrl(uri)
             .documentName("claim-form-claimant-copy.pdf")
@@ -781,7 +781,7 @@ public final class SampleClaim {
         return this;
     }
 
-    public SampleClaim withDefendantResponseReceiptDocument(URI uri) {
+    public SampleHwfClaim withDefendantResponseReceiptDocument(URI uri) {
         ClaimDocument claimDocument = ClaimDocument.builder()
             .documentManagementUrl(uri)
             .documentName("claim-response.pdf")
@@ -793,7 +793,7 @@ public final class SampleClaim {
         return this;
     }
 
-    public SampleClaim withOrderDocument(URI uri) {
+    public SampleHwfClaim withOrderDocument(URI uri) {
         ClaimDocument claimDocument = ClaimDocument.builder()
             .documentManagementUrl(uri)
             .documentName(LEGAL_ADVISOR_ORDER_PDF)
@@ -805,7 +805,7 @@ public final class SampleClaim {
         return this;
     }
 
-    public SampleClaim withCCJRequestDocument(URI uri) {
+    public SampleHwfClaim withCCJRequestDocument(URI uri) {
         ClaimDocument claimDocument = ClaimDocument.builder()
             .documentManagementUrl(uri)
             .documentManagementBinaryUrl(uri)
@@ -818,7 +818,7 @@ public final class SampleClaim {
         return this;
     }
 
-    public SampleClaim withSettlementAgreementDocument(URI uri) {
+    public SampleHwfClaim withSettlementAgreementDocument(URI uri) {
         ClaimDocument claimDocument = ClaimDocument.builder()
             .documentManagementUrl(uri)
             .documentName("settlement-agreement.pdf")
@@ -830,7 +830,7 @@ public final class SampleClaim {
         return this;
     }
 
-    public SampleClaim withGeneralLetter(URI uri) {
+    public SampleHwfClaim withGeneralLetter(URI uri) {
         ClaimDocument claimDocument = ClaimDocument.builder()
                 .documentManagementUrl(uri)
                 .documentName("general-letter.pdf")
@@ -842,7 +842,7 @@ public final class SampleClaim {
         return this;
     }
 
-    public SampleClaim withOcon9xScannedDocument(URI uri) {
+    public SampleHwfClaim withOcon9xScannedDocument(URI uri) {
         ScannedDocument scannedDocument = ScannedDocument.builder()
             .documentManagementUrl(uri)
             .fileName("OCON9X-form.pdf")
@@ -854,59 +854,59 @@ public final class SampleClaim {
         return this;
     }
 
-    public SampleClaim withClaimantResponse(ClaimantResponse claimantResponse) {
+    public SampleHwfClaim withClaimantResponse(ClaimantResponse claimantResponse) {
         this.claimantResponse = claimantResponse;
         return this;
     }
 
-    public SampleClaim withClaimantResponseDeadline(LocalDate claimantResponseDeadline) {
+    public SampleHwfClaim withClaimantResponseDeadline(LocalDate claimantResponseDeadline) {
         this.claimantResponseDeadline = claimantResponseDeadline;
         return this;
     }
 
-    public SampleClaim withClaimantRespondedAt(LocalDateTime localDateTime) {
+    public SampleHwfClaim withClaimantRespondedAt(LocalDateTime localDateTime) {
         this.claimantRespondedAt = localDateTime;
         return this;
     }
 
-    public SampleClaim withDirectionsQuestionnaireDeadline(LocalDate dqDeadline) {
+    public SampleHwfClaim withDirectionsQuestionnaireDeadline(LocalDate dqDeadline) {
         this.directionsQuestionnaireDeadline = dqDeadline;
         return this;
     }
 
-    public SampleClaim withMoneyReceivedOn(LocalDate moneyReceivedOn) {
+    public SampleHwfClaim withMoneyReceivedOn(LocalDate moneyReceivedOn) {
         this.moneyReceivedOn = moneyReceivedOn;
         return this;
     }
 
-    public SampleClaim withFeatures(List<String> features) {
+    public SampleHwfClaim withFeatures(List<String> features) {
         this.features = features;
         return this;
     }
 
-    public SampleClaim withReviewOrder(ReviewOrder reviewOrder) {
+    public SampleHwfClaim withReviewOrder(ReviewOrder reviewOrder) {
         this.reviewOrder = reviewOrder;
         return this;
     }
 
-    public SampleClaim withDirectionOrder(DirectionOrder directionOrder) {
+    public SampleHwfClaim withDirectionOrder(DirectionOrder directionOrder) {
         this.directionOrder = directionOrder;
         return this;
     }
 
-    public SampleClaim withClaimSubmissionOperationIndicators(
+    public SampleHwfClaim withClaimSubmissionOperationIndicators(
         ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators
     ) {
         this.claimSubmissionOperationIndicators = claimSubmissionOperationIndicators;
         return this;
     }
 
-    public SampleClaim withMediationOutcome(MediationOutcome mediationOutcome) {
+    public SampleHwfClaim withMediationOutcome(MediationOutcome mediationOutcome) {
         this.mediationOutcome = mediationOutcome;
         return this;
     }
 
-    public SampleClaim withTransferContent(TransferContent transferContent) {
+    public SampleHwfClaim withTransferContent(TransferContent transferContent) {
         this.transferContent = transferContent;
         return this;
     }
