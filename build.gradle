@@ -388,6 +388,9 @@ sonarqube {
         "email-client/**",
         "rpa-mapper/**",
         "**/HwfClaimNotificationService.java",
+        "**/HWFFullRemissionCallbackHandler.java",
+        "**/HWFHalfRemissionCallbackHandler.java",
+        "**/HWFNoRemissionCallbackHandler.java"
       ].join(",")
   }
 }
