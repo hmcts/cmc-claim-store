@@ -12,7 +12,6 @@ import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
-import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.party.NamedParty;
@@ -24,26 +23,18 @@ import uk.gov.service.notify.NotificationClientException;
 import java.util.Map;
 import java.util.Optional;
 
-import static java.math.BigDecimal.ZERO;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.DEFENDANT_NAME;
-import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.EXTERNAL_ID;
-import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FEES_PAID;
-import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
-import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.NEW_FEATURES;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.PIN;
-import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.RESPOND_TO_CLAIM_URL;
-import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.RESPONSE_DEADLINE;
 
 @Service
 public class HwfClaimNotificationService {
     private final Logger logger = LoggerFactory.getLogger(HwfClaimNotificationService.class);
 
     private final NotificationClient notificationClient;
-    private final NotificationsProperties notificationsProperties;
     private final AppInsights appInsights;
 
     @Autowired
@@ -78,12 +69,7 @@ public class HwfClaimNotificationService {
     @Recover
     public void logNotificationFailure(
         NotificationException exception,
-        Claim claim,
-        String targetEmail,
-        String pin,
-        String emailTemplateId,
-        String reference,
-        String submitterName
+        String reference
     ) {
         String errorMessage = String.format(
             "Failure: failed to send notification (%s) due to %s",
@@ -102,7 +88,7 @@ public class HwfClaimNotificationService {
         ImmutableMap.Builder<String, String> parameters = new ImmutableMap.Builder<>();
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
 
-        if (!claim.getClaimData().isClaimantRepresented()) {
+        if (Boolean.FALSE.equals(claim.getClaimData().isClaimantRepresented())) {
             parameters.put(CLAIMANT_NAME, getNameWithTitle(claim.getClaimData().getClaimant()));
             parameters.put(CLAIMANT_TYPE, PartyUtils.getType(claim.getClaimData().getClaimant()));
             parameters.put(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName());
@@ -110,12 +96,6 @@ public class HwfClaimNotificationService {
             parameters.put(CLAIMANT_NAME, submitterName);
         }
 
-        parameters.put(RESPONSE_DEADLINE, Formatting.formatDate(claim.getResponseDeadline()));
-        parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
-        parameters.put(RESPOND_TO_CLAIM_URL, notificationsProperties.getRespondToClaimUrl());
-        parameters.put(EXTERNAL_ID, claim.getExternalId());
-        parameters.put(FEES_PAID, claim.getClaimData().getFeesPaidInPounds().orElse(ZERO).toString());
-        parameters.put(NEW_FEATURES, claim.getFeatures() == null || claim.getFeatures().isEmpty() ? "false" : "true");
         Optional.ofNullable(pin).ifPresent(p -> parameters.put(PIN, p));
         return parameters.build();
     }
