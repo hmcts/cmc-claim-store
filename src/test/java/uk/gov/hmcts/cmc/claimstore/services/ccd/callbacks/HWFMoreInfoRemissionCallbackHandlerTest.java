@@ -76,7 +76,7 @@ class HWFMoreInfoRemissionCallbackHandlerTest {
             = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
         Map<String, Object> data = response.getData();
         assertThat(data).containsEntry("helpWithFeesNumber", "1234")
-       .containsEntry("moreInfoDetails", "Details");
+            .containsEntry("moreInfoDetails", "Details");
     }
 
 }
