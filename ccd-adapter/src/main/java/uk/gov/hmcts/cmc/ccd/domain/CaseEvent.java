@@ -5,6 +5,7 @@ import java.util.Arrays;
 public enum CaseEvent {
     CREATE_CASE("CreateClaim"),
     CREATE_HWF_CASE("CreateHelpWithFeesClaim"),
+    INVALID_HWF_REFERENCE("InvalidHWFReference"),
     ISSUE_CASE("IssueClaim"),
     MORE_TIME_REQUESTED_PAPER("MoreTimeRequestedPaper"),
     TEST_SUPPORT_UPDATE("TestSupportUpdate"),
@@ -91,7 +92,8 @@ public enum CaseEvent {
     CCJ_REQUEST_UPLOAD("CCJRequestUpload"),
     CHANGE_CONTACT_DETAILS("ChangeContactDetails"),
     MORE_INFO_REQUIRED_FOR_HWF("MoreInfoRequiredForHWF"),
-    ADD_BULK_PRINT_DETAILS("UpdateBulkPrintDetails");
+    ADD_BULK_PRINT_DETAILS("UpdateBulkPrintDetails"),
+    HWF_PART_REMISSION_GRANTED("HWFPartRemission");
 
     private final String value;
 

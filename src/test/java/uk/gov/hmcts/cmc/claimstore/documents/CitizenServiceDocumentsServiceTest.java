@@ -57,6 +57,25 @@ public class CitizenServiceDocumentsServiceTest {
     }
 
     @Test
+    public void shouldReturnDraftClaimDocument() {
+        //given
+        when(documentTemplates.getDraftClaim()).thenReturn(PDF_BYTES);
+
+        Claim claim = SampleClaim.getDefault();
+        Map<String, Object> documentContent = new HashMap<>();
+        documentContent.put("helpWithFeesNumber", "HWF01234");
+        documentContent.put("helpWithFeesType", "Claim Issue");
+        when(claimContentProvider.createContent(claim)).thenReturn(documentContent);
+        //when
+        Document result = citizenServiceDocumentsService.draftClaimDocument(claim);
+        //then
+        assertThat(result.template).isEqualTo(new String(PDF_BYTES));
+        //verify
+        verify(claimContentProvider).createContent(claim);
+        verify(documentTemplates).getDraftClaim();
+    }
+
+    @Test
     public void shouldReturnPinLetterDocument() {
         //given
         when(documentTemplates.getDefendantPinLetter()).thenReturn(PDF_BYTES);
