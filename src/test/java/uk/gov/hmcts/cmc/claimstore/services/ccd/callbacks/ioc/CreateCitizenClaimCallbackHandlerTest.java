@@ -23,6 +23,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleHwfClaim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -128,6 +129,66 @@ public class CreateCitizenClaimCallbackHandlerTest {
             .thenReturn(Optional.of(paymentBuilder.status(SUCCESS).build()));
 
         Claim claim = SampleClaim.getDefault().toBuilder()
+            .referenceNumber(referenceNumberRepository.getReferenceNumberForCitizen())
+            .issuedOn(ISSUE_DATE)
+            .responseDeadline(RESPONSE_DEADLINE)
+            .claimData(withFullClaimData().getClaimData())
+            .build();
+
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+            .thenReturn(claim);
+
+        callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_SUBMIT)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
+
+        createCitizenClaimCallbackHandler.handle(callbackParams);
+
+        verify(caseMapper).to(claimArgumentCaptor.capture());
+
+        Claim toBeSaved = claimArgumentCaptor.getValue();
+        assertThat(toBeSaved.getIssuedOn()).contains(ISSUE_DATE);
+        assertThat(toBeSaved.getServiceDate()).isEqualTo(ISSUE_DATE.plusDays(5));
+        assertThat(toBeSaved.getReferenceNumber()).isEqualTo(REFERENCE_NO);
+        assertThat(toBeSaved.getResponseDeadline()).isEqualTo(RESPONSE_DEADLINE);
+    }
+
+    @Test
+    public void shouldSuccessfullyReturnCallBackResponseWhenClaimIsHwfPending() {
+
+        Claim claim = SampleHwfClaim.getDefaultHwfPending().toBuilder()
+            .referenceNumber(referenceNumberRepository.getReferenceNumberForCitizen())
+            .issuedOn(ISSUE_DATE)
+            .responseDeadline(RESPONSE_DEADLINE)
+            .claimData(withFullClaimData().getClaimData())
+            .build();
+
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+            .thenReturn(claim);
+
+        callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_SUBMIT)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
+
+        createCitizenClaimCallbackHandler.handle(callbackParams);
+
+        verify(caseMapper).to(claimArgumentCaptor.capture());
+
+        Claim toBeSaved = claimArgumentCaptor.getValue();
+        assertThat(toBeSaved.getIssuedOn()).contains(ISSUE_DATE);
+        assertThat(toBeSaved.getServiceDate()).isEqualTo(ISSUE_DATE.plusDays(5));
+        assertThat(toBeSaved.getReferenceNumber()).isEqualTo(REFERENCE_NO);
+        assertThat(toBeSaved.getResponseDeadline()).isEqualTo(RESPONSE_DEADLINE);
+    }
+
+    @Test
+    public void shouldSuccessfullyReturnCallBackResponseWhenClaimIsHwfAwaitingResponse() {
+
+        Claim claim = SampleHwfClaim.getDefaultAwaitingResponseHwf().toBuilder()
             .referenceNumber(referenceNumberRepository.getReferenceNumberForCitizen())
             .issuedOn(ISSUE_DATE)
             .responseDeadline(RESPONSE_DEADLINE)
