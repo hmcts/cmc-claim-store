@@ -97,7 +97,8 @@ public class ClaimantOperationServiceTest {
         given(emailTemplates.getRepresentativeClaimIssued()).willReturn(REPRESENTATIVE_EMAIL_TEMPLATE);
 
         //when
-        claimantOperationService.confirmRepresentative(CLAIM_HWF_PENDING, SUBMITTER_NAME, REPRESENTATIVE_EMAIL, AUTHORISATION);
+        claimantOperationService.confirmRepresentative(CLAIM_HWF_PENDING,
+            SUBMITTER_NAME, REPRESENTATIVE_EMAIL, AUTHORISATION);
 
         //verify
         verify(claimIssuedNotificationService).sendMail(
