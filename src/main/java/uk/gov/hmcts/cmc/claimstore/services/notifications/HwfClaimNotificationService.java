@@ -28,13 +28,17 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.DEFENDANT_NAME;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.EXTERNAL_ID;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.PIN;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.RESPOND_TO_CLAIM_URL;
 
 @Service
 public class HwfClaimNotificationService {
     private final Logger logger = LoggerFactory.getLogger(HwfClaimNotificationService.class);
 
     private final NotificationClient notificationClient;
+    private final NotificationsProperties notificationsProperties;
     private final AppInsights appInsights;
 
     @Autowired
@@ -69,7 +73,12 @@ public class HwfClaimNotificationService {
     @Recover
     public void logNotificationFailure(
         NotificationException exception,
-        String reference
+        Claim claim,
+        String targetEmail,
+        String pin,
+        String emailTemplateId,
+        String reference,
+        String submitterName
     ) {
         String errorMessage = String.format(
             "Failure: failed to send notification (%s) due to %s",
@@ -96,6 +105,9 @@ public class HwfClaimNotificationService {
             parameters.put(CLAIMANT_NAME, submitterName);
         }
 
+        parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
+        parameters.put(RESPOND_TO_CLAIM_URL, notificationsProperties.getRespondToClaimUrl());
+        parameters.put(EXTERNAL_ID, claim.getExternalId());
         Optional.ofNullable(pin).ifPresent(p -> parameters.put(PIN, p));
         return parameters.build();
     }
