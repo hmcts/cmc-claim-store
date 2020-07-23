@@ -10,8 +10,9 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationT
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimCreationEventsStatusService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.HwfClaimNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleHwfClaim;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -23,7 +24,8 @@ public class ClaimantOperationServiceTest {
 
     public static final String CLAIMANT_EMAIL_TEMPLATE = "Claimant Email Template";
     public static final String REPRESENTATIVE_EMAIL_TEMPLATE = "Representative Email Template";
-    public static final Claim CLAIM = SampleClaim.getDefault();
+    public static final Claim CLAIM_HWF_PENDING = SampleHwfClaim.getDefaultHwfPending();
+    public static final Claim CLAIM_HWF_AWAITING_RESPONSE = SampleHwfClaim.getDefaultAwaitingResponseHwf();
     public static final String AUTHORISATION = "AUTHORISATION";
     public static final String SUBMITTER_NAME = "submitter-name";
     public static final String REPRESENTATIVE_EMAIL = "representative@Email.com";
@@ -39,31 +41,50 @@ public class ClaimantOperationServiceTest {
     private EmailTemplates emailTemplates;
     @Mock
     private ClaimCreationEventsStatusService eventsStatusService;
+    @Mock
+    private HwfClaimNotificationService hwfClaimNotificationService;
 
     @Before
     public void before() {
         claimantOperationService = new ClaimantOperationService(claimIssuedNotificationService,
-            notificationProperties, eventsStatusService);
+            notificationProperties, eventsStatusService, hwfClaimNotificationService);
 
         given(notificationProperties.getTemplates()).willReturn(templates);
         given(templates.getEmail()).willReturn(emailTemplates);
     }
 
     @Test
-    public void shouldNotifyCitizen() {
+    public void shouldNotifyCitizenForAwaitingResponse() {
         //given
-        given(emailTemplates.getClaimantClaimIssued()).willReturn(CLAIMANT_EMAIL_TEMPLATE);
+        given(emailTemplates.getClaimantHwfUpdate()).willReturn(CLAIMANT_EMAIL_TEMPLATE);
 
         //when
-        claimantOperationService.notifyCitizen(CLAIM, SUBMITTER_NAME, AUTHORISATION);
+        claimantOperationService.notifyCitizen(CLAIM_HWF_AWAITING_RESPONSE, SUBMITTER_NAME, AUTHORISATION);
 
         //verify
-        verify(claimIssuedNotificationService).sendMail(
-            eq(CLAIM),
-            eq(CLAIM.getSubmitterEmail()),
-            any(),
+        verify(hwfClaimNotificationService).sendMail(
+            eq(CLAIM_HWF_AWAITING_RESPONSE),
+            eq(CLAIM_HWF_AWAITING_RESPONSE.getSubmitterEmail()),
             eq(CLAIMANT_EMAIL_TEMPLATE),
-            eq("claimant-issue-notification-" + CLAIM.getReferenceNumber()),
+            eq("hwf-claim-update-notification-" + CLAIM_HWF_AWAITING_RESPONSE.getReferenceNumber()),
+            eq(SUBMITTER_NAME)
+        );
+    }
+
+    @Test
+    public void shouldNotifyCitizenForHwfPending() {
+        //given
+        given(emailTemplates.getClaimantClaimIssuedWithHwfVerficationPending()).willReturn(CLAIMANT_EMAIL_TEMPLATE);
+
+        //when
+        claimantOperationService.notifyCitizen(CLAIM_HWF_PENDING, SUBMITTER_NAME, AUTHORISATION);
+
+        //verify
+        verify(hwfClaimNotificationService).sendMail(
+            eq(CLAIM_HWF_PENDING),
+            eq(CLAIM_HWF_PENDING.getSubmitterEmail()),
+            eq(CLAIMANT_EMAIL_TEMPLATE),
+            eq("hwf-claimant-issue-creation-notification-" + CLAIM_HWF_PENDING.getReferenceNumber()),
             eq(SUBMITTER_NAME)
         );
     }
@@ -74,15 +95,16 @@ public class ClaimantOperationServiceTest {
         given(emailTemplates.getRepresentativeClaimIssued()).willReturn(REPRESENTATIVE_EMAIL_TEMPLATE);
 
         //when
-        claimantOperationService.confirmRepresentative(CLAIM, SUBMITTER_NAME, REPRESENTATIVE_EMAIL, AUTHORISATION);
+        claimantOperationService.confirmRepresentative(CLAIM_HWF_PENDING,
+            SUBMITTER_NAME, REPRESENTATIVE_EMAIL, AUTHORISATION);
 
         //verify
         verify(claimIssuedNotificationService).sendMail(
-            eq(CLAIM),
+            eq(CLAIM_HWF_PENDING),
             eq(REPRESENTATIVE_EMAIL),
             any(),
             eq(REPRESENTATIVE_EMAIL_TEMPLATE),
-            eq("representative-issue-notification-" + CLAIM.getReferenceNumber()),
+            eq("representative-issue-notification-" + CLAIM_HWF_PENDING.getReferenceNumber()),
             eq(SUBMITTER_NAME)
         );
     }
