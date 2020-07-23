@@ -9,7 +9,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
-import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.DefendantResponseNotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -46,9 +45,6 @@ class HWFFullRemissionCallbackHandlerTest {
     @Mock
     private DefendantResponseNotificationService defendantResponseNotificationService;
 
-    @Mock
-    private ClaimService claimService;
-
     @BeforeEach
     public void setUp() {
         handler = new HWFFullRemissionCallbackHandler(caseDetailsConverter, deadlineCalculator, caseMapper);
@@ -77,7 +73,9 @@ class HWFFullRemissionCallbackHandlerTest {
             = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
         Map<String, Object> data = response.getData();
 
-        assertThat(data).containsEntry("helpWithFeesNumber", "139999").containsEntry("hwfFeeDetailsSummary", "NOT_QUALIFY_FEE_ASSISTANCE").containsEntry("hwfMandatoryDetails", "Details");
+        assertThat(data).containsEntry("helpWithFeesNumber", "139999")
+            .containsEntry("hwfFeeDetailsSummary", "NOT_QUALIFY_FEE_ASSISTANCE")
+            .containsEntry("hwfMandatoryDetails", "Details");
     }
 
 }
