@@ -67,7 +67,7 @@ public class ClaimantOperationServiceTest {
             eq(CLAIM_HWF_AWAITING_RESPONSE.getSubmitterEmail()),
             any(),
             eq(CLAIMANT_EMAIL_TEMPLATE),
-            eq("claimant-issue-notification-" + CLAIM.getReferenceNumber()),
+            eq("claimant-issue-notification-" + CLAIM_HWF_AWAITING_RESPONSE.getReferenceNumber()),
             eq(SUBMITTER_NAME)
         );
     }
@@ -86,7 +86,7 @@ public class ClaimantOperationServiceTest {
             eq(CLAIM_HWF_PENDING.getSubmitterEmail()),
             any(),
             eq(CLAIMANT_EMAIL_TEMPLATE),
-            eq("claimant-issue-notification-" + CLAIM.getReferenceNumber()),
+            eq("claimant-issue-notification-" + CLAIM_HWF_PENDING.getReferenceNumber()),
             eq(SUBMITTER_NAME)
         );
     }
@@ -105,7 +105,7 @@ public class ClaimantOperationServiceTest {
             eq(REPRESENTATIVE_EMAIL),
             any(),
             eq(REPRESENTATIVE_EMAIL_TEMPLATE),
-            eq("representative-issue-notification-" + CLAIM.getReferenceNumber()),
+            eq("representative-issue-notification-" + CLAIM_HWF_PENDING.getReferenceNumber()),
             eq(SUBMITTER_NAME)
         );
     }
