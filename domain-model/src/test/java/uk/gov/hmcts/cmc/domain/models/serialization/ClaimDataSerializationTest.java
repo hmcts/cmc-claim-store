@@ -53,7 +53,7 @@ public class ClaimDataSerializationTest {
                 .individualDetails())
             .withHelpWithFeesNumber("HWF012345")
             .withMoreInfoDetails(null)
-            .withhelpWithFeesType("Claim Issue")
+            .withHelpWithFeesType("Claim Issue")
             .withHwfFeeDetailsSummary("Summary")
             .withHwfMandatoryDetails("Details")
             .build();
