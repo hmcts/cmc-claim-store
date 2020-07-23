@@ -2,13 +2,13 @@
 
 [![codecov](https://codecov.io/gh/hmcts/cmc-claim-store/branch/master/graph/badge.svg)](https://codecov.io/gh/hmcts/cmc-claim-store)
 
-This is the backend service for Civil Money Claims.  
-The service provides a set of RESTful endpoints for the CMC frontend application.  
+This is the backend service for Civil Money Claims.
+The service provides a set of RESTful endpoints for the CMC frontend application.
 The two main responsibilities of this application are:
  - data access layer for the CMC service,
- - executing business logic of the CMC service e.g. calculating response deadline. 
+ - executing business logic of the CMC service e.g. calculating response deadline.
 
-Internally state is persisted to a relational database.  
+Internally state is persisted to a relational database.
 The service also delegates some responsibilities to other RESTful services e.g. idam-api or pdf-service.
 
 ## Getting started
@@ -20,7 +20,7 @@ The service also delegates some responsibilities to other RESTful services e.g. 
 
 #### Environment variables
 
-Some environment variables are mandatory. 
+Some environment variables are mandatory.
 
 - Ask one of the cmc-developers for latest vars
 - Check the [Helm chart values](charts/cmc-claim-store/values.template.yaml)
@@ -29,7 +29,7 @@ Some environment variables are mandatory.
 ### Building
 
 The project uses [Gradle](https://gradle.org) as a build tool but you don't have install it locally since there is a
-`./gradlew` wrapper script.  
+`./gradlew` wrapper script.
 
 To build project please execute the following command:
 
@@ -63,7 +63,7 @@ As a result the following containers will get created and started:
 
  - Database exposing port `5430`
  - API exposing ports `4400`
- 
+
 ### Smoke and functional tests for Automated Acceptance Testing environment
 
 The [`src/aat`](src/aat) source set contains automatic tests which are executed in the delivery pipeline. They are intended to run against real Claim Store instances after deployments to consecutive slots and environments.
@@ -132,7 +132,7 @@ info see: https://tools.hmcts.net/confluence/display/ROC/AKS+-+Azure+Managed+Kub
 ### IDE Settings
 
 #### Project Lombok Plugin
-When building the project in your IDE (eclipse or IntelliJ), Lombok plugin will be required to compile. 
+When building the project in your IDE (eclipse or IntelliJ), Lombok plugin will be required to compile.
 
 For IntelliJ IDEA, please add the Lombok IntelliJ plugin:
 * Go to `File > Settings > Plugins`
@@ -144,8 +144,8 @@ For IntelliJ IDEA, please add the Lombok IntelliJ plugin:
 Plugin setup for other IDE's are available on [https://projectlombok.org/setup/overview]
 
 #### JsonMappingException when running tests in your IDE
-Add the `-parameters` setting to your compiler arguments in your IDE (Make sure you recompile your code after).  
-This is because we use a feature of jackson for automatically deserialising based on the constructor.  
+Add the `-parameters` setting to your compiler arguments in your IDE (Make sure you recompile your code after).
+This is because we use a feature of jackson for automatically deserialising based on the constructor.
 For more info see: https://github.com/FasterXML/jackson-modules-java8/blob/a0d102fa0aea5c2fc327250868e1c1f6d523856d/parameter-names/README.md
 
 ## License
