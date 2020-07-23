@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
 class HWFHalfRemissionCallbackHandlerTest {
 
     private static final String AUTHORISATION = "Bearer: aaaa";
-    private HWFFullRemissionCallbackHandler handler;
+    private HWFHalfRemissionCallbackHandler handler;
     private CallbackParams callbackParams;
     private CallbackRequest callbackRequest;
     @Mock
@@ -47,7 +47,7 @@ class HWFHalfRemissionCallbackHandlerTest {
 
     @BeforeEach
     public void setUp() {
-        handler = new HWFFullRemissionCallbackHandler(caseDetailsConverter, deadlineCalculator, caseMapper);
+        handler = new HWFHalfRemissionCallbackHandler(caseDetailsConverter, deadlineCalculator, caseMapper);
         callbackRequest = CallbackRequest
             .builder()
             .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
