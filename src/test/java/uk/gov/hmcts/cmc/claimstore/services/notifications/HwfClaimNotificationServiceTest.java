@@ -96,15 +96,9 @@ public class HwfClaimNotificationServiceTest extends BaseNotificationServiceTest
         expectedException.expect(NotificationException.class);
         service.logNotificationFailure(
             new NotificationException("expected exception"),
-            null,
-            "hidden@email.com",
-            null,
-            null,
-            "reference",
-            null
+            "reference"
         );
 
         assertWasLogged("Failure: failed to send notification (reference) due to expected exception");
-        assertWasNotLogged("hidden@email.com");
     }
 }

@@ -73,12 +73,7 @@ public class HwfClaimNotificationService {
     @Recover
     public void logNotificationFailure(
         NotificationException exception,
-        Claim claim,
-        String targetEmail,
-        String pin,
-        String emailTemplateId,
-        String reference,
-        String submitterName
+        String reference
     ) {
         String errorMessage = String.format(
             "Failure: failed to send notification (%s) due to %s",
