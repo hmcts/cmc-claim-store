@@ -21,7 +21,6 @@ import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
@@ -30,7 +29,6 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.DEFENDANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
-import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.PIN;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.RESPOND_TO_CLAIM_URL;
 
 @Service
@@ -57,12 +55,11 @@ public class HwfClaimNotificationService {
     public void sendMail(
         Claim claim,
         String targetEmail,
-        String pin,
         String emailTemplateId,
         String reference,
         String submitterName
     ) {
-        Map<String, String> parameters = aggregateParams(claim, pin, submitterName);
+        Map<String, String> parameters = aggregateParams(claim, submitterName);
         try {
             notificationClient.sendEmail(emailTemplateId, targetEmail, parameters, reference);
         } catch (NotificationClientException e) {
@@ -87,7 +84,7 @@ public class HwfClaimNotificationService {
         throw exception;
     }
 
-    private Map<String, String> aggregateParams(Claim claim, String pin,
+    private Map<String, String> aggregateParams(Claim claim,
                                                 String submitterName) {
         ImmutableMap.Builder<String, String> parameters = new ImmutableMap.Builder<>();
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
@@ -103,7 +100,6 @@ public class HwfClaimNotificationService {
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
         parameters.put(RESPOND_TO_CLAIM_URL, notificationsProperties.getRespondToClaimUrl());
         parameters.put(EXTERNAL_ID, claim.getExternalId());
-        Optional.ofNullable(pin).ifPresent(p -> parameters.put(PIN, p));
         return parameters.build();
     }
 

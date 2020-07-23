@@ -54,6 +54,7 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.withFullClai
 @RunWith(MockitoJUnitRunner.class)
 public class CreateCitizenClaimCallbackHandlerTest {
     private static final String REFERENCE_NO = "000MC001";
+    private static final String REFERENCE_NO_HWF = "1595459870527766";
     private static final LocalDate ISSUE_DATE = now();
     private static final LocalDate RESPONSE_DEADLINE = ISSUE_DATE.plusDays(14);
     private static final String BEARER_TOKEN = "Bearer let me in";
@@ -157,9 +158,15 @@ public class CreateCitizenClaimCallbackHandlerTest {
 
     @Test
     public void shouldSuccessfullyReturnCallBackResponseWhenClaimIsHwfPending() {
+        caseDetails.setId(Long.valueOf(REFERENCE_NO_HWF));
+        callbackRequest = CallbackRequest.builder()
+            .eventId(CREATE_CITIZEN_CLAIM.getValue())
+            .caseDetails(caseDetails)
+            .build();
 
         Claim claim = SampleHwfClaim.getDefaultHwfPending().toBuilder()
-            .referenceNumber(referenceNumberRepository.getReferenceNumberForCitizen())
+            .id(Long.valueOf(REFERENCE_NO_HWF))
+            .referenceNumber(REFERENCE_NO_HWF)
             .issuedOn(ISSUE_DATE)
             .responseDeadline(RESPONSE_DEADLINE)
             .claimData(withFullClaimData().getClaimData())
@@ -179,17 +186,15 @@ public class CreateCitizenClaimCallbackHandlerTest {
         verify(caseMapper).to(claimArgumentCaptor.capture());
 
         Claim toBeSaved = claimArgumentCaptor.getValue();
-        assertThat(toBeSaved.getIssuedOn()).contains(ISSUE_DATE);
-        assertThat(toBeSaved.getServiceDate()).isEqualTo(ISSUE_DATE.plusDays(5));
-        assertThat(toBeSaved.getReferenceNumber()).isEqualTo(REFERENCE_NO);
-        assertThat(toBeSaved.getResponseDeadline()).isEqualTo(RESPONSE_DEADLINE);
+        assertThat(toBeSaved.getReferenceNumber()).isEqualTo(REFERENCE_NO_HWF);
     }
 
     @Test
     public void shouldSuccessfullyReturnCallBackResponseWhenClaimIsHwfAwaitingResponse() {
 
         Claim claim = SampleHwfClaim.getDefaultAwaitingResponseHwf().toBuilder()
-            .referenceNumber(referenceNumberRepository.getReferenceNumberForCitizen())
+            .id(Long.valueOf(REFERENCE_NO_HWF))
+            .referenceNumber(REFERENCE_NO_HWF)
             .issuedOn(ISSUE_DATE)
             .responseDeadline(RESPONSE_DEADLINE)
             .claimData(withFullClaimData().getClaimData())
@@ -209,10 +214,7 @@ public class CreateCitizenClaimCallbackHandlerTest {
         verify(caseMapper).to(claimArgumentCaptor.capture());
 
         Claim toBeSaved = claimArgumentCaptor.getValue();
-        assertThat(toBeSaved.getIssuedOn()).contains(ISSUE_DATE);
-        assertThat(toBeSaved.getServiceDate()).isEqualTo(ISSUE_DATE.plusDays(5));
-        assertThat(toBeSaved.getReferenceNumber()).isEqualTo(REFERENCE_NO);
-        assertThat(toBeSaved.getResponseDeadline()).isEqualTo(RESPONSE_DEADLINE);
+        assertThat(toBeSaved.getReferenceNumber()).isEqualTo(REFERENCE_NO_HWF);
     }
 
     @Test

@@ -24,7 +24,7 @@ public class ClaimantOperationServiceTest {
 
     public static final String CLAIMANT_EMAIL_TEMPLATE = "Claimant Email Template";
     public static final String REPRESENTATIVE_EMAIL_TEMPLATE = "Representative Email Template";
-    public static final Claim CLAIM_HWF_PENDING = SampleHwfClaim.getDefaultAwaitingResponseHwf();
+    public static final Claim CLAIM_HWF_PENDING = SampleHwfClaim.getDefaultHwfPending();
     public static final Claim CLAIM_HWF_AWAITING_RESPONSE = SampleHwfClaim.getDefaultAwaitingResponseHwf();
     public static final String AUTHORISATION = "AUTHORISATION";
     public static final String SUBMITTER_NAME = "submitter-name";
@@ -56,18 +56,17 @@ public class ClaimantOperationServiceTest {
     @Test
     public void shouldNotifyCitizenForAwaitingResponse() {
         //given
-        given(emailTemplates.getClaimantClaimIssued()).willReturn(CLAIMANT_EMAIL_TEMPLATE);
+        given(emailTemplates.getClaimantHwfUpdate()).willReturn(CLAIMANT_EMAIL_TEMPLATE);
 
         //when
         claimantOperationService.notifyCitizen(CLAIM_HWF_AWAITING_RESPONSE, SUBMITTER_NAME, AUTHORISATION);
 
         //verify
-        verify(claimIssuedNotificationService).sendMail(
+        verify(hwfClaimNotificationService).sendMail(
             eq(CLAIM_HWF_AWAITING_RESPONSE),
             eq(CLAIM_HWF_AWAITING_RESPONSE.getSubmitterEmail()),
-            any(),
             eq(CLAIMANT_EMAIL_TEMPLATE),
-            eq("claimant-issue-notification-" + CLAIM_HWF_AWAITING_RESPONSE.getReferenceNumber()),
+            eq("hwf-claim-update-notification-" + CLAIM_HWF_AWAITING_RESPONSE.getReferenceNumber()),
             eq(SUBMITTER_NAME)
         );
     }
@@ -75,18 +74,17 @@ public class ClaimantOperationServiceTest {
     @Test
     public void shouldNotifyCitizenForHwfPending() {
         //given
-        given(emailTemplates.getClaimantClaimIssued()).willReturn(CLAIMANT_EMAIL_TEMPLATE);
+        given(emailTemplates.getClaimantClaimIssuedWithHwfVerficationPending()).willReturn(CLAIMANT_EMAIL_TEMPLATE);
 
         //when
         claimantOperationService.notifyCitizen(CLAIM_HWF_PENDING, SUBMITTER_NAME, AUTHORISATION);
 
         //verify
-        verify(claimIssuedNotificationService).sendMail(
+        verify(hwfClaimNotificationService).sendMail(
             eq(CLAIM_HWF_PENDING),
             eq(CLAIM_HWF_PENDING.getSubmitterEmail()),
-            any(),
             eq(CLAIMANT_EMAIL_TEMPLATE),
-            eq("claimant-issue-notification-" + CLAIM_HWF_PENDING.getReferenceNumber()),
+            eq("hwf-claimant-issue-creation-notification-" + CLAIM_HWF_PENDING.getReferenceNumber()),
             eq(SUBMITTER_NAME)
         );
     }

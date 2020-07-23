@@ -40,7 +40,6 @@ public class ClaimantOperationService {
             hwfClaimNotificationService.sendMail(
                 claim,
                 claim.getSubmitterEmail(),
-                null,
                 notificationsProperties.getTemplates().getEmail().getClaimantClaimIssuedWithHwfVerficationPending(),
                 "hwf-claimant-issue-creation-notification-" + claim.getReferenceNumber(),
                 submitterName
@@ -49,7 +48,6 @@ public class ClaimantOperationService {
             hwfClaimNotificationService.sendMail(
                 claim,
                 claim.getSubmitterEmail(),
-                null,
                 notificationsProperties.getTemplates().getEmail().getClaimantHwfUpdate(),
                 "hwf-claim-update-notification-" + claim.getReferenceNumber(),
                 submitterName
