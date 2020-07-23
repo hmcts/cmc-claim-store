@@ -68,6 +68,8 @@ public class JsonMapperTest {
             .withHousingDisrepair(null)
             .withPersonalInjury(null)
             .withStatementOfTruth(null)
+            .withHwfFeeDetailsSummary("Summary")
+            .withHwfMandatoryDetails("Details")
             .clearClaimants()
             .addClaimant(SampleParty.builder().withRepresentative(null).individual())
             .withDefendant(SampleTheirDetails.builder()
@@ -126,6 +128,8 @@ public class JsonMapperTest {
             .withHelpWithFeesNumber("HWF012345")
             .withMoreInfoDetails(null)
             .withhelpWithFeesType("Claim Issue")
+            .withHwfFeeDetailsSummary("Summary")
+            .withHwfMandatoryDetails("Details")
             .withTimeline(SampleTimeline.validDefaults())
             .withEvidence(SampleEvidence.validDefaults())
             .build();
@@ -170,9 +174,11 @@ public class JsonMapperTest {
             .withTimeline(null)
             .withPayment(null)
             .withEvidence(null)
-            .withHelpWithFeesNumber(null)
             .withMoreInfoDetails(null)
-            .withhelpWithFeesType(null)
+            .withHelpWithFeesNumber("HWF012345")
+            .withHelpWithFeesType("Claim Issue")
+            .withHwfFeeDetailsSummary("Summary")
+            .withHwfMandatoryDetails("Details")
             .build();
         assertThat(output).isEqualTo(expected);
     }

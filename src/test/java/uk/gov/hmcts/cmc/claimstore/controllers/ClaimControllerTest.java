@@ -168,7 +168,7 @@ public class ClaimControllerTest {
         //given
         ClaimData claimData = SampleClaimData.builder()
             .withHelpWithFeesNumber("HWF012345")
-            .withhelpWithFeesType("Claim Issue")
+            .withHelpWithFeesType("Claim Issue")
             .build();
         Claim expectedResponse = Claim.builder().claimData(claimData).build();
         when(claimService.saveHelpWithFeesClaim(USER_ID, claimData, AUTHORISATION, FEATURES))
@@ -185,7 +185,7 @@ public class ClaimControllerTest {
     public void shouldsaveHelpWithFeesClaim() {
         ClaimData claimData = SampleClaimData.builder()
             .withHelpWithFeesNumber("HWF012345")
-            .withhelpWithFeesType("Claim Issue")
+            .withHelpWithFeesType("Claim Issue")
             .withPayment(Payment.builder()
                 .amount(null)
                 .transactionId(null)

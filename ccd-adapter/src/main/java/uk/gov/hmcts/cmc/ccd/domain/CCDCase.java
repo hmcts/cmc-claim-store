@@ -154,6 +154,8 @@ public class CCDCase {
     private String helpWithFeesNumber;
     private String moreInfoDetails;
     private String helpWithFeesType;
+    private String hwfFeeDetailsSummary;
+    private String hwfMandatoryDetails;
     private CCDResponseType paperAdmissionType;
     private CCDTransferContent transferContent;
     @Builder.Default
