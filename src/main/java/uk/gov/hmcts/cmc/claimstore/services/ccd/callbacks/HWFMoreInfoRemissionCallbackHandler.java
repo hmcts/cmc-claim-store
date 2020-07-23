@@ -67,7 +67,6 @@ public class HWFMoreInfoRemissionCallbackHandler extends CallbackHandler {
         CallbackRequest callbackRequest = callbackParams.getRequest();
 
         Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
-        List<String> errors = new ArrayList<>();
         var responseBuilder = AboutToStartOrSubmitCallbackResponse.builder();
 
         if (!FeaturesUtils.isOnlineDQ(claim)) {
