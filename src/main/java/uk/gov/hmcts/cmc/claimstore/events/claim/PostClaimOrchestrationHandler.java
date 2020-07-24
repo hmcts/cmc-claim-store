@@ -42,7 +42,7 @@ public class PostClaimOrchestrationHandler {
     private final NotificationOperation<Claim, CitizenClaimCreatedEvent, Claim> notifyClaimantOperation;
     private final NotificationOperation<Claim, HwfClaimUpdatedEvent, Claim> notifyClaimantAboutHwfOperation;
     private final RepNotificationOperation<Claim, RepresentedClaimCreatedEvent, Claim> notifyRepresentativeOperation;
-    private static final String logMessage = "Failed operation processing for event {}";
+    private static final String FAILED_LOG_MSG = "Failed operation processing for event {}";
 
     @Autowired
     @SuppressWarnings("squid:S00107")
@@ -115,7 +115,7 @@ public class PostClaimOrchestrationHandler {
                 updatedClaim.apply(claim);
             }
         } catch (Exception e) {
-            logger.error(logMessage, event, e);
+            logger.error(FAILED_LOG_MSG, event, e);
         }
     }
 
@@ -152,7 +152,7 @@ public class PostClaimOrchestrationHandler {
                 }
             }
         } catch (Exception e) {
-            logger.error(logMessage, event, e);
+            logger.error(FAILED_LOG_MSG, event, e);
         }
     }
 
@@ -184,7 +184,7 @@ public class PostClaimOrchestrationHandler {
                 );
             }
         } catch (Exception e) {
-            logger.error(logMessage, event, e);
+            logger.error(FAILED_LOG_MSG, event, e);
         }
     }
 }
