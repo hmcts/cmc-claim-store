@@ -35,10 +35,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BULK_PRINT_FAILED;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.DIRECTION_ORDER_LETTER_TYPE;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.GENERAL_LETTER_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.ADDITIONAL_DATA_CASE_IDENTIFIER_KEY;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.ADDITIONAL_DATA_LETTER_TYPE_KEY;
-import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.FIRST_CONTACT_LETTER_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.XEROX_TYPE_PARAMETER;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -51,6 +53,7 @@ public class BulkPrintServiceTest {
     private static final Document defendantLetterDocument = new Document("pinTemplate", pinContents);
     private static final Map<String, Object> claimContents = new HashMap<>();
     private static final Document sealedClaimDocument = new Document("sealedClaimTemplate", claimContents);
+    private static final String AUTHORISATION = "Bearer: let me in";
 
     @Mock
     private SendLetterApi sendLetterApi;
@@ -60,17 +63,20 @@ public class BulkPrintServiceTest {
 
     @Mock
     private AuthTokenGenerator authTokenGenerator;
+
     private BulkPrintService bulkPrintService;
+
     @Mock
     private BulkPrintStaffNotificationService bulkPrintStaffNotificationService;
     @Mock
     private PDFServiceClient pdfServiceClient;
+
     private Letter letter;
 
     @Before
     public void beforeEachTest() {
         when(authTokenGenerator.generate()).thenReturn(AUTH_VALUE);
-        additionalData.put(ADDITIONAL_DATA_LETTER_TYPE_KEY, FIRST_CONTACT_LETTER_TYPE);
+        additionalData.put(ADDITIONAL_DATA_LETTER_TYPE_KEY, FIRST_CONTACT_LETTER_TYPE.value);
         additionalData.put(ADDITIONAL_DATA_CASE_IDENTIFIER_KEY, CLAIM.getId());
         additionalData.put(ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY, CLAIM.getReferenceNumber());
 
@@ -94,11 +100,14 @@ public class BulkPrintServiceTest {
         );
 
         //when
-        bulkPrintService.print(CLAIM,
+        bulkPrintService.printHtmlLetter(CLAIM,
             ImmutableList.of(
                 new PrintableTemplate(defendantLetterDocument, "filename"),
                 new PrintableTemplate(sealedClaimDocument, "filename")
-            ));
+            ),
+            FIRST_CONTACT_LETTER_TYPE,
+            AUTHORISATION
+        );
         //then
 
         verify(sendLetterApi).sendLetter(eq(AUTH_VALUE),
@@ -128,7 +137,9 @@ public class BulkPrintServiceTest {
         bulkPrintService.printPdf(CLAIM, ImmutableList.of(
             new PrintableTemplate(coversheetForClaimant, "filename"),
             new PrintableTemplate(legalOrderDocument, "filename")
-        ), "general-order");
+            ),
+            DIRECTION_ORDER_LETTER_TYPE,
+            AUTHORISATION);
 
         verify(sendLetterApi).sendLetter(eq(AUTH_VALUE), any(LetterWithPdfsRequest.class));
     }
@@ -151,7 +162,10 @@ public class BulkPrintServiceTest {
         //when
         bulkPrintService.printPdf(CLAIM, ImmutableList.of(
             new PrintableTemplate(generalLetter, "filename")
-        ), "general-letter");
+            ),
+            GENERAL_LETTER_TYPE,
+            AUTHORISATION
+        );
 
         verify(sendLetterApi).sendLetter(eq(AUTH_VALUE), any(LetterWithPdfsRequest.class));
     }
@@ -171,13 +185,16 @@ public class BulkPrintServiceTest {
             appInsights,
             pdfServiceClient
         );
+
         try {
-            bulkPrintService.print(
+            bulkPrintService.printHtmlLetter(
                 CLAIM,
                 ImmutableList.of(
                     new PrintableTemplate(defendantLetterDocument, "filename"),
                     new PrintableTemplate(sealedClaimDocument, "filename")
-                ));
+                ),
+                FIRST_CONTACT_LETTER_TYPE,
+                AUTHORISATION);
         } finally {
             //then
             verify(sendLetterApi).sendLetter(eq(AUTH_VALUE), eq(letter));

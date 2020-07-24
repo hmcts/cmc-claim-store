@@ -8,6 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDTelephone;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
@@ -134,7 +135,12 @@ public class TheirDetailsMapperTest {
                 .value(ccdParty).build());
 
         //then
-        assertThat(party).isEqualTo(ccdParty);
+        String claimantProvidedEmail = ccdParty.getPartyDetail().getEmailAddress();
+        CCDParty claimantProvidedDetails = ccdParty.getClaimantProvidedDetail().toBuilder()
+            .emailAddress(claimantProvidedEmail).build();
+        CCDRespondent ccdPartyWithEmail = ccdParty.toBuilder().claimantProvidedDetail(claimantProvidedDetails).build();
+
+        assertThat(party).isEqualTo(ccdPartyWithEmail);
         assertThat(party.getId()).isEqualTo(collectionId);
     }
 
