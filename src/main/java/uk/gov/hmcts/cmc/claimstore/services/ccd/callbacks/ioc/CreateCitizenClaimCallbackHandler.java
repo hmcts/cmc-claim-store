@@ -159,11 +159,19 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
             claim.getExternalId());
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
         User user = userService.getUser(authorisation);
-        eventProducer.createClaimCreatedEvent(
-            claim,
-            user.getUserDetails().getFullName(),
-            authorisation
-        );
+        if (claim.getState().equals(AWAITING_RESPONSE_HWF)) {
+            eventProducer.createHwfClaimUpdatedEvent(
+                claim,
+                user.getUserDetails().getFullName(),
+                authorisation
+            );
+        } else {
+            eventProducer.createClaimCreatedEvent(
+                claim,
+                user.getUserDetails().getFullName(),
+                authorisation
+            );
+        }
         return SubmittedCallbackResponse.builder().build();
     }
 }

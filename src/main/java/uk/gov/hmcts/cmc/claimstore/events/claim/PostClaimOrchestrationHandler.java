@@ -40,6 +40,7 @@ public class PostClaimOrchestrationHandler {
     private final PDFBasedOperation<Claim, String, PDF, Claim> notifyStaffOperation;
     private final NotificationOperation<Claim, CitizenClaimCreatedEvent, Claim> generatePinOperation;
     private final NotificationOperation<Claim, CitizenClaimCreatedEvent, Claim> notifyClaimantOperation;
+    private final NotificationOperation<Claim, HwfClaimUpdatedEvent, Claim> notifyClaimantAboutHwfOperation;
     private final RepNotificationOperation<Claim, RepresentedClaimCreatedEvent, Claim> notifyRepresentativeOperation;
 
     @Autowired
@@ -88,6 +89,9 @@ public class PostClaimOrchestrationHandler {
                 ? claimantOperationService.notifyCitizen(claim, event.getSubmitterName(), event.getAuthorisation())
                 : claim;
 
+        notifyClaimantAboutHwfOperation = (claim, event) ->
+            claimantOperationService.notifyCitizen(claim, event.getSubmitterName(), event.getAuthorisation());
+
         notifyRepresentativeOperation = (claim, event) ->
             claim.getClaimSubmissionOperationIndicators().getClaimantNotification() == NO
                 ? claimantOperationService.confirmRepresentative(
@@ -100,6 +104,23 @@ public class PostClaimOrchestrationHandler {
 
     @LogExecutionTime
     @EventListener
+    public void citizenHwfClaimUpdateHandler(HwfClaimUpdatedEvent event) {
+        try {
+            Claim claim = event.getClaim();
+            String authorisation = event.getAuthorisation();
+
+            if ((claim.getState().equals(HWF_APPLICATION_PENDING))
+                || (claim.getState().equals(AWAITING_RESPONSE_HWF))) {
+                UnaryOperator<Claim> updatedClaim = c -> notifyClaimantAboutHwfOperation.perform(c, event);
+                updatedClaim.apply(claim);
+            }
+        } catch (Exception e) {
+            logger.error("Failed operation processing for event {}", event, e);
+        }
+    }
+
+    @LogExecutionTime
+    @EventListener
     public void citizenIssueHandler(CitizenClaimCreatedEvent event) {
         try {
             Claim claim = event.getClaim();
@@ -107,8 +128,7 @@ public class PostClaimOrchestrationHandler {
 
             UnaryOperator<Claim> doPinOperation = c -> generatePinOperation.perform(c, event);
 
-            if (claim.getState().equals(HWF_APPLICATION_PENDING)
-                || claim.getState().equals(AWAITING_RESPONSE_HWF)) {
+            if (claim.getState().equals(HWF_APPLICATION_PENDING)) {
                 UnaryOperator<Claim> updatedClaim = c -> notifyClaimantOperation.perform(c, event);
                 updatedClaim.apply(claim);
             } else {
