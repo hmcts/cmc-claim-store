@@ -105,5 +105,7 @@
   "90022_Application Error Disclosure_http://cmc-claim-store-pr-1825.service.core-compute-preview.internal/documents/documentType/externalId_GET": "ignore",
   "90022_Application Error Disclosure_http://cmc-claim-store-pr-1825.service.core-compute-preview.internal/support/rpa/paid-in-full_PUT": "ignore",
   "90022_Application Error Disclosure_http://cmc-claim-store-pr-1825.service.core-compute-preview.internal/claims/resume-citizen-payment_PUT": "ignore",
-  "90022_Application Error Disclosure_http://cmc-claim-store-pr-1825.service.core-compute-preview.internal/support/sendMediation_POST": "ignore"
- }
+  "90022_Application Error Disclosure_http://cmc-claim-store-pr-1825.service.core-compute-preview.internal/support/sendMediation_POST": "ignore",
+  "10038_Content Security Policy (CSP) Header Not Set_http://cmc-claim-store-pr-1825.service.core-compute-preview.internal/claims/%7BexternalId:%5Cp%7BXDigit%7D%7B8%7D-%5Cp%7BXDigit%7D%7B4%7D-%5Cp%7BXDigit%7D%7B4%7D-%5Cp%7BXDigit%7D%7B4%7D-%5Cp%7BXDigit%7D%7B12%7D%7D/metadata_GET": "ignore",
+  "10038_Content Security Policy (CSP) Header Not Set_http://cmc-claim-store-pr-1825.service.core-compute-preview.internal/claims/%7BexternalId:%5Cp%7BXDigit%7D%7B8%7D-%5Cp%7BXDigit%7D%7B4%7D-%5Cp%7BXDigit%7D%7B4%7D-%5Cp%7BXDigit%7D%7B4%7D-%5Cp%7BXDigit%7D%7B12%7D%7D/review-order_PUT": "ignore"
+}
