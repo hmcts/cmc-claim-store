@@ -42,7 +42,7 @@ public class PostClaimOrchestrationHandler {
     private final NotificationOperation<Claim, CitizenClaimCreatedEvent, Claim> notifyClaimantOperation;
     private final NotificationOperation<Claim, HwfClaimUpdatedEvent, Claim> notifyClaimantAboutHwfOperation;
     private final RepNotificationOperation<Claim, RepresentedClaimCreatedEvent, Claim> notifyRepresentativeOperation;
-    private final static String logMessage = "Failed operation processing for event {}";
+    private static final String logMessage = "Failed operation processing for event {}";
 
     @Autowired
     @SuppressWarnings("squid:S00107")
