@@ -42,7 +42,7 @@ public class PostClaimOrchestrationHandler {
     private final NotificationOperation<Claim, CitizenClaimCreatedEvent, Claim> notifyClaimantOperation;
     private final NotificationOperation<Claim, HwfClaimUpdatedEvent, Claim> notifyClaimantAboutHwfOperation;
     private final RepNotificationOperation<Claim, RepresentedClaimCreatedEvent, Claim> notifyRepresentativeOperation;
-
+    private final String logMessage = "Failed operation processing for event {}";
     @Autowired
     @SuppressWarnings("squid:S00107")
     public PostClaimOrchestrationHandler(
@@ -107,7 +107,6 @@ public class PostClaimOrchestrationHandler {
     public void citizenHwfClaimUpdateHandler(HwfClaimUpdatedEvent event) {
         try {
             Claim claim = event.getClaim();
-            String authorisation = event.getAuthorisation();
 
             if ((claim.getState().equals(HWF_APPLICATION_PENDING))
                 || (claim.getState().equals(AWAITING_RESPONSE_HWF))) {
@@ -115,7 +114,7 @@ public class PostClaimOrchestrationHandler {
                 updatedClaim.apply(claim);
             }
         } catch (Exception e) {
-            logger.error("Failed operation processing for event {}", event, e);
+            logger.error(logMessage, event, e);
         }
     }
 
@@ -152,7 +151,7 @@ public class PostClaimOrchestrationHandler {
                 }
             }
         } catch (Exception e) {
-            logger.error("Failed operation processing for event {}", event, e);
+            logger.error(logMessage, event, e);
         }
     }
 
@@ -184,7 +183,7 @@ public class PostClaimOrchestrationHandler {
                 );
             }
         } catch (Exception e) {
-            logger.error("Failed operation processing for event {}", event, e);
+            logger.error(logMessage, event, e);
         }
     }
 }
