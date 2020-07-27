@@ -1,14 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -41,12 +38,11 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-@DisplayName("HWF Half Remission Rejected Callback Handler")
-class HWFHalfRemissionCallbackHandlerTest {
-    @Rule
-    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
+@DisplayName("HWF Full Remission Rejected Callback Handler")
+class HWFFullRemissionRejectedCallbackHandlerTest {
+
     private static final String AUTHORISATION = "Bearer: aaaa";
-    private HWFHalfRemissionCallbackHandler handler;
+    private HWFFullRemissionRejectedCallbackHandler handler;
     private CallbackParams callbackParams;
     private CallbackRequest callbackRequest;
     @Mock
@@ -68,11 +64,14 @@ class HWFHalfRemissionCallbackHandlerTest {
     private UserService userService;
 
     @Mock
+    private User mockUser;
+
+    @Mock
     private UserDetails userDetails;
 
     @BeforeEach
     public void setUp() {
-        handler = new HWFHalfRemissionCallbackHandler(caseDetailsConverter, deadlineCalculator, caseMapper,
+        handler = new HWFFullRemissionRejectedCallbackHandler(caseDetailsConverter, deadlineCalculator, caseMapper,
             eventProducer, userService);
         callbackRequest = CallbackRequest
             .builder()
@@ -90,6 +89,7 @@ class HWFHalfRemissionCallbackHandlerTest {
     void shouldUpdateInfo() {
         Claim claim = SampleClaim.getClaimWithFullAdmission();
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+        when(userService.getUser(anyString())).thenReturn(mockUser);
         Map<String, Object> mappedCaseData = new HashMap<>();
         mappedCaseData.put("helpWithFeesNumber", "139999");
         mappedCaseData.put("hwfFeeDetailsSummary", "NOT_QUALIFY_FEE_ASSISTANCE");
@@ -102,7 +102,6 @@ class HWFHalfRemissionCallbackHandlerTest {
         assertThat(data).containsEntry("helpWithFeesNumber", "139999")
             .containsEntry("hwfFeeDetailsSummary", "NOT_QUALIFY_FEE_ASSISTANCE")
             .containsEntry("hwfMandatoryDetails", "Details");
-
     }
 
     @Test
@@ -128,5 +127,4 @@ class HWFHalfRemissionCallbackHandlerTest {
 
         assertThat(claim).isNotNull();
     }
-
 }

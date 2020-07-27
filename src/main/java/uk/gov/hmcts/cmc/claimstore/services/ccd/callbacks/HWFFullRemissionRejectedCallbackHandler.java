@@ -1,3 +1,4 @@
+
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 
 import com.google.common.collect.ImmutableList;
@@ -16,28 +17,27 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
-import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
 @Service
-public class HWFFullRemissionCallbackHandler extends CallbackHandler {
-    private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
-    private static final List<CaseEvent> EVENTS = ImmutableList.of(CaseEvent.HWF_FULL_REMISSION_GRANTED);
+public class HWFFullRemissionRejectedCallbackHandler extends CallbackHandler {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
+
+    private static final List<CaseEvent> EVENTS = ImmutableList.of(CaseEvent.FULL_REMISSION_HWF_REJECTED);
 
     private final CaseDetailsConverter caseDetailsConverter;
 
@@ -50,9 +50,10 @@ public class HWFFullRemissionCallbackHandler extends CallbackHandler {
     private final UserService userService;
 
     @Autowired
-    public HWFFullRemissionCallbackHandler(CaseDetailsConverter caseDetailsConverter,
-                                           DirectionsQuestionnaireDeadlineCalculator deadlineCalculator,
-                                           CaseMapper caseMapper, EventProducer eventProducer, UserService userService) {
+    public HWFFullRemissionRejectedCallbackHandler(CaseDetailsConverter caseDetailsConverter,
+                                                   DirectionsQuestionnaireDeadlineCalculator deadlineCalculator,
+                                                   CaseMapper caseMapper, EventProducer eventProducer,
+                                                   UserService userService) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.deadlineCalculator = deadlineCalculator;
         this.caseMapper = caseMapper;
@@ -63,7 +64,8 @@ public class HWFFullRemissionCallbackHandler extends CallbackHandler {
     @Override
     protected Map<CallbackType, Callback> callbacks() {
         return ImmutableMap.of(
-            CallbackType.ABOUT_TO_SUBMIT, this::updateFeeRemitted
+            CallbackType.ABOUT_TO_SUBMIT, this::updateRejectionReasons,
+            CallbackType.SUBMITTED, this::startHwfClaimUpdatePostOperations
         );
     }
 
@@ -77,27 +79,22 @@ public class HWFFullRemissionCallbackHandler extends CallbackHandler {
         return ROLES;
     }
 
-    private CallbackResponse updateFeeRemitted(CallbackParams callbackParams) {
-        logger.info("HWF Remittance fee about-to-submit callback ");
+    private CallbackResponse updateRejectionReasons(CallbackParams callbackParams) {
         CallbackRequest callbackRequest = callbackParams.getRequest();
 
         Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
+        var responseBuilder = AboutToStartOrSubmitCallbackResponse.builder();
 
         if (!FeaturesUtils.isOnlineDQ(claim)) {
             LocalDate deadline = deadlineCalculator.calculate(LocalDateTime.now());
             claim = claim.toBuilder().directionsQuestionnaireDeadline(deadline).build();
         }
-        Map<String, Object> dataMap = caseDetailsConverter.convertToMap(caseMapper.to(claim));
-        Optional<BigDecimal> feesPaid = claim.getClaimData().getFeesPaidInPounds();
 
-        if (feesPaid.isPresent()) {
-            dataMap.put("feeRemitted", MonetaryConversions
-                .poundsToPennies(feesPaid.get()).toString());
-        }
-        return AboutToStartOrSubmitCallbackResponse
-            .builder()
-            .data(dataMap)
-            .build();
+        Map<String, Object> dataMap = caseDetailsConverter.convertToMap(caseMapper.to(claim));
+
+        responseBuilder.data(dataMap);
+
+        return responseBuilder.build();
     }
 
     private CallbackResponse startHwfClaimUpdatePostOperations(CallbackParams callbackParams) {
@@ -114,5 +111,4 @@ public class HWFFullRemissionCallbackHandler extends CallbackHandler {
         );
         return SubmittedCallbackResponse.builder().build();
     }
-
 }

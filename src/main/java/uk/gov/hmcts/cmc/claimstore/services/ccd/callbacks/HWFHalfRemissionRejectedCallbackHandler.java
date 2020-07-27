@@ -31,7 +31,7 @@ import java.util.Map;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
 @Service
-public class HWFHalfRemissionCallbackHandler extends CallbackHandler {
+public class HWFHalfRemissionRejectedCallbackHandler extends CallbackHandler {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -50,10 +50,10 @@ public class HWFHalfRemissionCallbackHandler extends CallbackHandler {
     private final UserService userService;
 
     @Autowired
-    public HWFHalfRemissionCallbackHandler(CaseDetailsConverter caseDetailsConverter,
-                                           DirectionsQuestionnaireDeadlineCalculator deadlineCalculator,
-                                           CaseMapper caseMapper, EventProducer eventProducer,
-                                           UserService userService) {
+    public HWFHalfRemissionRejectedCallbackHandler(CaseDetailsConverter caseDetailsConverter,
+                                                   DirectionsQuestionnaireDeadlineCalculator deadlineCalculator,
+                                                   CaseMapper caseMapper, EventProducer eventProducer,
+                                                   UserService userService) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.deadlineCalculator = deadlineCalculator;
         this.caseMapper = caseMapper;
