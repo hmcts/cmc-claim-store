@@ -52,7 +52,8 @@ public class HWFFullRemissionCallbackHandler extends CallbackHandler {
     @Autowired
     public HWFFullRemissionCallbackHandler(CaseDetailsConverter caseDetailsConverter,
                                            DirectionsQuestionnaireDeadlineCalculator deadlineCalculator,
-                                           CaseMapper caseMapper, EventProducer eventProducer, UserService userService) {
+                                           CaseMapper caseMapper, EventProducer eventProducer,
+                                           UserService userService) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.deadlineCalculator = deadlineCalculator;
         this.caseMapper = caseMapper;

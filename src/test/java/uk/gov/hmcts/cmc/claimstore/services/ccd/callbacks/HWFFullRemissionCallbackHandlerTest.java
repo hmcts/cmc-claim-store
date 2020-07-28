@@ -66,7 +66,6 @@ class HWFFullRemissionCallbackHandlerTest {
     @Mock
     private UserService userService;
 
-
     @BeforeEach
     public void setUp() {
         handler = new HWFFullRemissionCallbackHandler(caseDetailsConverter, deadlineCalculator, caseMapper,
