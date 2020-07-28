@@ -83,6 +83,7 @@
   "100001_Unexpected Content-Type was returned_http://cmc-claim-store-pr-1828.service.core-compute-preview.internal/testing-support/trigger-server-error_GET": "ignore",
   "100001_Unexpected Content-Type was returned_http://cmc-claim-store-pr-1828.service.core-compute-preview.internal/support/deadline/deadlineType/claim/referenceNumber?overwrite=false_PUT": "ignore",
   "100001_Unexpected Content-Type was returned_http://cmc-claim-store-pr-1828.service.core-compute-preview.internal/documents/documentType/externalId_GET": "ignore",
+  "100001_Unexpected Content-Type was returned_http://cmc-claim-store-pr-1828.service.core-compute-preview.internal/support/rpa/more-time_PUT": "ignore",
   "100001_Unexpected Content-Type was returned_http://cmc-claim-store-pr-1828.service.core-compute-preview.internal/claims/%7BexternalId:%5Cp%7BXDigit%7D%7B8%7D-%5Cp%7BXDigit%7D%7B4%7D-%5Cp%7BXDigit%7D%7B4%7D-%5Cp%7BXDigit%7D%7B4%7D-%5Cp%7BXDigit%7D%7B12%7D%7D/request-more-time_POST": "ignore",
   "100001_Unexpected Content-Type was returned_http://cmc-claim-store-pr-1828.service.core-compute-preview.internal/testing-support/claims/claimReferenceNumber/response-deadline/newDeadline_PUT":  "ignore",
   "10024_Information Disclosure - Sensitive Information in URL_http://cmc-claim-store-pr-1828.service.core-compute-preview.internal/claims/filters/defendants/email?email=foo-bar@example.com_POST": "ignore",
