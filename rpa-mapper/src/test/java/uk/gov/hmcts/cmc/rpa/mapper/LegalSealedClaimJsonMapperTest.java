@@ -19,6 +19,8 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 import uk.gov.hmcts.cmc.rpa.config.ModuleConfiguration;
 
+import java.time.LocalDate;
+
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
 
@@ -61,6 +63,7 @@ public class LegalSealedClaimJsonMapperTest {
                 .build()
             )
             .withReferenceNumber("006LR003")
+            .withIssuedOn(LocalDate.of(2020, 7, 25))
             .build();
 
         String expected = new ResourceReader().read("/claim/individual_rpa_legal_case.json").trim();
@@ -100,6 +103,7 @@ public class LegalSealedClaimJsonMapperTest {
                 .build()
             )
             .withReferenceNumber("006LR003")
+            .withIssuedOn(LocalDate.of(2020, 7, 25))
             .build();
 
         String expected = new ResourceReader().read("/claim/sole_trader_rpa_legal_case.json").trim();
@@ -138,6 +142,7 @@ public class LegalSealedClaimJsonMapperTest {
                 .build()
             )
             .withReferenceNumber("006LR003")
+            .withIssuedOn(LocalDate.of(2020, 7, 25))
             .build();
 
         String expected = new ResourceReader().read("/claim/company_rpa_legal_case.json").trim();
@@ -176,6 +181,7 @@ public class LegalSealedClaimJsonMapperTest {
                 .build()
             )
             .withReferenceNumber("006LR003")
+            .withIssuedOn(LocalDate.of(2020, 7, 25))
             .build();
 
         String expected = new ResourceReader().read("/claim/organisation_rpa_legal_case.json").trim();
