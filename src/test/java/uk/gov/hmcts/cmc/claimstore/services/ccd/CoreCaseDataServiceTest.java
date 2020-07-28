@@ -29,6 +29,7 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
@@ -49,6 +50,8 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,6 +66,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ADD_BULK_PRINT_DETAILS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CLAIMANT_RESPONSE_ACCEPTATION;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CLAIMANT_RESPONSE_REJECTION;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
@@ -655,6 +659,24 @@ public class CoreCaseDataServiceTest {
 
         verify(coreCaseDataApi).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
             anyString(), anyString(), eq(ORDER_REVIEW_REQUESTED.getValue()));
+        verify(coreCaseDataApi).submitEventForCitizen(anyString(), anyString(), anyString(), anyString(),
+            anyString(), anyString(), eq(true), any(CaseDataContent.class));
+    }
+
+    @Test
+    public void addBulkPrintDetailsToClaimShouldBeSuccessful() {
+        Claim claim = SampleClaim.getDefault();
+
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+
+        service.addBulkPrintDetailsToClaim(
+            AUTHORISATION,
+            List.of(BulkPrintDetails.builder().printRequestId(UUID.randomUUID().toString()).build()),
+            ADD_BULK_PRINT_DETAILS,
+            claim.getId());
+
+        verify(coreCaseDataApi).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
+            anyString(), anyString(), eq(ADD_BULK_PRINT_DETAILS.getValue()));
         verify(coreCaseDataApi).submitEventForCitizen(anyString(), anyString(), anyString(), anyString(),
             anyString(), anyString(), eq(true), any(CaseDataContent.class));
     }
