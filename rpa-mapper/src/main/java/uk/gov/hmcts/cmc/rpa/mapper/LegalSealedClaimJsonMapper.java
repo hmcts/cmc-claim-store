@@ -26,7 +26,7 @@ import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractFromSubclass;
 import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractOptionalFromSubclass;
 
 @Component
-@SuppressWarnings( {"LineLength"})
+@SuppressWarnings({"LineLength"})
 public class LegalSealedClaimJsonMapper {
 
     public JsonObject map(Claim claim) {
