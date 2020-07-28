@@ -126,6 +126,7 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
                         .map(CCDScannedDocument::getType)
                         .collect(Collectors.toSet());
 
+                assertThat(scannedDocumentTypes).isNotEmpty();
                 assertThat(scannedDocumentTypes).doesNotContain(type);
             }
         }
@@ -187,6 +188,7 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
                         .map(CCDCollectionElement::getValue)
                         .collect(Collectors.toSet());
 
+                assertThat(scannedDocuments).isNotEmpty();
                 assertThat(scannedDocuments).doesNotContain(subtypeForm);
             }
         }
