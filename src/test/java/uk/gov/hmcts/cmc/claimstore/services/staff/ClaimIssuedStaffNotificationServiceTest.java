@@ -51,7 +51,7 @@ public class ClaimIssuedStaffNotificationServiceTest {
         when(provider.createContent(anyMap())).thenReturn(new EmailContent("subject", "body"));
 
         ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService
-            = new ClaimIssuedStaffNotificationService(emailService, staffEmailProperties, provider, true);
+            = new ClaimIssuedStaffNotificationService(emailService, staffEmailProperties, provider, true, true);
 
         //when
         claimIssuedStaffNotificationService.notifyStaffOfClaimIssue(SampleClaim.getDefault(), documents);
@@ -64,7 +64,7 @@ public class ClaimIssuedStaffNotificationServiceTest {
     @Test
     public void shouldNotNotifyStaffOfClaimIssueWhenStaffEmailsDisabled() {
         ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService
-            = new ClaimIssuedStaffNotificationService(emailService, staffEmailProperties, provider, false);
+            = new ClaimIssuedStaffNotificationService(emailService, staffEmailProperties, provider, false, false);
 
         //when
         claimIssuedStaffNotificationService.notifyStaffOfClaimIssue(SampleClaim.getDefault(), documents);
