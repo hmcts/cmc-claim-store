@@ -96,6 +96,7 @@ public class LegalSealedClaimJsonMapper {
             .add("title", getDefendantTitle(defendant))
             .add("firstName", getDefendantFirstName(defendant))
             .add("lastName", getDefendantLastName(defendant))
+            .add("name", defendant.getName())
             .add("primaryAddress", mapAddress(defendant.getAddress()))
             .add("emailAddress", defendant.getEmail().orElse(null))
             .build();

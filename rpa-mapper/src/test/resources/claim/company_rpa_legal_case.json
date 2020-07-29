@@ -57,6 +57,7 @@
         "lastName": null,
         "firstName": null,
         "title": null,
+        "name": "Dr. John Smith",
         "emailAddress": "j.smith@example.com",
         "type": "COMPANY",
         "primaryAddress": {

@@ -57,6 +57,7 @@
         "lastName": "Smith",
         "firstName": "John",
         "title": "Dr.",
+        "name": "Dr. John Smith",
         "emailAddress": "j.smith@example.com",
         "type": "SOLETRADER",
         "primaryAddress": {
