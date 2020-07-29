@@ -47,30 +47,12 @@ public class ClaimIssuedStaffNotificationService {
 
     @LogExecutionTime
     public void notifyStaffOfClaimIssue(Claim claim, List<PDF> documents) {
-        if (staffEmailsEnabled) {
-            requireNonNull(claim);
-            EmailData emailData = prepareEmailData(claim, documents);
-            emailService.sendEmail(staffEmailProperties.getSender(), emailData);
-        }
 
         if (staffEmailsEnabledForLegalRep && claim.getClaimData().isClaimantRepresented()) {
             requireNonNull(claim);
             EmailData emailData = prepareEmailDataForLegalRep(claim, documents);
             emailService.sendEmail(staffEmailProperties.getSender(), emailData);
         }
-    }
-
-    private EmailData prepareEmailData(Claim claim, List<PDF> documents) {
-        EmailContent content = provider.createContent(wrapInMap(claim));
-        List<EmailAttachment> attachments = documents.stream()
-            .filter(document -> document.getClaimDocumentType() != CLAIM_ISSUE_RECEIPT)
-            .map(document -> pdf(document.getBytes(), document.getFilename()))
-            .collect(Collectors.toList());
-
-        return new EmailData(staffEmailProperties.getRecipient(),
-            content.getSubject(),
-            content.getBody(),
-            attachments);
     }
 
     private EmailData prepareEmailDataForLegalRep(Claim claim, List<PDF> documents) {
