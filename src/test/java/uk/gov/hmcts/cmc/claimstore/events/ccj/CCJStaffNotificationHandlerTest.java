@@ -43,11 +43,12 @@ public class CCJStaffNotificationHandlerTest {
     @Test
     public void notifyStaffDefaultCCJRequestSubmittedWhenStaffEmailEnabled() {
         CountyCourtJudgmentEvent event = new CountyCourtJudgmentEvent(
-            SampleClaimIssuedEvent.CLAIM, "Bearer token here");
+            SampleClaimIssuedEvent.CLAIM_LEGAL_REP, "Bearer token here");
 
         handler.onDefaultJudgmentRequestSubmitted(event);
 
-        verify(ccjStaffNotificationService, once()).notifyStaffCCJRequestSubmitted(eq(SampleClaimIssuedEvent.CLAIM));
+        verify(ccjStaffNotificationService, once()).notifyStaffCCJRequestSubmitted(
+            eq(SampleClaimIssuedEvent.CLAIM_LEGAL_REP));
     }
 
     @Test
@@ -68,11 +69,12 @@ public class CCJStaffNotificationHandlerTest {
     @Test
     public void notifyStaffCCJRequestByAdmissionSubmittedWhenStaffEmailEnabled() {
         CountyCourtJudgmentEvent event = new CountyCourtJudgmentEvent(
-            SampleClaimIssuedEvent.CLAIM, "Bearer token here");
+            SampleClaimIssuedEvent.CLAIM_LEGAL_REP, "Bearer token here");
 
         handler.onDefaultJudgmentRequestSubmitted(event);
 
-        verify(ccjStaffNotificationService, once()).notifyStaffCCJRequestSubmitted(eq(SampleClaimIssuedEvent.CLAIM));
+        verify(ccjStaffNotificationService, once())
+            .notifyStaffCCJRequestSubmitted(eq(SampleClaimIssuedEvent.CLAIM_LEGAL_REP));
     }
 
     @Test

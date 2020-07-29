@@ -53,7 +53,7 @@ class CCJStaffNotificationServiceTest {
                 ccjRequestSubmittedEmailContentProvider, reDeterminationNotificationEmailContentProvider,
                 staffPdfCreatorService, false);
 
-            claim = SampleClaim.getCitizenClaim();
+            claim = SampleClaim.getLegalDataWithReps();
         }
 
         @Test
@@ -90,13 +90,6 @@ class CCJStaffNotificationServiceTest {
                     .thenReturn(new EmailAttachment(inputStreamSource, "", "createResponsePdfAttachment"));
                 when(reDeterminationNotificationEmailContentProvider.createContent(any()))
                     .thenReturn(new EmailContent("", ""));
-            }
-
-            @Test
-            void notifyStaffCCJReDeterminationRequestShouldSendEmail() {
-                service.notifyStaffCCJReDeterminationRequest(claim, "");
-
-                verify(emailService).sendEmail(any(), any());
             }
 
         }

@@ -482,6 +482,27 @@ public final class SampleClaim {
             .build();
     }
 
+    public static Claim getClaimFullDefenceStatesPaidWithAcceptationForLegalRep() {
+        return builder()
+            .withDefendantEmail(DEFENDANT_EMAIL)
+            .withClaimData(SampleClaimData.submittedByLegalRepresentative())
+            .withResponse(
+                SampleResponse.FullDefence
+                    .builder()
+                    .withDefenceType(DefenceType.ALREADY_PAID)
+                    .withMediation(NO)
+                    .build())
+            .withRespondedAt(LocalDateTime.now())
+            .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .paymentOption(IMMEDIATELY)
+                    .ccjType(DEFAULT)
+                    .build()
+            ).withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
+            .build();
+    }
+
     public static Claim getClaimFullDefenceStatesPaidWithRejection() {
         return builder()
             .withDefendantEmail(DEFENDANT_EMAIL)
@@ -512,6 +533,20 @@ public final class SampleClaim {
 
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
+            .withResponse(SampleResponse.FullAdmission.validDefaults())
+            .withSettlement(settlement)
+            .build();
+    }
+
+    public static Claim getClaimWithSettlementAgreementRejectedForLegalRep() {
+
+        Settlement settlement = new Settlement();
+        settlement.makeOffer(SampleOffer.builder().build(), CLAIMANT, null);
+        settlement.acceptCourtDetermination(CLAIMANT, null);
+        settlement.reject(MadeBy.DEFENDANT, null);
+
+        return builder()
+            .withClaimData(SampleClaimData.submittedByLegalRepresentative())
             .withResponse(SampleResponse.FullAdmission.validDefaults())
             .withSettlement(settlement)
             .build();

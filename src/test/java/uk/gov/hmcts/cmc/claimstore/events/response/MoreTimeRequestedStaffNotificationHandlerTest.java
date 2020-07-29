@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -24,6 +25,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 public class MoreTimeRequestedStaffNotificationHandlerTest {
 
     private static final String STAFF_EMAIL_ADDRESS = "staff@example.com";
+    private static final String STAFF_EMAIL_ADDRES_LEGAL_REP = "staff_lr@example.com";
     private static final String STAFF_TEMPLATE_ID = "staff template id";
 
     private MoreTimeRequestedStaffNotificationHandler handler;
@@ -42,7 +44,8 @@ public class MoreTimeRequestedStaffNotificationHandlerTest {
 
     @Before
     public void setup() {
-        when(staffEmailProperties.getRecipient()).thenReturn(STAFF_EMAIL_ADDRESS);
+        lenient().when(staffEmailProperties.getRecipient()).thenReturn(STAFF_EMAIL_ADDRESS);
+        when(staffEmailProperties.getLegalRecipient()).thenReturn(STAFF_EMAIL_ADDRES_LEGAL_REP);
 
         when(notificationsProperties.getTemplates()).thenReturn(templates);
         when(templates.getEmail()).thenReturn(emailTemplates);
@@ -58,12 +61,12 @@ public class MoreTimeRequestedStaffNotificationHandlerTest {
             true
         );
 
-        MoreTimeRequestedEvent event = SampleMoreTimeRequestedEvent.getDefault();
+        MoreTimeRequestedEvent event = SampleMoreTimeRequestedEvent.getDefaultForLegalRep();
 
         handler.sendNotifications(event);
 
         verify(notificationService, once()).sendMail(
-            eq(STAFF_EMAIL_ADDRESS),
+            eq(STAFF_EMAIL_ADDRES_LEGAL_REP),
             eq(STAFF_TEMPLATE_ID),
             anyMap(),
             eq(SampleMoreTimeRequestedEvent.getReference("staff", event.getClaim().getReferenceNumber()))

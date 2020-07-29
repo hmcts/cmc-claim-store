@@ -18,6 +18,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -46,7 +47,7 @@ public class ClaimIssuedStaffNotificationServiceTest {
     @Test
     public void notifyStaffOfClaimIssueWhenStaffEmailsEnabled() {
         //given
-        when(staffEmailProperties.getRecipient()).thenReturn("some recipient");
+        lenient().when(staffEmailProperties.getRecipient()).thenReturn("some recipient");
         when(staffEmailProperties.getSender()).thenReturn("sender@mail.com");
         when(provider.createContent(anyMap())).thenReturn(new EmailContent("subject", "body"));
 
@@ -54,7 +55,7 @@ public class ClaimIssuedStaffNotificationServiceTest {
             = new ClaimIssuedStaffNotificationService(emailService, staffEmailProperties, provider, true);
 
         //when
-        claimIssuedStaffNotificationService.notifyStaffOfClaimIssue(SampleClaim.getDefault(), documents);
+        claimIssuedStaffNotificationService.notifyStaffOfClaimIssue(SampleClaim.getLegalDataWithReps(), documents);
 
         //verify
         verify(provider).createContent(anyMap());

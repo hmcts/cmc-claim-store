@@ -50,7 +50,7 @@ public class PaidInFullNotificationServiceTest {
             emailService,
             emailProperties,
             new PaidInFullJsonMapper(),
-            false
+            true
         );
     }
 
@@ -124,7 +124,7 @@ public class PaidInFullNotificationServiceTest {
             emailService,
             emailProperties,
             new PaidInFullJsonMapper(),
-            true
+            false
         );
 
         Claim claimStatesPaid = SampleClaim.getClaimFullDefenceStatesPaidWithAcceptation();

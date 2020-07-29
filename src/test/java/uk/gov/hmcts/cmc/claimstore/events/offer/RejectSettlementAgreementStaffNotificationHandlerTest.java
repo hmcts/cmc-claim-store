@@ -16,7 +16,7 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public class RejectSettlementAgreementStaffNotificationHandlerTest {
     private static final RejectSettlementAgreementEvent event = new RejectSettlementAgreementEvent(
-        SampleClaim.getClaimWithSettlementAgreementRejected());
+        SampleClaim.getClaimWithSettlementAgreementRejectedForLegalRep());
 
     private RejectSettlementAgreementStaffNotificationHandler handler;
 
