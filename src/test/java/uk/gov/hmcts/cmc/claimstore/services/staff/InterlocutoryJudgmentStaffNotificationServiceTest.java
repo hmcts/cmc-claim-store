@@ -77,7 +77,7 @@ class InterlocutoryJudgmentStaffNotificationServiceTest {
 
             @BeforeEach
             void setUp() {
-                claim = SampleClaim.getDefault();
+                claim = SampleClaim.getLegalDataWithReps();
 
                 when(staffPdfCreatorService.createSealedClaimPdfAttachment(claim))
                     .thenReturn(new EmailAttachment(inputStreamSource, "", "createSealedClaimPdfAttachment"));
