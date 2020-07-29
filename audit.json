@@ -207,5 +207,18 @@
   "90033_Loosely Scoped Cookie_http://cmc-claim-store-aat.service.core-compute-aat.internal/testing-support/claims/claimReferenceNumber_GET": "ignore",
   "90022_Application Error Disclosure_http://cmc-claim-store-aat.service.core-compute-aat.internal/claims/filters/defendants/email?email=foo-bar@example.com_POST": "ignore",
   "90022_Application Error Disclosure_http://cmc-claim-store-aat.service.core-compute-aat.internal/claims/defendant/defendantId/metadata_GET": "ignore",
-  "90022_Application Error Disclosure_http://cmc-claim-store-aat.service.core-compute-aat.internal/claims/claimant/submitterId/metadata_GET": "ignore"
+  "90022_Application Error Disclosure_http://cmc-claim-store-aat.service.core-compute-aat.internal/claims/claimant/submitterId/metadata_GET": "ignore",
+  "10010_Cookie No HttpOnly Flag_http://cmc-claim-store-aat.service.core-compute-aat.internal/interest/calculate?amount=1.2\u0026from_date=from_date\u0026rate=1.2\u0026to_date=to_date_GET": "ignore",
+  "10010_Cookie No HttpOnly Flag_http://cmc-claim-store-aat.service.core-compute-aat.internal/claims/claimReference_GET": "ignore",
+  "90033_Loosely Scoped Cookie_http://cmc-claim-store-aat.service.core-compute-aat.internal/user/roles_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://cmc-claim-store-aat.service.core-compute-aat.internal/claims/filters/payments?reference=reference_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://cmc-claim-store-aat.service.core-compute-aat.internal/interest/calculate?amount=1.2\u0026from_date=from_date\u0026rate=1.2\u0026to_date=to_date_GET": "ignore",
+  "90033_Loosely Scoped Cookie_http://cmc-claim-store-aat.service.core-compute-aat.internal/claims/defendant/defendantId/metadata_GET": "ignore",
+  "90033_Loosely Scoped Cookie_http://cmc-claim-store-aat.service.core-compute-aat.internal/support/rpa/ccj_PUT": "ignore",
+  "90033_Loosely Scoped Cookie_http://cmc-claim-store-aat.service.core-compute-aat.internal/testing-support/claims/claimReferenceNumber/defendant_PUT": "ignore",
+  "90033_Loosely Scoped Cookie_http://cmc-claim-store-aat.service.core-compute-aat.internal/deadline/issueDate_GET": "ignore",
+  "90033_Loosely Scoped Cookie_http://cmc-claim-store-aat.service.core-compute-aat.internal/support/rpa/claim_PUT": "ignore",
+  "90033_Loosely Scoped Cookie_http://cmc-claim-store-aat.service.core-compute-aat.internal/claims/create-citizen-claim_PUT": "ignore",
+  "90033_Loosely Scoped Cookie_http://cmc-claim-store-aat.service.core-compute-aat.internal/support/documents/referenceNumber/ORDER_DIRECTIONS_PUT": "ignore",
+  "90033_Loosely Scoped Cookie_http://cmc-claim-store-aat.service.core-compute-aat.internal/claims/claimReference_GET": "ignore"
 }
