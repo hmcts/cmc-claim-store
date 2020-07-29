@@ -39,6 +39,7 @@
         "id": "db10f60f-30b7-43a4-bfd4-25fd157e7bc9",
         "value": {
           "partyName": "Jan Clark",
+          "representativeOrganisationName": "xyz",
           "partyDetail": {
             "type": "INDIVIDUAL",
             "emailAddress": "j.smith@example.com",

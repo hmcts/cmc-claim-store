@@ -39,6 +39,7 @@
         "id": "0da037e8-701c-405d-8d92-222b233d6026",
         "value": {
           "partyName": "Jan Clark",
+          "representativeOrganisationName": "xyz",
           "partyDetail": {
             "type": "INDIVIDUAL",
             "primaryAddress": {
