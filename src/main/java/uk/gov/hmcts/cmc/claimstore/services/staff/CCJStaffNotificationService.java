@@ -61,7 +61,7 @@ public class CCJStaffNotificationService {
 
         EmailContent emailContent = ccjRequestSubmittedEmailContentProvider.createContent(map);
         return new EmailData(
-            staffEmailProperties.getRecipient(),
+            staffEmailProperties.getLegalRecipient(),
             emailContent.getSubject(),
             emailContent.getBody(),
             singletonList(staffPdfCreatorService.generateCountyCourtJudgmentPdf(claim))
@@ -85,7 +85,7 @@ public class CCJStaffNotificationService {
     }
 
     public void notifyStaffCCJReDeterminationRequest(Claim claim, String submitterName) {
-        if (staffEmailsEnabled) {
+        if (staffEmailsEnabled && claim.getClaimData().isClaimantRepresented())  {
             requireNonNull(claim);
             emailService.sendEmail(staffEmailProperties.getSender(),
                 prepareReDeterminationEmailData(claim, submitterName));
@@ -106,7 +106,7 @@ public class CCJStaffNotificationService {
         EmailContent emailContent = reDeterminationNotificationEmailContentProvider.createContent(map);
 
         return new EmailData(
-            staffEmailProperties.getRecipient(),
+            staffEmailProperties.getLegalRecipient(),
             emailContent.getSubject(),
             emailContent.getBody(),
             attachments.build()

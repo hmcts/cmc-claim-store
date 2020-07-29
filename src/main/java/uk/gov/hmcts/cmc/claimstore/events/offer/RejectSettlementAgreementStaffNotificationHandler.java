@@ -23,7 +23,7 @@ public class RejectSettlementAgreementStaffNotificationHandler {
 
     @EventListener
     public void onSettlementAgreementRejected(RejectSettlementAgreementEvent event) {
-        if (staffEmailsEnabled) {
+        if (staffEmailsEnabled && event.getClaim().getClaimData().isClaimantRepresented()) {
             notificationService.notifySettlementRejected(event.getClaim());
         }
     }

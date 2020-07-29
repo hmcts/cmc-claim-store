@@ -44,7 +44,7 @@ public class ClaimIssuedStaffNotificationService {
 
     @LogExecutionTime
     public void notifyStaffOfClaimIssue(Claim claim, List<PDF> documents) {
-        if (staffEmailsEnabled) {
+        if (staffEmailsEnabled && claim.getClaimData().isClaimantRepresented())  {
             requireNonNull(claim);
             EmailData emailData = prepareEmailData(claim, documents);
             emailService.sendEmail(staffEmailProperties.getSender(), emailData);
@@ -58,7 +58,7 @@ public class ClaimIssuedStaffNotificationService {
             .map(document -> pdf(document.getBytes(), document.getFilename()))
             .collect(Collectors.toList());
 
-        return new EmailData(staffEmailProperties.getRecipient(),
+        return new EmailData(staffEmailProperties.getLegalRecipient(),
             content.getSubject(),
             content.getBody(),
             attachments);

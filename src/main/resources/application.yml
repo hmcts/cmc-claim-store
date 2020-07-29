@@ -211,6 +211,7 @@ notifications:
 staff-notifications:
   sender:
   recipient:
+  legalRecipient:
 
 feature_toggles:
   watermark_pdf: false

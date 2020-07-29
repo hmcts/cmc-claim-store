@@ -28,7 +28,7 @@ public class CCJStaffNotificationHandler {
 
     @EventListener
     public void onDefaultJudgmentRequestSubmitted(CountyCourtJudgmentEvent event) {
-        if (staffEmailsEnabled) {
+        if (staffEmailsEnabled && event.getClaim().getClaimData().isClaimantRepresented()) {
             this.ccjStaffNotificationService.notifyStaffCCJRequestSubmitted(event.getClaim());
         }
     }

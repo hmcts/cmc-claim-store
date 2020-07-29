@@ -79,13 +79,14 @@ public class CountersignSettlementAgreementActionsHandler {
 
     @EventListener
     public void sendNotificationToStaff(CountersignSettlementAgreementEvent event) {
-        if (staffEmailsEnabled) {
+        if (staffEmailsEnabled && event.getClaim().getClaimData().isClaimantRepresented()) {
             final Claim claim = event.getClaim();
             final Map<String, Object> parameters = aggregateParameters(claim);
             EmailContent emailcontent = settlementCountersignedEmailContentProvider.createContent(parameters);
             this.emailService.sendEmail(
                 staffEmailProperties.getSender(),
-                new EmailData(staffEmailProperties.getRecipient(), emailcontent.getSubject(), emailcontent.getBody(),
+                new EmailData(staffEmailProperties.getLegalRecipient(), emailcontent.getSubject(),
+                    emailcontent.getBody(),
                     Collections.emptyList()));
         }
     }

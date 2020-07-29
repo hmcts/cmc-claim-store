@@ -51,7 +51,7 @@ public class StatesPaidStaffNotificationService {
     }
 
     public void notifyStaffClaimantResponseStatesPaidSubmittedFor(Claim claim) {
-        if (staffEmailsEnabled) {
+        if (staffEmailsEnabled && claim.getClaimData().isClaimantRepresented()) {
             EmailContent emailContent;
             emailContent = emailContentProvider.createContent(wrapInMap(claim));
 

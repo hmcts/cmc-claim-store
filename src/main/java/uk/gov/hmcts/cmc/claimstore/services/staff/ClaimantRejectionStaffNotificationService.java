@@ -60,7 +60,7 @@ public class ClaimantRejectionStaffNotificationService {
     }
 
     public void notifyStaffClaimantRejectPartAdmission(Claim claim) {
-        if (staffEmailsEnabled) {
+        if (staffEmailsEnabled && claim.getClaimData().isClaimantRepresented()) {
             requireNonNull(claim);
             requireNonNull(claim.getClaimantRespondedAt());
 
@@ -69,7 +69,7 @@ public class ClaimantRejectionStaffNotificationService {
             emailService.sendEmail(
                 staffEmailProperties.getSender(),
                 new EmailData(
-                    staffEmailProperties.getRecipient(),
+                    staffEmailProperties.getLegalRecipient(),
                     emailContent.getSubject(),
                     emailContent.getBody(),
                     singletonList(createResponsePdfAttachment(claim))
@@ -79,7 +79,7 @@ public class ClaimantRejectionStaffNotificationService {
     }
 
     public void notifyStaffWithClaimantsIntentionToProceed(Claim claim) {
-        if (staffEmailsEnabled) {
+        if (staffEmailsEnabled && claim.getClaimData().isClaimantRepresented()) {
             requireNonNull(claim);
 
             EmailContent emailContent = claimantDirectionsHearingContentProvider.createContent(getParameters(claim));

@@ -22,7 +22,7 @@ public class AgreementCountersignedStaffNotificationHandler {
 
     @EventListener
     public void onAgreementCountersigned(AgreementCountersignedEvent event) {
-        if (staffEmailsEnabled) {
+        if (staffEmailsEnabled && event.getClaim().getClaimData().isClaimantRepresented()) {
             notificationService.notifySettlementReached(
                 event.getClaim()
             );

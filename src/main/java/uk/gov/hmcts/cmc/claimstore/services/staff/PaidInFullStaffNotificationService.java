@@ -39,12 +39,12 @@ public class PaidInFullStaffNotificationService {
     }
 
     public void notifyPaidInFull(Claim claim) {
-        if (staffEmailsEnabled) {
+        if (staffEmailsEnabled && claim.getClaimData().isClaimantRepresented()) {
             EmailContent emailContent = emailContentProvider.createContent(wrapInMap(claim));
             emailService.sendEmail(
                 emailProperties.getSender(),
                 new EmailData(
-                    emailProperties.getRecipient(),
+                    emailProperties.getLegalRecipient(),
                     emailContent.getSubject(),
                     emailContent.getBody(),
                     Collections.emptyList()

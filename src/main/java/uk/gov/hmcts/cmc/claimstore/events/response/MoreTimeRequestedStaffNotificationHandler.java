@@ -41,9 +41,9 @@ public class MoreTimeRequestedStaffNotificationHandler {
 
     @EventListener
     public void sendNotifications(MoreTimeRequestedEvent event) {
-        if (staffEmailsEnabled) {
+        if (staffEmailsEnabled && event.getClaim().getClaimData().isClaimantRepresented()) {
             notificationService.sendMail(
-                staffEmailProperties.getRecipient(),
+                staffEmailProperties.getLegalRecipient(),
                 notificationsProperties.getTemplates().getEmail().getStaffMoreTimeRequested(),
                 prepareNotificationParameters(event),
                 String.format(REFERENCE_TEMPLATE, "staff", event.getClaim().getReferenceNumber())

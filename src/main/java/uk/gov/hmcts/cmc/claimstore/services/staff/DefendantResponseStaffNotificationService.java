@@ -62,7 +62,7 @@ public class DefendantResponseStaffNotificationService {
         Claim claim,
         String defendantEmail
     ) {
-        if (staffEmailsEnabled) {
+        if (staffEmailsEnabled && claim.getClaimData().isClaimantRepresented()) {
             ResponseType responseType = claim.getResponse()
                 .orElseThrow(() -> new IllegalArgumentException(MISSING_RESPONSE))
                 .getResponseType();
@@ -75,7 +75,7 @@ public class DefendantResponseStaffNotificationService {
             emailService.sendEmail(
                 emailProperties.getSender(),
                 new EmailData(
-                    emailProperties.getRecipient(),
+                    emailProperties.getLegalRecipient(),
                     emailContent.getSubject(),
                     emailContent.getBody(),
                     singletonList(createResponsePdfAttachment(claim))

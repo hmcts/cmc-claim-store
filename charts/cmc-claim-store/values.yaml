@@ -31,6 +31,7 @@ java:
         - rpa-email-paid-in-full
         - launchDarkly-sdk-key
         - sendgrid-api-key
+        - staff-email-legal-rep
   environment:
     REFORM_TEAM: cmc
     REFORM_SERVICE_NAME: claim-store

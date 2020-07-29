@@ -57,7 +57,7 @@ public class PaidInFullNotificationService {
     @EventListener
     public void notifyRobotics(ClaimantResponseEvent event) {
         requireNonNull(event);
-        if (!staffEmailsEnabled) {
+        if (staffEmailsEnabled) {
             Claim claim = event.getClaim();
             Response response = claim.getResponse()
                 .orElseThrow(() -> new IllegalArgumentException(MISSING_RESPONSE));

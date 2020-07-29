@@ -36,7 +36,7 @@ public class RejectSettlementAgreementStaffNotificationService {
         emailService.sendEmail(
             emailProperties.getSender(),
             new EmailData(
-                emailProperties.getRecipient(),
+                emailProperties.getLegalRecipient(),
                 emailContent.getSubject(),
                 emailContent.getBody(),
                 Collections.emptyList()

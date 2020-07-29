@@ -45,7 +45,7 @@ public class ClaimantRejectOrgPaymentPlanStaffNotificationService {
     }
 
     public void notifyStaffClaimantRejectOrganisationPaymentPlan(Claim claim) {
-        if (staffEmailsEnabled) {
+        if (staffEmailsEnabled && claim.getClaimData().isClaimantRepresented()) {
 
             requireNonNull(claim);
             requireNonNull(claim.getClaimantRespondedAt());
@@ -62,7 +62,7 @@ public class ClaimantRejectOrgPaymentPlanStaffNotificationService {
         EmailContent emailContent = claimantRejectOrgPaymentPlanStaffEmailContentProvider.createContent(map);
 
         return EmailData.builder()
-            .to(staffEmailProperties.getRecipient())
+            .to(staffEmailProperties.getLegalRecipient())
             .subject(emailContent.getSubject())
             .message(emailContent.getBody())
             .attachments(prepareEmailAttachments(claim))

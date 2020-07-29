@@ -43,7 +43,7 @@ public class InterlocutoryJudgmentStaffNotificationService {
     }
 
     public void notifyStaffInterlocutoryJudgmentSubmitted(Claim claim) {
-        if (staffEmailsEnabled) {
+        if (staffEmailsEnabled && claim.getClaimData().isClaimantRepresented()) {
             requireNonNull(claim);
             requireNonNull(claim.getClaimantRespondedAt());
 
@@ -59,7 +59,7 @@ public class InterlocutoryJudgmentStaffNotificationService {
         EmailContent emailContent = reDeterminationNotificationEmailContentProvider.createContent(map);
 
         return EmailData.builder()
-            .to(staffEmailProperties.getRecipient())
+            .to(staffEmailProperties.getLegalRecipient())
             .subject(emailContent.getSubject())
             .message(emailContent.getBody())
             .attachments(prepareEmailAttachments(claim))
