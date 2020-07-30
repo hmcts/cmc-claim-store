@@ -27,6 +27,8 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.getWithClaimantResponseRejectionForPartAdmissionAndMediation;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData.addLegalRepresentative;
 
 public class ClaimantRejectionStaffNotificationServiceTest extends BaseMockSpringTest {
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
@@ -57,7 +59,7 @@ public class ClaimantRejectionStaffNotificationServiceTest extends BaseMockSprin
 
     @Before
     public void beforeEachTest() {
-        claimWithPartAdmission = SampleClaim.getWithClaimantResponseRejectionForPartAdmissionAndMediation();
+        claimWithPartAdmission = addLegalRepresentative(getWithClaimantResponseRejectionForPartAdmissionAndMediation());
         service = new ClaimantRejectionStaffNotificationService(
             emailService,
             emailProperties,

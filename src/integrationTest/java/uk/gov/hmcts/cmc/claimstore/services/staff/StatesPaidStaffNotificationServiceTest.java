@@ -14,7 +14,6 @@ import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.StatesPaidEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
@@ -30,6 +29,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.getClaimFullDefenceStatesPaidWithAcceptation;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData.addLegalRepresentative;
 
 public class StatesPaidStaffNotificationServiceTest extends BaseMockSpringTest {
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
@@ -58,7 +59,7 @@ public class StatesPaidStaffNotificationServiceTest extends BaseMockSpringTest {
     @Before
     public void beforeEachTest() {
 
-        claimWithFullDefenceResponse = SampleClaim.getClaimFullDefenceStatesPaidWithAcceptation();
+        claimWithFullDefenceResponse = addLegalRepresentative(getClaimFullDefenceStatesPaidWithAcceptation());
 
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .thenReturn(PDF_CONTENT);
@@ -69,7 +70,7 @@ public class StatesPaidStaffNotificationServiceTest extends BaseMockSpringTest {
         StatesPaidStaffNotificationService staffNotificationService;
         staffNotificationService = new StatesPaidStaffNotificationService(
             emailService, emailProperties, emailContentProvider, defendantResponseReceiptService, true);
-        
+
         when(emailContentProvider.createContent(anyMap())).thenReturn(new EmailContent("subject", "body"));
 
         staffNotificationService.notifyStaffClaimantResponseStatesPaidSubmittedFor(claimWithFullDefenceResponse);

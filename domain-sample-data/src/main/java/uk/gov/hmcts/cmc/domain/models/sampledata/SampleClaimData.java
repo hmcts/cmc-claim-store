@@ -1,11 +1,14 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.Timeline;
 import uk.gov.hmcts.cmc.domain.models.amount.Amount;
+import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
 import uk.gov.hmcts.cmc.domain.models.evidence.Evidence;
+import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation;
@@ -13,6 +16,7 @@ import uk.gov.hmcts.cmc.domain.models.particulars.HousingDisrepair;
 import uk.gov.hmcts.cmc.domain.models.particulars.PersonalInjury;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -268,4 +272,26 @@ public class SampleClaimData {
             .withAmount(SampleAmountBreakdown.builder().build())
             .build();
     }
+
+    public static Claim addLegalRepresentative(Claim claim) {
+        List<Party> claimants = new ArrayList<Party>();
+        claimants.add(SampleParty.builder()
+            .withRepresentative(Representative.builder().build())
+            .individual());
+        ClaimData claimData = claim.getClaimData().toBuilder().claimants(claimants).build();
+        return claim.toBuilder().claimData(claimData).build();
+    }
+
+    public static Claim addStatementOfTruth(Claim claim) {
+        StatementOfTruth statementOfTruth = StatementOfTruth.builder().build();
+        ClaimData claimData = claim.getClaimData().toBuilder().statementOfTruth(statementOfTruth).build();
+        return claim.toBuilder().claimData(claimData).build();
+    }
+
+    public static Claim addClaimValue(Claim claim) {
+        AmountRange amount = AmountRange.builder().higherValue(BigDecimal.ONE).build();
+        ClaimData claimData = claim.getClaimData().toBuilder().amount(amount).build();
+        return claim.toBuilder().claimData(claimData).build();
+    }
+
 }
