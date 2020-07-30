@@ -31,6 +31,7 @@ java:
         - rpa-email-paid-in-full
         - launchDarkly-sdk-key
         - sendgrid-api-key
+        - staff-email-legal-rep
   environment:
     REFORM_TEAM: cmc
     REFORM_SERVICE_NAME: claim-store
@@ -50,6 +51,7 @@ java:
     FEATURE_TOGGLES_CTSC_ENABLED: false
     FEATURE_TOGGLES_BULK_PRINT_TRANSFER_ENABLED: false
     FEATURE_TOGGLES_STAFF_EMAILS_ENABLED: true
+    FEATURE_TOGGLES_STAFF_EMAILS_ENABLED_FOR_LEGAL_REP: true
     FEATURE_AUTO_CANCEL_PAYMENTS: false
     STAFF_NOTIFICATIONS_SENDER: noreply@reform.hmcts.net
     RPA_NOTIFICATIONS_SENDER: noreply@reform.hmcts.net
