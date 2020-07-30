@@ -15,6 +15,7 @@ public class CCDApplicant {
     private String representativeOrganisationEmail;
     private String representativeOrganisationDxAddress;
     private CCDYesNoOption leadApplicantIndicator;
+    private String pcqId;
 
     @JsonIgnore
     public boolean hasRepresentative() {
