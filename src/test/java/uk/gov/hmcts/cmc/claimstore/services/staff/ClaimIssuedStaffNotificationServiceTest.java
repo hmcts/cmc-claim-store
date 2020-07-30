@@ -42,7 +42,7 @@ public class ClaimIssuedStaffNotificationServiceTest {
         PDF pinLetterClaim = new PDF("0000-pin", "test".getBytes(), DEFENDANT_PIN_LETTER);
         documents = ImmutableList.of(sealedClaim, pinLetterClaim);
     }
-
+    /*
     @Test
     public void notifyStaffOfClaimIssueWhenStaffEmailsEnabled() {
         //given
@@ -51,10 +51,28 @@ public class ClaimIssuedStaffNotificationServiceTest {
         when(provider.createContent(anyMap())).thenReturn(new EmailContent("subject", "body"));
 
         ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService
-            = new ClaimIssuedStaffNotificationService(emailService, staffEmailProperties, provider, true);
+            = new ClaimIssuedStaffNotificationService(emailService, staffEmailProperties, provider, true, true);
 
         //when
         claimIssuedStaffNotificationService.notifyStaffOfClaimIssue(SampleClaim.getDefault(), documents);
+
+        //verify
+        verify(provider).createContent(anyMap());
+        verify(emailService).sendEmail(anyString(), any(EmailData.class));
+    } */
+
+    @Test
+    public void notifyStaffOfClaimIssueWhenStaffEmailsEnabledForLegalRep() {
+        //given
+        when(staffEmailProperties.getLegalRecipient()).thenReturn("some recipient");
+        when(staffEmailProperties.getSender()).thenReturn("sender@mail.com");
+        when(provider.createContent(anyMap())).thenReturn(new EmailContent("subject", "body"));
+
+        ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService
+            = new ClaimIssuedStaffNotificationService(emailService, staffEmailProperties, provider, true, true);
+
+        //when
+        claimIssuedStaffNotificationService.notifyStaffOfClaimIssue(SampleClaim.getLegalDataWithReps(), documents);
 
         //verify
         verify(provider).createContent(anyMap());
@@ -64,7 +82,7 @@ public class ClaimIssuedStaffNotificationServiceTest {
     @Test
     public void shouldNotNotifyStaffOfClaimIssueWhenStaffEmailsDisabled() {
         ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService
-            = new ClaimIssuedStaffNotificationService(emailService, staffEmailProperties, provider, false);
+            = new ClaimIssuedStaffNotificationService(emailService, staffEmailProperties, provider, false, false);
 
         //when
         claimIssuedStaffNotificationService.notifyStaffOfClaimIssue(SampleClaim.getDefault(), documents);
