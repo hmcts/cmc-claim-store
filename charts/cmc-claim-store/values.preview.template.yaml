@@ -46,6 +46,7 @@ java:
         - rpa-email-claimant-response
         - launchDarkly-sdk-key
         - sendgrid-api-key
+        - staff-email-legal-rep
   environment:
     LOG_LEVEL: DEBUG
     CMC_DB_HOST: ${SERVICE_NAME}-postgresql
