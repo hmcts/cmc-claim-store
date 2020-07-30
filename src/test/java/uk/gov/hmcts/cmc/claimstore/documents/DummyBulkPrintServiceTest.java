@@ -23,9 +23,11 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DummyBulkPrintServiceTest {
+    private static final String AUTHORISATION = "Bearer: let me in";
     private final Logger log = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
     @Mock
@@ -51,19 +53,22 @@ public class DummyBulkPrintServiceTest {
         Map<String, Object> claimContents = new HashMap<>();
         Document sealedClaimDocument = new Document("sealedClaimTemplate", claimContents);
 
-        new DummyBulkPrintService().print(
+        new DummyBulkPrintService().printHtmlLetter(
             SampleClaim.getDefault(),
             ImmutableList.of(
                 new PrintableTemplate(defendantLetterDocument, "filename"),
                 new PrintableTemplate(sealedClaimDocument, "filename")
-            ));
+            ),
+            FIRST_CONTACT_LETTER_TYPE,
+            AUTHORISATION
+        );
         assertWasLogged("No bulk print operation need to be performed as 'Bulk print url' is switched off.");
     }
 
-    private void assertWasLogged(CharSequence text) {
+    private void assertWasLogged(CharSequence input) {
         verify(mockAppender).doAppend(captorLoggingEvent.capture());
         LoggingEvent loggingEvent = captorLoggingEvent.getValue();
-        assertThat(loggingEvent.getFormattedMessage()).contains(text);
+        assertThat(loggingEvent.getFormattedMessage()).contains(input);
     }
 
 }

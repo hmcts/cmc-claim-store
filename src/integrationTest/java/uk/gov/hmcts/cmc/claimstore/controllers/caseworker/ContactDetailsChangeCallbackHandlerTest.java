@@ -29,6 +29,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.ChangeContactLetterService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
@@ -41,6 +42,7 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -80,8 +82,31 @@ public class ContactDetailsChangeCallbackHandlerTest extends BaseMockSpringTest 
     private static final String DOCUMENT_URL = "http://bla.test";
     private static final String DOCUMENT_BINARY_URL = "http://bla.test/binary";
     private static final String DOCUMENT_FILE_NAME = "contact-letter.pdf";
+    private static final LocalDateTime DATE = LocalDateTime.parse("2020-11-16T13:15:30");
+    private static final String DOC_URL_BINARY = "http://success.test/binary";
+    private static final String DOC_NAME = "doc-name";
+    public static final String GENERAL_DOCUMENT_NAME = "document-name";
+    private static final CCDDocument DOCUMENT = CCDDocument
+        .builder()
+        .documentUrl(DOCUMENT_URL)
+        .documentBinaryUrl(DOC_URL_BINARY)
+        .documentFileName(GENERAL_DOCUMENT_NAME)
+        .build();
+    private static final CCDCollectionElement<CCDClaimDocument> CLAIM_DOCUMENT =
+        CCDCollectionElement.<CCDClaimDocument>builder()
+            .value(CCDClaimDocument.builder()
+                .documentLink(DOCUMENT)
+                .createdDatetime(DATE)
+                .documentName(GENERAL_DOCUMENT_NAME)
+                .documentType(CCDClaimDocumentType.GENERAL_LETTER)
+                .build())
+            .build();
+
     @Mock
     private SendLetterResponse sendLetterResponse;
+
+    @MockBean
+    private ChangeContactLetterService changeContactLetterService;
 
     @Before
     public void setUp() {
@@ -119,12 +144,25 @@ public class ContactDetailsChangeCallbackHandlerTest extends BaseMockSpringTest 
     @SuppressWarnings("unchecked")
     @Test
     public void shouldProcessAboutToSubmitEvent() throws Exception {
+
+        CaseDetails caseDetailsTemp = successfulCoreCaseDataStoreSubmitResponse();
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetailsTemp);
+        CCDCase expected = ccdCase.toBuilder()
+            .caseDocuments(ImmutableList.<CCDCollectionElement<CCDClaimDocument>>builder()
+                .addAll(ccdCase.getCaseDocuments())
+                .add(CLAIM_DOCUMENT)
+                .build())
+            .build();
+
         given(documentManagementService.downloadDocument(anyString(), any(ClaimDocument.class)))
             .willReturn(new byte[] {1, 2, 3, 4});
 
         given(documentManagementService.getDocumentMetaData(anyString(), anyString())).willReturn(getLinks());
 
         given(sendLetterApi.sendLetter(anyString(), any(LetterWithPdfsRequest.class))).willReturn(sendLetterResponse);
+
+        given(changeContactLetterService.publishLetter(any(CCDCase.class), any(Claim.class), any(String.class),
+            any(CCDDocument.class))).willReturn(expected);
 
         MvcResult mvcResult = makeRequest(ABOUT_TO_SUBMIT.getValue())
             .andExpect(status().isOk())
@@ -136,8 +174,8 @@ public class ContactDetailsChangeCallbackHandlerTest extends BaseMockSpringTest 
         ).getData();
         List<Map<String, Object>> documents = (List<Map<String, Object>>) responseData.get("caseDocuments");
 
-        assertThat(documents).hasSize(2);
-        Map<String, Object> value = documents.get(1);
+        assertThat(documents).hasSize(1);
+        Map<String, Object> value = documents.get(0);
         Map<String, Object> claimDocument = (Map<String, Object>) value.get("value");
         assertThat(claimDocument.get("documentType")).isEqualTo(CCDClaimDocumentType.GENERAL_LETTER.name());
         Map<String, Object> document = (Map<String, Object>) claimDocument.get("documentLink");

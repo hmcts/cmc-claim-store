@@ -2,11 +2,16 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
+import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.otherparty.OrganisationDetails;
+
+import java.util.Optional;
+import java.util.function.Function;
 
 @Component
 public class OrganisationDetailsMapper {
@@ -46,17 +51,33 @@ public class OrganisationDetailsMapper {
 
     public OrganisationDetails from(CCDCollectionElement<CCDRespondent> ccdOrganisation) {
         CCDRespondent respondent = ccdOrganisation.getValue();
-        CCDParty claimantProvidedDetails = respondent.getClaimantProvidedDetail();
+        CCDParty detailFromClaimant = respondent.getClaimantProvidedDetail();
+        CCDParty partyDetail = respondent.getPartyDetail();
+
         return OrganisationDetails.builder()
             .id(ccdOrganisation.getId())
             .name(respondent.getClaimantProvidedPartyName())
-            .address(addressMapper.from(claimantProvidedDetails.getPrimaryAddress()))
-            .email(claimantProvidedDetails.getEmailAddress())
-            .phoneNumber(telephoneMapper.from(claimantProvidedDetails.getTelephoneNumber()))
+            .address(getAddress(partyDetail, detailFromClaimant, CCDParty::getPrimaryAddress))
+            .email(getDetail(partyDetail, detailFromClaimant, x -> x.getEmailAddress()))
+            .phoneNumber(telephoneMapper.from(getDetail(partyDetail, detailFromClaimant, CCDParty::getTelephoneNumber)))
             .representative(representativeMapper.from(respondent))
-            .serviceAddress(addressMapper.from(claimantProvidedDetails.getCorrespondenceAddress()))
-            .contactPerson(claimantProvidedDetails.getContactPerson())
-            .companiesHouseNumber(claimantProvidedDetails.getCompaniesHouseNumber())
+            .serviceAddress(getAddress(partyDetail, detailFromClaimant, CCDParty::getCorrespondenceAddress))
+            .contactPerson(detailFromClaimant.getContactPerson())
+            .companiesHouseNumber(detailFromClaimant.getCompaniesHouseNumber())
             .build();
+    }
+
+    private Address getAddress(CCDParty detail, CCDParty detailByClaimant, Function<CCDParty, CCDAddress> getAddress) {
+        CCDAddress partyAddress = getAddress(detail, getAddress);
+        return addressMapper.from(partyAddress != null ? partyAddress : getAddress(detailByClaimant, getAddress));
+    }
+
+    private CCDAddress getAddress(CCDParty partyDetail, Function<CCDParty, CCDAddress> extractAddress) {
+        return Optional.ofNullable(partyDetail).map(extractAddress).orElse(null);
+    }
+
+    private <T> T getDetail(CCDParty detail, CCDParty detailByClaimant, Function<CCDParty, T> getDetail) {
+        T partyDetail = detail != null ? getDetail.apply(detail) : null;
+        return partyDetail != null ? partyDetail : getDetail.apply(detailByClaimant);
     }
 }

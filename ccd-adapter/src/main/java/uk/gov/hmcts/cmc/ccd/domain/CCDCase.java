@@ -152,6 +152,8 @@ public class CCDCase {
     private LocalDate calculatedResponseDeadline;
     private CCDResponseType paperAdmissionType;
     private CCDTransferContent transferContent;
+    @Builder.Default
+    private List<CCDCollectionElement<CCDBulkPrintDetails>> bulkPrintDetails = Collections.emptyList();
     /**
      * Temporary variables that are not to be persisted to case data but are only used during events.
      */

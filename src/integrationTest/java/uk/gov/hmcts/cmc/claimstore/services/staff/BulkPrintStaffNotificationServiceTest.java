@@ -49,6 +49,7 @@ public class BulkPrintStaffNotificationServiceTest extends BaseMockSpringTest {
     private PrintableTemplate sealedClaimDocument;
 
     private Claim claim;
+    private static final String AUTHORISATION = "Bearer: let me in";
 
     @Before
     public void setUp() {
