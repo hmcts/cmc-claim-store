@@ -141,6 +141,10 @@ dateCalculations:
   waitingTransferDeadlineInDays: 19
   claimantCcjReminderDays: 10
 
+directionDeadline:
+  changeDate: "2020-07-27T11:00:00"
+  numberOfDays: 7
+
 notifications:
   govNotifyApiKey: ${GOV_NOTIFY_API_KEY:}
   frontendBaseUrl: "${FRONTEND_BASE_URL:}"
@@ -207,6 +211,7 @@ notifications:
 staff-notifications:
   sender:
   recipient:
+  legalRecipient:
 
 feature_toggles:
   watermark_pdf: false
@@ -216,6 +221,7 @@ feature_toggles:
   staff_emails_enabled: true
   auto_cancel_payments: "${FEATURE_AUTO_CANCEL_PAYMENTS:false}"
   bulk_print_transfer_enabled: false
+  staff_emails_enabled_for_legal_rep: true
 
 feign:
   httpclient:

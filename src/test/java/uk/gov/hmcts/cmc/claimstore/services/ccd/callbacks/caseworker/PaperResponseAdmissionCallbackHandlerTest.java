@@ -33,6 +33,7 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.DefendantResponseNotif
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -52,7 +53,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -192,7 +192,8 @@ class PaperResponseAdmissionCallbackHandlerTest {
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
         when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-        doNothing().when(generalLetterService).printLetter(anyString(), any(CCDDocument.class), any(Claim.class));
+        when(generalLetterService.printLetter(anyString(), any(CCDDocument.class), any(Claim.class)))
+            .thenReturn(BulkPrintDetails.builder().build());
         ArgumentCaptor<CCDCase> ccdDataArgumentCaptor = ArgumentCaptor.forClass(CCDCase.class);
         handler.handle(callbackParams);
         verify(caseDetailsConverter).convertToMap(ccdDataArgumentCaptor.capture());
@@ -299,7 +300,8 @@ class PaperResponseAdmissionCallbackHandlerTest {
             when(clock.instant()).thenReturn(LocalDate.parse("2020-06-22").atStartOfDay().toInstant(ZoneOffset.UTC));
             when(clock.getZone()).thenReturn(ZoneOffset.UTC);
             when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);
-            doNothing().when(generalLetterService).printLetter(anyString(), any(CCDDocument.class), any(Claim.class));
+            when(generalLetterService.printLetter(anyString(), any(CCDDocument.class), any(Claim.class)))
+                .thenReturn(BulkPrintDetails.builder().build());
         }
 
         @Test

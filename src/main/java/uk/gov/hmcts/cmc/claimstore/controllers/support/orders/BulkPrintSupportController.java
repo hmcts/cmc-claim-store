@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.support.orders;
 
+import com.google.common.collect.ImmutableList;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -9,6 +10,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
@@ -17,7 +19,9 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 import static java.lang.String.format;
@@ -61,7 +65,11 @@ public class BulkPrintSupportController {
             .orElseThrow(() -> new RuntimeException("no order document found for the reference " + referenceNumber))
             .getDocumentLink();
 
-        legalOrderService.print(authorisation, claim, document);
+        List<BulkPrintDetails> bulkPrintDetails = legalOrderService.print(authorisation, claim, document);
+        ImmutableList.Builder<BulkPrintDetails> printDetails = ImmutableList.builder();
+        printDetails.addAll(claim.getBulkPrintDetails());
+        printDetails.addAll(bulkPrintDetails);
+        claimService.addBulkPrintDetails(authorisation, printDetails.build(), CaseEvent.ADD_BULK_PRINT_DETAILS, claim);
     }
 
     private CCDDocument to(ClaimDocument claimDocument) {
