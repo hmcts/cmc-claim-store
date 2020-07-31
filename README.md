@@ -11,7 +11,7 @@ The two main responsibilities of this application are:
 Internally state is persisted to a relational database.  
 The service also delegates some responsibilities to other RESTful services e.g. idam-api or pdf-service.
 
-## Getting started
+### Getting started
 
 ### Prerequisites
 
