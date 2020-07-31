@@ -69,7 +69,6 @@ class UserServiceTest {
     }
 
     @Test
-    @Disabled("Enable this when using /o/userinfo")
     void findsUserDetailsForAuthToken() {
         when(idamApi.retrieveUserInfo(AUTHORISATION)).thenReturn(userInfo);
 
@@ -90,8 +89,9 @@ class UserServiceTest {
 
         when(idamApi.authenticateUser(null, null, null, grantType, username, password, scope))
             .thenReturn(tokenExchangeResponse);
-        when(idamApi.retrieveUserDetails(UserService.BEARER + accessToken))
-            .thenReturn(new UserDetails(UID, SUB, GIVEN_NAME, FAMILY_NAME, ROLES));
+
+        when(idamApi.retrieveUserInfo(UserService.BEARER + accessToken))
+            .thenReturn(new UserInfo(SUB, UID, GIVEN_NAME, GIVEN_NAME, FAMILY_NAME, ROLES));
 
         User found = userService.authenticateUser(username, password);
 
