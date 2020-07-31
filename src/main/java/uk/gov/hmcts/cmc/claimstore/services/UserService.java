@@ -92,8 +92,6 @@ public class UserService {
 
     @LogExecutionTime
     public UserInfo getUserInfo(String bearerToken) {
-        String logg = "bearerToken--" + bearerToken;
-        logger.info(logg);
         return idamApi.retrieveUserInfo(bearerToken);
     }
 
