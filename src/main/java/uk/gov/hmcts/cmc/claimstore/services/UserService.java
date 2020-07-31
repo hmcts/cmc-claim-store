@@ -1,9 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.idam.IdamCaseworker;
 import uk.gov.hmcts.cmc.claimstore.config.properties.idam.IdamCaseworkerProperties;
@@ -19,13 +16,11 @@ import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 
 @Component
 public class UserService {
-    Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public static final String BEARER = "Bearer ";
     public static final String AUTHORIZATION_CODE = "authorization_code";
     public static final String GRANT_TYPE_PASSWORD = "password";
     public static final String DEFAULT_SCOPE = "openid roles profile";
-    public static final String CODE = "code";
 
     private final IdamApi idamApi;
     private final IdamCaseworkerProperties idamCaseworkerProperties;
@@ -44,16 +39,7 @@ public class UserService {
 
     @LogExecutionTime
     public UserDetails getUserDetails(String authorisation) {
-        logger.info("User info invoked");
-        UserInfo userInfo = getUserInfo(authorisation);
-
-        return UserDetails.builder()
-            .id(userInfo.getUid())
-            .email(userInfo.getSub())
-            .forename(userInfo.getGivenName())
-            .surname(userInfo.getFamilyName())
-            .roles(userInfo.getRoles())
-            .build();
+        return idamApi.retrieveUserDetails(authorisation);
     }
 
     @LogExecutionTime
@@ -63,7 +49,7 @@ public class UserService {
 
     public User authenticateUser(String username, String password) {
 
-        String authorisation = getAuthorisationToken(username, password);
+        String authorisation = getIdamOauth2Token(username, password);
         UserDetails userDetails = getUserDetails(authorisation);
         return new User(authorisation, userDetails);
     }
@@ -79,14 +65,7 @@ public class UserService {
         return idamApi.generatePin(new GeneratePinRequest(name), authorisation);
     }
 
-    public String getAuthorisationToken(String username, String password) {
-        logger.info("oauth2.getClientId()----" + oauth2.getClientId());
-        logger.info("oauth2.getClientId()----" + oauth2.getClientId());
-        logger.info(" oauth2.getClientSecret()----" + oauth2.getClientSecret());
-        logger.info("oauth2.getRedirectUrl()----" + oauth2.getRedirectUrl());
-        logger.info("username----" + username);
-        logger.info("password----" + password);
-
+    public String getIdamOauth2Token(String username, String password) {
         TokenExchangeResponse authenticateUserResponse = idamApi.authenticateUser(
             oauth2.getClientId(),
             oauth2.getClientSecret(),
@@ -97,14 +76,11 @@ public class UserService {
             DEFAULT_SCOPE
         );
 
-        logger.info("authenticateUserResponse.getAccessToken()----" + authenticateUserResponse.getAccessToken());
         return BEARER + authenticateUserResponse.getAccessToken();
     }
 
     @LogExecutionTime
-    @Cacheable(value = "userInfoCache")
     public UserInfo getUserInfo(String bearerToken) {
-        logger.info("IDAM /o/userinfo invoked");
         return idamApi.retrieveUserInfo(bearerToken);
     }
 
