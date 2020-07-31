@@ -15,6 +15,8 @@ public class StaffEmailProperties {
     private String sender;
     @NotBlank
     private String recipient;
+    @NotBlank
+    private String legalRecipient;
 
     public String getSender() {
         return sender;
@@ -28,8 +30,16 @@ public class StaffEmailProperties {
         return recipient;
     }
 
+    public String getLegalRecipient() {
+        return legalRecipient;
+    }
+
     public void setRecipient(String recipient) {
         this.recipient = recipient;
+    }
+
+    public void setLegalRecipient(String legalRecipient) {
+        this.legalRecipient = legalRecipient;
     }
 
 }
