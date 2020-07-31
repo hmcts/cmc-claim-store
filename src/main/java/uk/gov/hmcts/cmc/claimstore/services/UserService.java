@@ -42,7 +42,8 @@ public class UserService {
     @LogExecutionTime
     public UserDetails getUserDetails(String authorisation) {
         UserInfo userInfo = getUserInfo(authorisation);
-        logger.info("userInfo--" + userInfo);
+        String logg = "userInfo--" + userInfo.toString();
+        logger.info(logg);
         return UserDetails.builder()
             .id(userInfo.getUid())
             .email(userInfo.getSub())
@@ -58,8 +59,6 @@ public class UserService {
     }
 
     public User authenticateUser(String username, String password) {
-        logger.info("username---" + username);
-        logger.info("password---" + password);
         String authorisation = getIdamOauth2Token(username, password);
         UserDetails userDetails = getUserDetails(authorisation);
         return new User(authorisation, userDetails);
@@ -86,13 +85,15 @@ public class UserService {
             password,
             DEFAULT_SCOPE
         );
-        logger.info("authenticateUserResponse.getAccessToken()--" + authenticateUserResponse.getAccessToken());
+        String logg = "authenticateUserResponse.getAccessToken()--" + authenticateUserResponse.getAccessToken();
+        logger.info(logg);
         return BEARER + authenticateUserResponse.getAccessToken();
     }
 
     @LogExecutionTime
     public UserInfo getUserInfo(String bearerToken) {
-        logger.info("bearerToken--" + bearerToken);
+        String logg = "bearerToken--" + bearerToken;
+        logger.info(logg);
         return idamApi.retrieveUserInfo(bearerToken);
     }
 
