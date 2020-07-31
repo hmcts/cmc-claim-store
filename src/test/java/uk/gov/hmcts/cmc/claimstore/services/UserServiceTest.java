@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -9,23 +8,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.config.properties.idam.IdamCaseworkerProperties;
 import uk.gov.hmcts.cmc.claimstore.idam.IdamApi;
-import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinRequest;
-import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.Oauth2;
-import uk.gov.hmcts.cmc.claimstore.idam.models.TokenExchangeResponse;
-import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserInfo;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.claimstore.services.UserService.AUTHORIZATION_CODE;
-import static uk.gov.hmcts.cmc.claimstore.services.UserService.CODE;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -89,28 +80,6 @@ class UserServiceTest {
         verifyUserDetails(userDetails);
     }
 
-    @Test
-    void authenticatesUser() {
-        final String grantType = UserService.GRANT_TYPE_PASSWORD;
-        final String username = "username";
-        final String password = "password";
-        final String scope = UserService.DEFAULT_SCOPE;
-
-        final String accessToken = "access_token";
-        final TokenExchangeResponse tokenExchangeResponse = new TokenExchangeResponse(accessToken);
-
-        when(idamApi.authenticateUser(null, null, null, grantType, username, password, scope))
-            .thenReturn(tokenExchangeResponse);
-        when(idamApi.retrieveUserDetails(UserService.BEARER + accessToken))
-            .thenReturn(new UserDetails(UID, SUB, GIVEN_NAME, FAMILY_NAME, ROLES));
-
-        User found = userService.authenticateUser(username, password);
-
-        assertThat(found.getAuthorisation()).isEqualTo(UserService.BEARER + accessToken);
-        assertThat(found.getUserDetails()).isNotNull();
-        verifyUserDetails(found.getUserDetails());
-    }
-
     private void verifyUserDetails(UserDetails userDetails) {
         assertThat(userDetails.getEmail()).isEqualTo(SUB);
         assertThat(userDetails.getId()).isEqualTo(UID);
@@ -120,55 +89,4 @@ class UserServiceTest {
         assertThat(userDetails.getRoles()).isEqualTo(ROLES);
     }
 
-    @Ignore
-    @Test
-    public void getAuthorisationTokenForGivenUser() {
-
-        when(idamApi.authenticateUser(any(), any(), any(), any(), any(), any(), any()))
-            .thenReturn(new TokenExchangeResponse(eq(CODE)));
-        when(idamApi.exchangeToken(eq(CODE), eq(AUTHORIZATION_CODE), any(), any(), any()))
-            .thenReturn(new TokenExchangeResponse("I am a valid token"));
-
-        String authorisation = userService.getAuthorisationToken(USERNAME, PASSWORD);
-
-        assertThat(authorisation).isEqualTo(AUTHORISATION);
-    }
-
-    @Ignore
-    @Test
-    public void generatePinShouldGenerateValidPin() {
-
-        when(idamApi.generatePin(any(GeneratePinRequest.class), eq(AUTHORISATION)))
-            .thenReturn(new GeneratePinResponse(PIN, UID));
-
-        GeneratePinResponse response = userService.generatePin(USERNAME, AUTHORISATION);
-
-        assertThat(response).isNotNull();
-        assertThat(response.getPin()).isEqualTo(PIN);
-        assertThat(response.getUserId()).isEqualTo(UID);
-    }
-
-    @Ignore
-    @Test
-    public void authenticateUserShouldReturnUser() {
-
-        when(idamApi.authenticateUser(any(), any(), any(), any(), any(), any(), any()))
-            .thenReturn(new TokenExchangeResponse("I am a valid token"));
-        when(idamApi.exchangeToken(eq(CODE), eq(AUTHORIZATION_CODE), any(), any(), any()))
-            .thenReturn(new TokenExchangeResponse("I am a valid token"));
-
-        User user = userService.authenticateUser(USERNAME, PASSWORD);
-
-        assertThat(user.getAuthorisation()).isEqualTo(AUTHORISATION);
-        assertUserDetails(user.getUserDetails());
-    }
-
-    private void assertUserDetails(UserDetails userDetails) {
-        assertThat(userDetails.getEmail()).isEqualTo(SUB);
-        assertThat(userDetails.getId()).isEqualTo(UID);
-        assertThat(userDetails.getForename()).isEqualTo(GIVEN_NAME);
-        assertThat(userDetails.getSurname()).hasValue(FAMILY_NAME);
-        assertThat(userDetails.getFullName()).isEqualTo(NAME);
-        assertThat(userDetails.getRoles()).isEqualTo(ROLES);
-    }
 }
