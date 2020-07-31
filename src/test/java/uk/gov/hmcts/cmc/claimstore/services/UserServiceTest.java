@@ -8,7 +8,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.config.properties.idam.IdamCaseworkerProperties;
 import uk.gov.hmcts.cmc.claimstore.idam.IdamApi;
-import uk.gov.hmcts.cmc.claimstore.idam.models.*;
+import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinRequest;
+import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
+import uk.gov.hmcts.cmc.claimstore.idam.models.Oauth2;
+import uk.gov.hmcts.cmc.claimstore.idam.models.TokenExchangeResponse;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserInfo;
 
 import java.util.List;
 
@@ -113,7 +119,7 @@ class UserServiceTest {
     @Test
     public void getAuthorisationTokenForGivenUser() {
 
-        when(idamApi.authenticateUser( null,
+        when(idamApi.authenticateUser(null,
             null,
             null,
             "password",
@@ -154,7 +160,6 @@ class UserServiceTest {
 
         when(idamApi.authenticateUser(null, null, null, grantType, username, password, scope))
             .thenReturn(tokenExchangeResponse);
-
 
         when(idamApi.retrieveUserInfo(UserService.BEARER + accessToken))
             .thenReturn(new UserInfo(SUB, UID, GIVEN_NAME, GIVEN_NAME, FAMILY_NAME, ROLES));
