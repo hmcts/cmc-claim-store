@@ -80,6 +80,13 @@ public class UserService {
     }
 
     public String getAuthorisationToken(String username, String password) {
+        logger.info("oauth2.getClientId()----" + oauth2.getClientId());
+        logger.info("oauth2.getClientId()----" + oauth2.getClientId());
+        logger.info(" oauth2.getClientSecret()----" + oauth2.getClientSecret());
+        logger.info("oauth2.getRedirectUrl()----" + oauth2.getRedirectUrl());
+        logger.info("username----" + username);
+        logger.info("password----" + password);
+
         TokenExchangeResponse authenticateUserResponse = idamApi.authenticateUser(
             oauth2.getClientId(),
             oauth2.getClientSecret(),
@@ -90,6 +97,7 @@ public class UserService {
             DEFAULT_SCOPE
         );
 
+        logger.info("authenticateUserResponse.getAccessToken()----" + authenticateUserResponse.getAccessToken());
         return BEARER + authenticateUserResponse.getAccessToken();
     }
 
