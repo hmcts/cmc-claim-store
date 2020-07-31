@@ -390,6 +390,7 @@ sonarqube {
         "**/DBCaseRepository.java",
         "**/MapperUtil.java",
         "**/CCDCaseApi.java",
+        "**/UserService.java",
         "launch-darkly-client/**",
         "email-client/**",
         "rpa-mapper/**"

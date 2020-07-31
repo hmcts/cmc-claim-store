@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.idam.IdamCaseworker;
@@ -16,6 +18,8 @@ import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 
 @Component
 public class UserService {
+    Logger logger = LoggerFactory.getLogger(this.getClass());
+
     public static final String BEARER = "Bearer ";
     public static final String AUTHORIZATION_CODE = "authorization_code";
     public static final String GRANT_TYPE_PASSWORD = "password";
@@ -39,6 +43,7 @@ public class UserService {
     @LogExecutionTime
     public UserDetails getUserDetails(String authorisation) {
         UserInfo userInfo = getUserInfo(authorisation);
+        logger.info("userInfo--" + userInfo);
         return UserDetails.builder()
             .id(userInfo.getUid())
             .email(userInfo.getSub())
@@ -54,8 +59,12 @@ public class UserService {
     }
 
     public User authenticateUser(String username, String password) {
+        logger.info("username--" + username);
+        logger.info("password--" + password);
         String authorisation = getIdamOauth2Token(username, password);
+        logger.info("authorisation--" + authorisation);
         UserDetails userDetails = getUserDetails(authorisation);
+        logger.info("userDetails--" + userDetails);
         return new User(authorisation, userDetails);
     }
 
