@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.idam.IdamCaseworker;
 import uk.gov.hmcts.cmc.claimstore.config.properties.idam.IdamCaseworkerProperties;
 import uk.gov.hmcts.cmc.claimstore.idam.IdamApi;
-import uk.gov.hmcts.cmc.claimstore.idam.models.AuthenticateUserResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinRequest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.Oauth2;
@@ -18,8 +17,6 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserInfo;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 
-import java.util.Base64;
-
 @Component
 public class UserService {
     Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -28,6 +25,8 @@ public class UserService {
     public static final String AUTHORIZATION_CODE = "authorization_code";
     public static final String CODE = "code";
     public static final String BASIC = "Basic ";
+    public static final String GRANT_TYPE_PASSWORD = "password";
+    public static final String DEFAULT_SCOPE = "openid roles profile";
 
     private final IdamApi idamApi;
     private final IdamCaseworkerProperties idamCaseworkerProperties;
@@ -82,22 +81,15 @@ public class UserService {
     }
 
     public String getAuthorisationToken(String username, String password) {
-        String authorisation = username + ":" + password;
-        String base64Authorisation = Base64.getEncoder().encodeToString(authorisation.getBytes());
-
-        AuthenticateUserResponse authenticateUserResponse = idamApi.authenticateUser(
-            BASIC + base64Authorisation,
-            CODE,
-            oauth2.getClientId(),
-            oauth2.getRedirectUrl()
-        );
         logger.info("IDAM /o/token invoked.");
-        TokenExchangeResponse tokenExchangeResponse = idamApi.exchangeToken(
-            authenticateUserResponse.getCode(),
-            AUTHORIZATION_CODE,
-            oauth2.getRedirectUrl(),
+        TokenExchangeResponse tokenExchangeResponse = idamApi.authenticateUser(
             oauth2.getClientId(),
-            oauth2.getClientSecret()
+            oauth2.getClientSecret(),
+            oauth2.getRedirectUrl(),
+            GRANT_TYPE_PASSWORD,
+            username,
+            password,
+            DEFAULT_SCOPE
         );
 
         return BEARER + tokenExchangeResponse.getAccessToken();
