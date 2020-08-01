@@ -18,8 +18,6 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserInfo;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 
-import java.util.Base64;
-
 @Component
 public class UserService {
     Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -32,6 +30,8 @@ public class UserService {
     private final IdamApi idamApi;
     private final IdamCaseworkerProperties idamCaseworkerProperties;
     private final Oauth2 oauth2;
+    public static final String GRANT_TYPE_PASSWORD = "password";
+    public static final String DEFAULT_SCOPE = "openid roles profile";
 
     @Autowired
     public UserService(
@@ -82,14 +82,10 @@ public class UserService {
     }
 
     public String getAuthorisationToken(String username, String password) {
-        String authorisation = username + ":" + password;
-        String base64Authorisation = Base64.getEncoder().encodeToString(authorisation.getBytes());
 
         AuthenticateUserResponse authenticateUserResponse = idamApi.authenticateUser(
-            BASIC + base64Authorisation,
-            CODE,
-            oauth2.getClientId(),
-            oauth2.getRedirectUrl()
+            oauth2.getClientId(), oauth2.getClientSecret(), oauth2.getRedirectUrl(),
+            GRANT_TYPE_PASSWORD, username, password, "openid profile roles"
         );
         logger.info("IDAM /o/token invoked.");
         TokenExchangeResponse tokenExchangeResponse = idamApi.exchangeToken(
