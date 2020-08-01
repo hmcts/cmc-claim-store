@@ -15,7 +15,7 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriUtils;
 import uk.gov.hmcts.cmc.claimstore.idam.IdamApi;
-import uk.gov.hmcts.cmc.claimstore.idam.models.AuthenticateUserResponse;
+import uk.gov.hmcts.cmc.claimstore.idam.models.AuthenticateUserResponse;git s
 import uk.gov.hmcts.cmc.claimstore.idam.models.Oauth2;
 import uk.gov.hmcts.cmc.claimstore.idam.models.TokenExchangeResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
@@ -26,8 +26,6 @@ import uk.gov.hmcts.cmc.claimstore.tests.helpers.TestData;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-
-import static uk.gov.hmcts.cmc.claimstore.services.UserService.AUTHORIZATION_CODE;
 
 @Service
 public class IdamTestService {
@@ -95,11 +93,13 @@ public class IdamTestService {
                 AuthenticateUserResponse pinUserCode = authenticatePinUser(pin.getBody());
 
                 TokenExchangeResponse exchangeResponse = idamApi.exchangeToken(
-                    pinUserCode.getCode(),
-                    AUTHORIZATION_CODE,
-                    oauth2.getRedirectUrl(),
                     oauth2.getClientId(),
-                    oauth2.getClientSecret()
+                    oauth2.getClientSecret(),
+                    oauth2.getRedirectUrl(),
+                    "password",
+                    aatConfiguration.getSmokeTestCitizen().getUsername(),
+                    password,
+                    "openid profile roles"
                 );
 
                 upliftUser(email, password, exchangeResponse);
@@ -125,11 +125,13 @@ public class IdamTestService {
         String code = getCodeFromRedirect(response);
 
         idamApi.exchangeToken(
-            code,
-            AUTHORIZATION_CODE,
-            oauth2.getRedirectUrl(),
             oauth2.getClientId(),
-            oauth2.getClientSecret()
+            oauth2.getClientSecret(),
+            oauth2.getRedirectUrl(),
+            "password",
+            aatConfiguration.getSmokeTestCitizen().getUsername(),
+            password,
+            "openid profile roles"
         );
     }
 

@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.idam.IdamCaseworker;
 import uk.gov.hmcts.cmc.claimstore.config.properties.idam.IdamCaseworkerProperties;
 import uk.gov.hmcts.cmc.claimstore.idam.IdamApi;
-import uk.gov.hmcts.cmc.claimstore.idam.models.AuthenticateUserResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinRequest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.Oauth2;
@@ -26,12 +25,12 @@ public class UserService {
     public static final String AUTHORIZATION_CODE = "authorization_code";
     public static final String CODE = "code";
     public static final String BASIC = "Basic ";
+    public static final String GRANT_TYPE_PASSWORD = "password";
+    public static final String DEFAULT_SCOPE = "openid profile roles";
 
     private final IdamApi idamApi;
     private final IdamCaseworkerProperties idamCaseworkerProperties;
     private final Oauth2 oauth2;
-    public static final String GRANT_TYPE_PASSWORD = "password";
-    public static final String DEFAULT_SCOPE = "openid roles profile";
 
     @Autowired
     public UserService(
@@ -82,26 +81,15 @@ public class UserService {
     }
 
     public String getAuthorisationToken(String username, String password) {
-
-        AuthenticateUserResponse authenticateUserResponse = idamApi.authenticateUser(
-            oauth2.getClientId(), oauth2.getClientSecret(), oauth2.getRedirectUrl(),
-            GRANT_TYPE_PASSWORD, username, password, "openid profile roles"
-        );
-        logger.info("authenticateUserResponse--" + authenticateUserResponse);
-        logger.info("GRANT_TYPE_PASSWORD--" + GRANT_TYPE_PASSWORD);
-        logger.info("oauth2.getRedirectUrl()--" + oauth2.getRedirectUrl());
-        logger.info("oauth2.getClientId()--" + oauth2.getClientId());
-        logger.info("oauth2.getClientSecret()--" + oauth2.getClientSecret());
-
         logger.info("IDAM /o/token invoked.");
         TokenExchangeResponse tokenExchangeResponse = idamApi.exchangeToken(
-            authenticateUserResponse.getCode(),
-            GRANT_TYPE_PASSWORD,
-            oauth2.getRedirectUrl(),
             oauth2.getClientId(),
-            oauth2.getClientSecret()
-        );
-
+            oauth2.getClientSecret(),
+            oauth2.getRedirectUrl(),
+            GRANT_TYPE_PASSWORD,
+            username,
+            password,
+            DEFAULT_SCOPE);
         return BEARER + tokenExchangeResponse.getAccessToken();
     }
 
