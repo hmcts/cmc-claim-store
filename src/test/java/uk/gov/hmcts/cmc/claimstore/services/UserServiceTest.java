@@ -8,8 +8,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.config.properties.idam.IdamCaseworkerProperties;
 import uk.gov.hmcts.cmc.claimstore.idam.IdamApi;
 import uk.gov.hmcts.cmc.claimstore.idam.models.AuthenticateUserResponse;
+import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinRequest;
+import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.Oauth2;
 import uk.gov.hmcts.cmc.claimstore.idam.models.TokenExchangeResponse;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserInfo;
 
@@ -20,6 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.PIN;
 import static uk.gov.hmcts.cmc.claimstore.services.UserService.CODE;
 
 @ExtendWith(MockitoExtension.class)
@@ -101,5 +105,44 @@ class UserServiceTest {
         String authorisation = userService.getAuthorisationTokenForTests(USERNAME, PASSWORD);
 
         assertThat(authorisation).isEqualTo(AUTHORISATION);
+    }
+
+    @Test
+    public void generatePinShouldGenerateValidPin() {
+
+        when(idamApi.generatePin(any(GeneratePinRequest.class), eq(AUTHORISATION)))
+            .thenReturn(new GeneratePinResponse(PIN, UID));
+
+        GeneratePinResponse response = userService.generatePin(USERNAME, AUTHORISATION);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getPin()).isEqualTo(PIN);
+        assertThat(response.getUserId()).isEqualTo(UID);
+    }
+
+    @Test
+    public void authenticateUserShouldReturnUser() {
+
+        when(idamApi.authenticateUser(anyString(), eq(CODE), any(), any()))
+            .thenReturn(new AuthenticateUserResponse(CODE));
+        when(idamApi.exchangeTokenForTests(eq(CODE), eq(AUTHORIZATION_CODE), any(), any(), any()))
+            .thenReturn(new TokenExchangeResponse("I am a valid token"));
+
+        when(idamApi.retrieveUserInfo(eq(AUTHORISATION)))
+            .thenReturn(userInfo);
+
+        User user = userService.authenticateUserForTests(USERNAME, PASSWORD);
+
+        assertThat(user.getAuthorisation()).isEqualTo(AUTHORISATION);
+        assertUserDetails(user.getUserDetails());
+    }
+
+    private void assertUserDetails(UserDetails userDetails) {
+        assertThat(userDetails.getEmail()).isEqualTo(SUB);
+        assertThat(userDetails.getId()).isEqualTo(UID);
+        assertThat(userDetails.getForename()).isEqualTo(GIVEN_NAME);
+        assertThat(userDetails.getSurname()).hasValue(FAMILY_NAME);
+        assertThat(userDetails.getFullName()).isEqualTo(NAME);
+        assertThat(userDetails.getRoles()).isEqualTo(ROLES);
     }
 }

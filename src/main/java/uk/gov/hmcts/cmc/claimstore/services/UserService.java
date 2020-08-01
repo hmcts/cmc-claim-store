@@ -104,7 +104,7 @@ public class UserService {
     }
 
     public User authenticateUserForTests(String username, String password) {
-        String authorisation = getAuthorisationToken(username, password);
+        String authorisation = getAuthorisationTokenForTests(username, password);
         UserDetails userDetails = getUserDetails(authorisation);
         return new User(authorisation, userDetails);
     }
