@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.idam.IdamCaseworker;
 import uk.gov.hmcts.cmc.claimstore.config.properties.idam.IdamCaseworkerProperties;
 import uk.gov.hmcts.cmc.claimstore.idam.IdamApi;
+import uk.gov.hmcts.cmc.claimstore.idam.models.AuthenticateUserResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinRequest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.Oauth2;
@@ -16,6 +17,8 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserInfo;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
+
+import java.util.Base64;
 
 @Component
 public class UserService {
@@ -100,4 +103,29 @@ public class UserService {
         return idamApi.retrieveUserInfo(bearerToken);
     }
 
+    public User authenticateUserForTests(String username, String password) {
+        String authorisation = getAuthorisationToken(username, password);
+        UserDetails userDetails = getUserDetails(authorisation);
+        return new User(authorisation, userDetails);
+    }
+
+    public String getAuthorisationTokenForTests(String username, String password) {
+        String authorisation = username + ":" + password;
+        String base64Authorisation = Base64.getEncoder().encodeToString(authorisation.getBytes());
+        AuthenticateUserResponse authenticateUserResponse = idamApi.authenticateUser(
+            BASIC + base64Authorisation,
+            CODE,
+            oauth2.getClientId(),
+            oauth2.getRedirectUrl()
+        );
+        logger.info("IDAM /o/token invoked.");
+        TokenExchangeResponse tokenExchangeResponse = idamApi.exchangeTokenForTests(
+            authenticateUserResponse.getCode(),
+            AUTHORIZATION_CODE,
+            oauth2.getRedirectUrl(),
+            oauth2.getClientId(),
+            oauth2.getClientSecret()
+        );
+        return BEARER + tokenExchangeResponse.getAccessToken();
+    }
 }

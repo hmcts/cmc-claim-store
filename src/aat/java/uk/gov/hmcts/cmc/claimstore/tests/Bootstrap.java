@@ -59,7 +59,7 @@ public class Bootstrap {
     }
 
     private void authenticateUser() {
-        smokeTestCitizen = userService.authenticateUser(
+        smokeTestCitizen = userService.authenticateUserForTests(
             aatConfiguration.getSmokeTestCitizen().getUsername(),
             aatConfiguration.getSmokeTestCitizen().getPassword()
         );

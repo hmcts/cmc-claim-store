@@ -77,6 +77,19 @@ public interface IdamApi {
         @RequestParam("scope") String scope
     );
 
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/oauth2/token",
+        consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
+    )
+    TokenExchangeResponse exchangeTokenForTests(
+        @RequestParam("code") final String code,
+        @RequestParam("grant_type") final String grantType,
+        @RequestParam("redirect_uri") final String redirectUri,
+        @RequestParam("client_id") final String clientId,
+        @RequestParam("client_secret") final String clientSecret
+    );
+
     @RequestMapping(method = RequestMethod.GET, value = "/details")
     UserDetails retrieveUserDetails(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation);
 }
