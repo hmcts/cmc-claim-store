@@ -90,7 +90,7 @@ public class UserService {
         logger.info("IDAM /o/token invoked.");
         TokenExchangeResponse tokenExchangeResponse = idamApi.exchangeToken(
             authenticateUserResponse.getCode(),
-            AUTHORIZATION_CODE,
+            GRANT_TYPE_PASSWORD,
             oauth2.getRedirectUrl(),
             oauth2.getClientId(),
             oauth2.getClientSecret()
