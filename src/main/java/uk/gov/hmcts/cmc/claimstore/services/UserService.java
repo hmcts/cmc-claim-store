@@ -87,6 +87,12 @@ public class UserService {
             oauth2.getClientId(), oauth2.getClientSecret(), oauth2.getRedirectUrl(),
             GRANT_TYPE_PASSWORD, username, password, "openid profile roles"
         );
+        logger.info("authenticateUserResponse--" + authenticateUserResponse);
+        logger.info("GRANT_TYPE_PASSWORD--" + GRANT_TYPE_PASSWORD);
+        logger.info("oauth2.getRedirectUrl()--" + oauth2.getRedirectUrl());
+        logger.info("oauth2.getClientId()--" + oauth2.getClientId());
+        logger.info("oauth2.getClientSecret()--" + oauth2.getClientSecret());
+
         logger.info("IDAM /o/token invoked.");
         TokenExchangeResponse tokenExchangeResponse = idamApi.exchangeToken(
             authenticateUserResponse.getCode(),
