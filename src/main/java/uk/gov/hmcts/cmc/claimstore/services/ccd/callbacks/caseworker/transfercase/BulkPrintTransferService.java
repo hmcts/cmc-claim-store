@@ -67,7 +67,6 @@ public class BulkPrintTransferService {
 
     public void findCasesAndTransfer() {
         User user = userService.authenticateAnonymousCaseWorker();
-        String authorisation = user.getAuthorisation();
 
         Integer totalClaimsReadyForTransfer = caseSearchApi.totalClaimsReadyForTransfer(user);
         logger.info("Automated Transfer - Total cases in transfer ready state: " + totalClaimsReadyForTransfer);
@@ -75,17 +74,19 @@ public class BulkPrintTransferService {
         Map<CCDCase, Claim> claims = new HashMap<>();
 
         claimsReadyForTransfer(user, claims, "data.hearingCourtName", "data.hearingCourtAddress",
-            x -> x.getHearingCourtName(), x-> x.getHearingCourtAddress());
+            x -> x.getHearingCourtName(), x -> x.getHearingCourtAddress());
 
         claimsReadyForTransfer(user, claims,
             "data.directionOrder.hearingCourtName", "data.directionOrder.hearingCourtAddress",
-            x -> x.getDirectionOrder().getHearingCourtName(), x-> x.getDirectionOrder().getHearingCourtAddress());
+            x -> x.getDirectionOrder().getHearingCourtName(), x -> x.getDirectionOrder().getHearingCourtAddress());
 
-        if(automatedTransferReadMode)
+        if (automatedTransferReadMode) {
             return;
+        }
 
         claims.forEach((ccdCase, claim) -> {
             try {
+                String authorisation = user.getAuthorisation();
                 ccdCase = transferCase(ccdCase, claim, authorisation,
                     transferCaseDocumentPublishService::publishCaseDocuments,
                     transferCaseNotificationsService::sendTransferToCourtEmail, this::updateCaseData);
@@ -100,8 +101,8 @@ public class BulkPrintTransferService {
     }
 
     private void claimsReadyForTransfer(User user, Map<CCDCase, Claim> claims,
-                                        String courtNameKey, String courtAddressKey,
-                                        Function<CCDCase,String> courtName, Function<CCDCase,CCDAddress> courtAddress) {
+                                    String courtNameKey, String courtAddressKey,
+                                    Function<CCDCase, String> courtName, Function<CCDCase, CCDAddress> courtAddress) {
 
         List<CCDCase> claimsReadyForTransfer = caseSearchApi.getClaimsReadyForTransfer(
             user, courtNameKey, courtAddressKey);
@@ -109,7 +110,7 @@ public class BulkPrintTransferService {
         StringBuilder sb = new StringBuilder(format("Automated Transfer for %d cases where %s and %s found: ",
             claimsReadyForTransfer.size(), courtNameKey, courtAddressKey));
 
-        if (! CollectionUtils.isEmpty(claimsReadyForTransfer)) {
+        if (!CollectionUtils.isEmpty(claimsReadyForTransfer)) {
             for (CCDCase ccdCase : claimsReadyForTransfer) {
                 sb.append(ccdCase.getPreviousServiceCaseReference()).append(", ");
                 updateTransferContent(ccdCase, claims, courtName, courtAddress);
@@ -129,7 +130,7 @@ public class BulkPrintTransferService {
     }
 
     private void updateTransferContent(CCDCase ccdCase, Map<CCDCase, Claim> claims,
-                                       Function<CCDCase,String> courtName, Function<CCDCase,CCDAddress> courtAddress) {
+                                Function<CCDCase, String> courtName, Function<CCDCase, CCDAddress> courtAddress) {
 
         CCDTransferContent transferContent = CCDTransferContent.builder()
             .transferCourtName(courtName.apply(ccdCase))
@@ -138,11 +139,11 @@ public class BulkPrintTransferService {
             .transferReasonOther(REASON)
             .build();
 
-        ccdCase =  ccdCase.toBuilder()
+        CCDCase ccdCaseWithTransferContent = ccdCase.toBuilder()
             .transferContent(transferContent)
             .build();
 
-        claims.put(ccdCase, caseMapper.from(ccdCase));
+        claims.put(ccdCaseWithTransferContent, caseMapper.from(ccdCaseWithTransferContent));
     }
 
     public CCDCase updateCaseDataWithHandOffDate(CCDCase ccdCase) {

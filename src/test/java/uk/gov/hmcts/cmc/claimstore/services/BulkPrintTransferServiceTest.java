@@ -98,7 +98,7 @@ class BulkPrintTransferServiceTest {
             .hearingCourtAddress(HEARING_COURT_ADDRESS).build();
         when(caseSearchApi.getClaimsReadyForTransfer(USER, "data.hearingCourtName", "data.hearingCourtAddress"))
             .thenReturn(Collections.singletonList(caseWithHearingCourt));
-       when(caseMapper.to(SAMPLE_CLAIM))
+        when(caseMapper.to(SAMPLE_CLAIM))
             .thenReturn(sampleCcdCase);
         CCDCase caseWithHearingCourtWithTransferContent = addTransferContent(caseWithHearingCourt);
         lenient().when(caseMapper.from(addTransferContent(caseWithHearingCourtWithTransferContent)))
@@ -122,7 +122,7 @@ class BulkPrintTransferServiceTest {
                 .updateCaseData(caseWithHearingCourtWithTransferContent), CaseEvent.AUTOMATED_TRANSFER);
     }
 
-    private CCDCase addTransferContent(CCDCase ccdCase){
+    private CCDCase addTransferContent(CCDCase ccdCase) {
         CCDTransferContent transferContent = CCDTransferContent.builder()
             .transferCourtName(HEARING_COURT_NAME)
             .transferCourtAddress(HEARING_COURT_ADDRESS)

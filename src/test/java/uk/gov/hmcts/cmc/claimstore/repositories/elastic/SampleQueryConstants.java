@@ -155,7 +155,7 @@ public interface SampleQueryConstants {
         + "  }\n"
         + "}}";
 
-    String readyForTransfer = "{\"size\": 1000,\"query\": {\n"
+    String readyForTransfer = "{\"size\": 2000,\"query\": {\n"
         + "  \"bool\" : {\n"
         + "    \"must\" : [\n"
         + "      {\n"

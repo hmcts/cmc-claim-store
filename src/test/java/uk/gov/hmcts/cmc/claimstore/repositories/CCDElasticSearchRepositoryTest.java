@@ -97,7 +97,8 @@ public class CCDElasticSearchRepositoryTest {
     @Test
     public void getClaimsReadyForTransferQueriesElastic() {
         User user = new User(AUTHORISATION, null);
-        ccdElasticSearchRepository.getClaimsReadyForTransfer(user);
+        ccdElasticSearchRepository.getClaimsReadyForTransfer(user,
+            "data.hearingCourtName", "data.hearingCourtAddress");
         verify(coreCaseDataApi).searchCases(
             AUTHORISATION,
             SERVICE_AUTH,
