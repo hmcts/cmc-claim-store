@@ -92,7 +92,7 @@ public class BulkPrintTransferService {
                 updateCaseInCCD(ccdCase, authorisation);
                 logger.info("Automated Transfer - " + ccdCase.getPreviousServiceCaseReference() + " done!");
             } catch (Exception e) {
-                logger.error("Automated Transfer failed for: " + ccdCase.getPreviousServiceCaseReference());
+                logger.error("Automated Transfer failed for: " + ccdCase.getPreviousServiceCaseReference() + " - " + e);
             }
         });
 
