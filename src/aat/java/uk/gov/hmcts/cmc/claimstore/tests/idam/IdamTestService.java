@@ -95,14 +95,12 @@ public class IdamTestService {
 
                 AuthenticateUserResponse pinUserCode = authenticatePinUser(pin.getBody());
 
-                TokenExchangeResponse exchangeResponse = idamApi.exchangeToken(
-                    oauth2.getClientId(),
-                    oauth2.getClientSecret(),
-                    oauth2.getRedirectUrl(),
+                TokenExchangeResponse exchangeResponse = idamApi.exchangeTokenForTests(
+                    pinUserCode.getCode(),
                     "password",
-                    aatConfiguration.getSmokeTestCitizen().getUsername(),
-                    password,
-                    "openid profile roles"
+                    oauth2.getRedirectUrl(),
+                    oauth2.getClientId(),
+                    oauth2.getClientSecret()
                 );
 
                 upliftUser(email, password, exchangeResponse);
@@ -127,14 +125,12 @@ public class IdamTestService {
 
         String code = getCodeFromRedirect(response);
 
-        idamApi.exchangeToken(
-            oauth2.getClientId(),
-            oauth2.getClientSecret(),
-            oauth2.getRedirectUrl(),
+        idamApi.exchangeTokenForTests(
+            code,
             "password",
-            aatConfiguration.getSmokeTestCitizen().getUsername(),
-            password,
-            "openid profile roles"
+            oauth2.getRedirectUrl(),
+            oauth2.getClientId(),
+            oauth2.getClientSecret()
         );
     }
 
