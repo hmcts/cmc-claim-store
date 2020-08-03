@@ -27,6 +27,8 @@ import uk.gov.hmcts.cmc.claimstore.tests.helpers.TestData;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
+import static uk.gov.hmcts.cmc.claimstore.services.UserService.AUTHORIZATION_CODE;
+
 @Service
 public class IdamTestService {
 
@@ -97,7 +99,7 @@ public class IdamTestService {
 
                 TokenExchangeResponse exchangeResponse = idamApi.exchangeTokenForTests(
                     pinUserCode.getCode(),
-                    "password",
+                    AUTHORIZATION_CODE,
                     oauth2.getRedirectUrl(),
                     oauth2.getClientId(),
                     oauth2.getClientSecret()
@@ -127,7 +129,7 @@ public class IdamTestService {
 
         idamApi.exchangeTokenForTests(
             code,
-            "password",
+            AUTHORIZATION_CODE,
             oauth2.getRedirectUrl(),
             oauth2.getClientId(),
             oauth2.getClientSecret()
