@@ -18,7 +18,6 @@ import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantPaperResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
-import uk.gov.hmcts.cmc.claimstore.events.response.PaperDefenceReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.events.revieworder.ReviewOrderEvent;
 import uk.gov.hmcts.cmc.claimstore.events.settlement.CountersignSettlementAgreementEvent;
 import uk.gov.hmcts.cmc.claimstore.events.settlement.RejectSettlementAgreementEvent;
@@ -124,10 +123,6 @@ public class EventProducer {
 
     public void createInterlocutoryJudgmentEvent(Claim claim) {
         publisher.publishEvent(new InterlocutoryJudgmentEvent(claim));
-    }
-
-    public void createPaperDefenceEvent(Claim claim, Document coverLetter, Document oconForm) {
-        publisher.publishEvent(new PaperDefenceReadyToPrintEvent(claim, coverLetter, oconForm));
     }
 
     public void createRejectOrganisationPaymentPlanEvent(Claim claim) {

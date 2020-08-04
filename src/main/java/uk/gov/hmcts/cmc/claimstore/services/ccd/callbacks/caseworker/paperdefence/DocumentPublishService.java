@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
-import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.documents.BulkPrintHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.PrintableDocumentService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.sendletter.api.Document;
@@ -15,17 +15,17 @@ import java.time.LocalDate;
 public class DocumentPublishService {
     private final PaperResponseLetterService paperResponseLetterService;
     private final PrintableDocumentService printableDocumentService;
-    private final EventProducer eventProducer;
+    private final BulkPrintHandler bulkPrintHandler;
 
     @Autowired
     public DocumentPublishService(
         PaperResponseLetterService paperResponseLetterService,
         PrintableDocumentService printableDocumentService,
-        EventProducer eventProducer
+        BulkPrintHandler bulkPrintHandler
     ) {
         this.paperResponseLetterService = paperResponseLetterService;
         this.printableDocumentService = printableDocumentService;
-        this.eventProducer = eventProducer;
+        this.bulkPrintHandler = bulkPrintHandler;
     }
 
     public CCDCase publishDocuments(
@@ -44,7 +44,7 @@ public class DocumentPublishService {
 
         Document formDoc = printableDocumentService.process(oconForm, authorisation);
 
-        eventProducer.createPaperDefenceEvent(claim, coverDoc, formDoc);
+        bulkPrintHandler.printPaperDefence(claim, coverDoc, formDoc, authorisation);
 
         return paperResponseLetterService
             .addCoverLetterToCaseWithDocuments(ccdCase, claim, coverLetter, authorisation);
