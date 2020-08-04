@@ -8,9 +8,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -25,15 +28,19 @@ import uk.gov.hmcts.cmc.claimstore.services.DirectionOrderService;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Collections;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
@@ -61,6 +68,8 @@ class DocAssemblyTemplateBodyMapperTest {
     @Mock
     private ResponseDeadlineCalculator responseDeadlineCalculator;
 
+    @Captor ArgumentCaptor<LocalDate> workingDayIndicate;
+
     private DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
     private CCDCase ccdCase;
     private UserDetails userDetails;
@@ -75,7 +84,6 @@ class DocAssemblyTemplateBodyMapperTest {
             directionOrderService,
             workingDayIndicator,
             responseDeadlineCalculator);
-
         ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
         ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
         ccdCase.setHearingCourt("BIRMINGHAM");
@@ -100,6 +108,7 @@ class DocAssemblyTemplateBodyMapperTest {
             .withForename("Judge")
             .withSurname("McJudge")
             .build();
+
         docAssemblyTemplateBodyBuilder = DocAssemblyTemplateBody.builder()
             .paperDetermination(false)
             .hasFirstOrderDirections(true)
@@ -302,6 +311,7 @@ class DocAssemblyTemplateBodyMapperTest {
 
         @Test
         void shouldMapTemplateBody() {
+
             DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
                 ccdCase,
                 userDetails
@@ -311,6 +321,37 @@ class DocAssemblyTemplateBodyMapperTest {
 
             assertThat(requestBody).isEqualTo(expectedBody);
             verify(directionOrderService).getHearingCourt(any());
+        }
+
+        @Test
+        void shouldMapDirectionDeadLineBefore() {
+            ReflectionTestUtils.setField(docAssemblyTemplateBodyMapper, "directionDeadLineNumberOfDays", 7);
+            ReflectionTestUtils.setField(docAssemblyTemplateBodyMapper, "directionDeadlineChangeDate",
+                "2018-06-27T11:00:00");
+            when(workingDayIndicator.getNextWorkingDay(any())).thenReturn(LocalDate.parse("2020-07-28"));
+            DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
+                ccdCase,
+                userDetails
+            );
+            verify(workingDayIndicator, times(2)).getNextWorkingDay(workingDayIndicate.capture());
+            assertEquals(LocalDate.parse("2019-05-01"), workingDayIndicate.getAllValues().get(0));
+
+        }
+
+        @Test
+        void shouldMapDirectionDeadLineAfter() {
+
+            ReflectionTestUtils.setField(docAssemblyTemplateBodyMapper, "directionDeadLineNumberOfDays", 7);
+            ReflectionTestUtils.setField(docAssemblyTemplateBodyMapper, "directionDeadlineChangeDate",
+                LocalDateTime.now().plusDays(2).toString());
+            when(workingDayIndicator.getNextWorkingDay(any())).thenReturn(LocalDate.parse("2020-07-28"));
+            DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
+                ccdCase,
+                userDetails
+            );
+            verify(workingDayIndicator, times(2)).getNextWorkingDay(workingDayIndicate.capture());
+            assertEquals(LocalDate.parse("2019-05-13"), workingDayIndicate.getAllValues().get(0));
+
         }
 
         @Test
@@ -451,9 +492,9 @@ class DocAssemblyTemplateBodyMapperTest {
         void shouldMapTemplateBodySoleTraderYesToNewFeature() {
             LocalDate now = LocalDate.now();
             CCDRespondent ccdRespondentSoleTrader = SampleData.getCCDRespondentSoleTrader()
-                    .toBuilder()
-                    .responseDeadline(now)
-                    .build();
+                .toBuilder()
+                .responseDeadline(now)
+                .build();
             ccdCase.setRespondents(
                 ImmutableList.of(
                     CCDCollectionElement.<CCDRespondent>builder()
@@ -534,4 +575,29 @@ class DocAssemblyTemplateBodyMapperTest {
             assertThat(requestBody).isEqualTo(expectedBody);
         }
     }
+
+    @Test
+    void shouldMapTemplateBodyWhenPaperResponseAdmissionLetter() {
+        when(clock.instant()).thenReturn(LocalDate.parse("2020-06-22").atStartOfDay().toInstant(ZoneOffset.UTC));
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);
+        DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper
+            .paperResponseAdmissionLetter(ccdCase, "John S");
+        DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
+            .currentDate(LocalDate.parse("2020-06-22"))
+            .partyName("Mary Richards")
+            .partyAddress(CCDAddress.builder()
+                .addressLine1("line1")
+                .addressLine2("line2")
+                .addressLine3("line3")
+                .postCode("postcode")
+                .postTown("city")
+                .build())
+            .referenceNumber("ref no")
+            .caseName("case name")
+            .caseworkerName("John S")
+            .build();
+        assertThat(requestBody).isEqualTo(expectedBody);
+    }
+
 }

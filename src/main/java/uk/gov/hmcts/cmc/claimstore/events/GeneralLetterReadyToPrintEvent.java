@@ -10,4 +10,5 @@ import uk.gov.hmcts.reform.sendletter.api.Document;
 public class GeneralLetterReadyToPrintEvent {
     private final Claim claim;
     private final Document generalLetterDocument;
+    private final String authorisation;
 }

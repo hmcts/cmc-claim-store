@@ -14,4 +14,6 @@ public interface CaseSearchApi {
     List<Claim> getClaims(User user, QueryBuilder queryBuilder);
 
     List<Claim> getClaimsWithDefaultCCJ(User user, LocalDate ccjRequestedDate);
+
+    List<Claim> getClaimsReadyForTransfer(User user);
 }

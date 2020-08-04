@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferAcceptedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferMadeEvent;
+import uk.gov.hmcts.cmc.claimstore.events.response.DefendantPaperResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.revieworder.ReviewOrderEvent;
@@ -92,6 +93,19 @@ public class EventProducerTest {
 
         //when
         eventProducer.createDefendantResponseEvent(CLAIM, AUTHORISATION);
+
+        //then
+        verify(publisher).publishEvent(eq(expectedEvent));
+    }
+
+    @Test
+    public void shouldCreateDefendantPaperResponseEvent() {
+        //given
+        DefendantPaperResponseEvent expectedEvent
+            = new DefendantPaperResponseEvent(CLAIM, AUTHORISATION);
+
+        //when
+        eventProducer.createDefendantPaperResponseEvent(CLAIM, AUTHORISATION);
 
         //then
         verify(publisher).publishEvent(eq(expectedEvent));
@@ -184,9 +198,9 @@ public class EventProducerTest {
         Document coverLetter = mock(Document.class);
         List<BulkPrintTransferEvent.PrintableDocument> caseDocuments = mock(List.class);
 
-        BulkPrintTransferEvent event = new BulkPrintTransferEvent(CLAIM, coverLetter, caseDocuments);
+        BulkPrintTransferEvent event = new BulkPrintTransferEvent(CLAIM, coverLetter, caseDocuments, AUTHORISATION);
 
-        eventProducer.createBulkPrintTransferEvent(CLAIM, coverLetter, caseDocuments);
+        eventProducer.createBulkPrintTransferEvent(CLAIM, coverLetter, caseDocuments, AUTHORISATION);
 
         verify(publisher).publishEvent(eq(event));
     }

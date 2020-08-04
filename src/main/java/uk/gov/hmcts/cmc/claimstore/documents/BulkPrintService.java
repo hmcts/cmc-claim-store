@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.Printable;
 import uk.gov.hmcts.cmc.claimstore.services.staff.BulkPrintStaffNotificationService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.reform.sendletter.api.Document;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
+import java.time.LocalDate;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +33,9 @@ import java.util.stream.Collectors;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BULK_PRINT_FAILED;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.BULK_PRINT_TRANSFER_TYPE;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.DIRECTION_ORDER_LETTER_TYPE;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.GENERAL_LETTER_TYPE;
 
 @Service
 @ConditionalOnProperty(prefix = "send-letter", name = "url")
@@ -42,10 +47,6 @@ public class BulkPrintService implements PrintService {
     public static final String XEROX_TYPE_PARAMETER = "CMC001";
 
     protected static final String ADDITIONAL_DATA_LETTER_TYPE_KEY = "letterType";
-    protected static final String FIRST_CONTACT_LETTER_TYPE = "first-contact-pack";
-    protected static final String DIRECTION_ORDER_LETTER_TYPE = "direction-order-pack";
-    protected static final String BULK_PRINT_TRANSFER_TYPE = "bulk-print-transfer-pack";
-    protected static final String GENERAL_LETTER_TYPE = "general-letter";
     protected static final String ADDITIONAL_DATA_CASE_IDENTIFIER_KEY = "caseIdentifier";
     protected static final String ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY = "caseReferenceNumber";
     protected static final String PAPER_DEFENCE_TYPE = "paper-defence-pack";
@@ -77,7 +78,12 @@ public class BulkPrintService implements PrintService {
         backoff = @Backoff(delay = 200)
     )
     @Override
-    public void print(Claim claim, List<Printable> documents) {
+    public BulkPrintDetails printHtmlLetter(
+        Claim claim,
+        List<Printable> documents,
+        BulkPrintRequestType letterType,
+        String authorisation
+    ) {
         requireNonNull(claim);
         List<Document> docs = documents.stream()
             .filter(Objects::nonNull)
@@ -89,14 +95,20 @@ public class BulkPrintService implements PrintService {
             new Letter(
                 docs,
                 XEROX_TYPE_PARAMETER,
-                wrapInDetailsInMap(claim, FIRST_CONTACT_LETTER_TYPE)
+                wrapInDetailsInMap(claim, letterType)
             )
         );
 
-        logger.info("Defendant first contact pack letter {} created for claim reference {}",
+        logger.info(letterType.logInfo,
             sendLetterResponse.letterId,
             claim.getReferenceNumber()
         );
+
+        return BulkPrintDetails.builder()
+            .printRequestId(sendLetterResponse.letterId.toString())
+            .printRequestType(letterType.printRequestType)
+            .printRequestedAt(LocalDate.now())
+            .build();
     }
 
     @Recover
@@ -119,7 +131,12 @@ public class BulkPrintService implements PrintService {
         backoff = @Backoff(delay = 200)
     )
     @Override
-    public void printPdf(Claim claim, List<Printable> documents, String letterType) {
+    public BulkPrintDetails printPdf(
+        Claim claim,
+        List<Printable> documents,
+        BulkPrintRequestType letterType,
+        String authorisation
+    ) {
         requireNonNull(claim);
         String info = "";
         if (letterType.equals(DIRECTION_ORDER_LETTER_TYPE)) {
@@ -127,6 +144,9 @@ public class BulkPrintService implements PrintService {
         }
         if (letterType.equals(GENERAL_LETTER_TYPE)) {
             info = "General Letter {} created for letter type {} claim reference {}";
+        }
+        if (letterType.equals(BULK_PRINT_TRANSFER_TYPE)) {
+            info = "Bulk print request {} created for request    type {} claim reference {}";
         }
 
         List<String> docs = documents.stream()
@@ -149,6 +169,12 @@ public class BulkPrintService implements PrintService {
             letterType,
             claim.getReferenceNumber()
         );
+
+        return BulkPrintDetails.builder()
+            .printRequestId(sendLetterResponse.letterId.toString())
+            .printRequestType(letterType.printRequestType)
+            .printRequestedAt(LocalDate.now())
+            .build();
     }
 
     private String readDocuments(Document document) {
@@ -162,9 +188,9 @@ public class BulkPrintService implements PrintService {
         return Base64.getEncoder().encodeToString(html);
     }
 
-    private static Map<String, Object> wrapInDetailsInMap(Claim claim, String letterType) {
+    private static Map<String, Object> wrapInDetailsInMap(Claim claim, BulkPrintRequestType letterType) {
         Map<String, Object> additionalData = new HashMap<>();
-        additionalData.put(ADDITIONAL_DATA_LETTER_TYPE_KEY, letterType);
+        additionalData.put(ADDITIONAL_DATA_LETTER_TYPE_KEY, letterType.value);
         additionalData.put(ADDITIONAL_DATA_CASE_IDENTIFIER_KEY, claim.getId());
         additionalData.put(ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY, claim.getReferenceNumber());
         return additionalData;

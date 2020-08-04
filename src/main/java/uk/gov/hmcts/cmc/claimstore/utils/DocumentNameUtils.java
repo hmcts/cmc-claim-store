@@ -169,4 +169,14 @@ public class DocumentNameUtils {
 
         return format("%s-issue-OCON9x-form", caseRef);
     }
+
+    public static String buildNoticeOfTransferToCcbcForDefendantFileName(String caseRef) {
+        return getFileName(caseRef, "defendant-case-handoff");
+    }
+
+    private static String getFileName(String caseRef, String fileNameSuffix) {
+        requireNonBlank(caseRef);
+        return format("%s-%s", caseRef, fileNameSuffix);
+    }
+
 }
