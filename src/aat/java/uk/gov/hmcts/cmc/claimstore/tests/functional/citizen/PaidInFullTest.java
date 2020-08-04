@@ -58,20 +58,6 @@ public class PaidInFullTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturnUnprocessableEntityWhenPaidInFullDateIsInFuture() {
-        String claimantId = claimant.getUserDetails().getId();
-        Claim createdCase = commonOperations.submitClaim(
-            claimant.getAuthorisation(),
-            claimantId
-        );
-
-        commonOperations
-            .paidInFull(createdCase.getExternalId(), new PaidInFull(now().plusWeeks(1)), claimant)
-            .then()
-            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
-    }
-
-    @Test
     public void shouldNoAllowSubmitPaidInFullIfAlreadyDone() {
         String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
