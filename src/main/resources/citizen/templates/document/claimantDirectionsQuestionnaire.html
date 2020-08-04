@@ -316,7 +316,16 @@
     <tr>
       <td><b>Expert evidence</b></td>
     </tr>
-
+  <tr>
+    <td>
+      <div>
+        Expert evidence required
+      </div>
+    </td>
+    <td>
+      Yes
+    </td>
+  </tr>
     {% if hearingContent.hasExpertReport equals "Yes" %}
       <tr>
         <td>
@@ -417,6 +426,18 @@
     {% endif %}
   {% endif %}
 
+  {% if hearingContent.expertRequired equals "No" %}
+  <tr>
+    <td>
+      <div>
+        Expert evidence required
+      </div>
+    </td>
+    <td>
+      No
+    </td>
+  </tr>
+  {% endif %}
 
   <tr>
     <td><b>Witnesses</b></td>
