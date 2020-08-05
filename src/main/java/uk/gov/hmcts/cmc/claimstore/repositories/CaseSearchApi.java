@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.repositories;
 
 import org.elasticsearch.index.query.QueryBuilder;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
@@ -15,5 +16,7 @@ public interface CaseSearchApi {
 
     List<Claim> getClaimsWithDefaultCCJ(User user, LocalDate ccjRequestedDate);
 
-    List<Claim> getClaimsReadyForTransfer(User user);
+    List<CCDCase> getClaimsReadyForTransfer(User user, String... queryData);
+
+    Integer totalClaimsReadyForTransfer(User user);
 }

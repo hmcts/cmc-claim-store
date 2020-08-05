@@ -1,13 +1,19 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase;
 
 import org.elasticsearch.common.TriFunction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTransferContent;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTransferReason;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseSearchApi;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -18,12 +24,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
+import static java.lang.String.format;
 import static java.time.LocalDate.now;
 
 @Service
 public class BulkPrintTransferService {
+
+    private final Logger logger = LoggerFactory.getLogger(BulkPrintService.class);
 
     private CaseSearchApi caseSearchApi;
 
@@ -34,6 +44,9 @@ public class BulkPrintTransferService {
     private final TransferCaseNotificationsService transferCaseNotificationsService;
     private final CoreCaseDataService coreCaseDataService;
     private static final String REASON = "For directions";
+
+    @Value("${automated_transfer_read_mode}")
+    private boolean automatedTransferReadMode;
 
     @Autowired
     public BulkPrintTransferService(
@@ -54,19 +67,56 @@ public class BulkPrintTransferService {
 
     public void findCasesAndTransfer() {
         User user = userService.authenticateAnonymousCaseWorker();
-        String authorisation = user.getAuthorisation();
-        List<Claim> claimsReadyForTransfer = caseSearchApi.getClaimsReadyForTransfer(user);
-        Map<Claim, CCDCase> ccdCaseMap = new HashMap<>();
-        if (!claimsReadyForTransfer.isEmpty()) {
-            claimsReadyForTransfer.forEach(claim -> ccdCaseMap.put(claim, caseMapper.to(claim)));
-            ccdCaseMap.forEach((claim, ccdCase) -> {
-                CCDCase ccdCaseTransferred = transferCase(ccdCase, claim, authorisation,
+
+        Integer totalClaimsReadyForTransfer = caseSearchApi.totalClaimsReadyForTransfer(user);
+        logger.info("Automated Transfer - Total cases in transfer ready state: " + totalClaimsReadyForTransfer);
+
+        Map<CCDCase, Claim> claims = new HashMap<>();
+
+        claimsReadyForTransfer(user, claims, "data.hearingCourtName", "data.hearingCourtAddress",
+            x -> x.getHearingCourtName(), x -> x.getHearingCourtAddress());
+
+        claimsReadyForTransfer(user, claims,
+            "data.directionOrder.hearingCourtName", "data.directionOrder.hearingCourtAddress",
+            x -> x.getDirectionOrder().getHearingCourtName(), x -> x.getDirectionOrder().getHearingCourtAddress());
+
+        if (automatedTransferReadMode) {
+            return;
+        }
+
+        claims.forEach((ccdCase, claim) -> {
+            try {
+                String authorisation = user.getAuthorisation();
+                ccdCase = transferCase(ccdCase, claim, authorisation,
                     transferCaseDocumentPublishService::publishCaseDocuments,
                     transferCaseNotificationsService::sendTransferToCourtEmail, this::updateCaseData);
-                CCDCase ccdCaseUpdated = updateTransferContent(ccdCaseTransferred);
-                updateCaseInCCD(ccdCaseUpdated, authorisation);
-            });
+                updateCaseInCCD(ccdCase, authorisation);
+                logger.info("Automated Transfer - " + ccdCase.getPreviousServiceCaseReference() + " done!");
+            } catch (Exception e) {
+                logger.error("Automated Transfer failed for: " + ccdCase.getPreviousServiceCaseReference() + " - " + e);
+            }
+        });
+
+        logger.info("Automated Transfer - completed !!");
+    }
+
+    private void claimsReadyForTransfer(User user, Map<CCDCase, Claim> claims,
+                                    String courtNameKey, String courtAddressKey,
+                                    Function<CCDCase, String> courtName, Function<CCDCase, CCDAddress> courtAddress) {
+
+        List<CCDCase> claimsReadyForTransfer = caseSearchApi.getClaimsReadyForTransfer(
+            user, courtNameKey, courtAddressKey);
+
+        StringBuilder sb = new StringBuilder(format("Automated Transfer for %d cases where %s and %s found: ",
+            claimsReadyForTransfer.size(), courtNameKey, courtAddressKey));
+
+        if (!CollectionUtils.isEmpty(claimsReadyForTransfer)) {
+            for (CCDCase ccdCase : claimsReadyForTransfer) {
+                sb.append(ccdCase.getPreviousServiceCaseReference()).append(", ");
+                updateTransferContent(ccdCase, claims, courtName, courtAddress);
+            }
         }
+        logger.info(sb.toString());
     }
 
     public CCDCase transferCase(CCDCase ccdCase, Claim claim, String authorisation,
@@ -79,14 +129,21 @@ public class BulkPrintTransferService {
         return updateCaseData.apply(updatedCase);
     }
 
-    private CCDCase updateTransferContent(CCDCase ccdCase) {
-        return ccdCase.toBuilder()
-            .transferContent(ccdCase.getTransferContent().toBuilder()
-                .transferCourtName(ccdCase.getHearingCourtName())
-                .transferCourtAddress(ccdCase.getHearingCourtAddress())
-                .transferReason(CCDTransferReason.OTHER)
-                .transferReasonOther(REASON).build())
+    private void updateTransferContent(CCDCase ccdCase, Map<CCDCase, Claim> claims,
+                                Function<CCDCase, String> courtName, Function<CCDCase, CCDAddress> courtAddress) {
+
+        CCDTransferContent transferContent = CCDTransferContent.builder()
+            .transferCourtName(courtName.apply(ccdCase))
+            .transferCourtAddress(courtAddress.apply(ccdCase))
+            .transferReason(CCDTransferReason.OTHER)
+            .transferReasonOther(REASON)
             .build();
+
+        CCDCase ccdCaseWithTransferContent = ccdCase.toBuilder()
+            .transferContent(transferContent)
+            .build();
+
+        claims.put(ccdCaseWithTransferContent, caseMapper.from(ccdCaseWithTransferContent));
     }
 
     public CCDCase updateCaseDataWithHandOffDate(CCDCase ccdCase) {

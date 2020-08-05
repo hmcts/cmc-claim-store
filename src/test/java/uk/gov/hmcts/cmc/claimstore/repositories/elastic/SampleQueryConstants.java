@@ -155,7 +155,7 @@ public interface SampleQueryConstants {
         + "  }\n"
         + "}}";
 
-    String readyForTransfer = "{\"size\": 1000,\"query\": {\n"
+    String readyForTransfer = "{\"size\": 2000,\"query\": {\n"
         + "  \"bool\" : {\n"
         + "    \"must\" : [\n"
         + "      {\n"
@@ -176,6 +176,23 @@ public interface SampleQueryConstants {
         + "        \"exists\" : {\n"
         + "          \"field\" : \"data.hearingCourtAddress\",\n"
         + "          \"boost\" : 1.0\n"
+        + "        }\n"
+        + "      }\n"
+        + "    ],\n"
+        + "    \"adjust_pure_negative\" : true,\n"
+        + "    \"boost\" : 1.0\n"
+        + "  }\n"
+        + "}}";
+
+    String totalCasesReadyForTransfer = "{\"size\": 2000,\"query\": {\n"
+        + "  \"bool\" : {\n"
+        + "    \"must\" : [\n"
+        + "      {\n"
+        + "        \"term\" : {\n"
+        + "          \"state\" : {\n"
+        + "            \"value\" : \"readyfortransfer\",\n"
+        + "            \"boost\" : 1.0\n"
+        + "          }\n"
         + "        }\n"
         + "      }\n"
         + "    ],\n"

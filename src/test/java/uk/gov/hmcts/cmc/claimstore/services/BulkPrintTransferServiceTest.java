@@ -29,6 +29,7 @@ import java.util.Collections;
 import static java.time.LocalDate.now;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDTransferContent.builder;
@@ -93,26 +94,45 @@ class BulkPrintTransferServiceTest {
     void shouldFindCasesAndTransfer() {
         when(userService.authenticateAnonymousCaseWorker())
             .thenReturn(USER);
-        when(caseSearchApi.getClaimsReadyForTransfer(USER))
-            .thenReturn(Collections.singletonList(SAMPLE_CLAIM));
+        CCDCase caseWithHearingCourt = sampleCcdCase.toBuilder().hearingCourt(HEARING_COURT_NAME)
+            .hearingCourtAddress(HEARING_COURT_ADDRESS).build();
+        when(caseSearchApi.getClaimsReadyForTransfer(USER, "data.hearingCourtName", "data.hearingCourtAddress"))
+            .thenReturn(Collections.singletonList(caseWithHearingCourt));
         when(caseMapper.to(SAMPLE_CLAIM))
             .thenReturn(sampleCcdCase);
+        CCDCase caseWithHearingCourtWithTransferContent = addTransferContent(caseWithHearingCourt);
+        lenient().when(caseMapper.from(addTransferContent(caseWithHearingCourtWithTransferContent)))
+            .thenReturn(SAMPLE_CLAIM);
         when(coreCaseDataService.update(AUTHORISATION, transferredCCDCase, CaseEvent.AUTOMATED_TRANSFER))
             .thenReturn(SAMPLE_CASE_DETAILS);
-        when(transferCaseDocumentPublishService
-            .publishCaseDocuments(sampleCcdCase, AUTHORISATION, SAMPLE_CLAIM))
-            .thenReturn(sampleCcdCase);
+        lenient().when(transferCaseDocumentPublishService
+            .publishCaseDocuments(caseWithHearingCourtWithTransferContent, AUTHORISATION, SAMPLE_CLAIM))
+            .thenReturn(caseWithHearingCourtWithTransferContent);
         doNothing().when(transferCaseNotificationsService)
-            .sendTransferToCourtEmail(sampleCcdCase, SAMPLE_CLAIM);
+            .sendTransferToCourtEmail(caseWithHearingCourtWithTransferContent, SAMPLE_CLAIM);
         bulkPrintTransferService.findCasesAndTransfer();
         verify(userService).authenticateAnonymousCaseWorker();
-        verify(caseSearchApi).getClaimsReadyForTransfer(USER);
+        verify(caseSearchApi).getClaimsReadyForTransfer(USER, "data.hearingCourtName", "data.hearingCourtAddress");
         verify(transferCaseDocumentPublishService)
-            .publishCaseDocuments(sampleCcdCase, AUTHORISATION, SAMPLE_CLAIM);
+            .publishCaseDocuments(caseWithHearingCourtWithTransferContent, AUTHORISATION, SAMPLE_CLAIM);
         verify(transferCaseNotificationsService)
-            .sendTransferToCourtEmail(sampleCcdCase, SAMPLE_CLAIM);
+            .sendTransferToCourtEmail(caseWithHearingCourtWithTransferContent, SAMPLE_CLAIM);
         verify(coreCaseDataService)
-            .update(AUTHORISATION, transferredCCDCase, CaseEvent.AUTOMATED_TRANSFER);
+            .update(AUTHORISATION, bulkPrintTransferService
+                .updateCaseData(caseWithHearingCourtWithTransferContent), CaseEvent.AUTOMATED_TRANSFER);
+    }
+
+    private CCDCase addTransferContent(CCDCase ccdCase) {
+        CCDTransferContent transferContent = CCDTransferContent.builder()
+            .transferCourtName(HEARING_COURT_NAME)
+            .transferCourtAddress(HEARING_COURT_ADDRESS)
+            .transferReason(CCDTransferReason.OTHER)
+            .transferReasonOther(REASON)
+            .build();
+
+        return  ccdCase.toBuilder()
+            .transferContent(transferContent)
+            .build();
     }
 
     @Test
