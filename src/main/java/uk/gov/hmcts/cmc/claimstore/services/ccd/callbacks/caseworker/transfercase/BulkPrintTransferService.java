@@ -13,7 +13,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDTransferContent;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTransferReason;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
-import uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseSearchApi;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -27,13 +26,12 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
-import static java.lang.String.format;
 import static java.time.LocalDate.now;
 
 @Service
 public class BulkPrintTransferService {
 
-    private final Logger logger = LoggerFactory.getLogger(BulkPrintService.class);
+    private final Logger logger = LoggerFactory.getLogger(BulkPrintTransferService.class);
 
     private CaseSearchApi caseSearchApi;
 
@@ -69,7 +67,7 @@ public class BulkPrintTransferService {
         User user = userService.authenticateAnonymousCaseWorker();
 
         Integer totalClaimsReadyForTransfer = caseSearchApi.totalClaimsReadyForTransfer(user);
-        logger.info("Automated Transfer - Total cases in transfer ready state: " + totalClaimsReadyForTransfer);
+        logger.info("Automated Transfer - Total cases in transfer ready state: {}", totalClaimsReadyForTransfer);
 
         Map<CCDCase, Claim> claims = new HashMap<>();
 
@@ -91,9 +89,9 @@ public class BulkPrintTransferService {
                     transferCaseDocumentPublishService::publishCaseDocuments,
                     transferCaseNotificationsService::sendTransferToCourtEmail, this::updateCaseData);
                 updateCaseInCCD(ccdCase, authorisation);
-                logger.info("Automated Transfer - " + ccdCase.getPreviousServiceCaseReference() + " done!");
+                logger.info("Automated Transfer - {} done!", ccdCase.getPreviousServiceCaseReference());
             } catch (Exception e) {
-                logger.error("Automated Transfer failed for: " + ccdCase.getPreviousServiceCaseReference() + " - " + e);
+                logger.error("Automated Transfer failed for: {}", ccdCase.getPreviousServiceCaseReference(), e);
             }
         });
 
@@ -107,16 +105,15 @@ public class BulkPrintTransferService {
         List<CCDCase> claimsReadyForTransfer = caseSearchApi.getClaimsReadyForTransfer(
             user, courtNameKey, courtAddressKey);
 
-        StringBuilder sb = new StringBuilder(format("Automated Transfer for %d cases where %s and %s found: ",
-            claimsReadyForTransfer.size(), courtNameKey, courtAddressKey));
-
         if (!CollectionUtils.isEmpty(claimsReadyForTransfer)) {
+            StringBuilder sb = new StringBuilder();
             for (CCDCase ccdCase : claimsReadyForTransfer) {
-                sb.append(ccdCase.getPreviousServiceCaseReference()).append(", ");
+                sb.append(ccdCase.getPreviousServiceCaseReference()).append(" ");
                 updateTransferContent(ccdCase, claims, courtName, courtAddress);
             }
+            logger.info("Automated Transfer for {} cases where {} and {} found: {}",
+                claimsReadyForTransfer.size(), courtNameKey, courtAddressKey, sb.toString());
         }
-        logger.info(sb.toString());
     }
 
     public CCDCase transferCase(CCDCase ccdCase, Claim claim, String authorisation,
