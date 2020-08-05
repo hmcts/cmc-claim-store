@@ -112,7 +112,7 @@ public class BulkPrintTransferService {
                 updateTransferContent(ccdCase, claims, courtName, courtAddress);
             }
             logger.info("Automated Transfer for {} cases where {} and {} found: {}",
-                claimsReadyForTransfer.size(), courtNameKey, courtAddressKey, sb.toString());
+                claimsReadyForTransfer.size(), courtNameKey, courtAddressKey, sb);
         }
     }
 
