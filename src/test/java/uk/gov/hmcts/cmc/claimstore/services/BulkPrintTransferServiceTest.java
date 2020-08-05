@@ -5,8 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTransferContent;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTransferReason;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
@@ -28,8 +30,8 @@ import java.util.Collections;
 
 import static java.time.LocalDate.now;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDTransferContent.builder;
@@ -90,39 +92,7 @@ class BulkPrintTransferServiceTest {
             coreCaseDataService);
     }
 
-    @Test
-    void shouldFindCasesAndTransfer() {
-        when(userService.authenticateAnonymousCaseWorker())
-            .thenReturn(USER);
-        CCDCase caseWithHearingCourt = sampleCcdCase.toBuilder().hearingCourt(HEARING_COURT_NAME)
-            .hearingCourtAddress(HEARING_COURT_ADDRESS).build();
-        when(caseSearchApi.getClaimsReadyForTransfer(USER, "data.hearingCourtName", "data.hearingCourtAddress"))
-            .thenReturn(Collections.singletonList(caseWithHearingCourt));
-        when(caseMapper.to(SAMPLE_CLAIM))
-            .thenReturn(sampleCcdCase);
-        CCDCase caseWithHearingCourtWithTransferContent = addTransferContent(caseWithHearingCourt);
-        lenient().when(caseMapper.from(addTransferContent(caseWithHearingCourtWithTransferContent)))
-            .thenReturn(SAMPLE_CLAIM);
-        when(coreCaseDataService.update(AUTHORISATION, transferredCCDCase, CaseEvent.AUTOMATED_TRANSFER))
-            .thenReturn(SAMPLE_CASE_DETAILS);
-        lenient().when(transferCaseDocumentPublishService
-            .publishCaseDocuments(caseWithHearingCourtWithTransferContent, AUTHORISATION, SAMPLE_CLAIM))
-            .thenReturn(caseWithHearingCourtWithTransferContent);
-        doNothing().when(transferCaseNotificationsService)
-            .sendTransferToCourtEmail(caseWithHearingCourtWithTransferContent, SAMPLE_CLAIM);
-        bulkPrintTransferService.findCasesAndTransfer();
-        verify(userService).authenticateAnonymousCaseWorker();
-        verify(caseSearchApi).getClaimsReadyForTransfer(USER, "data.hearingCourtName", "data.hearingCourtAddress");
-        verify(transferCaseDocumentPublishService)
-            .publishCaseDocuments(caseWithHearingCourtWithTransferContent, AUTHORISATION, SAMPLE_CLAIM);
-        verify(transferCaseNotificationsService)
-            .sendTransferToCourtEmail(caseWithHearingCourtWithTransferContent, SAMPLE_CLAIM);
-        verify(coreCaseDataService)
-            .update(AUTHORISATION, bulkPrintTransferService
-                .updateCaseData(caseWithHearingCourtWithTransferContent), CaseEvent.AUTOMATED_TRANSFER);
-    }
-
-    private CCDCase addTransferContent(CCDCase ccdCase) {
+   private CCDCase addTransferContent(CCDCase ccdCase) {
         CCDTransferContent transferContent = CCDTransferContent.builder()
             .transferCourtName(HEARING_COURT_NAME)
             .transferCourtAddress(HEARING_COURT_ADDRESS)
@@ -151,4 +121,84 @@ class BulkPrintTransferServiceTest {
         ccdCase = bulkPrintTransferService.updateCaseData(ccdCaseWithTransferContent);
         assertEquals(now(), ccdCase.getTransferContent().getDateOfTransfer());
     }
+
+    @Test
+    void shouldFindCasesAndTransfer() {
+        CCDCase caseWithHearingCourt = sampleCcdCase.toBuilder().hearingCourt(HEARING_COURT_NAME)
+            .hearingCourtAddress(HEARING_COURT_ADDRESS).build();
+        CCDCase caseWithHearingCourtWithTransferContent = provideHearingCourt(caseWithHearingCourt,
+            "data.hearingCourtName", "data.hearingCourtAddress");
+        bulkPrintTransferService.findCasesAndTransfer();
+        verifyCalls(caseWithHearingCourtWithTransferContent, 1, 1, 1);
+    }
+
+    @Test
+    void shouldFindCasesButNotTransfer(){
+
+        ReflectionTestUtils.setField(bulkPrintTransferService, "automatedTransferReadMode", true);
+
+        CCDDirectionOrder directionOrder = CCDDirectionOrder.builder().hearingCourtName(HEARING_COURT_NAME)
+            .hearingCourtAddress(HEARING_COURT_ADDRESS).build();
+        CCDCase caseWithHearingCourt = sampleCcdCase.toBuilder().directionOrder(directionOrder).build();
+
+        CCDCase caseWithHearingCourtWithTransferContent = provideHearingCourt(caseWithHearingCourt,
+            "data.directionOrder.hearingCourtName", "data.directionOrder.hearingCourtAddress");
+
+        bulkPrintTransferService.findCasesAndTransfer();
+
+        verifyCalls(caseWithHearingCourtWithTransferContent, 0, 0, 0);
+    }
+
+    private CCDCase provideHearingCourt(CCDCase caseWithHearingCourt, String courtNameField, String courtAddressField){
+        CCDCase caseWithReferenceNo = caseWithHearingCourt.toBuilder().previousServiceCaseReference("OCMC0001").build();
+        when(userService.authenticateAnonymousCaseWorker())
+            .thenReturn(USER);
+        lenient().when(caseSearchApi.getClaimsReadyForTransfer(USER, courtNameField, courtAddressField))
+            .thenReturn(Collections.singletonList(caseWithReferenceNo));
+        lenient().when(caseMapper.to(SAMPLE_CLAIM))
+            .thenReturn(sampleCcdCase);
+        CCDCase caseWithHearingCourtWithTransferContent = addTransferContent(caseWithReferenceNo);
+        lenient().when(caseMapper.from(addTransferContent(caseWithHearingCourtWithTransferContent)))
+            .thenReturn(SAMPLE_CLAIM);
+        lenient().when(coreCaseDataService.update(AUTHORISATION, transferredCCDCase, CaseEvent.AUTOMATED_TRANSFER))
+            .thenReturn(SAMPLE_CASE_DETAILS);
+        lenient().when(transferCaseDocumentPublishService
+            .publishCaseDocuments(caseWithHearingCourtWithTransferContent, AUTHORISATION, SAMPLE_CLAIM))
+            .thenReturn(caseWithHearingCourtWithTransferContent);
+        lenient().doNothing().when(transferCaseNotificationsService)
+            .sendTransferToCourtEmail(caseWithHearingCourtWithTransferContent, SAMPLE_CLAIM);
+        return caseWithHearingCourtWithTransferContent;
+    }
+
+    private void verifyCalls(CCDCase caseWithHearingCourtWithTransferContent, int docServiceCall, int notificationServiceCall, int caseServiceCall){
+        verify(userService).authenticateAnonymousCaseWorker();
+        verify(caseSearchApi).getClaimsReadyForTransfer(USER,
+            "data.directionOrder.hearingCourtName", "data.directionOrder.hearingCourtAddress");
+        verify(transferCaseDocumentPublishService, times(docServiceCall))
+            .publishCaseDocuments(caseWithHearingCourtWithTransferContent, AUTHORISATION, SAMPLE_CLAIM);
+        verify(transferCaseNotificationsService, times(notificationServiceCall))
+            .sendTransferToCourtEmail(caseWithHearingCourtWithTransferContent, SAMPLE_CLAIM);
+        verify(coreCaseDataService, times(caseServiceCall))
+            .update(AUTHORISATION, bulkPrintTransferService
+                .updateCaseData(caseWithHearingCourtWithTransferContent), CaseEvent.AUTOMATED_TRANSFER);
+    }
+
+    @Test
+    void shouldhandleException(){
+
+        CCDCase caseWithHearingCourt = sampleCcdCase.toBuilder().hearingCourt(HEARING_COURT_NAME)
+            .hearingCourtAddress(HEARING_COURT_ADDRESS).build();
+        CCDCase caseWithHearingCourtWithTransferContent = provideHearingCourt(caseWithHearingCourt,
+            "data.hearingCourtName", "data.hearingCourtAddress");
+
+        when(transferCaseDocumentPublishService
+                .publishCaseDocuments(caseWithHearingCourtWithTransferContent, AUTHORISATION, SAMPLE_CLAIM))
+                .thenThrow(IllegalStateException.class);
+
+        bulkPrintTransferService.findCasesAndTransfer();
+
+        verifyCalls(caseWithHearingCourtWithTransferContent, 1, 0, 0);
+
+    }
+
 }
