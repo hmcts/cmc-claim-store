@@ -105,4 +105,15 @@ public class CCDElasticSearchRepositoryTest {
             CASE_TYPE_ID,
             SampleQueryConstants.readyForTransfer);
     }
+
+    @Test
+    public void totalClaimsReadyForTransfer() {
+        User user = new User(AUTHORISATION, null);
+        ccdElasticSearchRepository.totalClaimsReadyForTransfer(user);
+        verify(coreCaseDataApi).searchCases(
+            AUTHORISATION,
+            SERVICE_AUTH,
+            CASE_TYPE_ID,
+            SampleQueryConstants.totalCasesReadyForTransfer);
+    }
 }

@@ -183,4 +183,21 @@ public interface SampleQueryConstants {
         + "    \"boost\" : 1.0\n"
         + "  }\n"
         + "}}";
+
+    String totalCasesReadyForTransfer = "{\"size\": 2000,\"query\": {\n"
+        + "  \"bool\" : {\n"
+        + "    \"must\" : [\n"
+        + "      {\n"
+        + "        \"term\" : {\n"
+        + "          \"state\" : {\n"
+        + "            \"value\" : \"readyfortransfer\",\n"
+        + "            \"boost\" : 1.0\n"
+        + "          }\n"
+        + "        }\n"
+        + "      }\n"
+        + "    ],\n"
+        + "    \"adjust_pure_negative\" : true,\n"
+        + "    \"boost\" : 1.0\n"
+        + "  }\n"
+        + "}}";
 }
