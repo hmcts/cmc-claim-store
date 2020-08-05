@@ -92,7 +92,7 @@ class BulkPrintTransferServiceTest {
             coreCaseDataService);
     }
 
-   private CCDCase addTransferContent(CCDCase ccdCase) {
+    private CCDCase addTransferContent(CCDCase ccdCase) {
         CCDTransferContent transferContent = CCDTransferContent.builder()
             .transferCourtName(HEARING_COURT_NAME)
             .transferCourtAddress(HEARING_COURT_ADDRESS)
@@ -133,7 +133,7 @@ class BulkPrintTransferServiceTest {
     }
 
     @Test
-    void shouldFindCasesButNotTransfer(){
+    void shouldFindCasesButNotTransfer() {
 
         ReflectionTestUtils.setField(bulkPrintTransferService, "automatedTransferReadMode", true);
 
@@ -149,7 +149,7 @@ class BulkPrintTransferServiceTest {
         verifyCalls(caseWithHearingCourtWithTransferContent, 0, 0, 0);
     }
 
-    private CCDCase provideHearingCourt(CCDCase caseWithHearingCourt, String courtNameField, String courtAddressField){
+    private CCDCase provideHearingCourt(CCDCase caseWithHearingCourt, String courtNameField, String courtAddressField) {
         CCDCase caseWithReferenceNo = caseWithHearingCourt.toBuilder().previousServiceCaseReference("OCMC0001").build();
         when(userService.authenticateAnonymousCaseWorker())
             .thenReturn(USER);
@@ -170,7 +170,8 @@ class BulkPrintTransferServiceTest {
         return caseWithHearingCourtWithTransferContent;
     }
 
-    private void verifyCalls(CCDCase caseWithHearingCourtWithTransferContent, int docServiceCall, int notificationServiceCall, int caseServiceCall){
+    private void verifyCalls(CCDCase caseWithHearingCourtWithTransferContent, int docServiceCall,
+                             int notificationServiceCall, int caseServiceCall) {
         verify(userService).authenticateAnonymousCaseWorker();
         verify(caseSearchApi).getClaimsReadyForTransfer(USER,
             "data.directionOrder.hearingCourtName", "data.directionOrder.hearingCourtAddress");
@@ -184,7 +185,7 @@ class BulkPrintTransferServiceTest {
     }
 
     @Test
-    void shouldhandleException(){
+    void shouldhandleException() {
 
         CCDCase caseWithHearingCourt = sampleCcdCase.toBuilder().hearingCourt(HEARING_COURT_NAME)
             .hearingCourtAddress(HEARING_COURT_ADDRESS).build();
