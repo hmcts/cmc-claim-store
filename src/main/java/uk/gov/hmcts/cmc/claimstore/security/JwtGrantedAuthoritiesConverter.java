@@ -32,7 +32,9 @@ public class JwtGrantedAuthoritiesConverter implements Converter<Jwt, Collection
     @Override
     public Collection<GrantedAuthority> convert(Jwt jwt) {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        if (jwt.containsClaim(TOKEN_NAME) && jwt.getClaim(TOKEN_NAME).equals(ACCESS_TOKEN)) {
+        Boolean verifyJwtContainsClaim = jwt.containsClaim(TOKEN_NAME);
+        if (Boolean.TRUE.equals(verifyJwtContainsClaim)
+            && jwt.getClaim(TOKEN_NAME).equals(ACCESS_TOKEN)) {
             UserInfo userInfo = userService.getUserInfo(BEARER + jwt.getTokenValue());
             authorities = extractAuthorityFromClaims(userInfo.getRoles());
         }

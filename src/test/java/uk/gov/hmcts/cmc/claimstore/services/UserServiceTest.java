@@ -95,7 +95,7 @@ class UserServiceTest {
     }
 
     @Test
-    public void getAuthorisationTokenForGivenUser() {
+    void getAuthorisationTokenForGivenUser() {
 
         when(idamApi.authenticateUser(anyString(), eq(CODE), any(), any()))
             .thenReturn(new AuthenticateUserResponse(CODE));
@@ -108,7 +108,7 @@ class UserServiceTest {
     }
 
     @Test
-    public void generatePinShouldGenerateValidPin() {
+    void generatePinShouldGenerateValidPin() {
 
         when(idamApi.generatePin(any(GeneratePinRequest.class), eq(AUTHORISATION)))
             .thenReturn(new GeneratePinResponse(PIN, UID));
@@ -121,7 +121,7 @@ class UserServiceTest {
     }
 
     @Test
-    public void authenticateUserShouldReturnUser() {
+    void authenticateUserShouldReturnUser() {
 
         when(idamApi.authenticateUser(anyString(), eq(CODE), any(), any()))
             .thenReturn(new AuthenticateUserResponse(CODE));
