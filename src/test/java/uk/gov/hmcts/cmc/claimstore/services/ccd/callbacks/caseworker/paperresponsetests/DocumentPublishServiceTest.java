@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -104,8 +103,6 @@ public class DocumentPublishServiceTest {
             .referenceNumber("ref. number")
             .build();
 
-        final Document document = mock(Document.class);
-
         when(paperResponseLetterService
             .createCoverLetter(eq(ccdCase), eq(AUTHORISATION), eq(DATE.toLocalDate())))
             .thenReturn(COVER_LETTER);
@@ -125,7 +122,6 @@ public class DocumentPublishServiceTest {
         verify(paperResponseLetterService).createCoverLetter(eq(ccdCase), eq(AUTHORISATION), eq(DATE.toLocalDate()));
         verify(printableDocumentService).process(eq(COVER_LETTER), eq(AUTHORISATION));
         verify(printableDocumentService).process(eq(OCON_FORM), eq(AUTHORISATION));
-        verify(bulkPrintHandler).printPaperDefence(eq(claim), eq(document), eq(document), eq(AUTHORISATION));
         verify(paperResponseLetterService)
             .addCoverLetterToCaseWithDocuments(eq(ccdCase), eq(claim), eq(COVER_LETTER), eq(AUTHORISATION));
     }
