@@ -50,10 +50,13 @@ public class HearingContentProvider {
 
     private void mapSupportRequirement(RequireSupport support,
                                        HearingContent.HearingContentBuilder builder) {
-
         List<String> supportNeeded = new ArrayList<>();
-        support.getLanguageInterpreter().ifPresent(supportNeeded::add);
-        support.getSignLanguageInterpreter().ifPresent(supportNeeded::add);
+        support.getLanguageInterpreter()
+            .filter(languageInterpreter -> !"None".equals(languageInterpreter))
+            .ifPresent(supportNeeded::add);
+        support.getSignLanguageInterpreter()
+            .filter(signLanguageInterpreter -> !"None".equals(signLanguageInterpreter))
+            .ifPresent(supportNeeded::add);
         support.getHearingLoop()
             .map(YesNoOption::name)
             .filter(hearingLoop -> hearingLoop.equals(YesNoOption.YES.name()))
@@ -62,9 +65,10 @@ public class HearingContentProvider {
             .map(YesNoOption::name)
             .filter(access -> access.equals(YesNoOption.YES.name()))
             .ifPresent(x -> supportNeeded.add(DISABLED_ACCESS));
-        support.getOtherSupport().ifPresent(supportNeeded::add);
+        support.getOtherSupport()
+            .filter(otherSupport -> !"None".equals(otherSupport))
+            .ifPresent(supportNeeded::add);
         builder.supportRequired(supportNeeded);
-
     }
 
     private void mapExpertRequest(DirectionsQuestionnaire questionnaire, HearingContent.HearingContentBuilder builder) {
