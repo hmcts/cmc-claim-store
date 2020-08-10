@@ -62,7 +62,8 @@ public class PaperDefenceLetterBodyMapper {
     public DocAssemblyTemplateBody oconFormSoleTraderWithDQsMapper(CCDCase ccdCase, LocalDate extendedDeadline) {
         DocAssemblyTemplateBody commonTemplate = oconFormCommonTemplateMapper(ccdCase, extendedDeadline);
         return commonTemplate.toBuilder()
-            .soleTradingTraderName(ccdCase.getRespondents().get(0).getValue().getPartyDetail().getBusinessName())
+            .soleTradingTraderName(ccdCase.getRespondents().get(0).getValue().getClaimantProvidedDetail()
+                .getBusinessName())
             .preferredCourt(ccdCase.getPreferredDQCourt())
             .build();
     }
@@ -70,7 +71,8 @@ public class PaperDefenceLetterBodyMapper {
     public DocAssemblyTemplateBody oconFormSoleTraderWithoutDQsMapper(CCDCase ccdCase, LocalDate extendedDeadline) {
         DocAssemblyTemplateBody commonTemplate = oconFormCommonTemplateMapper(ccdCase, extendedDeadline);
         return commonTemplate.toBuilder()
-            .soleTradingTraderName(ccdCase.getRespondents().get(0).getValue().getPartyDetail().getBusinessName())
+            .soleTradingTraderName(ccdCase.getRespondents().get(0).getValue().getClaimantProvidedDetail()
+                .getBusinessName())
             .build();
     }
 
