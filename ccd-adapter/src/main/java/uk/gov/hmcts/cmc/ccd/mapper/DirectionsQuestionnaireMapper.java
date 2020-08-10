@@ -95,7 +95,7 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
             requireSupport.getLanguageInterpreter().ifPresent(builder::languageInterpreted);
             requireSupport.getSignLanguageInterpreter().ifPresent(builder::signLanguageInterpreted);
             requireSupport.getOtherSupport().ifPresent(builder::otherSupportRequired);
-            requireSupport.getOtherSupport().map(builder::otherSupportRequired)z;
+            requireSupport.getOtherSupport().map(builder::otherSupportRequired);
 
             requireSupport.getHearingLoop()
                 .map(YesNoOption::name)
