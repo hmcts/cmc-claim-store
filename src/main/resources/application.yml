@@ -127,6 +127,8 @@ schedule:
     waiting-transfer: ""
     stay-claim: ""
 
+automated_transfer_read_mode: true
+
 dateCalculations:
   endOfBusinessDayHour: 16
   serviceDays: 5
