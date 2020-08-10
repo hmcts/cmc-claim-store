@@ -35,6 +35,14 @@ public class HearingContentProviderTest {
     }
 
     @Test
+    public void mapDirectionsQuestionnaireNoneSupportRequired() {
+        DirectionsQuestionnaire dq = SampleDirectionsQuestionnaire.builder().buildNone();
+        HearingContent hearingContent = hearingContentProvider.mapDirectionQuestionnaire(dq);
+        assertEquals(2, hearingContent.getSupportRequired().size());
+
+    }
+
+    @Test
     public void mapDirectionsQuestionnaireMapsHearingContent() {
         DirectionsQuestionnaire dq = SampleDirectionsQuestionnaire.builder().build();
         HearingContent hearingContent = hearingContentProvider.mapDirectionQuestionnaire(dq);
