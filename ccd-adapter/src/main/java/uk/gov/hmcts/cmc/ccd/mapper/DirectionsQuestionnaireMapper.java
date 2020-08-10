@@ -95,6 +95,7 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
             requireSupport.getLanguageInterpreter().ifPresent(builder::languageInterpreted);
             requireSupport.getSignLanguageInterpreter().ifPresent(builder::signLanguageInterpreted);
             requireSupport.getOtherSupport().ifPresent(builder::otherSupportRequired);
+            requireSupport.getOtherSupport().map(builder::otherSupportRequired)z;
 
             requireSupport.getHearingLoop()
                 .map(YesNoOption::name)
@@ -178,7 +179,6 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
     ) {
         CCDYesNoOption hearingLoop = ccdDirectionsQuestionnaire.getHearingLoop();
         CCDYesNoOption disabledAccess = ccdDirectionsQuestionnaire.getDisabledAccess();
-
         if (isAllEmpty(
             ccdDirectionsQuestionnaire.getLanguageInterpreted(),
             ccdDirectionsQuestionnaire.getSignLanguageInterpreted(),
@@ -186,15 +186,8 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
             && isNull(hearingLoop)
             && isNull(disabledAccess
         )) {
-            return RequireSupport.builder()
-                .languageInterpreter("None")
-                .signLanguageInterpreter("None")
-                .hearingLoop(yesNoMapper.from(hearingLoop))
-                .disabledAccess(yesNoMapper.from(disabledAccess))
-                .otherSupport("None")
-                .build();
+            return null;
         }
-
 
         return RequireSupport.builder()
             .languageInterpreter(ccdDirectionsQuestionnaire.getLanguageInterpreted())
