@@ -5,6 +5,8 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.Arrays;
+import java.util.List;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
@@ -18,4 +20,7 @@ public @interface UserRole {
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
+
+    List<String> userRoles = Arrays.asList("cmc-new-features-consent-given",
+        "cmc-new-features-consent-not-given");
 }

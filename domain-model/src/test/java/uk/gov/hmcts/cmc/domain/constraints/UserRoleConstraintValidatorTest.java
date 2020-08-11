@@ -14,7 +14,6 @@ public class UserRoleConstraintValidatorTest {
 
     @Mock
     private ConstraintValidatorContext validatorContext;
-
     private final UserRoleConstraintValidator validator = new UserRoleConstraintValidator();
 
     @Test
