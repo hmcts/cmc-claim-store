@@ -79,7 +79,7 @@ public class LegalSealedClaimJsonMapper {
             .add("type", claimant.getClass().getSimpleName().toUpperCase())
             .add("primaryAddress", mapAddress(claimant.getAddress()))
             .add("emailAddress", submitterEmail)
-            .add("telephoneNumber", new NullAwareJsonObjectBuilder().add("telephoneNumber", claimant.getPhone().orElse(null)).build())
+            .add("telephoneNumber",  claimant.getPhone().orElse(null))
             .add("dateOfBirth", getDateOfBirth(claimant))
             .build();
     }
