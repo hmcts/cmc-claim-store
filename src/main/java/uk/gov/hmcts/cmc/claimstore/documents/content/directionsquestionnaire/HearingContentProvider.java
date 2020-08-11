@@ -30,6 +30,7 @@ public class HearingContentProvider {
     private static final String HEARING_LOOP = "Hearing Loop";
     private static final String YES = "Yes";
     private static final String NO = "No";
+    public static final String NONE = "None";
 
     private final Function<ExpertReport, ExpertReportContent> mapExpertReport = report ->
         ExpertReportContent.builder().expertName(report.getExpertName())
@@ -52,10 +53,10 @@ public class HearingContentProvider {
                                        HearingContent.HearingContentBuilder builder) {
         List<String> supportNeeded = new ArrayList<>();
         support.getLanguageInterpreter()
-            .filter(languageInterpreter -> !"None".equals(languageInterpreter))
+            .filter(languageInterpreter -> !NONE.equals(languageInterpreter))
             .ifPresent(supportNeeded::add);
         support.getSignLanguageInterpreter()
-            .filter(signLanguageInterpreter -> !"None".equals(signLanguageInterpreter))
+            .filter(signLanguageInterpreter -> !NONE.equals(signLanguageInterpreter))
             .ifPresent(supportNeeded::add);
         support.getHearingLoop()
             .map(YesNoOption::name)
@@ -66,7 +67,7 @@ public class HearingContentProvider {
             .filter(access -> access.equals(YesNoOption.YES.name()))
             .ifPresent(x -> supportNeeded.add(DISABLED_ACCESS));
         support.getOtherSupport()
-            .filter(otherSupport -> !"None".equals(otherSupport))
+            .filter(otherSupport -> !NONE.equals(otherSupport))
             .ifPresent(supportNeeded::add);
         builder.supportRequired(supportNeeded);
     }
