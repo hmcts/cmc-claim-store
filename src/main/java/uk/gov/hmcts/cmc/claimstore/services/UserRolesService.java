@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 public class UserRolesService {
     private final UserRolesRepository userRolesRepository;
     private final UserService userService;
+
     public UserRolesService(
         UserRolesRepository userRolesRepository,
         UserService userService
@@ -33,7 +34,7 @@ public class UserRolesService {
 
     public void saveRole(String userRolesName, String authorisation) {
         User user = userService.getUser(authorisation);
-        if(!userService.userRoles.contains(userRolesName)) {
+        if (!userService.userRoles.contains(userRolesName)) {
             throw new CallbackException(
                 String.format("Invalid role :  %s", userRolesName));
         }
