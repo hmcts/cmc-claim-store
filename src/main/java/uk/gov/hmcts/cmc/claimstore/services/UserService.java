@@ -26,7 +26,7 @@ public class UserService {
     public static final String AUTHORIZATION_CODE = "authorization_code";
     public static final String CODE = "code";
     public static final String BASIC = "Basic ";
-    public static final List<String> userRoles = Arrays.asList("cmc-new-features-consent-given",
+    protected static final List<String> userRoles = Arrays.asList("cmc-new-features-consent-given",
         "cmc-new-features-consent-not-given");
     private final IdamApi idamApi;
     private final IdamCaseworkerProperties idamCaseworkerProperties;
