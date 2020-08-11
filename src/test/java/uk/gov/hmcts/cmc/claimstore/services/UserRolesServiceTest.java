@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
+import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.repositories.UserRolesRepository;
@@ -32,6 +33,7 @@ public class UserRolesServiceTest {
         = SampleUserDetails.builder().withUserId(USER_ID).withMail(SUBMITTER_EMAIL).build();
 
     private static final String CONSENT_GIVEN_ROLE = "cmc-new-features-consent-given";
+    private static final String CONSENT_GIVEN_ROLE_INVALID = "something";
 
     @Mock
     private UserRolesRepository userRolesRepository;
@@ -40,6 +42,7 @@ public class UserRolesServiceTest {
 
     private UserRolesService userRolesService;
     private final UserRole authorizedUserRole = new UserRole(USER_ID, CONSENT_GIVEN_ROLE);
+    private final UserRole unauthorizedUserRole = new UserRole(USER_ID, CONSENT_GIVEN_ROLE_INVALID);
 
     @Before
     public void setup() {
@@ -73,5 +76,12 @@ public class UserRolesServiceTest {
 
         verify(userRolesRepository, once())
             .saveUserRole(eq(USER_ID), eq(authorizedUserRole.getRole()));
+    }
+
+    @Test(expected = CallbackException.class)
+    public void throwErrorMessageIfRoleIsNotValid() {
+        when(userRolesRepository.getByUserId(eq(USER_ID))).thenReturn(ImmutableList.of(unauthorizedUserRole));
+
+        userRolesService.saveRole(unauthorizedUserRole.getRole(), AUTHORISATION);
     }
 }

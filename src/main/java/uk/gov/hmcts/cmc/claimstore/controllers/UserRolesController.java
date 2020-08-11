@@ -22,7 +22,6 @@ import javax.validation.constraints.NotNull;
 
 @Api
 @RestController
-@Validated
 @RequestMapping(
     path = "/user/roles",
     produces = MediaType.APPLICATION_JSON_VALUE)
