@@ -34,7 +34,7 @@ public class UserRolesService {
 
     public void saveRole(String userRolesName, String authorisation) {
         User user = userService.getUser(authorisation);
-        if (!userService.userRoles.contains(userRolesName)) {
+        if (!UserService.userRoles.contains(userRolesName)) {
             throw new CallbackException(
                 String.format("Invalid role :  %s", userRolesName));
         }

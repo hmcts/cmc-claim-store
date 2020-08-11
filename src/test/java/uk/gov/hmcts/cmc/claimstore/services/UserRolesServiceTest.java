@@ -80,8 +80,6 @@ public class UserRolesServiceTest {
 
     @Test(expected = CallbackException.class)
     public void throwErrorMessageIfRoleIsNotValid() {
-        when(userRolesRepository.getByUserId(eq(USER_ID))).thenReturn(ImmutableList.of(unauthorizedUserRole));
-
         userRolesService.saveRole(unauthorizedUserRole.getRole(), AUTHORISATION);
     }
 }
