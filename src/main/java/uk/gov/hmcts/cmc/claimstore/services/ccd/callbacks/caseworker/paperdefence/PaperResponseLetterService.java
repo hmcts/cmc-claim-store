@@ -5,8 +5,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
+import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
@@ -103,12 +105,22 @@ public class PaperResponseLetterService {
         CCDPartyType partyType = ccdCase.getRespondents().get(0).getValue().getClaimantProvidedDetail().getType();
 
         CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
-        CCDAddress address = respondent.getPartyDetail() != null
-            && respondent.getPartyDetail().getPrimaryAddress() != null
-            ? respondent.getPartyDetail().getPrimaryAddress()
-            : respondent.getClaimantProvidedDetail().getPrimaryAddress();
+        CCDApplicant applicant = ccdCase.getApplicants().get(0).getValue();
+        CCDParty givenRespondent = respondent.getClaimantProvidedDetail();
 
-        String courtName = courtFinderApi.findMoneyClaimCourtByPostcode(address.getPostCode())
+        CCDAddress defendantAddress = respondent.getPartyDetail() != null
+            && respondent.getPartyDetail().getCorrespondenceAddress() != null
+            ? respondent.getPartyDetail().getCorrespondenceAddress()
+            : respondent.getPartyDetail() != null && respondent.getPartyDetail().getPrimaryAddress() != null
+            ? respondent.getPartyDetail().getPrimaryAddress()
+            : givenRespondent.getCorrespondenceAddress() != null
+            ? givenRespondent.getCorrespondenceAddress() : givenRespondent.getPrimaryAddress();
+
+        CCDAddress claimantAddress = applicant.getPartyDetail().getCorrespondenceAddress() == null
+            ? applicant.getPartyDetail().getPrimaryAddress() : applicant.getPartyDetail().getCorrespondenceAddress();
+
+        String courtName = courtFinderApi.findMoneyClaimCourtByPostcode(partyType == CCDPartyType.ORGANISATION
+            ? claimantAddress.getPostCode() : defendantAddress.getPostCode())
             .stream()
             .map(Court::getName)
             .findFirst()
