@@ -50,21 +50,23 @@ public class PaperDefenceLetterBodyMapper {
             .build();
     }
 
-    public DocAssemblyTemplateBody oconFormIndividualWithDQsMapper(CCDCase ccdCase, LocalDate extendedDeadline) {
+    public DocAssemblyTemplateBody oconFormIndividualWithDQsMapper(CCDCase ccdCase, LocalDate extendedDeadline,
+                                                                   String courtName) {
         DocAssemblyTemplateBody commonTemplate = oconFormCommonTemplateMapper(ccdCase, extendedDeadline);
-        return commonTemplate.toBuilder().preferredCourt(ccdCase.getPreferredDQCourt()).build();
+        return commonTemplate.toBuilder().preferredCourt(courtName).build();
     }
 
     public DocAssemblyTemplateBody oconFormIndividualWithoutDQsMapper(CCDCase ccdCase, LocalDate extendedDeadline) {
         return oconFormCommonTemplateMapper(ccdCase, extendedDeadline);
     }
 
-    public DocAssemblyTemplateBody oconFormSoleTraderWithDQsMapper(CCDCase ccdCase, LocalDate extendedDeadline) {
+    public DocAssemblyTemplateBody oconFormSoleTraderWithDQsMapper(CCDCase ccdCase, LocalDate extendedDeadline,
+                                                                   String courtName) {
         DocAssemblyTemplateBody commonTemplate = oconFormCommonTemplateMapper(ccdCase, extendedDeadline);
         return commonTemplate.toBuilder()
             .soleTradingTraderName(ccdCase.getRespondents().get(0).getValue().getClaimantProvidedDetail()
                 .getBusinessName())
-            .preferredCourt(ccdCase.getPreferredDQCourt())
+            .preferredCourt(courtName)
             .build();
     }
 
@@ -76,11 +78,12 @@ public class PaperDefenceLetterBodyMapper {
             .build();
     }
 
-    public DocAssemblyTemplateBody oconFormOrganisationWithDQsMapper(CCDCase ccdCase, LocalDate extendedDeadline) {
+    public DocAssemblyTemplateBody oconFormOrganisationWithDQsMapper(CCDCase ccdCase, LocalDate extendedDeadline,
+                                                                     String courtName) {
         DocAssemblyTemplateBody commonTemplate = oconFormCommonTemplateMapper(ccdCase, extendedDeadline);
         return commonTemplate.toBuilder()
             .organisationName(ccdCase.getRespondents().get(0).getValue().getClaimantProvidedPartyName())
-            .preferredCourt(ccdCase.getPreferredDQCourt())
+            .preferredCourt(courtName)
             .build();
     }
 

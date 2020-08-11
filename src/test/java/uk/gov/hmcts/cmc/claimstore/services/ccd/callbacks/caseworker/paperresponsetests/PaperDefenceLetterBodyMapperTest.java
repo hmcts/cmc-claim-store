@@ -127,7 +127,7 @@ public class PaperDefenceLetterBodyMapperTest {
         void shouldMapTemplateBodyWhenIndividualWithDQs() {
             ccdCase.setPreferredDQCourt(HEARING_COURT);
             DocAssemblyTemplateBody requestBody = paperDefenceLetterBodyMapper
-                .oconFormIndividualWithDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE);
+                .oconFormIndividualWithDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE, HEARING_COURT);
             DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
                 .referenceNumber(ccdCase.getPreviousServiceCaseReference())
                 .responseDeadline(respondent.getResponseDeadline())
@@ -149,7 +149,7 @@ public class PaperDefenceLetterBodyMapperTest {
         void shouldMapTemplateBodyWhenCompanyWithDQs() {
             ccdCase.setPreferredDQCourt(HEARING_COURT);
             DocAssemblyTemplateBody requestBody = paperDefenceLetterBodyMapper
-                .oconFormOrganisationWithDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE);
+                .oconFormOrganisationWithDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE, HEARING_COURT);
             DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
                 .referenceNumber(ccdCase.getPreviousServiceCaseReference())
                 .responseDeadline(respondent.getResponseDeadline())
@@ -193,7 +193,7 @@ public class PaperDefenceLetterBodyMapperTest {
         void shouldMapTemplateBodyWhenSoleTraderWithDQs() {
             ccdCase.setPreferredDQCourt(HEARING_COURT);
             DocAssemblyTemplateBody requestBody = paperDefenceLetterBodyMapper
-                .oconFormSoleTraderWithDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE);
+                .oconFormSoleTraderWithDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE, HEARING_COURT);
             DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
                 .referenceNumber(ccdCase.getPreviousServiceCaseReference())
                 .responseDeadline(respondent.getResponseDeadline())

@@ -4,10 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPartyType;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
+import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
+import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
@@ -34,6 +38,7 @@ public class PaperResponseLetterService {
     private final DocAssemblyService docAssemblyService;
     private final UserService userService;
     private final GeneralLetterService generalLetterService;
+    private final CourtFinderApi courtFinderApi;
 
     @Autowired
     public PaperResponseLetterService(
@@ -47,7 +52,8 @@ public class PaperResponseLetterService {
         PaperDefenceLetterBodyMapper paperDefenceLetterBodyMapper,
         DocAssemblyService docAssemblyService,
         UserService userService,
-        GeneralLetterService generalLetterService
+        GeneralLetterService generalLetterService,
+        CourtFinderApi courtFinderApi
     ) {
         this.oconFormIndividualWithDQs = oconFormIndividualWithDQs;
         this.oconFormSoleTraderWithDQs = oconFormSoleTraderWithDQs;
@@ -60,6 +66,7 @@ public class PaperResponseLetterService {
         this.docAssemblyService = docAssemblyService;
         this.userService = userService;
         this.generalLetterService = generalLetterService;
+        this.courtFinderApi = courtFinderApi;
     }
 
     public CCDDocument createCoverLetter(CCDCase ccdCase, String authorisation, LocalDate extendedResponseDeadline) {
@@ -94,13 +101,26 @@ public class PaperResponseLetterService {
     private PaperResponseLetter formForCorrectDefendantType(CCDCase ccdCase, Claim claim, LocalDate extendedDeadline) {
         PaperResponseLetter.PaperResponseLetterBuilder paperResponseLetter = PaperResponseLetter.builder();
         CCDPartyType partyType = ccdCase.getRespondents().get(0).getValue().getClaimantProvidedDetail().getType();
+
+        CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
+        CCDAddress address = respondent.getPartyDetail() != null
+            && respondent.getPartyDetail().getPrimaryAddress() != null
+            ? respondent.getPartyDetail().getPrimaryAddress()
+            : respondent.getClaimantProvidedDetail().getPrimaryAddress();
+
+        String courtName = courtFinderApi.findMoneyClaimCourtByPostcode(address.getPostCode())
+            .stream()
+            .map(Court::getName)
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException("No court found"));
+
         switch (partyType) {
             case INDIVIDUAL:
                 if (FeaturesUtils.isOnlineDQ(claim)) {
                     return paperResponseLetter
                         .templateId(oconFormIndividualWithDQs)
                         .payload(paperDefenceLetterBodyMapper
-                            .oconFormIndividualWithDQsMapper(ccdCase, extendedDeadline))
+                            .oconFormIndividualWithDQsMapper(ccdCase, extendedDeadline, courtName))
                         .build();
                 } else {
                     return paperResponseLetter
@@ -115,7 +135,7 @@ public class PaperResponseLetterService {
                     return paperResponseLetter
                         .templateId(oconFormOrganisationWithDQs)
                         .payload(paperDefenceLetterBodyMapper
-                            .oconFormOrganisationWithDQsMapper(ccdCase, extendedDeadline))
+                            .oconFormOrganisationWithDQsMapper(ccdCase, extendedDeadline, courtName))
                         .build();
                 } else {
                     return paperResponseLetter
@@ -129,7 +149,7 @@ public class PaperResponseLetterService {
                     return paperResponseLetter
                         .templateId(oconFormSoleTraderWithDQs)
                         .payload(paperDefenceLetterBodyMapper
-                            .oconFormSoleTraderWithDQsMapper(ccdCase, extendedDeadline))
+                            .oconFormSoleTraderWithDQsMapper(ccdCase, extendedDeadline, courtName))
                         .build();
                 } else {
                     return paperResponseLetter
