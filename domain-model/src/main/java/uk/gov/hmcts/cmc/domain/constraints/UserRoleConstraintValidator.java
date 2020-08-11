@@ -6,7 +6,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 public class UserRoleConstraintValidator implements ConstraintValidator<UserRole, String> {
-    private static final List<String> userRoles =
+    protected static final List<String> userRoles =
         Arrays.asList("cmc-new-features-consent-given",
             "cmc-new-features-consent-not-given");
 

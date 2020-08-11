@@ -9,13 +9,12 @@ import javax.validation.ConstraintValidatorContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 @RunWith(MockitoJUnitRunner.class)
 public class UserRoleConstraintValidatorTest {
 
     @Mock
     private ConstraintValidatorContext validatorContext;
-    private final UserRoleConstraintValidator validator = new UserRoleConstraintValidator();
+    private UserRoleConstraintValidator validator = new UserRoleConstraintValidator();
 
     @Test
     public void shouldReturnTrueForValidRole() {
