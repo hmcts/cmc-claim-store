@@ -101,13 +101,8 @@ public class PaperDefenceLetterBodyMapper {
         CCDAddress claimantAddress = applicant.getPartyDetail().getCorrespondenceAddress() == null
             ? applicant.getPartyDetail().getPrimaryAddress() : applicant.getPartyDetail().getCorrespondenceAddress();
 
-        CCDAddress defendantAddress = respondent.getPartyDetail() != null
-            && respondent.getPartyDetail().getCorrespondenceAddress() != null
-            ? respondent.getPartyDetail().getCorrespondenceAddress()
-            : respondent.getPartyDetail() != null && respondent.getPartyDetail().getPrimaryAddress() != null
-            ? respondent.getPartyDetail().getPrimaryAddress()
-            : givenRespondent.getCorrespondenceAddress() != null
-            ? givenRespondent.getCorrespondenceAddress() : givenRespondent.getPrimaryAddress();
+        CCDAddress defendantAddress = givenRespondent.getCorrespondenceAddress() == null
+            ? givenRespondent.getPrimaryAddress() : givenRespondent.getCorrespondenceAddress();
 
         String partyName = respondent.getPartyName() != null
             ? respondent.getPartyName() :
