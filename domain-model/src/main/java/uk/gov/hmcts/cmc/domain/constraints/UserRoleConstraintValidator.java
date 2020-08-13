@@ -1,19 +1,17 @@
 package uk.gov.hmcts.cmc.domain.constraints;
 
+import java.util.Arrays;
+import java.util.List;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 public class UserRoleConstraintValidator implements ConstraintValidator<UserRoleValidator, String> {
 
-    private static final String CONSENT_GIVEN_ROLE = "cmc-new-features-consent-given";
-    private static final String CONSENT_NOT_GIVEN_ROLE = "cmc-new-features-consent-not-given";
+    private static final List<String> userRoles = Arrays.asList("cmc-new-features-consent-given",
+        "cmc-new-features-consent-not-given");
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        if (CONSENT_GIVEN_ROLE.equals(value) || CONSENT_NOT_GIVEN_ROLE.equals(value)) {
-            return Boolean.TRUE;
-        } else {
-            return Boolean.FALSE;
-        }
+        return userRoles.contains(value) ? Boolean.TRUE : Boolean.FALSE;
     }
 }
