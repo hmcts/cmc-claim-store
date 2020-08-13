@@ -10,7 +10,10 @@ public class UserRoleConstraintValidator implements ConstraintValidator<UserRole
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        return (CONSENT_GIVEN_ROLE.equals(value) || CONSENT_NOT_GIVEN_ROLE.equals(value))
-            ? Boolean.TRUE : Boolean.FALSE;
+        if (CONSENT_GIVEN_ROLE.equals(value) || CONSENT_NOT_GIVEN_ROLE.equals(value)) {
+            return Boolean.TRUE;
+        } else {
+            return Boolean.FALSE;
+        }
     }
 }
