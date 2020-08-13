@@ -24,6 +24,7 @@ public class UserService {
     public static final String AUTHORIZATION_CODE = "authorization_code";
     public static final String CODE = "code";
     public static final String BASIC = "Basic ";
+
     private final IdamApi idamApi;
     private final IdamCaseworkerProperties idamCaseworkerProperties;
     private final Oauth2 oauth2;

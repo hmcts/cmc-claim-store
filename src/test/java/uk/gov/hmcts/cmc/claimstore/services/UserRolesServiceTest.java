@@ -74,5 +74,4 @@ public class UserRolesServiceTest {
         verify(userRolesRepository, once())
             .saveUserRole(eq(USER_ID), eq(authorizedUserRole.getRole()));
     }
-
 }
