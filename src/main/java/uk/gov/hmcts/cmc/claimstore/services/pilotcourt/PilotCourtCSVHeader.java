@@ -7,7 +7,8 @@ public enum PilotCourtCSVHeader {
     ID,
     POSTCODE,
     LA_PILOT(Pilot.LA),
-    JDDO_PILOT(Pilot.JDDO);
+    JDDO_PILOT(Pilot.JDDO),
+    CASEWORKER_PILOT(Pilot.CASEWORKER);
 
     private Pilot pilot;
 
