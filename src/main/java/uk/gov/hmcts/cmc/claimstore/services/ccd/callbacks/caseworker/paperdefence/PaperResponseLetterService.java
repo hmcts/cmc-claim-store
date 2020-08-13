@@ -119,7 +119,7 @@ public class PaperResponseLetterService {
         CCDAddress claimantAddress = applicant.getPartyDetail().getCorrespondenceAddress() == null
             ? applicant.getPartyDetail().getPrimaryAddress() : applicant.getPartyDetail().getCorrespondenceAddress();
 
-        String courtName = courtFinderApi.findMoneyClaimCourtByPostcode(partyType == CCDPartyType.ORGANISATION
+        String courtName = courtFinderApi.findMoneyClaimCourtByPostcode(partyType == CCDPartyType.COMPANY
             ? claimantAddress.getPostCode() : defendantAddress.getPostCode())
             .stream()
             .map(Court::getName)
