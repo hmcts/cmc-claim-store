@@ -15,9 +15,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserInfo;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 
-import java.util.Arrays;
 import java.util.Base64;
-import java.util.List;
 
 @Component
 public class UserService {
@@ -26,8 +24,6 @@ public class UserService {
     public static final String AUTHORIZATION_CODE = "authorization_code";
     public static final String CODE = "code";
     public static final String BASIC = "Basic ";
-    protected static final List<String> userRoles = Arrays.asList("cmc-new-features-consent-given",
-        "cmc-new-features-consent-not-given");
     private final IdamApi idamApi;
     private final IdamCaseworkerProperties idamCaseworkerProperties;
     private final Oauth2 oauth2;
