@@ -275,18 +275,16 @@ public class SupportController {
     @PutMapping(value = "/claims/transitionClaimState")
     @ApiOperation("Trigger scheduled state transition")
     public void transitionClaimState(
-        @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation,
         @Valid @NotNull @RequestBody StateTransitionInput stateTransitionInput
     ) {
         LocalDateTime localDateTime = stateTransitionInput.getLocalDateTime();
         StateTransitions stateTransition = stateTransitionInput.getStateTransitions();
         LocalDateTime runDateTime = localDateTime == null ? LocalDateTimeFactory.nowInLocalZone() : localDateTime;
 
-        User user = userService.getUser(authorisation);
         String format = runDateTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss"));
-        logger.info(format("transitionClaimState %s called by %s for date: %s", stateTransition,
-            user.getUserDetails().getId(), format));
-        scheduledStateTransitionService.transitionClaims(runDateTime, user, stateTransition);
+        logger.info(format("transitionClaimState %s invoked by support controller for date: %s", stateTransition,
+            format));
+        scheduledStateTransitionService.stateChangeTriggered(runDateTime, stateTransition);
     }
 
     private void resendStaffNotificationCCJRequestSubmitted(Claim claim, String authorisation) {

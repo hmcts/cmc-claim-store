@@ -172,7 +172,7 @@ public class ScheduledStateTransitionServiceTest {
         ScheduledStateTransitionService scheduledStateTransitionServiceSpy =
             Mockito.spy(scheduledStateTransitionService);
 
-        scheduledStateTransitionServiceSpy.stateChangeTriggered(stateTransition);
+        scheduledStateTransitionServiceSpy.stateChangeTriggered(LocalDateTime.now(), stateTransition);
 
         verify(scheduledStateTransitionServiceSpy).transitionClaims(any(), any(), any());
     }
@@ -183,7 +183,7 @@ public class ScheduledStateTransitionServiceTest {
         ScheduledStateTransitionService scheduledStateTransitionServiceSpy =
             Mockito.spy(scheduledStateTransitionService);
 
-        scheduledStateTransitionServiceSpy.stateChangeTriggered(stateTransition);
+        scheduledStateTransitionServiceSpy.stateChangeTriggered(LocalDateTime.now(), stateTransition);
 
         verify(scheduledStateTransitionServiceSpy, never()).transitionClaims(any(), any(), any());
     }
