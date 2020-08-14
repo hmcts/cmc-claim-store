@@ -99,11 +99,10 @@ public class ScheduledStateTransitionService {
             .forEach(this::getStateTransitionDaysProperty);
     }
 
-    public void stateChangeTriggered(StateTransition stateTransition) {
-        LocalDateTime now = LocalDateTime.now();
-        if (workingDayIndicator.isWorkingDay(now.toLocalDate())) {
+    public void stateChangeTriggered(LocalDateTime runDateTime, StateTransition stateTransition) {
+        if (workingDayIndicator.isWorkingDay(runDateTime.toLocalDate())) {
             User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
-            transitionClaims(now, anonymousCaseWorker, stateTransition);
+            transitionClaims(runDateTime, anonymousCaseWorker, stateTransition);
         }
     }
 
