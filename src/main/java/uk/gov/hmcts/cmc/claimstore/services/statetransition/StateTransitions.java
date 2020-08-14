@@ -7,7 +7,6 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
-import uk.gov.hmcts.cmc.claimstore.utils.DateUtils;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 
 import java.time.LocalDate;
@@ -26,7 +25,9 @@ public enum StateTransitions implements StateTransition {
                 .must(QueryBuilders.rangeQuery("data.respondents.value.responseSubmittedOn").lte(responseDate))
                 .mustNot(QueryBuilders.existsQuery("data.respondents.value.paidInFullDate"))
                 .mustNot(QueryBuilders.existsQuery("data.respondents.value.claimantResponse.submittedOn"))
-                .must(QueryBuilders.rangeQuery("data.submittedOn").gte(DateUtils.DATE_OF_5_0_0_RELEASE))
+                .must(QueryBuilders.rangeQuery("data.submittedOn")
+                    .gte(calculateProjectSubmittedOnDate(responseDate, 60))
+                    .lte(responseDate))
         ),
         ImmutableSet.of(CaseEvent.DISPUTE, CaseEvent.ALREADY_PAID,  CaseEvent.FULL_ADMISSION,
             CaseEvent.PART_ADMISSION),
@@ -58,5 +59,9 @@ public enum StateTransitions implements StateTransition {
         this.query = query;
         this.triggerEvents = Collections.emptySet();
         this.ignoredEvents = Collections.emptySet();
+    }
+
+    public static LocalDate calculateProjectSubmittedOnDate(LocalDate runDateTime, int numberOfDays) {
+        return runDateTime.minusDays(numberOfDays);
     }
 }
