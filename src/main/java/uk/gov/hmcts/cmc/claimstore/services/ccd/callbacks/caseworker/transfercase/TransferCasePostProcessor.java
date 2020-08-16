@@ -43,50 +43,56 @@ public class TransferCasePostProcessor {
         return completeCaseTransfer(callbackParams,
             transferCaseDocumentPublishService::publishDefendentDocuments,
             transferCaseNotificationsService::sendTransferToCcbcEmail,
-            bulkPrintTransferService::updateCaseDataWithHandOffDate
+            bulkPrintTransferService::updateCaseDataWithHandOffDate,
+            false
         );
     }
 
     public CallbackResponse transferToCourt(CallbackParams callbackParams) {
         return completeCaseTransfer(callbackParams, transferCaseDocumentPublishService::publishCaseDocuments,
-            transferCaseNotificationsService::sendTransferToCourtEmail, bulkPrintTransferService::updateCaseData);
+            transferCaseNotificationsService::sendTransferToCourtEmail, bulkPrintTransferService::updateCaseData, true);
     }
 
     private CallbackResponse completeCaseTransfer(CallbackParams callbackParams,
             TriFunction<CCDCase, String, Claim, CCDCase> transferCaseDocumentPublishService,
-            BiConsumer<CCDCase, Claim> sendEmailNotifications, UnaryOperator<CCDCase> updateCaseData) {
+            BiConsumer<CCDCase, Claim> sendEmailNotifications, UnaryOperator<CCDCase> updateCaseData,
+                                                  boolean isTransferToCourt) {
 
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
-        HearingCourt hearingCourt = directionOrderService.getHearingCourt(ccdCase);
-        ccdCase = ccdCase.toBuilder()
-            .hearingCourtName(hearingCourt.getName())
-            .hearingCourtAddress(hearingCourt.getAddress())
-            .expertReportPermissionPartyGivenToClaimant(null)
-            .expertReportPermissionPartyGivenToDefendant(null)
-            .expertReportInstructionClaimant(null)
-            .expertReportInstructionDefendant(null)
-            .build();
-        Address address = Address.builder()
-            .line1(hearingCourt.getAddress().getAddressLine1())
-            .line2(hearingCourt.getAddress().getAddressLine2())
-            .line3(hearingCourt.getAddress().getAddressLine3())
-            .city(hearingCourt.getAddress().getPostTown())
-            .county(hearingCourt.getAddress().getCounty())
-            .postcode(hearingCourt.getAddress().getPostCode()).build();
-        TransferContent transferContent = TransferContent.builder()
-            .hearingCourtName(hearingCourt.getName())
-            .hearingCourtAddress(address)
-            .build();
-        claim = claim.toBuilder().transferContent(transferContent).build();
+        if (isTransferToCourt) {
+            HearingCourt hearingCourt = directionOrderService.getHearingCourt(ccdCase);
+            ccdCase = ccdCase.toBuilder()
+                .hearingCourtName(hearingCourt.getName())
+                .hearingCourtAddress(hearingCourt.getAddress())
+                .expertReportPermissionPartyGivenToClaimant(null)
+                .expertReportPermissionPartyGivenToDefendant(null)
+                .expertReportInstructionClaimant(null)
+                .expertReportInstructionDefendant(null)
+                .build();
+            Address address = Address.builder()
+                .line1(hearingCourt.getAddress().getAddressLine1())
+                .line2(hearingCourt.getAddress().getAddressLine2())
+                .line3(hearingCourt.getAddress().getAddressLine3())
+                .city(hearingCourt.getAddress().getPostTown())
+                .county(hearingCourt.getAddress().getCounty())
+                .postcode(hearingCourt.getAddress().getPostCode()).build();
+            TransferContent transferContent = TransferContent.builder()
+                .hearingCourtName(hearingCourt.getName())
+                .hearingCourtAddress(address)
+                .build();
+            claim = claim.toBuilder().transferContent(transferContent).build();
+        }
         ccdCase = bulkPrintTransferService.transferCase(ccdCase, claim, authorisation,
             transferCaseDocumentPublishService, sendEmailNotifications, updateCaseData);
-
+        if (isTransferToCourt) {
+            ccdCase = cleanUpDynamicList(ccdCase);
+        }
         return AboutToStartOrSubmitCallbackResponse
             .builder()
-            .data(caseDetailsConverter.convertToMap(cleanUpDynamicList(ccdCase)))
+            .data(caseDetailsConverter.convertToMap(ccdCase))
             .build();
     }
 

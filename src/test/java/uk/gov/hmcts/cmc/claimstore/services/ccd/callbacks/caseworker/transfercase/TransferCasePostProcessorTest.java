@@ -98,18 +98,6 @@ class TransferCasePostProcessorTest {
         when(bulkPrintTransferService.transferCase(any(CCDCase.class), any(Claim.class), any(String.class),
             any(TriFunction.class), any(BiConsumer.class), any(UnaryOperator.class))).thenReturn(ccdCase);
 
-        when(directionOrderService.getHearingCourt(any()))
-            .thenReturn(HearingCourt.builder()
-                .name("Birmingham Court")
-                .address(CCDAddress.builder()
-                    .addressLine1("line1")
-                    .addressLine2("line2")
-                    .addressLine3("line3")
-                    .postCode("SW1P4BB")
-                    .postTown("Birmingham")
-                    .build()
-                )
-                .build());
     }
 
     @Test
@@ -125,6 +113,19 @@ class TransferCasePostProcessorTest {
 
     @Test
     void shouldCompleteCaseTransferForLinkedDefendants() {
+
+        when(directionOrderService.getHearingCourt(any()))
+            .thenReturn(HearingCourt.builder()
+                .name("Birmingham Court")
+                .address(CCDAddress.builder()
+                    .addressLine1("line1")
+                    .addressLine2("line2")
+                    .addressLine3("line3")
+                    .postCode("SW1P4BB")
+                    .postTown("Birmingham")
+                    .build()
+                )
+                .build());
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = (AboutToStartOrSubmitCallbackResponse)
             transferCasePostProcessor.transferToCourt(callbackParams);
