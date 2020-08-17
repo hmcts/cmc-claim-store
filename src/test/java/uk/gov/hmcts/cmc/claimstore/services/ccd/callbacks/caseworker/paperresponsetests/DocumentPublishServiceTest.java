@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
+import uk.gov.hmcts.cmc.ccd.mapper.BulkPrintDetailsMapper;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.documents.BulkPrintHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.PrintableDocumentService;
@@ -70,12 +71,15 @@ public class DocumentPublishServiceTest {
 
     private DocumentPublishService documentPublishService;
 
+    private BulkPrintDetailsMapper bulkPrintDetailsMapper = new BulkPrintDetailsMapper();
+
     @BeforeEach
     void setUp() {
         documentPublishService = new DocumentPublishService(
             paperResponseLetterService,
             printableDocumentService,
-            bulkPrintHandler
+            bulkPrintHandler,
+            bulkPrintDetailsMapper
         );
     }
 

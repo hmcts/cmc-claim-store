@@ -25,17 +25,15 @@ import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.BULK_PR
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.DIRECTION_ORDER_LETTER_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.GENERAL_LETTER_TYPE;
-import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.PAPER_DEFENCE_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildOconFormFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildPaperDefenceCoverLetterFileBaseName;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BulkPrintHandlerTest {
 
+    private static final String AUTHORISATION = "Bearer: let me in";
     @Mock
     private BulkPrintService bulkPrintService;
-
-    private static final String AUTHORISATION = "Bearer: let me in";
 
     @Test
     public void notifyStaffForDefendantLetters() {
@@ -172,7 +170,7 @@ public class BulkPrintHandlerTest {
                     letter,
                     buildOconFormFileBaseName(claim.getReferenceNumber())))
                 .build(),
-            PAPER_DEFENCE_TYPE,
+            GENERAL_LETTER_TYPE,
             AUTHORISATION
         );
     }

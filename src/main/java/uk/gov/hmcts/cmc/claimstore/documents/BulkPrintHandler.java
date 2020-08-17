@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.PAPER_DEFENCE_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildCoverSheetFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDirectionsOrderFileBaseName;
@@ -139,7 +138,7 @@ public class BulkPrintHandler {
                     oconForm,
                     buildOconFormFileBaseName(claim.getReferenceNumber())))
                 .build(),
-            PAPER_DEFENCE_TYPE,
+            BulkPrintRequestType.GENERAL_LETTER_TYPE,
             authorisation);
     }
 }

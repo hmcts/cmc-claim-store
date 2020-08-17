@@ -36,20 +36,18 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BULK_PRIN
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.BULK_PRINT_TRANSFER_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.DIRECTION_ORDER_LETTER_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.GENERAL_LETTER_TYPE;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.PAPER_DEFENCE_TYPE;
 
 @Service
 @ConditionalOnProperty(prefix = "send-letter", name = "url")
 public class BulkPrintService implements PrintService {
-    private final Logger logger = LoggerFactory.getLogger(BulkPrintService.class);
-
     /* This is configured on Xerox end so they know its us printing and controls things
      like paper quality and resolution */
     public static final String XEROX_TYPE_PARAMETER = "CMC001";
-
     protected static final String ADDITIONAL_DATA_LETTER_TYPE_KEY = "letterType";
     protected static final String ADDITIONAL_DATA_CASE_IDENTIFIER_KEY = "caseIdentifier";
     protected static final String ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY = "caseReferenceNumber";
-
+    private final Logger logger = LoggerFactory.getLogger(BulkPrintService.class);
     private final SendLetterApi sendLetterApi;
     private final AuthTokenGenerator authTokenGenerator;
     private final AppInsights appInsights;
@@ -69,6 +67,14 @@ public class BulkPrintService implements PrintService {
         this.appInsights = appInsights;
         this.bulkPrintStaffNotificationService = bulkPrintStaffNotificationService;
         this.pdfServiceClient = pdfServiceClient;
+    }
+
+    private static Map<String, Object> wrapInDetailsInMap(Claim claim, BulkPrintRequestType letterType) {
+        Map<String, Object> additionalData = new HashMap<>();
+        additionalData.put(ADDITIONAL_DATA_LETTER_TYPE_KEY, letterType.value);
+        additionalData.put(ADDITIONAL_DATA_CASE_IDENTIFIER_KEY, claim.getId());
+        additionalData.put(ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY, claim.getReferenceNumber());
+        return additionalData;
     }
 
     @LogExecutionTime
@@ -147,6 +153,9 @@ public class BulkPrintService implements PrintService {
         if (letterType.equals(BULK_PRINT_TRANSFER_TYPE)) {
             info = "Bulk print request {} created for request    type {} claim reference {}";
         }
+        if (letterType.equals(PAPER_DEFENCE_TYPE)) {
+            info = "Paper defence type request {} created for request    type {} claim reference {}";
+        }
 
         List<String> docs = documents.stream()
             .filter(Objects::nonNull)
@@ -185,13 +194,5 @@ public class BulkPrintService implements PrintService {
 
         byte[] html = pdfServiceClient.generateFromHtml(document.template.getBytes(), document.values);
         return Base64.getEncoder().encodeToString(html);
-    }
-
-    private static Map<String, Object> wrapInDetailsInMap(Claim claim, BulkPrintRequestType letterType) {
-        Map<String, Object> additionalData = new HashMap<>();
-        additionalData.put(ADDITIONAL_DATA_LETTER_TYPE_KEY, letterType.value);
-        additionalData.put(ADDITIONAL_DATA_CASE_IDENTIFIER_KEY, claim.getId());
-        additionalData.put(ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY, claim.getReferenceNumber());
-        return additionalData;
     }
 }
