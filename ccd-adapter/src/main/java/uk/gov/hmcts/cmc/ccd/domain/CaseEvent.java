@@ -88,7 +88,13 @@ public enum CaseEvent {
     REVIEW_JUDGE_COMMENTS("ReviewJudgeComments"),
     CCJ_REQUEST_UPLOAD("CCJRequestUpload"),
     CHANGE_CONTACT_DETAILS("ChangeContactDetails"),
-    ADD_BULK_PRINT_DETAILS("UpdateBulkPrintDetails");
+    ADD_BULK_PRINT_DETAILS("UpdateBulkPrintDetails"),
+    APPROVE_ORDER("ApproveOrder"),
+    CLAIM_NOTES("ClaimNotes"),
+    ISSUE_PAPER_DEFENCE_FORMS("IssuePaperDefenceForms"),
+    MIGRATION_FROM_CLAIM_STORE_CREATE("MigrationFromClaimstoreCreate"),
+    MIGRATION_FROM_CLAIM_STORE_UPDATE("MigrationFromClaimstoreUpdate"),
+    PAPER_HAND_OFF("PaperHandoff");
 
     private final String value;
 
