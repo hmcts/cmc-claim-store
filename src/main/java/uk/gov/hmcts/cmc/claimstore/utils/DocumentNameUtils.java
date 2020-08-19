@@ -162,6 +162,14 @@ public class DocumentNameUtils {
         return getFileName(caseRef, "defendant-case-handoff");
     }
 
+    public static String buildLADirectionOrderFileName(String caseRef) {
+        return getFileName(caseRef, "Legal-Adviser-Direction-Order");
+    }
+
+    public static String buildJudgeDirectionOrderFileName(String caseRef) {
+        return getFileName(caseRef, "Judge-Direction-Order");
+    }
+
     private static String getFileName(String caseRef, String fileNameSuffix) {
         requireNonBlank(caseRef);
         return format("%s-%s", caseRef, fileNameSuffix);
