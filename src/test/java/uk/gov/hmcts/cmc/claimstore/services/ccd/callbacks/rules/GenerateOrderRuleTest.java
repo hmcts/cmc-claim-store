@@ -5,6 +5,7 @@ import org.junit.Test;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GenerateOrderRuleTest {
@@ -18,8 +19,8 @@ public class GenerateOrderRuleTest {
             .expertReportPermissionPartyAskedByDefendant(CCDYesNoOption.YES)
             .grantExpertReportPermission(null)
             .build();
-
-        List<String> validations = generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase, true);
+        List<String> validations = new ArrayList<>();
+        generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase, true, validations);
 
         Assertions.assertThat(validations).isNotEmpty()
             .hasSize(2)
@@ -34,8 +35,8 @@ public class GenerateOrderRuleTest {
             .expertReportPermissionPartyAskedByDefendant(CCDYesNoOption.YES)
             .grantExpertReportPermission(CCDYesNoOption.YES)
             .build();
-
-        List<String> validations = generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase, true);
+        List<String> validations = new ArrayList<>();
+        generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase, true, validations);
 
         Assertions.assertThat(validations).isEmpty();
     }
@@ -47,7 +48,8 @@ public class GenerateOrderRuleTest {
             .expertReportPermissionPartyAskedByDefendant(CCDYesNoOption.NO)
             .grantExpertReportPermission(null)
             .build();
-        List<String> validations = generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase, true);
+        List<String> validations = new ArrayList<>();
+        generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase, true, validations);
 
         Assertions.assertThat(validations).isEmpty();
     }
@@ -60,8 +62,8 @@ public class GenerateOrderRuleTest {
             .expertReportPermissionPartyGivenToClaimant(null)
             .expertReportPermissionPartyGivenToDefendant(null)
             .build();
-
-        List<String> validations = generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase, false);
+        List<String> validations = new ArrayList<>();
+        generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase, false, validations);
 
         Assertions.assertThat(validations).isNotEmpty()
             .hasSize(2)
@@ -77,8 +79,8 @@ public class GenerateOrderRuleTest {
             .expertReportPermissionPartyGivenToClaimant(CCDYesNoOption.YES)
             .expertReportPermissionPartyGivenToDefendant(CCDYesNoOption.YES)
             .build();
-
-        List<String> validations = generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase, false);
+        List<String> validations = new ArrayList<>();
+        generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase, false, validations);
 
         Assertions.assertThat(validations).isEmpty();
     }
@@ -91,7 +93,8 @@ public class GenerateOrderRuleTest {
             .expertReportPermissionPartyGivenToClaimant(null)
             .expertReportPermissionPartyGivenToDefendant(null)
             .build();
-        List<String> validations = generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase, false);
+        List<String> validations = new ArrayList<>();
+        generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase, false, validations);
 
         Assertions.assertThat(validations).isEmpty();
     }

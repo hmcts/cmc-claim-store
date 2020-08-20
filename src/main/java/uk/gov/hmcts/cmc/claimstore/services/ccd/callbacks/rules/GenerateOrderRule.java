@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -18,10 +19,8 @@ public class GenerateOrderRule {
     public static final String DEFENDANT_REQUESTED_FOR_EXPORT_REPORT =
         "Enter if you  grant permission for expert to the defendant";
 
-    public List<String> validateExpectedFieldsAreSelectedByLegalAdvisor(CCDCase ccdCase, boolean expertsAtCaseLevel) {
+    public void validateExpectedFieldsAreSelectedByLegalAdvisor(CCDCase ccdCase, boolean expertsAtCaseLevel, List<String> validationErrors) {
         Objects.requireNonNull(ccdCase, "ccd case object can not be null");
-
-        List<String> validationErrors = new ArrayList<>();
 
         if (expertsAtCaseLevel) {
             if (isPresentAndIsYes(ccdCase.getExpertReportPermissionPartyAskedByClaimant())
@@ -48,7 +47,6 @@ public class GenerateOrderRule {
                 validationErrors.add(DEFENDANT_REQUESTED_FOR_EXPORT_REPORT);
             }
         }
-        return validationErrors;
     }
 
     private boolean isPresent(CCDYesNoOption input) {
@@ -57,5 +55,16 @@ public class GenerateOrderRule {
 
     private boolean isPresentAndIsYes(CCDYesNoOption input) {
         return isPresent(input) && input.toBoolean();
+    }
+
+    public void validateDate(CCDCase ccdCase, List<String> validationErrors){
+        Objects.requireNonNull(ccdCase, "ccd case object can not be null");
+
+        LocalDate uploadDeadlineDate = ccdCase.getDocUploadDeadline();
+        LocalDate eyewitnessUploadDeadlineDate = ccdCase.getEyewitnessUploadDeadline();
+
+        if ( uploadDeadlineDate.isBefore(LocalDate.now()) || eyewitnessUploadDeadlineDate.isBefore(LocalDate.now())){
+            validationErrors.add("The date entered cannot be in the past");
+        }
     }
 }

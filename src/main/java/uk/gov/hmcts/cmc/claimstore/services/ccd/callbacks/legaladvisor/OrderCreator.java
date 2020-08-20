@@ -32,11 +32,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -173,9 +169,12 @@ public class OrderCreator {
         logger.info("Order creator: creating order document");
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
+        List<String> validations = new ArrayList<>();
 
-        List<String> validations = generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase,
-            hasExpertsAtCaseLevel(callbackParams));
+        generateOrderRule.validateDate(ccdCase, validations);
+
+        generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase,
+            hasExpertsAtCaseLevel(callbackParams), validations);
         if (!validations.isEmpty()) {
             return AboutToStartOrSubmitCallbackResponse.builder().errors(validations).build();
         }
@@ -309,4 +308,5 @@ public class OrderCreator {
     private boolean hasDynamicCourts(CallbackParams callbackParams) {
         return getPilot(callbackParams) != Pilot.LA || callbackParams.getVersion() == CallbackVersion.V_2;
     }
+
 }
