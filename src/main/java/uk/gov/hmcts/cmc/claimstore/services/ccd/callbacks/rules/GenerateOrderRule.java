@@ -5,7 +5,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -19,7 +18,8 @@ public class GenerateOrderRule {
     public static final String DEFENDANT_REQUESTED_FOR_EXPORT_REPORT =
         "Enter if you  grant permission for expert to the defendant";
 
-    public void validateExpectedFieldsAreSelectedByLegalAdvisor(CCDCase ccdCase, boolean expertsAtCaseLevel, List<String> validationErrors) {
+    public void validateExpectedFieldsAreSelectedByLegalAdvisor(CCDCase ccdCase, boolean expertsAtCaseLevel,
+                                                                List<String> validationErrors) {
         Objects.requireNonNull(ccdCase, "ccd case object can not be null");
 
         if (expertsAtCaseLevel) {
@@ -57,13 +57,13 @@ public class GenerateOrderRule {
         return isPresent(input) && input.toBoolean();
     }
 
-    public void validateDate(CCDCase ccdCase, List<String> validationErrors){
+    public void validateDate(CCDCase ccdCase, List<String> validationErrors) {
         Objects.requireNonNull(ccdCase, "ccd case object can not be null");
 
         LocalDate uploadDeadlineDate = ccdCase.getDocUploadDeadline();
         LocalDate eyewitnessUploadDeadlineDate = ccdCase.getEyewitnessUploadDeadline();
 
-        if ( uploadDeadlineDate.isBefore(LocalDate.now()) || eyewitnessUploadDeadlineDate.isBefore(LocalDate.now())){
+        if (uploadDeadlineDate.isBefore(LocalDate.now()) || eyewitnessUploadDeadlineDate.isBefore(LocalDate.now())) {
             validationErrors.add("The date entered cannot be in the past");
         }
     }
