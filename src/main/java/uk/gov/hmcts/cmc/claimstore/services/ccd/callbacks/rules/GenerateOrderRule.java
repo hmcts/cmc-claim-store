@@ -18,6 +18,9 @@ public class GenerateOrderRule {
     public static final String DEFENDANT_REQUESTED_FOR_EXPORT_REPORT =
         "Enter if you  grant permission for expert to the defendant";
 
+    public static final String PAST_DATE_ERROR_MESSAGE =
+        "The date entered cannot be in the past";
+
     public void validateExpectedFieldsAreSelectedByLegalAdvisor(CCDCase ccdCase, boolean expertsAtCaseLevel,
                                                                 List<String> validationErrors) {
         Objects.requireNonNull(ccdCase, "ccd case object can not be null");
@@ -64,7 +67,7 @@ public class GenerateOrderRule {
         LocalDate eyewitnessUploadDeadlineDate = ccdCase.getEyewitnessUploadDeadline();
 
         if (uploadDeadlineDate.isBefore(LocalDate.now()) || eyewitnessUploadDeadlineDate.isBefore(LocalDate.now())) {
-            validationErrors.add("The date entered cannot be in the past");
+            validationErrors.add(PAST_DATE_ERROR_MESSAGE);
         }
     }
 }
