@@ -180,9 +180,9 @@ public class GenerateOrderCallbackHandlerTest extends BaseMockSpringTest {
             .build();
         Map<String, Object> data = new HashMap<>(caseDetailsTemp.getData());
         data.put("paperDetermination", "No");
-        data.put("docUploadDeadline", "2019-06-03");
+        data.put("docUploadDeadline", LocalDate.now().plusDays(1).toString());
         data.put("docUploadForParty", "BOTH");
-        data.put("eyewitnessUploadDeadline", "2019-06-03");
+        data.put("eyewitnessUploadDeadline", LocalDate.now().plusDays(1).toString());
         data.put("eyewitnessUploadForParty", "CLAIMANT");
         data.put("directionList", ImmutableList.of("EYEWITNESS", "DOCUMENTS"));
         data.put("extraDocUploadList", ImmutableList.of(ImmutableMap.of(
