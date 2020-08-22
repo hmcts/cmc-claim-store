@@ -541,9 +541,9 @@ public class GenerateOrderCallbackHandlerTest {
 
                     assertThat(response.getData()).contains(
                         entry("preferredDQCourt", DEFENDANT_PREFERRED_COURT),
-                        entry("newRequestedCourt", null),
-                        entry("preferredCourtObjectingParty", null),
-                        entry("preferredCourtObjectingReason", null)
+                        entry("newRequestedCourt", "Not applicable"),
+                        entry("preferredCourtObjectingParty", "Not applicable"),
+                        entry("preferredCourtObjectingReason", "No Objection")
                     );
                 }
 

@@ -220,6 +220,16 @@ public class OrderCreator {
             preferredCourtObjectingReason = defendantDQ.getExceptionalCircumstancesReason();
         }
 
+        if (null == newRequestedCourt) {
+            newRequestedCourt = "Not applicable";
+        }
+        if (null == preferredCourtObjectingParty) {
+            preferredCourtObjectingParty = "Not applicable";
+        }
+        if (null == preferredCourtObjectingReason) {
+            preferredCourtObjectingReason = "No Objection";
+        }
+
         data.put(NEW_REQUESTED_COURT, newRequestedCourt);
         data.put(PREFERRED_COURT_OBJECTING_PARTY, preferredCourtObjectingParty);
         data.put(PREFERRED_COURT_OBJECTING_REASON, preferredCourtObjectingReason);
