@@ -43,7 +43,8 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.DQ_FLAG;
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.LA_PILOT_FLAG;
 
 @ExtendWith(MockitoExtension.class)
-public class PaperResponseLetterServiceTest {
+class PaperResponseLetterServiceTest {
+    protected static final String AUTHORISATION_TOKEN = "Bearer token";
     private static final String OCON_INDIVIDUAL_DQS = "indDqTemplateID";
     private static final String OCON_INDIVIDUAL = "indDqTemplateID";
     private static final String OCON_COMPANY_DQS = "oconCompDqTemplateID";
@@ -51,13 +52,22 @@ public class PaperResponseLetterServiceTest {
     private static final String OCON_SOLE_TRADER_DQS = "oconSoleDqTemplateID";
     private static final String OCON_SOLE_TRADER = "oconSoleTemplateID";
     private static final String COVER_LETTER = "coverLetter";
-    protected static final String AUTHORISATION_TOKEN = "Bearer token";
     private static final LocalDate EXTENDED_RESPONSE_DEADLINE = LocalDate.now();
     private static final String HEARING_COURT = "Shoreditch";
     private static final String POST_CODE = "postcode";
     private static final UserDetails CITIZEN_DETAILS = SampleUserDetails.builder()
         .withRoles(Role.CITIZEN.getRole())
         .withUserId(SampleClaim.USER_ID).build();
+
+    private static final String DOC_URL = "http://success.test";
+    private static final String DOC_URL_BINARY = "http://success.test/binary";
+    private static final String DOC_NAME = "doc-name";
+    private static final CCDDocument COVER_LETTER_DOC = CCDDocument
+        .builder()
+        .documentUrl(DOC_URL)
+        .documentBinaryUrl(DOC_URL_BINARY)
+        .documentFileName(DOC_NAME)
+        .build();
 
     private PaperResponseLetterService paperResponseLetterService;
     @Mock
@@ -276,6 +286,23 @@ public class PaperResponseLetterServiceTest {
                 .oconFormOrganisationWithoutDQsMapper(eq(ccdCase), eq(EXTENDED_RESPONSE_DEADLINE));
             verify(docAssemblyService).generateDocument(eq(ccdCase), eq(AUTHORISATION_TOKEN),
                 eq(docAssemblyTemplateBody), anyString());
+
+        }
+
+        @Test
+        void shouldAddCoverLetterToCaseWithDocuments() {
+            docAssemblyTemplateBody = DocAssemblyTemplateBody.builder().build();
+            ccdCase.setRespondents(
+                ImmutableList.of(
+                    CCDCollectionElement.<CCDRespondent>builder()
+                        .value(SampleData.getCCDRespondentOrganisation())
+                        .build()
+                ));
+            CCDDocument ccdDocument = CCDDocument.builder().build();
+            paperResponseLetterService.addCoverLetterToCaseWithDocuments(ccdCase, claim, ccdDocument,
+                AUTHORISATION_TOKEN);
+            verify(generalLetterService).attachGeneralLetterToCase(any(CCDCase.class), any(CCDDocument.class),
+                anyString(), anyString());
 
         }
     }

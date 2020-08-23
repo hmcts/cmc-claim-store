@@ -96,8 +96,8 @@ public class PaperResponseLetterService {
         var paperResponseLetter = formForCorrectDefendantType(ccdCase, claim, extendedResponseDeadline);
         return docAssemblyService.generateDocument(ccdCase,
             authorisation,
-            paperResponseLetter.payload,
-            paperResponseLetter.templateId);
+            paperResponseLetter.getPayload(),
+            paperResponseLetter.getTemplateId());
     }
 
     private PaperResponseLetter formForCorrectDefendantType(CCDCase ccdCase, Claim claim, LocalDate extendedDeadline) {
@@ -108,23 +108,11 @@ public class PaperResponseLetterService {
         CCDApplicant applicant = ccdCase.getApplicants().get(0).getValue();
         CCDParty givenRespondent = respondent.getClaimantProvidedDetail();
 
-        CCDAddress defendantAddress = respondent.getPartyDetail() != null
-            && respondent.getPartyDetail().getCorrespondenceAddress() != null
-            ? respondent.getPartyDetail().getCorrespondenceAddress()
-            : respondent.getPartyDetail() != null && respondent.getPartyDetail().getPrimaryAddress() != null
-            ? respondent.getPartyDetail().getPrimaryAddress()
-            : givenRespondent.getCorrespondenceAddress() != null
-            ? givenRespondent.getCorrespondenceAddress() : givenRespondent.getPrimaryAddress();
+        CCDAddress defendantAddress = getDefendantAddress(respondent, givenRespondent);
 
-        CCDAddress claimantAddress = applicant.getPartyDetail().getCorrespondenceAddress() == null
-            ? applicant.getPartyDetail().getPrimaryAddress() : applicant.getPartyDetail().getCorrespondenceAddress();
+        CCDAddress claimantAddress = getClaimantAddress(applicant);
 
-        String courtName = courtFinderApi.findMoneyClaimCourtByPostcode(partyType == CCDPartyType.COMPANY
-            ? claimantAddress.getPostCode() : defendantAddress.getPostCode())
-            .stream()
-            .map(Court::getName)
-            .findFirst()
-            .orElseThrow(() -> new IllegalStateException("No court found"));
+        String courtName = getCourtName(partyType, defendantAddress, claimantAddress);
 
         switch (partyType) {
             case INDIVIDUAL:
@@ -173,6 +161,25 @@ public class PaperResponseLetterService {
             default:
                 throw new MappingException();
         }
+    }
+
+    private String getCourtName(CCDPartyType partyType, CCDAddress defendantAddress, CCDAddress claimantAddress) {
+        return courtFinderApi.findMoneyClaimCourtByPostcode(partyType == CCDPartyType.COMPANY
+            ? claimantAddress.getPostCode() : defendantAddress.getPostCode())
+            .stream()
+            .map(Court::getName)
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException("No court found"));
+    }
+
+    private CCDAddress getClaimantAddress(CCDApplicant applicant) {
+        return applicant.getPartyDetail().getPrimaryAddress();
+    }
+
+    private CCDAddress getDefendantAddress(CCDRespondent respondent, CCDParty givenRespondent) {
+
+        return respondent.getPartyDetail() != null && respondent.getPartyDetail().getPrimaryAddress() != null
+            ? respondent.getPartyDetail().getPrimaryAddress() : givenRespondent.getPrimaryAddress();
     }
 
     public CCDCase addCoverLetterToCaseWithDocuments(

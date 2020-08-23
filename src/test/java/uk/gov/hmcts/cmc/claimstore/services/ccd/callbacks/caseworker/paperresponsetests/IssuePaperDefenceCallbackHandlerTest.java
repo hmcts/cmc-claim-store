@@ -41,9 +41,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
 @ExtendWith(MockitoExtension.class)
-public class IssuePaperDefenceCallbackHandlerTest {
+ class IssuePaperDefenceCallbackHandlerTest {
     private static final String DOC_URL = "http://success.test";
     private static final String DOC_URL_BINARY = "http://success.test/binary";
     private static final String DOC_NAME = "doc-name";
@@ -191,5 +192,11 @@ public class IssuePaperDefenceCallbackHandlerTest {
             (AboutToStartOrSubmitCallbackResponse) issuePaperDefenceCallbackHandler.handle(callbackParams);
         assertThat(actualResponse.getErrors().get(0)).isEqualTo(ERROR_MESSAGE);
     }
+
+    @Test
+    void shouldHaveCorrectCaseworkerRole() {
+        assertThat(issuePaperDefenceCallbackHandler.getSupportedRoles()).containsOnly(CASEWORKER);
+    }
+
 }
 

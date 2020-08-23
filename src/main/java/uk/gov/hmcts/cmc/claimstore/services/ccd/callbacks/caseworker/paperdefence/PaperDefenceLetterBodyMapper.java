@@ -8,16 +8,10 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
 
-import java.time.Clock;
 import java.time.LocalDate;
 
 @Component
 public class PaperDefenceLetterBodyMapper {
-    private final Clock clock;
-
-    public PaperDefenceLetterBodyMapper(Clock clock) {
-        this.clock = clock;
-    }
 
     public DocAssemblyTemplateBody coverLetterTemplateMapper(
         CCDCase ccdCase,
@@ -32,7 +26,6 @@ public class PaperDefenceLetterBodyMapper {
 
         LocalDate currentDate = LocalDate.now();
 
-        // TODO how to create party name either based on title + first name + last name or just party name
         String partyName = respondent.getPartyName() != null
             ? respondent.getPartyName() :
             respondent.getClaimantProvidedPartyName();
@@ -101,8 +94,7 @@ public class PaperDefenceLetterBodyMapper {
         CCDAddress claimantAddress = applicant.getPartyDetail().getCorrespondenceAddress() == null
             ? applicant.getPartyDetail().getPrimaryAddress() : applicant.getPartyDetail().getCorrespondenceAddress();
 
-        CCDAddress defendantAddress = givenRespondent.getCorrespondenceAddress() == null
-            ? givenRespondent.getPrimaryAddress() : givenRespondent.getCorrespondenceAddress();
+        CCDAddress defendantAddress = getDefendantAddress(respondent, givenRespondent);
 
         String partyName = respondent.getPartyName() != null
             ? respondent.getPartyName() :
@@ -120,5 +112,18 @@ public class PaperDefenceLetterBodyMapper {
             .claimantEmail(applicant.getPartyDetail().getEmailAddress())
             .claimantAddress(claimantAddress)
             .build();
+    }
+
+    private CCDAddress getDefendantAddress(CCDRespondent respondent, CCDParty givenRespondent) {
+
+        if (respondent.getPartyDetail() != null && respondent.getPartyDetail().getCorrespondenceAddress() != null) {
+            return respondent.getPartyDetail().getCorrespondenceAddress();
+        } else if (respondent.getPartyDetail() != null && respondent.getPartyDetail().getPrimaryAddress() != null) {
+            return respondent.getPartyDetail().getPrimaryAddress();
+        } else if (givenRespondent.getCorrespondenceAddress() != null) {
+            return givenRespondent.getCorrespondenceAddress();
+        } else {
+            return givenRespondent.getPrimaryAddress();
+        }
     }
 }

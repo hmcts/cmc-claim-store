@@ -13,7 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplate
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class PaperResponseLetter {
-    public String templateId;
-    public DocAssemblyTemplateBody payload;
+    private String templateId;
+    private DocAssemblyTemplateBody payload;
 }
 

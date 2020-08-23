@@ -36,7 +36,6 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BULK_PRIN
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.BULK_PRINT_TRANSFER_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.DIRECTION_ORDER_LETTER_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.GENERAL_LETTER_TYPE;
-import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.PAPER_DEFENCE_TYPE;
 
 @Service
 @ConditionalOnProperty(prefix = "send-letter", name = "url")
@@ -152,9 +151,6 @@ public class BulkPrintService implements PrintService {
         }
         if (letterType.equals(BULK_PRINT_TRANSFER_TYPE)) {
             info = "Bulk print request {} created for request    type {} claim reference {}";
-        }
-        if (letterType.equals(PAPER_DEFENCE_TYPE)) {
-            info = "Paper defence type request {} created for request    type {} claim reference {}";
         }
 
         List<String> docs = documents.stream()
