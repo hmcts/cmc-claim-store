@@ -124,9 +124,9 @@ public class GenerateOrderCallbackHandlerTest extends BaseMockSpringTest {
         assertThat(responseData.get("eyewitnessUploadForParty")).isEqualTo("BOTH");
         assertThat(responseData.get("preferredDQCourt")).isEqualTo("Preferred court");
         assertThat(responseData.get("paperDetermination")).isEqualTo("NO");
-        assertThat(responseData.get("newRequestedCourt")).isEqualTo("Not applicable");
-        assertThat(responseData.get("preferredCourtObjectingParty")).isEqualTo("Not applicable");
-        assertThat(responseData.get("preferredCourtObjectingReason")).isEqualTo("No Objection");
+        assertThat(responseData.get("newRequestedCourt")).isEqualTo("Court not objected");
+        assertThat(responseData.get("preferredCourtObjectingParty")).isEqualTo("Court not objected");
+        assertThat(responseData.get("preferredCourtObjectingReason")).isEqualTo("Court not objected");
         assertThat(responseData.get("otherDirectionHeaders")).isNull();
     }
 
