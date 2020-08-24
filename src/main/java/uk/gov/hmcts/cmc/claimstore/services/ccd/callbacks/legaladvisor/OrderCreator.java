@@ -221,8 +221,9 @@ public class OrderCreator {
             preferredCourtObjectingReason = defendantDQ.getExceptionalCircumstancesReason();
         }
 
-        if (null == newRequestedCourt && null == preferredCourtObjectingParty
-            && null == preferredCourtObjectingReason) {
+        if (StringUtils.isBlank(newRequestedCourt)
+            && StringUtils.isBlank(preferredCourtObjectingParty)
+            && StringUtils.isBlank(preferredCourtObjectingReason)) {
             newRequestedCourt = COURT_NOT_OBJECTED;
             preferredCourtObjectingParty = COURT_NOT_OBJECTED;
             preferredCourtObjectingReason = COURT_NOT_OBJECTED;
