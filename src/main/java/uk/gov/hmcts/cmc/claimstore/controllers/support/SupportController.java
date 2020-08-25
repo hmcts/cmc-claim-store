@@ -57,12 +57,15 @@ import uk.gov.hmcts.cmc.domain.models.MediationRequest;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
+import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
+import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import javax.validation.Valid;
@@ -247,10 +250,12 @@ public class SupportController {
 
     private void triggerAsyncOperation(String authorisation, Claim claim) {
         if (claim.getClaimData().isClaimantRepresented()) {
-            String submitterName = claim.getClaimData().getClaimant()
-                .getRepresentative()
-                .orElseThrow(() -> new IllegalArgumentException(MISSING_REPRESENTATIVE))
-                .getOrganisationName();
+            String submitterName = claim.getClaimData().getClaimants().stream()
+                .findFirst()
+                .map(Party::getRepresentative)
+                .map(Optional::get)
+                .map(Representative::getOrganisationName)
+                .orElseThrow(() -> new IllegalArgumentException(MISSING_REPRESENTATIVE));
 
             this.postClaimOrchestrationHandler
                 .representativeIssueHandler(new RepresentedClaimCreatedEvent(claim, submitterName, authorisation));
