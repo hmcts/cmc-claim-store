@@ -11,7 +11,13 @@ import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.rpa.config.EmailProperties;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountRange;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepresentative;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
@@ -79,7 +85,17 @@ public class ClaimIssuedNotificationServiceTest extends BaseMockSpringTest {
     }
 
     @Test
-    public void shouldSendEmailToConfiguredRecipient() {
+    public void shouldSendEmailToLegalSealedClaimRecipient() {
+        claim = getLegalSealedClaim();
+        service.notifyRobotics(claim, documents);
+
+        verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
+
+        assertThat(emailDataArgument.getValue().getTo()).isEqualTo(emailProperties.getLegalSealedClaimRecipient());
+    }
+
+    @Test
+    public void shouldSendEmailToCitizenClaimRecipient() {
         service.notifyRobotics(claim, documents);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
@@ -88,7 +104,7 @@ public class ClaimIssuedNotificationServiceTest extends BaseMockSpringTest {
     }
 
     @Test
-    public void shouldSendEmailWithContent() {
+    public void shouldSendEmailWithCitizenContent() {
         service.notifyRobotics(claim, documents);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
@@ -98,7 +114,7 @@ public class ClaimIssuedNotificationServiceTest extends BaseMockSpringTest {
     }
 
     @Test
-    public void shouldSendEmailWithPDFAttachments() {
+    public void shouldSendEmailWithCitizenSealedPDFAttachments() {
         service.notifyRobotics(claim, documents);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
@@ -120,5 +136,70 @@ public class ClaimIssuedNotificationServiceTest extends BaseMockSpringTest {
 
         assertThat(emailAttachment.getContentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
         assertThat(emailAttachment.getFilename()).isEqualTo(expectedJsonFilename);
+    }
+
+    @Test
+    public void shouldSendEmailWithLegalSealedClaimPDFAttachments() {
+        Claim claim = getLegalSealedClaim();
+        List<PDF> documents = new ArrayList<>();
+        PDF sealedClaimDoc = new PDF(buildSealedClaimFileBaseName(claim.getReferenceNumber()),
+            PDF_CONTENT,
+            SEALED_CLAIM);
+        documents.add(sealedClaimDoc);
+
+        service.notifyRobotics(claim, documents);
+
+        verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
+
+        EmailAttachment sealedClaimEmailAttachment = emailDataArgument.getValue()
+            .getAttachments()
+            .get(0);
+
+        String expectedPdfFilename = buildSealedClaimFileBaseName(claim.getReferenceNumber()) + EXTENSION;
+
+        assertThat(sealedClaimEmailAttachment.getContentType()).isEqualTo(MediaType.APPLICATION_PDF_VALUE);
+        assertThat(sealedClaimEmailAttachment.getFilename()).isEqualTo(expectedPdfFilename);
+
+        EmailAttachment emailAttachment = emailDataArgument.getValue()
+            .getAttachments()
+            .get(1);
+
+        String expectedJsonFilename = buildJsonClaimFileBaseName(claim.getReferenceNumber()) + JSON_EXTENSION;
+
+        assertThat(emailAttachment.getContentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
+        assertThat(emailAttachment.getFilename()).isEqualTo(expectedJsonFilename);
+    }
+
+    private Claim getLegalSealedClaim() {
+        return SampleClaim.builder()
+            .withClaimData(SampleClaimData.builder()
+                .withExternalId(SampleClaim.RAND_UUID)
+                .withExternalReferenceNumber("LBA/UM1616668")
+                .withAmount(SampleAmountRange.builder().build())
+                .clearDefendants()
+                .clearClaimants()
+                .withClaimant(SampleParty.builder()
+                    .withPhone("(0)207 127 0000")
+                    .withRepresentative(SampleRepresentative.builder()
+                        .organisationContactDetails(ContactDetails.builder()
+                            .dxAddress("xyzrt")
+                            .email("abn@gmail.com")
+                            .phone("01123456789")
+                            .build())
+                        .build())
+                    .individual())
+                .withDefendant(SampleTheirDetails.builder()
+                    .withRepresentative(SampleRepresentative.builder()
+                        .organisationContactDetails(ContactDetails.builder()
+                            .dxAddress("xyzrt")
+                            .email("abn@gmail.com")
+                            .phone("01123456789")
+                            .build())
+                        .build())
+                    .individualDetails())
+                .build()
+            )
+            .withReferenceNumber("006LR003")
+            .build();
     }
 }
