@@ -18,6 +18,9 @@ public class EmailProperties {
     private String sealedClaimRecipient;
 
     @NotBlank
+    private String legalSealedClaimRecipient;
+
+    @NotBlank
     private String responseRecipient;
 
     @NotBlank
@@ -75,5 +78,13 @@ public class EmailProperties {
 
     public void setPaidInFullRecipient(String paidInFullRecipient) {
         this.paidInFullRecipient = paidInFullRecipient;
+    }
+
+    public String getLegalSealedClaimRecipient() {
+        return legalSealedClaimRecipient;
+    }
+
+    public void setLegalSealedClaimRecipient(String legalSealedClaimRecipient) {
+        this.legalSealedClaimRecipient = legalSealedClaimRecipient;
     }
 }
