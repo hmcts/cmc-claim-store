@@ -225,6 +225,7 @@ public class OrderCreator {
             && StringUtils.isBlank(preferredCourtObjectingParty)
             && StringUtils.isBlank(preferredCourtObjectingReason)) {
             newRequestedCourt = COURT_NOT_OBJECTED;
+            preferredCourtObjectingParty = CCDResponseSubjectType.NONE.getValue();
             preferredCourtObjectingReason = COURT_NOT_OBJECTED;
         }
 
