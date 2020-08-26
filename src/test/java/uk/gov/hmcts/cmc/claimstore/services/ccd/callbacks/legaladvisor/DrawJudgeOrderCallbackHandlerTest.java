@@ -659,7 +659,6 @@ class DrawJudgeOrderCallbackHandlerTest {
                     assertThat(response.getData()).contains(
                         entry("preferredDQCourt", DEFENDANT_PREFERRED_COURT),
                         entry("newRequestedCourt", "Court not objected"),
-                        entry("preferredCourtObjectingParty", "Court not objected"),
                         entry("preferredCourtObjectingReason", "Court not objected")
                     );
                 }
