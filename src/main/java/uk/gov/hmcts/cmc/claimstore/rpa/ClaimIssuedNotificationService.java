@@ -12,9 +12,11 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
+import uk.gov.hmcts.cmc.rpa.mapper.LegalSealedClaimJsonMapper;
 import uk.gov.hmcts.cmc.rpa.mapper.SealedClaimJsonMapper;
 
 import java.util.List;
+import javax.json.JsonObject;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
@@ -28,28 +30,29 @@ public class ClaimIssuedNotificationService {
     private final EmailService emailService;
     private final EmailProperties emailProperties;
     private final ClaimIssuedEmailContentProvider emailContentProvider;
-    private final SealedClaimJsonMapper jsonMapper;
+    private final SealedClaimJsonMapper citizenSealedClaimMapper;
+    private final LegalSealedClaimJsonMapper legalSealedClaimMapper;
 
     @Autowired
     public ClaimIssuedNotificationService(
         EmailService emailService,
         EmailProperties emailProperties,
         ClaimIssuedEmailContentProvider emailContentProvider,
-        SealedClaimJsonMapper jsonMapper
+        SealedClaimJsonMapper citizenSealedClaimMapper,
+        LegalSealedClaimJsonMapper legalSealedClaimMapper
     ) {
         this.emailService = emailService;
         this.emailProperties = emailProperties;
         this.emailContentProvider = emailContentProvider;
-        this.jsonMapper = jsonMapper;
+        this.citizenSealedClaimMapper = citizenSealedClaimMapper;
+        this.legalSealedClaimMapper = legalSealedClaimMapper;
     }
 
     public void notifyRobotics(Claim claim, List<PDF> documents) {
         requireNonNull(claim);
 
-        if (!claim.getClaimData().isClaimantRepresented()) {
-            EmailData emailData = prepareEmailData(claim, documents);
-            emailService.sendEmail(emailProperties.getSender(), emailData);
-        }
+        EmailData emailData = prepareEmailData(claim, documents);
+        emailService.sendEmail(emailProperties.getSender(), emailData);
     }
 
     private EmailData prepareEmailData(Claim claim, List<PDF> documents) {
@@ -61,16 +64,28 @@ public class ClaimIssuedNotificationService {
             .findFirst()
             .orElseThrow(() -> new IllegalArgumentException("Event does not contain sealed claim PDF"));
 
-        return new EmailData(emailProperties.getSealedClaimRecipient(),
+        return new EmailData(getSealedClaimRecipient(claim),
             content.getSubject(),
             content.getBody(),
             Lists.newArrayList(sealedClaimPdfAttachment, createSealedClaimJsonAttachment(claim))
         );
     }
 
+    private String getSealedClaimRecipient(Claim claim) {
+
+        return claim.getClaimData().isClaimantRepresented()
+            ? emailProperties.getLegalSealedClaimRecipient()
+            : emailProperties.getSealedClaimRecipient();
+    }
+
     private EmailAttachment createSealedClaimJsonAttachment(Claim claim) {
-        return EmailAttachment.json(jsonMapper.map(claim).toString().getBytes(),
+        return EmailAttachment.json(mapToJson(claim).toString().getBytes(),
             DocumentNameUtils.buildJsonClaimFileBaseName(claim.getReferenceNumber()) + JSON_EXTENSION);
     }
 
+    private JsonObject mapToJson(Claim claim) {
+        return claim.getClaimData().isClaimantRepresented()
+            ? legalSealedClaimMapper.map(claim)
+            : citizenSealedClaimMapper.map(claim);
+    }
 }
