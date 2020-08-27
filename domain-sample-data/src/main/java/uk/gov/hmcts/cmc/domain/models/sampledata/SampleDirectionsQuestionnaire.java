@@ -14,10 +14,13 @@ import java.util.List;
 
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleHearingLocation.defaultHearingLocation;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleRequireSupport.defaultRequireSupport;
 
 public class SampleDirectionsQuestionnaire {
 
     private HearingLocation hearingLocation = defaultHearingLocation;
+
+    private RequireSupport requireSupport = defaultRequireSupport;
 
     public static SampleDirectionsQuestionnaire builder() {
         return new SampleDirectionsQuestionnaire();
@@ -25,6 +28,11 @@ public class SampleDirectionsQuestionnaire {
 
     public SampleDirectionsQuestionnaire withHearingLocation(HearingLocation hearingLocation) {
         this.hearingLocation = hearingLocation;
+        return this;
+    }
+
+    public SampleDirectionsQuestionnaire withRequireSupport(RequireSupport requireSupport) {
+        this.requireSupport = requireSupport;
         return this;
     }
 
@@ -36,13 +44,7 @@ public class SampleDirectionsQuestionnaire {
             new ExpertReport("1", "expert1", LocalDate.of(2040, 1, 1)));
 
         return DirectionsQuestionnaire.builder()
-            .requireSupport(RequireSupport.builder()
-                .languageInterpreter("English")
-                .signLanguageInterpreter("Need Sign Language")
-                .disabledAccess(YES)
-                .hearingLoop(YES)
-                .build()
-            )
+            .requireSupport(requireSupport)
             .expertRequired(YES)
             .permissionForExpert(YES)
             .hearingLocation(hearingLocation)
