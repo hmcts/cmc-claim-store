@@ -161,5 +161,18 @@
     <suppress>
         <cve>CVE-2020-5408</cve>
         <cve>CVE-2020-5407</cve>
+
+        <notes><![CDATA[
+   file name: snakeyaml-1.25.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.yaml/snakeyaml@.*$</packageUrl>
+        <cpe>cpe:/a:snakeyaml_project:snakeyaml</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: launchdarkly-java-server-sdk-4.14.0.jar (shaded: org.yaml:snakeyaml:1.19)
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.yaml/snakeyaml@.*$</packageUrl>
+        <cpe>cpe:/a:snakeyaml_project:snakeyaml</cpe>
     </suppress>
 </suppressions>
