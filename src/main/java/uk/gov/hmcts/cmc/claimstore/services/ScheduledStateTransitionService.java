@@ -112,11 +112,11 @@ public class ScheduledStateTransitionService {
 
         Set<Claim> claims = new HashSet<>(caseSearchApi.getClaims(user,
             stateTransition.getQuery().apply(responseDate)));
-
+        logger.info("{} Total claims retrieved via elastic search: " + claims.size(), stateTransition);
         if (!stateTransition.getTriggerEvents().isEmpty()) {
             claims = filterClaimsByEvents(user, stateTransition, claims);
         }
-
+        logger.info("{} Total claims count followed by filtering: " + claims.size(), stateTransition);
         Collection<Claim> failedClaims = claims.stream()
             .map(claim -> updateClaim(user, claim, stateTransition))
             .filter(Optional::isPresent)
