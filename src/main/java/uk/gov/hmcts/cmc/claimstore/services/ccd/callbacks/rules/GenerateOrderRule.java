@@ -2,7 +2,9 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.rules;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -65,8 +67,13 @@ public class GenerateOrderRule {
 
         LocalDate uploadDeadlineDate = ccdCase.getDocUploadDeadline();
         LocalDate eyewitnessUploadDeadlineDate = ccdCase.getEyewitnessUploadDeadline();
+        List<CCDCollectionElement<CCDOrderDirection>> otherDirectionOrder =
+            ccdCase.getOtherDirections() == null ? List.of() : ccdCase.getOtherDirections();
 
         if (uploadDeadlineDate.isBefore(LocalDate.now()) || eyewitnessUploadDeadlineDate.isBefore(LocalDate.now())) {
+            validationErrors.add(PAST_DATE_ERROR_MESSAGE);
+        }
+        if (otherDirectionOrder.stream().anyMatch(e -> e.getValue().getSendBy().isBefore(LocalDate.now()))) {
             validationErrors.add(PAST_DATE_ERROR_MESSAGE);
         }
     }

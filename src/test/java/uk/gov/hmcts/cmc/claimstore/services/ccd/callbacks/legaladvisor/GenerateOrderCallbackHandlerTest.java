@@ -487,14 +487,14 @@ public class GenerateOrderCallbackHandlerTest {
                 void shouldUseSavedOtherDirectionsWhenExistingCcdCase() {
                     List<CCDCollectionElement<CCDOrderDirection>> otherDirections = ImmutableList.of(
                         CCDOrderDirection.builder()
-                            .sendBy(LocalDate.parse("2020-10-11"))
+                            .sendBy(LocalDate.now().plusDays(10))
                             .directionComment("a direction")
                             .extraOrderDirection(OTHER)
                             .otherDirectionHeaders(UPLOAD)
                             .forParty(BOTH)
                             .build(),
                         CCDOrderDirection.builder()
-                            .sendBy(LocalDate.parse("2020-10-11"))
+                            .sendBy(LocalDate.now().plusDays(10))
                             .extraOrderDirection(EXPERT_REPORT_PERMISSION)
                             .forParty(BOTH)
                             .build()

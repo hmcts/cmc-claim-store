@@ -563,7 +563,7 @@ public class SampleData {
             .state(OPEN.getValue())
             .build();
     }
-    
+
     public static CCDCase addContactChangePartyClaimant(CCDCase ccdCase) {
         return ccdCase.toBuilder()
             .contactChangeParty(CCDContactPartyType.CLAIMANT)
@@ -607,14 +607,14 @@ public class SampleData {
                             .directionComment("a direction")
                             .otherDirectionHeaders(UPLOAD)
                             .forParty(CCDDirectionPartyType.BOTH)
-                            .sendBy(LocalDate.parse("2020-10-11"))
+                            .sendBy(LocalDate.parse("2022-10-11"))
                             .build()
                     )
                     .build(),
                 CCDCollectionElement.<CCDOrderDirection>builder()
                     .value(
                         CCDOrderDirection.builder()
-                            .sendBy(LocalDate.parse("2020-10-11"))
+                            .sendBy(LocalDate.parse("2022-10-11"))
                             .extraOrderDirection(EXPERT_REPORT_PERMISSION)
                             .forParty(CCDDirectionPartyType.BOTH)
                             .expertReports(
@@ -640,8 +640,8 @@ public class SampleData {
                     )
                     .build()))
             .paperDetermination(NO)
-            .docUploadDeadline(LocalDate.parse("2020-10-11"))
-            .eyewitnessUploadDeadline(LocalDate.parse("2020-10-11"))
+            .docUploadDeadline(LocalDate.parse("2022-10-11"))
+            .eyewitnessUploadDeadline(LocalDate.parse("2022-10-11"))
             .hearingCourt("BIRMINGHAM")
             .preferredCourtObjectingReason("I like this court more")
             .newRequestedCourt("Another court")
