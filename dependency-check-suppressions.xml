@@ -165,4 +165,8 @@
         <gav regex="true">.*</gav>
         <cve>CVE-2017-18640</cve>
     </suppress>
+    <suppress>
+    <cve>CVE-2020-5407</cve>
+    <cve>CVE-2020-5408</cve>
+        </suppress>
 </suppressions>
