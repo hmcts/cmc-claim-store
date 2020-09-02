@@ -160,6 +160,7 @@
   "10010_Cookie No HttpOnly Flag_http://cmc-claim-store-aat.service.core-compute-aat.internal/deadline/issueDate_GET": "ignore",
   "10010_Cookie No HttpOnly Flag_http://cmc-claim-store-aat.service.core-compute-aat.internal/support/rpa/ccj_PUT": "ignore",
   "10010_Cookie No HttpOnly Flag_http://cmc-claim-store-aat.service.core-compute-aat.internal/support/rpa/claim_PUT": "ignore",
+  "10010_Cookie No HttpOnly Flag_http://cmc-claim-store-aat.service.core-compute-aat.internal/support/rpa/paid-in-full_PUT": "ignore",
   "10010_Cookie No HttpOnly Flag_http://cmc-claim-store-aat.service.core-compute-aat.internal/support/rpa/response_PUT": "ignore",
   "10010_Cookie No HttpOnly Flag_http://cmc-claim-store-aat.service.core-compute-aat.internal/_GET": "ignore",
   "10010_Cookie No HttpOnly Flag_http://cmc-claim-store-aat.service.core-compute-aat.internal/testing-support/claims/claimReferenceNumber_GET": "ignore",
