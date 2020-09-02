@@ -151,6 +151,7 @@
   "10010_Cookie No HttpOnly Flag_http://cmc-claim-store-aat.service.core-compute-aat.internal/calendar/next-working-day?date=date_GET": "ignore",
   "10010_Cookie No HttpOnly Flag_http://cmc-claim-store-aat.service.core-compute-aat.internal/cases/callbacks/version/callback-type_POST": "ignore",
   "10010_Cookie No HttpOnly Flag_http://cmc-claim-store-aat.service.core-compute-aat.internal/claims/claimant/submitterId_GET": "ignore",
+  "10010_Cookie No HttpOnly Flag_http://cmc-claim-store-aat.service.core-compute-aat.internal/claims/claimant/submitterId/metadata_GET": "ignore",
   "10010_Cookie No HttpOnly Flag_http://cmc-claim-store-aat.service.core-compute-aat.internal/claims/create-citizen-claim_PUT": "ignore",
   "10010_Cookie No HttpOnly Flag_http://cmc-claim-store-aat.service.core-compute-aat.internal/claims/defendant/defendantId_GET": "ignore",
   "10010_Cookie No HttpOnly Flag_http://cmc-claim-store-aat.service.core-compute-aat.internal/claims/defendant/defendantId/metadata_GET": "ignore",
