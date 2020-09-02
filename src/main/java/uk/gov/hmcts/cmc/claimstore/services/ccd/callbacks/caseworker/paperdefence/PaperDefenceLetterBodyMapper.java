@@ -20,8 +20,7 @@ public class PaperDefenceLetterBodyMapper {
     ) {
         CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
         CCDParty givenRespondent = respondent.getClaimantProvidedDetail();
-        CCDAddress defendantAddress = givenRespondent.getCorrespondenceAddress() == null
-            ? givenRespondent.getPrimaryAddress() : givenRespondent.getCorrespondenceAddress();
+        CCDAddress defendantAddress = getDefendantAddress(respondent, givenRespondent);
         CCDApplicant applicant = ccdCase.getApplicants().get(0).getValue();
 
         LocalDate currentDate = LocalDate.now();
