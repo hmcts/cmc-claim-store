@@ -36,6 +36,11 @@ data "azurerm_key_vault_secret" "staff_email_legal_rep" {
   key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
 }
 
+data "azurerm_key_vault_secret" "rpa-email-legal-sealed-claim" {
+  name = "rpa-email-legal-sealed-claim"
+  key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
+}
+
 data "azurerm_key_vault_secret" "live_support_email" {
   name = "live-support-email"
   key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
