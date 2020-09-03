@@ -39,6 +39,7 @@ java:
         - staff-email
         - live-support-email
         - rpa-email-sealed-claim
+        - rpa-email-legal-sealed-claim
         - rpa-email-more-time-requested
         - rpa-email-response
         - rpa-email-ccj
@@ -54,7 +55,7 @@ java:
     CMC_DB_CONNECTION_OPTIONS: '?sslmode=allow'
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-ccd-data-store-api
     OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/hmcts
-    RPA_NOTIFICATIONS_LEGALSEALEDCLAIMRECIPIENT: civilmoneyclaims+rpa-legal-sealedclaim-issued@gmail.com 
+    RPA_NOTIFICATIONS_LEGALSEALEDCLAIMRECIPIENT: civilmoneyclaims+rpa-legal-sealedclaim-issued@gmail.com
 
 ccd:
   enabled: true
