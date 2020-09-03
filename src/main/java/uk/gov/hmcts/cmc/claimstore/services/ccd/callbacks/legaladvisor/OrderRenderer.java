@@ -17,6 +17,7 @@ public class OrderRenderer {
     private final DocAssemblyService docAssemblyService;
     private final String legalAdvisorTemplateId;
     private final String judgeTemplateId;
+    private final String bespokeTemplateId;
     private final UserService userService;
     private final DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
 
@@ -25,21 +26,26 @@ public class OrderRenderer {
         UserService userService,
         DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper,
         @Value("${doc_assembly.templateId}") String legalAdvisorTemplateId,
-        @Value("${doc_assembly.judgeTemplateId}") String judgeTemplateId
+        @Value("${doc_assembly.judgeTemplateId}") String judgeTemplateId,
+        @Value("${doc_assembly.bespokeTemplateId}") String bespokeTemplateId
     ) {
         this.docAssemblyService = docAssemblyService;
         this.legalAdvisorTemplateId = legalAdvisorTemplateId;
         this.judgeTemplateId = judgeTemplateId;
+        this.bespokeTemplateId = bespokeTemplateId;
         this.userService = userService;
         this.docAssemblyTemplateBodyMapper = docAssemblyTemplateBodyMapper;
     }
 
     public DocAssemblyResponse renderOrder(CCDCase ccdCase, String authorisation) {
         ClaimState claimState = ClaimState.fromValue(ccdCase.getState());
+        if (null != ccdCase.getDirectionOrderType() && ccdCase.getDirectionOrderType().equalsIgnoreCase("BESPOKE")) {
+            return renderJudgeBespokeOrder(ccdCase, authorisation);
+        }
         return claimState == READY_FOR_JUDGE_DIRECTIONS  ? renderJudgeOrder(ccdCase, authorisation)
             : renderLegalAdvisorOrder(ccdCase, authorisation);
     }
-    
+
     private DocAssemblyResponse renderOrder(CCDCase ccdCase, String authorisation, String templateId) {
         UserDetails userDetails = userService.getUserDetails(authorisation);
 
@@ -49,12 +55,25 @@ public class OrderRenderer {
             docAssemblyTemplateBodyMapper.from(ccdCase, userDetails));
     }
 
+    private DocAssemblyResponse renderBespokeOrder(CCDCase ccdCase, String authorisation, String templateId) {
+        UserDetails userDetails = userService.getUserDetails(authorisation);
+
+        return docAssemblyService.renderTemplate(ccdCase,
+            authorisation,
+            templateId,
+            docAssemblyTemplateBodyMapper.mapBespokeDirectionOrder(ccdCase, userDetails));
+    }
+
     public DocAssemblyResponse renderLegalAdvisorOrder(CCDCase ccdCase, String authorisation) {
         return renderOrder(ccdCase, authorisation, legalAdvisorTemplateId);
     }
 
     public DocAssemblyResponse renderJudgeOrder(CCDCase ccdCase, String authorisation) {
         return renderOrder(ccdCase, authorisation, judgeTemplateId);
+    }
+
+    public DocAssemblyResponse renderJudgeBespokeOrder(CCDCase ccdCase, String authorisation) {
+        return renderBespokeOrder(ccdCase, authorisation, bespokeTemplateId);
     }
 
 }

@@ -9,10 +9,7 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -160,4 +157,8 @@ public class CCDCase {
     @Builder.Default
     private List<CCDCollectionElement<CCDScannedDocument>> temporaryScannedDocuments = Collections.emptyList();
     private LocalDate dateOfHandoff;
+    private String directionOrderType;
+
+    private List<CCDCollectionElement<CCDBespokeOrderDirection>> bespokeDirectionList;
+    private CCDBespokeOrderWarning bespokeOrderWarning;
 }

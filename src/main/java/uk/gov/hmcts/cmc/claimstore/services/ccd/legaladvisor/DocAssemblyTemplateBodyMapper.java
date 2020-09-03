@@ -230,4 +230,42 @@ public class DocAssemblyTemplateBodyMapper {
             .partyAddress(partyAddress)
             .build();
     }
+
+    public DocAssemblyTemplateBody mapBespokeDirectionOrder(CCDCase ccdCase, UserDetails userDetails) {
+        LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
+
+        return DocAssemblyTemplateBody.builder()
+            .claimant(Party.builder()
+            .partyName(ccdCase.getApplicants()
+                .get(0)
+                .getValue()
+                .getPartyName())
+            .build())
+            .defendant(Party.builder()
+                .partyName(ccdCase.getRespondents()
+                    .get(0)
+                    .getValue()
+                    .getPartyName())
+                .build())
+            .judicial(Judicial.builder()
+                .firstName(userDetails.getForename())
+                .lastName(userDetails.getSurname().orElse(""))
+                .build())
+            .currentDate(currentDate)
+            .referenceNumber(ccdCase.getPreviousServiceCaseReference())
+            .bespokeDirectionList(ccdCase.getBespokeDirectionList()
+                .stream()
+                .filter(direction -> direction != null && direction.getValue() != null)
+                .map(CCDCollectionElement::getValue)
+                .map(ccdBespokeOrderDirection -> BespokeDirection.builder()
+                    .directionComment(ccdBespokeOrderDirection.getBeSpokeDirectionExplain())
+                    .sendBy(ccdBespokeOrderDirection.getBeSpokeDirectionDatetime())
+                    .forParty(ccdBespokeOrderDirection.getBeSpokeDirectionFor())
+                    .build())
+                .collect(Collectors.toList()))
+            .changeOrderDeadline(workingDayIndicator.getNextWorkingDay(
+                currentDate.plusDays(CHANGE_ORDER_DEADLINE_NO_OF_DAYS)))
+            .bespokeOrderWarning(Boolean.TRUE)
+            .build();
+    }
 }

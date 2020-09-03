@@ -107,6 +107,11 @@ public class DocAssemblyTemplateBody implements FormPayload {
     private List<CCDCollectionElement<String>> expertReportInstructionClaimant;
     private List<CCDCollectionElement<String>> expertReportInstructionDefendant;
 
+    //Bespoke Order changes
+    @JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
+    private List<BespokeDirection> bespokeDirectionList;
+    private boolean bespokeOrderWarning;
+
     private String partyName;
     private String businessName;
     private CCDAddress partyAddress;

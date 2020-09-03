@@ -42,6 +42,7 @@ import java.util.stream.Stream;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDBespokeOrderWarning.WARNING;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.BOTH;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.DOCUMENTS;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EYEWITNESS;
@@ -60,6 +61,7 @@ public class OrderCreator {
     private static final String PREFERRED_COURT_OBJECTING_PARTY = "preferredCourtObjectingParty";
     private static final String PREFERRED_COURT_OBJECTING_REASON = "preferredCourtObjectingReason";
     private static final String DIRECTION_LIST = "directionList";
+    private static final String BESPOKE_DIRECTION_WARNING = "drawBespokeDirectionOrderWarning";
     private static final String PREFERRED_DQ_COURT = "preferredDQCourt";
     private static final String EXPERT_PERMISSION_BY_CLAIMANT = "expertReportPermissionPartyAskedByClaimant";
     private static final String EXPERT_PERMISSION_BY_DEFENDANT = "expertReportPermissionPartyAskedByDefendant";
@@ -105,6 +107,7 @@ public class OrderCreator {
 
         Map<String, Object> data = new HashMap<>();
         data.put(DIRECTION_LIST, chooseItem(ccdCase.getDirectionList(), ImmutableList.of(DOCUMENTS, EYEWITNESS)));
+        data.put(BESPOKE_DIRECTION_WARNING, chooseItem(ccdCase.getBespokeOrderWarning(), ImmutableList.of(WARNING)));
 
         addCourtData(claim, ccdCase, data);
 

@@ -30,6 +30,7 @@ class OrderRendererTest {
     private DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
     private static final String LEGAL_ADVISOR_TEMPLATE_ID = "legalAdvisorTemplateId";
     private static final String JUDGE_TEMPLATE_ID = "judgeTemplateId";
+    private static final String BESPOKE_TEMPLATE_ID = "bespokeTemplateId";
     private static final String AUTHORISATION = "authorisation";
 
     private CCDCase ccdCase;
@@ -47,7 +48,8 @@ class OrderRendererTest {
             userService,
             docAssemblyTemplateBodyMapper,
             LEGAL_ADVISOR_TEMPLATE_ID,
-            JUDGE_TEMPLATE_ID);
+            JUDGE_TEMPLATE_ID,
+            BESPOKE_TEMPLATE_ID);
     }
 
     @Test
