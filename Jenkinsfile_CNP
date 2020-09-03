@@ -6,7 +6,7 @@ def product = "cmc"
 def component = "claim-store"
 
 def secrets = [
-  // these are required for our integration tests container (initialised in Jenkins)
+  // these are required for our integration tests env.IDAM_WEB_URL = 'https://idam-web-public.aat.platform.hmcts.net'container (initialised in Jenkins)
   'cmc-${env}': [
     secret('citizen-oauth-client-secret', 'OAUTH2_CLIENT_SECRET'),
     secret('smoke-test-citizen-username', 'SMOKE_TEST_CITIZEN_USERNAME'),
