@@ -160,5 +160,7 @@ public class CCDCase {
     private String directionOrderType;
 
     private List<CCDCollectionElement<CCDBespokeOrderDirection>> bespokeDirectionList;
-    private CCDBespokeOrderWarning bespokeOrderWarning;
+
+    @Builder.Default
+    private List<CCDBespokeOrderWarning> drawBespokeDirectionOrderWarning = Collections.emptyList();
 }

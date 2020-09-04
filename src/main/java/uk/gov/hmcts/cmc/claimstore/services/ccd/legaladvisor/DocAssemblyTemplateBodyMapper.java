@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDContactChangeContent;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.GeneralLetterContent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDBespokeOrderWarning;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionOrderService;
@@ -265,7 +266,7 @@ public class DocAssemblyTemplateBodyMapper {
                 .collect(Collectors.toList()))
             .changeOrderDeadline(workingDayIndicator.getNextWorkingDay(
                 currentDate.plusDays(CHANGE_ORDER_DEADLINE_NO_OF_DAYS)))
-            .bespokeOrderWarning(Boolean.TRUE)
+            .bespokeOrderWarning(ccdCase.getDrawBespokeDirectionOrderWarning().contains(CCDBespokeOrderWarning.WARNING))
             .build();
     }
 }

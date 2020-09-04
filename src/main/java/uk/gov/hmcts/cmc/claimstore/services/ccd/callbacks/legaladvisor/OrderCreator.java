@@ -107,7 +107,7 @@ public class OrderCreator {
 
         Map<String, Object> data = new HashMap<>();
         data.put(DIRECTION_LIST, chooseItem(ccdCase.getDirectionList(), ImmutableList.of(DOCUMENTS, EYEWITNESS)));
-        data.put(BESPOKE_DIRECTION_WARNING, chooseItem(ccdCase.getBespokeOrderWarning(), ImmutableList.of(WARNING)));
+        data.put(BESPOKE_DIRECTION_WARNING, chooseItem(ccdCase.getDrawBespokeDirectionOrderWarning(), ImmutableList.of(WARNING)));
 
         addCourtData(claim, ccdCase, data);
 
