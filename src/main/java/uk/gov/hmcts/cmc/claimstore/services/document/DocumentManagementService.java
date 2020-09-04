@@ -149,10 +149,9 @@ public class DocumentManagementService {
                 URI.create(documentMetadata.links.binary.href).getPath()
             );
 
-            if(responseEntity.getBody() == null) {
+            if (responseEntity.getBody() == null) {
                 throw new NullPointerException("No response body returned");
-            }
-            else {
+            } else {
                 ByteArrayResource resource = (ByteArrayResource) responseEntity.getBody();
                 //noinspection ConstantConditions let the NPE be thrown
                 return resource.getByteArray();
