@@ -149,9 +149,14 @@ public class DocumentManagementService {
                 URI.create(documentMetadata.links.binary.href).getPath()
             );
 
-            ByteArrayResource resource = (ByteArrayResource) responseEntity.getBody();
-            //noinspection ConstantConditions let the NPE be thrown
-            return resource.getByteArray();
+            if(responseEntity.getBody() == null) {
+                throw new NullPointerException("No response body returned");
+            }
+            else {
+                ByteArrayResource resource = (ByteArrayResource) responseEntity.getBody();
+                //noinspection ConstantConditions let the NPE be thrown
+                return resource.getByteArray();
+            }
         } catch (Exception ex) {
             throw new DocumentManagementException(
                 String.format("Unable to download document %s from document management.",
