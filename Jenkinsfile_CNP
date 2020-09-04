@@ -6,7 +6,7 @@ def product = "cmc"
 def component = "claim-store"
 
 def secrets = [
-  // these are required for our integration tests env.IDAM_WEB_URL = 'https://idam-web-public.aat.platform.hmcts.net'container (initialised in Jenkins)
+  // these are required for our integration tests container (initialised in Jenkins)
   'cmc-${env}': [
     secret('citizen-oauth-client-secret', 'OAUTH2_CLIENT_SECRET'),
     secret('smoke-test-citizen-username', 'SMOKE_TEST_CITIZEN_USERNAME'),
@@ -34,7 +34,6 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 // Vars needed for AKS testing
 env.FRONTEND_BASE_URL = 'https://moneyclaims.aat.platform.hmcts.net'
 env.IDAM_API_URL = 'https://idam-api.aat.platform.hmcts.net'
-env.IDAM_WEB_URL = 'https://idam-web-public.aat.platform.hmcts.net'
 env.S2S_URL = 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
 env.PDF_SERVICE_URL = 'http://cmc-pdf-service-aat.service.core-compute-aat.internal'
 
