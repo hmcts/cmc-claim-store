@@ -54,6 +54,7 @@ java:
     CMC_DB_PASSWORD: hmcts
     CMC_DB_CONNECTION_OPTIONS: '?sslmode=allow'
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-ccd-data-store-api
+    RPA_NOTIFICATIONS_LEGALSEALEDCLAIMRECIPIENT: civilmoneyclaims+rpa-legal-sealedclaim-issued@gmail.com
 
 ccd:
   enabled: true
@@ -126,7 +127,7 @@ ccd:
       - civilmoneyclaims+la@gmail.com|CMC|MoneyClaimCase|readyForDirections
 
   ccd-definition-importer:
-    image: hmctspublic.azurecr.io/cmc/ccd-definition-importer:1.6.6
+    image: hmctspublic.azurecr.io/cmc/ccd-definition-importer:1.6.10
     environment:
       CCD_DEF_CLAIM_STORE_BASE_URL: http://${SERVICE_NAME}-java
     definitionFilename: cmc-ccd.xlsx
@@ -140,3 +141,4 @@ ccd:
     - caseworker-cmc-anonymouscitizen
     - caseworker-cmc-judge
     - caseworker-cmc-legaladvisor
+    - caseworker-cmc-pcqextractor
