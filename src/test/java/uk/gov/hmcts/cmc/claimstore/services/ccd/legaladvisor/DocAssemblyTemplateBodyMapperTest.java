@@ -602,7 +602,8 @@ class DocAssemblyTemplateBodyMapperTest {
     }
 
     @Nested
-    class bespokeOrderTest {
+    @DisplayName("Test methods for bespoke direction orders")
+    class BespokeDirectionOrderTests {
 
         @BeforeEach
         void setUp() {
