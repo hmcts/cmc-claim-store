@@ -163,11 +163,11 @@ public class DocumentNameUtils {
     }
 
     public static String buildLADirectionOrderFileName(String caseRef) {
-        return getFileName(caseRef, "Legal-Adviser-Direction-Order");
+        return getFileName(caseRef, "Legal-Adviser-Directions-Order");
     }
 
     public static String buildJudgeDirectionOrderFileName(String caseRef) {
-        return getFileName(caseRef, "Judge-Direction-Order");
+        return getFileName(caseRef, "Judge-Directions-Order");
     }
 
     private static String getFileName(String caseRef, String fileNameSuffix) {
