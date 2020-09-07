@@ -102,5 +102,6 @@
   "hasMainAddressChanged": false,
   "hasPhoneChanged": false,
   "orderDrawnByJudge": false,
-  "orderDrawnByLA": false
+  "orderDrawnByLA": false,
+  "bespokeOrderWarning": false
 }
