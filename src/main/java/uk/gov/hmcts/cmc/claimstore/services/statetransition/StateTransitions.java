@@ -26,7 +26,7 @@ public enum StateTransitions implements StateTransition {
                 .mustNot(QueryBuilders.existsQuery("data.respondents.value.paidInFullDate"))
                 .mustNot(QueryBuilders.existsQuery("data.respondents.value.claimantResponse.submittedOn"))
                 .must(QueryBuilders.rangeQuery("data.submittedOn")
-                    .gte(calculateProjectSubmittedOnDate(responseDate, 60))
+                    .gte(calculateClaimSubmittedOnDate(responseDate, Constants.CLAIM_CREATED_BEFORE_DAYS_COUNT))
                     .lte(responseDate))
         ),
         ImmutableSet.of(CaseEvent.DISPUTE, CaseEvent.ALREADY_PAID,  CaseEvent.FULL_ADMISSION,
@@ -35,7 +35,8 @@ public enum StateTransitions implements StateTransition {
             CaseEvent.SENDING_CLAIMANT_NOTIFICATION, CaseEvent.PIN_GENERATION_OPERATIONS, CaseEvent.SENDING_RPA,
             CaseEvent.SEALED_CLAIM_UPLOAD, CaseEvent.REVIEW_ORDER_UPLOAD, CaseEvent.CLAIM_ISSUE_RECEIPT_UPLOAD,
             CaseEvent.SUPPORT_UPDATE, CaseEvent.ATTACH_SCANNED_DOCS, CaseEvent.REVIEWED_PAPER_RESPONSE,
-            CaseEvent.RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS, CaseEvent.UPDATE_CLAIM, CaseEvent.LINK_SEALED_CLAIM)
+            CaseEvent.RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS, CaseEvent.UPDATE_CLAIM, CaseEvent.LINK_SEALED_CLAIM,
+            CaseEvent.CLAIM_NOTES, CaseEvent.PAPER_HAND_OFF)
     ),
 
     WAITING_TRANSFER(CaseEvent.WAITING_TRANSFER,
@@ -61,7 +62,11 @@ public enum StateTransitions implements StateTransition {
         this.ignoredEvents = Collections.emptySet();
     }
 
-    public static LocalDate calculateProjectSubmittedOnDate(LocalDate runDateTime, int numberOfDays) {
+    public static LocalDate calculateClaimSubmittedOnDate(LocalDate runDateTime, int numberOfDays) {
         return runDateTime.minusDays(numberOfDays);
+    }
+
+    private static class Constants {
+        public static final int CLAIM_CREATED_BEFORE_DAYS_COUNT = 60;
     }
 }
