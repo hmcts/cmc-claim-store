@@ -20,6 +20,9 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class OrderRendererTest {
 
+    public static final String DIRECTION_TYPE_BESPOKE = "BESPOKE";
+    public static final String DIRECTION_TYPE_INVALID = "INVALID";
+
     private OrderRenderer orderRenderer;
 
     @Mock
@@ -42,8 +45,6 @@ class OrderRendererTest {
         when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetails);
         ccdCase = CCDCase.builder().build();
         docAssemblyTemplateBody = DocAssemblyTemplateBody.builder().build();
-        when(docAssemblyTemplateBodyMapper.from(any(CCDCase.class), any(UserDetails.class))).thenReturn(
-            docAssemblyTemplateBody);
         orderRenderer = new OrderRenderer(docAssemblyService,
             userService,
             docAssemblyTemplateBodyMapper,
@@ -54,6 +55,9 @@ class OrderRendererTest {
 
     @Test
     void shouldRenderLegalAdvisorOrder() {
+        when(docAssemblyTemplateBodyMapper.from(any(CCDCase.class), any(UserDetails.class))).thenReturn(
+            docAssemblyTemplateBody);
+
         orderRenderer.renderLegalAdvisorOrder(ccdCase, AUTHORISATION);
 
         verify(docAssemblyService).renderTemplate(ccdCase, AUTHORISATION, LEGAL_ADVISOR_TEMPLATE_ID,
@@ -62,6 +66,9 @@ class OrderRendererTest {
 
     @Test
     void shouldRenderJudgeOrder() {
+        when(docAssemblyTemplateBodyMapper.from(any(CCDCase.class), any(UserDetails.class))).thenReturn(
+            docAssemblyTemplateBody);
+
         orderRenderer.renderJudgeOrder(ccdCase, AUTHORISATION);
 
         verify(docAssemblyService).renderTemplate(ccdCase, AUTHORISATION, JUDGE_TEMPLATE_ID, docAssemblyTemplateBody);
@@ -69,6 +76,9 @@ class OrderRendererTest {
 
     @Test
     void shouldRenderJudgeOrderWhenStateIsReadyForJudgeDirections() {
+        when(docAssemblyTemplateBodyMapper.from(any(CCDCase.class), any(UserDetails.class))).thenReturn(
+            docAssemblyTemplateBody);
+
         ccdCase = CCDCase.builder().state(ClaimState.READY_FOR_JUDGE_DIRECTIONS.getValue()).build();
 
         orderRenderer.renderOrder(ccdCase, AUTHORISATION);
@@ -78,12 +88,49 @@ class OrderRendererTest {
 
     @Test
     void shouldRenderLegalAdvisorOrderWhenStateIsNotReadyForJudgeDirections() {
+        when(docAssemblyTemplateBodyMapper.from(any(CCDCase.class), any(UserDetails.class))).thenReturn(
+            docAssemblyTemplateBody);
+
         ccdCase = CCDCase.builder().state(ClaimState.OPEN.getValue()).build();
 
         orderRenderer.renderOrder(ccdCase, AUTHORISATION);
 
         verify(docAssemblyService).renderTemplate(ccdCase, AUTHORISATION, LEGAL_ADVISOR_TEMPLATE_ID,
             docAssemblyTemplateBody);
+    }
+
+    @Test
+    void shouldRenderJudgeBespokeOrder() {
+        when(docAssemblyTemplateBodyMapper.mapBespokeDirectionOrder(any(CCDCase.class), any(UserDetails.class))).thenReturn(
+            docAssemblyTemplateBody);
+        orderRenderer.renderJudgeBespokeOrder(ccdCase, AUTHORISATION);
+
+        verify(docAssemblyService).renderTemplate(ccdCase, AUTHORISATION, BESPOKE_TEMPLATE_ID, docAssemblyTemplateBody);
+    }
+
+    @Test
+    void shouldRenderJudgeBespokeOrderWhenDirectionTypeIsBespoke() {
+        when(docAssemblyTemplateBodyMapper.mapBespokeDirectionOrder(any(CCDCase.class), any(UserDetails.class))).thenReturn(
+            docAssemblyTemplateBody);
+
+        ccdCase = CCDCase.builder().directionOrderType(DIRECTION_TYPE_BESPOKE).build();
+
+        orderRenderer.renderOrder(ccdCase, AUTHORISATION);
+
+        verify(docAssemblyService).renderTemplate(ccdCase, AUTHORISATION, BESPOKE_TEMPLATE_ID, docAssemblyTemplateBody);
+    }
+
+    @Test
+    void shouldNotRenderJudgeBespokeOrderWhenDirectionTypeIsInvalid() {
+        when(docAssemblyTemplateBodyMapper.from(any(CCDCase.class), any(UserDetails.class))).thenReturn(
+            docAssemblyTemplateBody);
+
+        ccdCase = CCDCase.builder().directionOrderType(DIRECTION_TYPE_INVALID)
+            .state(ClaimState.READY_FOR_JUDGE_DIRECTIONS.getValue()).build();
+
+        orderRenderer.renderOrder(ccdCase, AUTHORISATION);
+
+        verify(docAssemblyService).renderTemplate(ccdCase, AUTHORISATION, JUDGE_TEMPLATE_ID, docAssemblyTemplateBody);
     }
 
 }

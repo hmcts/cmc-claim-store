@@ -14,6 +14,8 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_JUDGE_DIRECTIO
 
 @Component
 public class OrderRenderer {
+    public static final String DIRECTION_TYPE_BESPOKE = "BESPOKE";
+
     private final DocAssemblyService docAssemblyService;
     private final String legalAdvisorTemplateId;
     private final String judgeTemplateId;
@@ -38,10 +40,10 @@ public class OrderRenderer {
     }
 
     public DocAssemblyResponse renderOrder(CCDCase ccdCase, String authorisation) {
-        ClaimState claimState = ClaimState.fromValue(ccdCase.getState());
-        if (null != ccdCase.getDirectionOrderType() && ccdCase.getDirectionOrderType().equalsIgnoreCase("BESPOKE")) {
+        if (DIRECTION_TYPE_BESPOKE.equalsIgnoreCase(ccdCase.getDirectionOrderType())) {
             return renderJudgeBespokeOrder(ccdCase, authorisation);
         }
+        ClaimState claimState = ClaimState.fromValue(ccdCase.getState());
         return claimState == READY_FOR_JUDGE_DIRECTIONS  ? renderJudgeOrder(ccdCase, authorisation)
             : renderLegalAdvisorOrder(ccdCase, authorisation);
     }
