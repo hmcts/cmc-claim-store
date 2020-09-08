@@ -101,8 +101,8 @@ class OrderRendererTest {
 
     @Test
     void shouldRenderJudgeBespokeOrder() {
-        when(docAssemblyTemplateBodyMapper.mapBespokeDirectionOrder(any(CCDCase.class), any(UserDetails.class))).thenReturn(
-            docAssemblyTemplateBody);
+        when(docAssemblyTemplateBodyMapper.mapBespokeDirectionOrder(any(CCDCase.class),
+            any(UserDetails.class))).thenReturn(docAssemblyTemplateBody);
         orderRenderer.renderJudgeBespokeOrder(ccdCase, AUTHORISATION);
 
         verify(docAssemblyService).renderTemplate(ccdCase, AUTHORISATION, BESPOKE_TEMPLATE_ID, docAssemblyTemplateBody);
@@ -110,8 +110,8 @@ class OrderRendererTest {
 
     @Test
     void shouldRenderJudgeBespokeOrderWhenDirectionTypeIsBespoke() {
-        when(docAssemblyTemplateBodyMapper.mapBespokeDirectionOrder(any(CCDCase.class), any(UserDetails.class))).thenReturn(
-            docAssemblyTemplateBody);
+        when(docAssemblyTemplateBodyMapper.mapBespokeDirectionOrder(any(CCDCase.class),
+            any(UserDetails.class))).thenReturn(docAssemblyTemplateBody);
 
         ccdCase = CCDCase.builder().directionOrderType(DIRECTION_TYPE_BESPOKE).build();
 
