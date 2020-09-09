@@ -48,7 +48,7 @@ public class ClaimIssuedStaffNotificationService {
     @LogExecutionTime
     public void notifyStaffOfClaimIssue(Claim claim, List<PDF> documents) {
 
-        if (staffEmailsEnabledForLegalRep && !claim.getClaimData().isClaimantRepresented()) {
+        if (staffEmailsEnabledForLegalRep && claim.getClaimData().isClaimantRepresented()) {
             requireNonNull(claim);
             EmailData emailData = prepareEmailDataForLegalRep(claim, documents);
             emailService.sendEmail(staffEmailProperties.getSender(), emailData);
