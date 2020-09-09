@@ -50,7 +50,7 @@ public class BulkPrintHandlerTest {
         bulkPrintHandler.print(printEvent);
 
         //verify
-        verify(bulkPrintService).printHtmlLetter(
+        verify(bulkPrintService).printPdf(
             claim,
             ImmutableList.of(
                 new PrintableTemplate(

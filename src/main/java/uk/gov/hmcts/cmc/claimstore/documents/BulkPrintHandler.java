@@ -44,7 +44,7 @@ public class BulkPrintHandler {
     public BulkPrintDetails print(DocumentReadyToPrintEvent event) {
         requireNonNull(event);
         Claim claim = event.getClaim();
-        return bulkPrintService.printHtmlLetter(
+        return bulkPrintService.printPdf(
             claim,
             ImmutableList.of(
                 new PrintableTemplate(

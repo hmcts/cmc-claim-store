@@ -122,7 +122,7 @@ public class PinOrchestrationServiceTest {
         given(emailTemplates.getDefendantClaimIssued()).willReturn(DEFENDANT_EMAIL_TEMPLATE);
 
         given(bulkPrintService
-            .printHtmlLetter(eq(CLAIM), eq(printAbles), eq(FIRST_CONTACT_LETTER_TYPE), eq(AUTHORISATION)))
+            .printPdf(eq(CLAIM), eq(printAbles), eq(FIRST_CONTACT_LETTER_TYPE), eq(AUTHORISATION)))
             .willReturn(bulkPrintDetails);
 
         given(claimService.addBulkPrintDetails(eq(AUTHORISATION), eq(printDetails),
@@ -141,7 +141,7 @@ public class PinOrchestrationServiceTest {
         pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
 
         //then
-        verify(bulkPrintService).printHtmlLetter(
+        verify(bulkPrintService).printPdf(
             eq(CLAIM),
             eq(printAbles),
             eq(FIRST_CONTACT_LETTER_TYPE),
@@ -175,7 +175,7 @@ public class PinOrchestrationServiceTest {
         given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION)))
             .willReturn(generatedDocuments);
 
-        doThrow(new RuntimeException("bulk print failed")).when(bulkPrintService).printHtmlLetter(
+        doThrow(new RuntimeException("bulk print failed")).when(bulkPrintService).printPdf(
             any(), anyList(), eq(FIRST_CONTACT_LETTER_TYPE), anyString());
 
         //when
