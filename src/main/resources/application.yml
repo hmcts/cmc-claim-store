@@ -114,6 +114,7 @@ doc_assembly:
   oconFormIndividualWithoutDQs: "CV-CMC-GOR-ENG-0013.docx"
   oconFormSoleTraderWithoutDQs: "CV-CMC-GOR-ENG-0014.docx"
   oconFormOrganisationWithoutDQs: "CV-CMC-GOR-ENG-0015.docx"
+  defendantPinLetterTemplateID: "CV-CMC-GOR-ENG-0017.docx"
 
   noticeOfTransferToCcbcSentToDefendantTemplateId: "CV-CMC-GOR-ENG-0016.docx"
   paperResponseAdmissionTemplateId: "CV-CMC-GOR-ENG-0016.docx"

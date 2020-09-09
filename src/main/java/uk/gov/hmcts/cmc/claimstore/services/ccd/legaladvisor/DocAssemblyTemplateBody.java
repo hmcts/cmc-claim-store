@@ -133,5 +133,9 @@ public class DocAssemblyTemplateBody implements FormPayload {
     private String claimAmount;
     private String soleTradingTraderName;
     private String organisationName;
+    private String defendantPin;
+    private String staffEmail;
+    private String respondToClaimUrl;
+
 
 }

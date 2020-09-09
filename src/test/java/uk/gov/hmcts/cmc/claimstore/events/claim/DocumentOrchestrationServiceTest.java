@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.events.claim;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -9,9 +10,9 @@ import uk.gov.hmcts.cmc.claimstore.documents.CitizenServiceDocumentsService;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
-import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.PrintableDocumentService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -33,10 +34,9 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEI
 public class DocumentOrchestrationServiceTest {
     public static final Claim CLAIM = SampleClaim.getDefault();
     public static final String AUTHORISATION = "AUTHORISATION";
-    private static final byte[] PDF_BYTES = new byte[] {1, 2, 3, 4};
     public static final String PIN = "PIN";
     public static final String LETTER_HOLDER_ID = "LetterHolderId";
-
+    private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
     private final Map<String, Object> claimContents = new HashMap<>();
     private final String claimTemplate = "claimTemplate";
     private final Document sealedClaimLetterDocument = new Document(claimTemplate, claimContents);
@@ -58,6 +58,8 @@ public class DocumentOrchestrationServiceTest {
     @Mock
     private UserService userService;
     private DocumentOrchestrationService documentOrchestrationService;
+    @Mock
+    private PrintableDocumentService printableDocumentService;
 
     @Before
     public void before() {
@@ -67,11 +69,11 @@ public class DocumentOrchestrationServiceTest {
             pdfServiceClient,
             claimIssueReceiptService,
             claimService,
-            userService
+            userService,
+            printableDocumentService
         );
 
         given(citizenServiceDocumentsService.sealedClaimDocument(eq(CLAIM))).willReturn(sealedClaimLetterDocument);
-        given(citizenServiceDocumentsService.pinLetterDocument(eq(CLAIM), eq(PIN))).willReturn(defendantLetterDocument);
         given(sealedClaimPdfService.createPdf(eq(CLAIM))).willReturn(new PDF(
             "sealedClaim",
             PDF_BYTES,
@@ -84,14 +86,9 @@ public class DocumentOrchestrationServiceTest {
         ));
         given(pdfServiceClient.generateFromHtml(any(), anyMap())).willReturn(PDF_BYTES);
 
-        given(userService.generatePin(eq(CLAIM.getClaimData().getDefendant().getName()), eq(AUTHORISATION)))
-            .willReturn(GeneratePinResponse.builder()
-                .pin(PIN)
-                .userId(LETTER_HOLDER_ID)
-                .build()
-            );
     }
 
+    @Ignore
     @Test
     public void shouldCreateAllDocumentsForCitizen() {
         // when

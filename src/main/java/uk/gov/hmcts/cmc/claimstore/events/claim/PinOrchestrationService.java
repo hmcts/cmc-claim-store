@@ -61,7 +61,7 @@ public class PinOrchestrationService {
                 .defendantNotification(NO);
 
         try {
-            BulkPrintDetails bulkPrintDetails = bulkPrintService.printHtmlLetter(
+            BulkPrintDetails bulkPrintDetails = bulkPrintService.printPdf(
                 updatedClaim,
                 ImmutableList.of(
                     new PrintableTemplate(

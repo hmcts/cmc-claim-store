@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.claimstore.events.operations.UploadOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimCreatedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.PrintableDocumentService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -77,6 +78,8 @@ public class PostClaimOrchestrationHandlerTest {
     private PinOrchestrationService pinOrchestrationService;
     @Mock
     private AppInsights appInsights;
+    @Mock
+    private PrintableDocumentService printableDocumentService;
 
     @Before
     public void before() {
@@ -86,7 +89,8 @@ public class PostClaimOrchestrationHandlerTest {
             pdfServiceClient,
             claimIssueReceiptService,
             claimService,
-            userService
+            userService,
+            printableDocumentService
         );
 
         postClaimOrchestrationHandler = new PostClaimOrchestrationHandler(
