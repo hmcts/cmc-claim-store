@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.documents;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -39,7 +38,7 @@ public class CitizenServiceDocumentsServiceTest {
     private DefendantPinLetterContentProvider letterContentProvider;
     @Mock
     private DocAssemblyService docAssemblyService;
-    @Mock
+
     private String defendantPinLetterTemplateID;
     @Mock
     private CaseMapper caseMapper;
@@ -60,7 +59,6 @@ public class CitizenServiceDocumentsServiceTest {
             interestContentProvider, addressMapper);
     }
 
-    @Ignore
     @Test
     public void shouldReturnSealedClaimDocument() {
         //given
@@ -80,7 +78,6 @@ public class CitizenServiceDocumentsServiceTest {
         verify(documentTemplates).getSealedClaim();
     }
 
-    @Ignore
     @Test
     public void shouldReturnPinLetterDocument() {
         //given
