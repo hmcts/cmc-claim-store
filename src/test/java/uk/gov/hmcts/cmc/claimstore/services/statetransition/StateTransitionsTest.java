@@ -42,7 +42,7 @@ public class StateTransitionsTest {
             CaseEvent.SEALED_CLAIM_UPLOAD, CaseEvent.REVIEW_ORDER_UPLOAD, CaseEvent.CLAIM_ISSUE_RECEIPT_UPLOAD,
             CaseEvent.SUPPORT_UPDATE, CaseEvent.ATTACH_SCANNED_DOCS, CaseEvent.REVIEWED_PAPER_RESPONSE,
             CaseEvent.RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS, CaseEvent.UPDATE_CLAIM, CaseEvent.LINK_SEALED_CLAIM,
-            CaseEvent.DEFENDANT_RESPONSE_UPLOAD);
+            CaseEvent.DEFENDANT_RESPONSE_UPLOAD, CaseEvent.CLAIM_NOTES, CaseEvent.PAPER_HAND_OFF);
         Assert.assertEquals(ignoredEvents, StateTransitions.STAY_CLAIM.getIgnoredEvents());
     }
 
