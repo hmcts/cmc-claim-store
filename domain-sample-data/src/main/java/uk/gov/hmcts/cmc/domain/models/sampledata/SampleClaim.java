@@ -21,6 +21,7 @@ import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.PrintRequestType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
+import uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
@@ -41,6 +42,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static java.math.BigDecimal.TEN;
+import static uk.gov.hmcts.cmc.domain.models.ChannelType.CITIZEN;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
@@ -67,6 +69,7 @@ public final class SampleClaim {
     public static final String DEFENDANT_ID = "4";
     public static final Long CLAIM_ID = 3L;
     public static final String REFERENCE_NUMBER = "000MC001";
+    public static final String LEGAL_REFERENCE_NUMBER = "006LR003";
     public static final UUID RAND_UUID = UUID.randomUUID();
     public static final String EXTERNAL_ID = RAND_UUID.toString();
     public static final boolean NOT_REQUESTED_FOR_MORE_TIME = false;
@@ -113,12 +116,12 @@ public final class SampleClaim {
     private Long ccdCaseId = 1023467890123456L;
     private ReviewOrder reviewOrder;
     private DirectionOrder directionOrder;
-    private ChannelType channel;
+    private final ChannelType channel = CITIZEN;
     private final LocalDate intentionToProceedDeadline = NOW_IN_LOCAL_ZONE.toLocalDate().plusDays(33);
     private final YesNoOption offlineJourney = NO;
     private MediationOutcome mediationOutcome;
     private TransferContent transferContent;
-    private String bulkPrintLetterId = UUID.randomUUID().toString();
+    private final String bulkPrintLetterId = UUID.randomUUID().toString();
 
     private SampleClaim() {
     }
@@ -339,8 +342,6 @@ public final class SampleClaim {
     }
 
     public static Claim getWithClaimantResponseRejectionForPartAdmissionAndMediation() {
-        SampleClaimantResponse.ClaimantResponseRejection
-            .builder();
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
             .withResponse(
@@ -835,6 +836,39 @@ public final class SampleClaim {
             .build();
         this.claimDocumentCollection.addScannedDocument(scannedDocument);
         return this;
+    }
+
+    public static Claim getLegalSealedClaim() {
+        return SampleClaim.builder()
+            .withClaimData(SampleClaimData.builder()
+                .withExternalId(SampleClaim.RAND_UUID)
+                .withExternalReferenceNumber("LBA/UM1616668")
+                .withAmount(SampleAmountRange.builder().build())
+                .clearDefendants()
+                .clearClaimants()
+                .withClaimant(SampleParty.builder()
+                    .withPhone("(0)207 127 0000")
+                    .withRepresentative(SampleRepresentative.builder()
+                        .organisationContactDetails(ContactDetails.builder()
+                            .dxAddress("xyzrt")
+                            .email("abn@gmail.com")
+                            .phone("01123456789")
+                            .build())
+                        .build())
+                    .individual())
+                .withDefendant(SampleTheirDetails.builder()
+                    .withRepresentative(SampleRepresentative.builder()
+                        .organisationContactDetails(ContactDetails.builder()
+                            .dxAddress("xyzrt")
+                            .email("abn@gmail.com")
+                            .phone("01123456789")
+                            .build())
+                        .build())
+                    .individualDetails())
+                .build()
+            )
+            .withReferenceNumber(LEGAL_REFERENCE_NUMBER)
+            .build();
     }
 
     public SampleClaim withClaimantResponse(ClaimantResponse claimantResponse) {

@@ -54,7 +54,6 @@ public class ClaimantResponseHelperTest {
 
     @Test
     public void shouldReturnTrueWhenOptedForMediation() {
-        SampleClaimantResponse.ClaimantResponseRejection.builder();
         ClaimantResponse claimantResponse = ResponseRejection.builder()
             .amountPaid(TEN)
             .freeMediation(YES)

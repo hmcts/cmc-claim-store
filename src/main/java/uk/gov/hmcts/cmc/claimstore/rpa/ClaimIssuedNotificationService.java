@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.rpa;
 
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.rpa.config.EmailProperties;
@@ -32,6 +33,7 @@ public class ClaimIssuedNotificationService {
     private final ClaimIssuedEmailContentProvider emailContentProvider;
     private final SealedClaimJsonMapper citizenSealedClaimMapper;
     private final LegalSealedClaimJsonMapper legalSealedClaimMapper;
+    private boolean legalSealedClaimEnabledForRpa;
 
     @Autowired
     public ClaimIssuedNotificationService(
@@ -39,17 +41,23 @@ public class ClaimIssuedNotificationService {
         EmailProperties emailProperties,
         ClaimIssuedEmailContentProvider emailContentProvider,
         SealedClaimJsonMapper citizenSealedClaimMapper,
-        LegalSealedClaimJsonMapper legalSealedClaimMapper
+        LegalSealedClaimJsonMapper legalSealedClaimMapper,
+        @Value("${feature_toggles.legal_sealed_claim_for_rpa_enabled}") boolean legalSealedClaimEnabledForRpa
     ) {
         this.emailService = emailService;
         this.emailProperties = emailProperties;
         this.emailContentProvider = emailContentProvider;
         this.citizenSealedClaimMapper = citizenSealedClaimMapper;
         this.legalSealedClaimMapper = legalSealedClaimMapper;
+        this.legalSealedClaimEnabledForRpa = legalSealedClaimEnabledForRpa;
     }
 
     public void notifyRobotics(Claim claim, List<PDF> documents) {
         requireNonNull(claim);
+
+        if (claim.getClaimData().isClaimantRepresented() && !legalSealedClaimEnabledForRpa) {
+            return;
+        }
 
         EmailData emailData = prepareEmailData(claim, documents);
         emailService.sendEmail(emailProperties.getSender(), emailData);
@@ -88,4 +96,5 @@ public class ClaimIssuedNotificationService {
             ? legalSealedClaimMapper.map(claim)
             : citizenSealedClaimMapper.map(claim);
     }
+
 }
