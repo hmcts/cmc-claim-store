@@ -83,10 +83,28 @@ public class CaseDetailsConverter {
 
     public CCDCase extractCCDCase(CaseDetails caseDetails) {
         Map<String, Object> tempData = new HashMap<>(caseDetails.getData());
+        removeHearingCourtForBespokeOrder(tempData);
         tempData.put("id", caseDetails.getId());
         tempData.put("state", caseDetails.getState());
 
         return jsonMapper.fromMap(tempData, CCDCase.class);
+    }
+
+    public CCDCase extractCCDCaseDetailsForOrderDirection(CaseDetails caseDetails) {
+        Map<String, Object> tempData = new HashMap<>(caseDetails.getData());
+        removeHearingCourtForBespokeOrder(tempData);
+        tempData.put("id", caseDetails.getId());
+        tempData.put("state", caseDetails.getState());
+
+        return jsonMapper.fromMap(tempData, CCDCase.class);
+    }
+
+    public void removeHearingCourtForBespokeOrder(Map<String, Object> tempData) {
+        if(tempData.containsKey("directionOrderType")
+            && tempData.get("directionOrderType").equals("BESPOKE")
+            && tempData.containsKey("hearingCourt")) {
+            tempData.remove("hearingCourt");
+        }
     }
 
     public CCDCase convertTo(Claim claim) {

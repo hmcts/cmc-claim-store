@@ -74,6 +74,7 @@ public class OrderCreator {
     private static final String EXPERT_REPORT_INSTRUCTION = "expertReportInstruction";
     private static final String OTHER_DIRECTIONS = "otherDirections";
     private static final String ESTIMATED_HEARING_DURATION = "estimatedHearingDuration";
+    public static final String DIRECTION_TYPE_BESPOKE = "BESPOKE";
 
     private final LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator;
     private final CaseDetailsConverter caseDetailsConverter;
@@ -177,6 +178,10 @@ public class OrderCreator {
         logger.info("Order creator: creating order document");
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
+        if ((DIRECTION_TYPE_BESPOKE.equalsIgnoreCase(ccdCase.getDirectionOrderType()) && ccdCase.getBespokeDirectionList() == null)
+            || (!DIRECTION_TYPE_BESPOKE.equalsIgnoreCase(ccdCase.getDirectionOrderType()) && ccdCase.getHearingCourt() == null)) {
+            return prepopulateOrder(callbackParams);
+        }
 
         List<String> validations = generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase,
             hasExpertsAtCaseLevel(callbackParams));
