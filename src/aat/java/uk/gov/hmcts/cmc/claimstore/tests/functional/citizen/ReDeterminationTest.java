@@ -5,12 +5,15 @@ import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
+import uk.gov.hmcts.cmc.claimstore.tests.helpers.Retry;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse.ClaimantResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+import org.junit.Rule;
+import uk.gov.hmcts.cmc.claimstore.tests.helpers.RetryFailedFunctionalTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -33,7 +36,11 @@ public class ReDeterminationTest extends BaseTest {
         claim = createClaimWithResponse(createdCase, defendant);
     }
 
+    @Rule
+    public RetryFailedFunctionalTests retryRule = new RetryFailedFunctionalTests(3);
+
     @Test
+    @Retry
     public void shouldSaveReDeterminationWithCourtDetermination() {
         String explanation = "I want it sooner";
         commonOperations.submitClaimantResponse(
@@ -61,6 +68,7 @@ public class ReDeterminationTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldNotSaveReDeterminationByClaimantPaymentIntentionWithoutCourtDetermination() {
         commonOperations.submitClaimantResponse(
             ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithClaimantPaymentIntentionBySetDate(),
@@ -71,6 +79,7 @@ public class ReDeterminationTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldSaveReDeterminationWithDefendantPaymentIntentionAccepted() {
         String explanation = "I want it sooner";
         commonOperations.submitClaimantResponse(
@@ -98,6 +107,7 @@ public class ReDeterminationTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldReturnUnprocessableEntityWhenInvalidReDeterminationIsSubmitted() {
         commonOperations.submitClaimantResponse(
             ClaimantResponseAcceptation.builder().build(),
@@ -115,6 +125,7 @@ public class ReDeterminationTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldNotBeAllowedToRequestReDeterminationWhenNoClaimantResponseGiven() {
         String explanation = "I want it sooner";
 
@@ -130,6 +141,7 @@ public class ReDeterminationTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldNotBeAllowedToRequestReDeterminationWhenAlreadyReDetermined() {
         String explanation = "I want it sooner";
 
@@ -159,6 +171,7 @@ public class ReDeterminationTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldNotBeAllowedToRequestReDeterminationWhenNoCCJRequested() {
         String explanation = "I want it sooner";
 
