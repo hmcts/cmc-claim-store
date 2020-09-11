@@ -132,6 +132,8 @@ public class RespondToClaimTest extends BaseTest {
 
         System.out.println("This is the bloody response that is screwing up the nightly build" + updatedCase.getResponse() );
 
+        System.out.println("This is the response sent by the angels" + response);
+
         assertThat(updatedCase.getResponse().isPresent()).isTrue();
         assertThat(updatedCase.getResponse().get()).isEqualTo(response);
         assertThat(updatedCase.getRespondedAt()).isNotNull();
