@@ -18,9 +18,11 @@ spring:
         staff-email: staff-notifications.recipient
         live-support-email: live-support.recipient
         rpa-email-sealed-claim: rpa.notifications.sealedClaimRecipient
+        rpa-email-legal-sealed-claim: rpa.notifications.legalSealedClaimRecipient
         rpa-email-more-time-requested: rpa.notifications.moreTimeRequestedRecipient
         rpa-email-response: rpa.notifications.responseRecipient
         rpa-email-ccj: rpa.notifications.countyCourtJudgementRecipient
         rpa-email-paid-in-full: rpa.notifications.paidInFullRecipient
         launchDarkly-sdk-key: LAUNCH_DARKLY_SDK_KEY
         sendgrid-api-key: SENDGRID_API_KEY
+        staff-email-legal-rep: staff-notifications.legalRecipient
