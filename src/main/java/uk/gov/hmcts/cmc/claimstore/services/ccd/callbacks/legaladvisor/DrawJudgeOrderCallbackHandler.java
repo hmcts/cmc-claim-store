@@ -50,7 +50,7 @@ public class DrawJudgeOrderCallbackHandler extends CallbackHandler {
     protected Map<CallbackType, Callback> callbacks() {
         return ImmutableMap.of(
             CallbackType.ABOUT_TO_START, orderCreator::prepopulateOrder,
-            CallbackType.MID, orderCreator::generateOrder,
+            CallbackType.MID, orderCreator::generateOrPrepopulateOrder,
             CallbackType.ABOUT_TO_SUBMIT, orderPostProcessor::copyDraftToCaseDocument,
             CallbackType.SUBMITTED, orderPostProcessor::notifyPartiesAndPrintOrder
         );

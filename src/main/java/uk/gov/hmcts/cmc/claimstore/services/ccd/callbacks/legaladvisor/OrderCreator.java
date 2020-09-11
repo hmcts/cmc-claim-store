@@ -103,8 +103,8 @@ public class OrderCreator {
         logger.info("Order creator: pre populating order fields");
         CallbackRequest callbackRequest = callbackParams.getRequest();
 
-        Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
-        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
+        Claim claim = caseDetailsConverter.extractClaimForDirectionOrder(callbackRequest.getCaseDetails());
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCaseForDirectionOrder(callbackRequest.getCaseDetails());
 
         Map<String, Object> data = new HashMap<>();
         data.put(DIRECTION_LIST, chooseItem(ccdCase.getDirectionList(), ImmutableList.of(DOCUMENTS, EYEWITNESS)));
@@ -174,14 +174,24 @@ public class OrderCreator {
             .collect(Collectors.joining(", "));
     }
 
+    public CallbackResponse generateOrPrepopulateOrder(CallbackParams callbackParams) {
+        logger.info("Order creator: mid event to handle generate or prepopulate the claim for direction type");
+        CallbackRequest callbackRequest = callbackParams.getRequest();
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCaseForDirectionOrder(callbackRequest.getCaseDetails());
+        if ((DIRECTION_TYPE_BESPOKE.equalsIgnoreCase(ccdCase.getDirectionOrderType())
+            && ccdCase.getBespokeDirectionList() == null)
+            || (!DIRECTION_TYPE_BESPOKE.equalsIgnoreCase(ccdCase.getDirectionOrderType())
+            && ccdCase.getHearingCourt() == null)) {
+            return prepopulateOrder(callbackParams);
+        } else {
+            return generateOrder(callbackParams);
+        }
+    }
+
     public CallbackResponse generateOrder(CallbackParams callbackParams) {
         logger.info("Order creator: creating order document");
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
-        if ((DIRECTION_TYPE_BESPOKE.equalsIgnoreCase(ccdCase.getDirectionOrderType()) && ccdCase.getBespokeDirectionList() == null)
-            || (!DIRECTION_TYPE_BESPOKE.equalsIgnoreCase(ccdCase.getDirectionOrderType()) && ccdCase.getHearingCourt() == null)) {
-            return prepopulateOrder(callbackParams);
-        }
 
         List<String> validations = generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase,
             hasExpertsAtCaseLevel(callbackParams));
