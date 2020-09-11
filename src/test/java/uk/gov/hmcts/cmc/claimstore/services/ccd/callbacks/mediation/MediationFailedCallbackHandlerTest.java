@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
@@ -29,9 +30,13 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -74,6 +79,10 @@ public class MediationFailedCallbackHandlerTest {
 
     private CallbackParams callbackParams;
     private static final String AUTHORISATION = "Bearer: aaaa";
+    private static final String INSTANT_EXPECTED = "2020-06-23T10:10:10";
+    private static final String DATE_REFERRED_FOR_DIRECTIONS = "dateReferredForDirections";
+    private static final String REFERENCE = "reference";
+    private static final String REFERENCE_KEY = "previousServiceCaseReference";
 
     private final Claim claimSetForMediation =
         SampleClaim.getWithClaimantResponseRejectionForPartAdmissionAndMediation();
@@ -294,6 +303,25 @@ public class MediationFailedCallbackHandlerTest {
                 .saveCaseEvent(AUTHORISATION, claim.getCcdCaseId(), CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE);
     }
 
+    @Test
+    public void testReadyForDirectionsDateForMediationUnsuccessful() {
+        var dateTime = LocalDateTime.parse(INSTANT_EXPECTED);
+
+        Claim claim = claimSetForMediation.toBuilder()
+            .response(
+                SampleResponse.FullDefence.builder().build()).build();
+
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+        when(caseMapper.to(any(Claim.class))).thenReturn(getCcdCase(dateTime));
+        when(caseDetailsConverter.convertToMap(any(CCDCase.class))).thenReturn(getCcdCaseMap(dateTime));
+
+        var response = (AboutToStartOrSubmitCallbackResponse) mediationFailedCallbackHandler.handle(callbackParams);
+
+        CCDCase ccdCase = (CCDCase) response.getData().get(DATE_REFERRED_FOR_DIRECTIONS);
+
+        assertEquals(dateTime, ccdCase.getDateReferredForDirections());
+    }
+
     private void handleSubmittedCallback() {
         CallbackRequest callbackRequest = CallbackRequest
             .builder()
@@ -308,5 +336,18 @@ public class MediationFailedCallbackHandlerTest {
             .build();
 
         mediationFailedCallbackHandler.handle(callbackParams);
+    }
+
+    private CCDCase getCcdCase(LocalDateTime dateTime) {
+        return CCDCase.builder()
+            .dateReferredForDirections(dateTime)
+            .build();
+    }
+
+    private Map<String, Object> getCcdCaseMap(LocalDateTime dateTime) {
+        Map<String, Object> map = new HashMap<>();
+        map.put(DATE_REFERRED_FOR_DIRECTIONS, getCcdCase(dateTime));
+        map.put(REFERENCE_KEY, REFERENCE);
+        return map;
     }
 }
