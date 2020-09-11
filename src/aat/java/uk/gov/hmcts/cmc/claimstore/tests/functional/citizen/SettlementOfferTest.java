@@ -2,13 +2,9 @@ package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
-import uk.gov.hmcts.cmc.claimstore.tests.Bootstrap;
-import uk.gov.hmcts.cmc.claimstore.tests.helpers.CommonOperations;
-import uk.gov.hmcts.cmc.claimstore.tests.idam.IdamTestService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
@@ -20,14 +16,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SettlementOfferTest extends BaseTest {
-    @Autowired
-    protected static Bootstrap bootstrap;
-
-    @Autowired
-    protected static CommonOperations commonOperations;
-
-    @Autowired
-    protected static IdamTestService idamTestService;
 
     private static User claimant;
     private static String claimantId;
@@ -38,15 +26,17 @@ public class SettlementOfferTest extends BaseTest {
 
     @BeforeClass
     public static void beforeClass() {
-        claimant = bootstrap.getClaimant();
+        SettlementOfferTest settlementOfferTest = new SettlementOfferTest();
+        claimant = settlementOfferTest.bootstrap.getClaimant();
         claimantId = claimant.getUserDetails().getId();
-        createdCase = commonOperations.submitClaim(
+        createdCase = settlementOfferTest.commonOperations.submitClaim(
             claimant.getAuthorisation(),
             claimantId
         );
 
-        defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
-        updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
+        defendant = settlementOfferTest.idamTestService.upliftDefendant(createdCase.getLetterHolderId(),
+            settlementOfferTest.bootstrap.getDefendant());
+        updatedCase = settlementOfferTest.createClaimWithDisputeResponse(createdCase, defendant);
 
         offer = SampleOffer.builder().build();
     }
@@ -194,7 +184,7 @@ public class SettlementOfferTest extends BaseTest {
             .statusCode(HttpStatus.CONFLICT.value());
     }
 
-    private static Claim createClaimWithDisputeResponse(Claim createdCase, User defendant) {
+    private Claim createClaimWithDisputeResponse(Claim createdCase, User defendant) {
 
         commonOperations.linkDefendant(
             defendant.getAuthorisation()
