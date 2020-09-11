@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
@@ -16,7 +16,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SettlementOfferTest extends BaseTest {
-
+    private static boolean setUpIsDone = false;
     private static User claimant;
     private static String claimantId;
     private static Claim createdCase;
@@ -24,13 +24,11 @@ public class SettlementOfferTest extends BaseTest {
     private static Claim updatedCase;
     private static Offer offer;
 
-    @BeforeClass
-    public static void beforeClass() {
-        SettlementOfferTest settlementOfferTest = new SettlementOfferTest();
-        settlementOfferTest.initialize();
-    }
-
-    private void initialize() {
+    @Before
+    public void setup() {
+        if (setUpIsDone) {
+            return;
+        }
         claimant = bootstrap.getClaimant();
         claimantId = claimant.getUserDetails().getId();
         createdCase = commonOperations.submitClaim(
@@ -43,6 +41,7 @@ public class SettlementOfferTest extends BaseTest {
         updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
 
         offer = SampleOffer.builder().build();
+        setUpIsDone = true;
     }
 
     @Test
@@ -96,14 +95,6 @@ public class SettlementOfferTest extends BaseTest {
     }
 
     @Test
-    public void shouldFailAcceptOfferWithoutExistingOfferFromUser() {
-        commonOperations
-            .acceptOffer(updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.CLAIMANT)
-            .then()
-            .statusCode(HttpStatus.CONFLICT.value());
-    }
-
-    @Test
     public void shouldBeAbleToSuccessfullyRejectOffer() {
         Claim caseWithOffer = commonOperations
             .submitOffer(offer, updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.DEFENDANT)
@@ -142,9 +133,6 @@ public class SettlementOfferTest extends BaseTest {
     }
 
     private Claim countersignAnOffer(Claim createdCase, User defendant) {
-
-        Claim updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
-
         Offer offer = SampleOffer.builder().build();
 
         Claim caseWithOffer = commonOperations
