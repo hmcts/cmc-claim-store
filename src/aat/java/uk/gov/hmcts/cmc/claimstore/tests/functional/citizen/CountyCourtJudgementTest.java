@@ -30,11 +30,11 @@ public class CountyCourtJudgementTest extends BaseTest {
     private static Offer offer;
 
     @BeforeClass
-    public void beforeClass() {
+    public static void beforeClass() {
         CountyCourtJudgementTest countyCourtJudgementTest = new CountyCourtJudgementTest();
         claimant = countyCourtJudgementTest.bootstrap.getClaimant();
         claimantId = claimant.getUserDetails().getId();
-        createdCase = commonOperations.submitClaim(
+        createdCase = countyCourtJudgementTest.commonOperations.submitClaim(
             claimant.getAuthorisation(),
             claimantId
         );

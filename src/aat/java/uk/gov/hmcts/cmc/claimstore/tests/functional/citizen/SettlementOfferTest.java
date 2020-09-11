@@ -27,16 +27,20 @@ public class SettlementOfferTest extends BaseTest {
     @BeforeClass
     public static void beforeClass() {
         SettlementOfferTest settlementOfferTest = new SettlementOfferTest();
-        claimant = settlementOfferTest.bootstrap.getClaimant();
+        settlementOfferTest.initialize();
+    }
+
+    private void initialize() {
+        claimant = bootstrap.getClaimant();
         claimantId = claimant.getUserDetails().getId();
-        createdCase = settlementOfferTest.commonOperations.submitClaim(
+        createdCase = commonOperations.submitClaim(
             claimant.getAuthorisation(),
             claimantId
         );
 
-        defendant = settlementOfferTest.idamTestService.upliftDefendant(createdCase.getLetterHolderId(),
-            settlementOfferTest.bootstrap.getDefendant());
-        updatedCase = settlementOfferTest.createClaimWithDisputeResponse(createdCase, defendant);
+        defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(),
+            bootstrap.getDefendant());
+        updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
 
         offer = SampleOffer.builder().build();
     }
