@@ -11,7 +11,6 @@ import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.claimstore.tests.helpers.Retry;
 import uk.gov.hmcts.cmc.claimstore.tests.helpers.RetryFailedFunctionalTests;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import wiremock.com.google.j2objc.annotations.RetainedLocalRef;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
