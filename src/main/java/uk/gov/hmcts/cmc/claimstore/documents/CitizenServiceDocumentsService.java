@@ -118,7 +118,9 @@ public class CitizenServiceDocumentsService {
                 claim.getIssuedOn(),
                 claim.getIssuedOn()
             );
-            totalAmountComponents.add(interestContent.getAmountRealValue());
+            if (interestContent != null) {
+                totalAmountComponents.add(interestContent.getAmountRealValue());
+            }
         }
 
         return DocAssemblyTemplateBody.builder()
