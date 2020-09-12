@@ -145,7 +145,8 @@ public class GenerateOrderCallbackHandlerTest {
         void shouldGenerateDocumentOnMidEvent() {
             CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
             ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
-            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
+                .thenReturn(ccdCase);
 
             CallbackRequest callbackRequest = CallbackRequest
                 .builder()
@@ -194,7 +195,8 @@ public class GenerateOrderCallbackHandlerTest {
         @Test
         void shouldRaiseAppInsight() {
             CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
-            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
+                .thenReturn(ccdCase);
 
             generateOrderCallbackHandler.handle(callbackParams);
 
@@ -236,7 +238,8 @@ public class GenerateOrderCallbackHandlerTest {
         @Test
         void shouldPersistHearingCourt() {
             CCDCase ccdCase = CCDCase.builder().hearingCourt("birmingham").build();
-            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
+                .thenReturn(ccdCase);
 
             generateOrderCallbackHandler.handle(callbackParams);
 
@@ -251,7 +254,8 @@ public class GenerateOrderCallbackHandlerTest {
         @Test
         void shouldClearHearingCourtField() {
             CCDCase ccdCase = CCDCase.builder().hearingCourt("BIRMINGHAM").build();
-            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
+                .thenReturn(ccdCase);
 
             generateOrderCallbackHandler.handle(callbackParams);
 
@@ -270,7 +274,8 @@ public class GenerateOrderCallbackHandlerTest {
                 .expertReportInstructionClaimant(Collections.emptyList())
                 .expertReportInstructionDefendant(Collections.emptyList())
                 .build();
-            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
+                .thenReturn(ccdCase);
 
             generateOrderCallbackHandler.handle(callbackParams);
 
@@ -309,7 +314,8 @@ public class GenerateOrderCallbackHandlerTest {
                                 .build()
                         ))
                         .build();
-                    when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+                    when(caseDetailsConverter.extractCCDCaseForDirectionOrder(any(CaseDetails.class)))
+                        .thenReturn(ccdCase);
 
                     callbackParams = CallbackParams.builder()
                         .type(CallbackType.ABOUT_TO_START)
@@ -612,7 +618,8 @@ public class GenerateOrderCallbackHandlerTest {
                         .otherDirections(null)
                         .build();
 
-                    when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+                    when(caseDetailsConverter.extractCCDCaseForDirectionOrder(any(CaseDetails.class)))
+                        .thenReturn(ccdCase);
 
                     CallbackParams callbackParams = CallbackParams.builder()
                         .type(CallbackType.ABOUT_TO_START)
@@ -620,7 +627,8 @@ public class GenerateOrderCallbackHandlerTest {
                         .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
                         .build();
 
-                    when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(Claim.builder().build());
+                    when(caseDetailsConverter.extractClaimForDirectionOrder(any(CaseDetails.class)))
+                        .thenReturn(Claim.builder().build());
 
                     Assertions.assertThrows(IllegalStateException.class,
                         () -> generateOrderCallbackHandler.handle(callbackParams));
@@ -643,7 +651,8 @@ public class GenerateOrderCallbackHandlerTest {
                             .build()
                     ))
                     .build();
-                when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+                when(caseDetailsConverter.extractCCDCaseForDirectionOrder(any(CaseDetails.class)))
+                    .thenReturn(ccdCase);
 
                 callbackParams = CallbackParams.builder()
                     .type(CallbackType.ABOUT_TO_START)
@@ -660,7 +669,8 @@ public class GenerateOrderCallbackHandlerTest {
 
                 @BeforeEach
                 void setUp() {
-                    when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(Claim.builder().build());
+                    when(caseDetailsConverter.extractClaimForDirectionOrder(any(CaseDetails.class)))
+                        .thenReturn(Claim.builder().build());
                 }
 
                 @Test
@@ -791,7 +801,8 @@ public class GenerateOrderCallbackHandlerTest {
                                         ).build()
                                 ).build()
                             ).build();
-                    when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+                    when(caseDetailsConverter.extractClaimForDirectionOrder(any(CaseDetails.class)))
+                        .thenReturn(claim);
 
                     callbackParams = CallbackParams.builder()
                         .type(CallbackType.ABOUT_TO_START)

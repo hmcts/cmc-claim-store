@@ -75,6 +75,8 @@ public class OrderCreator {
     private static final String OTHER_DIRECTIONS = "otherDirections";
     private static final String ESTIMATED_HEARING_DURATION = "estimatedHearingDuration";
     public static final String DIRECTION_TYPE_BESPOKE = "BESPOKE";
+    public static final String DIRECTION_ORDER_TYPE = "directionOrderType";
+    public static final String BESPOKE_DIRECTION_LIST = "bespokeDirectionList";
 
     private final LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator;
     private final CaseDetailsConverter caseDetailsConverter;
@@ -108,9 +110,6 @@ public class OrderCreator {
 
         Map<String, Object> data = new HashMap<>();
         data.put(DIRECTION_LIST, chooseItem(ccdCase.getDirectionList(), ImmutableList.of(DOCUMENTS, EYEWITNESS)));
-        data.put(BESPOKE_DIRECTION_WARNING,
-            chooseItem(ccdCase.getDrawBespokeDirectionOrderWarning(), ImmutableList.of(WARNING)));
-
         addCourtData(claim, ccdCase, data);
 
         LocalDate deadline = legalOrderGenerationDeadlinesCalculator.calculateOrderGenerationDeadlines();
@@ -147,6 +146,11 @@ public class OrderCreator {
 
             }
         }
+
+        data.put(BESPOKE_DIRECTION_WARNING,
+            chooseItem(ccdCase.getDrawBespokeDirectionOrderWarning(), ImmutableList.of(WARNING)));
+        data.put(BESPOKE_DIRECTION_LIST, ccdCase.getBespokeDirectionList());
+        data.put(DIRECTION_ORDER_TYPE, ccdCase.getDirectionOrderType());
 
         return AboutToStartOrSubmitCallbackResponse
             .builder()

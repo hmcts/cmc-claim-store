@@ -166,7 +166,10 @@ class DrawJudgeOrderCallbackHandlerTest {
         void shouldGenerateDocumentOnMidEvent() {
             CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
             ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
-            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            when(caseDetailsConverter.extractCCDCaseForDirectionOrder(any(CaseDetails.class)))
+                .thenReturn(ccdCase);
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
+                .thenReturn(ccdCase);
 
             CallbackRequest callbackRequest = CallbackRequest
                 .builder()
@@ -226,10 +229,12 @@ class DrawJudgeOrderCallbackHandlerTest {
                 .caseDocuments(ImmutableList.of(existingDocument))
                 .build();
 
-            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
+                .thenReturn(ccdCase);
 
             Claim claim = SampleClaim.builder().build();
-            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+                .thenReturn(claim);
 
             drawJudgeOrderCallbackHandler.handle(callbackParams);
 
@@ -312,7 +317,8 @@ class DrawJudgeOrderCallbackHandlerTest {
 
             when(directionOrderService.getHearingCourt(any())).thenReturn(HearingCourt.builder().build());
 
-            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
+                .thenReturn(ccdCase);
             when(documentManagementService.getDocumentMetaData(any(), any()))
                 .thenReturn(ResourceLoader.successfulDocumentManagementDownloadResponse());
 
@@ -341,7 +347,8 @@ class DrawJudgeOrderCallbackHandlerTest {
                 .build();
 
             CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
-            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
+                .thenReturn(ccdCase);
 
             Assertions.assertThrows(CallbackException.class, () ->
                 drawJudgeOrderCallbackHandler.handle(callbackParams));
@@ -354,7 +361,8 @@ class DrawJudgeOrderCallbackHandlerTest {
                 .caseDocuments(Collections.emptyList())
                 .hearingCourt("birmingham")
                 .build();
-            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
+                .thenReturn(ccdCase);
             when(documentManagementService.getDocumentMetaData(any(), any()))
                 .thenReturn(ResourceLoader.successfulDocumentManagementDownloadResponse());
 
@@ -381,7 +389,8 @@ class DrawJudgeOrderCallbackHandlerTest {
                 .caseDocuments(Collections.emptyList())
                 .hearingCourt("BIRMINGHAM")
                 .build();
-            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
+                .thenReturn(ccdCase);
 
             when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
             when(clock.getZone()).thenReturn(ZoneOffset.UTC);
@@ -425,8 +434,10 @@ class DrawJudgeOrderCallbackHandlerTest {
                                 .build()
                         ))
                         .build();
-                    when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-                    when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(Claim.builder().build());
+                    when(caseDetailsConverter.extractCCDCaseForDirectionOrder(any(CaseDetails.class)))
+                        .thenReturn(ccdCase);
+                    when(caseDetailsConverter.extractClaimForDirectionOrder(any(CaseDetails.class)))
+                        .thenReturn(Claim.builder().build());
 
                     callbackParams = CallbackParams.builder()
                         .type(CallbackType.ABOUT_TO_START)
@@ -794,7 +805,8 @@ class DrawJudgeOrderCallbackHandlerTest {
                             .otherDirections(null)
                             .build();
 
-                    when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+                    when(caseDetailsConverter.extractCCDCaseForDirectionOrder(any(CaseDetails.class)))
+                        .thenReturn(ccdCase);
 
                     CallbackParams callbackParams = CallbackParams.builder()
                         .type(CallbackType.ABOUT_TO_START)
@@ -802,7 +814,8 @@ class DrawJudgeOrderCallbackHandlerTest {
                         .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
                         .build();
 
-                    when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(Claim.builder().build());
+                    when(caseDetailsConverter.extractClaimForDirectionOrder(any(CaseDetails.class)))
+                        .thenReturn(Claim.builder().build());
 
                     Assertions.assertThrows(IllegalStateException.class,
                         () -> drawJudgeOrderCallbackHandler.handle(callbackParams));
