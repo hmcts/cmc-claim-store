@@ -149,7 +149,6 @@ public class OrderCreator {
 
         data.put(BESPOKE_DIRECTION_WARNING,
             chooseItem(ccdCase.getDrawBespokeDirectionOrderWarning(), ImmutableList.of(WARNING)));
-        data.put(BESPOKE_DIRECTION_LIST, ccdCase.getBespokeDirectionList());
         data.put(DIRECTION_ORDER_TYPE, ccdCase.getDirectionOrderType());
 
         return AboutToStartOrSubmitCallbackResponse
