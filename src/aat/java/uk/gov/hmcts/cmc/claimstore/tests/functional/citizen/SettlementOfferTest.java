@@ -60,7 +60,7 @@ public class SettlementOfferTest extends BaseTest {
 
     @Test
     public void shouldFailForMultipleOfferFromOneUser() {
-        commonOperations
+        Claim caseWithOffer  = commonOperations
             .submitOffer(offer, updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.DEFENDANT)
             .then()
             .statusCode(HttpStatus.CREATED.value())
@@ -68,7 +68,7 @@ public class SettlementOfferTest extends BaseTest {
             .extract().body().as(Claim.class);
 
         commonOperations
-            .submitOffer(offer, updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.DEFENDANT)
+            .submitOffer(offer, caseWithOffer.getExternalId(), defendant.getAuthorisation(), MadeBy.DEFENDANT)
             .then()
             .statusCode(HttpStatus.BAD_REQUEST.value());
     }
@@ -133,8 +133,6 @@ public class SettlementOfferTest extends BaseTest {
     }
 
     private Claim countersignAnOffer(Claim createdCase, User defendant) {
-        Offer offer = SampleOffer.builder().build();
-
         Claim caseWithOffer = commonOperations
             .submitOffer(offer, updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.DEFENDANT)
             .then()
@@ -195,10 +193,6 @@ public class SettlementOfferTest extends BaseTest {
 
     private Claim createClaimWithFullAdmissionResponse() {
         String claimantId = claimant.getUserDetails().getId();
-        Claim createdCase = commonOperations.submitClaim(
-            claimant.getAuthorisation(),
-            claimantId
-        );
 
         User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
         commonOperations.linkDefendant(
