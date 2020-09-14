@@ -2,10 +2,13 @@ package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
+import uk.gov.hmcts.cmc.claimstore.tests.helpers.Retry;
+import uk.gov.hmcts.cmc.claimstore.tests.helpers.RetryFailedFunctionalTests;
 import uk.gov.hmcts.cmc.domain.models.UserRoleRequest;
 
 import java.util.List;
@@ -22,12 +25,16 @@ public class FeatureTogglesTest extends BaseTest {
         user = idamTestService.createCitizen();
     }
 
+    @Rule
+    public RetryFailedFunctionalTests retryRule = new RetryFailedFunctionalTests(3);
+
     @After
     public void after() {
         idamTestService.deleteUser(user.getUserDetails().getEmail());
     }
 
     @Test
+    @Retry
     public void shouldSuccessfullySubmitUserRole() {
         commonOperations.saveUserRoles(new UserRoleRequest(CONSENT_GIVEN_ROLE), user.getAuthorisation())
             .then()
@@ -35,6 +42,7 @@ public class FeatureTogglesTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldThrow409OnSubmitOfSameUserRoleMoreThanOnce() {
         commonOperations.saveUserRoles(new UserRoleRequest(CONSENT_GIVEN_ROLE), user.getAuthorisation())
             .then()
@@ -47,6 +55,7 @@ public class FeatureTogglesTest extends BaseTest {
 
     @SuppressWarnings("unchecked")
     @Test
+    @Retry
     public void shouldSuccessfullyFetchRole() {
         commonOperations.saveUserRoles(new UserRoleRequest(CONSENT_GIVEN_ROLE), user.getAuthorisation())
             .then()

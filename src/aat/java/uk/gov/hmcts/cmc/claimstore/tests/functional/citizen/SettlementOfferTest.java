@@ -1,10 +1,13 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
+import uk.gov.hmcts.cmc.claimstore.tests.helpers.Retry;
+import uk.gov.hmcts.cmc.claimstore.tests.helpers.RetryFailedFunctionalTests;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
@@ -24,7 +27,11 @@ public class SettlementOfferTest extends BaseTest {
         claimant = bootstrap.getClaimant();
     }
 
+    @Rule
+    public RetryFailedFunctionalTests retryRule = new RetryFailedFunctionalTests(3);
+
     @Test
+    @Retry
     public void shouldBeAbleToSuccessfullySubmitOffer() {
         String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
@@ -50,6 +57,7 @@ public class SettlementOfferTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldFailForMultipleOfferFromOneUser() {
         String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
@@ -76,6 +84,7 @@ public class SettlementOfferTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldBeAbleToSuccessfullyAcceptOffer() {
         String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
@@ -107,6 +116,7 @@ public class SettlementOfferTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldFailAcceptOfferWithoutExistingOfferFromUser() {
         String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
@@ -124,6 +134,7 @@ public class SettlementOfferTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldBeAbleToSuccessfullyRejectOffer() {
         String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
@@ -156,6 +167,7 @@ public class SettlementOfferTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldFailRejectOfferWithoutExistingOfferFromUser() {
         String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
@@ -173,6 +185,7 @@ public class SettlementOfferTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldBeAbleToSuccessfullyCountersignOffer() {
         String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
@@ -218,6 +231,7 @@ public class SettlementOfferTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldFailRejectOfferWhenAlreadySettled() {
         String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
@@ -236,6 +250,7 @@ public class SettlementOfferTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldFailAcceptOfferWhenAlreadySettled() {
         String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
