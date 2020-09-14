@@ -1,10 +1,13 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
+import uk.gov.hmcts.cmc.claimstore.tests.helpers.Retry;
+import uk.gov.hmcts.cmc.claimstore.tests.helpers.RetryFailedFunctionalTests;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
@@ -24,7 +27,11 @@ public class SettlementOfferTest extends BaseTest {
         claimant = bootstrap.getClaimant();
     }
 
+    @Rule
+    public RetryFailedFunctionalTests retryRule = new RetryFailedFunctionalTests(3);
+
     @Test
+    @Retry
     public void shouldBeAbleToSuccessfullySubmitOffer() {
         Claim createdCase = submitClaimSynchronized();
 
@@ -46,6 +53,7 @@ public class SettlementOfferTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldFailForMultipleOfferFromOneUser() {
         Claim createdCase = submitClaimSynchronized();
 
@@ -68,6 +76,7 @@ public class SettlementOfferTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldBeAbleToSuccessfullyAcceptOffer() {
         Claim createdCase = submitClaimSynchronized();
         User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
@@ -95,6 +104,7 @@ public class SettlementOfferTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldFailAcceptOfferWithoutExistingOfferFromUser() {
         Claim createdCase = submitClaimSynchronized();
 
@@ -108,6 +118,7 @@ public class SettlementOfferTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldBeAbleToSuccessfullyRejectOffer() {
         Claim createdCase = submitClaimSynchronized();
 
@@ -136,6 +147,7 @@ public class SettlementOfferTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldFailRejectOfferWithoutExistingOfferFromUser() {
         Claim createdCase = submitClaimSynchronized();
 
@@ -149,6 +161,7 @@ public class SettlementOfferTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldBeAbleToSuccessfullyCountersignOffer() {
         Claim createdCase = submitClaimSynchronized();
 
@@ -190,6 +203,7 @@ public class SettlementOfferTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldFailRejectOfferWhenAlreadySettled() {
         Claim createdCase = submitClaimSynchronized();
 
@@ -204,6 +218,7 @@ public class SettlementOfferTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldFailAcceptOfferWhenAlreadySettled() {
         Claim createdCase = submitClaimSynchronized();
 

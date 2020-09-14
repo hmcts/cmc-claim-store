@@ -1,17 +1,19 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
 import io.restassured.RestAssured;
-import org.junit.BeforeClass;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
+import uk.gov.hmcts.cmc.claimstore.tests.helpers.Retry;
+import uk.gov.hmcts.cmc.claimstore.tests.helpers.RetryFailedFunctionalTests;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
-import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
@@ -22,26 +24,25 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class CountyCourtJudgementTest extends BaseTest {
 
-    private static User claimant;
-    private static String claimantId;
-    private static Claim createdCase;
-    private static User defendant;
-    private static Claim updatedCase;
-    private static Offer offer;
+    private User claimant;
 
-    @BeforeClass
-    public static void beforeClass() {
-        CountyCourtJudgementTest countyCourtJudgementTest = new CountyCourtJudgementTest();
-        claimant = countyCourtJudgementTest.bootstrap.getClaimant();
-        claimantId = claimant.getUserDetails().getId();
-        createdCase = countyCourtJudgementTest.commonOperations.submitClaim(
+    @Before
+    public void before() {
+        claimant = bootstrap.getClaimant();
+    }
+
+    @Rule
+    public RetryFailedFunctionalTests retryRule = new RetryFailedFunctionalTests(3);
+
+    @Test
+    @Retry
+    public void shouldBeAbleToSuccessfullyRequestCCJ() {
+        String claimantId = claimant.getUserDetails().getId();
+        Claim createdCase = commonOperations.submitClaim(
             claimant.getAuthorisation(),
             claimantId
         );
-    }
 
-    @Test
-    public void shouldBeAbleToSuccessfullyRequestCCJ() {
         updateResponseDeadlineToEnableCCJ(createdCase.getReferenceNumber());
 
         CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
@@ -60,7 +61,13 @@ public class CountyCourtJudgementTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldNotBeAllowedToDefaultCCJWhenResponseDeadlineHasNotPassed() {
+        String claimantId = claimant.getUserDetails().getId();
+        Claim createdCase = commonOperations.submitClaim(
+            claimant.getAuthorisation(),
+            claimantId
+        );
         CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
             .paymentOption(PaymentOption.IMMEDIATELY)
             .ccjType(CountyCourtJudgmentType.DEFAULT)
@@ -72,7 +79,13 @@ public class CountyCourtJudgementTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldNotBeAllowedToRequestCCJWhenResponseWasSubmitted() {
+        String claimantId = claimant.getUserDetails().getId();
+        Claim createdCase = commonOperations.submitClaim(
+            claimant.getAuthorisation(),
+            claimantId
+        );
 
         User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
         commonOperations.linkDefendant(defendant.getAuthorisation());
