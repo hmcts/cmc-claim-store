@@ -16,36 +16,23 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SettlementOfferTest extends BaseTest {
-    private static boolean setUpIsDone = false;
-    private static User claimant;
-    private static String claimantId;
-    private static Claim createdCase;
-    private static User defendant;
-    private static Claim updatedCase;
-    private static Offer offer;
+
+    private User claimant;
 
     @Before
-    public void setup() {
-        if (setUpIsDone) {
-            return;
-        }
+    public void before() {
         claimant = bootstrap.getClaimant();
-        claimantId = claimant.getUserDetails().getId();
-        createdCase = commonOperations.submitClaim(
-            claimant.getAuthorisation(),
-            claimantId
-        );
-
-        defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(),
-            bootstrap.getDefendant());
-        updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
-
-        offer = SampleOffer.builder().build();
-        setUpIsDone = true;
     }
 
     @Test
     public void shouldBeAbleToSuccessfullySubmitOffer() {
+        Claim createdCase = submitClaimSynchronized();
+
+        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
+        Claim updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
+
+        Offer offer = SampleOffer.builder().build();
+
         Claim caseWithOffer = commonOperations
             .submitOffer(offer, updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.DEFENDANT)
             .then()
@@ -60,7 +47,14 @@ public class SettlementOfferTest extends BaseTest {
 
     @Test
     public void shouldFailForMultipleOfferFromOneUser() {
-        Claim caseWithOffer  = commonOperations
+        Claim createdCase = submitClaimSynchronized();
+
+        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
+        Claim updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
+
+        Offer offer = SampleOffer.builder().build();
+
+        commonOperations
             .submitOffer(offer, updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.DEFENDANT)
             .then()
             .statusCode(HttpStatus.CREATED.value())
@@ -68,13 +62,19 @@ public class SettlementOfferTest extends BaseTest {
             .extract().body().as(Claim.class);
 
         commonOperations
-            .submitOffer(offer, caseWithOffer.getExternalId(), defendant.getAuthorisation(), MadeBy.DEFENDANT)
+            .submitOffer(offer, updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.DEFENDANT)
             .then()
             .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
     public void shouldBeAbleToSuccessfullyAcceptOffer() {
+        Claim createdCase = submitClaimSynchronized();
+        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
+        Claim updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
+
+        Offer offer = SampleOffer.builder().build();
+
         Claim caseWithOffer = commonOperations
             .submitOffer(offer, updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.DEFENDANT)
             .then()
@@ -95,7 +95,27 @@ public class SettlementOfferTest extends BaseTest {
     }
 
     @Test
+    public void shouldFailAcceptOfferWithoutExistingOfferFromUser() {
+        Claim createdCase = submitClaimSynchronized();
+
+        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
+        Claim updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
+
+        commonOperations
+            .acceptOffer(updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.CLAIMANT)
+            .then()
+            .statusCode(HttpStatus.CONFLICT.value());
+    }
+
+    @Test
     public void shouldBeAbleToSuccessfullyRejectOffer() {
+        Claim createdCase = submitClaimSynchronized();
+
+        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
+        Claim updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
+
+        Offer offer = SampleOffer.builder().build();
+
         Claim caseWithOffer = commonOperations
             .submitOffer(offer, updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.DEFENDANT)
             .then()
@@ -117,6 +137,11 @@ public class SettlementOfferTest extends BaseTest {
 
     @Test
     public void shouldFailRejectOfferWithoutExistingOfferFromUser() {
+        Claim createdCase = submitClaimSynchronized();
+
+        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
+        Claim updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
+
         commonOperations
             .rejectOffer(updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.CLAIMANT)
             .then()
@@ -125,6 +150,10 @@ public class SettlementOfferTest extends BaseTest {
 
     @Test
     public void shouldBeAbleToSuccessfullyCountersignOffer() {
+        Claim createdCase = submitClaimSynchronized();
+
+        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
+
         Claim caseWithCounterSign = countersignAnOffer(createdCase, defendant);
 
         assertThat(caseWithCounterSign.getSettlement().isPresent()).isTrue();
@@ -133,6 +162,11 @@ public class SettlementOfferTest extends BaseTest {
     }
 
     private Claim countersignAnOffer(Claim createdCase, User defendant) {
+
+        Claim updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
+
+        Offer offer = SampleOffer.builder().build();
+
         Claim caseWithOffer = commonOperations
             .submitOffer(offer, updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.DEFENDANT)
             .then()
@@ -157,6 +191,10 @@ public class SettlementOfferTest extends BaseTest {
 
     @Test
     public void shouldFailRejectOfferWhenAlreadySettled() {
+        Claim createdCase = submitClaimSynchronized();
+
+        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
+
         Claim updatedCase = countersignAnOffer(createdCase, defendant);
 
         commonOperations
@@ -167,7 +205,15 @@ public class SettlementOfferTest extends BaseTest {
 
     @Test
     public void shouldFailAcceptOfferWhenAlreadySettled() {
+        Claim createdCase = submitClaimSynchronized();
+
+        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
+        commonOperations.linkDefendant(
+            defendant.getAuthorisation()
+        );
+
         Claim updatedCase = countersignAnOffer(createdCase, defendant);
+
         commonOperations
             .acceptOffer(updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.CLAIMANT)
             .then()
@@ -192,7 +238,7 @@ public class SettlementOfferTest extends BaseTest {
     }
 
     private Claim createClaimWithFullAdmissionResponse() {
-        String claimantId = claimant.getUserDetails().getId();
+        Claim createdCase = submitClaimSynchronized();
 
         User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
         commonOperations.linkDefendant(
@@ -206,5 +252,17 @@ public class SettlementOfferTest extends BaseTest {
             .statusCode(HttpStatus.OK.value())
             .and()
             .extract().body().as(Claim.class);
+    }
+
+    private Claim submitClaimSynchronized() {
+        Claim synchronizedClaim = null;
+        synchronized (SettlementOfferTest.class) {
+            String claimantId = claimant.getUserDetails().getId();
+            synchronizedClaim = commonOperations.submitClaim(
+                claimant.getAuthorisation(),
+                claimantId
+            );
+        }
+        return synchronizedClaim;
     }
 }
