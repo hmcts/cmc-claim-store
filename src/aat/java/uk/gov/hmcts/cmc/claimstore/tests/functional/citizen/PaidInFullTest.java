@@ -1,10 +1,13 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
+import uk.gov.hmcts.cmc.claimstore.tests.helpers.Retry;
+import uk.gov.hmcts.cmc.claimstore.tests.helpers.RetryFailedFunctionalTests;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 
@@ -22,7 +25,11 @@ public class PaidInFullTest extends BaseTest {
         claimant = bootstrap.getClaimant();
     }
 
+    @Rule
+    public RetryFailedFunctionalTests retryRule = new RetryFailedFunctionalTests(3);
+
     @Test
+    @Retry
     public void shouldSuccessfullySavePaidInFull() {
         String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
@@ -44,6 +51,7 @@ public class PaidInFullTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldReturnUnprocessableEntityWhenInvalidRequestBodyIsSubmitted() {
         String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
@@ -58,6 +66,22 @@ public class PaidInFullTest extends BaseTest {
     }
 
     @Test
+    @Retry
+    public void shouldReturnUnprocessableEntityWhenPaidInFullDateIsInFuture() {
+        String claimantId = claimant.getUserDetails().getId();
+        Claim createdCase = commonOperations.submitClaim(
+            claimant.getAuthorisation(),
+            claimantId
+        );
+
+        commonOperations
+            .paidInFull(createdCase.getExternalId(), new PaidInFull(now().plusWeeks(1)), claimant)
+            .then()
+            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+    }
+
+    @Test
+    @Retry
     public void shouldNoAllowSubmitPaidInFullIfAlreadyDone() {
         String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
@@ -84,6 +108,7 @@ public class PaidInFullTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldNotAllowPaidInFullWhenClaimDoesNotExist() {
         commonOperations
             .paidInFull(UUID.randomUUID().toString(), new PaidInFull(now()), claimant)

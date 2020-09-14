@@ -392,7 +392,8 @@ sonarqube {
         "**/CCDCaseApi.java",
         "launch-darkly-client/**",
         "email-client/**",
-        "rpa-mapper/**"
+        "rpa-mapper/**",
+        "**/UserRoleConstraintValidator.java"
       ].join(",")
   }
 }
