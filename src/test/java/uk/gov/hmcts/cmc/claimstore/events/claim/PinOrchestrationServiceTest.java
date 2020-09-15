@@ -126,15 +126,16 @@ public class PinOrchestrationServiceTest {
         given(bulkPrintService
             .printPdf(eq(CLAIM), eq(printAbles), eq(FIRST_CONTACT_LETTER_TYPE), eq(AUTHORISATION)))
             .willReturn(bulkPrintDetails);
-
+        given(bulkPrintService
+            .printHtmlLetter(eq(CLAIM), eq(printAbles), eq(FIRST_CONTACT_LETTER_TYPE), eq(AUTHORISATION)))
+            .willReturn(bulkPrintDetails);
         given(claimService.addBulkPrintDetails(eq(AUTHORISATION), eq(printDetails),
             eq(ADD_BULK_PRINT_DETAILS), eq(CLAIM)))
             .willReturn(claimWithBulkPrintDetails);
-
     }
 
     @Test
-    public void shouldProcessPinBased() {
+    public void shouldProcessNewPinBased() {
         //given
         given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION), eq(true)))
             .willReturn(generatedDocuments);
@@ -173,7 +174,7 @@ public class PinOrchestrationServiceTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void updatePinOperationStatusWhenBulkPrintFails() {
+    public void updatePinOperationStatusWhenBulkPrintFailsForNewPinLetter() {
         //given
         given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION), true))
             .willReturn(generatedDocuments);
@@ -232,6 +233,66 @@ public class PinOrchestrationServiceTest {
 
             verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM.getId()),
                 eq(operationIndicators), eq(CaseEvent.PIN_GENERATION_OPERATIONS));
+        }
+    }
+
+    @Test
+    public void shouldProcessPinBased() {
+        //given
+        given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION), eq(false)))
+            .willReturn(generatedDocuments);
+        given(launchDarklyClient.isFeatureEnabled(eq("new-defendant-pin-letter"), any(LDUser.class))).willReturn(false);
+
+        //when
+        pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
+
+        //then
+        verify(bulkPrintService).printHtmlLetter(
+            eq(CLAIM),
+            eq(printAbles),
+            eq(FIRST_CONTACT_LETTER_TYPE),
+            eq(AUTHORISATION));
+
+        verify(claimIssuedStaffNotificationService).notifyStaffOfClaimIssue(eq(claimWithBulkPrintDetails),
+            eq(ImmutableList.of(sealedClaim, defendantPinLetter)));
+
+        verify(claimIssuedNotificationService).sendMail(
+            eq(claimWithBulkPrintDetails),
+            eq(CLAIM.getClaimData().getDefendant().getEmail().orElse(null)),
+            eq(PIN),
+            eq(DEFENDANT_EMAIL_TEMPLATE),
+            eq("defendant-issue-notification-" + CLAIM.getReferenceNumber()),
+            eq(SUBMITTER_NAME)
+        );
+
+        ClaimSubmissionOperationIndicators operationIndicators = ClaimSubmissionOperationIndicators.builder()
+            .bulkPrint(YesNoOption.YES)
+            .staffNotification(YesNoOption.YES)
+            .defendantNotification(YesNoOption.YES)
+            .build();
+
+        verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM.getId()),
+            eq(operationIndicators), eq(CaseEvent.PIN_GENERATION_OPERATIONS));
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void updatePinOperationStatusWhenBulkPrintFails() {
+        //given
+        given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION), false))
+            .willReturn(generatedDocuments);
+        given(launchDarklyClient.isFeatureEnabled(eq("new-defendant-pin-letter"), any(LDUser.class))).willReturn(false);
+
+        doThrow(new RuntimeException("bulk print failed")).when(bulkPrintService).printHtmlLetter(
+            any(), anyList(), eq(FIRST_CONTACT_LETTER_TYPE), anyString());
+
+        //when
+        try {
+            pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
+
+        } finally {
+            //then
+            verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM.getId()),
+                eq(ClaimSubmissionOperationIndicators.builder().build()), eq(CaseEvent.PIN_GENERATION_OPERATIONS));
         }
     }
 }

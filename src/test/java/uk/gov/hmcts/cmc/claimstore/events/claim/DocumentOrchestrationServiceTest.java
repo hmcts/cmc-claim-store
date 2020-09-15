@@ -90,6 +90,8 @@ public class DocumentOrchestrationServiceTest {
         );
 
         given(citizenServiceDocumentsService.sealedClaimDocument(eq(CLAIM))).willReturn(sealedClaimLetterDocument);
+        given(citizenServiceDocumentsService.pinLetterDocument(eq(CLAIM), eq(PIN))).willReturn(defendantLetterDocument);
+
         given(sealedClaimPdfService.createPdf(eq(CLAIM))).willReturn(new PDF(
             "sealedClaim",
             PDF_BYTES,
@@ -101,10 +103,16 @@ public class DocumentOrchestrationServiceTest {
             CLAIM_ISSUE_RECEIPT
         ));
         given(pdfServiceClient.generateFromHtml(any(), anyMap())).willReturn(PDF_BYTES);
+        given(userService.generatePin(eq(CLAIM.getClaimData().getDefendant().getName()), eq(AUTHORISATION)))
+            .willReturn(GeneratePinResponse.builder()
+                .pin(PIN)
+                .userId(LETTER_HOLDER_ID)
+                .build()
+            );
     }
 
     @Test
-    public void shouldCreateAllDocumentsForCitizen() {
+    public void shouldCreateAllNewDocumentsForCitizen() {
         given(printableDocumentService.pdf(DOCUMENT, AUTHORISATION)).willReturn(PDF_BYTES);
         given(userService.generatePin(anyString(), anyString())).willReturn(PIN_RESPONSE);
         given(citizenServiceDocumentsService
@@ -149,5 +157,17 @@ public class DocumentOrchestrationServiceTest {
 
         //verify
         verify(sealedClaimPdfService).createPdf(eq(CLAIM));
+    }
+
+    @Test
+    public void shouldCreateAllDocumentsForCitizen() {
+        // when
+        documentOrchestrationService.generateForCitizen(CLAIM, AUTHORISATION, false);
+
+        //verify
+        verify(citizenServiceDocumentsService).sealedClaimDocument(eq(CLAIM));
+        verify(citizenServiceDocumentsService).pinLetterDocument(eq(CLAIM), eq(PIN));
+        verify(pdfServiceClient, atLeast(2)).generateFromHtml(any(), anyMap());
+        verify(claimIssueReceiptService).createPdf(eq(CLAIM));
     }
 }

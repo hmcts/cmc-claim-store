@@ -39,7 +39,7 @@ public class BulkPrintHandlerTest {
     private LaunchDarklyClient launchDarklyClient;
 
     @Test
-    public void notifyStaffForDefendantLetters() {
+    public void notifyStaffForNewDefendantLetters() {
         //given
         BulkPrintHandler bulkPrintHandler = new BulkPrintHandler(bulkPrintService, launchDarklyClient);
         Claim claim = SampleClaim.getDefault();
@@ -55,6 +55,37 @@ public class BulkPrintHandlerTest {
 
         //verify
         verify(bulkPrintService).printPdf(
+            claim,
+            ImmutableList.of(
+                new PrintableTemplate(
+                    defendantLetterDocument,
+                    claim.getReferenceNumber() + "-defendant-pin-letter"),
+                new PrintableTemplate(
+                    sealedClaimDocument,
+                    claim.getReferenceNumber() + "-claim-form")
+            ),
+            FIRST_CONTACT_LETTER_TYPE,
+            AUTHORISATION
+        );
+    }
+
+    @Test
+    public void notifyStaffForDefendantLetters() {
+        //given
+        BulkPrintHandler bulkPrintHandler = new BulkPrintHandler(bulkPrintService, launchDarklyClient);
+        Claim claim = SampleClaim.getDefault();
+        Document defendantLetterDocument = new Document("pinTemplate", new HashMap<>());
+        Document sealedClaimDocument = new Document("sealedClaimTemplate", new HashMap<>());
+        when(launchDarklyClient.isFeatureEnabled(eq("new-defendant-pin-letter"), any(LDUser.class))).thenReturn(false);
+
+        DocumentReadyToPrintEvent printEvent
+            = new DocumentReadyToPrintEvent(claim, defendantLetterDocument, sealedClaimDocument, AUTHORISATION);
+
+        //when
+        bulkPrintHandler.print(printEvent);
+
+        //verify
+        verify(bulkPrintService).printHtmlLetter(
             claim,
             ImmutableList.of(
                 new PrintableTemplate(

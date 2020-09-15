@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,5 +43,29 @@ class PrintableDocumentServiceTest {
         verify(documentManagementService, times(1)).downloadDocument(
             anyString(),
             any(ClaimDocument.class));
+    }
+
+    @Test
+    void shouldThrowExceptionIfDownloadUrlIsWrong() {
+
+        when(documentManagementService.downloadDocument(
+            anyString(),
+            any(ClaimDocument.class))).thenThrow(new IllegalArgumentException("Exception"));
+
+        Assertions.assertThrows(IllegalArgumentException.class,
+            () -> printableDocumentService.pdf(document, AUTHORISATION));
+
+    }
+
+    @Test
+    void shouldThrowExceptionIfUrlIsWrong() {
+
+        when(documentManagementService.downloadDocument(
+            anyString(),
+            any(ClaimDocument.class))).thenThrow(new IllegalArgumentException("Exception"));
+
+        Assertions.assertThrows(IllegalArgumentException.class,
+            () -> printableDocumentService.process(document, AUTHORISATION));
+
     }
 }

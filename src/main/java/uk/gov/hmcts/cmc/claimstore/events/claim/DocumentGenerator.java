@@ -60,9 +60,14 @@ public class DocumentGenerator {
                 event.getPin(),
                 event.getAuthorisation());
             defendantLetterDoc = printableDocumentService.process(pinLetter, event.getAuthorisation());
+            defendantLetter = new PDF(buildDefendantLetterFileBaseName(event.getClaim().getReferenceNumber()),
+                printableDocumentService.pdf(pinLetter, event.getAuthorisation()), DEFENDANT_PIN_LETTER);
         } else {
             defendantLetterDoc = citizenServiceDocumentsService.pinLetterDocument(event.getClaim(),
                 event.getPin());
+            defendantLetter = new PDF(buildDefendantLetterFileBaseName(event.getClaim().getReferenceNumber()),
+                pdfServiceClient.generateFromHtml(defendantLetterDoc.template.getBytes(), defendantLetterDoc.values),
+                DEFENDANT_PIN_LETTER);
         }
 
         publisher.publishEvent(
@@ -73,14 +78,6 @@ public class DocumentGenerator {
                 event.getAuthorisation()));
 
         PDF sealedClaim = sealedClaimPdfService.createPdf(event.getClaim());
-        if (launchDarklyClient.isFeatureEnabled("new-defendant-pin-letter", LaunchDarklyClient.CLAIM_STORE_USER)) {
-            defendantLetter = new PDF(buildDefendantLetterFileBaseName(event.getClaim().getReferenceNumber()),
-                printableDocumentService.pdf(pinLetter, event.getAuthorisation()), DEFENDANT_PIN_LETTER);
-        } else {
-            defendantLetter = new PDF(buildDefendantLetterFileBaseName(event.getClaim().getReferenceNumber()),
-                pdfServiceClient.generateFromHtml(defendantLetterDoc.template.getBytes(), defendantLetterDoc.values),
-                DEFENDANT_PIN_LETTER);
-        }
         publisher.publishEvent(new DocumentGeneratedEvent(event.getClaim(), event.getAuthorisation(),
             sealedClaim, defendantLetter));
     }

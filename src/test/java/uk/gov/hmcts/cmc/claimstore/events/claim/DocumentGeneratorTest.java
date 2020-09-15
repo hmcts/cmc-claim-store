@@ -66,7 +66,7 @@ public class DocumentGeneratorTest {
     }
 
     @Test
-    public void shouldPublishDocumentReadyToPrintEventHavingLetterDocumentBeforeClaimDocument() {
+    public void shouldPublishDocumentReadyToPrintEventHavingNewLetterDocumentBeforeClaimDocument() {
         //given
 
         Document sealedClaimDocument = new Document(sealedClaimTemplate, claimContents);
@@ -95,7 +95,7 @@ public class DocumentGeneratorTest {
     }
 
     @Test
-    public void shouldTriggerDocumentGeneratedEventForCitizenClaim() {
+    public void shouldTriggerDocumentGeneratedEventForCitizenClaimWithNewPinLetter() {
         Document sealedClaimDocument = new Document(sealedClaimTemplate, claimContents);
         Claim claim = SampleClaim.getDefault();
         when(citizenDocumentService.sealedClaimDocument(claim)).thenReturn(sealedClaimDocument);
@@ -118,6 +118,55 @@ public class DocumentGeneratorTest {
         ));
         RepresentedClaimIssuedEvent event = new RepresentedClaimIssuedEvent(claim, submitterName, authorisation);
         documentGenerator.generateForRepresentedClaim(event);
+        verify(publisher).publishEvent(any(DocumentGeneratedEvent.class));
+    }
+
+    @Test
+    public void shouldPublishDocumentReadyToPrintEventHavingLetterDocumentBeforeClaimDocument() {
+        //given
+
+        Document sealedClaimDocument = new Document(sealedClaimTemplate, claimContents);
+        Claim claim = SampleClaim.getDefault();
+        when(citizenDocumentService.sealedClaimDocument(claim)).thenReturn(sealedClaimDocument);
+        when(citizenDocumentService.pinLetterDocument(claim, pin)).thenReturn(defendantLetterDocument);
+        when(launchDarklyClient.isFeatureEnabled(eq("new-defendant-pin-letter"), any(LDUser.class))).thenReturn(false);
+
+        when(sealedClaimPdfService.createPdf(claim))
+            .thenReturn(new PDF(
+                "sealedClaim",
+                PDF_CONTENT,
+                SEALED_CLAIM
+            ));
+
+        when(pdfServiceClient.generateFromHtml(pinTemplate.getBytes(), defendantLetterDocument.values))
+            .thenReturn(PDF_CONTENT);
+
+        //when
+        CitizenClaimIssuedEvent event = new CitizenClaimIssuedEvent(claim, pin, submitterName, authorisation);
+        documentGenerator.generateForNonRepresentedClaim(event);
+
+        //then
+        verify(publisher, never())
+            .publishEvent(
+                new DocumentReadyToPrintEvent(claim, sealedClaimDocument, defendantLetterDocument, authorisation));
+
+        verify(publisher)
+            .publishEvent(
+                new DocumentReadyToPrintEvent(claim, defendantLetterDocument, sealedClaimDocument, authorisation));
+    }
+
+    @Test
+    public void shouldTriggerDocumentGeneratedEventForCitizenClaim() {
+        Document sealedClaimDocument = new Document(sealedClaimTemplate, claimContents);
+        Claim claim = SampleClaim.getDefault();
+        when(citizenDocumentService.sealedClaimDocument(claim)).thenReturn(sealedClaimDocument);
+        when(citizenDocumentService.pinLetterDocument(claim, pin)).thenReturn(defendantLetterDocument);
+        when(launchDarklyClient.isFeatureEnabled(eq("new-defendant-pin-letter"), any(LDUser.class))).thenReturn(false);
+        CitizenClaimIssuedEvent event = new CitizenClaimIssuedEvent(claim, pin, submitterName, authorisation);
+        documentGenerator.generateForNonRepresentedClaim(event);
+        verify(publisher)
+            .publishEvent(
+                new DocumentReadyToPrintEvent(claim, defendantLetterDocument, sealedClaimDocument, authorisation));
         verify(publisher).publishEvent(any(DocumentGeneratedEvent.class));
     }
 }
