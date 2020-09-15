@@ -181,9 +181,9 @@ public class OrderCreator {
         logger.info("Order creator: mid event to handle generate or prepopulate the claim for direction type");
         CallbackRequest callbackRequest = callbackParams.getRequest();
         if (callbackRequest.getCaseDetails().getData() != null
-            && callbackRequest.getCaseDetails().getData().containsKey("directionOrderType")
-            && "BESPOKE".equals(callbackRequest.getCaseDetails().getData().get("directionOrderType"))) {
-            callbackRequest.getCaseDetails().getData().remove("hearingCourt");
+            && callbackRequest.getCaseDetails().getData().containsKey(DIRECTION_ORDER_TYPE)
+            && DIRECTION_TYPE_BESPOKE.equals(callbackRequest.getCaseDetails().getData().get(DIRECTION_ORDER_TYPE))) {
+            callbackRequest.getCaseDetails().getData().remove(HEARING_COURT);
         }
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
         if ((DIRECTION_TYPE_BESPOKE.equalsIgnoreCase(ccdCase.getDirectionOrderType())
