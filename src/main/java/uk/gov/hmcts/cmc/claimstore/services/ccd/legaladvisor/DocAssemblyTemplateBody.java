@@ -128,4 +128,9 @@ public class DocAssemblyTemplateBody implements FormPayload {
     private String reasonForTransfer;
     private boolean orderDrawnByJudge;
     private boolean orderDrawnByLA;
+    private String claimAmount;
+    private String defendantPin;
+    private String staffEmail;
+    private String respondToClaimUrl;
+    private String responseDashboardUrl;
 }

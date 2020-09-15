@@ -7,12 +7,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.context.ApplicationEventPublisher;
 import uk.gov.hmcts.cmc.claimstore.documents.CitizenServiceDocumentsService;
-import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentGeneratedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.PrintableDocumentService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
@@ -30,9 +30,6 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 @RunWith(MockitoJUnitRunner.class)
 public class DocumentGeneratorTest {
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
-
-    private DocumentGenerator documentGenerator;
-
     private final String authorisation = "AuthValue";
     private final String submitterName = "Dr. John Smith";
     private final String pin = "123456";
@@ -41,7 +38,7 @@ public class DocumentGeneratorTest {
     private final Document defendantLetterDocument = new Document(pinTemplate, pinContents);
     private final Map<String, Object> claimContents = new HashMap<>();
     private final String sealedClaimTemplate = "sealedClaimTemplate";
-
+    private DocumentGenerator documentGenerator;
     @Mock
     private CitizenServiceDocumentsService citizenDocumentService;
     @Mock
@@ -51,14 +48,15 @@ public class DocumentGeneratorTest {
     @Mock
     private PDFServiceClient pdfServiceClient;
     @Mock
-    private ClaimIssueReceiptService claimIssueReceiptService;
+    private PrintableDocumentService printableDocumentService;
 
     @Before
     public void before() {
         documentGenerator = new DocumentGenerator(citizenDocumentService,
             sealedClaimPdfService,
             publisher,
-            pdfServiceClient);
+            pdfServiceClient,
+            printableDocumentService);
     }
 
     @Test
@@ -68,7 +66,6 @@ public class DocumentGeneratorTest {
         Document sealedClaimDocument = new Document(sealedClaimTemplate, claimContents);
         Claim claim = SampleClaim.getDefault();
         when(citizenDocumentService.sealedClaimDocument(claim)).thenReturn(sealedClaimDocument);
-        when(citizenDocumentService.pinLetterDocument(claim, pin)).thenReturn(defendantLetterDocument);
 
         when(sealedClaimPdfService.createPdf(claim))
             .thenReturn(new PDF(
@@ -76,9 +73,6 @@ public class DocumentGeneratorTest {
                 PDF_CONTENT,
                 SEALED_CLAIM
             ));
-
-        when(pdfServiceClient.generateFromHtml(pinTemplate.getBytes(), defendantLetterDocument.values))
-            .thenReturn(PDF_CONTENT);
 
         //when
         CitizenClaimIssuedEvent event = new CitizenClaimIssuedEvent(claim, pin, submitterName, authorisation);
@@ -91,7 +85,7 @@ public class DocumentGeneratorTest {
 
         verify(publisher)
             .publishEvent(
-                new DocumentReadyToPrintEvent(claim, defendantLetterDocument, sealedClaimDocument, authorisation));
+                any(DocumentReadyToPrintEvent.class));
     }
 
     @Test
@@ -99,12 +93,11 @@ public class DocumentGeneratorTest {
         Document sealedClaimDocument = new Document(sealedClaimTemplate, claimContents);
         Claim claim = SampleClaim.getDefault();
         when(citizenDocumentService.sealedClaimDocument(claim)).thenReturn(sealedClaimDocument);
-        when(citizenDocumentService.pinLetterDocument(claim, pin)).thenReturn(defendantLetterDocument);
         CitizenClaimIssuedEvent event = new CitizenClaimIssuedEvent(claim, pin, submitterName, authorisation);
         documentGenerator.generateForNonRepresentedClaim(event);
         verify(publisher)
             .publishEvent(
-                new DocumentReadyToPrintEvent(claim, defendantLetterDocument, sealedClaimDocument, authorisation));
+                any(DocumentReadyToPrintEvent.class));
         verify(publisher).publishEvent(any(DocumentGeneratedEvent.class));
     }
 

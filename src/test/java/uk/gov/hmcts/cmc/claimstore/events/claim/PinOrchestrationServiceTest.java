@@ -67,8 +67,23 @@ public class PinOrchestrationServiceTest {
             sealedClaimLetterDocument,
             CLAIM.getReferenceNumber() + "-claim-form")
     );
+    private final GeneratedDocuments generatedDocuments = GeneratedDocuments.builder()
+        .defendantPinLetterDoc(defendantPinLetterDocument)
+        .defendantPinLetter(defendantPinLetter)
+        .sealedClaimDoc(sealedClaimLetterDocument)
+        .sealedClaim(sealedClaim)
+        .pin(PIN)
+        .claim(CLAIM)
+        .build();
+    private final BulkPrintDetails bulkPrintDetails = BulkPrintDetails.builder()
+        .printRequestType(PIN_LETTER_TO_DEFENDANT).printRequestId("requestId").build();
+    private final ImmutableList<BulkPrintDetails> printDetails = ImmutableList.<BulkPrintDetails>builder()
+        .addAll(CLAIM.getBulkPrintDetails())
+        .add(bulkPrintDetails)
+        .build();
+    private final Claim claimWithBulkPrintDetails
+        = CLAIM.toBuilder().bulkPrintDetails(List.of(bulkPrintDetails)).build();
     private PinOrchestrationService pinOrchestrationService;
-
     @Mock
     private PrintService bulkPrintService;
     @Mock
@@ -88,24 +103,6 @@ public class PinOrchestrationServiceTest {
     @Mock
     private ClaimService claimService;
 
-    private final GeneratedDocuments generatedDocuments = GeneratedDocuments.builder()
-        .defendantPinLetterDoc(defendantPinLetterDocument)
-        .defendantPinLetter(defendantPinLetter)
-        .sealedClaimDoc(sealedClaimLetterDocument)
-        .sealedClaim(sealedClaim)
-        .pin(PIN)
-        .claim(CLAIM)
-        .build();
-
-    private final BulkPrintDetails bulkPrintDetails = BulkPrintDetails.builder()
-        .printRequestType(PIN_LETTER_TO_DEFENDANT).printRequestId("requestId").build();
-    private final ImmutableList<BulkPrintDetails> printDetails = ImmutableList.<BulkPrintDetails>builder()
-        .addAll(CLAIM.getBulkPrintDetails())
-        .add(bulkPrintDetails)
-        .build();
-    private final Claim claimWithBulkPrintDetails
-        = CLAIM.toBuilder().bulkPrintDetails(List.of(bulkPrintDetails)).build();
-
     @Before
     public void before() {
         pinOrchestrationService = new PinOrchestrationService(
@@ -122,7 +119,7 @@ public class PinOrchestrationServiceTest {
         given(emailTemplates.getDefendantClaimIssued()).willReturn(DEFENDANT_EMAIL_TEMPLATE);
 
         given(bulkPrintService
-            .printHtmlLetter(eq(CLAIM), eq(printAbles), eq(FIRST_CONTACT_LETTER_TYPE), eq(AUTHORISATION)))
+            .printPdf(eq(CLAIM), eq(printAbles), eq(FIRST_CONTACT_LETTER_TYPE), eq(AUTHORISATION)))
             .willReturn(bulkPrintDetails);
 
         given(claimService.addBulkPrintDetails(eq(AUTHORISATION), eq(printDetails),
@@ -141,7 +138,7 @@ public class PinOrchestrationServiceTest {
         pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
 
         //then
-        verify(bulkPrintService).printHtmlLetter(
+        verify(bulkPrintService).printPdf(
             eq(CLAIM),
             eq(printAbles),
             eq(FIRST_CONTACT_LETTER_TYPE),
@@ -175,7 +172,7 @@ public class PinOrchestrationServiceTest {
         given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION)))
             .willReturn(generatedDocuments);
 
-        doThrow(new RuntimeException("bulk print failed")).when(bulkPrintService).printHtmlLetter(
+        doThrow(new RuntimeException("bulk print failed")).when(bulkPrintService).printPdf(
             any(), anyList(), eq(FIRST_CONTACT_LETTER_TYPE), anyString());
 
         //when
