@@ -32,8 +32,10 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -75,6 +77,7 @@ public class OrderCreator {
     private static final String OTHER_DIRECTIONS = "otherDirections";
     private static final String ESTIMATED_HEARING_DURATION = "estimatedHearingDuration";
     public static final String DIRECTION_TYPE_BESPOKE = "BESPOKE";
+    public static final String DIRECTION_TYPE_STANDARD = "STANDARD";
     public static final String DIRECTION_ORDER_TYPE = "directionOrderType";
     public static final String BESPOKE_DIRECTION_LIST = "bespokeDirectionList";
 
@@ -104,7 +107,9 @@ public class OrderCreator {
     public CallbackResponse prepopulateOrder(CallbackParams callbackParams) {
         logger.info("Order creator: pre populating order fields");
         CallbackRequest callbackRequest = callbackParams.getRequest();
-
+        if (callbackRequest.getCaseDetails().getData().containsKey(HEARING_COURT)) {
+            callbackRequest.getCaseDetails().getData().remove(HEARING_COURT);
+        }
         Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
 
@@ -180,16 +185,27 @@ public class OrderCreator {
     public CallbackResponse generateOrPrepopulateOrder(CallbackParams callbackParams) {
         logger.info("Order creator: mid event to handle generate or prepopulate the claim for direction type");
         CallbackRequest callbackRequest = callbackParams.getRequest();
-        if (callbackRequest.getCaseDetails().getData() != null
-            && callbackRequest.getCaseDetails().getData().containsKey(DIRECTION_ORDER_TYPE)
-            && DIRECTION_TYPE_BESPOKE.equals(callbackRequest.getCaseDetails().getData().get(DIRECTION_ORDER_TYPE))) {
-            callbackRequest.getCaseDetails().getData().remove(HEARING_COURT);
+        Map<String, Object> tempData = new HashMap<>(callbackRequest.getCaseDetails().getData());
+        boolean populateOrder = true;
+
+        if (!tempData.containsKey(DIRECTION_ORDER_TYPE)) {
+            populateOrder = false;
+        } else if (tempData.containsKey(DIRECTION_ORDER_TYPE)
+            && DIRECTION_TYPE_BESPOKE.equals(tempData.get(DIRECTION_ORDER_TYPE))
+            && tempData.containsKey(BESPOKE_DIRECTION_LIST)) {
+            ArrayList tempBespokeDirectionOrderList = (ArrayList) (tempData.get(BESPOKE_DIRECTION_LIST));
+            if (tempBespokeDirectionOrderList.size() > 0) {
+                populateOrder = false;
+            }
+        } else if (tempData.containsKey(DIRECTION_ORDER_TYPE)
+            && DIRECTION_TYPE_STANDARD.equals(tempData.get(DIRECTION_ORDER_TYPE))
+            && tempData.containsKey(HEARING_COURT)) {
+            if (!(tempData.get(HEARING_COURT) instanceof LinkedHashMap)) {
+                populateOrder = false;
+            }
         }
-        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
-        if ((DIRECTION_TYPE_BESPOKE.equalsIgnoreCase(ccdCase.getDirectionOrderType())
-            && ccdCase.getBespokeDirectionList() == null)
-            || (!DIRECTION_TYPE_BESPOKE.equalsIgnoreCase(ccdCase.getDirectionOrderType())
-            && ccdCase.getHearingCourt() == null)) {
+
+        if (populateOrder) {
             return prepopulateOrder(callbackParams);
         } else {
             return generateOrder(callbackParams);
