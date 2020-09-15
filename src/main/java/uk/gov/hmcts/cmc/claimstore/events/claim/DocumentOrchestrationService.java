@@ -51,20 +51,27 @@ public class DocumentOrchestrationService {
         this.printableDocumentService = printableDocumentService;
     }
 
-    public GeneratedDocuments generateForCitizen(Claim claim, String authorisation) {
+    public GeneratedDocuments generateForCitizen(Claim claim, String authorisation, boolean newPinLetterEnabled) {
         Optional<GeneratePinResponse> pinResponse = getPinResponse(claim.getClaimData(), authorisation);
 
         String pin = pinResponse
             .map(GeneratePinResponse::getPin)
             .orElseThrow(() -> new IllegalArgumentException("Pin generation failed"));
-
-        CCDDocument pinLetter = citizenServiceDocumentsService.createDefendantPinLetter(claim, pin,
-            authorisation);
-
-        Document defendantPinLetterDoc = printableDocumentService.process(pinLetter, authorisation);
-
-        PDF defendantPinLetter = new PDF(buildDefendantLetterFileBaseName(claim.getReferenceNumber()),
-            printableDocumentService.pdf(pinLetter, authorisation), DEFENDANT_PIN_LETTER);
+        Document defendantPinLetterDoc;
+        PDF defendantPinLetter;
+        if (newPinLetterEnabled) {
+            CCDDocument pinLetter = citizenServiceDocumentsService.createDefendantPinLetter(claim, pin,
+                authorisation);
+            defendantPinLetterDoc = printableDocumentService.process(pinLetter, authorisation);
+            defendantPinLetter = new PDF(buildDefendantLetterFileBaseName(claim.getReferenceNumber()),
+                printableDocumentService.pdf(pinLetter, authorisation), DEFENDANT_PIN_LETTER);
+        } else {
+            defendantPinLetterDoc = citizenServiceDocumentsService.pinLetterDocument(claim, pin);
+            defendantPinLetter = new PDF(buildDefendantLetterFileBaseName(claim.getReferenceNumber()),
+                pdfServiceClient.generateFromHtml(defendantPinLetterDoc.template.getBytes(),
+                    defendantPinLetterDoc.values),
+                DEFENDANT_PIN_LETTER);
+        }
 
         String letterHolderId = pinResponse.map(GeneratePinResponse::getUserId)
             .orElseThrow(() -> new IllegalArgumentException("Pin generation failed"));

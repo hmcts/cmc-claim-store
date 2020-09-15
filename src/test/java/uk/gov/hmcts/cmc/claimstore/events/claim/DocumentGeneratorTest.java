@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.events.claim;
 
+import com.launchdarkly.client.LDUser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.PrintableDocumentService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
@@ -22,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -49,6 +52,8 @@ public class DocumentGeneratorTest {
     private PDFServiceClient pdfServiceClient;
     @Mock
     private PrintableDocumentService printableDocumentService;
+    @Mock
+    private LaunchDarklyClient launchDarklyClient;
 
     @Before
     public void before() {
@@ -56,7 +61,8 @@ public class DocumentGeneratorTest {
             sealedClaimPdfService,
             publisher,
             pdfServiceClient,
-            printableDocumentService);
+            printableDocumentService,
+            launchDarklyClient);
     }
 
     @Test
@@ -66,7 +72,7 @@ public class DocumentGeneratorTest {
         Document sealedClaimDocument = new Document(sealedClaimTemplate, claimContents);
         Claim claim = SampleClaim.getDefault();
         when(citizenDocumentService.sealedClaimDocument(claim)).thenReturn(sealedClaimDocument);
-
+        when(launchDarklyClient.isFeatureEnabled(eq("new-defendant-pin-letter"), any(LDUser.class))).thenReturn(true);
         when(sealedClaimPdfService.createPdf(claim))
             .thenReturn(new PDF(
                 "sealedClaim",
@@ -93,6 +99,7 @@ public class DocumentGeneratorTest {
         Document sealedClaimDocument = new Document(sealedClaimTemplate, claimContents);
         Claim claim = SampleClaim.getDefault();
         when(citizenDocumentService.sealedClaimDocument(claim)).thenReturn(sealedClaimDocument);
+        when(launchDarklyClient.isFeatureEnabled(eq("new-defendant-pin-letter"), any(LDUser.class))).thenReturn(true);
         CitizenClaimIssuedEvent event = new CitizenClaimIssuedEvent(claim, pin, submitterName, authorisation);
         documentGenerator.generateForNonRepresentedClaim(event);
         verify(publisher)

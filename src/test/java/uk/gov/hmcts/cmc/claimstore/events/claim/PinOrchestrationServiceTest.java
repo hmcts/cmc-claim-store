@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.events.claim;
 
+import com.launchdarkly.client.LDUser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.util.HashMap;
@@ -102,6 +104,8 @@ public class PinOrchestrationServiceTest {
     private DocumentOrchestrationService documentOrchestrationService;
     @Mock
     private ClaimService claimService;
+    @Mock
+    private LaunchDarklyClient launchDarklyClient;
 
     @Before
     public void before() {
@@ -112,7 +116,8 @@ public class PinOrchestrationServiceTest {
             notificationsProperties,
             eventsStatusService,
             documentOrchestrationService,
-            claimService);
+            claimService,
+            launchDarklyClient);
 
         given(notificationsProperties.getTemplates()).willReturn(templates);
         given(templates.getEmail()).willReturn(emailTemplates);
@@ -131,8 +136,9 @@ public class PinOrchestrationServiceTest {
     @Test
     public void shouldProcessPinBased() {
         //given
-        given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION)))
+        given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION), eq(true)))
             .willReturn(generatedDocuments);
+        given(launchDarklyClient.isFeatureEnabled(eq("new-defendant-pin-letter"), any(LDUser.class))).willReturn(true);
 
         //when
         pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
@@ -169,7 +175,7 @@ public class PinOrchestrationServiceTest {
     @Test(expected = RuntimeException.class)
     public void updatePinOperationStatusWhenBulkPrintFails() {
         //given
-        given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION)))
+        given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION), true))
             .willReturn(generatedDocuments);
 
         doThrow(new RuntimeException("bulk print failed")).when(bulkPrintService).printPdf(
@@ -189,7 +195,7 @@ public class PinOrchestrationServiceTest {
     @Test(expected = RuntimeException.class)
     public void updatePinOperationStatusWhenClaimIssueNotificationFails() {
         //given
-        given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION)))
+        given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION), true))
             .willReturn(generatedDocuments);
         doThrow(new RuntimeException("claim issue notification failed"))
             .when(claimIssuedStaffNotificationService).notifyStaffOfClaimIssue(any(), any());
@@ -210,7 +216,7 @@ public class PinOrchestrationServiceTest {
     @Test(expected = RuntimeException.class)
     public void updatePinOperationStatusWhenNotifyDefendantFails() {
         //given
-        given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION)))
+        given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION), true))
             .willReturn(generatedDocuments);
         doThrow(new RuntimeException("claim issue notification failed"))
             .when(claimIssuedNotificationService).sendMail(any(), any(), any(), any(), any(), any());

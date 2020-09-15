@@ -112,7 +112,7 @@ public class DocumentOrchestrationServiceTest {
             .willReturn(DOCUMENT);
         given(printableDocumentService.process(DOCUMENT, AUTHORISATION)).willReturn(COVER_DOCUMENT);
         // when
-        documentOrchestrationService.generateForCitizen(CLAIM, AUTHORISATION);
+        documentOrchestrationService.generateForCitizen(CLAIM, AUTHORISATION, true);
 
         //verify
         verify(citizenServiceDocumentsService).sealedClaimDocument(eq(CLAIM));

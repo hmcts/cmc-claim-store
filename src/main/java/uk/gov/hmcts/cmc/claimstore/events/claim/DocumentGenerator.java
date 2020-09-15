@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.PrintableDocumentService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
@@ -26,7 +27,8 @@ public class DocumentGenerator {
     private final SealedClaimPdfService sealedClaimPdfService;
     private final ApplicationEventPublisher publisher;
     private final PDFServiceClient pdfServiceClient;
-    PrintableDocumentService printableDocumentService;
+    private final PrintableDocumentService printableDocumentService;
+    private final LaunchDarklyClient launchDarklyClient;
 
     @Autowired
     public DocumentGenerator(
@@ -34,24 +36,35 @@ public class DocumentGenerator {
         SealedClaimPdfService sealedClaimPdfService,
         ApplicationEventPublisher publisher,
         PDFServiceClient pdfServiceClient,
-        PrintableDocumentService printableDocumentService
+        PrintableDocumentService printableDocumentService,
+        LaunchDarklyClient launchDarklyClient
     ) {
         this.citizenServiceDocumentsService = citizenServiceDocumentsService;
         this.sealedClaimPdfService = sealedClaimPdfService;
         this.publisher = publisher;
         this.pdfServiceClient = pdfServiceClient;
         this.printableDocumentService = printableDocumentService;
+        this.launchDarklyClient = launchDarklyClient;
     }
 
     @EventListener
     @LogExecutionTime
     public void generateForNonRepresentedClaim(CitizenClaimIssuedEvent event) {
         Document sealedClaimDoc = citizenServiceDocumentsService.sealedClaimDocument(event.getClaim());
-        CCDDocument pinLetter = citizenServiceDocumentsService.createDefendantPinLetter(event.getClaim(),
-            event.getPin(),
-            event.getAuthorisation());
 
-        Document defendantLetterDoc = printableDocumentService.process(pinLetter, event.getAuthorisation());
+        Document defendantLetterDoc;
+        CCDDocument pinLetter = null;
+        PDF defendantLetter;
+        if (launchDarklyClient.isFeatureEnabled("new-defendant-pin-letter", LaunchDarklyClient.CLAIM_STORE_USER)) {
+            pinLetter = citizenServiceDocumentsService.createDefendantPinLetter(event.getClaim(),
+                event.getPin(),
+                event.getAuthorisation());
+            defendantLetterDoc = printableDocumentService.process(pinLetter, event.getAuthorisation());
+        } else {
+            defendantLetterDoc = citizenServiceDocumentsService.pinLetterDocument(event.getClaim(),
+                event.getPin());
+        }
+
         publisher.publishEvent(
             new DocumentReadyToPrintEvent(
                 event.getClaim(),
@@ -60,8 +73,14 @@ public class DocumentGenerator {
                 event.getAuthorisation()));
 
         PDF sealedClaim = sealedClaimPdfService.createPdf(event.getClaim());
-        PDF defendantLetter = new PDF(buildDefendantLetterFileBaseName(event.getClaim().getReferenceNumber()),
-            printableDocumentService.pdf(pinLetter, event.getAuthorisation()), DEFENDANT_PIN_LETTER);
+        if (launchDarklyClient.isFeatureEnabled("new-defendant-pin-letter", LaunchDarklyClient.CLAIM_STORE_USER)) {
+            defendantLetter = new PDF(buildDefendantLetterFileBaseName(event.getClaim().getReferenceNumber()),
+                printableDocumentService.pdf(pinLetter, event.getAuthorisation()), DEFENDANT_PIN_LETTER);
+        } else {
+            defendantLetter = new PDF(buildDefendantLetterFileBaseName(event.getClaim().getReferenceNumber()),
+                pdfServiceClient.generateFromHtml(defendantLetterDoc.template.getBytes(), defendantLetterDoc.values),
+                DEFENDANT_PIN_LETTER);
+        }
         publisher.publishEvent(new DocumentGeneratedEvent(event.getClaim(), event.getAuthorisation(),
             sealedClaim, defendantLetter));
     }

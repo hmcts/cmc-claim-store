@@ -32,7 +32,7 @@ class PrintableDocumentServiceTest {
     }
 
     @Test
-    public void shouldDownloadDocumentFromDocumentManagement() {
+    void shouldDownloadDocumentFromDocumentManagement() {
 
         when(documentManagementService.downloadDocument(anyString(), any(ClaimDocument.class)))
             .thenReturn(new byte[]{1, 2, 3, 4});
