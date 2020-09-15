@@ -123,6 +123,16 @@ public class RespondToClaimTest extends BaseTest {
         User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
 
         commonOperations.linkDefendant(defendant.getAuthorisation());
+        synchronized (RespondToClaimTest.class) {
+            Claim updatedCase = commonOperations.submitResponse(response, createdCase.getExternalId(), defendant)
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .and()
+                .extract().body().as(Claim.class);
+            assertThat(updatedCase.getResponse().isPresent()).isTrue();
+            assertThat(updatedCase.getResponse().get()).isEqualTo(response);
+            assertThat(updatedCase.getRespondedAt()).isNotNull();
+        }
 
         Claim updatedCase = commonOperations.submitResponse(response, createdCase.getExternalId(), defendant)
             .then()
