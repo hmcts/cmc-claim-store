@@ -166,8 +166,6 @@ class DrawJudgeOrderCallbackHandlerTest {
         void shouldGenerateDocumentOnMidEvent() {
             CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
             ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
-            when(caseDetailsConverter.extractCCDCaseForDirectionOrder(any(CaseDetails.class)))
-                .thenReturn(ccdCase);
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
                 .thenReturn(ccdCase);
 
@@ -434,9 +432,9 @@ class DrawJudgeOrderCallbackHandlerTest {
                                 .build()
                         ))
                         .build();
-                    when(caseDetailsConverter.extractCCDCaseForDirectionOrder(any(CaseDetails.class)))
+                    when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
                         .thenReturn(ccdCase);
-                    when(caseDetailsConverter.extractClaimForDirectionOrder(any(CaseDetails.class)))
+                    when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
                         .thenReturn(Claim.builder().build());
 
                     callbackParams = CallbackParams.builder()
@@ -805,7 +803,7 @@ class DrawJudgeOrderCallbackHandlerTest {
                             .otherDirections(null)
                             .build();
 
-                    when(caseDetailsConverter.extractCCDCaseForDirectionOrder(any(CaseDetails.class)))
+                    when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
                         .thenReturn(ccdCase);
 
                     CallbackParams callbackParams = CallbackParams.builder()
@@ -814,7 +812,7 @@ class DrawJudgeOrderCallbackHandlerTest {
                         .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
                         .build();
 
-                    when(caseDetailsConverter.extractClaimForDirectionOrder(any(CaseDetails.class)))
+                    when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
                         .thenReturn(Claim.builder().build());
 
                     Assertions.assertThrows(IllegalStateException.class,

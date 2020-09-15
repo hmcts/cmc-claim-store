@@ -62,23 +62,6 @@ public class CaseDetailsConverter {
             .build();
     }
 
-    public Claim extractClaimForDirectionOrder(CaseDetails caseDetails) {
-        CCDCase ccdCase = extractCCDCaseForDirectionOrder(caseDetails);
-        Claim claim = caseMapper.from(ccdCase);
-
-        if (claim.getRespondedAt() == null) {
-            return claim;
-        }
-
-        // Calculating the intention to proceed here rather than in the mapper as we have access
-        // to the WorkingDayIndicator here
-        LocalDate intentionToProceedDeadline = calculateIntentionToProceedDeadline(claim.getRespondedAt());
-        return claim.toBuilder()
-            .intentionToProceedDeadline(intentionToProceedDeadline)
-            .response(updateResponseMethod(claim.getResponse().orElse(null), ccdCase))
-            .build();
-    }
-
     private Response updateResponseMethod(Response response, CCDCase ccdCase) {
         if (!ctscEnabled || response == null || response.getResponseMethod().isPresent()) {
             return response;
@@ -104,21 +87,6 @@ public class CaseDetailsConverter {
         tempData.put("state", caseDetails.getState());
 
         return jsonMapper.fromMap(tempData, CCDCase.class);
-    }
-
-    public CCDCase extractCCDCaseForDirectionOrder(CaseDetails caseDetails) {
-        Map<String, Object> tempData = new HashMap<>(caseDetails.getData());
-        removeHearingCourt(tempData);
-        tempData.put("id", caseDetails.getId());
-        tempData.put("state", caseDetails.getState());
-
-        return jsonMapper.fromMap(tempData, CCDCase.class);
-    }
-
-    public void removeHearingCourt(Map<String, Object> tempData) {
-        if (tempData.containsKey("hearingCourt")) {
-            tempData.remove("hearingCourt");
-        }
     }
 
     public CCDCase convertTo(Claim claim) {

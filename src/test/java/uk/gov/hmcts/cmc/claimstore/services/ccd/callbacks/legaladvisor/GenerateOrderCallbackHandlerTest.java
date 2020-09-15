@@ -314,7 +314,7 @@ public class GenerateOrderCallbackHandlerTest {
                                 .build()
                         ))
                         .build();
-                    when(caseDetailsConverter.extractCCDCaseForDirectionOrder(any(CaseDetails.class)))
+                    when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
                         .thenReturn(ccdCase);
 
                     callbackParams = CallbackParams.builder()
@@ -618,7 +618,7 @@ public class GenerateOrderCallbackHandlerTest {
                         .otherDirections(null)
                         .build();
 
-                    when(caseDetailsConverter.extractCCDCaseForDirectionOrder(any(CaseDetails.class)))
+                    when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
                         .thenReturn(ccdCase);
 
                     CallbackParams callbackParams = CallbackParams.builder()
@@ -627,7 +627,7 @@ public class GenerateOrderCallbackHandlerTest {
                         .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
                         .build();
 
-                    when(caseDetailsConverter.extractClaimForDirectionOrder(any(CaseDetails.class)))
+                    when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
                         .thenReturn(Claim.builder().build());
 
                     Assertions.assertThrows(IllegalStateException.class,
@@ -651,7 +651,7 @@ public class GenerateOrderCallbackHandlerTest {
                             .build()
                     ))
                     .build();
-                when(caseDetailsConverter.extractCCDCaseForDirectionOrder(any(CaseDetails.class)))
+                when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
                     .thenReturn(ccdCase);
 
                 callbackParams = CallbackParams.builder()
@@ -669,7 +669,7 @@ public class GenerateOrderCallbackHandlerTest {
 
                 @BeforeEach
                 void setUp() {
-                    when(caseDetailsConverter.extractClaimForDirectionOrder(any(CaseDetails.class)))
+                    when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
                         .thenReturn(Claim.builder().build());
                 }
 
@@ -801,7 +801,7 @@ public class GenerateOrderCallbackHandlerTest {
                                         ).build()
                                 ).build()
                             ).build();
-                    when(caseDetailsConverter.extractClaimForDirectionOrder(any(CaseDetails.class)))
+                    when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
                         .thenReturn(claim);
 
                     callbackParams = CallbackParams.builder()
