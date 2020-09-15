@@ -16,7 +16,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
 import java.util.UUID;
-import java.util.logging.ConsoleHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
@@ -123,16 +122,22 @@ public class RespondToClaimTest extends BaseTest {
         User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
 
         commonOperations.linkDefendant(defendant.getAuthorisation());
+        synchronized (RespondToClaimTest.class) {
+            Claim updatedCase = commonOperations.submitResponse(response, createdCase.getExternalId(), defendant)
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .and()
+                .extract().body().as(Claim.class);
+            assertThat(updatedCase.getResponse().isPresent()).isTrue();
+            assertThat(updatedCase.getResponse().get()).isEqualTo(response);
+            assertThat(updatedCase.getRespondedAt()).isNotNull();
+        }
 
         Claim updatedCase = commonOperations.submitResponse(response, createdCase.getExternalId(), defendant)
             .then()
             .statusCode(HttpStatus.OK.value())
             .and()
             .extract().body().as(Claim.class);
-
-        System.out.println("This is the bloody response that is screwing up the nightly build" + updatedCase.getResponse() );
-
-        System.out.println("This is the response sent by the angels" + response);
 
         assertThat(updatedCase.getResponse().isPresent()).isTrue();
         assertThat(updatedCase.getResponse().get()).isEqualTo(response);

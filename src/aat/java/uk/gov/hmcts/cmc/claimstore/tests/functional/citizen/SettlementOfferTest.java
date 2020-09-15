@@ -33,11 +33,7 @@ public class SettlementOfferTest extends BaseTest {
     @Test
     @Retry
     public void shouldBeAbleToSuccessfullySubmitOffer() {
-        String claimantId = claimant.getUserDetails().getId();
-        Claim createdCase = commonOperations.submitClaim(
-            claimant.getAuthorisation(),
-            claimantId
-        );
+        Claim createdCase = submitClaimSynchronized();
 
         User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
         Claim updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
@@ -59,11 +55,7 @@ public class SettlementOfferTest extends BaseTest {
     @Test
     @Retry
     public void shouldFailForMultipleOfferFromOneUser() {
-        String claimantId = claimant.getUserDetails().getId();
-        Claim createdCase = commonOperations.submitClaim(
-            claimant.getAuthorisation(),
-            claimantId
-        );
+        Claim createdCase = submitClaimSynchronized();
 
         User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
         Claim updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
@@ -86,11 +78,7 @@ public class SettlementOfferTest extends BaseTest {
     @Test
     @Retry
     public void shouldBeAbleToSuccessfullyAcceptOffer() {
-        String claimantId = claimant.getUserDetails().getId();
-        Claim createdCase = commonOperations.submitClaim(
-            claimant.getAuthorisation(),
-            claimantId
-        );
+        Claim createdCase = submitClaimSynchronized();
         User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
         Claim updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
 
@@ -118,11 +106,7 @@ public class SettlementOfferTest extends BaseTest {
     @Test
     @Retry
     public void shouldFailAcceptOfferWithoutExistingOfferFromUser() {
-        String claimantId = claimant.getUserDetails().getId();
-        Claim createdCase = commonOperations.submitClaim(
-            claimant.getAuthorisation(),
-            claimantId
-        );
+        Claim createdCase = submitClaimSynchronized();
 
         User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
         Claim updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
@@ -136,11 +120,7 @@ public class SettlementOfferTest extends BaseTest {
     @Test
     @Retry
     public void shouldBeAbleToSuccessfullyRejectOffer() {
-        String claimantId = claimant.getUserDetails().getId();
-        Claim createdCase = commonOperations.submitClaim(
-            claimant.getAuthorisation(),
-            claimantId
-        );
+        Claim createdCase = submitClaimSynchronized();
 
         User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
         Claim updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
@@ -169,11 +149,7 @@ public class SettlementOfferTest extends BaseTest {
     @Test
     @Retry
     public void shouldFailRejectOfferWithoutExistingOfferFromUser() {
-        String claimantId = claimant.getUserDetails().getId();
-        Claim createdCase = commonOperations.submitClaim(
-            claimant.getAuthorisation(),
-            claimantId
-        );
+        Claim createdCase = submitClaimSynchronized();
 
         User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
         Claim updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
@@ -187,11 +163,7 @@ public class SettlementOfferTest extends BaseTest {
     @Test
     @Retry
     public void shouldBeAbleToSuccessfullyCountersignOffer() {
-        String claimantId = claimant.getUserDetails().getId();
-        Claim createdCase = commonOperations.submitClaim(
-            claimant.getAuthorisation(),
-            claimantId
-        );
+        Claim createdCase = submitClaimSynchronized();
 
         User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
 
@@ -233,11 +205,7 @@ public class SettlementOfferTest extends BaseTest {
     @Test
     @Retry
     public void shouldFailRejectOfferWhenAlreadySettled() {
-        String claimantId = claimant.getUserDetails().getId();
-        Claim createdCase = commonOperations.submitClaim(
-            claimant.getAuthorisation(),
-            claimantId
-        );
+        Claim createdCase = submitClaimSynchronized();
 
         User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
 
@@ -252,11 +220,7 @@ public class SettlementOfferTest extends BaseTest {
     @Test
     @Retry
     public void shouldFailAcceptOfferWhenAlreadySettled() {
-        String claimantId = claimant.getUserDetails().getId();
-        Claim createdCase = commonOperations.submitClaim(
-            claimant.getAuthorisation(),
-            claimantId
-        );
+        Claim createdCase = submitClaimSynchronized();
 
         User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
         commonOperations.linkDefendant(
@@ -289,11 +253,7 @@ public class SettlementOfferTest extends BaseTest {
     }
 
     private Claim createClaimWithFullAdmissionResponse() {
-        String claimantId = claimant.getUserDetails().getId();
-        Claim createdCase = commonOperations.submitClaim(
-            claimant.getAuthorisation(),
-            claimantId
-        );
+        Claim createdCase = submitClaimSynchronized();
 
         User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
         commonOperations.linkDefendant(
@@ -307,5 +267,17 @@ public class SettlementOfferTest extends BaseTest {
             .statusCode(HttpStatus.OK.value())
             .and()
             .extract().body().as(Claim.class);
+    }
+
+    private Claim submitClaimSynchronized() {
+        Claim synchronizedClaim = null;
+        synchronized (SettlementOfferTest.class) {
+            String claimantId = claimant.getUserDetails().getId();
+            synchronizedClaim = commonOperations.submitClaim(
+                claimant.getAuthorisation(),
+                claimantId
+            );
+        }
+        return synchronizedClaim;
     }
 }
