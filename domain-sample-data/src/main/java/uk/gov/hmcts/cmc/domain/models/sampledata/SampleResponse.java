@@ -5,14 +5,7 @@ import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestion
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
-import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
-import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
-import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
-import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
-import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
-import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
-import uk.gov.hmcts.cmc.domain.models.response.Response;
-import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
+import uk.gov.hmcts.cmc.domain.models.response.*;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.sampledata.statementofmeans.SampleStatementOfMeans;
 
@@ -46,6 +39,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .defendant(defendantDetails)
                 .paymentIntention(SamplePaymentIntention.instalments())
                 .statementOfMeans(SampleStatementOfMeans.builder().build())
+                .responseMethod(ResponseMethod.DIGITAL)
                 .build();
         }
 
@@ -55,6 +49,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .defendant(SampleParty.builder().individual())
                 .paymentIntention(SamplePaymentIntention.bySetDate())
                 .statementOfMeans(SampleStatementOfMeans.builder().build())
+                .responseMethod(ResponseMethod.DIGITAL)
                 .build();
         }
 
@@ -63,6 +58,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .moreTimeNeeded(YesNoOption.NO)
                 .defendant(SampleParty.builder().individual())
                 .paymentIntention(SamplePaymentIntention.immediately())
+                .responseMethod(ResponseMethod.DIGITAL)
                 .build();
         }
 
@@ -71,6 +67,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .moreTimeNeeded(YesNoOption.NO)
                 .defendant(SampleParty.builder().individual())
                 .paymentIntention(SamplePaymentIntention.instalments())
+                .responseMethod(ResponseMethod.DIGITAL)
                 .build();
         }
 
@@ -79,6 +76,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .moreTimeNeeded(YesNoOption.NO)
                 .defendant(party)
                 .paymentIntention(paymentIntention)
+                .responseMethod(ResponseMethod.DIGITAL)
                 .build();
         }
 
@@ -90,6 +88,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .mediationContactPerson(MEDIATION_CONTACT_PERSON)
                 .defendant(SampleParty.builder().individual())
                 .paymentIntention(SamplePaymentIntention.instalments())
+                .responseMethod(ResponseMethod.DIGITAL)
                 .build();
         }
     }
@@ -108,6 +107,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .defence(USER_DEFENCE)
                 .timeline(SampleDefendantTimeline.validDefaults())
                 .evidence(SampleDefendantEvidence.validDefaults())
+                .responseMethod(ResponseMethod.DIGITAL)
                 .build();
         }
 
@@ -121,6 +121,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .timeline(SampleDefendantTimeline.validDefaults())
                 .evidence(SampleDefendantEvidence.validDefaults())
                 .statementOfMeans(SampleStatementOfMeans.builder().build())
+                .responseMethod(ResponseMethod.DIGITAL)
                 .build();
         }
 
@@ -134,6 +135,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .timeline(SampleDefendantTimeline.validDefaults())
                 .evidence(SampleDefendantEvidence.validDefaults())
                 .statementOfMeans(SampleStatementOfMeans.builder().build())
+                .responseMethod(ResponseMethod.DIGITAL)
                 .build();
         }
 
@@ -148,6 +150,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .evidence(SampleDefendantEvidence.validDefaults())
                 .statementOfMeans(SampleStatementOfMeans.builder().build())
                 .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder().build())
+                .responseMethod(ResponseMethod.DIGITAL)
                 .build();
         }
 
@@ -161,6 +164,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .timeline(SampleDefendantTimeline.validDefaults())
                 .evidence(SampleDefendantEvidence.validDefaults())
                 .statementOfMeans(SampleStatementOfMeans.builder().build())
+                .responseMethod(ResponseMethod.DIGITAL)
                 .build();
         }
 
@@ -174,6 +178,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .timeline(SampleDefendantTimeline.validDefaults())
                 .evidence(SampleDefendantEvidence.validDefaults())
                 .statementOfMeans(SampleStatementOfMeans.builder().build())
+                .responseMethod(ResponseMethod.DIGITAL)
                 .build();
         }
 
@@ -183,6 +188,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .moreTimeNeeded(YesNoOption.NO)
                 .amount(BigDecimal.valueOf(120.99))
                 .paymentDeclaration(SamplePaymentDeclaration.builder().build())
+                .responseMethod(ResponseMethod.DIGITAL)
                 .build();
         }
 
@@ -197,6 +203,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .amount(BigDecimal.valueOf(120.99))
                 .paymentIntention(SamplePaymentIntention.instalments())
                 .statementOfMeans(SampleStatementOfMeans.builder().build())
+                .responseMethod(ResponseMethod.DIGITAL)
                 .build();
         }
 
@@ -212,6 +219,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .paymentIntention(SamplePaymentIntention.instalments())
                 .statementOfMeans(SampleStatementOfMeans.builder().build())
                 .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder().build())
+                .responseMethod(ResponseMethod.DIGITAL)
                 .build();
         }
 
@@ -227,6 +235,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .paymentIntention(SamplePaymentIntention.instalments())
                 .statementOfMeans(SampleStatementOfMeans.builder().build())
                 .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder().build())
+                .responseMethod(ResponseMethod.DIGITAL)
                 .build();
         }
     }
@@ -296,7 +305,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 freeMediationOption, mediationPhoneNumber, mediationContactPerson,
                 moreTimeNeededOption, defendantDetails, statementOfTruth,
                 defenceType, defence, paymentDeclaration, timeline, evidence, directionsQuestionnaire,
-                null
+                ResponseMethod.DIGITAL
             );
         }
     }
