@@ -15,7 +15,6 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
-
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -129,9 +128,6 @@ public class RespondToClaimTest extends BaseTest {
                 .statusCode(HttpStatus.OK.value())
                 .and()
                 .extract().body().as(Claim.class);
-            System.out.println("This is the bloody response that is screwing up the "
-                + "nightly build" + updatedCase.getResponse());
-            System.out.println("This is the response sent by the angels" + response);
             assertThat(updatedCase.getResponse().isPresent()).isTrue();
             assertThat(updatedCase.getResponse().get()).isEqualTo(response);
             assertThat(updatedCase.getRespondedAt()).isNotNull();
