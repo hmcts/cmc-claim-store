@@ -1146,8 +1146,8 @@ class DrawJudgeOrderCallbackHandlerTest {
                     when(launchDarklyClient.isFeatureEnabled(eq("bespoke-order"), any(LDUser.class))).thenReturn(true);
                     AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
                         drawJudgeOrderCallbackHandler.handle(callbackParams);
-                    assertThat(response.getData().get("drawBespokeDirectionOrderWarning"))
-                        .isEqualTo(ImmutableList.of(CCDBespokeOrderWarning.WARNING));
+                    assertThat(response.getData()).contains(entry("drawBespokeDirectionOrderWarning",
+                        ImmutableList.of(CCDBespokeOrderWarning.WARNING)));
                 }
             }
 
