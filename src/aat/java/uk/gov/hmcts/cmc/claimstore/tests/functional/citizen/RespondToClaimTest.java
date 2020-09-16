@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse2;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
 import java.util.UUID;
 
@@ -82,7 +83,7 @@ public class RespondToClaimTest extends BaseTest {
     public void shouldBeAbleToSuccessfullySubmitFullAdmission() {
         String defendantCollectionId = UUID.randomUUID().toString();
 
-        Response fullAdmissionResponse = SampleResponse.FullAdmission.builder()
+        Response fullAdmissionResponse = SampleResponse2.FullAdmission.builder()
             .withDefendantDetails(SampleParty.builder()
                 .withCollectionId(defendantCollectionId)
                 .individual())
