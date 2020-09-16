@@ -1,10 +1,13 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
+import uk.gov.hmcts.cmc.claimstore.tests.helpers.Retry;
+import uk.gov.hmcts.cmc.claimstore.tests.helpers.RetryFailedFunctionalTests;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
@@ -12,7 +15,6 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
-
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,7 +30,11 @@ public class RespondToClaimTest extends BaseTest {
         claimant = bootstrap.getClaimant();
     }
 
+    @Rule
+    public RetryFailedFunctionalTests retryRule = new RetryFailedFunctionalTests(3);
+
     @Test
+    @Retry
     public void shouldBeAbleToSuccessfullySubmitDisputeDefence() {
         String defendantCollectionId = UUID.randomUUID().toString();
 
@@ -43,6 +49,7 @@ public class RespondToClaimTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldBeAbleToSuccessfullySubmitFreeMediationRequestOnDefence() {
         String defendantCollectionId = UUID.randomUUID().toString();
 
@@ -57,6 +64,7 @@ public class RespondToClaimTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldBeAbleToSuccessfullySubmitAlreadyPaidDefence() {
         String defendantCollectionId = UUID.randomUUID().toString();
 
@@ -70,6 +78,7 @@ public class RespondToClaimTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldBeAbleToSuccessfullySubmitFullAdmission() {
         String defendantCollectionId = UUID.randomUUID().toString();
 
@@ -82,6 +91,7 @@ public class RespondToClaimTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldBeAbleToSuccessfullySubmitPartAdmissionWithAlreadyPaidAmount() {
         String defendantCollectionId = UUID.randomUUID().toString();
 
@@ -93,6 +103,7 @@ public class RespondToClaimTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldBeAbleToSuccessfullySubmitPartAdmissionWithPaymentInFuture() {
         String defendantCollectionId = UUID.randomUUID().toString();
 
@@ -111,15 +122,16 @@ public class RespondToClaimTest extends BaseTest {
         User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
 
         commonOperations.linkDefendant(defendant.getAuthorisation());
+        synchronized (RespondToClaimTest.class) {
+            Claim updatedCase = commonOperations.submitResponse(response, createdCase.getExternalId(), defendant)
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .and()
+                .extract().body().as(Claim.class);
+            assertThat(updatedCase.getResponse().isPresent()).isTrue();
+            assertThat(updatedCase.getResponse().get()).isEqualTo(response);
+            assertThat(updatedCase.getRespondedAt()).isNotNull();
+        }
 
-        Claim updatedCase = commonOperations.submitResponse(response, createdCase.getExternalId(), defendant)
-            .then()
-            .statusCode(HttpStatus.OK.value())
-            .and()
-            .extract().body().as(Claim.class);
-
-        assertThat(updatedCase.getResponse().isPresent()).isTrue();
-        assertThat(updatedCase.getResponse().get()).isEqualTo(response);
-        assertThat(updatedCase.getRespondedAt()).isNotNull();
     }
 }
