@@ -198,7 +198,8 @@ public class OrderCreator {
             populateOrder = false;
         } else if (DIRECTION_TYPE_BESPOKE.equals(tempData.get(DIRECTION_ORDER_TYPE))
             && tempData.containsKey(BESPOKE_DIRECTION_LIST)) {
-            ArrayList<LinkedHashMap> tempBespokeDirectionOrderList = (ArrayList) (tempData.get(BESPOKE_DIRECTION_LIST));
+            ArrayList<Map<String, Object>> tempBespokeDirectionOrderList
+                = (ArrayList) (tempData.get(BESPOKE_DIRECTION_LIST));
             if (!tempBespokeDirectionOrderList.isEmpty()) {
                 populateOrder = false;
             }
