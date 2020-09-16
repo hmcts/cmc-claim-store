@@ -49,6 +49,7 @@ import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestion
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -112,6 +113,8 @@ public class GenerateOrderCallbackHandlerTest {
     private DocumentManagementService documentManagementService;
     @Mock
     private ClaimService claimService;
+    @Mock
+    private LaunchDarklyClient launchDarklyClient;
 
     private CallbackRequest callbackRequest;
     private GenerateOrderCallbackHandler generateOrderCallbackHandler;
@@ -119,7 +122,8 @@ public class GenerateOrderCallbackHandlerTest {
     @BeforeEach
     void setUp() {
         OrderCreator orderCreator = new OrderCreator(legalOrderGenerationDeadlinesCalculator, caseDetailsConverter,
-            new GenerateOrderRule(), directionsQuestionnaireService, pilotCourtService, orderRenderer);
+            new GenerateOrderRule(), directionsQuestionnaireService, pilotCourtService,
+            orderRenderer, launchDarklyClient);
 
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
             caseDetailsConverter, legalOrderService, appInsights, directionOrderService,

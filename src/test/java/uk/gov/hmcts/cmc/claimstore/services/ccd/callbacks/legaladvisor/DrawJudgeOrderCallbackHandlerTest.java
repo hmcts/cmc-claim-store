@@ -51,6 +51,7 @@ import uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -132,6 +133,8 @@ class DrawJudgeOrderCallbackHandlerTest {
     private OrderRenderer orderRenderer;
     @Mock
     private ClaimService claimService;
+    @Mock
+    private LaunchDarklyClient launchDarklyClient;
 
     private CallbackRequest callbackRequest;
     private DrawJudgeOrderCallbackHandler drawJudgeOrderCallbackHandler;
@@ -143,7 +146,8 @@ class DrawJudgeOrderCallbackHandlerTest {
             new GenerateOrderRule(),
             directionsQuestionnaireService,
             pilotCourtService,
-            orderRenderer);
+            orderRenderer,
+            launchDarklyClient);
 
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
             caseDetailsConverter, legalOrderService, appInsights, directionOrderService,

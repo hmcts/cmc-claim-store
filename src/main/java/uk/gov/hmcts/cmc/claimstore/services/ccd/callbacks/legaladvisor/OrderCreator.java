@@ -26,6 +26,7 @@ import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.Pilot;
 import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
@@ -87,6 +88,7 @@ public class OrderCreator {
     private final DirectionsQuestionnaireService directionsQuestionnaireService;
     private final PilotCourtService pilotCourtService;
     private final OrderRenderer orderRenderer;
+    private final LaunchDarklyClient launchDarklyClient;
 
     public OrderCreator(
         LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator,
@@ -94,7 +96,8 @@ public class OrderCreator {
         GenerateOrderRule generateOrderRule,
         DirectionsQuestionnaireService directionsQuestionnaireService,
         PilotCourtService pilotCourtService,
-        OrderRenderer orderRenderer
+        OrderRenderer orderRenderer,
+        LaunchDarklyClient launchDarklyClient
     ) {
         this.legalOrderGenerationDeadlinesCalculator = legalOrderGenerationDeadlinesCalculator;
         this.caseDetailsConverter = caseDetailsConverter;
@@ -102,6 +105,7 @@ public class OrderCreator {
         this.directionsQuestionnaireService = directionsQuestionnaireService;
         this.pilotCourtService = pilotCourtService;
         this.orderRenderer = orderRenderer;
+        this.launchDarklyClient = launchDarklyClient;
     }
 
     public CallbackResponse prepopulateOrder(CallbackParams callbackParams) {
@@ -152,10 +156,11 @@ public class OrderCreator {
             }
         }
 
-        data.put(BESPOKE_DIRECTION_WARNING,
-            chooseItem(ccdCase.getDrawBespokeDirectionOrderWarning(), ImmutableList.of(WARNING)));
-        data.put(DIRECTION_ORDER_TYPE, ccdCase.getDirectionOrderType());
-
+        if (launchDarklyClient.isFeatureEnabled("bespoke-order", LaunchDarklyClient.CLAIM_STORE_USER)) {
+            data.put(BESPOKE_DIRECTION_WARNING,
+                chooseItem(ccdCase.getDrawBespokeDirectionOrderWarning(), ImmutableList.of(WARNING)));
+            data.put(DIRECTION_ORDER_TYPE, ccdCase.getDirectionOrderType());
+        }
         return AboutToStartOrSubmitCallbackResponse
             .builder()
             .data(data)
@@ -187,8 +192,9 @@ public class OrderCreator {
         CallbackRequest callbackRequest = callbackParams.getRequest();
         Map<String, Object> tempData = new HashMap<>(callbackRequest.getCaseDetails().getData());
         boolean populateOrder = true;
-
-        if (!tempData.containsKey(DIRECTION_ORDER_TYPE)) {
+        if (!launchDarklyClient.isFeatureEnabled("bespoke-order", LaunchDarklyClient.CLAIM_STORE_USER)) {
+            return generateOrder(callbackParams);
+        } else if (!tempData.containsKey(DIRECTION_ORDER_TYPE)) {
             populateOrder = false;
         } else if (tempData.containsKey(DIRECTION_ORDER_TYPE)
             && DIRECTION_TYPE_BESPOKE.equals(tempData.get(DIRECTION_ORDER_TYPE))
