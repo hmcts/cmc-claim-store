@@ -25,6 +25,8 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDBespokeOrderDirection;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDBespokeOrderWarning;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
@@ -62,7 +64,10 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -278,7 +283,6 @@ class DrawJudgeOrderCallbackHandlerTest {
             CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
 
             ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
-            ccdCase.setDirectionOrderType("STANDARD");
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
                 .thenReturn(ccdCase);
             when(launchDarklyClient.isFeatureEnabled(eq("bespoke-order"), any(LDUser.class))).thenReturn(true);
@@ -309,6 +313,237 @@ class DrawJudgeOrderCallbackHandlerTest {
 
             CCDDocument document = CCDDocument.builder().documentUrl(DOC_URL).build();
             assertThat(response.getData()).contains(entry("draftOrderDoc", document));
+        }
+
+        @Test
+        void shouldGenerateBespokeOrderDocument() {
+            CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
+
+            ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
+            ccdCase.setDirectionOrderType("BESPOKE");
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
+                .thenReturn(ccdCase);
+            when(launchDarklyClient.isFeatureEnabled(eq("bespoke-order"), any(LDUser.class))).thenReturn(true);
+            List<CCDBespokeOrderDirection> bespokeDirectionList = new ArrayList();
+            bespokeDirectionList.add(
+                CCDBespokeOrderDirection.builder()
+                    .beSpokeDirectionFor(CCDDirectionPartyType.BOTH)
+                    .beSpokeDirectionExplain("third direction")
+                    .beSpokeDirectionDatetime(LocalDate.of(2020, 8, 4))
+                    .build());
+
+            ImmutableMap<String, Object> data = ImmutableMap.of("data", "existingData",
+                "directionOrderType", "BESPOKE", "bespokeDirectionList", bespokeDirectionList);
+            CallbackRequest callbackRequest = CallbackRequest
+                .builder()
+                .eventId(GENERATE_ORDER.getValue())
+                .caseDetails(CaseDetails.builder().data(data).build())
+                .caseDetailsBefore(CaseDetails.builder().data(Collections.emptyMap()).build())
+                .build();
+
+            DocAssemblyResponse docAssemblyResponse = Mockito.mock(DocAssemblyResponse.class);
+            when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
+            when(orderRenderer.renderOrder(eq(ccdCase), eq(BEARER_TOKEN))).thenReturn(docAssemblyResponse);
+
+            CallbackParams callbackParams = CallbackParams.builder()
+                .type(CallbackType.MID)
+                .request(callbackRequest)
+                .version(CallbackVersion.V_2)
+                .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response =
+                (AboutToStartOrSubmitCallbackResponse) drawJudgeOrderCallbackHandler
+                    .handle(callbackParams);
+
+            CCDDocument document = CCDDocument.builder().documentUrl(DOC_URL).build();
+            assertThat(response.getData()).contains(entry("draftOrderDoc", document));
+        }
+    }
+
+    @Nested
+    @DisplayName("Prepopulate orders on Mid Event tests")
+    class MidTests2 {
+        CallbackParams callbackParams;
+        CallbackRequest callbackRequest;
+        CCDCase ccdCase;
+        private CCDAddress address;
+        private final String courtName = "Birmingham Court";
+        private HearingCourt hearingCourt;
+
+        @BeforeEach
+        void setUp() {
+            ccdCase = CCDCase.builder()
+                .respondents(ImmutableList.of(
+                    CCDCollectionElement.<CCDRespondent>builder()
+                        .value(SampleData.getIndividualRespondentWithDQInClaimantResponse())
+                        .build()
+                ))
+                .build();
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
+                .thenReturn(ccdCase);
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+                .thenReturn(Claim.builder().build());
+        }
+
+        @Test
+        void shouldPrePopulateOrderWhenDirectionTypeIsStandardNoHearingCourt() {
+            ccdCase.setDirectionOrderType("STANDARD");
+            when(launchDarklyClient.isFeatureEnabled(eq("bespoke-order"), any(LDUser.class))).thenReturn(true);
+            ImmutableMap<String, Object> data = ImmutableMap.of("data", "existingData",
+                "directionOrderType", "STANDARD");
+
+            callbackRequest = CallbackRequest
+                .builder()
+                .eventId(GENERATE_ORDER.getValue())
+                .caseDetails(CaseDetails.builder().data(data).build())
+                .caseDetailsBefore(CaseDetails.builder().data(Collections.emptyMap()).build())
+                .build();
+
+            callbackParams = CallbackParams.builder()
+                .type(CallbackType.MID)
+                .request(callbackRequest)
+                .version(CallbackVersion.V_2)
+                .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response =
+                (AboutToStartOrSubmitCallbackResponse) drawJudgeOrderCallbackHandler
+                    .handle(callbackParams);
+
+            assertThat(response.getData()).contains(entry("directionList",
+                ImmutableList.of(CCDOrderDirectionType.DOCUMENTS, CCDOrderDirectionType.EYEWITNESS)));
+        }
+
+        @Test
+        void shouldPrePopulateOrderWhenDirectionTypeIsStandardAndHearingCourtLondon() {
+            ccdCase.setDirectionOrderType("STANDARD");
+            when(launchDarklyClient.isFeatureEnabled(eq("bespoke-order"), any(LDUser.class))).thenReturn(true);
+            address = CCDAddress.builder()
+                .addressLine1("line1")
+                .addressLine2("line2")
+                .addressLine3("line3")
+                .postCode("SW1P4BB")
+                .postTown("Birmingham")
+                .build();
+
+            hearingCourt = HearingCourt.builder().name(courtName).address(address).build();
+
+            LinkedHashMap<String, Object> hearingCourtMap = new LinkedHashMap<>();
+            hearingCourtMap.put("list_items", hearingCourt);
+            Map<String, Object> data = new HashMap<>();
+            data.put("data", "existingData");
+            data.put("directionOrderType", "STANDARD");
+            data.put("hearingCourt", hearingCourtMap);
+
+            callbackRequest = CallbackRequest
+                .builder()
+                .eventId(GENERATE_ORDER.getValue())
+                .caseDetails(CaseDetails.builder().data(data).build())
+                .caseDetailsBefore(CaseDetails.builder().data(Collections.emptyMap()).build())
+                .build();
+
+            callbackParams = CallbackParams.builder()
+                .type(CallbackType.MID)
+                .request(callbackRequest)
+                .version(CallbackVersion.V_2)
+                .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response =
+                (AboutToStartOrSubmitCallbackResponse) drawJudgeOrderCallbackHandler
+                    .handle(callbackParams);
+
+            assertThat(response.getData()).contains(entry("directionList",
+                ImmutableList.of(CCDOrderDirectionType.DOCUMENTS, CCDOrderDirectionType.EYEWITNESS)));
+        }
+
+        @Test
+        void shouldPrePopulateOrderWhenDirectionTypeIsBespokeNoDirectionList() {
+            ccdCase.setDirectionOrderType("BESPOKE");
+            when(launchDarklyClient.isFeatureEnabled(eq("bespoke-order"), any(LDUser.class))).thenReturn(true);
+            ImmutableMap<String, Object> data = ImmutableMap.of("data", "existingData",
+                "directionOrderType", "BESPOKE");
+
+            callbackRequest = CallbackRequest
+                .builder()
+                .eventId(GENERATE_ORDER.getValue())
+                .caseDetails(CaseDetails.builder().data(data).build())
+                .caseDetailsBefore(CaseDetails.builder().data(Collections.emptyMap()).build())
+                .build();
+
+            callbackParams = CallbackParams.builder()
+                .type(CallbackType.MID)
+                .request(callbackRequest)
+                .version(CallbackVersion.V_2)
+                .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response =
+                (AboutToStartOrSubmitCallbackResponse) drawJudgeOrderCallbackHandler
+                    .handle(callbackParams);
+
+            assertThat(response.getData()).contains(entry("directionList",
+                ImmutableList.of(CCDOrderDirectionType.DOCUMENTS, CCDOrderDirectionType.EYEWITNESS)));
+        }
+
+        @Test
+        void shouldPrePopulateOrderWhenDirectionTypeIsBespokeEmptyDirectionList() {
+            ccdCase.setDirectionOrderType("BESPOKE");
+            when(launchDarklyClient.isFeatureEnabled(eq("bespoke-order"), any(LDUser.class))).thenReturn(true);
+
+            ImmutableMap<String, Object> data = ImmutableMap.of("data", "existingData",
+                "directionOrderType", "BESPOKE", "bespokeDirectionList", new ArrayList<LinkedHashMap>());
+
+            callbackRequest = CallbackRequest
+                .builder()
+                .eventId(GENERATE_ORDER.getValue())
+                .caseDetails(CaseDetails.builder().data(data).build())
+                .caseDetailsBefore(CaseDetails.builder().data(Collections.emptyMap()).build())
+                .build();
+
+            callbackParams = CallbackParams.builder()
+                .type(CallbackType.MID)
+                .request(callbackRequest)
+                .version(CallbackVersion.V_2)
+                .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response =
+                (AboutToStartOrSubmitCallbackResponse) drawJudgeOrderCallbackHandler
+                    .handle(callbackParams);
+
+            assertThat(response.getData()).contains(entry("directionList",
+                ImmutableList.of(CCDOrderDirectionType.DOCUMENTS, CCDOrderDirectionType.EYEWITNESS)));
+        }
+    }
+
+    @Nested
+    @DisplayName("Test exceptions")
+    class Exceptions {
+
+        @Test
+        void shouldThrowIfClaimantResponseIsNotPresent() {
+            CCDCase ccdCase =
+                SampleData.addCCDOrderGenerationData(SampleData.getCCDCitizenCase(Collections.emptyList()))
+                    .toBuilder()
+                    .otherDirections(null)
+                    .build();
+
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
+                .thenReturn(ccdCase);
+
+            CallbackParams callbackParams = CallbackParams.builder()
+                .type(CallbackType.ABOUT_TO_START)
+                .request(callbackRequest)
+                .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+                .build();
+
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+                .thenReturn(Claim.builder().build());
+
+            Assertions.assertThrows(IllegalStateException.class,
+                () -> drawJudgeOrderCallbackHandler.handle(callbackParams));
         }
     }
 
@@ -904,6 +1139,15 @@ class DrawJudgeOrderCallbackHandlerTest {
                     assertThat(listItems).contains(ImmutableMap.of("code", courtId, "label", hearingCourt.getName()));
                     assertThat(listItems).contains(ImmutableMap.of("code", PilotCourtService.OTHER_COURT_ID, "label",
                         "Other Court"));
+                }
+
+                @Test
+                void shouldUseDefaultBespokeDirectionWarningWhenNewCcdCase() {
+                    when(launchDarklyClient.isFeatureEnabled(eq("bespoke-order"), any(LDUser.class))).thenReturn(true);
+                    AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
+                        drawJudgeOrderCallbackHandler.handle(callbackParams);
+                    assertThat(response.getData().get("drawBespokeDirectionOrderWarning"))
+                        .isEqualTo(ImmutableList.of(CCDBespokeOrderWarning.WARNING));
                 }
             }
 

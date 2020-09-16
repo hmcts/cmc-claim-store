@@ -196,19 +196,16 @@ public class OrderCreator {
             return generateOrder(callbackParams);
         } else if (!tempData.containsKey(DIRECTION_ORDER_TYPE)) {
             populateOrder = false;
-        } else if (tempData.containsKey(DIRECTION_ORDER_TYPE)
-            && DIRECTION_TYPE_BESPOKE.equals(tempData.get(DIRECTION_ORDER_TYPE))
+        } else if (DIRECTION_TYPE_BESPOKE.equals(tempData.get(DIRECTION_ORDER_TYPE))
             && tempData.containsKey(BESPOKE_DIRECTION_LIST)) {
-            ArrayList tempBespokeDirectionOrderList = (ArrayList) (tempData.get(BESPOKE_DIRECTION_LIST));
-            if (tempBespokeDirectionOrderList.size() > 0) {
+            ArrayList<LinkedHashMap> tempBespokeDirectionOrderList = (ArrayList) (tempData.get(BESPOKE_DIRECTION_LIST));
+            if (!tempBespokeDirectionOrderList.isEmpty()) {
                 populateOrder = false;
             }
-        } else if (tempData.containsKey(DIRECTION_ORDER_TYPE)
-            && DIRECTION_TYPE_STANDARD.equals(tempData.get(DIRECTION_ORDER_TYPE))
-            && tempData.containsKey(HEARING_COURT)) {
-            if (!(tempData.get(HEARING_COURT) instanceof LinkedHashMap)) {
-                populateOrder = false;
-            }
+        } else if (DIRECTION_TYPE_STANDARD.equals(tempData.get(DIRECTION_ORDER_TYPE))
+            && tempData.containsKey(HEARING_COURT)
+            && !(tempData.get(HEARING_COURT) instanceof LinkedHashMap)) {
+            populateOrder = false;
         }
 
         if (populateOrder) {
