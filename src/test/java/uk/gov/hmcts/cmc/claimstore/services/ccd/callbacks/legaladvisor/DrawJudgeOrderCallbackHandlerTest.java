@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legaladvisor;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.launchdarkly.client.LDUser;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -177,6 +178,117 @@ class DrawJudgeOrderCallbackHandlerTest {
                 .builder()
                 .eventId(GENERATE_ORDER.getValue())
                 .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
+                .caseDetailsBefore(CaseDetails.builder().data(Collections.emptyMap()).build())
+                .build();
+
+            DocAssemblyResponse docAssemblyResponse = Mockito.mock(DocAssemblyResponse.class);
+            when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
+            when(orderRenderer.renderOrder(eq(ccdCase), eq(BEARER_TOKEN))).thenReturn(docAssemblyResponse);
+
+            CallbackParams callbackParams = CallbackParams.builder()
+                .type(CallbackType.MID)
+                .request(callbackRequest)
+                .version(CallbackVersion.V_2)
+                .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response =
+                (AboutToStartOrSubmitCallbackResponse) drawJudgeOrderCallbackHandler
+                    .handle(callbackParams);
+
+            CCDDocument document = CCDDocument.builder().documentUrl(DOC_URL).build();
+            assertThat(response.getData()).contains(entry("draftOrderDoc", document));
+        }
+
+        @Test
+        void shouldGenerateBespokeOrderDocumentOnMidEvent() {
+            CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
+
+            ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
+            ccdCase.setBespokeDirectionList(SampleData.getBespokeDirectionList());
+            ccdCase.setDirectionOrderType("BESPOKE");
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
+                .thenReturn(ccdCase);
+            when(launchDarklyClient.isFeatureEnabled(eq("bespoke-order"), any(LDUser.class))).thenReturn(true);
+
+            CallbackRequest callbackRequest = CallbackRequest
+                .builder()
+                .eventId(GENERATE_ORDER.getValue())
+                .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
+                .caseDetailsBefore(CaseDetails.builder().data(Collections.emptyMap()).build())
+                .build();
+
+            DocAssemblyResponse docAssemblyResponse = Mockito.mock(DocAssemblyResponse.class);
+            when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
+            when(orderRenderer.renderOrder(eq(ccdCase), eq(BEARER_TOKEN))).thenReturn(docAssemblyResponse);
+
+            CallbackParams callbackParams = CallbackParams.builder()
+                .type(CallbackType.MID)
+                .request(callbackRequest)
+                .version(CallbackVersion.V_2)
+                .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response =
+                (AboutToStartOrSubmitCallbackResponse) drawJudgeOrderCallbackHandler
+                    .handle(callbackParams);
+
+            CCDDocument document = CCDDocument.builder().documentUrl(DOC_URL).build();
+            assertThat(response.getData()).contains(entry("draftOrderDoc", document));
+        }
+
+        @Test
+        void shouldGenerateBespokeOrderDocumentWithEmptyListOnMidEvent() {
+            CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
+
+            ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
+            ccdCase.setDirectionOrderType("BESPOKE");
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
+                .thenReturn(ccdCase);
+            when(launchDarklyClient.isFeatureEnabled(eq("bespoke-order"), any(LDUser.class))).thenReturn(true);
+
+            CallbackRequest callbackRequest = CallbackRequest
+                .builder()
+                .eventId(GENERATE_ORDER.getValue())
+                .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
+                .caseDetailsBefore(CaseDetails.builder().data(Collections.emptyMap()).build())
+                .build();
+
+            DocAssemblyResponse docAssemblyResponse = Mockito.mock(DocAssemblyResponse.class);
+            when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
+            when(orderRenderer.renderOrder(eq(ccdCase), eq(BEARER_TOKEN))).thenReturn(docAssemblyResponse);
+
+            CallbackParams callbackParams = CallbackParams.builder()
+                .type(CallbackType.MID)
+                .request(callbackRequest)
+                .version(CallbackVersion.V_2)
+                .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response =
+                (AboutToStartOrSubmitCallbackResponse) drawJudgeOrderCallbackHandler
+                    .handle(callbackParams);
+
+            CCDDocument document = CCDDocument.builder().documentUrl(DOC_URL).build();
+            assertThat(response.getData()).contains(entry("draftOrderDoc", document));
+        }
+
+        @Test
+        void shouldGenerateStandardOrderDocumentOnMidEvent() {
+            CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
+
+            ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
+            ccdCase.setDirectionOrderType("STANDARD");
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
+                .thenReturn(ccdCase);
+            when(launchDarklyClient.isFeatureEnabled(eq("bespoke-order"), any(LDUser.class))).thenReturn(true);
+            ImmutableMap<String, Object> data = ImmutableMap.of("data", "existingData",
+                "directionOrderType", "STANDARD", "hearingCourt", "Birmingham");
+
+            CallbackRequest callbackRequest = CallbackRequest
+                .builder()
+                .eventId(GENERATE_ORDER.getValue())
+                .caseDetails(CaseDetails.builder().data(data).build())
                 .caseDetailsBefore(CaseDetails.builder().data(Collections.emptyMap()).build())
                 .build();
 
