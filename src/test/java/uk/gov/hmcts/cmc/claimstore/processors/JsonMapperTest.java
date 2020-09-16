@@ -22,7 +22,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterestDate;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepresentative;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse2;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTimeline;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
@@ -177,7 +177,7 @@ public class JsonMapperTest {
         Response output = processor.fromJson(input, Response.class);
 
         //then
-        Response expected = SampleResponse.validDefaults();
+        Response expected = SampleResponse2.validDefaults();
         Assert.assertEquals(output, expected);
     }
 
@@ -190,7 +190,7 @@ public class JsonMapperTest {
         Response output = processor.fromJson(input, Response.class);
 
         //then
-        Response expected = SampleResponse.FullAdmission.builder().build();
+        Response expected = SampleResponse2.FullAdmission.builder().build();
         assertThat(output).isEqualTo(expected);
     }
 
