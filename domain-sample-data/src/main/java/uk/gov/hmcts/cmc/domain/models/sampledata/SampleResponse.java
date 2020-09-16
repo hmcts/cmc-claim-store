@@ -42,7 +42,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
         }
 
         public FullAdmissionResponse build() {
-            System.out.printl("Build called from method - shouldBeAbleToSuccessfullySubmitFullAdmission");
+            System.out.println("Build called from method - shouldBeAbleToSuccessfullySubmitFullAdmission");
             return FullAdmissionResponse.builder()
                 .moreTimeNeeded(YesNoOption.NO)
                 .defendant(defendantDetails)
