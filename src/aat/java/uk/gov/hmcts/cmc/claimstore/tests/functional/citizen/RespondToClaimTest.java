@@ -81,7 +81,7 @@ public class RespondToClaimTest extends BaseTest {
     @Retry
     public void shouldBeAbleToSuccessfullySubmitFullAdmission() {
         String defendantCollectionId = UUID.randomUUID().toString();
-
+        System.out.println("functional test called - shouldBeAbleToSuccessfullySubmitFullAdmission");
         Response fullAdmissionResponse = SampleResponse.FullAdmission.builder()
             .withDefendantDetails(SampleParty.builder()
                 .withCollectionId(defendantCollectionId)
