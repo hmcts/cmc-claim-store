@@ -69,8 +69,6 @@ public class OrderRenderer {
             authorisation,
             templateId,
             docAssemblyTemplateBodyMapper.mapBespokeDirectionOrder(ccdCase, userDetails));
-
-
     }
 
     public DocAssemblyResponse renderLegalAdvisorOrder(CCDCase ccdCase, String authorisation) {
