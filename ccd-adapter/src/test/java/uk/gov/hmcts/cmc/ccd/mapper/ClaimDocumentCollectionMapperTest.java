@@ -12,13 +12,16 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.ScannedDocument;
+import uk.gov.hmcts.cmc.domain.models.ScannedDocumentSubtype;
 import uk.gov.hmcts.cmc.domain.models.ScannedDocumentType;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.PAPER_RESPONSE_DISPUTES_ALL;
+import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentSubtype.OCON9X;
 
 public class ClaimDocumentCollectionMapperTest {
 
@@ -145,5 +148,36 @@ public class ClaimDocumentCollectionMapperTest {
             .orElseThrow(() -> new IllegalStateException("Missing claim document collection"));
         Assert.notNull(caseDocuments.getStaffUploadedDocuments(), "Scanned document list cant be null");
         assertThat(caseDocuments.getStaffUploadedDocuments().size()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldGetLatestScannedDocument() {
+
+        ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
+
+        ScannedDocument earliestScannedDocument = ScannedDocument.builder()
+            .documentType(ScannedDocumentType.FORM)
+            .subtype(ScannedDocumentSubtype.OCON9X.value)
+            .deliveryDate(LocalDateTime.now().minusDays(1))
+            .build();
+
+        ScannedDocument latestScannedDocument = ScannedDocument.builder()
+            .documentType(ScannedDocumentType.FORM)
+            .subtype(ScannedDocumentSubtype.OCON9X.value)
+            .deliveryDate(LocalDateTime.now())
+            .build();
+
+        claimDocumentCollection.addScannedDocument(earliestScannedDocument);
+        claimDocumentCollection.addScannedDocument(latestScannedDocument);
+
+        Claim claim = Claim.builder()
+            .claimDocumentCollection(claimDocumentCollection)
+            .build();
+
+        ScannedDocument scannedDocument = claim.getScannedDocument(
+            ScannedDocumentType.FORM, OCON9X)
+            .orElseThrow(() -> new IllegalStateException("Missing document"));
+
+        assertThat(scannedDocument).isEqualTo(latestScannedDocument);
     }
 }

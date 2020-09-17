@@ -101,8 +101,8 @@ allprojects {
       mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
     dependencies {
-      // CVE-2019-17563
-      dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.35') {
+      // CVE-2020-13935
+      dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.37') {
         entry 'tomcat-embed-core'
         entry 'tomcat-embed-el'
         entry 'tomcat-embed-websocket'
@@ -193,7 +193,7 @@ dependencies {
   compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
 
-  compile group: 'org.elasticsearch', name: 'elasticsearch', version: '7.7.0'
+  compile group: 'org.elasticsearch', name: 'elasticsearch', version: '7.9.0'
   compile group: 'org.postgresql', name: 'postgresql', version: '42.2.14'
 
   compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.15.1-RELEASE'
@@ -387,7 +387,8 @@ sonarqube {
         "**/CCDCaseApi.java",
         "launch-darkly-client/**",
         "email-client/**",
-        "rpa-mapper/**"
+        "rpa-mapper/**",
+        "**/UserRoleConstraintValidator.java"
       ].join(",")
   }
 }

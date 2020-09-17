@@ -59,6 +59,8 @@ public enum CaseEvent {
     ORDER_REVIEW_REQUESTED("OrderReviewRequested"),
     WAITING_TRANSFER("WaitingTransfer"),
     TRANSFER("Transfer"),
+    TRANSFER_TO_CCBC("CaseMovedOffline"),
+    AUTOMATED_TRANSFER("AutomatedTransfer"),
     LIFT_STAY("LiftStay"),
     REFER_TO_JUDGE("ReferToJudge"),
     //inversion of control
@@ -77,6 +79,7 @@ public enum CaseEvent {
     PAPER_RESPONSE_OCON_9X_FORM("PaperResponseOCON9xForm"),
     UPDATE_CLAIM("UpdateClaim"),
     RESET_PIN("ResetPin"),
+    PAPER_RESPONSE_ADMISSION("PaperResponseAdmission"),
     ISSUE_GENERAL_LETTER("IssueGeneralLetter"),
     RESPONSE_MORE_TIME("ResponseMoreTime"),
     PROVIDE_DIRECTIONS("ProvideDirections"),
@@ -84,7 +87,13 @@ public enum CaseEvent {
     CLAIMANT_RESPONSE_RECEIPT_UPLOAD("ClaimantResponseReceiptUpload"),
     REVIEW_JUDGE_COMMENTS("ReviewJudgeComments"),
     CCJ_REQUEST_UPLOAD("CCJRequestUpload"),
-    CHANGE_CONTACT_DETAILS("ChangeContactDetails");
+    CHANGE_CONTACT_DETAILS("ChangeContactDetails"),
+    ADD_BULK_PRINT_DETAILS("UpdateBulkPrintDetails"),
+    APPROVE_ORDER("ApproveOrder"),
+    CLAIM_NOTES("ClaimNotes"),
+    MIGRATION_FROM_CLAIM_STORE_CREATE("MigrationFromClaimstoreCreate"),
+    MIGRATION_FROM_CLAIM_STORE_UPDATE("MigrationFromClaimstoreUpdate"),
+    PAPER_HAND_OFF("PaperHandoff");
 
     private final String value;
 

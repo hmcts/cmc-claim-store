@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 
 import java.time.Clock;
+import java.util.Collections;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,6 +29,7 @@ public class DefendantPinLetterContentProviderTest {
     private static final String DEFENDANT_PIN = "dsf4dd2";
     private static final String RESPOND_TO_CLAIM_URL = "https://moneyclaim.hmcts.net/first-contact/start";
     private static final String STAFF_NOTIFICATIONS_RECIPIENT = "email@domain.gov";
+    private static final String NEW_FEATURES = "newFeatures";
 
     private final Claim claim = SampleClaim.getDefault();
 
@@ -46,7 +48,8 @@ public class DefendantPinLetterContentProviderTest {
             staffEmailProperties,
             new InterestContentProvider(
                 new InterestCalculationService(Clock.systemDefaultZone())
-            )
+            ),
+            false
         );
         when(notificationsProperties.getRespondToClaimUrl()).thenReturn(RESPOND_TO_CLAIM_URL);
         when(staffEmailProperties.getRecipient()).thenReturn(STAFF_NOTIFICATIONS_RECIPIENT);
@@ -138,6 +141,29 @@ public class DefendantPinLetterContentProviderTest {
         Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
 
         assertThat(content).containsEntry("hmctsEmail", STAFF_NOTIFICATIONS_RECIPIENT);
+    }
+
+    @Test
+    public void newFeatureFlagShouldBeTrueIfClaimHasFeatures() {
+        Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
+
+        assertThat(content).containsEntry(NEW_FEATURES, Boolean.TRUE);
+    }
+
+    @Test
+    public void newFeatureFlagShouldBeFalseIfClaimHasZeroFeatures() {
+        Claim claim = SampleClaim.builder().withFeatures(Collections.emptyList()).build();
+        Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
+
+        assertThat(content).containsEntry(NEW_FEATURES, Boolean.FALSE);
+    }
+
+    @Test
+    public void newFeatureFlagShouldBeFalseIfClaimHasNoFeatures() {
+        Claim claim = SampleClaim.builder().withFeatures(null).build();
+        Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
+
+        assertThat(content).containsEntry(NEW_FEATURES, Boolean.FALSE);
     }
 
 }

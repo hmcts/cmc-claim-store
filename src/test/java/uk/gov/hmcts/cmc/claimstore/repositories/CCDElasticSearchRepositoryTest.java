@@ -94,4 +94,14 @@ public class CCDElasticSearchRepositoryTest {
             SampleQueryConstants.defaultCCJCases10DaysBefore);
     }
 
+    @Test
+    public void getClaimsReadyForTransferQueriesElastic() {
+        User user = new User(AUTHORISATION, null);
+        ccdElasticSearchRepository.getClaimsReadyForTransfer(user);
+        verify(coreCaseDataApi).searchCases(
+            AUTHORISATION,
+            SERVICE_AUTH,
+            CASE_TYPE_ID,
+            SampleQueryConstants.readyForTransfer);
+    }
 }

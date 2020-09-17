@@ -40,6 +40,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NON_MEDIA
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper.isResponsePartOrFullDefence;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.REJECTION;
+import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service
 public class MediationFailedCallbackHandler extends CallbackHandler {
@@ -121,6 +122,7 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
             LocalDate deadline = deadlineCalculator.calculate(LocalDateTime.now());
             claim = claim.toBuilder().directionsQuestionnaireDeadline(deadline).build();
         }
+        claim = claim.toBuilder().dateReferredForDirections(nowInUTC()).build();
 
         Map<String, Object> dataMap = caseDetailsConverter.convertToMap(caseMapper.to(claim));
         dataMap.put(STATE, stateByOnlineDQnPilotCheck(claim));
@@ -136,7 +138,7 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
     private void updateCaseEvent(CallbackParams callbackParams, Claim claim) {
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
         coreCaseDataService
-                .saveCaseEvent(authorisation, claim.getCcdCaseId(), CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE);
+            .saveCaseEvent(authorisation, claim.getCcdCaseId(), CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE);
     }
 
     private String stateByOnlineDQnPilotCheck(Claim claim) {
