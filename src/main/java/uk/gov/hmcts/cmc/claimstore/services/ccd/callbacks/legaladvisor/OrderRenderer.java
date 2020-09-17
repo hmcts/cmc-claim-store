@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legaladvisor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -14,6 +16,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_JUDGE_DIRECTIO
 
 @Component
 public class OrderRenderer {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     public static final String DIRECTION_TYPE_BESPOKE = "BESPOKE";
 
     private final DocAssemblyService docAssemblyService;
@@ -60,10 +63,14 @@ public class OrderRenderer {
     private DocAssemblyResponse renderBespokeOrder(CCDCase ccdCase, String authorisation, String templateId) {
         UserDetails userDetails = userService.getUserDetails(authorisation);
 
+        logger.info("Rendering bespoke order template: {}, external id: {}", templateId, ccdCase.getExternalId());
+
         return docAssemblyService.renderTemplate(ccdCase,
             authorisation,
             templateId,
             docAssemblyTemplateBodyMapper.mapBespokeDirectionOrder(ccdCase, userDetails));
+
+
     }
 
     public DocAssemblyResponse renderLegalAdvisorOrder(CCDCase ccdCase, String authorisation) {
