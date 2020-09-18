@@ -89,7 +89,7 @@ public enum CaseEvent {
     CCJ_REQUEST_UPLOAD("CCJRequestUpload"),
     CHANGE_CONTACT_DETAILS("ChangeContactDetails"),
     ISSUE_PAPER_DEFENSE_FORMS("IssuePaperDefenceForms"),
-    ADD_BULK_PRINT_DETAILS("UpdateBulkPrintDetails");
+    ADD_BULK_PRINT_DETAILS("UpdateBulkPrintDetails"),
     APPROVE_ORDER("ApproveOrder"),
     CLAIM_NOTES("ClaimNotes"),
     MIGRATION_FROM_CLAIM_STORE_CREATE("MigrationFromClaimstoreCreate"),
