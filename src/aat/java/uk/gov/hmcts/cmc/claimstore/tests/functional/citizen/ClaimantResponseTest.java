@@ -1,11 +1,14 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
+import uk.gov.hmcts.cmc.claimstore.tests.helpers.Retry;
+import uk.gov.hmcts.cmc.claimstore.tests.helpers.RetryFailedFunctionalTests;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
@@ -45,8 +48,12 @@ public class ClaimantResponseTest extends BaseTest {
         claim = createClaimWithResponse(createdCase, defendant);
     }
 
+    @Rule
+    public RetryFailedFunctionalTests retryRule = new RetryFailedFunctionalTests(3);
+
     @Test
     @LogExecutionTime
+    @Retry
     public void shouldSaveClaimantResponseAcceptationReferToJudge() {
         commonOperations.submitClaimantResponse(
             SampleClaimantResponse.validDefaultAcceptation(),
@@ -66,6 +73,7 @@ public class ClaimantResponseTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldSaveClaimantResponseAcceptationIssueCCJWithDefendantPaymentIntention() {
         commonOperations.submitClaimantResponse(
             ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithDefendantPaymentIntention(),
@@ -93,6 +101,7 @@ public class ClaimantResponseTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldNotSaveClaimantResponseAcceptationIssueCCJWithClaimantPaymentIntention() {
         commonOperations.submitClaimantResponse(
             ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithClaimantPaymentIntentionBySetDate(),
@@ -103,6 +112,7 @@ public class ClaimantResponseTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldSaveClaimantResponseAcceptationIssueCCJWithCourtDetermination() {
         commonOperations.submitClaimantResponse(
             ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithCourtDetermination(),
@@ -118,6 +128,7 @@ public class ClaimantResponseTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldSaveClaimantResponseAcceptationIssueSettlementWithCourtDetermination() {
         commonOperations.submitClaimantResponse(
             ClaimantResponseAcceptation.builder().buildAcceptationIssueSettlementWithCourtDetermination(),
@@ -133,6 +144,7 @@ public class ClaimantResponseTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldSaveClaimantResponseAcceptationIssueSettlementWithDefendantPaymentIntention() {
         commonOperations.submitClaimantResponse(
             ClaimantResponseAcceptation.builder().buildAcceptationIssueSettlementWithDefendantPaymentIntention(),
@@ -159,6 +171,7 @@ public class ClaimantResponseTest extends BaseTest {
     }
 
     @Test
+    @Retry
     public void shouldSaveClaimantResponseRejection() {
         commonOperations.submitClaimantResponse(
             SampleClaimantResponse.validRejectionWithDirectionsQuestionnaire(),
