@@ -177,7 +177,7 @@ class MoreTimeRequestedCallbackHandlerTest {
                 .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
                 .request(callbackRequest)
                 .build();
-
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
             when(responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn()))
                 .thenReturn(deadline);
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);

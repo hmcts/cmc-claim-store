@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
+import uk.gov.hmcts.cmc.claimstore.rules.ClaimDeadlineService;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
@@ -77,6 +78,8 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
     private DocumentPublishService documentPublishService;
     @Mock
     private IssuePaperResponseNotificationService issuePaperResponseNotificationService;
+    @Mock
+    private ClaimDeadlineService claimDeadlineService;
 
     private Claim claim;
     private CallbackRequest callbackRequest;
@@ -91,7 +94,8 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
             responseDeadlineCalculator,
             issueDateCalculator,
             issuePaperResponseNotificationService,
-            documentPublishService
+            documentPublishService,
+            claimDeadlineService
         );
         claim = Claim.builder()
             .claimData(SampleClaimData.builder().build())
