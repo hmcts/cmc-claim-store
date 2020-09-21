@@ -136,13 +136,13 @@ public class DocumentNameUtilsTest {
 
     @Test
     public void shouldBuildJudgeDirectionOrderFileName() {
-        assertThat(buildJudgeDirectionOrderFileName("000MC001")).isEqualTo("000MC001-Judge-Direction-Order");
+        assertThat(buildJudgeDirectionOrderFileName("000MC001")).isEqualTo("000MC001-Judge-Directions-Order");
     }
 
     @Test
     public void shouldBuildLADirectionOrderFileName() {
         assertThat(buildLADirectionOrderFileName("000MC001"))
-            .isEqualTo("000MC001-Legal-Adviser-Direction-Order");
+            .isEqualTo("000MC001-Legal-Adviser-Directions-Order");
     }
 
 }
