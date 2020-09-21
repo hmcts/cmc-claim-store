@@ -161,5 +161,4 @@ public class CCDCase {
     private List<CCDCollectionElement<CCDScannedDocument>> temporaryScannedDocuments = Collections.emptyList();
     private LocalDate dateOfHandoff;
     private LocalDate extendedResponseDeadline;
-    private LocalDate paperFormIssueDate;
 }

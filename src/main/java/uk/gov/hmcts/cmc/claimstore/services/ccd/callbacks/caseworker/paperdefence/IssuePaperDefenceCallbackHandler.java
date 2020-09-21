@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimDeadlineService;
@@ -95,18 +96,22 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
         if (!ccdRespondent.isOconFormSent()) {
             paperFormIssueDate = issueDateCalculator.calculateIssueDay(LocalDateTime.now());
             paperFormServedDate = responseDeadlineCalculator.calculateServiceDate(paperFormIssueDate);
-            responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(paperFormIssueDate);
+            if (CCDYesNoOption.YES.equals(ccdRespondent.getResponseMoreTimeNeededOption())) {
+                responseDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(paperFormIssueDate);
+            } else {
+                responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(paperFormIssueDate);
+            }
             extendedResponseDeadline =
                 responseDeadlineCalculator.calculatePostponedResponseDeadline(paperFormIssueDate);
         } else {
             paperFormServedDate = ccdRespondent.getPaperFormServedDate();
             responseDeadline = ccdRespondent.getResponseDeadline();
             extendedResponseDeadline = ccdCase.getExtendedResponseDeadline();
-            paperFormIssueDate = ccdCase.getPaperFormIssueDate();
+            paperFormIssueDate = ccdRespondent.getPaperFormIssueDate();
         }
         ccdCase = updateCaseDates(ccdCase, responseDeadline, paperFormServedDate, extendedResponseDeadline,
             paperFormIssueDate);
-        Claim claim = updateClaimDates(caseDetails, paperFormServedDate, responseDeadline);
+        Claim claim = updateClaimDates(caseDetails, responseDeadline);
 
         var builder = AboutToStartOrSubmitCallbackResponse.builder();
         if (claimDeadlineService.isPastDeadline(nowInLocalZone(),
@@ -138,10 +143,10 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
         CCDRespondent respondent = collectionElement.getValue().toBuilder()
             .responseDeadline(responseDeadline)
             .paperFormServedDate(serviceDate)
+            .paperFormIssueDate(paperFormIssueDate)
             .build();
         return ccdCase.toBuilder()
             .extendedResponseDeadline(extendedResponseDeadline)
-            .paperFormIssueDate(paperFormIssueDate)
             .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
                 .value(respondent)
                 .id(collectionElement.getId())
@@ -149,7 +154,7 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
             .build();
     }
 
-    private Claim updateClaimDates(CaseDetails caseDetails, LocalDate serviceDate, LocalDate responseDeadline) {
+    private Claim updateClaimDates(CaseDetails caseDetails, LocalDate responseDeadline) {
         return caseDetailsConverter.extractClaim(caseDetails)
             .toBuilder()
             .responseDeadline(responseDeadline)

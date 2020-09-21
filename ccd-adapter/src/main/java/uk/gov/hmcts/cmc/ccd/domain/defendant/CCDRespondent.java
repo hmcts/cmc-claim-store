@@ -30,6 +30,7 @@ public class CCDRespondent {
     private LocalDate responseDeadline;
     private LocalDate servedDate;
     private LocalDate paperFormServedDate;
+    private LocalDate paperFormIssueDate;
 
     private CCDParty claimantProvidedDetail;
     private String claimantProvidedPartyName;
