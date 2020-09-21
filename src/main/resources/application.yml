@@ -123,6 +123,7 @@ milo:
 
 schedule:
   transfer-claims: ""
+  issue-created-claims: "${SCHEDULE_ISSUE_CREATED_CLAIMS:}"
   state-transition:
     waiting-transfer: ""
     stay-claim: ""
