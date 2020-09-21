@@ -6,7 +6,7 @@ import lombok.Value;
 import java.time.LocalDate;
 
 @Value
-@Builder
+@Builder(toBuilder = true)
 public class CCDBespokeOrderDirection {
 
     private CCDDirectionPartyType beSpokeDirectionFor;

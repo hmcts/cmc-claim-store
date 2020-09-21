@@ -664,6 +664,22 @@ public class SampleData {
             .build();
     }
 
+    public static CCDCase addCCDBespokeOrderGenerationData(CCDCase ccdCase) {
+        return ccdCase.toBuilder()
+            .directionOrderType("BESPOKE")
+            .bespokeDirectionList(ImmutableList.of(
+                CCDCollectionElement.<CCDBespokeOrderDirection>builder()
+                    .value(
+                        CCDBespokeOrderDirection.builder()
+                            .beSpokeDirectionFor(CCDDirectionPartyType.BOTH)
+                            .beSpokeDirectionExplain("a direction")
+                            .beSpokeDirectionDatetime(LocalDate.parse("2020-10-11"))
+                            .build()
+                    )
+                    .build()))
+            .build();
+    }
+
     public static CCDStatementOfMeans getCCDStatementOfMeans() {
         return CCDStatementOfMeans.builder()
             .residenceType(JOINT_OWN_HOME)

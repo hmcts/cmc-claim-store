@@ -164,7 +164,8 @@ public class CCDCase {
     private LocalDate dateOfHandoff;
     private String directionOrderType;
 
-    private List<CCDCollectionElement<CCDBespokeOrderDirection>> bespokeDirectionList;
+    @Builder.Default
+    private List<CCDCollectionElement<CCDBespokeOrderDirection>> bespokeDirectionList = Collections.emptyList();
 
     @Builder.Default
     private List<CCDBespokeOrderWarning> drawBespokeDirectionOrderWarning = Collections.emptyList();
