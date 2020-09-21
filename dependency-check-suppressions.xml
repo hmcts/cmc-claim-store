@@ -160,16 +160,14 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
-   file name: snakeyaml-1.25.jar
+   snakeyaml-1.25.jar is not used directly
    ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.yaml/snakeyaml@.*$</packageUrl>
-        <cpe>cpe:/a:snakeyaml_project:snakeyaml</cpe>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2017-18640</cve>
     </suppress>
     <suppress>
-        <notes><![CDATA[
-   file name: launchdarkly-java-server-sdk-4.14.0.jar (shaded: org.yaml:snakeyaml:1.19)
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.yaml/snakeyaml@.*$</packageUrl>
-        <cpe>cpe:/a:snakeyaml_project:snakeyaml</cpe>
+        <cve>CVE-2020-5407</cve>
+        <cve>CVE-2020-5408</cve>
+        <cve>CVE-2020-7019</cve>
     </suppress>
 </suppressions>
