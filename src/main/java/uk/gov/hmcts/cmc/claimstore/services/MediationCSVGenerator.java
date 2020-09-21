@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MediationCSVGenerationException;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseSearchApi;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -27,6 +29,8 @@ import static uk.gov.hmcts.cmc.domain.models.MediationRow.MediationRowBuilder;
 
 @RequiredArgsConstructor
 public class MediationCSVGenerator {
+    Logger logger = LoggerFactory.getLogger(this.getClass());
+
     private static final String SITE_ID = "5";
     private static final String CASE_TYPE = "1";
     private static final String CHECK_LIST = "4";
@@ -128,6 +132,7 @@ public class MediationCSVGenerator {
             csvPrinter.flush();
             csvData = stringBuilder.toString();
         } catch (Exception e) {
+            logger.error("Mediation csv generation failed,records details are {}", problematicRecords);
             throw new MediationCSVGenerationException("Error generating Mediation CSV", e);
         }
     }
@@ -153,6 +158,8 @@ public class MediationCSVGenerator {
                 createMediationRow(claim, DEFENDANT_PARTY_TYPE)
             );
         } catch (MediationCSVGenerationException e) {
+            logger.error("Mediation csv generation failed for {} and error {}",
+                claim.getReferenceNumber(), e.getMessage());
             problematicRecords.put(claim.getReferenceNumber(), e.getMessage());
             return Collections.emptyList();
         }
