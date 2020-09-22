@@ -1,8 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.events.claim;
 
 import com.google.common.collect.ImmutableList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
@@ -26,8 +24,6 @@ import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 
 @Service
 public class PinOrchestrationService {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     private final ClaimIssuedNotificationService claimIssuedNotificationService;
     private final NotificationsProperties notificationsProperties;
     private final DocumentOrchestrationService documentOrchestrationService;
@@ -61,7 +57,6 @@ public class PinOrchestrationService {
     public Claim process(Claim claim, String authorisation, String submitterName) {
         boolean newPinLetterEnabled = launchDarklyClient.isFeatureEnabled("new-defendant-pin-letter",
             LaunchDarklyClient.CLAIM_STORE_USER);
-        logger.info("launchDarklyClient.isFeatureEnabled(new-defendant-pin-letter)--->" + newPinLetterEnabled);
         GeneratedDocuments documents = documentOrchestrationService.generateForCitizen(claim, authorisation,
             newPinLetterEnabled);
         Claim updatedClaim = documents.getClaim();
