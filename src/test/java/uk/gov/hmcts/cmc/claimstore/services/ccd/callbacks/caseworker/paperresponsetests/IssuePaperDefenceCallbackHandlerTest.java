@@ -68,6 +68,8 @@ class IssuePaperDefenceCallbackHandlerTest {
             .build();
     private static final String ERROR_MESSAGE = "There was a technical problem. Nothing has been sent."
         + " You need to try again.";
+    private static final String DEFENDANT_MISSED_DEADLINE =
+        "Defendant did not respond by deadline so paper form cannot be issued.";
     private static final String AUTHORISATION = "auth";
 
     @Mock
@@ -302,6 +304,48 @@ class IssuePaperDefenceCallbackHandlerTest {
         AboutToStartOrSubmitCallbackResponse actualResponse =
             (AboutToStartOrSubmitCallbackResponse) issuePaperDefenceCallbackHandler.handle(callbackParams);
         assertThat(actualResponse.getErrors().get(0)).isEqualTo(ERROR_MESSAGE);
+    }
+
+    @Test
+    void whenDefendantMissedDeadlineDate() {
+        ccdCase = CCDCase.builder()
+            .previousServiceCaseReference("000MC001")
+            .respondents(ImmutableList.of(
+                CCDCollectionElement.<CCDRespondent>builder()
+                    .value(SampleData.getIndividualRespondentWithDQInClaimantResponse())
+                    .build()
+            ))
+            .applicants(List.of(
+                CCDCollectionElement.<CCDApplicant>builder()
+                    .value(SampleData.getCCDApplicantIndividual())
+                    .build()
+            ))
+            .build();
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(10L)
+            .data(Collections.emptyMap())
+            .build();
+        callbackRequest =
+            CallbackRequest.builder()
+                .eventId(CaseEvent.ISSUE_PAPER_DEFENSE_FORMS.getValue())
+                .caseDetails(caseDetails)
+                .build();
+        CallbackParams callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_SUBMIT)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
+            .build();
+        LocalDate date = LocalDate.now();
+        when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(date);
+        when(responseDeadlineCalculator.calculateResponseDeadline(any(LocalDate.class))).thenReturn(date);
+        when(responseDeadlineCalculator.calculatePostponedResponseDeadline(any(LocalDate.class)))
+            .thenReturn(date);
+        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+        when(claimDeadlineService.isPastDeadline(any(), any())).thenReturn(true);
+        AboutToStartOrSubmitCallbackResponse actualResponse =
+            (AboutToStartOrSubmitCallbackResponse) issuePaperDefenceCallbackHandler.handle(callbackParams);
+        assertThat(actualResponse.getErrors().get(0)).isEqualTo(DEFENDANT_MISSED_DEADLINE);
     }
 
     @Test
