@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
@@ -203,6 +204,61 @@ class IssuePaperDefenceCallbackHandlerTest {
         verify(documentPublishService).publishDocuments(any(CCDCase.class), any(Claim.class), eq(AUTHORISATION),
             eq(LocalDate.now()));
         verify(issuePaperResponseNotificationService, times(0)).notifyClaimant(any(Claim.class));
+    }
+
+    @Test
+    void shouldHandleAboutToSubmitCallbackMoreTimeRequested() {
+        ccdCase = CCDCase.builder()
+            .previousServiceCaseReference("000MC001")
+            .respondents(ImmutableList.of(
+                CCDCollectionElement.<CCDRespondent>builder()
+                    .value(SampleData.getIndividualRespondentWithDQInClaimantResponse())
+                    .build()
+            ))
+            .applicants(List.of(
+                CCDCollectionElement.<CCDApplicant>builder()
+                    .value(SampleData.getCCDApplicantIndividual())
+                    .build()
+            ))
+            .build();
+
+        CCDCase updatedCCDCase = ccdCase.toBuilder()
+            .respondents(ImmutableList.of(CCDCollectionElement.<CCDRespondent>builder()
+                .value(ccdCase.getRespondents().get(0).getValue().toBuilder()
+                    .responseMoreTimeNeededOption(CCDYesNoOption.YES)
+                    .build())
+                .build()))
+            .extendedResponseDeadline(LocalDate.now())
+            .build();
+
+        LocalDate date = LocalDate.now();
+        when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(date);
+        when(responseDeadlineCalculator.calculateResponseDeadline(any())).thenReturn(date);
+        when(responseDeadlineCalculator.calculatePostponedResponseDeadline(any(LocalDate.class)))
+            .thenReturn(date);
+        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(updatedCCDCase);
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(10L)
+            .data(Collections.emptyMap())
+            .build();
+        callbackRequest =
+            CallbackRequest.builder()
+                .eventId(CaseEvent.ISSUE_PAPER_DEFENSE_FORMS.getValue())
+                .caseDetails(caseDetails)
+                .build();
+
+        CallbackParams callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_SUBMIT)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
+            .build();
+
+        issuePaperDefenceCallbackHandler.handle(callbackParams);
+        verify(documentPublishService).publishDocuments(any(CCDCase.class), any(Claim.class), eq(AUTHORISATION),
+            eq(LocalDate.now()));
+        verify(issuePaperResponseNotificationService).notifyClaimant(any(Claim.class));
     }
 
     @Test
