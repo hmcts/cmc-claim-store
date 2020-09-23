@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
@@ -50,8 +51,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.INDIVIDUAL;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.MoreTimeRequestedCallbackHandler.CALCULATED_RESPONSE_DEADLINE;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.MoreTimeRequestedCallbackHandler.PREVIEW_SENTENCE;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.MoreTimeRequestedCallbackHandler.RESPONSE_DEADLINE_PREVIEW;
@@ -167,6 +171,11 @@ class MoreTimeRequestedCallbackHandlerTest {
                 .build();
     }
 
+    @Test
+    void shouldHaveCorrectCaseworkerRole() {
+        assertThat(moreTimeRequestedCallbackHandler.getSupportedRoles()).containsOnly(CASEWORKER);
+    }
+
     @Nested
     @DisplayName("About to Start Validation test")
     class ValidationTest {
@@ -219,9 +228,10 @@ class MoreTimeRequestedCallbackHandlerTest {
                 .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
                 .request(callbackRequest)
                 .build();
-            ccdCase = ccdCase.toBuilder()
-                .calculatedResponseDeadline(deadline)
-                .build();
+        }
+
+        @Test
+        void shouldGenerateLetter() {
 
             UserDetails userDetails = SampleUserDetails.builder()
                 .withForename("Case")
@@ -231,11 +241,10 @@ class MoreTimeRequestedCallbackHandlerTest {
 
             when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(userDetails);
 
+            ccdCase = ccdCase.toBuilder()
+                .calculatedResponseDeadline(deadline)
+                .build();
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-        }
-
-        @Test
-        void shouldGenerateLetter() {
             when(generalLetterService
                 .generateLetter(any(CCDCase.class), eq(AUTHORISATION), eq(GENERAL_LETTER_TEMPLATE)))
                 .thenReturn(DOC_URL);
@@ -246,6 +255,28 @@ class MoreTimeRequestedCallbackHandlerTest {
             assertThat(response.getData()).hasSize(1)
                 .containsEntry(GeneralLetterService.DRAFT_LETTER_DOC, CCDDocument.builder()
                     .documentUrl(DOC_URL).build());
+        }
+
+        @Test
+        void dontSendLetterLinkedDefendant() {
+            ccdCase = ccdCase.toBuilder()
+                .calculatedResponseDeadline(deadline)
+                .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
+                    .value(CCDRespondent.builder()
+                        .defendantId("1234")
+                        .paperFormIssueDate(LocalDate.now())
+                        .build())
+                    .build()))
+                .build();
+
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+
+            AboutToStartOrSubmitCallbackResponse response
+                = (AboutToStartOrSubmitCallbackResponse) moreTimeRequestedCallbackHandler.handle(callbackParams);
+
+            verify(generalLetterService, times(0))
+                .generateLetter(any(CCDCase.class), eq(AUTHORISATION), eq(GENERAL_LETTER_TEMPLATE));
+
         }
     }
 
@@ -281,6 +312,7 @@ class MoreTimeRequestedCallbackHandlerTest {
             );
             assertThat(response).isNotNull();
         }
+
     }
 
     @Nested
@@ -335,6 +367,7 @@ class MoreTimeRequestedCallbackHandlerTest {
                 eq(SampleMoreTimeRequestedEvent.getReference("claimant", claim.getReferenceNumber()))
             );
         }
+
     }
 
     @Nested
@@ -357,14 +390,28 @@ class MoreTimeRequestedCallbackHandlerTest {
 
             ccdCase = ccdCase.toBuilder()
                 .calculatedResponseDeadline(deadline)
+                .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
+                    .value(CCDRespondent.builder()
+                        .paperFormIssueDate(LocalDate.now())
+                        .claimantProvidedDetail(
+                            CCDParty.builder()
+                                .type(INDIVIDUAL)
+                                .build())
+                        .partyDetail(CCDParty.builder()
+                            .type(INDIVIDUAL)
+                            .emailAddress("claimant@email.test")
+                            .build())
+                        .build())
+                    .build()))
                 .build();
+            CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
 
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
             when(notificationsProperties.getTemplates()).thenReturn(templates);
             when(templates.getEmail()).thenReturn(emailTemplates);
             when(notificationsProperties.getFrontendBaseUrl()).thenReturn(FRONTEND_BASE_URL);
-            when(responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn()))
+            when(responseDeadlineCalculator.calculatePostponedResponseDeadline(respondent.getPaperFormIssueDate()))
                 .thenReturn(deadline);
         }
 
