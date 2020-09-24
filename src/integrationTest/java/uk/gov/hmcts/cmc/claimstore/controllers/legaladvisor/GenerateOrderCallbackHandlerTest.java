@@ -180,9 +180,9 @@ public class GenerateOrderCallbackHandlerTest extends BaseMockSpringTest {
             .build();
         Map<String, Object> data = new HashMap<>(caseDetailsTemp.getData());
         data.put("paperDetermination", "No");
-        data.put("docUploadDeadline", "2019-06-03");
+        data.put("docUploadDeadline", LocalDate.now().plusDays(10).toString());
         data.put("docUploadForParty", "BOTH");
-        data.put("eyewitnessUploadDeadline", "2019-06-03");
+        data.put("eyewitnessUploadDeadline", LocalDate.now().plusDays(10).toString());
         data.put("eyewitnessUploadForParty", "CLAIMANT");
         data.put("directionList", ImmutableList.of("EYEWITNESS", "DOCUMENTS"));
         data.put("extraDocUploadList", ImmutableList.of(ImmutableMap.of(
@@ -193,14 +193,14 @@ public class GenerateOrderCallbackHandlerTest extends BaseMockSpringTest {
                 "id", "",
                 "value", ImmutableMap.of(
                     "extraOrderDirection", "EYEWITNESS",
-                    "sendBy", "2019-06-03",
+                    "sendBy",  LocalDate.now().plusDays(10),
                     "forParty", "CLAIMANT")),
             ImmutableMap.of(
                 "id", "",
                 "value", ImmutableMap.of(
                     "extraOrderDirection", "OTHER",
                     "directionComment", "second",
-                    "sendBy", "2019-06-04",
+                    "sendBy",  LocalDate.now().plusDays(10),
                     "forParty", "BOTH"))));
         data.put("preferredDQCourt", "Preferred court");
         data.put("newRequestedCourt", "Another court");
