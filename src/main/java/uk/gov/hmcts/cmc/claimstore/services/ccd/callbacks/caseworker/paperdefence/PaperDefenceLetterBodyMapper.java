@@ -39,6 +39,7 @@ public class PaperDefenceLetterBodyMapper {
             .extendedResponseDeadline(extendedResponseDeadline)
             .caseworkerName(caseworkerName)
             .caseName(ccdCase.getCaseName())
+            .moreTimeRequested(respondent.getResponseMoreTimeNeededOption().toBoolean())
             .build();
     }
 

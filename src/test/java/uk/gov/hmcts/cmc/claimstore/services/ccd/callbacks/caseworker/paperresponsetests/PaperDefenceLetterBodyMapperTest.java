@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.paperdefence.PaperDefenceLetterBodyMapper;
@@ -86,6 +87,7 @@ public class PaperDefenceLetterBodyMapperTest {
                         .correspondenceAddress(null)
                         .build())
                     .partyName(partyName)
+                    .responseMoreTimeNeededOption(CCDYesNoOption.NO)
                     .build())
                 .build()))
             .applicants(ImmutableList.of(CCDCollectionElement.<CCDApplicant>builder()
@@ -173,11 +175,12 @@ public class PaperDefenceLetterBodyMapperTest {
         @Test
         void shouldMapTemplateBodyWhenCoverLetterForDefendant() {
 
+            CCDCase updatedCCDCase = getCCDCase(ccdCase, null);
             LocalDate currentDate = LocalDate.now();
             DocAssemblyTemplateBody requestBody = paperDefenceLetterBodyMapper
-                .coverLetterTemplateMapper(ccdCase, CASEWORKER, EXTENDED_RESPONSE_DEADLINE);
+                .coverLetterTemplateMapper(updatedCCDCase, CASEWORKER, EXTENDED_RESPONSE_DEADLINE);
             DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
-                .partyName(partyName)
+                .partyName(respondent.getClaimantProvidedPartyName())
                 .partyAddress(defendantAddress)
                 .claimantName(applicant.getPartyName())
                 .currentDate(currentDate)
@@ -186,6 +189,7 @@ public class PaperDefenceLetterBodyMapperTest {
                 .extendedResponseDeadline(EXTENDED_RESPONSE_DEADLINE)
                 .caseworkerName(CASEWORKER)
                 .caseName(ccdCase.getCaseName())
+                .moreTimeRequested(false)
                 .build();
             assertThat(requestBody).isEqualTo(expectedBody);
         }

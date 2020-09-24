@@ -133,5 +133,6 @@ public class DocAssemblyTemplateBody implements FormPayload {
     private String claimAmount;
     private String soleTradingTraderName;
     private String organisationName;
+    private boolean moreTimeRequested;
 
 }
