@@ -73,6 +73,7 @@ public class OrderCreator {
     private static final String EXPERT_REPORT_INSTRUCTION = "expertReportInstruction";
     private static final String OTHER_DIRECTIONS = "otherDirections";
     private static final String ESTIMATED_HEARING_DURATION = "estimatedHearingDuration";
+    private static final String COURT_NOT_OBJECTED = "Court not objected";
 
     private final LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator;
     private final CaseDetailsConverter caseDetailsConverter;
@@ -222,6 +223,12 @@ public class OrderCreator {
             newRequestedCourt = defendantDQ.getHearingLocation();
             preferredCourtObjectingParty = CCDResponseSubjectType.RES_DEFENDANT.getValue();
             preferredCourtObjectingReason = defendantDQ.getExceptionalCircumstancesReason();
+        }
+
+        if (StringUtils.isBlank(preferredCourtObjectingReason)) {
+            newRequestedCourt = COURT_NOT_OBJECTED;
+            preferredCourtObjectingParty = CCDResponseSubjectType.NONE.getValue();
+            preferredCourtObjectingReason = COURT_NOT_OBJECTED;
         }
 
         data.put(NEW_REQUESTED_COURT, newRequestedCourt);
