@@ -12,6 +12,9 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.services.MediationReportService;
 import uk.gov.hmcts.cmc.scheduler.model.CronJob;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 @Component
 @Getter
 @DisallowConcurrentExecution
@@ -27,7 +30,11 @@ public class MiloJob implements CronJob {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
+            LocalDateTime now = LocalDateTime.now();
+            logger.info("Started MILO report generation at {}", now);
             mediationReportService.automatedMediationReport();
+            logger.info("MILO report ended at {}, took {} seconds to generate", LocalDateTime.now(),
+                Duration.between(now, LocalDateTime.now()).getSeconds());
         } catch (Exception e) {
             throw new JobExecutionException(e);
         }
