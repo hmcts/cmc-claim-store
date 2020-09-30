@@ -243,7 +243,7 @@ dependencies {
   testCompile group: 'org.junit.platform', name: 'junit-platform-engine', version: versions.junitPlatform
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.17.2'
   testCompile group: 'org.mockito', name: 'mockito-core', version: '3.3.3'
-  testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.3.3'
+  testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.5.13'
   testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.13.0'
 
   testCompile group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
