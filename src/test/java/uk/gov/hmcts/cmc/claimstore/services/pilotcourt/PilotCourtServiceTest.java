@@ -61,7 +61,7 @@ class PilotCourtServiceTest {
         void shouldThrowIllegalStateExceptionOnInvalidCSVPath() {
             Assertions.assertThrows(IllegalStateException.class, () ->
                 new PilotCourtService(
-                    "InvalidPath",
+                    null,
                     courtFinderApi,
                     hearingCourtMapper,
                     appInsights
