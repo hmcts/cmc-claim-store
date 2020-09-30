@@ -31,7 +31,6 @@ public class SolicitorPdfTest extends BasePdfTest {
     public RetryFailedFunctionalTests retryRule = new RetryFailedFunctionalTests(3);
 
     @Test
-    @Ignore
     @Retry
     public void shouldBeAbleToFindTestClaimDataInSolicitorSealedClaimPdf() throws IOException {
         shouldBeAbleToFindTestClaimDataInPdf("legalSealedClaim", createCase());

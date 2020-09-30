@@ -65,7 +65,16 @@ idam:
     url: "http://localhost:4552"
     totp_secret: "AAAAAAAAAAAAAAAA"
     microservice: "cmc_claim_store"
-
+uk:
+  gov:
+    hmcts:
+      cmc:
+        claimstore:
+          tests:
+            functional:
+              solicitor:
+                SolicitorPdfTest:
+                  shouldBeAbleToFindTestClaimDataInSolicitorSealedClaimPdf:
 courtfinder:
   api:
     url: "https://courttribunalfinder.service.gov.uk"
