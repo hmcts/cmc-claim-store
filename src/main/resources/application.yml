@@ -4,13 +4,14 @@ server:
 
 management:
   endpoints:
-    web:
+    jmx:
       exposure:
-        include: '*'
-      base-path: /
+        include: 'health'
+    web:
+      base-path: "/"
   endpoint:
     health:
-      show-details: always
+      show-details: "always"
 async:
   max:
     threadPool:
