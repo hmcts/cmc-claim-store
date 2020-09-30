@@ -54,13 +54,13 @@ public class SolicitorPdfTest extends BasePdfTest {
 
     @Override
     protected Supplier<SampleClaimData> getSampleClaimDataBuilder() {
-        return testData::submittedBySolicitorBuilderTest;
+        return testData::submittedBySolicitorBuilder;
     }
 
     @Override
     protected Claim createCase() {
         ClaimData claimData = getSampleClaimDataBuilder().get().build();
-        return commonOperations.saveClaim(claimData, user.getAuthorisation(), user.getUserDetails().getId())
+        return commonOperations.saveClaim(claimData, user.getAuthorisation(), "2eeee99b-5c0b-46ee-a2a9-29d22e399f9f")
             .then().extract().body().as(Claim.class);
     }
 

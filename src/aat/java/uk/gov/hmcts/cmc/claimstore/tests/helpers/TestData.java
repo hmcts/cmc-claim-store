@@ -42,11 +42,4 @@ public class TestData {
         return format(aatConfiguration.getGeneratedUserEmailPattern(), RandomStringUtils.randomAlphanumeric(10));
     }
 
-    public SampleClaimData submittedBySolicitorBuilderTest() {
-        return SampleClaimData.submittedByLegalRepresentativeBuilder()
-            .withClaimant(SampleParty.builder().withName("TestData")
-                .withRepresentative(SampleRepresentative.builder().build())
-                .party());
-    }
-
 }
