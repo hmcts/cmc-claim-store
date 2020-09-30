@@ -25,7 +25,7 @@ dependencyUpdates.resolutionStrategy = {
   }
 }
 
-def springBootVersion = '2.2.6.RELEASE'
+def springBootVersion = '2.3.4.RELEASE'
 def springCloudVersion = 'Hoxton.SR2'
 
 def versions = [
@@ -102,7 +102,7 @@ allprojects {
     }
     dependencies {
       // CVE-2020-13935
-      dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.37') {
+      dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.38') {
         entry 'tomcat-embed-core'
         entry 'tomcat-embed-el'
         entry 'tomcat-embed-websocket'
@@ -188,13 +188,13 @@ dependencies {
 
   compile group: 'com.mitchellbosecke', name: 'pebble', version: '2.4.0'
 
-  compile group: 'commons-io', name: 'commons-io', version: '2.7'
+  compile group: 'commons-io', name: 'commons-io', version: '2.8.0'
 
   compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
 
   compile group: 'org.elasticsearch', name: 'elasticsearch', version: '7.9.0'
-  compile group: 'org.postgresql', name: 'postgresql', version: '42.2.14'
+  compile group: 'org.postgresql', name: 'postgresql', version: '42.2.16'
 
   compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.15.1-RELEASE'
 
