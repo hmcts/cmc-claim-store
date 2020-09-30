@@ -150,6 +150,16 @@ public class GenerateOrderRuleTest {
     }
 
     @Test
+    public void shouldNotReturnDateValidationWhenOptional() {
+        CCDCase ccdCase = CCDCase.builder()
+            .build();
+        List<String> validations = new ArrayList<>();
+        generateOrderRule.validateDate(ccdCase, validations);
+
+        Assertions.assertThat(validations).isEmpty();
+    }
+
+    @Test
     public void shouldReturnDateValidationErrorForOtherDirectionsSendByDate() {
         List<CCDCollectionElement<CCDOrderDirection>> otherDirections = ImmutableList.of(
             CCDOrderDirection.builder()
@@ -181,6 +191,36 @@ public class GenerateOrderRuleTest {
         Assertions.assertThat(validations).isNotEmpty()
             .hasSize(1)
             .contains(GenerateOrderRule.PAST_DATE_ERROR_MESSAGE);
+    }
+
+    @Test
+    public void shouldNotReturnDateValidationErrorForOtherDirectionsSendByDateWhenOptional() {
+        List<CCDCollectionElement<CCDOrderDirection>> otherDirections = ImmutableList.of(
+            CCDOrderDirection.builder()
+                .directionComment("a direction")
+                .extraOrderDirection(OTHER)
+                .otherDirectionHeaders(UPLOAD)
+                .forParty(BOTH)
+                .build(),
+            CCDOrderDirection.builder()
+                .extraOrderDirection(EXPERT_REPORT_PERMISSION)
+                .forParty(BOTH)
+                .build()
+        )
+            .stream()
+            .map(e -> CCDCollectionElement.<CCDOrderDirection>builder().value(e).build())
+            .collect(Collectors.toList());
+
+        CCDCase ccdCase = CCDCase.builder()
+            .docUploadDeadline(LocalDate.now().plusDays(10))
+            .eyewitnessUploadDeadline(LocalDate.now().plusDays(10))
+            .otherDirections(otherDirections)
+            .build();
+
+        List<String> validations = new ArrayList<>();
+        generateOrderRule.validateDate(ccdCase, validations);
+
+        Assertions.assertThat(validations).isEmpty();
     }
 
     @Test
