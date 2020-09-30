@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.tests.functional.solicitor;
 
 import junit.framework.AssertionFailedError;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.tests.functional.BasePdfTest;
