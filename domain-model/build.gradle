@@ -25,7 +25,7 @@ dependencies {
   testCompile project(':domain-sample-data')
   testCompile group: 'junit', name: 'junit', version: '4.13'
   testCompile group: 'org.mockito', name: 'mockito-core', version: '3.3.3'
-  testCompile group: 'org.assertj', name: 'assertj-core', version: '3.16.1'
+  testCompile group: 'org.assertj', name: 'assertj-core', version: '3.17.2'
   testCompile group: 'javax.el', name: 'javax.el-api', version: '3.0.0'
   testCompile group: 'org.glassfish.web', name: 'javax.el', version: '2.2.6'
   testCompile group: 'com.google.guava', name: 'guava', version: '20.0'
