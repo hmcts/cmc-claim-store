@@ -70,14 +70,10 @@ public class GenerateOrderRule {
         List<CCDCollectionElement<CCDOrderDirection>> otherDirectionOrder =
             ccdCase.getOtherDirections() == null ? List.of() : ccdCase.getOtherDirections();
 
-        if ((uploadDeadlineDate != null && uploadDeadlineDate.isBefore(LocalDate.now()))
-            || (eyewitnessUploadDeadlineDate != null
-            && eyewitnessUploadDeadlineDate.isBefore(LocalDate.now()))) {
+        if (uploadDeadlineDate.isBefore(LocalDate.now()) || eyewitnessUploadDeadlineDate.isBefore(LocalDate.now())) {
             validationErrors.add(PAST_DATE_ERROR_MESSAGE);
         }
-        if (otherDirectionOrder.stream().anyMatch(e ->
-            e.getValue().getSendBy() != null
-                && e.getValue().getSendBy().isBefore(LocalDate.now()))) {
+        if (otherDirectionOrder.stream().anyMatch(e -> e.getValue().getSendBy().isBefore(LocalDate.now()))) {
             validationErrors.add(PAST_DATE_ERROR_MESSAGE);
         }
     }
