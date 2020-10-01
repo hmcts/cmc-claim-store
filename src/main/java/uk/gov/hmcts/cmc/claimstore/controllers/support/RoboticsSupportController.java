@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentGenerator;
 import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.rpa.DefenceResponseNotificationService;
@@ -100,6 +101,30 @@ public class RoboticsSupportController {
 
                     documentGenerator.generateForCitizenRPA(
                         new CitizenClaimIssuedEvent(claim, pinResponse.getPin(), fullName, authorisation)
+                    );
+                },
+                "Failed to send claim to RPA"
+            )));
+    }
+
+    @PutMapping("/legal-claim")
+    @ApiOperation("Send RPA notifications for multiple claims")
+    public Map<String, String> rpaLegalClaimNotifications(@RequestBody List<String> referenceNumbers) {
+        if (referenceNumbers == null || referenceNumbers.isEmpty()) {
+            throw new IllegalArgumentException("Reference numbers not supplied");
+        }
+        User user = userService.authenticateAnonymousCaseWorker();
+        String authorisation = user.getAuthorisation();
+        return referenceNumbers.stream()
+            .collect(toMap(Function.identity(), ref -> resendRPA(
+                ref,
+                user.getAuthorisation(),
+                reference -> true,
+                claim -> {
+                    String submitterName = userService.getUserDetails(authorisation).getFullName();
+
+                    documentGenerator.generateForRepresentedClaim(
+                        new RepresentedClaimIssuedEvent(claim, submitterName, authorisation)
                     );
                 },
                 "Failed to send claim to RPA"
