@@ -28,15 +28,14 @@ import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@Ignore
+
 public class PaidInFullStaffNotificationServiceWithEmailServiceRetryTest extends BaseMockSpringTest {
 
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
 
     @MockBean
     private JavaMailSenderImpl javaMailSender;
-    @MockBean
-    protected TelemetryClient telemetry;
+
     @MockBean
     protected PostClaimOrchestrationHandler postClaimOrchestrationHandler;
 
