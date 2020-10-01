@@ -56,7 +56,7 @@ public class SolicitorPdfTest extends BasePdfTest {
 
     @Override
     protected Supplier<SampleClaimData> getSampleClaimDataBuilder() {
-        return testData::submittedBySolicitorBuilder;
+        return testData::submittedBySolicitorBuilderTest;
     }
 
     @Override
