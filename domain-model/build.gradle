@@ -13,7 +13,7 @@ repositories {
 
 dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-json'
-  compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
+  compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'
   compile group: 'cz.jirutka.validator', name: 'validator-collection', version: '2.2.0'
 
   //   The below fixes https://nvd.nist.gov/vuln/detail/CVE-2019-12384 while waiting for spring to pull new version
