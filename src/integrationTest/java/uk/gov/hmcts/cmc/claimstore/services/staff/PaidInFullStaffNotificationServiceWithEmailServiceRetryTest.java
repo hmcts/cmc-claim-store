@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff;
 
-import com.microsoft.applicationinsights.TelemetryClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +32,7 @@ public class PaidInFullStaffNotificationServiceWithEmailServiceRetryTest extends
 
     @MockBean
     private JavaMailSenderImpl javaMailSender;
-    @MockBean
-    protected TelemetryClient telemetry;
+
     @MockBean
     protected PostClaimOrchestrationHandler postClaimOrchestrationHandler;
 
