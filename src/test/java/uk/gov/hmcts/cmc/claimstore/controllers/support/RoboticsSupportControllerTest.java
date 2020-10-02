@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentGenerator;
 import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -38,6 +39,7 @@ import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -160,6 +162,25 @@ public class RoboticsSupportControllerTest {
         );
 
         verify(documentGenerator).generateForCitizenRPA(any(CitizenClaimIssuedEvent.class));
+    }
+
+    @Test
+    public void testRPA_LegalClaimNotifications() {
+        Claim claim1 = SampleClaim.getLegalDataWithReps().toBuilder().referenceNumber("000LR001").build();
+        when(claimService.getClaimByReference("000LR001", "authorisation"))
+            .thenReturn(Optional.of(claim1));
+        Claim claim2 = SampleClaim.getLegalDataWithReps().toBuilder().referenceNumber("000LR002").build();
+        when(claimService.getClaimByReference("000LR002", "authorisation"))
+            .thenReturn(Optional.of(claim2));
+
+        Map<String, String> results = controller.rpaLegalClaimNotifications(asList("000LR001", "000LR002", "000LR003"));
+
+        assertThat(results).containsEntry("000LR001", "succeeded")
+            .containsEntry("000LR002", "succeeded")
+            .containsEntry("000LR003", "missing");
+
+        verify(documentGenerator, atLeast(2))
+            .generateForRepresentedClaim(any(RepresentedClaimIssuedEvent.class));
     }
 
     @Test
