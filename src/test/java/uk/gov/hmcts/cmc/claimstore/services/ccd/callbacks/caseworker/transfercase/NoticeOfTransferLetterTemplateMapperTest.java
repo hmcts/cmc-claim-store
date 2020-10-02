@@ -32,6 +32,7 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 @ExtendWith(MockitoExtension.class)
 class NoticeOfTransferLetterTemplateMapperTest {
 
+    public static final String LISTING = "Listing";
     private static final String TRANSFER_COURT_NAME = "Bristol";
     private static final String CASE_REFERENCE = "REF1";
     private static final String TRANSFER_REASON = "A reason";
@@ -216,7 +217,7 @@ class NoticeOfTransferLetterTemplateMapperTest {
             .currentDate(LocalDate.parse(TRANSFER_DATE))
             .hearingCourtName(TRANSFER_COURT_NAME)
             .hearingCourtAddress(transferCourtAddress)
-            .reasonForTransfer("Listing")
+            .reasonForTransfer(LISTING)
             .caseworkerName(CASE_WORKER_NAME);
 
         return bodyBuilder;
