@@ -196,7 +196,7 @@ dependencies {
   compile group: 'org.elasticsearch', name: 'elasticsearch', version: '7.9.0'
   compile group: 'org.postgresql', name: 'postgresql', version: '42.2.14'
 
-  compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.15.1-RELEASE'
+  compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.0-RELEASE'
 
   compile group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformJavaLogging
   compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformJavaLogging
