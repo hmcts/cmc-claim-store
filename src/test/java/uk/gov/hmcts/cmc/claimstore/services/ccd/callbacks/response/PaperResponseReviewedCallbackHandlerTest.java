@@ -26,6 +26,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.ScannedDocument;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -35,6 +36,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
@@ -63,6 +65,8 @@ class PaperResponseReviewedCallbackHandlerTest {
     private EmailTemplates emailTemplates;
     @Mock
     private NotificationTemplates notificationTemplates;
+    @Mock
+    LaunchDarklyClient launchDarklyClient;
 
     private final CaseDetails detailsBeforeEvent = CaseDetails.builder().id(1L).build();
     private final CaseDetails detailsAfterEvent = CaseDetails.builder().id(2L).build();
@@ -87,7 +91,8 @@ class PaperResponseReviewedCallbackHandlerTest {
             responseDeadlineCalculator,
             moreTimeRequestRule,
             notificationService,
-            notificationsProperties);
+            notificationsProperties,
+            launchDarklyClient);
         callbackRequest = CallbackRequest.builder()
             .eventId(CaseEvent.MORE_TIME_REQUESTED_PAPER.getValue())
             .caseDetails(CaseDetails.builder()
@@ -97,27 +102,38 @@ class PaperResponseReviewedCallbackHandlerTest {
     }
 
     @Test
-    @DisplayName("should include an error when already responded online")
+    @DisplayName("should include error when already responded online if LD enabled for restrict-review-paper-response")
     void eventNotPossibleWhenRespondedOnline() {
+        when(launchDarklyClient.isFeatureEnabled("restrict-review-paper-response")).thenReturn(true);
         claim = SampleClaim.getWithDefaultResponse();
-        when(caseDetailsConverter.extractClaim(any())).thenReturn(claim);
-
-        CallbackParams callbackParams = CallbackParams.builder()
-            .type(CallbackType.ABOUT_TO_START)
-            .request(callbackRequest)
-            .build();
-
-        var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
-        assertThat(response.getErrors()).contains(ALREADY_RESPONDED_ERROR);
+        checkEventAllowed(claim, true);
     }
 
     @Test
-    @DisplayName("should include an error when already responded offline")
+    @DisplayName("should include error when already responded offline if LD enabled for restrict-review-paper-response")
     void eventNotPossibleWhenRespondedOffline() {
-        claim = SampleClaim.withFullClaimData().toBuilder()
-            .respondedAt(LocalDateTime.now()).build();
+        when(launchDarklyClient.isFeatureEnabled("restrict-review-paper-response")).thenReturn(true);
+        claim = SampleClaim.withFullClaimData().toBuilder().respondedAt(LocalDateTime.now()).build();
+        checkEventAllowed(claim, true);
+    }
 
-        when(caseDetailsConverter.extractClaim(any())).thenReturn(claim);
+    @Test
+    @DisplayName("should include error when already responded online if LD enabled for restrict-review-paper-response")
+    void eventPossibleWhenRespondedOnlineIfNotRestricted() {
+        claim = SampleClaim.getWithDefaultResponse();
+        checkEventAllowed(claim, false);
+    }
+
+    @Test
+    @DisplayName("should include error when already responded offline if LD enabled for restrict-review-paper-response")
+    void eventPossibleWhenRespondedOfflineIfNotRestricted() {
+        claim = SampleClaim.withFullClaimData().toBuilder().respondedAt(LocalDateTime.now()).build();
+        checkEventAllowed(claim, false);
+    }
+
+    private void checkEventAllowed(Claim claim, boolean errorExpected) {
+
+        when(caseDetailsConverter.extractClaim(any())).thenReturn(this.claim);
 
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_START)
@@ -125,7 +141,8 @@ class PaperResponseReviewedCallbackHandlerTest {
             .build();
 
         var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
-        assertThat(response.getErrors()).contains(ALREADY_RESPONDED_ERROR);
+        assertEquals(errorExpected, response.getErrors() != null
+            && response.getErrors().contains(ALREADY_RESPONDED_ERROR));
     }
 
     @Nested
