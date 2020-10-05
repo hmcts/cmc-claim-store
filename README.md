@@ -1,4 +1,4 @@
-# CMC claim store
+# CMC claim store (dummy)
 
 [![codecov](https://codecov.io/gh/hmcts/cmc-claim-store/branch/master/graph/badge.svg)](https://codecov.io/gh/hmcts/cmc-claim-store)
 
