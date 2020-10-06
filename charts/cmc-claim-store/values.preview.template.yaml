@@ -23,7 +23,7 @@ java:
   livenessFailureThreshold: 6
   livenessDelay: 75
   readinessDelay: 75
-  keyVaults:[]
+  keyVaults: []
     cmc:
       resourceGroup: cmc
       secrets:
