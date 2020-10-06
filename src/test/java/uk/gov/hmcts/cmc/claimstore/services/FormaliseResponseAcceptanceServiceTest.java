@@ -633,7 +633,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .build();
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
         verify(claimantResponseReceiptService)
-            .createPdf(eq(claim), any());
+            .createPdf(any(Claim.class), any());
         verify(documentService)
             .uploadToDocumentManagement(pdf, AUTH, claim);
     }

@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import static java.util.Objects.requireNonNull;
@@ -56,6 +57,15 @@ public class ClaimantResponseContentProvider {
         Map<String, Object> content = new HashMap<>();
 
         content.put("claim", claimDataContentProvider.createContent(claim));
+
+        Optional<ClaimantResponse> claimantResponseOptional = claim.getClaimantResponse();
+        if (claimantResponseOptional.isPresent()) {
+            ResponseAcceptation responseAcceptation = (ResponseAcceptation) claimantResponseOptional.get();
+            responseAcceptation.getCourtDetermination().ifPresent(courtDetermination -> {
+                content.put("rejectionReason", courtDetermination.getRejectionReason());
+            });
+        }
+
         claim.getClaimantRespondedAt().ifPresent(respondedAt -> {
             content.put("claimantSubmittedOn", formatDateTime(respondedAt));
             content.put("claimantSubmittedDate", formatDate(respondedAt));

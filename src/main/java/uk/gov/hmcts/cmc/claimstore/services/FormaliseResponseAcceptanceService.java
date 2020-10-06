@@ -84,27 +84,30 @@ public class FormaliseResponseAcceptanceService {
                 formaliseSettlement(claim, responseAcceptation, authorisation);
                 break;
             case REFER_TO_JUDGE:
-                createEventForReferToJudge(claim, authorisation);
+                createEventForReferToJudge(claim, responseAcceptation, authorisation);
                 break;
             default:
                 throw new IllegalStateException("Invalid formaliseOption");
         }
     }
 
-    private void createEventForReferToJudge(Claim claim, String authorisation) {
+    private void createEventForReferToJudge(Claim claim, ResponseAcceptation responseAcceptation,
+                                            String authorisation) {
         Response response = claim.getResponse()
             .orElseThrow(() -> new IllegalArgumentException(MISSING_RESPONSE));
 
         CaseEvent caseEvent;
         Claim updatedClaim;
         if (isCompanyOrOrganisation(response.getDefendant())) {
-            updatedClaim = uploadClaimantResponseToDocumentStore(claim, authorisation,
-                buildRequestOrgRepaymentFileBaseName(claim.getReferenceNumber()));
+            updatedClaim =
+                uploadClaimantResponseToDocumentStore(claim, responseAcceptation, authorisation,
+                    buildRequestOrgRepaymentFileBaseName(claim.getReferenceNumber()));
             eventProducer.createRejectOrganisationPaymentPlanEvent(updatedClaim);
             caseEvent = REJECT_ORGANISATION_PAYMENT_PLAN;
         } else {
-            updatedClaim = uploadClaimantResponseToDocumentStore(claim, authorisation,
-                buildRequestForInterlocutoryJudgmentFileBaseName(claim.getReferenceNumber()));
+            updatedClaim =
+                uploadClaimantResponseToDocumentStore(claim, responseAcceptation, authorisation,
+                    buildRequestForInterlocutoryJudgmentFileBaseName(claim.getReferenceNumber()));
             eventProducer.createInterlocutoryJudgmentEvent(updatedClaim);
             caseEvent = INTERLOCUTORY_JUDGMENT;
         }
@@ -257,12 +260,14 @@ public class FormaliseResponseAcceptanceService {
         }
     }
 
-    private Claim uploadClaimantResponseToDocumentStore(Claim claim, String authorisation, String filename) {
+    private Claim uploadClaimantResponseToDocumentStore(Claim claim, ResponseAcceptation responseAcceptation,
+                                                        String authorisation, String filename) {
         if (!ctscEnabled) {
             return claim;
         }
-
-        PDF document = claimantResponseReceiptService.createPdf(claim, filename);
-        return documentService.uploadToDocumentManagement(document, authorisation, claim);
+        PDF document = claimantResponseReceiptService.createPdf(
+            claim.toBuilder().claimantResponse(responseAcceptation).build(), filename);
+        return documentService.uploadToDocumentManagement(document, authorisation,
+            claim.toBuilder().claimantResponse(null).build());
     }
 }
