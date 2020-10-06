@@ -169,5 +169,6 @@
         <cve>CVE-2020-5407</cve>
         <cve>CVE-2020-5408</cve>
         <cve>CVE-2020-7019</cve>
+        <cve>CVE-2020-5421</cve>
     </suppress>
 </suppressions>
