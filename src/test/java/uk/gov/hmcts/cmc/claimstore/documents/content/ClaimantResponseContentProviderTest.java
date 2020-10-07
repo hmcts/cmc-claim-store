@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimDataContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
@@ -255,5 +256,16 @@ public class ClaimantResponseContentProviderTest {
         Map<String, Object> content = contentProvider.createContent(claim);
 
         assertThat(content).doesNotContainKeys("rejectionReason");
+    }
+
+    @Test
+    public void whenNoClaimantResponse() {
+
+        Claim claim = SampleClaim.builder()
+            .withResponse(SampleResponse.FullAdmission.builder().buildWithPaymentOptionInstalments())
+            .withClaimantResponse(null)
+            .build();
+        Assertions.assertThrows(IllegalStateException.class,
+            () -> contentProvider.createContent(claim));
     }
 }
