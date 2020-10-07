@@ -206,4 +206,54 @@ public class ClaimantResponseContentProviderTest {
 
         assertThat(content).containsValue("Please enter judgment by determination");
     }
+
+    @Test
+    public void shouldShowRejectionReason() {
+
+        Claim claim = SampleClaim.builder()
+            .withResponse(SampleResponse.FullAdmission.builder().buildWithPaymentOptionInstalments())
+            .withClaimantResponse(ResponseAcceptation.builder()
+                .courtDetermination(CourtDetermination.builder()
+                    .rejectionReason("Rejection proposal")
+                    .courtDecision(bySetDate())
+                    .courtPaymentIntention(PaymentIntention.builder()
+                        .paymentOption(BY_SPECIFIED_DATE)
+                        .paymentDate(ResponseAcceptationContentProvider.SYSTEM_MAX_DATE)
+                        .build())
+                    .disposableIncome(BigDecimal.valueOf(-1))
+                    .decisionType(DecisionType.COURT)
+                    .build())
+                .formaliseOption(FormaliseOption.CCJ)
+                .build())
+            .build();
+
+        Map<String, Object> content = contentProvider.createContent(claim);
+
+        assertThat(content).containsValues("Rejection proposal");
+    }
+
+    @Test
+    public void shouldShowNoRejectionReason() {
+
+        Claim claim = SampleClaim.builder()
+            .withResponse(SampleResponse.FullAdmission.builder().buildWithPaymentOptionInstalments())
+            .withClaimantResponse(ResponseAcceptation.builder()
+                .courtDetermination(CourtDetermination.builder()
+                    .rejectionReason(null)
+                    .courtDecision(bySetDate())
+                    .courtPaymentIntention(PaymentIntention.builder()
+                        .paymentOption(BY_SPECIFIED_DATE)
+                        .paymentDate(ResponseAcceptationContentProvider.SYSTEM_MAX_DATE)
+                        .build())
+                    .disposableIncome(BigDecimal.valueOf(-1))
+                    .decisionType(DecisionType.COURT)
+                    .build())
+                .formaliseOption(FormaliseOption.CCJ)
+                .build())
+            .build();
+
+        Map<String, Object> content = contentProvider.createContent(claim);
+
+        assertThat(content).doesNotContainKeys("rejectionReason");
+    }
 }

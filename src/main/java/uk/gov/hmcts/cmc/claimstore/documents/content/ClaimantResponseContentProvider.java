@@ -61,9 +61,11 @@ public class ClaimantResponseContentProvider {
         Optional<ClaimantResponse> claimantResponseOptional = claim.getClaimantResponse();
         if (claimantResponseOptional.isPresent()) {
             ResponseAcceptation responseAcceptation = (ResponseAcceptation) claimantResponseOptional.get();
-            responseAcceptation.getCourtDetermination().ifPresent(courtDetermination ->
-                content.put("rejectionReason", courtDetermination.getRejectionReason())
-            );
+            responseAcceptation.getCourtDetermination().ifPresent(courtDetermination -> {
+                if (courtDetermination.getRejectionReason().isPresent()) {
+                    content.put("rejectionReason", courtDetermination.getRejectionReason().get());
+                }
+            });
         }
 
         claim.getClaimantRespondedAt().ifPresent(respondedAt -> {
