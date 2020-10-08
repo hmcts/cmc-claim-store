@@ -576,6 +576,10 @@ public class SampleData {
             .build();
     }
 
+    public static CCDCase getCCDCitizenCase() {
+        return ccdBuilderWithDefault().build();
+    }
+
     public static CCDCase getCCDCitizenCaseWithoutPayment() {
         List<CCDCollectionElement<CCDApplicant>> applicants
             = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
