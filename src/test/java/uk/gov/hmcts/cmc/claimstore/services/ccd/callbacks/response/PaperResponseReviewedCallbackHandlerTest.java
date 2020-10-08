@@ -40,6 +40,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.REFERENCE_NUMBER;
@@ -226,17 +228,32 @@ class PaperResponseReviewedCallbackHandlerTest {
         }
 
         @Test
-        @DisplayName("more time request is handled by scanned document upload")
-        void verifyMoreTimeRequestedIsHandledByScannedDocumentUpload() {
+        @DisplayName("more time request is handled by scanned document upload and email is sent")
+        void verifyMoreTimeRequestedIsHandledByScannedDocumentUploadAndEmailIsSentForN9Form() {
             when(notificationsProperties.getFrontendBaseUrl()).thenReturn("http://frontend.url");
             when(notificationsProperties.getTemplates()).thenReturn(notificationTemplates);
             when(notificationTemplates.getEmail()).thenReturn(emailTemplates);
             when(emailTemplates.getClaimantPaperResponseReceived()).thenReturn("TEMPLATE");
 
+            verifyMoreTimeRequestedIsHandledByScannedDocumentUpload("N9", 1);
+
+            assertThat(claimArgumentCaptor.getValue().isMoreTimeRequested())
+                .isTrue();
+            assertThat(claimArgumentCaptor.getValue().getResponseDeadline())
+                .isEqualTo(LocalDate.now().plusDays(7));
+        }
+
+        @Test
+        @DisplayName("verify that email is not sent for documents other than N9, N9a, N911")
+        void verifyMoreTimeRequestedIsHandledByScannedDocumentUploadAndEmailIsNotSentForN225Form() {
+            verifyMoreTimeRequestedIsHandledByScannedDocumentUpload("N225", 0);
+        }
+
+        void verifyMoreTimeRequestedIsHandledByScannedDocumentUpload(String form, int timesEmailIsSent) {
             documentCollection.addStaffUploadedDocument(
                 ClaimDocument.builder().documentType(ClaimDocumentType.PAPER_RESPONSE_STATES_PAID).build());
 
-            documentCollectionAfter.addScannedDocument(ScannedDocument.builder().subtype("N9").build());
+            documentCollectionAfter.addScannedDocument(ScannedDocument.builder().subtype(form).build());
             documentCollectionAfter.addStaffUploadedDocument(
                 ClaimDocument.builder().documentType(ClaimDocumentType.PAPER_RESPONSE_STATES_PAID).build());
 
@@ -247,7 +264,7 @@ class PaperResponseReviewedCallbackHandlerTest {
             when(caseDetailsConverter.extractClaim(detailsAfterEvent)).thenReturn(claimAfterEvent);
             when(caseDetailsConverter.extractClaim(detailsBeforeEvent)).thenReturn(claim);
             LocalDate newResponseDeadline = LocalDate.now().plusDays(7);
-            when(responseDeadlineCalculator.calculatePostponedResponseDeadline(claimAfterEvent.getIssuedOn()))
+            lenient().when(responseDeadlineCalculator.calculatePostponedResponseDeadline(claimAfterEvent.getIssuedOn()))
                 .thenReturn(newResponseDeadline);
 
             callbackRequest = CallbackRequest.builder()
@@ -264,19 +281,21 @@ class PaperResponseReviewedCallbackHandlerTest {
             handler.handle(callbackParams);
 
             verify(caseMapper).to(claimArgumentCaptor.capture());
-            assertThat(claimArgumentCaptor.getValue().isMoreTimeRequested())
-                .isTrue();
-            assertThat(claimArgumentCaptor.getValue().getResponseDeadline())
-                .isEqualTo(newResponseDeadline);
+            verify(notificationService, times(timesEmailIsSent))
+                .sendMail(
+                    eq(SUBMITTER_EMAIL),
+                    eq("TEMPLATE"),
+                    anyMap(),
+                    eq("paper-response-submitted-claimant-" + REFERENCE_NUMBER));
         }
 
         @Test
         @DisplayName("response by staff uploaded document is handled")
         void verifyResponseByStaffUploadedDocumentIsHandled() {
-            when(notificationsProperties.getFrontendBaseUrl()).thenReturn("http://frontend.url");
-            when(notificationsProperties.getTemplates()).thenReturn(notificationTemplates);
-            when(notificationTemplates.getEmail()).thenReturn(emailTemplates);
-            when(emailTemplates.getClaimantPaperResponseReceived()).thenReturn("TEMPLATE");
+            lenient().when(notificationsProperties.getFrontendBaseUrl()).thenReturn("http://frontend.url");
+            lenient().when(notificationsProperties.getTemplates()).thenReturn(notificationTemplates);
+            lenient().when(notificationTemplates.getEmail()).thenReturn(emailTemplates);
+            lenient().when(emailTemplates.getClaimantPaperResponseReceived()).thenReturn("TEMPLATE");
 
             documentCollection.addScannedDocument(ScannedDocument.builder().id("N9").subtype("N9").build());
             documentCollectionAfter.addScannedDocument(ScannedDocument.builder().id("N9").subtype("N9").build());
@@ -313,7 +332,7 @@ class PaperResponseReviewedCallbackHandlerTest {
             assertThat(claimArgumentCaptor.getValue().getRespondedAt())
                 .isEqualTo(docReceivedTime);
 
-            verify(notificationService)
+            verify(notificationService, times(0))
                 .sendMail(
                     eq(SUBMITTER_EMAIL),
                     eq("TEMPLATE"),
