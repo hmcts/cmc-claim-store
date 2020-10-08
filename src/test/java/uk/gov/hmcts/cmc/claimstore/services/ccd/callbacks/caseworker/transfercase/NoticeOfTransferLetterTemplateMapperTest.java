@@ -32,6 +32,7 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 @ExtendWith(MockitoExtension.class)
 class NoticeOfTransferLetterTemplateMapperTest {
 
+    public static final String LISTING = "Listing";
     private static final String TRANSFER_COURT_NAME = "Bristol";
     private static final String CASE_REFERENCE = "REF1";
     private static final String TRANSFER_REASON = "A reason";
@@ -143,6 +144,27 @@ class NoticeOfTransferLetterTemplateMapperTest {
     }
 
     @Test
+    void shouldMapNoticeOfTransferLetterBodyForListing() {
+
+        ccdCase = CCDCase.builder()
+            .previousServiceCaseReference(CASE_REFERENCE)
+            .transferContent(CCDTransferContent.builder()
+                .transferReason(CCDTransferReason.OTHER)
+                .transferCourtName(TRANSFER_COURT_NAME)
+                .transferCourtAddress(transferCourtAddress)
+                .transferReason(CCDTransferReason.LISTING)
+                .build())
+            .build();
+        DocAssemblyTemplateBody requestBody = noticeOfTransferLetterTemplateMapper
+            .noticeOfTransferLetterBodyForCourt(ccdCase, AUTHORISATION);
+
+        DocAssemblyTemplateBody expectedRequestBody = listingRequestBodyBuilder()
+            .build();
+
+        assertEquals(expectedRequestBody, requestBody);
+    }
+
+    @Test
     void shouldMapNoticeOfTransferLetterBodyForDefendant() {
 
         DocAssemblyTemplateBody requestBody = noticeOfTransferLetterTemplateMapper
@@ -182,6 +204,20 @@ class NoticeOfTransferLetterTemplateMapperTest {
             .hearingCourtName(TRANSFER_COURT_NAME)
             .hearingCourtAddress(transferCourtAddress)
             .reasonForTransfer(TRANSFER_REASON)
+            .caseworkerName(CASE_WORKER_NAME);
+
+        return bodyBuilder;
+    }
+
+    private DocAssemblyTemplateBody.DocAssemblyTemplateBodyBuilder listingRequestBodyBuilder() {
+
+        DocAssemblyTemplateBody.DocAssemblyTemplateBodyBuilder bodyBuilder = DocAssemblyTemplateBody
+            .builder()
+            .referenceNumber(CASE_REFERENCE)
+            .currentDate(LocalDate.parse(TRANSFER_DATE))
+            .hearingCourtName(TRANSFER_COURT_NAME)
+            .hearingCourtAddress(transferCourtAddress)
+            .reasonForTransfer(LISTING)
             .caseworkerName(CASE_WORKER_NAME);
 
         return bodyBuilder;
