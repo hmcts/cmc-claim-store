@@ -28,7 +28,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static java.util.function.Predicate.isEqual;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.DEFENDANT_NAME;
@@ -119,7 +119,7 @@ class PaperResponseReviewedHandler {
     private boolean mailToBeSent() {
         return getBulkScannedDocuments(claimAfterEvent.get())
             .filter(doc -> getBulkScannedDocuments(claimBeforeEvent.get()).noneMatch(isEqual(doc)))
-            .anyMatch(doc -> isNotBlank(doc.getSubtype()) && DOC_TYPE_TO_MAIL.contains(doc.getSubtype().toUpperCase()));
+            .anyMatch(doc -> isBlank(doc.getSubtype()) || DOC_TYPE_TO_MAIL.contains(doc.getSubtype().toUpperCase()));
     }
 
     private Claim toClaimAfterEvent(CallbackRequest callbackRequest) {
