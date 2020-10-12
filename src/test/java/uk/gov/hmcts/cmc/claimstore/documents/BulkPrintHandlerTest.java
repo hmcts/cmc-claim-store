@@ -190,7 +190,7 @@ public class BulkPrintHandlerTest {
     @Test
     public void notifyPaperDefenceLetter() {
         //given
-        BulkPrintHandler bulkPrintHandler = new BulkPrintHandler(bulkPrintService);
+        BulkPrintHandler bulkPrintHandler = new BulkPrintHandler(bulkPrintService, launchDarklyClient);
         Claim claim = SampleClaim.getDefault();
         Document letter = new Document("letter", new HashMap<>());
 
