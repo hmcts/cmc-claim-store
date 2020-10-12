@@ -101,7 +101,7 @@ public class PaymentsService {
             authorisation,
             paymentRequest,
             claimPayment.getReturnUrl(),
-            claimPayment.getReturnUrl().substring(0, claimPayment.getReturnUrl().indexOf("/claim"))+"/payment/update-card-payment"
+            claimPayment.getReturnUrl().substring(0, claimPayment.getReturnUrl().indexOf("/claim")) + "/payment/update-card-payment"
         );
         logger.info("Created payment for claim with external id {}: {}", claim.getExternalId(), payment);
 
