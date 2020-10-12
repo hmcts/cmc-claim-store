@@ -13,12 +13,12 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.reform.fees.client.FeesClient;
 import uk.gov.hmcts.reform.fees.client.model.FeeLookupResponseDto;
-import uk.gov.hmcts.reform.payments.client.CardPaymentRequest;
 import uk.gov.hmcts.reform.payments.client.PaymentsClient;
 import uk.gov.hmcts.reform.payments.client.models.FeeDto;
 import uk.gov.hmcts.reform.payments.client.models.LinkDto;
 import uk.gov.hmcts.reform.payments.client.models.LinksDto;
 import uk.gov.hmcts.reform.payments.client.models.PaymentDto;
+import uk.gov.hmcts.reform.payments.client.request.CardPaymentRequest;
 
 import java.math.BigDecimal;
 import java.net.URI;
@@ -37,6 +37,7 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SamplePayment.PAYMENT_RE
 public class PaymentsServiceTest {
     private static final String BEARER_TOKEN = "Bearer let me in";
     private static final String RETURN_URL = "http://returnUrl.test";
+    private static final String SERVICE_CALLBACK_URL = "http://serviceCallbackUrl.test";
     private static final String SERVICE = "CMC";
     private static final String SITE_ID = "siteId";
     private static final String CURRENCY = "currency";
@@ -81,7 +82,7 @@ public class PaymentsServiceTest {
 
     @Test
     public void shouldRetrieveAnExistingPayment() {
-        when(paymentsClient.retrievePayment(
+        when(paymentsClient.retrieveCardPayment(
             BEARER_TOKEN,
             PAYMENT_REFERENCE
         )).thenReturn(paymentDto);
@@ -108,7 +109,7 @@ public class PaymentsServiceTest {
             .dateCreated(PAYMENT_DATE)
             .links(LinksDto.builder().nextUrl(null).build())
             .build();
-        when(paymentsClient.retrievePayment(
+        when(paymentsClient.retrieveCardPayment(
             BEARER_TOKEN,
             PAYMENT_REFERENCE
         )).thenReturn(retrievedPayment);
@@ -137,7 +138,7 @@ public class PaymentsServiceTest {
                 LinkDto.builder().href(URI.create(NEXT_URL)).build())
                 .build())
             .build();
-        when(paymentsClient.retrievePayment(
+        when(paymentsClient.retrieveCardPayment(
             BEARER_TOKEN,
             PAYMENT_REFERENCE
         )).thenReturn(retrievedPayment);
@@ -188,9 +189,10 @@ public class PaymentsServiceTest {
                 .caseReference(claim.getExternalId())
                 .build();
 
-        when(paymentsClient.createPayment(
+        when(paymentsClient.createCardPayment(
             BEARER_TOKEN,
             expectedPaymentRequest,
+            RETURN_URL,
             RETURN_URL
         )).thenReturn(paymentDto);
 
@@ -213,7 +215,7 @@ public class PaymentsServiceTest {
                 LinkDto.builder().href(URI.create(NEXT_URL)).build())
                 .build())
             .build();
-        when(paymentsClient.retrievePayment(
+        when(paymentsClient.retrieveCardPayment(
             BEARER_TOKEN,
             PAYMENT_REFERENCE
         )).thenReturn(retrievedPayment);
@@ -247,7 +249,7 @@ public class PaymentsServiceTest {
                 LinkDto.builder().href(URI.create(NEXT_URL)).build())
                 .build())
             .build();
-        when(paymentsClient.retrievePayment(
+        when(paymentsClient.retrieveCardPayment(
             BEARER_TOKEN,
             PAYMENT_REFERENCE
         )).thenReturn(retrievedPayment);
@@ -281,9 +283,10 @@ public class PaymentsServiceTest {
 
     @Test(expected = IllegalStateException.class)
     public void shouldBubbleUpExceptionIfPaymentCreationFails() {
-        when(paymentsClient.createPayment(
+        when(paymentsClient.createCardPayment(
             eq(BEARER_TOKEN),
             any(CardPaymentRequest.class),
+            anyString(),
             anyString()))
             .thenThrow(IllegalStateException.class);
 

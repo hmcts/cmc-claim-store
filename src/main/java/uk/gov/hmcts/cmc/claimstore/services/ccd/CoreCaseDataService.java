@@ -1179,6 +1179,13 @@ public class CoreCaseDataService {
         }
     }
 
+    public Claim updateCardPaymentForClaim(String authorisation, Claim claim) {
+        CCDCase ccdCase = caseMapper.to(claim);
+
+        CaseDetails caseDetails = update(authorisation, ccdCase, CaseEvent.UPDATE_CLAIM);
+        return caseDetailsConverter.extractClaim(caseDetails);
+    }
+
     private Claim sendCaseEvent(String authorisation, CaseEvent caseEvent, Long caseId) {
         UserDetails userDetails = userService.getUserDetails(authorisation);
 

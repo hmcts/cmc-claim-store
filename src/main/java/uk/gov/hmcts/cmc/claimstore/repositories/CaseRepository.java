@@ -104,5 +104,9 @@ public interface CaseRepository {
         CaseEvent caseEvent,
         Claim claim);
 
+    Claim updateCardPaymentForClaim(
+        String authorisation,
+        Claim claim);
+
 }
 

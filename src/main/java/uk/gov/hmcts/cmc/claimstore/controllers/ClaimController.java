@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
+import uk.gov.hmcts.cmc.domain.models.PaymentUpdate;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantLinkStatus;
@@ -181,5 +182,14 @@ public class ClaimController {
         @Valid @NotNull @RequestBody ReviewOrder reviewOrder,
         @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation) {
         return claimService.saveReviewOrder(externalId, reviewOrder, authorisation);
+    }
+
+    @PostMapping(value = "/update-card-payment", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Update a Card payment")
+    public CreatePaymentResponse updatePayment(
+        @Valid @NotNull @RequestBody PaymentUpdate paymentUpdate,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
+    ) {
+        return claimService.updateCardPayment(authorisation, paymentUpdate);
     }
 }
