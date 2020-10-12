@@ -76,8 +76,7 @@ public class PaymentsServiceTest {
             DESCRIPTION
         );
         claim = SampleClaim.getDefault();
-        when(feesClient.lookupFee(eq("online"), eq("issue"), any(BigDecimal.class)))
-            .thenReturn(feeOutcome);
+
     }
 
     @Test
@@ -167,44 +166,6 @@ public class PaymentsServiceTest {
     }
 
     @Test
-    public void shouldMakePaymentAndSetThePaymentAmount() {
-        FeeDto[] fees = new FeeDto[]{
-            FeeDto.builder()
-                .ccdCaseNumber(String.valueOf(claim.getCcdCaseId()))
-                .calculatedAmount(feeOutcome.getFeeAmount())
-                .code(feeOutcome.getCode())
-                .version(String.valueOf(feeOutcome.getVersion()))
-                .build()
-        };
-
-        CardPaymentRequest expectedPaymentRequest =
-            CardPaymentRequest.builder()
-                .siteId(SITE_ID)
-                .description(DESCRIPTION)
-                .currency(CURRENCY)
-                .service(SERVICE)
-                .fees(fees)
-                .amount(feeOutcome.getFeeAmount())
-                .ccdCaseNumber(String.valueOf(claim.getCcdCaseId()))
-                .caseReference(claim.getExternalId())
-                .build();
-
-        when(paymentsClient.createCardPayment(
-            BEARER_TOKEN,
-            expectedPaymentRequest,
-            RETURN_URL,
-            RETURN_URL
-        )).thenReturn(paymentDto);
-
-        paymentsService.createPayment(
-            BEARER_TOKEN,
-            claim
-        );
-
-        verify(paymentDto).setAmount(BigDecimal.TEN);
-    }
-
-    @Test
     public void shouldRetrieveAnExistingPaymentWithTransactionId() {
         String externalReference = "External Reference";
         PaymentDto retrievedPayment = PaymentDto.builder()
@@ -273,21 +234,6 @@ public class PaymentsServiceTest {
     @Test(expected = IllegalStateException.class)
     public void shouldBubbleUpExceptionIfFeeLookupFails() {
         when(feesClient.lookupFee(eq("online"), eq("issue"), any(BigDecimal.class)))
-            .thenThrow(IllegalStateException.class);
-
-        paymentsService.createPayment(
-            BEARER_TOKEN,
-            claim
-        );
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void shouldBubbleUpExceptionIfPaymentCreationFails() {
-        when(paymentsClient.createCardPayment(
-            eq(BEARER_TOKEN),
-            any(CardPaymentRequest.class),
-            anyString(),
-            anyString()))
             .thenThrow(IllegalStateException.class);
 
         paymentsService.createPayment(
