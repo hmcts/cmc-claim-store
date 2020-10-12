@@ -10,6 +10,8 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplate
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildJudgeDirectionOrderFileName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildLADirectionOrderFileName;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_JUDGE_DIRECTIONS;
 
 @Component
@@ -39,22 +41,24 @@ public class OrderRenderer {
         return claimState == READY_FOR_JUDGE_DIRECTIONS  ? renderJudgeOrder(ccdCase, authorisation)
             : renderLegalAdvisorOrder(ccdCase, authorisation);
     }
-    
-    private DocAssemblyResponse renderOrder(CCDCase ccdCase, String authorisation, String templateId) {
+
+    private DocAssemblyResponse renderOrder(CCDCase ccdCase, String authorisation, String templateId,  String file) {
         UserDetails userDetails = userService.getUserDetails(authorisation);
 
         return docAssemblyService.renderTemplate(ccdCase,
             authorisation,
             templateId,
-            docAssemblyTemplateBodyMapper.from(ccdCase, userDetails));
+            docAssemblyTemplateBodyMapper.from(ccdCase, userDetails), file);
     }
 
     public DocAssemblyResponse renderLegalAdvisorOrder(CCDCase ccdCase, String authorisation) {
-        return renderOrder(ccdCase, authorisation, legalAdvisorTemplateId);
+        final String caseRef = ccdCase.getPreviousServiceCaseReference();
+        return renderOrder(ccdCase, authorisation, legalAdvisorTemplateId, buildLADirectionOrderFileName(caseRef));
     }
 
     public DocAssemblyResponse renderJudgeOrder(CCDCase ccdCase, String authorisation) {
-        return renderOrder(ccdCase, authorisation, judgeTemplateId);
+        final String caseReference = ccdCase.getPreviousServiceCaseReference();
+        return renderOrder(ccdCase, authorisation, judgeTemplateId, buildJudgeDirectionOrderFileName(caseReference));
     }
 
 }
