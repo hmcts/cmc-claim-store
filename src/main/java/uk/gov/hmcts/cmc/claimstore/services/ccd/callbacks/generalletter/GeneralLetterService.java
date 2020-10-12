@@ -121,8 +121,7 @@ public class GeneralLetterService {
     ) {
 
         List<CCDCollectionElement<CCDClaimDocument>> updatedCaseDocuments =
-            updateCaseDocumentsWithGeneralLetter(
-                ccdCase, document, documentName, authorization);
+            updateCaseDocumentsWithGeneralLetter(ccdCase, document, documentName, authorization);
 
         return ccdCase.toBuilder()
             .caseDocuments(updatedCaseDocuments)
