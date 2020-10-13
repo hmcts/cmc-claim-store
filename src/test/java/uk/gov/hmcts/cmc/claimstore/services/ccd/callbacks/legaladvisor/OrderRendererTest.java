@@ -43,7 +43,7 @@ class OrderRendererTest {
     void setUp() {
         UserDetails userDetails = UserDetails.builder().build();
         when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetails);
-        ccdCase = CCDCase.builder().build();
+        ccdCase = CCDCase.builder().previousServiceCaseReference("OCMC00001").build();
         docAssemblyTemplateBody = DocAssemblyTemplateBody.builder().build();
         orderRenderer = new OrderRenderer(docAssemblyService,
             userService,
@@ -61,7 +61,7 @@ class OrderRendererTest {
         orderRenderer.renderLegalAdvisorOrder(ccdCase, AUTHORISATION);
 
         verify(docAssemblyService).renderTemplate(ccdCase, AUTHORISATION, LEGAL_ADVISOR_TEMPLATE_ID,
-            docAssemblyTemplateBody);
+            docAssemblyTemplateBody, "OCMC00001-Legal-Adviser-Directions-Order");
     }
 
     @Test
@@ -71,7 +71,8 @@ class OrderRendererTest {
 
         orderRenderer.renderJudgeOrder(ccdCase, AUTHORISATION);
 
-        verify(docAssemblyService).renderTemplate(ccdCase, AUTHORISATION, JUDGE_TEMPLATE_ID, docAssemblyTemplateBody);
+        verify(docAssemblyService).renderTemplate(ccdCase, AUTHORISATION, JUDGE_TEMPLATE_ID, docAssemblyTemplateBody,
+            "OCMC00001-Judge-Directions-Order");
     }
 
     @Test
@@ -79,11 +80,13 @@ class OrderRendererTest {
         when(docAssemblyTemplateBodyMapper.from(any(CCDCase.class), any(UserDetails.class))).thenReturn(
             docAssemblyTemplateBody);
 
-        ccdCase = CCDCase.builder().state(ClaimState.READY_FOR_JUDGE_DIRECTIONS.getValue()).build();
+        ccdCase = CCDCase.builder().state(ClaimState.READY_FOR_JUDGE_DIRECTIONS.getValue())
+            .previousServiceCaseReference("OCMC00001").build();
 
         orderRenderer.renderOrder(ccdCase, AUTHORISATION);
 
-        verify(docAssemblyService).renderTemplate(ccdCase, AUTHORISATION, JUDGE_TEMPLATE_ID, docAssemblyTemplateBody);
+        verify(docAssemblyService).renderTemplate(ccdCase, AUTHORISATION, JUDGE_TEMPLATE_ID, docAssemblyTemplateBody,
+            "OCMC00001-Judge-Directions-Order");
     }
 
     @Test
@@ -91,12 +94,12 @@ class OrderRendererTest {
         when(docAssemblyTemplateBodyMapper.from(any(CCDCase.class), any(UserDetails.class))).thenReturn(
             docAssemblyTemplateBody);
 
-        ccdCase = CCDCase.builder().state(ClaimState.OPEN.getValue()).build();
+        ccdCase = CCDCase.builder().state(ClaimState.OPEN.getValue()).previousServiceCaseReference("OCMC00001").build();
 
         orderRenderer.renderOrder(ccdCase, AUTHORISATION);
 
         verify(docAssemblyService).renderTemplate(ccdCase, AUTHORISATION, LEGAL_ADVISOR_TEMPLATE_ID,
-            docAssemblyTemplateBody);
+            docAssemblyTemplateBody, "OCMC00001-Legal-Adviser-Directions-Order");
     }
 
     @Test

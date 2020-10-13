@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.Printable;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintablePdf;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintableTemplate;
 import uk.gov.hmcts.cmc.claimstore.events.BulkPrintTransferEvent;
@@ -24,14 +25,15 @@ import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.BULK_PR
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.DIRECTION_ORDER_LETTER_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.GENERAL_LETTER_TYPE;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildOconFormFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildPaperDefenceCoverLetterFileBaseName;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BulkPrintHandlerTest {
 
+    private static final String AUTHORISATION = "Bearer: let me in";
     @Mock
     private BulkPrintService bulkPrintService;
-
-    private static final String AUTHORISATION = "Bearer: let me in";
 
     @Test
     public void notifyStaffForDefendantLetters() {
@@ -145,5 +147,31 @@ public class BulkPrintHandlerTest {
             ),
             BULK_PRINT_TRANSFER_TYPE,
             AUTHORISATION);
+    }
+
+    @Test
+    public void notifyPaperDefenceLetter() {
+        //given
+        BulkPrintHandler bulkPrintHandler = new BulkPrintHandler(bulkPrintService);
+        Claim claim = SampleClaim.getDefault();
+        Document letter = new Document("letter", new HashMap<>());
+
+        //when
+        bulkPrintHandler.printPaperDefence(claim, letter, letter, AUTHORISATION);
+
+        //verify
+        verify(bulkPrintService).printPdf(
+            claim,
+            ImmutableList.<Printable>builder()
+                .add(new PrintablePdf(
+                    letter,
+                    buildPaperDefenceCoverLetterFileBaseName(claim.getReferenceNumber())))
+                .add(new PrintablePdf(
+                    letter,
+                    buildOconFormFileBaseName(claim.getReferenceNumber())))
+                .build(),
+            GENERAL_LETTER_TYPE,
+            AUTHORISATION
+        );
     }
 }

@@ -497,14 +497,14 @@ public class GenerateOrderCallbackHandlerTest {
                 void shouldUseSavedOtherDirectionsWhenExistingCcdCase() {
                     List<CCDCollectionElement<CCDOrderDirection>> otherDirections = ImmutableList.of(
                         CCDOrderDirection.builder()
-                            .sendBy(LocalDate.parse("2020-10-11"))
+                            .sendBy(LocalDate.now().plusDays(10))
                             .directionComment("a direction")
                             .extraOrderDirection(OTHER)
                             .otherDirectionHeaders(UPLOAD)
                             .forParty(BOTH)
                             .build(),
                         CCDOrderDirection.builder()
-                            .sendBy(LocalDate.parse("2020-10-11"))
+                            .sendBy(LocalDate.now().plusDays(10))
                             .extraOrderDirection(EXPERT_REPORT_PERMISSION)
                             .forParty(BOTH)
                             .build()
@@ -551,9 +551,9 @@ public class GenerateOrderCallbackHandlerTest {
 
                     assertThat(response.getData()).contains(
                         entry("preferredDQCourt", DEFENDANT_PREFERRED_COURT),
-                        entry("newRequestedCourt", null),
-                        entry("preferredCourtObjectingParty", null),
-                        entry("preferredCourtObjectingReason", null)
+                        entry("newRequestedCourt", "Court not objected"),
+                        entry("preferredCourtObjectingParty", "None"),
+                        entry("preferredCourtObjectingReason", "Court not objected")
                     );
                 }
 

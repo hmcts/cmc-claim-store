@@ -77,10 +77,13 @@ public class OrderCreator {
     private static final String EXPERT_REPORT_INSTRUCTION = "expertReportInstruction";
     private static final String OTHER_DIRECTIONS = "otherDirections";
     private static final String ESTIMATED_HEARING_DURATION = "estimatedHearingDuration";
+
     public static final String DIRECTION_TYPE_BESPOKE = "BESPOKE";
     public static final String DIRECTION_TYPE_STANDARD = "STANDARD";
     public static final String DIRECTION_ORDER_TYPE = "directionOrderType";
     public static final String BESPOKE_DIRECTION_LIST = "bespokeDirectionList";
+
+    private static final String COURT_NOT_OBJECTED = "Court not objected";
 
     private final LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator;
     private final CaseDetailsConverter caseDetailsConverter;
@@ -221,9 +224,12 @@ public class OrderCreator {
         logger.info("Order creator: creating order document");
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
+        List<String> validations = new ArrayList<>();
 
-        List<String> validations = generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase,
-            hasExpertsAtCaseLevel(callbackParams));
+        generateOrderRule.validateDate(ccdCase, validations);
+
+        generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase,
+            hasExpertsAtCaseLevel(callbackParams), validations);
         if (!validations.isEmpty()) {
             return AboutToStartOrSubmitCallbackResponse.builder().errors(validations).build();
         }
@@ -266,6 +272,12 @@ public class OrderCreator {
             newRequestedCourt = defendantDQ.getHearingLocation();
             preferredCourtObjectingParty = CCDResponseSubjectType.RES_DEFENDANT.getValue();
             preferredCourtObjectingReason = defendantDQ.getExceptionalCircumstancesReason();
+        }
+
+        if (StringUtils.isBlank(preferredCourtObjectingReason)) {
+            newRequestedCourt = COURT_NOT_OBJECTED;
+            preferredCourtObjectingParty = CCDResponseSubjectType.NONE.getValue();
+            preferredCourtObjectingReason = COURT_NOT_OBJECTED;
         }
 
         data.put(NEW_REQUESTED_COURT, newRequestedCourt);
@@ -357,4 +369,5 @@ public class OrderCreator {
     private boolean hasDynamicCourts(CallbackParams callbackParams) {
         return getPilot(callbackParams) != Pilot.LA || callbackParams.getVersion() == CallbackVersion.V_2;
     }
+
 }

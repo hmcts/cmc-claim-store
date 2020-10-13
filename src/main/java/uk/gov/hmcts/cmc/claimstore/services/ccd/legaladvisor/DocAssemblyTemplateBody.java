@@ -21,7 +21,7 @@ import java.util.List;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.TemplateConstants.HMCTS_URL;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Builder
+@Builder(toBuilder = true)
 @Value
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DocAssemblyTemplateBody implements FormPayload {
@@ -133,4 +133,11 @@ public class DocAssemblyTemplateBody implements FormPayload {
     private String reasonForTransfer;
     private boolean orderDrawnByJudge;
     private boolean orderDrawnByLA;
+
+    private String preferredCourt;
+    private String claimAmount;
+    private String soleTradingTraderName;
+    private String organisationName;
+    private boolean moreTimeRequested;
+
 }
