@@ -24,7 +24,19 @@ import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.rules.PaidInFullRule;
 import uk.gov.hmcts.cmc.claimstore.rules.ReviewOrderRule;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
-import uk.gov.hmcts.cmc.domain.models.*;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
+import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
+import uk.gov.hmcts.cmc.domain.models.PaidInFull;
+import uk.gov.hmcts.cmc.domain.models.Payment;
+import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
+import uk.gov.hmcts.cmc.domain.models.PaymentUpdate;
+import uk.gov.hmcts.cmc.domain.models.ReDetermination;
+import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
@@ -665,13 +677,10 @@ public class ClaimServiceTest {
 
     @Test
     public void updateCardPayment() {
-
-
         Payment payments = Payment.builder()
             .amount(new BigDecimal(200))
             .status(PaymentStatus.PENDING)
             .build();
-
         ClaimData claimData = ClaimData.builder()
             .payment(payments)
             .build();
@@ -679,12 +688,8 @@ public class ClaimServiceTest {
         Claim claim1 = Claim.builder()
             .claimData(claimData)
             .build();
-
-        when(caseRepository.getByClaimReferenceNumber(paymentUpdate.getCcdCaseNumber(), AUTHORISATION)).thenReturn(Optional.of(claim1));
-
-
-
-
+        when(caseRepository.getByClaimReferenceNumber(paymentUpdate.getCcdCaseNumber(), AUTHORISATION))
+            .thenReturn(Optional.of(claim1));
         claimService.updateCardPayment(AUTHORISATION, paymentUpdate);
     }
 
