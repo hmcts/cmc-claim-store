@@ -37,6 +37,7 @@ public class PaymentControllerTest {
 
     private PaymentController paymentController;
 
+    @Mock
     private AuthTokenValidator authTokenValidator;
 
     @Mock
@@ -69,7 +70,7 @@ public class PaymentControllerTest {
     }
 
     @Test
-    public void shouldSaveClaimInRepository() {
+    public void updateCardPayment() {
         when(authTokenValidator.getServiceName(AUTHORISATION)).thenReturn("fees_and_payments");
         when(claimService.updateCardPayment(AUTHORISATION, paymentUpdate)).thenReturn(claim);
 
