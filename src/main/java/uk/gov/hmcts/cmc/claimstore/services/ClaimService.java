@@ -451,7 +451,7 @@ public class ClaimService {
     @LogExecutionTime
     public Claim updateCardPayment(String authorisation, PaymentUpdate paymentUpdate) {
 
-       if (paymentUpdate.getStatus().equalsIgnoreCase(SUCCESS.name())) {
+        if (paymentUpdate.getStatus().equalsIgnoreCase(SUCCESS.name())) {
             Optional<Claim> claimRetreived = caseRepository.getByClaimReferenceNumber(
                 paymentUpdate.getCcdCaseNumber(), authorisation);
             claimRetreived.ifPresent(claim -> {

@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
+import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.PaymentUpdate;
-import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 
 import javax.validation.Valid;
@@ -43,7 +43,7 @@ public class PaymentController {
     ) {
         String serviceName = authTokenValidator.getServiceName(serviceToken);
         if (!"fees_and_payments".contains(serviceName)) {
-
+            throw new BadRequestException("Invalid Service Token");
         }
         claimService.updateCardPayment(serviceToken, paymentUpdate);
     }
