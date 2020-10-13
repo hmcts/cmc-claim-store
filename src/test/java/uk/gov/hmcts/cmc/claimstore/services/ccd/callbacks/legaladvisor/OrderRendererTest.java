@@ -129,11 +129,13 @@ class OrderRendererTest {
             docAssemblyTemplateBody);
 
         ccdCase = CCDCase.builder().directionOrderType(DIRECTION_TYPE_INVALID)
-            .state(ClaimState.READY_FOR_JUDGE_DIRECTIONS.getValue()).build();
+            .state(ClaimState.READY_FOR_JUDGE_DIRECTIONS.getValue())
+            .previousServiceCaseReference("000MC001").build();
 
         orderRenderer.renderOrder(ccdCase, AUTHORISATION);
 
-        verify(docAssemblyService).renderTemplate(ccdCase, AUTHORISATION, JUDGE_TEMPLATE_ID, docAssemblyTemplateBody);
+        verify(docAssemblyService).renderTemplate(ccdCase, AUTHORISATION, JUDGE_TEMPLATE_ID, docAssemblyTemplateBody,
+            "000MC001-Judge-Directions-Order");
     }
 
 }
