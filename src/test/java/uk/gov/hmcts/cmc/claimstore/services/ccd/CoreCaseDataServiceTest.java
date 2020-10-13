@@ -701,4 +701,17 @@ public class CoreCaseDataServiceTest {
 
         assertEquals(providedClaim, returnedClaim);
     }
+
+    @Test
+    public void updateupdateCardPaymentForClaim() {
+
+        Claim claim = SampleClaim.getDefault();
+        Claim expectedClaim = SampleClaim.getDefault();
+        when(caseMapper.to(claim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
+        when(caseDetailsConverter.extractClaim(any())).thenReturn(expectedClaim);
+
+        Claim updatedClaim = service.updateCardPaymentForClaim(AUTHORISATION, claim);
+
+        assertNotNull(updatedClaim);
+    }
 }

@@ -24,18 +24,7 @@ import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.rules.PaidInFullRule;
 import uk.gov.hmcts.cmc.claimstore.rules.ReviewOrderRule;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
-import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimData;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
-import uk.gov.hmcts.cmc.domain.models.ClaimState;
-import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
-import uk.gov.hmcts.cmc.domain.models.PaidInFull;
-import uk.gov.hmcts.cmc.domain.models.Payment;
-import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
-import uk.gov.hmcts.cmc.domain.models.ReDetermination;
-import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.*;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
@@ -109,6 +98,7 @@ public class ClaimServiceTest {
 
     private static final User UNAUTHORISED_USER = new User(AUTHORISATION, UNAUTHORISED_USER_DETAILS);
     private static final User USER = new User(AUTHORISATION, VALID_CLAIMANT);
+    private PaymentUpdate paymentUpdate = null;
 
     private ClaimService claimService;
 
@@ -143,6 +133,14 @@ public class ClaimServiceTest {
             new PaidInFullRule(),
             new ClaimAuthorisationRule(userService),
             new ReviewOrderRule());
+
+        paymentUpdate = PaymentUpdate.builder()
+            .amount(new BigDecimal(200))
+            .status(PaymentStatus.SUCCESS.name())
+            .reference("Ref")
+            .ccdCaseNumber("CCD-111")
+            .feeId("111")
+            .build();
     }
 
     @Test
@@ -663,6 +661,31 @@ public class ClaimServiceTest {
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any())).thenReturn(empty());
 
         claimService.saveReviewOrder(EXTERNAL_ID, SampleReviewOrder.getDefault(), AUTHORISATION);
+    }
+
+    @Test
+    public void updateCardPayment() {
+
+
+        Payment payments = Payment.builder()
+            .amount(new BigDecimal(200))
+            .status(PaymentStatus.PENDING)
+            .build();
+
+        ClaimData claimData = ClaimData.builder()
+            .payment(payments)
+            .build();
+
+        Claim claim1 = Claim.builder()
+            .claimData(claimData)
+            .build();
+
+        when(caseRepository.getByClaimReferenceNumber(paymentUpdate.getCcdCaseNumber(), AUTHORISATION)).thenReturn(Optional.of(claim1));
+
+
+
+
+        claimService.updateCardPayment(AUTHORISATION, paymentUpdate);
     }
 
     private static Claim createRepresentedClaimModel(ClaimData claimData) {

@@ -38,6 +38,8 @@ public class PaymentUpdate {
     private final String feeCode;
     private final String feeCalculatedAmount;
 
+    @SuppressWarnings("squid:S00107")
+    @Builder(toBuilder = true)
     public PaymentUpdate(String id,
                          BigDecimal amount,
                          BigDecimal description,

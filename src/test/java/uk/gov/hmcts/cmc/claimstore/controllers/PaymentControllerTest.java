@@ -1,0 +1,81 @@
+package uk.gov.hmcts.cmc.claimstore.controllers;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
+import uk.gov.hmcts.cmc.domain.models.PaymentUpdate;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.CLAIM;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.*;
+import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.ISSUE_DATE;
+import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.NOW_IN_LOCAL_ZONE;
+
+@RunWith(MockitoJUnitRunner.class)
+public class PaymentControllerTest {
+
+    private static final String AUTHORISATION = "Bearer: aaa";
+    private static final List<String> FEATURES = singletonList(ADMISSIONS.getValue());
+
+    private PaymentController paymentController;
+
+    private AuthTokenValidator authTokenValidator;
+
+    @Mock
+    private ClaimService claimService;
+
+    private PaymentUpdate paymentUpdate = null;
+
+    private static final Claim claim = SampleClaim.builder()
+        .withClaimId(CLAIM_ID)
+        .withSubmitterId(USER_ID)
+        .withLetterHolderId(LETTER_HOLDER_ID)
+        .withDefendantId(DEFENDANT_ID)
+        .withExternalId(EXTERNAL_ID)
+        .withReferenceNumber(SampleClaim.REFERENCE_NUMBER)
+        .withCreatedAt(NOW_IN_LOCAL_ZONE)
+        .withIssuedOn(ISSUE_DATE)
+        .withSubmitterEmail(SUBMITTER_EMAIL)
+        .build();
+
+    @Before
+    public void setup() {
+        paymentUpdate = PaymentUpdate.builder()
+            .amount(new BigDecimal(200))
+            .status(PaymentStatus.SUCCESS.name())
+            .reference("Ref")
+            .ccdCaseNumber("CCD-111")
+            .feeId("111")
+            .build();
+        paymentController = new PaymentController(claimService, authTokenValidator);
+    }
+
+    @Test
+    public void shouldSaveClaimInRepository() {
+        when(authTokenValidator.getServiceName(AUTHORISATION)).thenReturn("fees_and_payments");
+        when(claimService.updateCardPayment(AUTHORISATION, paymentUpdate)).thenReturn(claim);
+
+        paymentController.updateCardPayment(paymentUpdate, AUTHORISATION);
+
+        //then
+        Assert.assertNotNull(claim);
+    }
+}

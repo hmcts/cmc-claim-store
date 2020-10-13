@@ -37,14 +37,14 @@ public class PaymentController {
 
     @PostMapping(value = "/update-card-payment", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Update a Card payment")
-    public CreatePaymentResponse updateCardPayment(
+    public void updateCardPayment(
         @Valid @NotNull @RequestBody PaymentUpdate paymentUpdate,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String serviceToken
     ) {
         String serviceName = authTokenValidator.getServiceName(serviceToken);
         if (!"fees_and_payments".contains(serviceName)) {
-            return null;
+
         }
-        return claimService.updateCardPayment(serviceToken, paymentUpdate);
+        claimService.updateCardPayment(serviceToken, paymentUpdate);
     }
 }
