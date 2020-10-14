@@ -163,8 +163,9 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
     }
 
     private String getEmailAddress(CCDCollectionElement<CCDRespondent> r) {
-        return !StringUtils.isBlank(r.getValue().getPartyDetail().getEmailAddress())
-            ? r.getValue().getPartyDetail().getEmailAddress()
+        var partyDetail = r.getValue().getPartyDetail();
+        return partyDetail != null && !StringUtils.isBlank(partyDetail.getEmailAddress())
+            ? partyDetail.getEmailAddress()
             : r.getValue().getClaimantProvidedDetail().getEmailAddress();
     }
 
