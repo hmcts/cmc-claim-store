@@ -14,8 +14,10 @@ import uk.gov.hmcts.cmc.domain.models.Claim.ClaimBuilder;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.ScannedDocument;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse.AboutToStartOrSubmitCallbackResponseBuilder;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 
 import java.time.LocalDate;
@@ -44,7 +46,9 @@ class PaperResponseReviewedHandler {
 
     private static final List<String> PAPER_RESPONSE_SCANNED_TYPES = List.of("N9a", "N9b", "N11", "N225", "N180");
 
-    private static final List<String> DOC_TYPE_TO_MAIL = List.of("N9", "N9A", "N9B", "N11");
+    private static final List<String> RESPONSE_FORMS = List.of("N9", "N9a", "N9b", "N11");
+
+    private static final List<String> NON_RESPONSE_FORMS = List.of("N180", "N225", "EX160", "N244", "N245", "Non prescribed documents");
 
     private static final Predicate<ClaimDocument> isPaperResponseClaimDoc = doc ->
         PAPER_RESPONSE_STAFF_UPLOADED_TYPES.stream().anyMatch(isEqual(doc.getDocumentType()));
@@ -95,6 +99,9 @@ class PaperResponseReviewedHandler {
     }
 
     AboutToStartOrSubmitCallbackResponse handle() {
+
+        String claimState = null;
+
         if (hasRequestedMoreTimeRepeatedly()) {
             errors.add("Requesting More Time to respond can be done only once.");
         }
@@ -106,21 +113,47 @@ class PaperResponseReviewedHandler {
         getResponseTimeFromPaperResponse(claimAfterEvent.get())
             .ifPresent(responseClaim::respondedAt);
 
-        if (errors.isEmpty() && mailToBeSent()) {
+        AboutToStartOrSubmitCallbackResponseBuilder response = AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetailsConverter.convertToMap(caseMapper.to(responseClaim.build())));
+
+        if (! errors.isEmpty()) {
+            return response.errors(errors).build();
+        }
+
+        final Optional<ScannedDocument> scannedDocument = getScannedDocument();
+        if (scannedDocument.isPresent()) {
+            response = response.state(ClaimState.BUSINESS_QUEUE.getValue());
+            if (RESPONSE_FORMS.contains(scannedDocument.get().getSubtype())) {
+                notifyClaimantForResponseFormRecieved(responseClaim.build());
+            } else if (NON_RESPONSE_FORMS.contains(scannedDocument.get().getSubtype())) {
+                notifyClaimantForNonResponseFormRecieved(responseClaim.build());
+            }
+        } else {
             notifyClaimant(responseClaim.build());
         }
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .errors(errors)
-            .data(caseDetailsConverter.convertToMap(caseMapper.to(responseClaim.build())))
-            .build();
+        return response.build();
+    }
+
+    private void notifyClaimantForNonResponseFormRecieved(Claim claim) {
+
+    }
+
+    private void notifyClaimantForResponseFormRecieved(Claim claim) {
+
     }
 
     private boolean mailToBeSent() {
         return getBulkScannedDocuments(claimAfterEvent.get())
             .filter(doc -> getBulkScannedDocuments(claimBeforeEvent.get()).noneMatch(isEqual(doc)))
-            .anyMatch(doc -> isBlank(doc.getSubtype()) || DOC_TYPE_TO_MAIL.contains(doc.getSubtype().toUpperCase()));
+            .anyMatch(doc -> isBlank(doc.getSubtype()) || RESPONSE_FORMS.contains(doc.getSubtype()));
     }
+
+    private Optional<ScannedDocument> getScannedDocument() {
+        return getBulkScannedDocuments(claimAfterEvent.get())
+            .filter(doc -> getBulkScannedDocuments(claimBeforeEvent.get()).noneMatch(isEqual(doc))).findFirst();
+    }
+
 
     private Claim toClaimAfterEvent(CallbackRequest callbackRequest) {
         return caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
