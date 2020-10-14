@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.PaymentUpdate;
+import uk.gov.hmcts.cmc.domain.models.paymentresponse.UpdatePaymentResponse;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 
 import javax.validation.Valid;
@@ -37,7 +39,7 @@ public class PaymentController {
 
     @PostMapping(value = "/update-card-payment", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Update a Card payment")
-    public void updateCardPayment(
+    public ResponseEntity<UpdatePaymentResponse> updateCardPayment(
         @Valid @NotNull @RequestBody PaymentUpdate paymentUpdate,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String serviceToken
     ) {
@@ -46,5 +48,6 @@ public class PaymentController {
             throw new BadRequestException("Invalid Service Token");
         }
         claimService.updateCardPayment(serviceToken, paymentUpdate);
+        return ResponseEntity.ok().build();
     }
 }
