@@ -119,7 +119,9 @@ class PaperResponseReviewedHandler {
     private boolean mailToBeSent() {
         return getBulkScannedDocuments(claimAfterEvent.get())
             .filter(doc -> getBulkScannedDocuments(claimBeforeEvent.get()).noneMatch(isEqual(doc)))
-            .anyMatch(doc -> isBlank(doc.getSubtype()) || DOC_TYPE_TO_MAIL.contains(doc.getSubtype().toUpperCase()));
+            .anyMatch(doc -> isBlank(doc.getSubtype()) || DOC_TYPE_TO_MAIL.contains(doc.getSubtype().toUpperCase()))
+            || getStaffUploadedDocuments(claimAfterEvent.get())
+            .filter(doc -> getStaffUploadedDocuments(claimBeforeEvent.get()).noneMatch(isEqual(doc))).count() > 0;
     }
 
     private Claim toClaimAfterEvent(CallbackRequest callbackRequest) {

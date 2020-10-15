@@ -44,6 +44,9 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocument.builder;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.PAPER_RESPONSE_PART_ADMIT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.PAPER_RESPONSE_STATES_PAID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.SUBMITTER_EMAIL;
 
@@ -163,11 +166,11 @@ class PaperResponseReviewedCallbackHandlerTest {
         @DisplayName("fails when duplicate more time request comes through")
         void failsWhenDuplicateMoreTimeRequestedComesThrough() {
             documentCollection.addStaffUploadedDocument(
-                ClaimDocument.builder().documentType(ClaimDocumentType.PAPER_RESPONSE_MORE_TIME).build());
+                builder().documentType(ClaimDocumentType.PAPER_RESPONSE_MORE_TIME).build());
 
             documentCollectionAfter.addScannedDocument(ScannedDocument.builder().subtype("N9").build());
             documentCollectionAfter.addStaffUploadedDocument(
-                ClaimDocument.builder().documentType(ClaimDocumentType.PAPER_RESPONSE_MORE_TIME).build());
+                builder().documentType(ClaimDocumentType.PAPER_RESPONSE_MORE_TIME).build());
 
             claim = SampleClaim.withFullClaimData().toBuilder()
                 .claimDocumentCollection(documentCollection)
@@ -202,7 +205,7 @@ class PaperResponseReviewedCallbackHandlerTest {
 
             documentCollectionAfter.addScannedDocument(ScannedDocument.builder().subtype("N9").build());
             documentCollectionAfter.addStaffUploadedDocument(
-                ClaimDocument.builder().documentType(ClaimDocumentType.PAPER_RESPONSE_MORE_TIME).build());
+                builder().documentType(ClaimDocumentType.PAPER_RESPONSE_MORE_TIME).build());
 
             claim = SampleClaim.withFullClaimData().toBuilder().claimDocumentCollection(documentCollection).build();
             Claim claimAfterEvent = SampleClaim.withFullClaimData().toBuilder()
@@ -244,18 +247,30 @@ class PaperResponseReviewedCallbackHandlerTest {
         }
 
         @Test
+        @DisplayName("email is sent on mediation agreement docuemnt upload by staff")
+        void verifyEmailIsSentWhenMediationAgreementIsUploaded() {
+            when(notificationsProperties.getFrontendBaseUrl()).thenReturn("http://frontend.url");
+            when(notificationsProperties.getTemplates()).thenReturn(notificationTemplates);
+            when(notificationTemplates.getEmail()).thenReturn(emailTemplates);
+            when(emailTemplates.getClaimantPaperResponseReceived()).thenReturn("TEMPLATE");
+
+            documentCollectionAfter.addStaffUploadedDocument(builder().documentType(PAPER_RESPONSE_PART_ADMIT).build());
+
+            verifyMoreTimeRequestedIsHandledByScannedDocumentUpload("N225", 1);
+        }
+
+        @Test
         @DisplayName("verify that email is not sent for documents other than N9, N9a, N911")
         void verifyMoreTimeRequestedIsHandledByScannedDocumentUploadAndEmailIsNotSentForN225Form() {
             verifyMoreTimeRequestedIsHandledByScannedDocumentUpload("N225", 0);
         }
 
         void verifyMoreTimeRequestedIsHandledByScannedDocumentUpload(String form, int timesEmailIsSent) {
-            documentCollection.addStaffUploadedDocument(
-                ClaimDocument.builder().documentType(ClaimDocumentType.PAPER_RESPONSE_STATES_PAID).build());
+            ClaimDocument staffUploadedDoc = builder().documentType(PAPER_RESPONSE_STATES_PAID).build();
+            documentCollection.addStaffUploadedDocument(staffUploadedDoc);
 
             documentCollectionAfter.addScannedDocument(ScannedDocument.builder().subtype(form).build());
-            documentCollectionAfter.addStaffUploadedDocument(
-                ClaimDocument.builder().documentType(ClaimDocumentType.PAPER_RESPONSE_STATES_PAID).build());
+            documentCollectionAfter.addStaffUploadedDocument(staffUploadedDoc);
 
             claim = SampleClaim.withFullClaimData().toBuilder().claimDocumentCollection(documentCollection).build();
             Claim claimAfterEvent = SampleClaim.withFullClaimData().toBuilder()
@@ -301,8 +316,8 @@ class PaperResponseReviewedCallbackHandlerTest {
             documentCollectionAfter.addScannedDocument(ScannedDocument.builder().id("N9").subtype("N9").build());
             final LocalDateTime docReceivedTime = LocalDateTime.now();
             documentCollectionAfter.addStaffUploadedDocument(
-                ClaimDocument.builder().id("SP")
-                    .documentType(ClaimDocumentType.PAPER_RESPONSE_STATES_PAID)
+                builder().id("SP")
+                    .documentType(PAPER_RESPONSE_STATES_PAID)
                     .receivedDateTime(docReceivedTime)
                     .build()
             );
@@ -332,7 +347,7 @@ class PaperResponseReviewedCallbackHandlerTest {
             assertThat(claimArgumentCaptor.getValue().getRespondedAt())
                 .isEqualTo(docReceivedTime);
 
-            verify(notificationService, times(0))
+            verify(notificationService)
                 .sendMail(
                     eq(SUBMITTER_EMAIL),
                     eq("TEMPLATE"),
