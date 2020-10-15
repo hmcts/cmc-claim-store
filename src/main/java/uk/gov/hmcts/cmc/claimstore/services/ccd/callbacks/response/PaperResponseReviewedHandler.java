@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.ScannedDocument;
+import uk.gov.hmcts.cmc.domain.models.ScannedDocumentType;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse.AboutToStartOrSubmitCallbackResponseBuilder;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
@@ -36,6 +37,9 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.DEFENDANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
 import static uk.gov.hmcts.cmc.claimstore.utils.Lazy.lazily;
+import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentType.COVERSHEET;
+import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentType.LETTER;
+import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentType.OTHER;
 
 class PaperResponseReviewedHandler {
     private static final List<ClaimDocumentType> PAPER_RESPONSE_STAFF_UPLOADED_TYPES = List.of(
@@ -44,15 +48,13 @@ class PaperResponseReviewedHandler {
         ClaimDocumentType.PAPER_RESPONSE_PART_ADMIT,
         ClaimDocumentType.PAPER_RESPONSE_STATES_PAID);
 
-    private static final String  COVERSHEET= "coversheet";
-
     private static final List<String> PAPER_RESPONSE_SCANNED_TYPES = List.of("N9a", "N9b", "N11", "N225", "N180");
 
     private static final List<String> responseForms = List.of("N9", "N9a", "N9b", "N11");
 
-    private static final List<String> nonResponseForms = List.of("N180", "N225", "EX160", "N244", "N245", "Non prescribed documents");
+    private static final List<String> nonResponseForms = List.of("N180", "N225", "EX160", "N244", "N245", "Non_prescribed_documents");
 
-    private static final List<String> otherDocumentTypes = List.of("letter", "other");
+    private static final List<ScannedDocumentType> otherDocumentTypes = List.of(LETTER, OTHER);
 
     private static final Predicate<ClaimDocument> isPaperResponseClaimDoc = doc ->
         PAPER_RESPONSE_STAFF_UPLOADED_TYPES.stream().anyMatch(isEqual(doc.getDocumentType()));
@@ -128,13 +130,14 @@ class PaperResponseReviewedHandler {
 
     private AboutToStartOrSubmitCallbackResponseBuilder email(AboutToStartOrSubmitCallbackResponseBuilder response) {
         final Optional<ScannedDocument> scannedDocument = getScannedDocument();
-        if (scannedDocument.isPresent() && ! COVERSHEET.equals(scannedDocument.get().getSubtype())) {
-            if (responseForms.contains(scannedDocument.get().getSubtype())) {
+        if (scannedDocument.isPresent() && ! COVERSHEET.equals(scannedDocument.get().getDocumentType())) {
+            String subType = scannedDocument.get().getSubtype();
+            if (subType != null && responseForms.contains(subType)) {
                 response = response.state(ClaimState.BUSINESS_QUEUE.getValue());
                 notifyClaimant(claim.build(), mailTemplates.getPaperResponseReceivedAndCaseTransferredToCCBC());
-            } else if (nonResponseForms.contains(scannedDocument.get().getSubtype())) {
+            } else if (subType != null && nonResponseForms.contains(subType)) {
                 notifyClaimant(claim.build(), mailTemplates.getPaperResponseReceivedAndCaseWillBeTransferredToCCBC());
-            } else if (otherDocumentTypes.contains(scannedDocument.get().getSubtype())) {
+            } else if (otherDocumentTypes.contains(scannedDocument.get().getDocumentType())) {
                 notifyClaimant(claim.build(), mailTemplates.getClaimantPaperResponseReceivedGeneralResponse());
             }
         } else {

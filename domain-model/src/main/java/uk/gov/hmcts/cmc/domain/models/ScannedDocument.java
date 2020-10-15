@@ -16,6 +16,7 @@ public class ScannedDocument extends CollectionId {
     private final ScannedDocumentType documentType;
     private final String controlNumber;
     private final String subtype;
+    private final String otherSubtype;
     private final LocalDateTime scannedDate;
     private final LocalDateTime deliveryDate;
     private final String exceptionRecordReference;
@@ -29,6 +30,7 @@ public class ScannedDocument extends CollectionId {
         ScannedDocumentType documentType,
         String controlNumber,
         String subtype,
+        String otherSubtype,
         LocalDateTime scannedDate,
         LocalDateTime deliveryDate,
         String exceptionRecordReference,
@@ -41,6 +43,7 @@ public class ScannedDocument extends CollectionId {
         this.controlNumber = controlNumber;
         this.exceptionRecordReference = exceptionRecordReference;
         this.subtype = subtype;
+        this.otherSubtype = otherSubtype;
         this.scannedDate = scannedDate;
         this.deliveryDate = deliveryDate;
         this.documentManagementUrl = documentManagementUrl;

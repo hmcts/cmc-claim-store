@@ -23,6 +23,7 @@ public class ScannedDocumentMapper {
             .fileName(scannedDocument.getFileName())
             .scannedDate(scannedDocument.getScannedDate())
             .subtype(scannedDocument.getSubtype())
+            .otherSubtype(scannedDocument.getOtherSubtype())
             .url(CCDDocument
                 .builder()
                 .documentUrl(scannedDocument.getDocumentManagementUrl().toString())
@@ -54,6 +55,7 @@ public class ScannedDocumentMapper {
             .scannedDate(ccdScannedDocument.getScannedDate())
             .deliveryDate(ccdScannedDocument.getDeliveryDate())
             .subtype(ccdScannedDocument.getSubtype())
+            .otherSubtype(ccdScannedDocument.getOtherSubtype())
             .exceptionRecordReference(ccdScannedDocument.getExceptionRecordReference())
             .controlNumber(ccdScannedDocument.getControlNumber())
             .build();
