@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.response;
 
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
@@ -30,7 +31,6 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static java.util.function.Predicate.isEqual;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.DEFENDANT_NAME;
@@ -44,11 +44,15 @@ class PaperResponseReviewedHandler {
         ClaimDocumentType.PAPER_RESPONSE_PART_ADMIT,
         ClaimDocumentType.PAPER_RESPONSE_STATES_PAID);
 
+    private static final String  COVERSHEET= "coversheet";
+
     private static final List<String> PAPER_RESPONSE_SCANNED_TYPES = List.of("N9a", "N9b", "N11", "N225", "N180");
 
-    private static final List<String> RESPONSE_FORMS = List.of("N9", "N9a", "N9b", "N11");
+    private static final List<String> responseForms = List.of("N9", "N9a", "N9b", "N11");
 
-    private static final List<String> NON_RESPONSE_FORMS = List.of("N180", "N225", "EX160", "N244", "N245", "Non prescribed documents");
+    private static final List<String> nonResponseForms = List.of("N180", "N225", "EX160", "N244", "N245", "Non prescribed documents");
+
+    private static final List<String> otherDocumentTypes = List.of("letter", "other");
 
     private static final Predicate<ClaimDocument> isPaperResponseClaimDoc = doc ->
         PAPER_RESPONSE_STAFF_UPLOADED_TYPES.stream().anyMatch(isEqual(doc.getDocumentType()));
@@ -68,12 +72,13 @@ class PaperResponseReviewedHandler {
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
     private final MoreTimeRequestRule moreTimeRequestRule;
     private final NotificationService notificationService;
-    private final NotificationsProperties notificationsProperties;
+    private final EmailTemplates mailTemplates;
+    private final String frontendBaseUrl;
 
     private final Lazy<Claim> claimBeforeEvent;
     private final Lazy<Claim> claimAfterEvent;
 
-    private final ClaimBuilder responseClaim;
+    private final ClaimBuilder claim;
     private final List<String> errors = new ArrayList<>();
 
     PaperResponseReviewedHandler(
@@ -90,18 +95,16 @@ class PaperResponseReviewedHandler {
         this.responseDeadlineCalculator = responseDeadlineCalculator;
         this.moreTimeRequestRule = moreTimeRequestRule;
         this.notificationService = notificationService;
-        this.notificationsProperties = notificationsProperties;
+        this.mailTemplates = notificationsProperties.getTemplates().getEmail();
+        this.frontendBaseUrl = notificationsProperties.getFrontendBaseUrl();
 
         CallbackRequest callbackRequest = callbackParams.getRequest();
         claimBeforeEvent = lazily(() -> toClaimBeforeEvent(callbackRequest));
         claimAfterEvent = lazily(() -> toClaimAfterEvent(callbackRequest));
-        responseClaim = claimAfterEvent.get().toBuilder();
+        claim = claimAfterEvent.get().toBuilder();
     }
 
     AboutToStartOrSubmitCallbackResponse handle() {
-
-        String claimState = null;
-
         if (hasRequestedMoreTimeRepeatedly()) {
             errors.add("Requesting More Time to respond can be done only once.");
         }
@@ -111,42 +114,33 @@ class PaperResponseReviewedHandler {
         }
 
         getResponseTimeFromPaperResponse(claimAfterEvent.get())
-            .ifPresent(responseClaim::respondedAt);
+            .ifPresent(claim::respondedAt);
 
         AboutToStartOrSubmitCallbackResponseBuilder response = AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetailsConverter.convertToMap(caseMapper.to(responseClaim.build())));
+            .data(caseDetailsConverter.convertToMap(caseMapper.to(claim.build())));
 
         if (! errors.isEmpty()) {
             return response.errors(errors).build();
         }
 
+        return email(response).build();
+    }
+
+    private AboutToStartOrSubmitCallbackResponseBuilder email(AboutToStartOrSubmitCallbackResponseBuilder response) {
         final Optional<ScannedDocument> scannedDocument = getScannedDocument();
-        if (scannedDocument.isPresent()) {
-            response = response.state(ClaimState.BUSINESS_QUEUE.getValue());
-            if (RESPONSE_FORMS.contains(scannedDocument.get().getSubtype())) {
-                notifyClaimantForResponseFormRecieved(responseClaim.build());
-            } else if (NON_RESPONSE_FORMS.contains(scannedDocument.get().getSubtype())) {
-                notifyClaimantForNonResponseFormRecieved(responseClaim.build());
+        if (scannedDocument.isPresent() && ! COVERSHEET.equals(scannedDocument.get().getSubtype())) {
+            if (responseForms.contains(scannedDocument.get().getSubtype())) {
+                response = response.state(ClaimState.BUSINESS_QUEUE.getValue());
+                notifyClaimant(claim.build(), mailTemplates.getPaperResponseReceivedAndCaseTransferredToCCBC());
+            } else if (nonResponseForms.contains(scannedDocument.get().getSubtype())) {
+                notifyClaimant(claim.build(), mailTemplates.getPaperResponseReceivedAndCaseWillBeTransferredToCCBC());
+            } else if (otherDocumentTypes.contains(scannedDocument.get().getSubtype())) {
+                notifyClaimant(claim.build(), mailTemplates.getClaimantPaperResponseReceivedGeneralResponse());
             }
         } else {
-            notifyClaimant(responseClaim.build());
+            notifyClaimant(claim.build(), mailTemplates.getClaimantPaperResponseReceived());
         }
-
-        return response.build();
-    }
-
-    private void notifyClaimantForNonResponseFormRecieved(Claim claim) {
-
-    }
-
-    private void notifyClaimantForResponseFormRecieved(Claim claim) {
-
-    }
-
-    private boolean mailToBeSent() {
-        return getBulkScannedDocuments(claimAfterEvent.get())
-            .filter(doc -> getBulkScannedDocuments(claimBeforeEvent.get()).noneMatch(isEqual(doc)))
-            .anyMatch(doc -> isBlank(doc.getSubtype()) || RESPONSE_FORMS.contains(doc.getSubtype()));
+        return response;
     }
 
     private Optional<ScannedDocument> getScannedDocument() {
@@ -168,7 +162,7 @@ class PaperResponseReviewedHandler {
         LocalDate deadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claimByEvent.getIssuedOn());
 
         errors.addAll(moreTimeRequestRule.validateMoreTimeCanBeRequested(claimByEvent, deadline));
-        responseClaim
+        claim
             .responseDeadline(deadline)
             .moreTimeRequested(true);
     }
@@ -188,10 +182,10 @@ class PaperResponseReviewedHandler {
         return uploaded || scanned;
     }
 
-    private void notifyClaimant(Claim claim) {
+    private void notifyClaimant(Claim claim, String templateId) {
         notificationService.sendMail(
             claim.getSubmitterEmail(),
-            notificationsProperties.getTemplates().getEmail().getClaimantPaperResponseReceived(),
+            templateId,
             aggregateParams(claim),
             PaperResponse.notifyClaimantPaperResponseSubmitted(claim.getReferenceNumber(), "claimant")
         );
@@ -201,7 +195,7 @@ class PaperResponseReviewedHandler {
         return Map.of(
             CLAIMANT_NAME, claim.getClaimData().getClaimant().getName(),
             DEFENDANT_NAME, claim.getClaimData().getDefendant().getName(),
-            FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl(),
+            FRONTEND_BASE_URL, frontendBaseUrl,
             CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
     }
 
