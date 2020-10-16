@@ -258,8 +258,8 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public Claim updateCardPaymentForClaim(String authorisation, Claim claim) {
-        return coreCaseDataService.updateCardPaymentForClaim(authorisation,
+    public Claim updateCardPaymentForClaim(User user, Claim claim) {
+        return coreCaseDataService.updateCardPaymentForClaim(user,
             claim);
     }
 }

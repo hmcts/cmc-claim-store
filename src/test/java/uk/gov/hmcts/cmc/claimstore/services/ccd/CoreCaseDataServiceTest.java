@@ -155,6 +155,36 @@ public class CoreCaseDataServiceTest {
                 .data(new HashMap<>())
                 .build());
 
+        when(coreCaseDataApi.startEventForCaseWorker(
+            eq(AUTHORISATION),
+            eq(AUTH_TOKEN),
+            eq(USER_DETAILS.getId()),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(SampleClaim.CLAIM_ID.toString()),
+            anyString()
+        ))
+            .thenReturn(StartEventResponse.builder()
+                .caseDetails(CaseDetails.builder().data(Maps.newHashMap()).build())
+                .eventId("eventId")
+                .token("token")
+                .build());
+
+        when(coreCaseDataApi.submitEventForCaseWorker(
+            eq(AUTHORISATION),
+            eq(AUTH_TOKEN),
+            eq(USER_DETAILS.getId()),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(SampleClaim.CLAIM_ID.toString()),
+            anyBoolean(),
+            any()
+        ))
+            .thenReturn(CaseDetails.builder()
+                .id(SampleClaim.CLAIM_ID)
+                .data(new HashMap<>())
+                .build());
+
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(CCDCase.builder().build());
 
         this.service = new CoreCaseDataService(
@@ -705,13 +735,20 @@ public class CoreCaseDataServiceTest {
     @Test
     public void updateupdateCardPaymentForClaim() {
 
-        Claim claim = SampleClaim.getDefault();
-        Claim expectedClaim = SampleClaim.getDefault();
-        when(caseMapper.to(claim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
-        when(caseDetailsConverter.extractClaim(any())).thenReturn(expectedClaim);
+        Claim providedClaim = SampleClaim.getDefault();
+        Claim expectedClaim = SampleClaim.claim(providedClaim.getClaimData(), "000MC001");
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+            .thenReturn(expectedClaim);
 
-        Claim updatedClaim = service.updateCardPaymentForClaim(AUTHORISATION, claim);
+        Claim returnedClaim = service.updateCardPaymentForClaim(USER, providedClaim);
 
-        assertNotNull(updatedClaim);
+        assertNotNull(returnedClaim);
+        verify(coreCaseDataApi, atLeastOnce()).startEventForCaseWorker(eq(AUTHORISATION),
+            eq(AUTH_TOKEN),
+            eq(USER_DETAILS.getId()),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(SampleClaim.CLAIM_ID.toString()),
+            anyString());
     }
 }

@@ -452,9 +452,9 @@ public class ClaimService {
     public Claim updateCardPayment(String authorisation, PaymentUpdate paymentUpdate) {
 
         if (paymentUpdate.getStatus().equalsIgnoreCase(SUCCESS.name())) {
-            Optional<Claim> claimRetreived = caseRepository.getByClaimReferenceNumber(
-                paymentUpdate.getCcdCaseNumber(), authorisation);
-            claimRetreived.ifPresent(claim -> {
+            List<Claim> claimRetreived = caseRepository.getByPaymentReference(
+                paymentUpdate.getReference(), authorisation);
+            claimRetreived.forEach(claim -> {
                     Optional<Payment> paymentRetreived = claim.getClaimData().getPayment();
                     paymentRetreived.ifPresent(payment -> {
                         if (payment.getStatus().equals(PaymentStatus.PENDING)) {
@@ -472,8 +472,8 @@ public class ClaimService {
                             Claim updatedClaim = claim.toBuilder()
                                 .claimData(claimData)
                                 .build();
-
-                            caseRepository.updateCardPaymentForClaim(authorisation, updatedClaim);
+                            User user = userService.getUser(authorisation);
+                            caseRepository.updateCardPaymentForClaim(user, updatedClaim);
                         }
                     });
                 }

@@ -688,8 +688,8 @@ public class ClaimServiceTest {
         Claim claim1 = Claim.builder()
             .claimData(claimData)
             .build();
-        when(caseRepository.getByClaimReferenceNumber(paymentUpdate.getCcdCaseNumber(), AUTHORISATION))
-            .thenReturn(Optional.of(claim1));
+        when(caseRepository.getByPaymentReference(paymentUpdate.getReference(), AUTHORISATION))
+            .thenReturn(List.of(claim1));
         claimService.updateCardPayment(AUTHORISATION, paymentUpdate);
     }
 

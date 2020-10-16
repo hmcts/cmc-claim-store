@@ -105,7 +105,7 @@ public interface CaseRepository {
         Claim claim);
 
     Claim updateCardPaymentForClaim(
-        String authorisation,
+        User user,
         Claim claim);
 
 }
