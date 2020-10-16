@@ -104,6 +104,7 @@ doc_assembly:
   url: ${DOC_ASSEMBLY_URL:false}
   templateId: "CV-CMC-GOR-ENG-0004-1.docx"
   judgeTemplateId: "CV-CMC-GOR-ENG-00219-1.docx"
+  bespokeTemplateId: "CV-CMC-ENG-0010.docx"
   generalLetterTemplateId: "CV-CMC-GOR-ENG-0005.docx"
   contactChangeTemplateId: "CV-CMC-GOR-ENG-0006.docx"
   noticeOfTransferSentToDefendantTemplateId: "CV-CMC-GOR-ENG-0008.docx"
