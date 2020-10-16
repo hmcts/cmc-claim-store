@@ -23,6 +23,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.orders.BespokeOrderDirection;
 import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -119,6 +120,8 @@ public final class SampleClaim {
     private MediationOutcome mediationOutcome;
     private TransferContent transferContent;
     private String bulkPrintLetterId = UUID.randomUUID().toString();
+    private String directionOrderType;
+    private BespokeOrderDirection bespokeOrderDirection;
 
     private SampleClaim() {
     }
@@ -621,7 +624,9 @@ public final class SampleClaim {
             List.of(BulkPrintDetails.builder()
                 .printRequestType(PrintRequestType.PIN_LETTER_TO_DEFENDANT)
                 .printRequestedAt(LocalDate.now())
-                .printRequestId(bulkPrintLetterId).build())
+                .printRequestId(bulkPrintLetterId).build()),
+            directionOrderType,
+            bespokeOrderDirection
         );
     }
 
