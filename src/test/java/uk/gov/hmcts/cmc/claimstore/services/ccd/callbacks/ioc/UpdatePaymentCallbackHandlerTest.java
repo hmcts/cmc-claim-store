@@ -20,8 +20,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
-import java.time.OffsetDateTime;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -65,7 +63,6 @@ public class UpdatePaymentCallbackHandlerTest {
         Claim claim = SampleClaim.getDefault();
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
             .thenReturn(claim);
-        OffsetDateTime paymentDate = OffsetDateTime.parse("2017-02-03T10:15:30+01:00");
 
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_SUBMIT)
@@ -88,6 +85,4 @@ public class UpdatePaymentCallbackHandlerTest {
     public void shouldAcceptCitizenAndCaseWorkerRoles() {
         assertThat(handler.getSupportedRoles()).contains(Role.CITIZEN, Role.CASEWORKER);
     }
-
-
 }
