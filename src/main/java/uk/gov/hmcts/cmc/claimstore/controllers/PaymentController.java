@@ -31,6 +31,8 @@ public class PaymentController {
 
     private final AuthTokenValidator authTokenValidator;
 
+    public static final String SERVICE_AUTHORIZATION_HEADER = "ServiceAuthorization";
+
     @Autowired
     public PaymentController(ClaimService claimService, AuthTokenValidator authTokenValidator) {
         this.claimService = claimService;
@@ -40,8 +42,8 @@ public class PaymentController {
     @PostMapping(value = "/update-card-payment", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Update a Card payment")
     public ResponseEntity<UpdatePaymentResponse> updateCardPayment(
-        @Valid @NotNull @RequestBody PaymentUpdate paymentUpdate,
-        @RequestHeader(HttpHeaders.AUTHORIZATION) String serviceToken
+        @RequestHeader(value = SERVICE_AUTHORIZATION_HEADER) String serviceToken,
+        @Valid @NotNull @RequestBody PaymentUpdate paymentUpdate
     ) {
         String serviceName = authTokenValidator.getServiceName(serviceToken);
         if (!"fees_and_payments".contains(serviceName)) {
