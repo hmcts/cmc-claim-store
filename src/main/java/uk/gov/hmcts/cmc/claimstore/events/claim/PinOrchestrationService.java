@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ADD_BULK_PRINT_DETAILS;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
@@ -30,6 +31,7 @@ public class PinOrchestrationService {
     private final ClaimCreationEventsStatusService eventsStatusService;
     private final PrintService bulkPrintService;
     private final ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService;
+    private final LaunchDarklyClient launchDarklyClient;
 
     public PinOrchestrationService(
         PrintService bulkPrintService,
@@ -38,7 +40,8 @@ public class PinOrchestrationService {
         NotificationsProperties notificationsProperties,
         ClaimCreationEventsStatusService eventsStatusService,
         DocumentOrchestrationService documentOrchestrationService,
-        ClaimService claimService
+        ClaimService claimService,
+        LaunchDarklyClient launchDarklyClient
     ) {
         this.bulkPrintService = bulkPrintService;
         this.claimIssuedStaffNotificationService = claimIssuedStaffNotificationService;
@@ -47,11 +50,15 @@ public class PinOrchestrationService {
         this.eventsStatusService = eventsStatusService;
         this.documentOrchestrationService = documentOrchestrationService;
         this.claimService = claimService;
+        this.launchDarklyClient = launchDarklyClient;
     }
 
     @LogExecutionTime
     public Claim process(Claim claim, String authorisation, String submitterName) {
-        GeneratedDocuments documents = documentOrchestrationService.generateForCitizen(claim, authorisation);
+        boolean newPinLetterEnabled = launchDarklyClient.isFeatureEnabled("new-defendant-pin-letter",
+            LaunchDarklyClient.CLAIM_STORE_USER);
+        GeneratedDocuments documents = documentOrchestrationService.generateForCitizen(claim, authorisation,
+            newPinLetterEnabled);
         Claim updatedClaim = documents.getClaim();
 
         ClaimSubmissionOperationIndicators.ClaimSubmissionOperationIndicatorsBuilder updatedOperationIndicator =
@@ -61,18 +68,35 @@ public class PinOrchestrationService {
                 .defendantNotification(NO);
 
         try {
-            BulkPrintDetails bulkPrintDetails = bulkPrintService.printHtmlLetter(
-                updatedClaim,
-                ImmutableList.of(
-                    new PrintableTemplate(
-                        documents.getDefendantPinLetterDoc(),
-                        buildDefendantLetterFileBaseName(claim.getReferenceNumber())),
-                    new PrintableTemplate(
-                        documents.getSealedClaimDoc(),
-                        buildSealedClaimFileBaseName(claim.getReferenceNumber()))),
-                BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE,
-                authorisation
-            );
+            BulkPrintDetails bulkPrintDetails;
+            if (newPinLetterEnabled) {
+                bulkPrintDetails = bulkPrintService.printPdf(
+                    updatedClaim,
+                    ImmutableList.of(
+                        new PrintableTemplate(
+                            documents.getDefendantPinLetterDoc(),
+                            buildDefendantLetterFileBaseName(claim.getReferenceNumber())),
+                        new PrintableTemplate(
+                            documents.getSealedClaimDoc(),
+                            buildSealedClaimFileBaseName(claim.getReferenceNumber()))),
+                    BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE,
+                    authorisation
+                );
+            } else {
+                bulkPrintDetails = bulkPrintService.printHtmlLetter(
+                    updatedClaim,
+                    ImmutableList.of(
+                        new PrintableTemplate(
+                            documents.getDefendantPinLetterDoc(),
+                            buildDefendantLetterFileBaseName(claim.getReferenceNumber())),
+                        new PrintableTemplate(
+                            documents.getSealedClaimDoc(),
+                            buildSealedClaimFileBaseName(claim.getReferenceNumber()))),
+                    BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE,
+                    authorisation
+                );
+
+            }
 
             ImmutableList<BulkPrintDetails> printDetails = ImmutableList.<BulkPrintDetails>builder()
                 .addAll(claim.getBulkPrintDetails())
