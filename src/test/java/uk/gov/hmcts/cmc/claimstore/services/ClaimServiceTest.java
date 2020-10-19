@@ -63,9 +63,7 @@ import static java.time.LocalDate.now;
 import static java.util.Collections.singletonList;
 import static java.util.Optional.empty;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -690,7 +688,10 @@ public class ClaimServiceTest {
             .build();
         when(caseRepository.getByPaymentReference(paymentUpdate.getReference(), AUTHORISATION))
             .thenReturn(List.of(claim1));
-        claimService.updateCardPayment(AUTHORISATION, paymentUpdate);
+        when(userService.getUser(AUTHORISATION)).thenReturn(USER);
+        when(caseRepository.updateCardPaymentForClaim(any(), any(Claim.class))).thenReturn(claim1);
+        Claim updatedClaim  = claimService.updateCardPayment(AUTHORISATION, paymentUpdate);
+        assertNotNull(updatedClaim);
     }
 
     private static Claim createRepresentedClaimModel(ClaimData claimData) {

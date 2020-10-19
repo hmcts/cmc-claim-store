@@ -8,8 +8,6 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
-import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
-import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
@@ -35,25 +33,16 @@ public class UpdatePaymentCallbackHandler extends CallbackHandler {
     private static final List<Role> ROLES = Arrays.asList(Role.CASEWORKER, Role.CITIZEN);
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final PaymentsService paymentsService;
     private final CaseDetailsConverter caseDetailsConverter;
     private final CaseMapper caseMapper;
-    private final IssueDateCalculator issueDateCalculator;
-    private final ResponseDeadlineCalculator responseDeadlineCalculator;
 
     @Autowired
     public UpdatePaymentCallbackHandler(
-        PaymentsService paymentsService,
         CaseDetailsConverter caseDetailsConverter,
-        CaseMapper caseMapper,
-        IssueDateCalculator issueDateCalculator,
-        ResponseDeadlineCalculator responseDeadlineCalculator
+        CaseMapper caseMapper
     ) {
-        this.paymentsService = paymentsService;
         this.caseDetailsConverter = caseDetailsConverter;
         this.caseMapper = caseMapper;
-        this.issueDateCalculator = issueDateCalculator;
-        this.responseDeadlineCalculator = responseDeadlineCalculator;
     }
 
     @Override
@@ -74,10 +63,11 @@ public class UpdatePaymentCallbackHandler extends CallbackHandler {
     }
 
     private CallbackResponse updateCardPayment(CallbackParams callbackParams) {
+
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
 
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
-
+        logger.info("Initiating the Update Payment on the claim ", claim.getExternalId());
         return AboutToStartOrSubmitCallbackResponse
             .builder()
             .data(caseDetailsConverter.convertToMap(caseMapper.to(claim)))

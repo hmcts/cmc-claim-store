@@ -450,7 +450,7 @@ public class ClaimService {
 
     @LogExecutionTime
     public Claim updateCardPayment(String authorisation, PaymentUpdate paymentUpdate) {
-
+        final Claim[] returnClaim = {null};
         if (paymentUpdate.getStatus().equalsIgnoreCase(SUCCESS.name())) {
             List<Claim> claimRetreived = caseRepository.getByPaymentReference(
                 paymentUpdate.getReference(), authorisation);
@@ -473,13 +473,13 @@ public class ClaimService {
                                 .claimData(claimData)
                                 .build();
                             User user = userService.getUser(authorisation);
-                            caseRepository.updateCardPaymentForClaim(user, updatedClaim);
+                            returnClaim[0] = caseRepository.updateCardPaymentForClaim(user, updatedClaim);
                         }
                     });
                 }
             );
         }
-        return null;
+        return returnClaim[0];
     }
 
     private void createClaimEvent(String authorisation, User user, Claim savedClaim) {
