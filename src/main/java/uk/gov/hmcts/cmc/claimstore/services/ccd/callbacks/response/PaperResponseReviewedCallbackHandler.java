@@ -37,8 +37,6 @@ public class PaperResponseReviewedCallbackHandler extends CallbackHandler {
 
     private LaunchDarklyClient launchDarklyClient;
 
-    private LaunchDarklyClient launchDarklyClient;
-
     @Autowired
     public PaperResponseReviewedCallbackHandler(CaseDetailsConverter caseDetailsConverter,
                     LaunchDarklyClient launchDarklyClient, PaperResponseReviewedHandler paperResponseReviewedHandler) {
