@@ -57,7 +57,16 @@ class PaperResponseReviewedHandler {
         ClaimDocumentType.PAPER_RESPONSE_PART_ADMIT,
         ClaimDocumentType.PAPER_RESPONSE_STATES_PAID);
 
-    private static final List<ScannedDocumentType> otherDocumentTypes = of(LETTER, OTHER);
+    private static final List<String> PAPER_RESPONSE_SCANNED_TYPES = List.of("N9a", "N9b", "N11", "N225", "N180");
+
+    private static final Predicate<ClaimDocument> isPaperResponseClaimDoc = doc ->
+        PAPER_RESPONSE_STAFF_UPLOADED_TYPES.stream().anyMatch(isEqual(doc.getDocumentType()));
+
+    private static final Predicate<ScannedDocument> isPaperResponseScannedDoc = doc ->
+        PAPER_RESPONSE_SCANNED_TYPES.stream().anyMatch(type -> type.equalsIgnoreCase(doc.getSubtype()));
+
+    private static final Predicate<ClaimDocument> isClaimDocumentMoreTimeRequested = doc ->
+        ClaimDocumentType.PAPER_RESPONSE_MORE_TIME.equals(doc.getDocumentType());
 
     private final CaseMapper caseMapper;
     private final NotificationsProperties notificationsProperties;

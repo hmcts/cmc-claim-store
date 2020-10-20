@@ -621,5 +621,17 @@ class SupportControllerTest {
             verify(mediationReportService)
                 .sendMediationReport(eq(AUTHORISATION), eq(mediationSearchDate));
         }
+
+        @Test
+        void shouldRegenerateMiloReportForGivenDate() {
+            when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
+            LocalDate mediationSearchDate = LocalDate.of(2019, 7, 7);
+            doNothing().when(mediationReportService).sendMediationReport(eq(AUTHORISATION), any());
+            controller.reSendMediation(
+                new MediationRequest(mediationSearchDate, "Holly@cow.com"));
+            verify(mediationReportService)
+                .sendMediationReport(eq(AUTHORISATION), eq(mediationSearchDate));
+        }
     }
+
 }

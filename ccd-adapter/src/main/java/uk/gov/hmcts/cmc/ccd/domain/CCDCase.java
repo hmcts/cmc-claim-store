@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDBespokeOrderDirection;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDBespokeOrderWarning;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
@@ -160,5 +162,12 @@ public class CCDCase {
     @Builder.Default
     private List<CCDCollectionElement<CCDScannedDocument>> temporaryScannedDocuments = Collections.emptyList();
     private LocalDate dateOfHandoff;
+    private String directionOrderType;
+
+    @Builder.Default
+    private List<CCDCollectionElement<CCDBespokeOrderDirection>> bespokeDirectionList = Collections.emptyList();
+
+    @Builder.Default
+    private List<CCDBespokeOrderWarning> drawBespokeDirectionOrderWarning = Collections.emptyList();
     private LocalDate extendedResponseDeadline;
 }
