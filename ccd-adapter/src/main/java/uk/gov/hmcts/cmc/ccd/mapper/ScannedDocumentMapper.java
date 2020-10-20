@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.domain.models.ScannedDocument;
 import uk.gov.hmcts.cmc.domain.models.ScannedDocumentType;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 
 @Component
 public class ScannedDocumentMapper {
@@ -46,14 +47,20 @@ public class ScannedDocumentMapper {
 
         CCDScannedDocument ccdScannedDocument = collectionElement.getValue();
 
+        LocalDateTime deliveryDate = ccdScannedDocument.getDeliveryDate();
+        deliveryDate = deliveryDate == null ? LocalDateTime.now() : deliveryDate;
+
+        String fileName = ccdScannedDocument.getFileName();
+        fileName = fileName == null ? ccdScannedDocument.getSubtype() : fileName;
+
         return ScannedDocument.builder()
             .id(collectionElement.getId())
-            .fileName(ccdScannedDocument.getFileName())
+            .fileName(fileName)
             .documentManagementUrl(URI.create(ccdScannedDocument.getUrl().getDocumentUrl()))
             .documentManagementBinaryUrl(URI.create(ccdScannedDocument.getUrl().getDocumentBinaryUrl()))
             .documentType(ScannedDocumentType.valueOf(ccdScannedDocument.getType().name().toUpperCase()))
             .scannedDate(ccdScannedDocument.getScannedDate())
-            .deliveryDate(ccdScannedDocument.getDeliveryDate())
+            .deliveryDate(deliveryDate)
             .subtype(ccdScannedDocument.getSubtype())
             .otherSubtype(ccdScannedDocument.getOtherSubtype())
             .exceptionRecordReference(ccdScannedDocument.getExceptionRecordReference())
