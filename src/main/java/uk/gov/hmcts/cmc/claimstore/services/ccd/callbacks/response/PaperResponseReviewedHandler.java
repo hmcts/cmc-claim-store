@@ -135,7 +135,7 @@ class PaperResponseReviewedHandler {
 
         if (mailTemplateIds.size() > 0) {
             mailTemplateIds.forEach(mailTemplateId -> notifyClaimant(afterClaim, mailTemplateId));
-        } else if (getStaffUploadedDocuments(beforeClaim, afterClaim).size() > 0) {
+        } else if (getDocumentsUploadedByStaff(beforeClaim, afterClaim).size() > 0) {
             notifyClaimant(afterClaim, mailTemplates.getClaimantPaperResponseReceived());
         }
     }
@@ -145,7 +145,7 @@ class PaperResponseReviewedHandler {
             .filter(doc -> getBulkScannedDocuments(beforeClaim).noneMatch(isEqual(doc))).collect(Collectors.toList());
     }
 
-    private List<ClaimDocument> getStaffUploadedDocuments(final Claim beforeClaim, final Claim afterClaim) {
+    private List<ClaimDocument> getDocumentsUploadedByStaff(final Claim beforeClaim, final Claim afterClaim) {
         return getStaffUploadedDocuments(afterClaim)
             .filter(doc -> getStaffUploadedDocuments(beforeClaim).noneMatch(isEqual(doc))).collect(Collectors.toList());
     }
