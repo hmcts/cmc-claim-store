@@ -168,7 +168,7 @@ class PaperResponseReviewedHandlerTest {
     @Test
     void verifyMoreTimeRequestedIsHandledByScannedDocumentUpload() {
         AboutToStartOrSubmitCallbackResponse response = verifyMailWithCorrectTemplateIsSent(FORM, "N9",
-            null, "Template3", 1);
+            "Template3", 1);
 
         verify(caseMapper).to(claimArgumentCaptor.capture());
         assertThat(claimArgumentCaptor.getValue().isMoreTimeRequested())
@@ -187,36 +187,36 @@ class PaperResponseReviewedHandlerTest {
 
     private void verifyClaimState(String subType, int timesCalled) {
         AboutToStartOrSubmitCallbackResponse response = verifyMailWithCorrectTemplateIsSent(FORM, subType,
-            null, "Template3", timesCalled);
+            "Template3", timesCalled);
         assertEquals(BUSINESS_QUEUE.getValue(), response.getState());
     }
 
     @Test
     public void shouldTriggerMailWithSpecificMailTemplateForTheProvidedScannedDocument() {
 
-        verifyMailWithCorrectTemplateIsSent(FORM, "N9", null, "Template3", 1);
-        verifyMailWithCorrectTemplateIsSent(FORM, "N9a", null, "Template3", 2);
-        verifyMailWithCorrectTemplateIsSent(FORM, "N9b", null, "Template3", 3);
-        verifyMailWithCorrectTemplateIsSent(FORM, "N11", null, "Template3", 4);
+        verifyMailWithCorrectTemplateIsSent(FORM, "N9", "Template3", 1);
+        verifyMailWithCorrectTemplateIsSent(FORM, "N9a", "Template3", 2);
+        verifyMailWithCorrectTemplateIsSent(FORM, "N9b", "Template3", 3);
+        verifyMailWithCorrectTemplateIsSent(FORM, "N11", "Template3", 4);
 
-        verifyMailWithCorrectTemplateIsSent(FORM, "N180", null, "Template4", 1);
-        verifyMailWithCorrectTemplateIsSent(FORM, "N225", null, "Template4", 2);
-        verifyMailWithCorrectTemplateIsSent(FORM, "EX160", null, "Template4", 3);
-        verifyMailWithCorrectTemplateIsSent(FORM, "N244", null, "Template3", 4);
-        verifyMailWithCorrectTemplateIsSent(FORM, "N244", null, "Template4", 5);
-        verifyMailWithCorrectTemplateIsSent(FORM, "Non_prescribed_documents", null, "Template4", 6);
+        verifyMailWithCorrectTemplateIsSent(FORM, "N180", "Template4", 1);
+        verifyMailWithCorrectTemplateIsSent(FORM, "N225", "Template4", 2);
+        verifyMailWithCorrectTemplateIsSent(FORM, "EX160", "Template4", 3);
+        verifyMailWithCorrectTemplateIsSent(FORM, "N244", "Template3", 4);
+        verifyMailWithCorrectTemplateIsSent(FORM, "N244", "Template4", 5);
+        verifyMailWithCorrectTemplateIsSent(FORM, "Non_prescribed_documents", "Template4", 6);
 
-        verifyMailWithCorrectTemplateIsSent(ScannedDocumentType.OTHER, null, "abc", "Template2", 1);
-        verifyMailWithCorrectTemplateIsSent(ScannedDocumentType.LETTER, null, "xyz", "Template2", 2);
+        verifyMailWithCorrectTemplateIsSent(ScannedDocumentType.OTHER, "abc", "Template2", 1);
+        verifyMailWithCorrectTemplateIsSent(ScannedDocumentType.LETTER, "xyz", "Template2", 2);
 
-        verifyMailWithCorrectTemplateIsSent(ScannedDocumentType.COVERSHEET, null, "pqr", "Template1", 1);
+        verifyMailWithCorrectTemplateIsSent(ScannedDocumentType.COVERSHEET, "pqr", "Template1", 1);
     }
 
     private AboutToStartOrSubmitCallbackResponse verifyMailWithCorrectTemplateIsSent(ScannedDocumentType docType,
-                                        String subType, String otherSubType, String expectedTemplate, int timesCalled) {
+                                        String subType, String expectedTemplate, int timesCalled) {
         documentCollectionAfter = new ClaimDocumentCollection();
-        documentCollectionAfter.addScannedDocument(ScannedDocument.builder().documentType(docType).subtype(subType)
-            .otherSubtype(otherSubType).build());
+        documentCollectionAfter.addScannedDocument(ScannedDocument.builder()
+            .documentType(docType).subtype(subType).build());
         Claim afterClaim = withFullClaimData().toBuilder().claimDocumentCollection(documentCollectionAfter).build();
         Claim beforeClaim = withFullClaimData().toBuilder().claimDocumentCollection(documentCollection).build();
 

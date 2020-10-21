@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.google.common.collect.Iterables.concat;
@@ -40,7 +42,6 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.DEFENDANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.PAPER_RESPONSE_MORE_TIME;
-import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentType.COVERSHEET;
 import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentType.LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentType.OTHER;
 
@@ -117,25 +118,36 @@ class PaperResponseReviewedHandler {
 
     private void email(AboutToStartOrSubmitCallbackResponseBuilder response, Claim beforeClaim, Claim afterClaim) {
         EmailTemplates mailTemplates = notificationsProperties.getTemplates().getEmail();
-        final Optional<ScannedDocument> scannedDocument = getScannedDocument(beforeClaim, afterClaim);
-        if (scannedDocument.isPresent() && !COVERSHEET.equals(scannedDocument.get().getDocumentType())) {
-            String subType = scannedDocument.get().getSubtype();
-            if (subType != null && responseForms.contains(subType)) {
-                response.state(ClaimState.BUSINESS_QUEUE.getValue());
-                notifyClaimant(afterClaim, mailTemplates.getPaperResponseReceivedAndCaseTransferredToCCBC());
-            } else if (subType != null && forms.contains(subType)) {
-                notifyClaimant(afterClaim, mailTemplates.getPaperResponseReceivedAndCaseWillBeTransferredToCCBC());
-            } else if (otherDocumentTypes.contains(scannedDocument.get().getDocumentType())) {
-                notifyClaimant(afterClaim, mailTemplates.getClaimantPaperResponseReceivedGeneralResponse());
-            }
-        } else {
+        Set<String> mailTemplateIds = getUploadedScannedDocuments(beforeClaim, afterClaim).stream()
+            .map(scannedDocument -> {
+                String subType = scannedDocument.getSubtype();
+                if (subType != null && responseForms.contains(subType)) {
+                    response.state(ClaimState.BUSINESS_QUEUE.getValue());
+                    return mailTemplates.getPaperResponseReceivedAndCaseTransferredToCCBC();
+                } else if (subType != null && forms.contains(subType)) {
+                    return mailTemplates.getPaperResponseReceivedAndCaseWillBeTransferredToCCBC();
+                } else if (otherDocumentTypes.contains(scannedDocument.getDocumentType())) {
+                    return mailTemplates.getClaimantPaperResponseReceivedGeneralResponse();
+                } else {
+                    return mailTemplates.getClaimantPaperResponseReceived();
+                }
+            }).collect(Collectors.toSet());
+
+        if (mailTemplateIds.size() > 0) {
+            mailTemplateIds.forEach(mailTemplateId -> notifyClaimant(afterClaim, mailTemplateId));
+        } else if (getStaffUploadedDocuments(beforeClaim, afterClaim).size() > 0) {
             notifyClaimant(afterClaim, mailTemplates.getClaimantPaperResponseReceived());
         }
     }
 
-    private Optional<ScannedDocument> getScannedDocument(final Claim beforeClaim, final Claim afterClaim) {
+    private List<ScannedDocument> getUploadedScannedDocuments(final Claim beforeClaim, final Claim afterClaim) {
         return getBulkScannedDocuments(afterClaim)
-            .filter(doc -> getBulkScannedDocuments(beforeClaim).noneMatch(isEqual(doc))).findFirst();
+            .filter(doc -> getBulkScannedDocuments(beforeClaim).noneMatch(isEqual(doc))).collect(Collectors.toList());
+    }
+
+    private List<ClaimDocument> getStaffUploadedDocuments(final Claim beforeClaim, final Claim afterClaim) {
+        return getStaffUploadedDocuments(afterClaim)
+            .filter(doc -> getStaffUploadedDocuments(beforeClaim).noneMatch(isEqual(doc))).collect(Collectors.toList());
     }
 
     private void updateMoreTimeRequestedResponse(final ClaimBuilder builder, Claim claim, final List<String> errors) {

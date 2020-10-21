@@ -24,7 +24,7 @@ public class ScannedDocumentMapper {
             .fileName(scannedDocument.getFileName())
             .scannedDate(scannedDocument.getScannedDate())
             .subtype(scannedDocument.getSubtype())
-            .otherSubtype(scannedDocument.getOtherSubtype())
+            .formSubtype(scannedDocument.getFormSubtype())
             .url(CCDDocument
                 .builder()
                 .documentUrl(scannedDocument.getDocumentManagementUrl().toString())
@@ -51,7 +51,10 @@ public class ScannedDocumentMapper {
         deliveryDate = deliveryDate == null ? LocalDateTime.now() : deliveryDate;
 
         String fileName = ccdScannedDocument.getFileName();
-        fileName = fileName == null ? ccdScannedDocument.getSubtype() : fileName;
+        fileName = fileName == null ? ccdScannedDocument.getUrl().getDocumentFileName() : fileName;
+
+        String subType = ccdScannedDocument.getSubtype();
+        subType = subType == null ? ccdScannedDocument.getFormSubtype() : subType;
 
         return ScannedDocument.builder()
             .id(collectionElement.getId())
@@ -61,8 +64,8 @@ public class ScannedDocumentMapper {
             .documentType(ScannedDocumentType.valueOf(ccdScannedDocument.getType().name().toUpperCase()))
             .scannedDate(ccdScannedDocument.getScannedDate())
             .deliveryDate(deliveryDate)
-            .subtype(ccdScannedDocument.getSubtype())
-            .otherSubtype(ccdScannedDocument.getOtherSubtype())
+            .subtype(subType)
+            .formSubtype(ccdScannedDocument.getFormSubtype())
             .exceptionRecordReference(ccdScannedDocument.getExceptionRecordReference())
             .controlNumber(ccdScannedDocument.getControlNumber())
             .build();
