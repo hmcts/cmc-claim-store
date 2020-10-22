@@ -13,7 +13,6 @@ import static uk.gov.hmcts.cmc.claimstore.rules.ClaimDocumentsAccessRule.claiman
 import static uk.gov.hmcts.cmc.claimstore.rules.ClaimDocumentsAccessRule.defendantViewableDocsType;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.GENERAL_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentSubtype.N11;
-import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentSubtype.N9;
 import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentSubtype.N9A;
 import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentSubtype.N9B;
 import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentSubtype.OCON9X;
@@ -21,7 +20,7 @@ import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentType.FORM;
 
 public class DocumentsFilter {
 
-    private static final List<String> paperResponseForms = of(OCON9X.value, N9.value, N9A.value, N9B.value, N11.value);
+    private static final List<String> paperResponseForms = of(OCON9X.value, N9A.value, N9B.value, N11.value);
 
     private static Predicate<ClaimDocument> docsForDefendant = claimDocument -> defendantViewableDocsType.get()
         .contains(claimDocument.getDocumentType());

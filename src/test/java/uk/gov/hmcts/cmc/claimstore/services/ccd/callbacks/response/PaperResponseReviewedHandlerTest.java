@@ -168,7 +168,7 @@ class PaperResponseReviewedHandlerTest {
     @Test
     void verifyMoreTimeRequestedIsHandledByScannedDocumentUpload() {
         AboutToStartOrSubmitCallbackResponse response = verifyMailWithCorrectTemplateIsSent(FORM, "N9",
-            "Template3", 1);
+            "Template1", 1);
 
         verify(caseMapper).to(claimArgumentCaptor.capture());
         assertThat(claimArgumentCaptor.getValue().isMoreTimeRequested())
@@ -179,10 +179,9 @@ class PaperResponseReviewedHandlerTest {
 
     @Test
     void verifyClaimMovesToBusinessQueueStateAfterPaperResponseIsReviewed() {
-        verifyClaimState("N9", 1);
-        verifyClaimState("N9a", 2);
-        verifyClaimState("N9b", 3);
-        verifyClaimState("N11", 4);
+        verifyClaimState("N9a", 1);
+        verifyClaimState("N9b", 2);
+        verifyClaimState("N11", 3);
     }
 
     private void verifyClaimState(String subType, int timesCalled) {
@@ -194,16 +193,15 @@ class PaperResponseReviewedHandlerTest {
     @Test
     public void shouldTriggerMailWithSpecificMailTemplateForTheProvidedScannedDocument() {
 
-        verifyMailWithCorrectTemplateIsSent(FORM, "N9", "Template3", 1);
-        verifyMailWithCorrectTemplateIsSent(FORM, "N9a", "Template3", 2);
-        verifyMailWithCorrectTemplateIsSent(FORM, "N9b", "Template3", 3);
-        verifyMailWithCorrectTemplateIsSent(FORM, "N11", "Template3", 4);
+        verifyMailWithCorrectTemplateIsSent(FORM, "N9a", "Template3", 1);
+        verifyMailWithCorrectTemplateIsSent(FORM, "N9b", "Template3", 2);
+        verifyMailWithCorrectTemplateIsSent(FORM, "N11", "Template3", 3);
 
         verifyMailWithCorrectTemplateIsSent(FORM, "N180", "Template4", 1);
         verifyMailWithCorrectTemplateIsSent(FORM, "N225", "Template4", 2);
         verifyMailWithCorrectTemplateIsSent(FORM, "EX160", "Template4", 3);
-        verifyMailWithCorrectTemplateIsSent(FORM, "N244", "Template3", 4);
-        verifyMailWithCorrectTemplateIsSent(FORM, "N244", "Template4", 5);
+        verifyMailWithCorrectTemplateIsSent(FORM, "N244", "Template4", 4);
+        verifyMailWithCorrectTemplateIsSent(FORM, "N245", "Template4", 5);
         verifyMailWithCorrectTemplateIsSent(FORM, "Non_prescribed_documents", "Template4", 6);
 
         verifyMailWithCorrectTemplateIsSent(ScannedDocumentType.OTHER, "abc", "Template2", 1);

@@ -48,7 +48,7 @@ import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentType.OTHER;
 @Service
 class PaperResponseReviewedHandler {
 
-    private static final List<String> responseForms = of("N9", "N9a", "N9b", "N11");
+    private static final List<String> responseForms = of("N9a", "N9b", "N11");
     private static final List<String> forms = of("N180", "N225", "EX160", "N244", "N245", "Non_prescribed_documents");
     private static final List<String> SCANNED_DOCUMENT_TYPES = newArrayList(concat(responseForms, forms));
 
