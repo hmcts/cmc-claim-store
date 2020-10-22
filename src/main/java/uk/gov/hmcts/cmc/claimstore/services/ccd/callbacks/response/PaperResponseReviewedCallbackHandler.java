@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 
@@ -40,6 +41,8 @@ public class PaperResponseReviewedCallbackHandler extends CallbackHandler {
 
     private final Function<CallbackParams, PaperResponseReviewedHandler> handlerCreator;
 
+    private LaunchDarklyClient launchDarklyClient;
+
     @Autowired
     public PaperResponseReviewedCallbackHandler(
         CaseDetailsConverter caseDetailsConverter,
@@ -47,9 +50,11 @@ public class PaperResponseReviewedCallbackHandler extends CallbackHandler {
         ResponseDeadlineCalculator responseDeadlineCalculator,
         MoreTimeRequestRule moreTimeRequestRule,
         NotificationService notificationService,
-        NotificationsProperties notificationsProperties
+        NotificationsProperties notificationsProperties,
+        LaunchDarklyClient launchDarklyClient
     ) {
         this.caseDetailsConverter = caseDetailsConverter;
+        this.launchDarklyClient = launchDarklyClient;
         this.handlerCreator = callbackParams -> new PaperResponseReviewedHandler(
             caseDetailsConverter,
             caseMapper,
@@ -83,7 +88,9 @@ public class PaperResponseReviewedCallbackHandler extends CallbackHandler {
         Claim claim = toClaimAfterEvent(callbackParams.getRequest());
         var responseBuilder = AboutToStartOrSubmitCallbackResponse.builder();
 
-        if (claim.getResponse().isPresent() || claim.getRespondedAt() != null) {
+        boolean restrictPaperResponseReview = launchDarklyClient.isFeatureEnabled("restrict-review-paper-response");
+
+        if (restrictPaperResponseReview && (claim.getResponse().isPresent() || claim.getRespondedAt() != null)) {
             responseBuilder.errors(List.of(ALREADY_RESPONDED_ERROR));
         }
 
