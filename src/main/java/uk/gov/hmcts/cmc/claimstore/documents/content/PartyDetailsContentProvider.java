@@ -92,8 +92,10 @@ public class PartyDetailsContentProvider {
     }
 
     private Optional<String> defendantDateOfBirth(Party party) {
+
         if (party instanceof Individual) {
-            return Optional.of(formatDate(((Individual) party).getDateOfBirth()));
+            return ((Individual) party).getDateOfBirth() != null
+                ? Optional.of(formatDate(((Individual) party).getDateOfBirth())) : Optional.empty();
         }
         return Optional.empty();
     }
