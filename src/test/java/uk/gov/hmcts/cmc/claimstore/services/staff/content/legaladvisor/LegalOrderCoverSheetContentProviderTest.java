@@ -99,7 +99,6 @@ public class LegalOrderCoverSheetContentProviderTest {
         assertThat(content).containsEntry("addBreaksEnabled", true);
     }
 
-
     @Test
     public void shouldProvideDefendantDataWithAddBreaksFalseWhenLDFlagIsOff() {
         when(launchDarklyClient.isFeatureEnabled(eq("legal-order-alignment"), any(LDUser.class))).thenReturn(false);
