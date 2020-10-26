@@ -17,41 +17,52 @@ public class ValidUnemploymentConstraintValidator implements ConstraintValidator
         public static final String UNEMPLOYMENT = "unemployment";
     }
 
-    public boolean retiredPopulated(Boolean otherPopulated, boolean unemployedPopulated, ConstraintValidatorContext context, boolean valid) {
-            if (otherPopulated) {
-                setValidationErrors(context, Fields.OTHER, mayNotBeProvidedError(Fields.UNEMPLOYMENT, Fields.IS_RETIRED));
-                valid = false;
-            }
-            if (unemployedPopulated) {
-                setValidationErrors(
-                    context, Fields.UNEMPLOYED, mayNotBeProvidedError(Fields.UNEMPLOYMENT, Fields.IS_RETIRED));
-                valid = false;
-            }
-            return valid;
+    private boolean retiredPopulated(Boolean otherPopulated, boolean unemployedPopulated,
+                                     ConstraintValidatorContext context) {
+        boolean valid = true;
+        if (otherPopulated) {
+            setValidationErrors(context, Fields.OTHER, mayNotBeProvidedError(Fields.UNEMPLOYMENT,
+                Fields.IS_RETIRED));
+            valid = false;
+        }
+        if (unemployedPopulated) {
+            setValidationErrors(
+                context, Fields.UNEMPLOYED, mayNotBeProvidedError(Fields.UNEMPLOYMENT, Fields.IS_RETIRED));
+            valid = false;
+        }
+        return valid;
     }
 
-    public boolean otherPopulated(boolean isRetiredPopulated, boolean unemployedPopulated, ConstraintValidatorContext context, boolean valid) {
-            if (isRetiredPopulated) {
-                setValidationErrors(context, Fields.IS_RETIRED, mayNotBeProvidedError(Fields.UNEMPLOYMENT, Fields.OTHER));
-                valid = false;
-            }
-            if (unemployedPopulated) {
-                setValidationErrors(context, Fields.UNEMPLOYED, mayNotBeProvidedError(Fields.UNEMPLOYMENT, Fields.OTHER));
-                valid = false;
-            }
-            return  valid;
+    private boolean otherPopulated(boolean isRetiredPopulated, boolean unemployedPopulated,
+                                   ConstraintValidatorContext context) {
+        boolean valid = true;
+        if (isRetiredPopulated) {
+            setValidationErrors(context, Fields.IS_RETIRED, mayNotBeProvidedError(Fields.UNEMPLOYMENT,
+                Fields.OTHER));
+            valid = false;
+        }
+        if (unemployedPopulated) {
+            setValidationErrors(context, Fields.UNEMPLOYED, mayNotBeProvidedError(Fields.UNEMPLOYMENT,
+                Fields.OTHER));
+            valid = false;
+        }
+        return  valid;
     }
 
-    public boolean unemployedPopulated(boolean isRetiredPopulated, boolean otherPopulated, ConstraintValidatorContext context, boolean valid) {
-            if (isRetiredPopulated) {
-                setValidationErrors(context, Fields.IS_RETIRED, mayNotBeProvidedError(Fields.UNEMPLOYMENT, Fields.UNEMPLOYED));
-                valid = false;
-            }
-            if (otherPopulated) {
-                setValidationErrors(context, Fields.OTHER, mayNotBeProvidedError(Fields.UNEMPLOYMENT, Fields.UNEMPLOYED));
-                valid = false;
-            }
-            return valid;
+    private boolean unemployedPopulated(boolean isRetiredPopulated, boolean otherPopulated,
+                                        ConstraintValidatorContext context) {
+        boolean valid = true;
+        if (isRetiredPopulated) {
+            setValidationErrors(context, Fields.IS_RETIRED, mayNotBeProvidedError(Fields.UNEMPLOYMENT,
+                Fields.UNEMPLOYED));
+            valid = false;
+        }
+        if (otherPopulated) {
+            setValidationErrors(context, Fields.OTHER, mayNotBeProvidedError(Fields.UNEMPLOYMENT,
+                Fields.UNEMPLOYED));
+            valid = false;
+        }
+        return valid;
     }
 
     @Override
@@ -66,11 +77,11 @@ public class ValidUnemploymentConstraintValidator implements ConstraintValidator
         boolean unemployedPopulated = unemployment.getUnemployed().isPresent();
 
         if (isRetiredPopulated) {
-            valid = retiredPopulated(otherPopulated, unemployedPopulated, context, valid);
+            valid = retiredPopulated(otherPopulated, unemployedPopulated, context);
         } else if (otherPopulated) {
-            valid = otherPopulated(isRetiredPopulated, unemployedPopulated, context, valid);
+            valid = otherPopulated(isRetiredPopulated, unemployedPopulated, context);
         } else if (unemployedPopulated) {
-            valid = unemployedPopulated(isRetiredPopulated, otherPopulated, context, valid);
+            valid = unemployedPopulated(isRetiredPopulated, otherPopulated, context);
         }
         return valid;
     }

@@ -5,8 +5,6 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employment;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import java.lang.reflect.Field;
-
 import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.mayNotBeProvidedError;
 import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.setValidationErrors;
 
