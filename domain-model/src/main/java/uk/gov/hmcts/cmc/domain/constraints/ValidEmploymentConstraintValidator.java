@@ -5,6 +5,8 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employment;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
+import java.lang.reflect.Field;
+
 import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.mayNotBeProvidedError;
 import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.setValidationErrors;
 
@@ -14,6 +16,7 @@ public class ValidEmploymentConstraintValidator implements ConstraintValidator<V
         public static final String EMPLOYERS = "employers";
         public static final String SELF_EMPLOYMENT = "selfEmployment";
         public static final String UNEMPLOYMENT = "unemployment";
+        public static final String EMPLOYMENT = "employment";
     }
 
     @Override
@@ -27,14 +30,14 @@ public class ValidEmploymentConstraintValidator implements ConstraintValidator<V
         if (employment.getUnemployment().isPresent()) {
             if (employment.getEmployers().size() > 0) {
                 setValidationErrors(
-                    context, Fields.EMPLOYERS, mayNotBeProvidedError("employment", Fields.UNEMPLOYMENT)
+                    context, Fields.EMPLOYERS, mayNotBeProvidedError(Fields.EMPLOYMENT, Fields.UNEMPLOYMENT)
                 );
                 valid = false;
             }
 
             if (employment.getSelfEmployment().isPresent()) {
                 setValidationErrors(
-                    context, Fields.SELF_EMPLOYMENT, mayNotBeProvidedError("employment", Fields.UNEMPLOYMENT)
+                    context, Fields.SELF_EMPLOYMENT, mayNotBeProvidedError(Fields.EMPLOYMENT, Fields.UNEMPLOYMENT)
                 );
                 valid = false;
             }
@@ -46,7 +49,7 @@ public class ValidEmploymentConstraintValidator implements ConstraintValidator<V
             setValidationErrors(
                 context,
                 Fields.UNEMPLOYMENT,
-                mayNotBeProvidedError("employment", Fields.SELF_EMPLOYMENT + " or " + Fields.EMPLOYERS)
+                mayNotBeProvidedError(Fields.EMPLOYMENT, Fields.SELF_EMPLOYMENT + " or " + Fields.EMPLOYERS)
             );
             valid = false;
 
