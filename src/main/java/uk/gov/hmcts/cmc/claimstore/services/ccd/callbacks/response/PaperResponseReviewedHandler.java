@@ -19,6 +19,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.ScannedDocument;
 import uk.gov.hmcts.cmc.domain.models.ScannedDocumentType;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse.AboutToStartOrSubmitCallbackResponseBuilder;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
@@ -66,6 +67,7 @@ class PaperResponseReviewedHandler {
     private final NotificationService notificationService;
     private final CaseDetailsConverter caseDetailsConverter;
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
+    private final LaunchDarklyClient launchDarklyClient;
 
     @Autowired
     PaperResponseReviewedHandler(
@@ -74,7 +76,8 @@ class PaperResponseReviewedHandler {
         ResponseDeadlineCalculator responseDeadlineCalculator,
         MoreTimeRequestRule moreTimeRequestRule,
         NotificationService notificationService,
-        NotificationsProperties notificationsProperties
+        NotificationsProperties notificationsProperties,
+        LaunchDarklyClient launchDarklyClient
     ) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.caseMapper = caseMapper;
@@ -82,6 +85,7 @@ class PaperResponseReviewedHandler {
         this.moreTimeRequestRule = moreTimeRequestRule;
         this.notificationService = notificationService;
         this.notificationsProperties = notificationsProperties;
+        this.launchDarklyClient = launchDarklyClient;
     }
 
     AboutToStartOrSubmitCallbackResponse handle(final CallbackParams callbackParams) {
@@ -111,7 +115,12 @@ class PaperResponseReviewedHandler {
             return response.errors(errors).build();
         }
 
-        email(response, beforeClaim, afterClaim);
+        if (launchDarklyClient.isFeatureEnabled("paper-response-review-new-handling")) {
+            email(response, beforeClaim, afterClaim);
+        } else {
+            EmailTemplates mailTemplates = notificationsProperties.getTemplates().getEmail();
+            notifyClaimant(afterClaim, mailTemplates.getClaimantPaperResponseReceived());
+        }
 
         return response.build();
     }

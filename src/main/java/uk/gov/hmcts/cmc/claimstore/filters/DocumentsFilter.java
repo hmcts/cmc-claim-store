@@ -4,9 +4,11 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
+import uk.gov.hmcts.cmc.domain.models.ScannedDocument;
 
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import static java.util.List.of;
 import static uk.gov.hmcts.cmc.claimstore.rules.ClaimDocumentsAccessRule.claimantViewableDocsType;
@@ -22,7 +24,7 @@ public class DocumentsFilter {
 
     private static final List<String> paperResponseForms = of(OCON9X.value, N9A.value, N9B.value, N11.value);
 
-    private static Predicate<ClaimDocument> docsForDefendant = claimDocument -> defendantViewableDocsType.get()
+    private static final Predicate<ClaimDocument> docsForDefendant = claimDocument -> defendantViewableDocsType.get()
         .contains(claimDocument.getDocumentType());
 
     private static Predicate<ClaimDocument> docsForClaimant = claimDocument -> claimantViewableDocsType.get()
@@ -32,7 +34,8 @@ public class DocumentsFilter {
         // Do nothing constructor
     }
 
-    public static Claim filterDocuments(Claim claim, UserDetails userDetails, boolean ctscEnabled) {
+    public static Claim filterDocuments(Claim claim, UserDetails userDetails, boolean ctscEnabled,
+                                        Boolean newPaperResponseHandling) {
 
         if (userDetails.isCaseworker() || claim.getClaimDocumentCollection().isEmpty()) {
             return claim; // No need to filter.
@@ -47,7 +50,10 @@ public class DocumentsFilter {
             .forEach(docsToReturn::addClaimDocument);
 
         if (ctscEnabled) {
-            claim.getScannedDocuments().stream()
+            Stream<ScannedDocument> scannedDocumentStream = newPaperResponseHandling
+                ? claim.getScannedDocuments().stream() : claim.getScannedDocument(FORM, OCON9X).stream();
+
+            scannedDocumentStream
                 .filter(scannedDocument -> scannedDocument.getDocumentType().equals(FORM))
                 .filter(scannedDocument -> paperResponseForms.contains(scannedDocument.getSubtype()))
                 .forEach(docsToReturn::addScannedDocument);

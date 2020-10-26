@@ -25,6 +25,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.ScannedDocument;
 import uk.gov.hmcts.cmc.domain.models.ScannedDocumentType;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -77,6 +78,9 @@ class PaperResponseReviewedHandlerTest {
     @Mock
     private NotificationsProperties notificationsProperties;
 
+    @Mock
+    private LaunchDarklyClient launchDarklyClient;
+
     private final CaseDetails detailsBeforeEvent = CaseDetails.builder().id(1L).build();
     private final CaseDetails detailsAfterEvent = CaseDetails.builder().id(2L).build();
 
@@ -117,6 +121,8 @@ class PaperResponseReviewedHandlerTest {
         lenient().when(mailTemplates.getClaimantPaperResponseReceivedGeneralResponse()).thenReturn("Template2");
         lenient().when(mailTemplates.getPaperResponseReceivedAndCaseTransferredToCCBC()).thenReturn("Template3");
         lenient().when(mailTemplates.getPaperResponseReceivedAndCaseWillBeTransferredToCCBC()).thenReturn("Template4");
+
+        lenient().when(launchDarklyClient.isFeatureEnabled("paper-response-review-new-handling")).thenReturn(true);
     }
 
     @Test
@@ -188,6 +194,12 @@ class PaperResponseReviewedHandlerTest {
         AboutToStartOrSubmitCallbackResponse response = verifyMailWithCorrectTemplateIsSent(FORM, subType,
             "Template3", timesCalled);
         assertEquals(BUSINESS_QUEUE.getValue(), response.getState());
+    }
+
+    @Test
+    public void shouldNotUseNewEmailTemplatesIfFeatureTurnedOff() {
+        when(launchDarklyClient.isFeatureEnabled("paper-response-review-new-handling")).thenReturn(false);
+        verifyMailWithCorrectTemplateIsSent(FORM, "N9a", "Template3", 0);
     }
 
     @Test
