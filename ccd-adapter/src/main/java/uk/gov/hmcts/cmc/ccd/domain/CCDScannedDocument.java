@@ -14,6 +14,7 @@ public class CCDScannedDocument {
     private String subtype;
     private String formSubtype;
     private CCDScannedDocumentType type;
+    private String submittedBy;
     private LocalDateTime scannedDate;
     private LocalDateTime deliveryDate;
     private CCDDocument url;

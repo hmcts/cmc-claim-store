@@ -25,6 +25,7 @@ public class ScannedDocumentMapper {
             .scannedDate(scannedDocument.getScannedDate())
             .subtype(scannedDocument.getSubtype())
             .formSubtype(scannedDocument.getFormSubtype())
+            .submittedBy(scannedDocument.getSubmittedBy())
             .url(CCDDocument
                 .builder()
                 .documentUrl(scannedDocument.getDocumentManagementUrl().toString())
@@ -66,6 +67,7 @@ public class ScannedDocumentMapper {
             .deliveryDate(deliveryDate)
             .subtype(subType)
             .formSubtype(ccdScannedDocument.getFormSubtype())
+            .submittedBy(ccdScannedDocument.getSubmittedBy())
             .exceptionRecordReference(ccdScannedDocument.getExceptionRecordReference())
             .controlNumber(ccdScannedDocument.getControlNumber())
             .build();
