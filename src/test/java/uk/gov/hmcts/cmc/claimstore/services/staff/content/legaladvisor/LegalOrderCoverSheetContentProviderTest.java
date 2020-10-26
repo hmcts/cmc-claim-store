@@ -99,4 +99,16 @@ public class LegalOrderCoverSheetContentProviderTest {
         assertThat(content).containsEntry("addBreaksEnabled", true);
     }
 
+
+    @Test
+    public void shouldProvideDefendantDataWithAddBreaksFalseWhenLDFlagIsOff() {
+        when(launchDarklyClient.isFeatureEnabled(eq("legal-order-alignment"), any(LDUser.class))).thenReturn(false);
+        Map<String, Object> content = provider.createContentForDefendant(claim);
+        assertThat(content).containsEntry("partyFullName", "Dr. John Smith");
+        assertThat(content).containsEntry("partyAddress", claim.getClaimData().getClaimant().getAddress());
+        assertThat(content).containsEntry("claimReferenceNumber", claim.getReferenceNumber());
+        assertThat(content).containsEntry("hmctsEmail", STAFF_NOTIFICATIONS_RECIPIENT);
+        assertThat(content).containsEntry("addBreaksEnabled", false);
+    }
+
 }
