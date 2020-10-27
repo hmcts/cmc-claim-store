@@ -59,7 +59,8 @@ public class ClaimDocumentsAccessRule {
             return caseworkerViewableDocsType;
         }
 
-        if (userDetails.getId().equals(claim.getDefendantId())) {
+        if (userDetails.getId().equals(claim.getDefendantId())
+            || userDetails.getId().equals(claim.getLetterHolderId())) {
             return defendantViewableDocsType.get();
         } else if (userDetails.getId().equals(claim.getSubmitterId())) {
             return claimantViewableDocsType.get();
