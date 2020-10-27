@@ -7,9 +7,7 @@ import javax.validation.ConstraintValidatorContext;
 
 public class ValidInterestDateConstraintValidator implements ConstraintValidator<ValidInterestDate, InterestDate> {
 
-    public static class Fields {
-        public static final String REASON = "reason";
-    }
+    private static final String REASON = "reason";
 
     @Override
     public boolean isValid(InterestDate interestDate, ConstraintValidatorContext validatorContext) {
@@ -39,7 +37,7 @@ public class ValidInterestDateConstraintValidator implements ConstraintValidator
             valid = false;
         }
         if (interestDate.getReason() == null) {
-            setValidationErrors(validatorContext, Fields.REASON, "may not be null");
+            setValidationErrors(validatorContext, REASON, "may not be null");
             valid = false;
         }
         return valid;
@@ -53,7 +51,7 @@ public class ValidInterestDateConstraintValidator implements ConstraintValidator
             valid = false;
         }
         if (interestDate.getReason() != null) {
-            setValidationErrors(validatorContext, Fields.REASON, "may not be provided when type is 'submission'");
+            setValidationErrors(validatorContext, REASON, "may not be provided when type is 'submission'");
             valid = false;
         }
         return valid;
@@ -67,7 +65,7 @@ public class ValidInterestDateConstraintValidator implements ConstraintValidator
             valid = false;
         }
         if (interestDate.getReason() != null) {
-            setValidationErrors(validatorContext, Fields.REASON, "may not be provided when type is undefined");
+            setValidationErrors(validatorContext, REASON, "may not be provided when type is undefined");
             valid = false;
         }
         return valid;
