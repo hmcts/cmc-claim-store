@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 public class SampleUser {
     private static final String DEFAULT_CLAIMANT_ID = "1";
     private static final String DEFAULT_DEFENDANT_ID = "4";
+    private static final String DEFAULT_LETTER_HOLDER_ID = "2";
     private String authorisation = "Bearer letmein";
     private UserDetails userDetails = SampleUserDetails.getDefault();
 
@@ -35,6 +36,12 @@ public class SampleUser {
         return builder()
             .withUserDetails(SampleUserDetails.builder().withUserId(DEFAULT_DEFENDANT_ID).withMail("kk@mm.com").build())
             .build();
+    }
+
+    public static User getDefaultDefendantWithLetterHolder() {
+        return builder()
+            .withUserDetails(SampleUserDetails.builder().withUserId(DEFAULT_LETTER_HOLDER_ID).withMail("kk@mm.com")
+            .build()).build();
     }
 
     public static User getDefaultClaimant() {

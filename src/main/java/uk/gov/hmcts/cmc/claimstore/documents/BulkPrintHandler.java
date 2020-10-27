@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.events.BulkPrintTransferEvent;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.time.LocalDate;
@@ -25,6 +26,8 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildCoverShee
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDirectionsOrderFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildLetterFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildOconFormFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildPaperDefenceCoverLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 
 @Component
@@ -32,29 +35,43 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedCla
 public class BulkPrintHandler {
 
     private final PrintService bulkPrintService;
+    private final LaunchDarklyClient launchDarklyClient;
 
     @Autowired
-    public BulkPrintHandler(PrintService bulkPrintService) {
+    public BulkPrintHandler(PrintService bulkPrintService,
+                            LaunchDarklyClient launchDarklyClient) {
         this.bulkPrintService = bulkPrintService;
+        this.launchDarklyClient = launchDarklyClient;
     }
 
     @EventListener
     public BulkPrintDetails print(DocumentReadyToPrintEvent event) {
         requireNonNull(event);
         Claim claim = event.getClaim();
-        return bulkPrintService.printHtmlLetter(
-            claim,
-            ImmutableList.of(
+        BulkPrintDetails bulkPrintDetails;
+        if (launchDarklyClient.isFeatureEnabled("new-defendant-pin-letter", LaunchDarklyClient.CLAIM_STORE_USER)) {
+            bulkPrintDetails = bulkPrintService.printPdf(claim, ImmutableList.of(
                 new PrintableTemplate(
                     event.getDefendantLetterDocument(),
                     buildDefendantLetterFileBaseName(claim.getReferenceNumber())),
                 new PrintableTemplate(
                     event.getSealedClaimDocument(),
                     buildSealedClaimFileBaseName(claim.getReferenceNumber()))
-            ),
-            BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE,
-            event.getAuthorisation()
-        );
+                ),
+                BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE,
+                event.getAuthorisation()
+            );
+        } else {
+            bulkPrintDetails = bulkPrintService.printHtmlLetter(claim, ImmutableList.of(
+                new PrintableTemplate(
+                    event.getDefendantLetterDocument(),
+                    buildDefendantLetterFileBaseName(claim.getReferenceNumber())),
+                new PrintableTemplate(
+                    event.getSealedClaimDocument(),
+                    buildSealedClaimFileBaseName(claim.getReferenceNumber()))
+            ), BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE, event.getAuthorisation());
+        }
+        return bulkPrintDetails;
     }
 
     public BulkPrintDetails printDirectionOrder(Claim claim, Document coverSheet,
@@ -118,5 +135,25 @@ public class BulkPrintHandler {
 
         return bulkPrintService.printPdf(claim, Collections.unmodifiableList(printableDocs),
             BulkPrintRequestType.BULK_PRINT_TRANSFER_TYPE, authorisation);
+    }
+
+    public BulkPrintDetails printPaperDefence(Claim claim, Document coverLetter, Document oconForm,
+                                              String authorisation) {
+        requireNonNull(claim);
+        requireNonNull(coverLetter);
+        requireNonNull(authorisation);
+        requireNonNull(oconForm);
+
+        return bulkPrintService.printPdf(claim,
+            ImmutableList.<Printable>builder()
+                .add(new PrintablePdf(
+                    coverLetter,
+                    buildPaperDefenceCoverLetterFileBaseName(claim.getReferenceNumber())))
+                .add(new PrintablePdf(
+                    oconForm,
+                    buildOconFormFileBaseName(claim.getReferenceNumber())))
+                .build(),
+            BulkPrintRequestType.GENERAL_LETTER_TYPE,
+            authorisation);
     }
 }
