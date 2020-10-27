@@ -164,16 +164,22 @@ public class EmailTemplates {
     private String defendantMediationFailureOfflineDQ;
 
     @NotEmpty
+    private String paperResponseFormReceived;
+
+    @NotEmpty
     private String paperResponseReceivedAndCaseTransferredToCCBC;
 
     @NotEmpty
-    private String paperResponseReceivedAndCaseWillBeTransferredToCCBC;
+    private String paperResponseFromClaimantCaseHandoverToCCBC;
 
     @NotEmpty
-    private String claimantPaperResponseReceivedGeneralResponse;
+    private String paperResponseFromDefendantCaseHandoverToCCBC;
 
     @NotEmpty
-    private String claimantPaperResponseReceived;
+    private String paperResponseFromClaimantGeneralLetter;
+
+    @NotEmpty
+    private String paperResponseFromDefendantGeneralLetter;
 
     @NotEmpty
     private String claimantContactDetailsChanged;

@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -49,6 +48,8 @@ import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentType.OTHER;
 @Service
 class PaperResponseReviewedHandler {
 
+    public static final String CLAIMANT = "claimant";
+    public static final String DEFENDANT = "defendant";
     private static final List<String> responseForms = of("N9a", "N9b", "N11");
     private static final List<String> forms = of("N180", "N225", "EX160", "N244", "N245", "Non_prescribed_documents");
     private static final List<String> SCANNED_DOCUMENT_TYPES = newArrayList(concat(responseForms, forms));
@@ -119,7 +120,7 @@ class PaperResponseReviewedHandler {
             email(response, beforeClaim, afterClaim);
         } else {
             EmailTemplates mailTemplates = notificationsProperties.getTemplates().getEmail();
-            notifyClaimant(afterClaim, mailTemplates.getClaimantPaperResponseReceived());
+            notify(afterClaim, mailTemplates.getPaperResponseFormReceived(), CLAIMANT);
         }
 
         return response.build();
@@ -127,26 +128,47 @@ class PaperResponseReviewedHandler {
 
     private void email(AboutToStartOrSubmitCallbackResponseBuilder response, Claim beforeClaim, Claim afterClaim) {
         EmailTemplates mailTemplates = notificationsProperties.getTemplates().getEmail();
-        Set<String> mailTemplateIds = getUploadedScannedDocuments(beforeClaim, afterClaim).stream()
+        Map<String, String> mailsDetails = getUploadedScannedDocuments(beforeClaim, afterClaim)
+            .stream()
             .map(scannedDocument -> {
-                String subType = scannedDocument.getSubtype();
-                if (subType != null && responseForms.contains(subType)) {
-                    response.state(ClaimState.BUSINESS_QUEUE.getValue());
-                    return mailTemplates.getPaperResponseReceivedAndCaseTransferredToCCBC();
-                } else if (subType != null && forms.contains(subType)) {
-                    return mailTemplates.getPaperResponseReceivedAndCaseWillBeTransferredToCCBC();
-                } else if (otherDocumentTypes.contains(scannedDocument.getDocumentType())) {
-                    return mailTemplates.getClaimantPaperResponseReceivedGeneralResponse();
-                } else {
-                    return mailTemplates.getClaimantPaperResponseReceived();
-                }
-            }).collect(Collectors.toSet());
+                return getMailDetails(response, scannedDocument); })
+            .collect(Collectors.toMap(mailDetail -> mailDetail[0], mailDetail -> mailDetail[1]));
 
-        if (mailTemplateIds.size() > 0) {
-            mailTemplateIds.forEach(mailTemplateId -> notifyClaimant(afterClaim, mailTemplateId));
+        if (mailsDetails.size() > 0) {
+            mailsDetails.forEach((mailTemplateId, mailToParty) -> notify(afterClaim, mailTemplateId, mailToParty));
         } else if (getDocumentsUploadedByStaff(beforeClaim, afterClaim).size() > 0) {
-            notifyClaimant(afterClaim, mailTemplates.getClaimantPaperResponseReceived());
+            notify(afterClaim, mailTemplates.getPaperResponseFormReceived(), CLAIMANT);
         }
+    }
+
+    private String[] getMailDetails(AboutToStartOrSubmitCallbackResponseBuilder response,
+                                    ScannedDocument scannedDocument) {
+        String templateId;
+        String mailToParty = CLAIMANT;
+        String subType = scannedDocument.getSubtype();
+        EmailTemplates mailTemplates = notificationsProperties.getTemplates().getEmail();
+        Boolean submittedByClaimant = CLAIMANT.equals(scannedDocument.getSubmittedBy());
+        if (subType != null && responseForms.contains(subType)) {
+            response.state(ClaimState.BUSINESS_QUEUE.getValue());
+            templateId = mailTemplates.getPaperResponseReceivedAndCaseTransferredToCCBC();
+        } else if (subType != null && forms.contains(subType)) {
+            mailToParty = submittedByClaimant ? DEFENDANT : CLAIMANT;
+            templateId = submittedByClaimant ? mailTemplates.getPaperResponseFromClaimantCaseHandoverToCCBC() :
+                                                        mailTemplates.getPaperResponseFromDefendantCaseHandoverToCCBC();
+        } else if (otherDocumentTypes.contains(scannedDocument.getDocumentType())) {
+            mailToParty = submittedByClaimant ? CLAIMANT : DEFENDANT;
+            templateId = submittedByClaimant ? mailTemplates.getPaperResponseFromClaimantGeneralLetter() :
+                                                            mailTemplates.getPaperResponseFromDefendantGeneralLetter();
+        } else {
+            templateId = mailTemplates.getPaperResponseFormReceived();
+        }
+        return new String[]{templateId, mailToParty};
+    }
+
+    private String getEmailId(Claim claim, String mailToParty) {
+        String defendantMail = claim.getDefendantEmail();
+        defendantMail = defendantMail != null ? defendantMail : claim.getClaimData().getDefendant().getEmail().get();
+        return CLAIMANT.equals(mailToParty) ? claim.getSubmitterEmail() : defendantMail;
     }
 
     private List<ScannedDocument> getUploadedScannedDocuments(final Claim beforeClaim, final Claim afterClaim) {
@@ -180,12 +202,12 @@ class PaperResponseReviewedHandler {
         return uploaded || scanned;
     }
 
-    private void notifyClaimant(Claim claim, String templateId) {
+    private void notify(Claim claim, String mailTemplateId, String mailToParty) {
         notificationService.sendMail(
-            claim.getSubmitterEmail(),
-            templateId,
+            getEmailId(claim, mailToParty),
+            mailTemplateId,
             aggregateParams(claim),
-            PaperResponse.notifyClaimantPaperResponseSubmitted(claim.getReferenceNumber(), "claimant")
+            PaperResponse.notifyClaimantPaperResponseSubmitted(claim.getReferenceNumber(), mailToParty)
         );
     }
 

@@ -42,8 +42,12 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.CLAIMANT_EMAIL;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.response.PaperResponseReviewedHandler.CLAIMANT;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.response.PaperResponseReviewedHandler.DEFENDANT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.BUSINESS_QUEUE;
 import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentType.FORM;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_EMAIL;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.SUBMITTER_EMAIL;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.withFullClaimData;
@@ -117,10 +121,12 @@ class PaperResponseReviewedHandlerTest {
         lenient().when(notificationsProperties.getTemplates()).thenReturn(notificationTemplates);
         lenient().when(notificationTemplates.getEmail()).thenReturn(mailTemplates);
 
-        lenient().when(mailTemplates.getClaimantPaperResponseReceived()).thenReturn("Template1");
-        lenient().when(mailTemplates.getClaimantPaperResponseReceivedGeneralResponse()).thenReturn("Template2");
-        lenient().when(mailTemplates.getPaperResponseReceivedAndCaseTransferredToCCBC()).thenReturn("Template3");
-        lenient().when(mailTemplates.getPaperResponseReceivedAndCaseWillBeTransferredToCCBC()).thenReturn("Template4");
+        lenient().when(mailTemplates.getPaperResponseFormReceived()).thenReturn("Template1");
+        lenient().when(mailTemplates.getPaperResponseReceivedAndCaseTransferredToCCBC()).thenReturn("Template2");
+        lenient().when(mailTemplates.getPaperResponseFromClaimantCaseHandoverToCCBC()).thenReturn("Template3");
+        lenient().when(mailTemplates.getPaperResponseFromDefendantCaseHandoverToCCBC()).thenReturn("Template4");
+        lenient().when(mailTemplates.getPaperResponseFromClaimantGeneralLetter()).thenReturn("Template5");
+        lenient().when(mailTemplates.getPaperResponseFromDefendantGeneralLetter()).thenReturn("Template6");
 
         lenient().when(launchDarklyClient.isFeatureEnabled("paper-response-review-new-handling")).thenReturn(true);
     }
@@ -174,7 +180,7 @@ class PaperResponseReviewedHandlerTest {
     @Test
     void verifyMoreTimeRequestedIsHandledByScannedDocumentUpload() {
         AboutToStartOrSubmitCallbackResponse response = verifyMailWithCorrectTemplateIsSent(FORM, "N9",
-            "Template1", 1);
+            "Template1", SUBMITTER_EMAIL, false, 1);
 
         verify(caseMapper).to(claimArgumentCaptor.capture());
         assertThat(claimArgumentCaptor.getValue().isMoreTimeRequested())
@@ -192,41 +198,52 @@ class PaperResponseReviewedHandlerTest {
 
     private void verifyClaimState(String subType, int timesCalled) {
         AboutToStartOrSubmitCallbackResponse response = verifyMailWithCorrectTemplateIsSent(FORM, subType,
-            "Template3", timesCalled);
+            "Template2", SUBMITTER_EMAIL, false, timesCalled);
         assertEquals(BUSINESS_QUEUE.getValue(), response.getState());
     }
 
     @Test
     public void shouldNotUseNewEmailTemplatesIfFeatureTurnedOff() {
         when(launchDarklyClient.isFeatureEnabled("paper-response-review-new-handling")).thenReturn(false);
-        verifyMailWithCorrectTemplateIsSent(FORM, "N9a", "Template3", 0);
+        verifyMailWithCorrectTemplateIsSent(FORM, "N9a", "Template3", SUBMITTER_EMAIL, false, 0);
     }
 
     @Test
     public void shouldTriggerMailWithSpecificMailTemplateForTheProvidedScannedDocument() {
 
-        verifyMailWithCorrectTemplateIsSent(FORM, "N9a", "Template3", 1);
-        verifyMailWithCorrectTemplateIsSent(FORM, "N9b", "Template3", 2);
-        verifyMailWithCorrectTemplateIsSent(FORM, "N11", "Template3", 3);
+        verifyMailWithCorrectTemplateIsSent(FORM, "N9a", "Template2", SUBMITTER_EMAIL, false, 1);
+        verifyMailWithCorrectTemplateIsSent(FORM, "N9b", "Template2", SUBMITTER_EMAIL, false, 2);
+        verifyMailWithCorrectTemplateIsSent(FORM, "N11", "Template2", SUBMITTER_EMAIL, false, 3);
 
-        verifyMailWithCorrectTemplateIsSent(FORM, "N180", "Template4", 1);
-        verifyMailWithCorrectTemplateIsSent(FORM, "N225", "Template4", 2);
-        verifyMailWithCorrectTemplateIsSent(FORM, "EX160", "Template4", 3);
-        verifyMailWithCorrectTemplateIsSent(FORM, "N244", "Template4", 4);
-        verifyMailWithCorrectTemplateIsSent(FORM, "N245", "Template4", 5);
-        verifyMailWithCorrectTemplateIsSent(FORM, "Non_prescribed_documents", "Template4", 6);
+        verifyMailWithCorrectTemplateIsSent(FORM, "N180", "Template4", SUBMITTER_EMAIL, false, 1);
+        verifyMailWithCorrectTemplateIsSent(FORM, "N225", "Template4", SUBMITTER_EMAIL, false, 2);
+        verifyMailWithCorrectTemplateIsSent(FORM, "EX160", "Template4", SUBMITTER_EMAIL, false, 3);
+        verifyMailWithCorrectTemplateIsSent(FORM, "N244", "Template4", SUBMITTER_EMAIL, false, 4);
+        verifyMailWithCorrectTemplateIsSent(FORM, "N245", "Template4", SUBMITTER_EMAIL, false, 5);
+        verifyMailWithCorrectTemplateIsSent(FORM, "Non_prescribed_documents", "Template4", SUBMITTER_EMAIL, false, 6);
 
-        verifyMailWithCorrectTemplateIsSent(ScannedDocumentType.OTHER, "abc", "Template2", 1);
-        verifyMailWithCorrectTemplateIsSent(ScannedDocumentType.LETTER, "xyz", "Template2", 2);
+        verifyMailWithCorrectTemplateIsSent(FORM, "N180", "Template3", DEFENDANT_EMAIL, true, 1);
+        verifyMailWithCorrectTemplateIsSent(FORM, "N225", "Template3", DEFENDANT_EMAIL, true, 2);
+        verifyMailWithCorrectTemplateIsSent(FORM, "EX160", "Template3", DEFENDANT_EMAIL, true, 3);
+        verifyMailWithCorrectTemplateIsSent(FORM, "N244", "Template3", DEFENDANT_EMAIL, true, 4);
+        verifyMailWithCorrectTemplateIsSent(FORM, "N245", "Template3", DEFENDANT_EMAIL, true, 5);
+        verifyMailWithCorrectTemplateIsSent(FORM, "Non_prescribed_documents", "Template3", DEFENDANT_EMAIL, true, 6);
 
-        verifyMailWithCorrectTemplateIsSent(ScannedDocumentType.COVERSHEET, "pqr", "Template1", 1);
+        verifyMailWithCorrectTemplateIsSent(ScannedDocumentType.OTHER, "abc", "Template6", DEFENDANT_EMAIL, false, 1);
+        verifyMailWithCorrectTemplateIsSent(ScannedDocumentType.LETTER, "xyz", "Template6", DEFENDANT_EMAIL, false, 2);
+
+        verifyMailWithCorrectTemplateIsSent(ScannedDocumentType.OTHER, "abc", "Template5", CLAIMANT_EMAIL, true, 1);
+        verifyMailWithCorrectTemplateIsSent(ScannedDocumentType.LETTER, "xyz", "Template5", CLAIMANT_EMAIL, true, 2);
+
+        verifyMailWithCorrectTemplateIsSent(ScannedDocumentType.COVERSHEET, "", "Template1", SUBMITTER_EMAIL, false, 1);
     }
 
     private AboutToStartOrSubmitCallbackResponse verifyMailWithCorrectTemplateIsSent(ScannedDocumentType docType,
-                                        String subType, String expectedTemplate, int timesCalled) {
+        String subType, String expectedTemplate, String expectedEmail, Boolean submittedByClaimant, int timesCalled) {
+
         documentCollectionAfter = new ClaimDocumentCollection();
         documentCollectionAfter.addScannedDocument(ScannedDocument.builder()
-            .documentType(docType).subtype(subType).build());
+            .documentType(docType).subtype(subType).submittedBy(submittedByClaimant ? CLAIMANT : DEFENDANT).build());
         Claim afterClaim = withFullClaimData().toBuilder().claimDocumentCollection(documentCollectionAfter).build();
         Claim beforeClaim = withFullClaimData().toBuilder().claimDocumentCollection(documentCollection).build();
 
@@ -249,12 +266,14 @@ class PaperResponseReviewedHandlerTest {
 
         final AboutToStartOrSubmitCallbackResponse response = paperResponseReviewedHandler.handle(callbackParams);
 
+        String party = SUBMITTER_EMAIL.equals(expectedEmail) ? CLAIMANT : DEFENDANT;
+
         verify(notificationService, times(timesCalled))
             .sendMail(
-                eq(SUBMITTER_EMAIL),
+                eq(expectedEmail),
                 eq(expectedTemplate),
                 anyMap(),
-                eq("paper-response-submitted-claimant-" + REFERENCE_NUMBER));
+                eq("paper-response-submitted-" + party + "-" + REFERENCE_NUMBER));
 
         return response;
     }
