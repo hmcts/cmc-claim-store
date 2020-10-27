@@ -1,8 +1,8 @@
 ignore:
-  - "**/cmc/domain/constraints/ValidInterestConstraintValidator.java"
-  - "**/cmc/domain/constraints/ValidInterestDateConstraintValidator.java"
-  - "**/cmc/domain/constraints/ValidUnemploymentConstraintValidator.java"
-  - "**/cmc/domain/constraints/ValidEmploymentConstraintValidator.java"
+  - "**/ValidInterestConstraintValidator.java"
+  - "**/ValidInterestDateConstraintValidator.java"
+  - "**/ValidUnemploymentConstraintValidator.java"
+  - "**/ValidEmploymentConstraintValidator.java"
   - "**/cmc/domain/models/**"
   - "**/cmc/claimstore/idam/models/**"
   - "**/config/**"
