@@ -1,4 +1,8 @@
 ignore:
+  - "**/cmc/domain/constraints/ValidInterestConstraintValidator.java"
+  - "**/cmc/domain/constraints/ValidInterestDateConstraintValidator.java"
+  - "**/cmc/domain/constraints/ValidUnemploymentConstraintValidator.java"
+  - "**/cmc/domain/constraints/ValidEmploymentConstraintValidator.java"
   - "**/cmc/domain/models/**"
   - "**/cmc/claimstore/idam/models/**"
   - "**/config/**"
@@ -20,7 +24,3 @@ ignore:
   - "**/GeneratedDocuments.java"
   - "**/CCDCaseApi.java"
   - "**/DBCaseRepository.java"
-  - "**/cmc/domain/constraints/ValidInterestConstraintValidator.java"
-  - "**/cmc/domain/constraints/ValidInterestDateConstraintValidator.java"
-  - "**/cmc/domain/constraints/ValidUnemploymentConstraintValidator.java"
-  - "**/cmc/domain/constraints/ValidEmploymentConstraintValidator.java"
