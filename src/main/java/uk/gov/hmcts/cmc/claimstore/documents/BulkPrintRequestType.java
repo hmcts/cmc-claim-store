@@ -14,7 +14,10 @@ public enum BulkPrintRequestType {
         PrintRequestType.GENERAL_LETTER),
     BULK_PRINT_TRANSFER_TYPE("bulk-print-transfer-pack",
         "Bulk print transfer to court {} created for letter type {} claim reference {}",
-        PrintRequestType.BULK_PRINT_TRANSFER);
+        PrintRequestType.BULK_PRINT_TRANSFER),
+    PAPER_DEFENCE_TYPE("paper-defence-pack",
+        "paper-defence-pack letter {} created for letter type {} claim reference {}",
+        PrintRequestType.PAPER_DEFENCE_TYPE);
 
     String value;
     String logInfo;
