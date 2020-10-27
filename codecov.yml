@@ -1,5 +1,4 @@
 ignore:
-  - "**/cmc/domain/constraints/**"
   - "**/cmc/domain/models/**"
   - "**/cmc/claimstore/idam/models/**"
   - "**/config/**"

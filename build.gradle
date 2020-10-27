@@ -388,7 +388,11 @@ sonarqube {
         "launch-darkly-client/**",
         "email-client/**",
         "rpa-mapper/**",
-        "**/UserRoleConstraintValidator.java"
+        "**/UserRoleConstraintValidator.java",
+        "**/ValidEmploymentConstraintValidator.java",
+        "**/ValidInterestConstraintValidator.java",
+        "**/ValidInterestDateConstraintValidator.java",
+        "**/ValidUnemploymentConstraintValidator.java"
       ].join(",")
   }
 }
