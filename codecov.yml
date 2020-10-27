@@ -20,3 +20,6 @@ ignore:
   - "**/GeneratedDocuments.java"
   - "**/CCDCaseApi.java"
   - "**/DBCaseRepository.java"
+  - "**/ValidInterestConstraintValidator.java"
+  - "**/ValidInterestDateConstraintValidator.java"
+  - "**/ValidUnemploymentConstraintValidator.java"
