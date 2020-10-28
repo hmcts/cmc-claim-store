@@ -22,6 +22,7 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefenceType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
@@ -43,6 +44,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -54,27 +56,19 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.Pape
 class PaperResponseFullDefenceCallbackHandlerTest {
 
     private static final String BEARER_TOKEN = "Bearer let me in";
-
+    private static final LocalDateTime DATE = LocalDateTime.parse("2020-11-16T13:15:30");
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
-
     @Mock
     private Clock clock;
-
     @Mock
     private CaseMapper caseMapper;
-
     @Mock
     private EventProducer eventProducer;
-
     @Mock
     private CourtFinderApi courtFinderApi;
-
     @InjectMocks
     private PaperResponseFullDefenceCallbackHandler handler;
-
-    private static final LocalDateTime DATE = LocalDateTime.parse("2020-11-16T13:15:30");
-
     private CallbackParams callbackParams;
 
     @Nested
@@ -120,7 +114,7 @@ class PaperResponseFullDefenceCallbackHandlerTest {
             when(caseDetailsConverter.convertToMap(any(CCDCase.class))).thenReturn(Collections.emptyMap());
 
             AboutToStartOrSubmitCallbackResponse response
-                = (AboutToStartOrSubmitCallbackResponse)handler.handle(callbackParams);
+                = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
 
             Assertions.assertEquals(court, response.getData().get("preferredDQCourt"));
         }
@@ -135,7 +129,7 @@ class PaperResponseFullDefenceCallbackHandlerTest {
             when(caseDetailsConverter.convertToMap(any(CCDCase.class))).thenReturn(Collections.emptyMap());
 
             AboutToStartOrSubmitCallbackResponse response
-                = (AboutToStartOrSubmitCallbackResponse)handler.handle(callbackParams);
+                = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
 
             Assertions.assertNull(response.getData().get("preferredDQCourt"));
         }
@@ -153,7 +147,7 @@ class PaperResponseFullDefenceCallbackHandlerTest {
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(Claim.builder().build());
 
             AboutToStartOrSubmitCallbackResponse response
-                = (AboutToStartOrSubmitCallbackResponse)handler.handle(callbackParams);
+                = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
 
             Assertions.assertEquals(court, response.getData().get("preferredDQCourt"));
         }
@@ -162,7 +156,7 @@ class PaperResponseFullDefenceCallbackHandlerTest {
     @Nested
     class AboutToSubmitTests {
 
-        private  CCDCase ccdCase;
+        private CCDCase ccdCase;
 
         @Captor
         private ArgumentCaptor<CCDCase> ccdCaseArgumentCaptor;
@@ -287,8 +281,8 @@ class PaperResponseFullDefenceCallbackHandlerTest {
 
             assertThat(ccdCaseArgumentCaptor.getValue()
                 .getScannedDocuments().stream()
-                    .map(CCDCollectionElement::getValue)
-                    .map(CCDScannedDocument::getFileName)
+                .map(CCDCollectionElement::getValue)
+                .map(CCDScannedDocument::getFileName)
                 .collect(Collectors.toSet())
             ).containsExactly("reference-scanned-OCON9x-full-defence.pdf");
         }
@@ -300,16 +294,16 @@ class PaperResponseFullDefenceCallbackHandlerTest {
 
             ccdCase = ccdCase.toBuilder()
                 .scannedDocuments(ImmutableList.<CCDCollectionElement<CCDScannedDocument>>builder()
-                   .addAll(ccdCase.getScannedDocuments())
+                    .addAll(ccdCase.getScannedDocuments())
                     .add(CCDCollectionElement.<CCDScannedDocument>builder()
                         .value(
                             CCDScannedDocument.builder()
                                 .fileName(filename)
                                 .subtype(subtype)
                                 .build()
-                            )
+                        )
                         .build())
-                   .build())
+                    .build())
                 .build();
 
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(this.ccdCase);
@@ -325,6 +319,99 @@ class PaperResponseFullDefenceCallbackHandlerTest {
                 .map(CCDScannedDocument::getFileName)
                 .collect(Collectors.toSet())
             ).containsExactly(filename);
+        }
+
+        @Test
+        void shouldSetEmailFromDefandantProvidedAddess() {
+
+            ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList()).toBuilder()
+                .scannedDocuments(List.of(
+                    CCDCollectionElement.<CCDScannedDocument>builder()
+                        .value(CCDScannedDocument.builder()
+                            .type(form)
+                            .subtype(OCON9X_SUBTYPE)
+                            .deliveryDate(LocalDateTime.now())
+                            .build())
+                        .build())
+                )
+                .respondents(com.google.common.collect.ImmutableList.of(CCDCollectionElement.<CCDRespondent>builder()
+                    .value(ccdCase.getRespondents().get(0).getValue().toBuilder()
+                        .partyDetail(ccdCase.getRespondents().get(0).getValue().getPartyDetail().toBuilder()
+                            .correspondenceAddress(null)
+                            .emailAddress("abc@def.com")
+                            .build())
+                        .build())
+                    .build()))
+                .build();
+
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(this.ccdCase);
+            handler.handle(callbackParams);
+            verify(caseDetailsConverter).convertToMap(ccdCaseArgumentCaptor.capture());
+            assertEquals("abc@def.com",
+                ccdCaseArgumentCaptor.getValue().getRespondents().get(0).getValue().getPartyDetail().getEmailAddress());
+        }
+
+        @Test
+        void shouldSetEmailFromClaimantProvidedAddess() {
+
+            ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList()).toBuilder()
+                .scannedDocuments(List.of(
+                    CCDCollectionElement.<CCDScannedDocument>builder()
+                        .value(CCDScannedDocument.builder()
+                            .type(form)
+                            .subtype(OCON9X_SUBTYPE)
+                            .deliveryDate(LocalDateTime.now())
+                            .build())
+                        .build()))
+                .respondents(com.google.common.collect.ImmutableList.of(CCDCollectionElement.<CCDRespondent>builder()
+                    .value(ccdCase.getRespondents().get(0).getValue().toBuilder()
+                        .claimantProvidedDetail(ccdCase.getRespondents().get(0).getValue()
+                            .getClaimantProvidedDetail().toBuilder()
+                            .emailAddress("abc@def.com")
+                            .build())
+                        .partyDetail(ccdCase.getRespondents().get(0).getValue().getPartyDetail().toBuilder()
+                            .correspondenceAddress(null)
+                            .emailAddress("")
+                            .build())
+                        .build())
+                    .build()))
+                .build();
+
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(this.ccdCase);
+            handler.handle(callbackParams);
+            verify(caseDetailsConverter).convertToMap(ccdCaseArgumentCaptor.capture());
+            assertEquals("abc@def.com",
+                ccdCaseArgumentCaptor.getValue().getRespondents().get(0).getValue().getPartyDetail().getEmailAddress());
+        }
+
+        @Test
+        void shouldSetEmailFromClaimantProvidedAddessWhenPartIsNull() {
+
+            ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList()).toBuilder()
+                .scannedDocuments(List.of(
+                    CCDCollectionElement.<CCDScannedDocument>builder()
+                        .value(CCDScannedDocument.builder()
+                            .type(form)
+                            .subtype(OCON9X_SUBTYPE)
+                            .deliveryDate(LocalDateTime.now())
+                            .build())
+                        .build()))
+                .respondents(com.google.common.collect.ImmutableList.of(CCDCollectionElement.<CCDRespondent>builder()
+                    .value(ccdCase.getRespondents().get(0).getValue().toBuilder()
+                        .claimantProvidedDetail(ccdCase.getRespondents().get(0).getValue()
+                            .getClaimantProvidedDetail().toBuilder()
+                            .emailAddress("abc@def.com")
+                            .build())
+                        .partyDetail(null)
+                        .build())
+                    .build()))
+                .build();
+
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(this.ccdCase);
+            handler.handle(callbackParams);
+            verify(caseDetailsConverter).convertToMap(ccdCaseArgumentCaptor.capture());
+            assertEquals("abc@def.com",
+                ccdCaseArgumentCaptor.getValue().getRespondents().get(0).getValue().getPartyDetail().getEmailAddress());
         }
 
         @Test

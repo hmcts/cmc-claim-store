@@ -29,6 +29,8 @@ public class CCDRespondent {
     private String defendantId;
     private LocalDate responseDeadline;
     private LocalDate servedDate;
+    private LocalDate paperFormServedDate;
+    private LocalDate paperFormIssueDate;
 
     private CCDParty claimantProvidedDetail;
     private String claimantProvidedPartyName;
@@ -114,5 +116,10 @@ public class CCDRespondent {
     public boolean hasStatementOfTruth() {
         return responseDefendantSOTSignerName != null
             || responseDefendantSOTSignerRole != null;
+    }
+
+    @JsonIgnore
+    public boolean isOconFormSent() {
+        return paperFormServedDate != null;
     }
 }

@@ -63,6 +63,7 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
@@ -274,6 +275,26 @@ public class SupportController {
     ) {
         mediationReportService
             .sendMediationReport(authorisation, mediationRequest.getReportDate());
+
+    }
+
+    /*
+    * This method is added as to enable PET to regenerate
+    * MILO report(in case of failure) for specific date
+    * */
+    @PostMapping(value = "/reSendMediation", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Re-Generate and Send Mediation Report for Telephone Mediation Service")
+    public void reSendMediation(
+        @RequestBody MediationRequest mediationRequest
+    ) {
+        User user = userService.authenticateAnonymousCaseWorker();
+        String authorisation = user.getAuthorisation();
+        LocalDateTime now = LocalDateTime.now();
+        logger.info("Support controller started MILO report generation at {}", now);
+        mediationReportService
+            .sendMediationReport(authorisation, mediationRequest.getReportDate());
+        logger.info("MILO report ended at {}, took {} seconds to generate",
+            LocalDateTime.now(), Duration.between(now, LocalDateTime.now()).getSeconds());
 
     }
 

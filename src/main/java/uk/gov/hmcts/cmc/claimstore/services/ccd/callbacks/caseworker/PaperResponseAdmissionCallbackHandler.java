@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
@@ -99,9 +100,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
                 .value(e.getValue()
                     .toBuilder()
                     .responseType(ccdCase.getPaperAdmissionType())
-                    .partyDetail(e.getValue().getPartyDetail().toBuilder()
-                        .type(e.getValue().getClaimantProvidedDetail().getType())
-                        .build())
+                    .partyDetail(getPartyDetail(e))
                     .responseSubmittedOn(updatedCCDScannedDocs.stream()
                         .map(CCDCollectionElement::getValue)
                         .filter(s -> s.getSubtype().equals(FORM_NAME))
@@ -130,6 +129,12 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetailsConverter.convertToMap(updatedCCDCase))
             .build();
+    }
+
+    private CCDParty getPartyDetail(CCDCollectionElement<CCDRespondent> e) {
+        return e.getValue().getPartyDetail() != null ? e.getValue().getPartyDetail().toBuilder()
+            .type(e.getValue().getClaimantProvidedDetail().getType())
+            .build() : e.getValue().getClaimantProvidedDetail().toBuilder().build();
     }
 
     private boolean isDefendentLinked(CCDCase updatedCCDCase) {

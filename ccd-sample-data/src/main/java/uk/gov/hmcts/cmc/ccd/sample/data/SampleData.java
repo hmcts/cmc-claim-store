@@ -37,6 +37,7 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriorityDebt;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDBespokeOrderDirection;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
@@ -663,6 +664,22 @@ public class SampleData {
             .build();
     }
 
+    public static CCDCase addCCDBespokeOrderGenerationData(CCDCase ccdCase) {
+        return ccdCase.toBuilder()
+            .directionOrderType("BESPOKE")
+            .bespokeDirectionList(ImmutableList.of(
+                CCDCollectionElement.<CCDBespokeOrderDirection>builder()
+                    .value(
+                        CCDBespokeOrderDirection.builder()
+                            .beSpokeDirectionFor(CCDDirectionPartyType.BOTH)
+                            .beSpokeDirectionExplain("a direction")
+                            .beSpokeDirectionDatetime(LocalDate.parse("2020-10-11"))
+                            .build()
+                    )
+                    .build()))
+            .build();
+    }
+
     public static CCDStatementOfMeans getCCDStatementOfMeans() {
         return CCDStatementOfMeans.builder()
             .residenceType(JOINT_OWN_HOME)
@@ -818,5 +835,32 @@ public class SampleData {
             .scannedDocuments(SampleStaffUploadedDoc.scannedDocsPaperResponse)
             .state(OPEN.getValue())
             .build();
+    }
+
+    public static List<CCDCollectionElement<CCDBespokeOrderDirection>> getBespokeDirectionList() {
+
+        return ImmutableList.of(
+            CCDCollectionElement.<CCDBespokeOrderDirection>builder()
+                .value(
+                    CCDBespokeOrderDirection.builder()
+            .beSpokeDirectionFor(CCDDirectionPartyType.CLAIMANT)
+            .beSpokeDirectionExplain("first direction")
+            .beSpokeDirectionDatetime(LocalDate.of(2020, 8, 4))
+            .build()).build(),
+            CCDCollectionElement.<CCDBespokeOrderDirection>builder()
+                .value(
+                    CCDBespokeOrderDirection.builder()
+                        .beSpokeDirectionFor(CCDDirectionPartyType.DEFENDANT)
+                        .beSpokeDirectionExplain("second direction")
+                        .beSpokeDirectionDatetime(LocalDate.of(2020, 8, 4))
+                        .build()).build(),
+            CCDCollectionElement.<CCDBespokeOrderDirection>builder()
+                .value(
+                    CCDBespokeOrderDirection.builder()
+                        .beSpokeDirectionFor(CCDDirectionPartyType.BOTH)
+                        .beSpokeDirectionExplain("third direction")
+                        .beSpokeDirectionDatetime(LocalDate.of(2020, 8, 4))
+                        .build()).build()
+            );
     }
 }
