@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Builder
@@ -26,7 +25,9 @@ public class Fees {
     private final String ccdCaseNumber;
     private final String reference;
 
-    public Fees(Integer id, String code, String version, Integer volume, Integer calculatedAmount, String ccdCaseNumber, String reference) {
+    public Fees(Integer id, String code, String version,
+                Integer volume, Integer calculatedAmount,
+                String ccdCaseNumber, String reference) {
         this.id = id;
         this.code = code;
         this.version = version;
