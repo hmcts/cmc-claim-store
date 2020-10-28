@@ -39,6 +39,6 @@ public class BespokeOrderDirectionMapperTest {
         Claim.ClaimBuilder claimBuilder = Claim.builder();
         CCDCase ccdCase = CCDCase.builder().build();
         mapper.from(ccdCase, claimBuilder);
-        assertThat(!claimBuilder.build().getBespokeOrderDirection().isPresent());
+        assertThat(claimBuilder.build().getBespokeOrderDirection()).isEmpty();
     }
 }
