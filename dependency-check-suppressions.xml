@@ -178,4 +178,10 @@
         <cve>CVE-2020-10663</cve>
         <cve>CVE-2020-7712</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+             apache tomcat version
+         ]]></notes>
+        <cve>CVE-2020-13943</cve>
+    </suppress>
 </suppressions>
