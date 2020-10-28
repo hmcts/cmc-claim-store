@@ -110,17 +110,17 @@ doc_assembly:
   contactChangeTemplateId: "CV-CMC-GOR-ENG-0006.docx"
   noticeOfTransferSentToDefendantTemplateId: "CV-CMC-GOR-ENG-0008.docx"
   noticeOfTransferSentToCourtTemplateId: "CV-CMC-GOR-ENG-0009.docx"
-  paperDefenceCoverLetterTemplateID: "CV-CMC-GOR-ENG-0007.docx"
-  oconFormIndividualWithDQs: "CV-CMC-GOR-ENG-0010.docx"
-  oconFormSoleTraderWithDQs: "CV-CMC-GOR-ENG-0011.docx"
-  oconFormOrganisationWithDQs: "CV-CMC-GOR-ENG-0012.docx"
+  paperDefenceCoverLetterTemplateID: "CV-CMC-LET-ENG-00631.docx"
+  oconFormIndividualWithDQs: "CV-CMC-LET-ENG-00632.docx"
+  oconFormSoleTraderWithDQs: "CV-CMC-LET-ENG-00633.docx"
+  oconFormOrganisationWithDQs: "CV-CMC-LET-ENG-00634.docx"
   oconFormIndividualWithoutDQs: "CV-CMC-GOR-ENG-0013.docx"
   oconFormSoleTraderWithoutDQs: "CV-CMC-GOR-ENG-0014.docx"
   oconFormOrganisationWithoutDQs: "CV-CMC-GOR-ENG-0015.docx"
 
   noticeOfTransferToCcbcSentToDefendantTemplateId: "CV-CMC-GOR-ENG-0016.docx"
   paperResponseAdmissionTemplateId: "CV-CMC-GOR-ENG-0016.docx"
-  defendantPinLetterTemplateID: "CV-CMC-GOR-ENG-0017.docx"
+  defendantPinLetterTemplateID: "CV-CMC-LET-ENG-00630.docx"
 
 nonworking-days:
   datafile: ${NONWORKINGDAYS_DATAFILE:/data/non-working_days.dat}
