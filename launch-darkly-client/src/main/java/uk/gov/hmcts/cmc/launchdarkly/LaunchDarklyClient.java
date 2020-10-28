@@ -27,6 +27,10 @@ public class LaunchDarklyClient {
         Runtime.getRuntime().addShutdownHook(new Thread(this::close));
     }
 
+    public boolean isFeatureEnabled(String feature) {
+        return internalClient.boolVariation(feature, LaunchDarklyClient.CLAIM_STORE_USER, false);
+    }
+
     public boolean isFeatureEnabled(String feature, LDUser user) {
         return internalClient.boolVariation(feature, user, false);
     }
