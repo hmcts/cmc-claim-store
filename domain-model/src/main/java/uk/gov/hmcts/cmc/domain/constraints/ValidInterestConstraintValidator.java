@@ -12,6 +12,15 @@ import static uk.gov.hmcts.cmc.domain.constraints.BeanValidator.validate;
 
 public class ValidInterestConstraintValidator implements ConstraintValidator<ValidInterest, Interest> {
 
+    private static final String NO_INTEREST = "no interest";
+    private static final String REASON = "reason";
+    private static final String INTEREST_DATE = "interestDate";
+    private static final String INTEREST_BREAKDOWN = "interestBreakdown";
+    private static final String DAILY_AMOUNT = "specificDailyAmount";
+    private static final String STANDARD = "standard";
+    private static final String DIFFERENT = "different";
+    private static final String BREAKDOWN = "breakdown";
+
     @Override
     public boolean isValid(Interest interest, ConstraintValidatorContext validatorContext) {
         if (interest == null || interest.getType() == null) {
@@ -36,23 +45,26 @@ public class ValidInterestConstraintValidator implements ConstraintValidator<Val
         boolean valid = true;
 
         if (interest.getRate() != null) {
-            setValidationErrors(validatorContext, "rate", mayNotBeProvidedErrorForType("no interest"));
+            setValidationErrors(validatorContext, "rate", mayNotBeProvidedErrorForType(NO_INTEREST));
             valid = false;
         }
         if (interest.getReason() != null) {
-            setValidationErrors(validatorContext, "reason", mayNotBeProvidedErrorForType("no interest"));
+            setValidationErrors(validatorContext, REASON, mayNotBeProvidedErrorForType(NO_INTEREST));
             valid = false;
         }
         if (interest.getInterestDate() != null) {
-            setValidationErrors(validatorContext, "interestDate", mayNotBeProvidedErrorForType("no interest"));
+            setValidationErrors(validatorContext, INTEREST_DATE,
+                mayNotBeProvidedErrorForType(NO_INTEREST));
             valid = false;
         }
         if (interest.getInterestBreakdown() != null) {
-            setValidationErrors(validatorContext, "interestBreakdown", mayNotBeProvidedErrorForType("no interest"));
+            setValidationErrors(validatorContext, INTEREST_BREAKDOWN,
+                mayNotBeProvidedErrorForType(NO_INTEREST));
             valid = false;
         }
         if (interest.getSpecificDailyAmount().isPresent()) {
-            setValidationErrors(validatorContext, "specificDailyAmount", mayNotBeProvidedErrorForType("no interest"));
+            setValidationErrors(validatorContext, DAILY_AMOUNT,
+                mayNotBeProvidedErrorForType(NO_INTEREST));
             valid = false;
         }
         return valid;
@@ -63,25 +75,26 @@ public class ValidInterestConstraintValidator implements ConstraintValidator<Val
         InterestDate interestDate = interest.getInterestDate();
 
         if (interest.getRate() == null) {
-            setValidationErrors(validatorContext, "rate", mayNotBeNullErrorForType("standard"));
+            setValidationErrors(validatorContext, "rate", mayNotBeNullErrorForType(STANDARD));
             valid = false;
         }
         if (interest.getReason() != null) {
-            setValidationErrors(validatorContext, "reason", mayNotBeProvidedErrorForType("standard"));
+            setValidationErrors(validatorContext, REASON, mayNotBeProvidedErrorForType(STANDARD));
             valid = false;
         }
         if (interestDate == null) {
-            setValidationErrors(validatorContext, "interestDate", mayNotBeNullErrorForType("standard"));
+            setValidationErrors(validatorContext, INTEREST_DATE, mayNotBeNullErrorForType(STANDARD));
             valid = false;
         } else {
-            valid = valid && validateField(validatorContext, interestDate, "interestDate");
+            valid = valid && validateField(validatorContext, interestDate, INTEREST_DATE);
         }
         if (interest.getInterestBreakdown() != null) {
-            setValidationErrors(validatorContext, "interestBreakdown", mayNotBeProvidedErrorForType("standard"));
+            setValidationErrors(validatorContext, INTEREST_BREAKDOWN,
+                mayNotBeProvidedErrorForType(STANDARD));
             valid = false;
         }
         if (interest.getSpecificDailyAmount().isPresent()) {
-            setValidationErrors(validatorContext, "specificDailyAmount", mayNotBeProvidedErrorForType("standard"));
+            setValidationErrors(validatorContext, DAILY_AMOUNT, mayNotBeProvidedErrorForType(STANDARD));
             valid = false;
         }
         return valid;
@@ -92,88 +105,112 @@ public class ValidInterestConstraintValidator implements ConstraintValidator<Val
         InterestDate interestDate = interest.getInterestDate();
 
         if (interest.getRate() == null) {
-            setValidationErrors(validatorContext, "rate", mayNotBeNullErrorForType("different"));
+            setValidationErrors(validatorContext, "rate", mayNotBeNullErrorForType(DIFFERENT));
             valid = false;
         }
         if (interest.getReason() == null) {
-            setValidationErrors(validatorContext, "reason", mayNotBeNullErrorForType("different"));
+            setValidationErrors(validatorContext, REASON, mayNotBeNullErrorForType(DIFFERENT));
             valid = false;
         }
         if (interestDate == null) {
-            setValidationErrors(validatorContext, "interestDate", mayNotBeNullErrorForType("different"));
+            setValidationErrors(validatorContext, INTEREST_DATE, mayNotBeNullErrorForType(DIFFERENT));
             valid = false;
         } else {
-            valid = valid && validateField(validatorContext, interestDate, "interestDate");
+            valid = valid && validateField(validatorContext, interestDate, INTEREST_DATE);
         }
         if (interest.getInterestBreakdown() != null) {
-            setValidationErrors(validatorContext, "interestBreakdown", mayNotBeProvidedErrorForType("different"));
+            setValidationErrors(validatorContext, INTEREST_BREAKDOWN,
+                mayNotBeProvidedErrorForType(DIFFERENT));
             valid = false;
         }
         if (interest.getSpecificDailyAmount().isPresent()) {
-            setValidationErrors(validatorContext, "specificDailyAmount", mayNotBeProvidedErrorForType("different"));
-            valid = false;
+            setValidationErrors(validatorContext, DAILY_AMOUNT, mayNotBeProvidedErrorForType(DIFFERENT));
         }
         return valid;
     }
 
-    private boolean validateBreakdownInterest(Interest interest, ConstraintValidatorContext validatorContext) {
+    private boolean validateInterestReason(String reason, ConstraintValidatorContext validatorContext) {
         boolean valid = true;
+        if (reason != null) {
+            valid = setValidationErrors(validatorContext, REASON,
+                mayNotBeProvidedErrorForType(BREAKDOWN));
+        }
+        return valid;
+    }
+
+    private boolean validateInterestBreakdown(InterestBreakdown interestBreakdown, ConstraintValidatorContext
+        validatorContext, boolean valid) {
+        boolean validError;
+        if (interestBreakdown == null) {
+            validError = setValidationErrors(validatorContext, INTEREST_BREAKDOWN,
+                mayNotBeNullErrorForType(BREAKDOWN));
+        } else {
+            validError = valid && validateField(validatorContext, interestBreakdown, INTEREST_BREAKDOWN);
+        }
+        return valid ? validError : valid;
+    }
+
+    private boolean validateInterestDateNull(Interest interest, ConstraintValidatorContext context, boolean valid) {
+        boolean validError = true;
+        if ((interest.getRate() == null) && interest.getSpecificDailyAmount().isEmpty()) {
+            setValidationErrors(context,
+                "rate",
+                mayNotBeNullErrorForType(BREAKDOWN));
+            validError = setValidationErrors(context,
+                DAILY_AMOUNT,
+                mayNotBeNullErrorForType(BREAKDOWN));
+        }
+        return valid ? validError : valid;
+    }
+
+    private boolean validateInterestDateNotNull(Interest interest, ConstraintValidatorContext context, boolean valid) {
+        boolean validError = true;
+        if ((interest.getRate() != null) || interest.getSpecificDailyAmount().isPresent()) {
+            setValidationErrors(context,
+                "rate",
+                mayNotBeProvidedErrorForType(BREAKDOWN));
+            validError = setValidationErrors(context,
+                DAILY_AMOUNT,
+                mayNotBeProvidedErrorForType(BREAKDOWN));
+        }
+        return valid ? validError : valid;
+    }
+
+    private boolean validateBreakdownInterest(Interest interest, ConstraintValidatorContext validatorContext) {
+        boolean valid;
         InterestDate interestDate = interest.getInterestDate();
         InterestBreakdown interestBreakdown = interest.getInterestBreakdown();
 
-        if (interest.getReason() != null) {
-            setValidationErrors(validatorContext, "reason", mayNotBeProvidedErrorForType("breakdown"));
-            valid = false;
-        }
-        if (interestBreakdown == null) {
-            setValidationErrors(validatorContext, "interestBreakdown", mayNotBeNullErrorForType("breakdown"));
-            valid = false;
-        } else {
-            valid = valid && validateField(validatorContext, interestBreakdown, "interestBreakdown");
-        }
+        valid = validateInterestReason(interest.getReason(), validatorContext);
+        valid = validateInterestBreakdown(interestBreakdown, validatorContext, valid);
+
         if (interestDate == null) {
-            setValidationErrors(validatorContext, "interestDate", mayNotBeNullErrorForType("breakdown"));
-            valid = false;
+            valid = setValidationErrors(validatorContext, INTEREST_DATE,
+                mayNotBeNullErrorForType(BREAKDOWN));
         } else {
             switch (interestDate.getEndDateType()) {
                 case SETTLED_OR_JUDGMENT:
-                    if ((interest.getRate() == null) && !interest.getSpecificDailyAmount().isPresent()) {
-                        setValidationErrors(validatorContext,
-                            "rate",
-                            mayNotBeNullErrorForType("breakdown"));
-                        setValidationErrors(validatorContext,
-                            "specificDailyAmount",
-                            mayNotBeNullErrorForType("breakdown"));
-                        valid = false;
-                    }
+                    validateInterestDateNull(interest, validatorContext, valid);
                     break;
                 case SUBMISSION:
-                    if ((interest.getRate() != null) || interest.getSpecificDailyAmount().isPresent()) {
-                        setValidationErrors(validatorContext,
-                            "rate",
-                            mayNotBeProvidedErrorForType("breakdown"));
-                        setValidationErrors(validatorContext,
-                            "specificDailyAmount",
-                            mayNotBeProvidedErrorForType("breakdown"));
-                        valid = false;
-                    }
+                    validateInterestDateNotNull(interest, validatorContext, valid);
                     break;
                 default:
                     valid = false;
             }
-            valid = valid && validateField(validatorContext, interestDate, "interestDate");
+            valid = valid && validateField(validatorContext, interestDate, INTEREST_DATE);
         }
-
         return valid;
     }
 
-    private void setValidationErrors(ConstraintValidatorContext validatorContext, String fieldName, String... errors) {
-        validatorContext.disableDefaultConstraintViolation();
+    private boolean setValidationErrors(ConstraintValidatorContext context, String fieldName, String... errors) {
+        context.disableDefaultConstraintViolation();
         for (String error : errors) {
-            validatorContext.buildConstraintViolationWithTemplate(error)
+            context.buildConstraintViolationWithTemplate(error)
                 .addPropertyNode(fieldName)
                 .addConstraintViolation();
         }
+        return false;
     }
 
     private boolean validateField(ConstraintValidatorContext validatorContext, Object field, String fieldName) {

@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.claimstore.events.operations.UploadOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimCreatedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.PrintableDocumentService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -44,8 +45,8 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 @RunWith(MockitoJUnitRunner.class)
 public class PostClaimOrchestrationHandlerTest {
     public static final Claim CLAIM = SampleClaim.getDefault();
-    private static final String SUBMITTER_NAME = "submitter-name";
     public static final String AUTHORISATION = "AUTHORISATION";
+    private static final String SUBMITTER_NAME = "submitter-name";
     private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
 
     private final Map<String, Object> claimContents = new HashMap<>();
@@ -77,6 +78,8 @@ public class PostClaimOrchestrationHandlerTest {
     private PinOrchestrationService pinOrchestrationService;
     @Mock
     private AppInsights appInsights;
+    @Mock
+    private PrintableDocumentService printableDocumentService;
 
     @Before
     public void before() {
@@ -86,7 +89,8 @@ public class PostClaimOrchestrationHandlerTest {
             pdfServiceClient,
             claimIssueReceiptService,
             claimService,
-            userService
+            userService,
+            printableDocumentService
         );
 
         postClaimOrchestrationHandler = new PostClaimOrchestrationHandler(
