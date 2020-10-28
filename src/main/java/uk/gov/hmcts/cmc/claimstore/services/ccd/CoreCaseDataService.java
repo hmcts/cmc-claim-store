@@ -63,6 +63,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED_ONLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ORDER_REVIEW_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.UPDATE_CLAIM_PAYMENT;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
@@ -76,9 +77,11 @@ public class CoreCaseDataService {
     private static final String CMC_CASE_UPDATE_SUMMARY = "CMC case update";
     private static final String CMC_CASE_CREATE_SUMMARY = "CMC case create";
     private static final String CMC_PAYMENT_CREATE_SUMMARY = "CMC payment creation";
+    private static final String CMC_PAYMENT_UPDATE_SUMMARY = "CMC payment updation";
     private static final String SUBMITTING_CMC_CASE_UPDATE_DESCRIPTION = "Submitting CMC case update";
     private static final String SUBMITTING_CMC_CASE_CREATE_DESCRIPTION = "Submitting CMC case create";
     private static final String SUBMITTING_CMC_INITIATE_PAYMENT_DESCRIPTION = "Submitting CMC initiate payment";
+    private static final String SUBMITTING_CMC_UPDATE_PAYMENT_DESCRIPTION = "Submitting CMC update payment";
 
     private static final String CCD_UPDATE_FAILURE_MESSAGE
         = "Failed updating claim in CCD store for case id %s on event %s";
@@ -88,6 +91,9 @@ public class CoreCaseDataService {
 
     private static final String CCD_PAYMENT_CREATE_FAILURE_MESSAGE
         = "Failed creating a payment in CCD store for claim with external id %s on event %s";
+
+    private static final String CCD_PAYMENT_UPDATE_FAILURE_MESSAGE
+        = "Failed Updating a payment in CCD store for claim with external id %s on event %s";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -1174,6 +1180,58 @@ public class CoreCaseDataService {
                     CCD_UPDATE_FAILURE_MESSAGE,
                     caseId,
                     caseEvent
+                ), exception
+            );
+        }
+    }
+
+    @LogExecutionTime
+    public Claim updateCardPaymentForClaim(
+        User user,
+        Claim claim
+    ) {
+        requireNonNull(user, "user must not be null");
+
+        CCDCase ccdCase = caseMapper.to(claim);
+
+        try {
+            EventRequestData eventRequestData = EventRequestData.builder()
+                .userId(user.getUserDetails().getId())
+                .jurisdictionId(JURISDICTION_ID)
+                .caseTypeId(CASE_TYPE_ID)
+                .eventId(UPDATE_CLAIM_PAYMENT.getValue())
+                .ignoreWarning(true)
+                .build();
+
+            StartEventResponse startEventResponse = startUpdate(user.getAuthorisation(),
+                eventRequestData, claim.getId(), true);
+
+            CaseDataContent caseDataContent = CaseDataContent.builder()
+                .eventToken(startEventResponse.getToken())
+                .event(Event.builder()
+                    .id(startEventResponse.getEventId())
+                    .summary(CMC_PAYMENT_UPDATE_SUMMARY)
+                    .description(SUBMITTING_CMC_UPDATE_PAYMENT_DESCRIPTION)
+                    .build())
+                .data(ccdCase)
+                .build();
+
+            CaseDetails caseDetails = submitUpdate(
+                user.getAuthorisation(),
+                eventRequestData,
+                caseDataContent,
+                claim.getId(),
+                true
+            );
+
+            return caseDetailsConverter.extractClaim(caseDetails);
+
+        } catch (Exception exception) {
+            throw new CoreCaseDataStoreException(
+                String.format(
+                    CCD_PAYMENT_UPDATE_FAILURE_MESSAGE,
+                    ccdCase.getExternalId(),
+                    UPDATE_CLAIM_PAYMENT
                 ), exception
             );
         }

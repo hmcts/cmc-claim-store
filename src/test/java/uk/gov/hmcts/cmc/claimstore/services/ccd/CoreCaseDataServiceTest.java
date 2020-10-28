@@ -155,6 +155,36 @@ public class CoreCaseDataServiceTest {
                 .data(new HashMap<>())
                 .build());
 
+        when(coreCaseDataApi.startEventForCaseWorker(
+            eq(AUTHORISATION),
+            eq(AUTH_TOKEN),
+            eq(USER_DETAILS.getId()),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(SampleClaim.CLAIM_ID.toString()),
+            anyString()
+        ))
+            .thenReturn(StartEventResponse.builder()
+                .caseDetails(CaseDetails.builder().data(Maps.newHashMap()).build())
+                .eventId("eventId")
+                .token("token")
+                .build());
+
+        when(coreCaseDataApi.submitEventForCaseWorker(
+            eq(AUTHORISATION),
+            eq(AUTH_TOKEN),
+            eq(USER_DETAILS.getId()),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(SampleClaim.CLAIM_ID.toString()),
+            anyBoolean(),
+            any()
+        ))
+            .thenReturn(CaseDetails.builder()
+                .id(SampleClaim.CLAIM_ID)
+                .data(new HashMap<>())
+                .build());
+
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(CCDCase.builder().build());
 
         this.service = new CoreCaseDataService(
@@ -700,5 +730,25 @@ public class CoreCaseDataServiceTest {
         Claim returnedClaim = service.saveCaseEventIOC(USER, providedClaim, CREATE_CITIZEN_CLAIM);
 
         assertEquals(providedClaim, returnedClaim);
+    }
+
+    @Test
+    public void updateupdateCardPaymentForClaim() {
+
+        Claim providedClaim = SampleClaim.getDefault();
+        Claim expectedClaim = SampleClaim.claim(providedClaim.getClaimData(), "000MC001");
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+            .thenReturn(expectedClaim);
+
+        Claim returnedClaim = service.updateCardPaymentForClaim(USER, providedClaim);
+
+        assertNotNull(returnedClaim);
+        verify(coreCaseDataApi, atLeastOnce()).startEventForCaseWorker(eq(AUTHORISATION),
+            eq(AUTH_TOKEN),
+            eq(USER_DETAILS.getId()),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(SampleClaim.CLAIM_ID.toString()),
+            anyString());
     }
 }

@@ -29,6 +29,7 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
+import uk.gov.hmcts.cmc.domain.models.PaymentUpdate;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
@@ -52,6 +53,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISS
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NUMBER_OF_RECONSIDERATION;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED;
 import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_PAYMENT;
+import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
 @Component
@@ -441,8 +443,43 @@ public class ClaimService {
             .submitterEmail(submitterEmail)
             .createdAt(LocalDateTimeFactory.nowInUTC())
             .features(features)
-            .claimSubmissionOperationIndicators(ClaimSubmissionOperationIndicators.builder().build())
+            .claimSubmissionOperationIndicators(
+                ClaimSubmissionOperationIndicators.builder().build())
             .build();
+    }
+
+    @LogExecutionTime
+    public Claim updateCardPayment(String authorisation, PaymentUpdate paymentUpdate) {
+        final Claim[] returnClaim = {null};
+        if (paymentUpdate.getStatus().equalsIgnoreCase(SUCCESS.name())) {
+            List<Claim> claimRetreived = caseRepository.getByPaymentReference(
+                paymentUpdate.getReference(), authorisation);
+            claimRetreived.forEach(claim -> {
+                    Optional<Payment> paymentRetreived = claim.getClaimData().getPayment();
+                    paymentRetreived.ifPresent(payment -> {
+                        if (payment.getStatus().equals(PaymentStatus.PENDING)) {
+                            Payment paymentBuild = payment.toBuilder()
+                                .amount(paymentUpdate.getAmount())
+                                .reference(paymentUpdate.getReference())
+                                .status(SUCCESS)
+                                .feeId("" + paymentUpdate.getFees().getId())
+                                .build();
+
+                            ClaimData claimData = claim.getClaimData().toBuilder()
+                                .payment(paymentBuild)
+                                .build();
+
+                            Claim updatedClaim = claim.toBuilder()
+                                .claimData(claimData)
+                                .build();
+                            User user = userService.getUser(authorisation);
+                            returnClaim[0] = caseRepository.updateCardPaymentForClaim(user, updatedClaim);
+                        }
+                    });
+                }
+            );
+        }
+        return returnClaim[0];
     }
 
     private void createClaimEvent(String authorisation, User user, Claim savedClaim) {

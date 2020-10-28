@@ -64,6 +64,7 @@ public class CCDCase {
     private LocalDate paymentDateCreated;
     private String paymentNextUrl;
     private String paymentReturnUrl;
+    private String paymentServiceCallbackUrl;
     private String paymentTransactionId;
     private String paymentFeeId;
     private String preferredCourt;

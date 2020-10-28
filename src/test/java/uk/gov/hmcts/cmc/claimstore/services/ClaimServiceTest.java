@@ -31,9 +31,11 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
+import uk.gov.hmcts.cmc.domain.models.Fees;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
+import uk.gov.hmcts.cmc.domain.models.PaymentUpdate;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
@@ -64,6 +66,7 @@ import static java.util.Optional.empty;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -109,6 +112,7 @@ public class ClaimServiceTest {
 
     private static final User UNAUTHORISED_USER = new User(AUTHORISATION, UNAUTHORISED_USER_DETAILS);
     private static final User USER = new User(AUTHORISATION, VALID_CLAIMANT);
+    private PaymentUpdate paymentUpdate = null;
 
     private ClaimService claimService;
 
@@ -143,6 +147,17 @@ public class ClaimServiceTest {
             new PaidInFullRule(),
             new ClaimAuthorisationRule(userService),
             new ReviewOrderRule());
+
+        Fees fees = new Fees(111, "CD", "VER", 20,
+            200, "CCDD", "REF");
+
+        paymentUpdate = PaymentUpdate.builder()
+            .amount(new BigDecimal(200))
+            .status(PaymentStatus.SUCCESS.name())
+            .reference("Ref")
+            .ccdCaseNumber("CCD-111")
+            .fees(fees)
+            .build();
     }
 
     @Test
@@ -663,6 +678,27 @@ public class ClaimServiceTest {
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any())).thenReturn(empty());
 
         claimService.saveReviewOrder(EXTERNAL_ID, SampleReviewOrder.getDefault(), AUTHORISATION);
+    }
+
+    @Test
+    public void updateCardPayment() {
+        Payment payments = Payment.builder()
+            .amount(new BigDecimal(200))
+            .status(PaymentStatus.PENDING)
+            .build();
+        ClaimData claimData = ClaimData.builder()
+            .payment(payments)
+            .build();
+
+        Claim claim1 = Claim.builder()
+            .claimData(claimData)
+            .build();
+        when(caseRepository.getByPaymentReference(paymentUpdate.getReference(), AUTHORISATION))
+            .thenReturn(List.of(claim1));
+        when(userService.getUser(AUTHORISATION)).thenReturn(USER);
+        when(caseRepository.updateCardPaymentForClaim(any(), any(Claim.class))).thenReturn(claim1);
+        Claim updatedClaim = claimService.updateCardPayment(AUTHORISATION, paymentUpdate);
+        assertNotNull(updatedClaim);
     }
 
     private static Claim createRepresentedClaimModel(ClaimData claimData) {
