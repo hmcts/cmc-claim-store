@@ -31,6 +31,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
+import uk.gov.hmcts.cmc.domain.models.Fees;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
@@ -147,12 +148,15 @@ public class ClaimServiceTest {
             new ClaimAuthorisationRule(userService),
             new ReviewOrderRule());
 
+        Fees fees = new Fees(111, "CD", "VER", 20,
+            200, "CCDD", "REF");
+
         paymentUpdate = PaymentUpdate.builder()
             .amount(new BigDecimal(200))
             .status(PaymentStatus.SUCCESS.name())
             .reference("Ref")
             .ccdCaseNumber("CCD-111")
-            .feeId("111")
+            .fees(fees)
             .build();
     }
 
@@ -693,7 +697,7 @@ public class ClaimServiceTest {
             .thenReturn(List.of(claim1));
         when(userService.getUser(AUTHORISATION)).thenReturn(USER);
         when(caseRepository.updateCardPaymentForClaim(any(), any(Claim.class))).thenReturn(claim1);
-        Claim updatedClaim  = claimService.updateCardPayment(AUTHORISATION, paymentUpdate);
+        Claim updatedClaim = claimService.updateCardPayment(AUTHORISATION, paymentUpdate);
         assertNotNull(updatedClaim);
     }
 

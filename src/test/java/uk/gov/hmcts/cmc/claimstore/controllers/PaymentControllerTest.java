@@ -63,7 +63,6 @@ public class PaymentControllerTest {
             .status(PaymentStatus.SUCCESS.name())
             .reference("Ref")
             .ccdCaseNumber("CCD-111")
-            .feeId("111")
             .build();
         paymentController = new PaymentController(claimService, authTokenValidator);
     }

@@ -462,7 +462,7 @@ public class ClaimService {
                                 .amount(paymentUpdate.getAmount())
                                 .reference(paymentUpdate.getReference())
                                 .status(SUCCESS)
-                                .feeId(paymentUpdate.getFeeId())
+                                .feeId("" + paymentUpdate.getFees().getId())
                                 .build();
 
                             ClaimData claimData = claim.getClaimData().toBuilder()

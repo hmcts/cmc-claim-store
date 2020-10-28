@@ -36,10 +36,6 @@ public class Fees {
         this.reference = reference;
     }
 
-    @SuppressWarnings("squid:S00107")
-    @Builder(toBuilder = true)
-
-
     @Override
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ourStyle());
