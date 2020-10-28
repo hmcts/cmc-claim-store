@@ -65,7 +65,7 @@ idam:
     url: "http://localhost:4552"
     totp_secret: "AAAAAAAAAAAAAAAA"
     microservice: "cmc_claim_store"
-    services-allowed-to-payment-update: ${SERVICES_ALLOWED_TO_PAYMENT_UPDATE:fees_and_payments}
+    services-allowed-to-payment-update: ${SERVICES_ALLOWED_TO_PAYMENT_UPDATE:payment_api}
 
 courtfinder:
   api:

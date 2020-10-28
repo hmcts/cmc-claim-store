@@ -2,6 +2,8 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +33,8 @@ public class PaymentController {
 
     public static final String SERVICE_AUTHORIZATION_HEADER = "ServiceAuthorization";
 
+    private final Logger logger = LoggerFactory.getLogger(PaymentController.class);
+
     @Autowired
     public PaymentController(ClaimService claimService, AuthTokenValidator authTokenValidator) {
         this.claimService = claimService;
@@ -43,11 +47,12 @@ public class PaymentController {
         @RequestHeader(value = SERVICE_AUTHORIZATION_HEADER) String serviceToken,
         @Valid @NotNull @RequestBody PaymentUpdate paymentUpdate
     ) {
+        logger.info("Called s2s service");
         String serviceName = authTokenValidator.getServiceName(serviceToken);
-        if (!"fees_and_payments".contains(serviceName)) {
-            System.out.println("token - fees_and_payments");
+        if (!"payment_app".contains(serviceName)) {
+            logger.info("token validated", serviceToken);
         }
-        System.out.println("tokenn");
+        logger.info("tokennnn***");
         claimService.updateCardPayment(serviceToken, paymentUpdate);
         return ResponseEntity.ok().build();
     }
