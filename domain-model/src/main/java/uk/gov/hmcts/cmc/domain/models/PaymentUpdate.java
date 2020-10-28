@@ -21,7 +21,7 @@ public class PaymentUpdate {
      * The amount which was paid, in pennies for payments v1 or pounds with payments v2.
      */
     private final BigDecimal amount;
-    private final BigDecimal description;
+    private final String description;
     private final String reference;
     private final String currency;
     private final String ccdCaseNumber;
@@ -34,15 +34,13 @@ public class PaymentUpdate {
     private final String siteId;
     private final String serviceName;
     private final String paymentGroupReference;
-    private final String feeId;
-    private final String feeCode;
-    private final String feeCalculatedAmount;
+    private final Fees fees;
 
     @SuppressWarnings("squid:S00107")
     @Builder(toBuilder = true)
     public PaymentUpdate(String id,
                          BigDecimal amount,
-                         BigDecimal description,
+                         String description,
                          String reference,
                          String currency,
                          String ccdCaseNumber,
@@ -55,9 +53,7 @@ public class PaymentUpdate {
                          String siteId,
                          String serviceName,
                          String paymentGroupReference,
-                         String feeId,
-                         String feeCode,
-                         String feeCalculatedAmount) {
+                         Fees fees) {
         this.id = id;
         this.amount = amount;
         this.description = description;
@@ -73,9 +69,7 @@ public class PaymentUpdate {
         this.siteId = siteId;
         this.serviceName = serviceName;
         this.paymentGroupReference = paymentGroupReference;
-        this.feeId = feeId;
-        this.feeCode = feeCode;
-        this.feeCalculatedAmount = feeCalculatedAmount;
+        this.fees = fees;
     }
 
     @Override

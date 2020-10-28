@@ -7,11 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.PaymentUpdate;
 import uk.gov.hmcts.cmc.domain.models.paymentresponse.UpdatePaymentResponse;
@@ -41,7 +37,7 @@ public class PaymentController {
         this.authTokenValidator = authTokenValidator;
     }
 
-    @PostMapping(value = "/update-card-payment", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/update-card-payment", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Update a Card payment")
     public ResponseEntity<UpdatePaymentResponse> updateCardPayment(
         @RequestHeader(value = SERVICE_AUTHORIZATION_HEADER) String serviceToken,
