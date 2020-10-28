@@ -158,6 +158,18 @@ public class DocumentNameUtils {
         return format("%s-notice-of-transfer-for-defendant", caseRef);
     }
 
+    public static String buildPaperDefenceCoverLetterFileBaseName(String caseRef) {
+        requireNonBlank(caseRef);
+
+        return format("%s-issue-paper-form", caseRef);
+    }
+
+    public static String buildOconFormFileBaseName(String caseRef) {
+        requireNonBlank(caseRef);
+
+        return format("%s-issue-OCON9x-form", caseRef);
+    }
+
     public static String buildNoticeOfTransferToCcbcForDefendantFileName(String caseRef) {
         return getFileName(caseRef, "defendant-case-handoff");
     }

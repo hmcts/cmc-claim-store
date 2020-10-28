@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefenceType;
@@ -138,8 +139,7 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
                     .toBuilder()
                     .responseType(CCDResponseType.FULL_DEFENCE)
                     .responseDefenceType(CCDDefenceType.valueOf(getCaseDetailsProperty(caseDetails, "defenceType")))
-                    .partyDetail(r.getValue()
-                        .getPartyDetail()
+                    .partyDetail(getPartyDetail(r)
                         .toBuilder()
                         .emailAddress(getEmailAddress(r))
                         .type(r.getValue().getClaimantProvidedDetail().getType())
@@ -153,24 +153,30 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
             .collect(Collectors.toList());
     }
 
+    private CCDParty getPartyDetail(CCDCollectionElement<CCDRespondent> e) {
+        return e.getValue().getPartyDetail() != null ? e.getValue().getPartyDetail() :
+            e.getValue().getClaimantProvidedDetail();
+    }
+
     private String getCaseDetailsProperty(CaseDetails caseDetails, String preferredDQCourt) {
         return (String) caseDetails.getData().get(preferredDQCourt);
     }
 
     private String getEmailAddress(CCDCollectionElement<CCDRespondent> r) {
-        return !StringUtils.isBlank(r.getValue().getPartyDetail().getEmailAddress())
-            ? r.getValue().getPartyDetail().getEmailAddress()
+        var partyDetail = r.getValue().getPartyDetail();
+        return partyDetail != null && !StringUtils.isBlank(partyDetail.getEmailAddress())
+            ? partyDetail.getEmailAddress()
             : r.getValue().getClaimantProvidedDetail().getEmailAddress();
     }
 
     private LocalDateTime getResponseDate(CCDCase ccdCase) {
         return ccdCase.getScannedDocuments()
-                .stream()
-                .filter(e -> OCON9X_SUBTYPE.equals(e.getValue().getSubtype()))
-                .map(CCDCollectionElement::getValue)
-                .map(CCDScannedDocument::getDeliveryDate)
-                .max(LocalDateTime::compareTo)
-                .orElseThrow(() -> new IllegalStateException("No OCON9x form found"));
+            .stream()
+            .filter(e -> OCON9X_SUBTYPE.equals(e.getValue().getSubtype()))
+            .map(CCDCollectionElement::getValue)
+            .map(CCDScannedDocument::getDeliveryDate)
+            .max(LocalDateTime::compareTo)
+            .orElseThrow(() -> new IllegalStateException("No OCON9x form found"));
     }
 
     private CCDCollectionElement<CCDScannedDocument> updateFilename(CCDCollectionElement<CCDScannedDocument> element,

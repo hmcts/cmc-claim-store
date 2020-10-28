@@ -21,6 +21,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.GeneralLetterContent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDBespokeOrderWarning;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -600,4 +601,171 @@ class DocAssemblyTemplateBodyMapperTest {
         assertThat(requestBody).isEqualTo(expectedBody);
     }
 
+    @Nested
+    @DisplayName("Test methods for bespoke direction orders")
+    class BespokeOrderDirectionTests {
+
+        @BeforeEach
+        void setUp() {
+            docAssemblyTemplateBodyMapper
+                = new DocAssemblyTemplateBodyMapper(clock,
+                directionOrderService,
+                workingDayIndicator,
+                responseDeadlineCalculator);
+            ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
+            ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
+            ccdCase.setHearingCourt("BIRMINGHAM");
+            ccdCase.setCaseName("case name");
+            ccdCase.setRespondents(
+                ImmutableList.of(
+                    CCDCollectionElement.<CCDRespondent>builder()
+                        .value(SampleData.getIndividualRespondentWithDQ())
+                        .build()
+                ));
+            ccdCase.setApplicants(
+                ImmutableList.of(
+                    CCDCollectionElement.<CCDApplicant>builder()
+                        .value(SampleData.getCCDApplicantIndividual())
+                        .build()
+                ));
+            ccdCase.setDrawBespokeDirectionOrderWarning(ImmutableList.of(CCDBespokeOrderWarning.WARNING));
+            ccdCase.setBespokeDirectionList(SampleData.getBespokeDirectionList());
+            letterContent = GeneralLetterContent.builder()
+                .letterContent(LETTER_CONTENT)
+                .caseworkerName("Judge McJudge");
+
+            userDetails = SampleUserDetails.builder()
+                .withForename("Judge")
+                .withSurname("McJudge")
+                .build();
+
+            docAssemblyTemplateBodyBuilder = DocAssemblyTemplateBody.builder()
+                .paperDetermination(false)
+                .hasFirstOrderDirections(true)
+                .hasSecondOrderDirections(true)
+                .docUploadDeadline(LocalDate.parse("2020-10-11"))
+                .eyewitnessUploadDeadline(LocalDate.parse("2020-10-11"))
+                .currentDate(LocalDate.parse("2019-04-24"))
+                .claimant(Party.builder().partyName("Individual").build())
+                .defendant(Party.builder().partyName("Mary Richards").build())
+                .judicial(Judicial.builder().firstName("Judge").lastName("McJudge").build())
+                .referenceNumber("ref no")
+                .extraDocUploadList(
+                    ImmutableList.of(
+                        CCDCollectionElement.<String>builder()
+                            .value("first document")
+                            .build(),
+                        CCDCollectionElement.<String>builder()
+                            .value("second document")
+                            .build()))
+                .hearingCourtName("Birmingham Court")
+                .hearingCourtAddress(CCDAddress.builder()
+                    .addressLine1("line1")
+                    .addressLine2("line2")
+                    .addressLine3("line3")
+                    .postCode("SW1P4BB")
+                    .postTown("Birmingham")
+                    .build())
+                .docUploadForParty(CLAIMANT)
+                .eyewitnessUploadForParty(DEFENDANT)
+                .estimatedHearingDuration(FOUR_HOURS)
+                .otherDirections(ImmutableList.of(
+                    OtherDirection.builder()
+                        .sendBy(LocalDate.parse("2020-10-11"))
+                        .directionComment("a direction")
+                        .extraOrderDirection(OTHER)
+                        .otherDirectionHeaders(UPLOAD)
+                        .forParty(BOTH)
+                        .build(),
+                    OtherDirection.builder()
+                        .sendBy(LocalDate.parse("2020-10-11"))
+                        .extraOrderDirection(EXPERT_REPORT_PERMISSION)
+                        .forParty(BOTH)
+                        .expertReports(
+                            ImmutableList.of(
+                                CCDCollectionElement.<String>builder()
+                                    .value("first")
+                                    .build(),
+                                CCDCollectionElement.<String>builder()
+                                    .value("second")
+                                    .build(),
+                                CCDCollectionElement.<String>builder()
+                                    .value("third")
+                                    .build()))
+                        .extraDocUploadList(
+                            ImmutableList.of(
+                                CCDCollectionElement.<String>builder()
+                                    .value("first document")
+                                    .build(),
+                                CCDCollectionElement.<String>builder()
+                                    .value("second document")
+                                    .build()))
+                        .build()
+                ))
+                .bespokeOrderWarning(true)
+                .bespokeDirectionList(
+                    ImmutableList.of(BespokeDirection
+                            .builder()
+                            .directionComment("first direction")
+                            .forParty(CLAIMANT)
+                            .sendBy(LocalDate.parse("2020-08-04"))
+                            .build(),
+                        BespokeDirection
+                            .builder()
+                            .directionComment("second direction")
+                            .forParty(DEFENDANT)
+                            .sendBy(LocalDate.parse("2020-08-04"))
+                            .build(),
+                        BespokeDirection
+                            .builder()
+                            .directionComment("third direction")
+                            .forParty(BOTH)
+                            .sendBy(LocalDate.parse("2020-08-04"))
+                            .build()))
+                .expertReportPermissionPartyAskedByClaimant(true)
+                .expertReportPermissionPartyAskedByDefendant(true)
+                .expertReportInstructionClaimant(Collections.emptyList())
+                .expertReportInstructionDefendant(Collections.emptyList())
+                .grantExpertReportPermission(true)
+                .expertReportInstruction(SUBMIT_MORE_DOCS_INSTRUCTION);
+        }
+
+        @Test
+        void shouldMapTemplateBodyWhenBespokeOrderDrawn() {
+            when(clock.instant()).thenReturn(LocalDate.parse("2020-08-04").atStartOfDay().toInstant(ZoneOffset.UTC));
+            when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+            when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);
+            DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper
+                .mapBespokeDirectionOrder(ccdCase, userDetails);
+            DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
+                .judicial(Judicial.builder().firstName("Judge").lastName("McJudge").build())
+                .claimant(Party.builder().partyName("Individual").build())
+                .defendant(Party.builder().partyName("Mary Richards").build())
+                .referenceNumber("ref no")
+                .currentDate(LocalDate.parse("2020-08-04"))
+                .bespokeOrderWarning(true)
+                .bespokeDirectionList(
+                    ImmutableList.of(BespokeDirection
+                            .builder()
+                            .directionComment("first direction")
+                            .forParty(CLAIMANT)
+                            .sendBy(LocalDate.parse("2020-08-04"))
+                            .build(),
+                        BespokeDirection
+                            .builder()
+                            .directionComment("second direction")
+                            .forParty(DEFENDANT)
+                            .sendBy(LocalDate.parse("2020-08-04"))
+                            .build(),
+                        BespokeDirection
+                            .builder()
+                            .directionComment("third direction")
+                            .forParty(BOTH)
+                            .sendBy(LocalDate.parse("2020-08-04"))
+                            .build()))
+                .build();
+            assertThat(requestBody).isEqualTo(expectedBody);
+        }
+
+    }
 }
