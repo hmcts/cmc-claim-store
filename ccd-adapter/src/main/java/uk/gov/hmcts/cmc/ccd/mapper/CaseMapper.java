@@ -36,6 +36,7 @@ public class CaseMapper {
     private final ClaimDocumentCollectionMapper claimDocumentCollectionMapper;
     private final ReviewOrderMapper reviewOrderMapper;
     private final DirectionOrderMapper directionOrderMapper;
+    private final BespokeOrderDirectionMapper bespokeOrderDirectionMapper;
     private final TransferContentMapper transferContentMapper;
     private final BulkPrintDetailsMapper bulkPrintDetailsMapper;
 
@@ -45,6 +46,7 @@ public class CaseMapper {
         ClaimDocumentCollectionMapper claimDocumentCollectionMapper,
         ReviewOrderMapper reviewOrderMapper,
         DirectionOrderMapper directionOrderMapper,
+        BespokeOrderDirectionMapper bespokeOrderDirectionMapper,
         TransferContentMapper transferContentMapper,
         BulkPrintDetailsMapper bulkPrintDetailsMapper
     ) {
@@ -53,6 +55,7 @@ public class CaseMapper {
         this.claimDocumentCollectionMapper = claimDocumentCollectionMapper;
         this.reviewOrderMapper = reviewOrderMapper;
         this.directionOrderMapper = directionOrderMapper;
+        this.bespokeOrderDirectionMapper = bespokeOrderDirectionMapper;
         this.transferContentMapper = transferContentMapper;
         this.bulkPrintDetailsMapper = bulkPrintDetailsMapper;
     }
@@ -116,6 +119,7 @@ public class CaseMapper {
 
         claimDocumentCollectionMapper.from(ccdCase, builder);
         directionOrderMapper.from(ccdCase, builder);
+        bespokeOrderDirectionMapper.from(ccdCase, builder);
 
         builder
             .id(ccdCase.getId())
@@ -161,6 +165,10 @@ public class CaseMapper {
             .filter(Objects::nonNull)
             .collect(Collectors.toList())
         );
+
+        if (ccdCase.getDirectionOrderType() != null) {
+            builder.directionOrderType(ccdCase.getDirectionOrderType());
+        }
 
         return builder.build();
     }
