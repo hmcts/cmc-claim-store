@@ -102,7 +102,7 @@ allprojects {
     }
     dependencies {
       // CVE-2020-13935
-      dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.37') {
+      dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.38') {
         entry 'tomcat-embed-core'
         entry 'tomcat-embed-el'
         entry 'tomcat-embed-websocket'
@@ -299,7 +299,7 @@ task migrateClaims() {
 
   doLast {
     javaexec {
-      main = "-jar";
+      main = "-jar"
       args = [
         "ccd-claim-migration/build/libs/ccd-claim-migration-1.1.0.jar"
       ]
@@ -388,7 +388,11 @@ sonarqube {
         "launch-darkly-client/**",
         "email-client/**",
         "rpa-mapper/**",
-        "**/UserRoleConstraintValidator.java"
+        "**/UserRoleConstraintValidator.java",
+        "**/ValidEmploymentConstraintValidator.java",
+        "**/ValidInterestConstraintValidator.java",
+        "**/ValidInterestDateConstraintValidator.java",
+        "**/ValidUnemploymentConstraintValidator.java"
       ].join(",")
   }
 }

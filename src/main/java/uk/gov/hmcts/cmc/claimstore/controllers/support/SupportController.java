@@ -188,7 +188,7 @@ public class SupportController {
         @ApiResponse(code = 500, message = "Unable to upload document")
     })
     @SuppressWarnings("squid:S2201") // orElseThrow does not ignore the result
-    public ResponseEntity<?> uploadDocumentToDocumentManagement(
+    public ResponseEntity<String> uploadDocumentToDocumentManagement(
         @PathVariable("referenceNumber") String referenceNumber,
         @PathVariable("documentType") ClaimDocumentType documentType
     ) {
@@ -370,7 +370,7 @@ public class SupportController {
     }
 
     private void resendStaffNotificationOnDefendantResponseSubmitted(Claim claim, String authorization) {
-        if (!claim.getResponse().isPresent()) {
+        if (claim.getResponse().isEmpty()) {
             throw new ConflictException(CLAIM + claim.getReferenceNumber() + " does not have associated response");
         }
         DefendantResponseEvent event = new DefendantResponseEvent(claim, authorization);
