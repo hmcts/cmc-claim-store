@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
+import uk.gov.hmcts.cmc.claimstore.utils.AuthUtil;
 import uk.gov.hmcts.cmc.domain.models.PaymentUpdate;
 import uk.gov.hmcts.cmc.domain.models.paymentresponse.UpdatePaymentResponse;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
@@ -31,24 +32,28 @@ public class PaymentController {
 
     private final AuthTokenValidator authTokenValidator;
 
+    private final AuthUtil authUtil;
+
     public static final String SERVICE_AUTHORIZATION_HEADER = "ServiceAuthorization";
 
     private final Logger logger = LoggerFactory.getLogger(PaymentController.class);
 
     @Autowired
-    public PaymentController(ClaimService claimService, AuthTokenValidator authTokenValidator) {
+    public PaymentController(ClaimService claimService, AuthTokenValidator authTokenValidator, AuthUtil authUtil) {
         this.claimService = claimService;
         this.authTokenValidator = authTokenValidator;
+        this.authUtil = authUtil;
     }
 
-    @PutMapping(value = "/update-card-payment", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/payment-update", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Update a Card payment")
     public ResponseEntity<UpdatePaymentResponse> updateCardPayment(
         @RequestHeader(value = SERVICE_AUTHORIZATION_HEADER) String serviceToken,
         @Valid @NotNull @RequestBody PaymentUpdate paymentUpdate
     ) {
         logger.info("Called s2s service");
-        String serviceName = authTokenValidator.getServiceName(serviceToken);
+        //String serviceName = authTokenValidator.getServiceName(serviceToken);
+        String serviceName = Boolean.toString(authUtil.assertIsServiceAllowedToPaymentUpdate(serviceToken));
         if (!"payment_app".contains(serviceName)) {
             logger.info("token validated", serviceToken);
         }

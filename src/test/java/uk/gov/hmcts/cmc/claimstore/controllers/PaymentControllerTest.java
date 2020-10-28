@@ -7,6 +7,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.utils.AuthUtil;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.PaymentUpdate;
@@ -14,6 +16,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Collections.singletonList;
@@ -42,6 +45,13 @@ public class PaymentControllerTest {
     @Mock
     private ClaimService claimService;
 
+    @Mock
+    UserService userService;
+
+    @Mock
+    private AuthUtil authUtil;
+
+    List<String> allowedToPaymentUpdate = new ArrayList<String>();
     private PaymentUpdate paymentUpdate = null;
 
     private static final Claim claim = SampleClaim.builder()
@@ -58,13 +68,17 @@ public class PaymentControllerTest {
 
     @Before
     public void setup() {
+        allowedToPaymentUpdate.add("payment_app");
+        authUtil = new AuthUtil(userService,
+            authTokenValidator,
+            allowedToPaymentUpdate);
         paymentUpdate = PaymentUpdate.builder()
             .amount(new BigDecimal(200))
             .status(PaymentStatus.SUCCESS.name())
             .reference("Ref")
             .ccdCaseNumber("CCD-111")
             .build();
-        paymentController = new PaymentController(claimService, authTokenValidator);
+        paymentController = new PaymentController(claimService, authTokenValidator, authUtil);
     }
 
     @Test
