@@ -449,8 +449,10 @@ public class ClaimService {
     }
 
     @LogExecutionTime
-    public Claim updateCardPayment(String authorisation, PaymentUpdate paymentUpdate) {
+    public Claim updateCardPayment(PaymentUpdate paymentUpdate) {
         final Claim[] returnClaim = {null};
+        User user = userService.authenticateAnonymousCaseWorker();
+        String authorisation = user.getAuthorisation();
         if (paymentUpdate.getStatus().equalsIgnoreCase(SUCCESS.name())) {
             List<Claim> claimRetreived = caseRepository.getByPaymentReference(
                 paymentUpdate.getReference(), authorisation);
@@ -472,7 +474,6 @@ public class ClaimService {
                             Claim updatedClaim = claim.toBuilder()
                                 .claimData(claimData)
                                 .build();
-                            User user = userService.getUser(authorisation);
                             returnClaim[0] = caseRepository.updateCardPaymentForClaim(user, updatedClaim);
                         }
                     });

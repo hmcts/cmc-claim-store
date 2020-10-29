@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -51,9 +52,10 @@ public class PaymentController {
         String serviceName = authTokenValidator.getServiceName(serviceToken);
         if (!"payment_app".contains(serviceName)) {
             logger.info("token validated", serviceToken);
+            claimService.updateCardPayment(paymentUpdate);
+            return ResponseEntity.ok().build();
         }
-        logger.info("tokennnn***");
-        claimService.updateCardPayment(serviceToken, paymentUpdate);
-        return ResponseEntity.ok().build();
+        logger.info("Invalid Token");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 }

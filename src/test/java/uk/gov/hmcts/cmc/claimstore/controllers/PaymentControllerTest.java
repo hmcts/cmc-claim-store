@@ -70,7 +70,7 @@ public class PaymentControllerTest {
     @Test
     public void updateCardPayment() {
         when(authTokenValidator.getServiceName(AUTHORISATION)).thenReturn("fees_and_payments");
-        when(claimService.updateCardPayment(AUTHORISATION, paymentUpdate)).thenReturn(claim);
+        when(claimService.updateCardPayment(paymentUpdate)).thenReturn(claim);
 
         paymentController.updateCardPayment(AUTHORISATION, paymentUpdate);
 
