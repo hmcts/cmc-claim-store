@@ -268,4 +268,56 @@ public class ClaimantResponseContentProviderTest {
         Assertions.assertThrows(IllegalStateException.class,
             () -> contentProvider.createContent(claim));
     }
+
+    @Test
+    public void shouldShowReasonForReDetermination() {
+
+        Claim claim = SampleClaim.builder()
+            .withResponse(SampleResponse.FullAdmission.builder().buildWithPaymentOptionInstalments())
+            .withReDetermination(ReDetermination.builder().explanation("reason").partyType(MadeBy.CLAIMANT).build())
+            .withClaimantResponse(ResponseAcceptation.builder()
+                .courtDetermination(CourtDetermination.builder()
+                    .rejectionReason(null)
+                    .courtDecision(bySetDate())
+                    .courtPaymentIntention(PaymentIntention.builder()
+                        .paymentOption(BY_SPECIFIED_DATE)
+                        .paymentDate(ResponseAcceptationContentProvider.SYSTEM_MAX_DATE)
+                        .build())
+                    .disposableIncome(BigDecimal.valueOf(-1))
+                    .decisionType(DecisionType.COURT)
+                    .build())
+                .formaliseOption(FormaliseOption.CCJ)
+                .build())
+            .build();
+
+        Map<String, Object> content = contentProvider.createContent(claim);
+
+        assertThat(content).containsValues("reason");
+    }
+
+    @Test
+    public void shouldNotShowReasonForReDetermination() {
+
+        Claim claim = SampleClaim.builder()
+            .withResponse(SampleResponse.FullAdmission.builder().buildWithPaymentOptionInstalments())
+            .withReDetermination(ReDetermination.builder().explanation("").partyType(MadeBy.CLAIMANT).build())
+            .withClaimantResponse(ResponseAcceptation.builder()
+                .courtDetermination(CourtDetermination.builder()
+                    .rejectionReason(null)
+                    .courtDecision(bySetDate())
+                    .courtPaymentIntention(PaymentIntention.builder()
+                        .paymentOption(BY_SPECIFIED_DATE)
+                        .paymentDate(ResponseAcceptationContentProvider.SYSTEM_MAX_DATE)
+                        .build())
+                    .disposableIncome(BigDecimal.valueOf(-1))
+                    .decisionType(DecisionType.COURT)
+                    .build())
+                .formaliseOption(FormaliseOption.CCJ)
+                .build())
+            .build();
+
+        Map<String, Object> content = contentProvider.createContent(claim);
+
+        assertThat(content).doesNotContainKeys("reasonForReDeterminationclaimant");
+    }
 }
