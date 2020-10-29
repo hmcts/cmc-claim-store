@@ -182,6 +182,9 @@ public class EmailTemplates {
     private String paperResponseFromDefendantGeneralLetter;
 
     @NotEmpty
+    private String paperResponseFormReceivedForCcjRequest;
+
+    @NotEmpty
     private String claimantContactDetailsChanged;
 
     @NotEmpty

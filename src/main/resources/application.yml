@@ -218,6 +218,7 @@ notifications:
       paperResponseFromDefendantCaseHandoverToCCBC: "28cfdcc2-387d-4e8d-8d96-ed1b32b7538d"
       paperResponseFromClaimantGeneralLetter: "49920be9-c328-4a4e-ac2d-e488cf83b683"
       paperResponseFromDefendantGeneralLetter: "b60a6eaa-2032-491e-b17d-340004879a2d"
+      paperResponseFormReceivedForCcjRequest: "b2939b4e-6d87-4203-a0d0-ff7ab676d24b"
       defendantContactDetailsChanged: "39b8c7a0-6d8a-4bee-8b79-e0f1df73d249"
       claimantContactDetailsChanged: "bc227831-a2f5-4399-bfa4-06a392bc5a80"
       caseTransferToCourt: "841843ef-2d49-4c6b-8179-6e42443e049d"

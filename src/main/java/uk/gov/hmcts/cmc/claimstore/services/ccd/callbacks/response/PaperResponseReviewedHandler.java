@@ -50,9 +50,10 @@ class PaperResponseReviewedHandler {
 
     public static final String CLAIMANT = "claimant";
     public static final String DEFENDANT = "defendant";
+    private static final String CCJ_REQUEST = "N225";
     private static final List<String> responseForms = of("N9a", "N9b", "N11");
-    private static final List<String> forms = of("N180", "N225", "EX160", "N244", "N245", "Non_prescribed_documents");
-    private static final List<String> SCANNED_DOCUMENT_TYPES = newArrayList(concat(responseForms, forms));
+    private static final List<String> courtForms = of("N180", "EX160", "N244", "N245", "Non_prescribed_documents");
+    private static final List<String> SCANNED_DOCUMENT_TYPES = newArrayList(concat(responseForms, courtForms));
 
     private static final List<ClaimDocumentType> STAFF_UPLOADED_DOCS = of(
         ClaimDocumentType.PAPER_RESPONSE_FULL_ADMIT,
@@ -148,13 +149,15 @@ class PaperResponseReviewedHandler {
         String subType = scannedDocument.getSubtype();
         EmailTemplates mailTemplates = notificationsProperties.getTemplates().getEmail();
         Boolean submittedByClaimant = CLAIMANT.equals(scannedDocument.getSubmittedBy());
-        if (subType != null && responseForms.contains(subType)) {
+        if (responseForms.contains(subType)) {
             response.state(ClaimState.BUSINESS_QUEUE.getValue());
             templateId = mailTemplates.getPaperResponseReceivedAndCaseTransferredToCCBC();
-        } else if (subType != null && forms.contains(subType)) {
+        } else if (courtForms.contains(subType)) {
             mailToParty = submittedByClaimant ? DEFENDANT : CLAIMANT;
             templateId = submittedByClaimant ? mailTemplates.getPaperResponseFromClaimantCaseHandoverToCCBC() :
                                                         mailTemplates.getPaperResponseFromDefendantCaseHandoverToCCBC();
+        } else if (CCJ_REQUEST.equals(subType)) {
+            templateId = mailTemplates.getPaperResponseFormReceivedForCcjRequest();
         } else if (otherDocumentTypes.contains(scannedDocument.getDocumentType())) {
             mailToParty = submittedByClaimant ? CLAIMANT : DEFENDANT;
             templateId = submittedByClaimant ? mailTemplates.getPaperResponseFromClaimantGeneralLetter() :
