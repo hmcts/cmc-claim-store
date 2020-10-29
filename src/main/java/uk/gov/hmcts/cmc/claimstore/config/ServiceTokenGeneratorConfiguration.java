@@ -24,7 +24,7 @@ public class ServiceTokenGeneratorConfiguration {
     }
 
     @Bean
-    public AuthTokenValidator tokenValidator(ServiceAuthorisationApi s2sApi) {
+    public AuthTokenValidator serviceAuthTokenValidator(ServiceAuthorisationApi s2sApi) {
         return new ServiceAuthTokenValidator(s2sApi);
     }
 
