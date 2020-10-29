@@ -127,6 +127,7 @@ class PaperResponseReviewedHandlerTest {
         lenient().when(mailTemplates.getPaperResponseFromDefendantCaseHandoverToCCBC()).thenReturn("Template4");
         lenient().when(mailTemplates.getPaperResponseFromClaimantGeneralLetter()).thenReturn("Template5");
         lenient().when(mailTemplates.getPaperResponseFromDefendantGeneralLetter()).thenReturn("Template6");
+        lenient().when(mailTemplates.getPaperResponseFormReceivedForCcjRequest()).thenReturn("Template7");
 
         lenient().when(launchDarklyClient.isFeatureEnabled("paper-response-review-new-handling")).thenReturn(true);
     }
@@ -216,18 +217,18 @@ class PaperResponseReviewedHandlerTest {
         verifyMailWithCorrectTemplateIsSent(FORM, "N11", "Template2", SUBMITTER_EMAIL, false, 3);
 
         verifyMailWithCorrectTemplateIsSent(FORM, "N180", "Template4", SUBMITTER_EMAIL, false, 1);
-        verifyMailWithCorrectTemplateIsSent(FORM, "N225", "Template4", SUBMITTER_EMAIL, false, 2);
-        verifyMailWithCorrectTemplateIsSent(FORM, "EX160", "Template4", SUBMITTER_EMAIL, false, 3);
-        verifyMailWithCorrectTemplateIsSent(FORM, "N244", "Template4", SUBMITTER_EMAIL, false, 4);
-        verifyMailWithCorrectTemplateIsSent(FORM, "N245", "Template4", SUBMITTER_EMAIL, false, 5);
-        verifyMailWithCorrectTemplateIsSent(FORM, "Non_prescribed_documents", "Template4", SUBMITTER_EMAIL, false, 6);
+        verifyMailWithCorrectTemplateIsSent(FORM, "EX160", "Template4", SUBMITTER_EMAIL, false, 2);
+        verifyMailWithCorrectTemplateIsSent(FORM, "N244", "Template4", SUBMITTER_EMAIL, false, 3);
+        verifyMailWithCorrectTemplateIsSent(FORM, "N245", "Template4", SUBMITTER_EMAIL, false, 4);
+        verifyMailWithCorrectTemplateIsSent(FORM, "Non_prescribed_documents", "Template4", SUBMITTER_EMAIL, false, 5);
 
         verifyMailWithCorrectTemplateIsSent(FORM, "N180", "Template3", DEFENDANT_EMAIL, true, 1);
-        verifyMailWithCorrectTemplateIsSent(FORM, "N225", "Template3", DEFENDANT_EMAIL, true, 2);
-        verifyMailWithCorrectTemplateIsSent(FORM, "EX160", "Template3", DEFENDANT_EMAIL, true, 3);
-        verifyMailWithCorrectTemplateIsSent(FORM, "N244", "Template3", DEFENDANT_EMAIL, true, 4);
-        verifyMailWithCorrectTemplateIsSent(FORM, "N245", "Template3", DEFENDANT_EMAIL, true, 5);
-        verifyMailWithCorrectTemplateIsSent(FORM, "Non_prescribed_documents", "Template3", DEFENDANT_EMAIL, true, 6);
+        verifyMailWithCorrectTemplateIsSent(FORM, "EX160", "Template3", DEFENDANT_EMAIL, true, 2);
+        verifyMailWithCorrectTemplateIsSent(FORM, "N244", "Template3", DEFENDANT_EMAIL, true, 3);
+        verifyMailWithCorrectTemplateIsSent(FORM, "N245", "Template3", DEFENDANT_EMAIL, true, 4);
+        verifyMailWithCorrectTemplateIsSent(FORM, "Non_prescribed_documents", "Template3", DEFENDANT_EMAIL, true, 5);
+
+        verifyMailWithCorrectTemplateIsSent(FORM, "N225", "Template7", SUBMITTER_EMAIL, true, 1);
 
         verifyMailWithCorrectTemplateIsSent(ScannedDocumentType.OTHER, "abc", "Template6", DEFENDANT_EMAIL, false, 1);
         verifyMailWithCorrectTemplateIsSent(ScannedDocumentType.LETTER, "xyz", "Template6", DEFENDANT_EMAIL, false, 2);
