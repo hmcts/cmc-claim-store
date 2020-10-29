@@ -263,4 +263,18 @@ public class CaseMapperTest {
         //then
         MatcherAssert.assertThat(claim.getPreferredDQCourt().get(), is(PREFERRED_COURT));
     }
+
+    @Test
+    public void shouldMapDirectionOrderTypeFromCCDCase() {
+        //given
+        CCDCase ccdCase = SampleData.getCCDCitizenCase(getAmountBreakDown()).toBuilder()
+            .directionOrderType("BESPOKE")
+            .build();
+
+        //when
+        Claim claim = ccdCaseMapper.from(ccdCase);
+
+        //then
+        MatcherAssert.assertThat(claim.getDirectionOrderType().get(), is("BESPOKE"));
+    }
 }
