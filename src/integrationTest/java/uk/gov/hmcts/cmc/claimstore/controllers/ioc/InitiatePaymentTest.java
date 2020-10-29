@@ -38,7 +38,8 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimState.AWAITING_CITIZEN_PAYMENT
     properties = {
         "document_management.url=false",
         "payments.api.url=http://payments-api",
-        "fees.api.url=http://fees-api"
+        "fees.api.url=http://fees-api",
+        "document_management.url=http://doc-management-api"
     }
 )
 public class InitiatePaymentTest extends BaseMockSpringTest {
