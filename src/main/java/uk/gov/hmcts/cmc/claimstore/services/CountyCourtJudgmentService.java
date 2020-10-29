@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
+import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LIFT_STAY;
@@ -172,7 +173,7 @@ public class CountyCourtJudgmentService {
                 claimantResponseReceiptService.createPdf(claim.toBuilder().reDetermination(reDetermination).build(),
                     buildRequestForReferToJudgeFileBaseName(claim.getReferenceNumber(), partyType));
             updateClaim = documentService.uploadToDocumentManagement(document, authorisation,
-                claim.toBuilder().reDetermination(null).build());
+                claim.toBuilder().reDetermination(ReDetermination.builder().explanation("").build()).build());
         }
         return updateClaim;
     }
