@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
@@ -19,6 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_CLAIMANT_RESPONSE;
 import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
@@ -67,6 +69,12 @@ public class ClaimantResponseContentProvider {
                 }
             });
         }
+        claim.getReDetermination().ifPresent(reDetermination -> {
+            String partyType = reDetermination.getPartyType().name().toLowerCase();
+            if (!StringUtils.isBlank(reDetermination.getExplanation())) {
+                content.put(format("reasonForReDetermination%s", partyType), reDetermination.getExplanation());
+            }
+        });
 
         claim.getClaimantRespondedAt().ifPresent(respondedAt -> {
             content.put("claimantSubmittedOn", formatDateTime(respondedAt));

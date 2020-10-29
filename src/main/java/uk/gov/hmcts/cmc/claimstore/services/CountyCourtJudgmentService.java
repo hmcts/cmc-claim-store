@@ -168,9 +168,11 @@ public class CountyCourtJudgmentService {
         Claim updateClaim = claim;
         if (ctscEnabled) {
             String partyType = reDetermination.getPartyType().name().toLowerCase();
-            PDF document = claimantResponseReceiptService.createPdf(claim,
-                buildRequestForReferToJudgeFileBaseName(claim.getReferenceNumber(), partyType));
-            updateClaim = documentService.uploadToDocumentManagement(document, authorisation, claim);
+            PDF document =
+                claimantResponseReceiptService.createPdf(claim.toBuilder().reDetermination(reDetermination).build(),
+                    buildRequestForReferToJudgeFileBaseName(claim.getReferenceNumber(), partyType));
+            updateClaim = documentService.uploadToDocumentManagement(document, authorisation,
+                claim.toBuilder().reDetermination(null).build());
         }
         return updateClaim;
     }

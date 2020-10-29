@@ -391,5 +391,41 @@
 </div>
 {% endif %}
 {% endif %}
+
+{% if reasonForReDeterminationdefendant is defined %}
+<div class="section">
+  <div class="section-heading">
+    <strong>Request for redetermination from Defendant</strong>
+  </div>
+  <div class="section-body">
+    <table>
+      <tr>
+        <td><strong>Why do you feel this plan is not affordable?</strong></td>
+        <td>
+          {{ reasonForReDeterminationdefendant }}
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+{% if reasonForReDeterminationclaimant is defined %}
+<div class="section">
+  <div class="section-heading">
+    <strong>Request for redetermination from Claimant</strong>
+  </div>
+  <div class="section-body">
+    <table>
+      <tr>
+        <td><strong>Why do you believe the defendant can repay you sooner?</strong></td>
+        <td>
+          {{ reasonForReDeterminationclaimant }}
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+{% endif %}
 </body>
 </html>
