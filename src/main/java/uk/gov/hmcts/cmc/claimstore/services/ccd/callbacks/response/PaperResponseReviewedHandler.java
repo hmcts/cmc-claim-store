@@ -169,9 +169,15 @@ class PaperResponseReviewedHandler {
     }
 
     private String getEmailId(Claim claim, String mailToParty) {
-        String defendantMail = claim.getDefendantEmail();
-        defendantMail = defendantMail != null ? defendantMail : claim.getClaimData().getDefendant().getEmail().get();
-        return CLAIMANT.equals(mailToParty) ? claim.getSubmitterEmail() : defendantMail;
+        if (CLAIMANT.equals(mailToParty)) {
+            return claim.getSubmitterEmail();
+        }
+        if (claim.getDefendantEmail() != null) {
+            return claim.getDefendantEmail();
+        } else {
+            Optional<String> claimantProvidedMail = claim.getClaimData().getDefendant().getEmail();
+            return claimantProvidedMail.isPresent() ? claimantProvidedMail.get() : null;
+        }
     }
 
     private List<ScannedDocument> getUploadedScannedDocuments(final Claim beforeClaim, final Claim afterClaim) {

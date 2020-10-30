@@ -47,6 +47,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.response.PaperR
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.response.PaperResponseReviewedHandler.DEFENDANT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.BUSINESS_QUEUE;
 import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentType.FORM;
+import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentType.OTHER;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_EMAIL;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.SUBMITTER_EMAIL;
@@ -230,10 +231,10 @@ class PaperResponseReviewedHandlerTest {
 
         verifyMailWithCorrectTemplateIsSent(FORM, "N225", "Template7", SUBMITTER_EMAIL, true, 1);
 
-        verifyMailWithCorrectTemplateIsSent(ScannedDocumentType.OTHER, "abc", "Template6", DEFENDANT_EMAIL, false, 1);
+        verifyMailWithCorrectTemplateIsSent(OTHER, "abc", "Template6", DEFENDANT_EMAIL, false, 1);
         verifyMailWithCorrectTemplateIsSent(ScannedDocumentType.LETTER, "xyz", "Template6", DEFENDANT_EMAIL, false, 2);
 
-        verifyMailWithCorrectTemplateIsSent(ScannedDocumentType.OTHER, "abc", "Template5", CLAIMANT_EMAIL, true, 1);
+        verifyMailWithCorrectTemplateIsSent(OTHER, "abc", "Template5", CLAIMANT_EMAIL, true, 1);
         verifyMailWithCorrectTemplateIsSent(ScannedDocumentType.LETTER, "xyz", "Template5", CLAIMANT_EMAIL, true, 2);
 
         verifyMailWithCorrectTemplateIsSent(ScannedDocumentType.COVERSHEET, "", "Template1", SUBMITTER_EMAIL, false, 1);
@@ -247,6 +248,10 @@ class PaperResponseReviewedHandlerTest {
             .documentType(docType).subtype(subType).submittedBy(submittedByClaimant ? CLAIMANT : DEFENDANT).build());
         Claim afterClaim = withFullClaimData().toBuilder().claimDocumentCollection(documentCollectionAfter).build();
         Claim beforeClaim = withFullClaimData().toBuilder().claimDocumentCollection(documentCollection).build();
+
+        if (OTHER.equals(docType) && !submittedByClaimant) {
+            afterClaim = afterClaim.toBuilder().defendantEmail(DEFENDANT_EMAIL).build();
+        }
 
         when(caseDetailsConverter.extractClaim(detailsAfterEvent)).thenReturn(afterClaim);
         when(caseDetailsConverter.extractClaim(detailsBeforeEvent)).thenReturn(beforeClaim);
