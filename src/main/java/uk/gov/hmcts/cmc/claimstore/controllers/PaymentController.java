@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.elasticsearch.index.mapper.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,7 @@ public class PaymentController {
     ) {
         logger.info("Called s2s service");
         try {
+            logger.info("Payment Update - " + paymentUpdate.toString());
             String serviceName = authTokenValidator.getServiceName("Bearer " + serviceToken);
             if ("payment_app".contains(serviceName)) {
                 logger.info("token validated", serviceToken);
@@ -60,6 +62,7 @@ public class PaymentController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
