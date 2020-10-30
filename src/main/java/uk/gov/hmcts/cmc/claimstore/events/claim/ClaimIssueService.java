@@ -47,7 +47,8 @@ public class ClaimIssueService {
 
     private void issueClaimsPendingInCreatedState(Claim claim, String authorisation) {
         logger.info("Automated Claim Issue - {}", claim.getReferenceNumber());
-        if (claim.getClaimData().isClaimantRepresented()) {
+        final boolean claimantRepresented = claim.getClaimData().isClaimantRepresented();
+        if (claimantRepresented) {
             String submitterName = claim.getClaimData().getClaimants().stream()
                 .findFirst()
                 .map(Party::getRepresentative)

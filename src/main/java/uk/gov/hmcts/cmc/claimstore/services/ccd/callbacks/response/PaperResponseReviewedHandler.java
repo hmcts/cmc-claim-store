@@ -37,6 +37,7 @@ import static com.google.common.collect.Iterables.concat;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.List.of;
 import static java.util.function.Predicate.isEqual;
+import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.DEFENDANT_NAME;
@@ -131,13 +132,12 @@ class PaperResponseReviewedHandler {
         EmailTemplates mailTemplates = notificationsProperties.getTemplates().getEmail();
         Map<String, String> mailsDetails = getUploadedScannedDocuments(beforeClaim, afterClaim)
             .stream()
-            .map(scannedDocument -> {
-                return getMailDetails(response, scannedDocument); })
+            .map(scannedDocument -> getMailDetails(response, scannedDocument))
             .collect(Collectors.toMap(mailDetail -> mailDetail[0], mailDetail -> mailDetail[1]));
 
         if (mailsDetails.size() > 0) {
             mailsDetails.forEach((mailTemplateId, mailToParty) -> notify(afterClaim, mailTemplateId, mailToParty));
-        } else if (getDocumentsUploadedByStaff(beforeClaim, afterClaim).size() > 0) {
+        } else if (!isEmpty(getDocumentsUploadedByStaff(beforeClaim, afterClaim))) {
             notify(afterClaim, mailTemplates.getPaperResponseFormReceived(), CLAIMANT);
         }
     }
@@ -148,7 +148,7 @@ class PaperResponseReviewedHandler {
         String mailToParty = CLAIMANT;
         String subType = scannedDocument.getSubtype();
         EmailTemplates mailTemplates = notificationsProperties.getTemplates().getEmail();
-        Boolean submittedByClaimant = CLAIMANT.equals(scannedDocument.getSubmittedBy());
+        boolean submittedByClaimant = CLAIMANT.equals(scannedDocument.getSubmittedBy());
         if (responseForms.contains(subType)) {
             response.state(ClaimState.BUSINESS_QUEUE.getValue());
             templateId = mailTemplates.getPaperResponseReceivedAndCaseTransferredToCCBC();

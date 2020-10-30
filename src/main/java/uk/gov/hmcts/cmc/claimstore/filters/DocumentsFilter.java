@@ -35,7 +35,7 @@ public class DocumentsFilter {
     }
 
     public static Claim filterDocuments(Claim claim, UserDetails userDetails, boolean ctscEnabled,
-                                        Boolean newPaperResponseHandling) {
+                                        boolean newPaperResponseHandling) {
 
         if (userDetails.isCaseworker() || claim.getClaimDocumentCollection().isEmpty()) {
             return claim; // No need to filter.

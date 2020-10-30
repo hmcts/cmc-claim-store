@@ -204,13 +204,13 @@ class PaperResponseReviewedHandlerTest {
     }
 
     @Test
-    public void shouldNotUseNewEmailTemplatesIfFeatureTurnedOff() {
+    void shouldNotUseNewEmailTemplatesIfFeatureTurnedOff() {
         when(launchDarklyClient.isFeatureEnabled("paper-response-review-new-handling")).thenReturn(false);
         verifyMailWithCorrectTemplateIsSent(FORM, "N9a", "Template3", SUBMITTER_EMAIL, false, 0);
     }
 
     @Test
-    public void shouldTriggerMailWithSpecificMailTemplateForTheProvidedScannedDocument() {
+    void shouldTriggerMailWithSpecificMailTemplateForTheProvidedScannedDocument() {
 
         verifyMailWithCorrectTemplateIsSent(FORM, "N9a", "Template2", SUBMITTER_EMAIL, false, 1);
         verifyMailWithCorrectTemplateIsSent(FORM, "N9b", "Template2", SUBMITTER_EMAIL, false, 2);
