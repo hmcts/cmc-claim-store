@@ -156,7 +156,7 @@ public class ClaimServiceTest {
             .status(PaymentStatus.SUCCESS.name())
             .reference("Ref")
             .ccdCaseNumber("CCD-111")
-            .fees(fees)
+            .fees(List.of(fees))
             .build();
     }
 

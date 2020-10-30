@@ -8,6 +8,7 @@ import lombok.Data;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
@@ -34,7 +35,7 @@ public class PaymentUpdate {
     private final String siteId;
     private final String serviceName;
     private final String paymentGroupReference;
-    private final Fees fees;
+    private final List<Fees> fees;
 
     @SuppressWarnings("squid:S00107")
     @Builder(toBuilder = true)
@@ -53,7 +54,7 @@ public class PaymentUpdate {
                          String siteId,
                          String serviceName,
                          String paymentGroupReference,
-                         Fees fees) {
+                         List<Fees> fees) {
         this.id = id;
         this.amount = amount;
         this.description = description;
