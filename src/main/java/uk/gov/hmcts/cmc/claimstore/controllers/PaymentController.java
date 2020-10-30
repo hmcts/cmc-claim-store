@@ -49,13 +49,19 @@ public class PaymentController {
         @Valid @NotNull @RequestBody PaymentUpdate paymentUpdate
     ) {
         logger.info("Called s2s service");
-        String serviceName = authTokenValidator.getServiceName("Bearer " + serviceToken);
-        if ("payment_app".contains(serviceName)) {
-            logger.info("token validated", serviceToken);
-            claimService.updateCardPayment(paymentUpdate);
-            return ResponseEntity.ok().build();
+        try {
+            String serviceName = authTokenValidator.getServiceName("Bearer " + serviceToken);
+            if ("payment_app".contains(serviceName)) {
+                logger.info("token validated", serviceToken);
+                claimService.updateCardPayment(paymentUpdate);
+                return ResponseEntity.ok().build();
+            } else {
+                logger.info("Invalid Token");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        logger.info("Invalid Token");
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 }
