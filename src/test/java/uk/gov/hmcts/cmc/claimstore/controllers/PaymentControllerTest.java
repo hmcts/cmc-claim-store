@@ -31,7 +31,7 @@ import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.NOW_IN_LOCAL_ZONE;
 @RunWith(MockitoJUnitRunner.class)
 public class PaymentControllerTest {
 
-    private static final String AUTHORISATION = "Bearer: aaa";
+    private static final String AUTHORISATION = "aaa";
     private static final List<String> FEATURES = singletonList(ADMISSIONS.getValue());
 
     private PaymentController paymentController;
@@ -69,7 +69,7 @@ public class PaymentControllerTest {
 
     @Test
     public void updateCardPayment() {
-        when(authTokenValidator.getServiceName(AUTHORISATION)).thenReturn("fees_and_payments");
+        when(authTokenValidator.getServiceName("Bearer " + AUTHORISATION)).thenReturn("payment_app");
         when(claimService.updateCardPayment(paymentUpdate)).thenReturn(claim);
 
         paymentController.updateCardPayment(AUTHORISATION, paymentUpdate);
