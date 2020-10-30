@@ -49,7 +49,7 @@ public class PaymentController {
         @Valid @NotNull @RequestBody PaymentUpdate paymentUpdate
     ) {
         logger.info("Called s2s service");
-        String serviceName = authTokenValidator.getServiceName(serviceToken);
+        String serviceName = authTokenValidator.getServiceName("Bearer " + serviceToken);
         if (!"payment_app".contains(serviceName)) {
             logger.info("token validated", serviceToken);
             claimService.updateCardPayment(paymentUpdate);
