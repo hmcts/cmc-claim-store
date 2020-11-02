@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
+import com.launchdarkly.client.LDUser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +34,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SampleCourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.sampledata.statementofmeans.SampleStatementOfMeans;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -90,6 +92,9 @@ public class FormaliseResponseAcceptanceServiceTest {
     @Captor
     private ArgumentCaptor<Settlement> settlementArgumentCaptor;
 
+    @Mock
+    private LaunchDarklyClient launchDarklyClient;
+
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
     private PDF pdf;
     private static final Claim CLAIM = SampleClaim.builder().build();
@@ -111,7 +116,8 @@ public class FormaliseResponseAcceptanceServiceTest {
             caseRepository,
             documentService,
             true,
-            claimantResponseReceiptService
+            claimantResponseReceiptService,
+            launchDarklyClient
         );
     }
 
@@ -632,6 +638,8 @@ public class FormaliseResponseAcceptanceServiceTest {
             .formaliseOption(FormaliseOption.REFER_TO_JUDGE)
             .build();
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
+        when(launchDarklyClient.isFeatureEnabled(eq("redetermination-reason-in-pdf"), any(LDUser.class)))
+            .thenReturn(true);
         verify(claimantResponseReceiptService)
             .createPdf(any(Claim.class), any());
         verify(documentService)
@@ -652,8 +660,11 @@ public class FormaliseResponseAcceptanceServiceTest {
             caseRepository,
             documentService,
             false,
-            claimantResponseReceiptService
+            claimantResponseReceiptService,
+            launchDarklyClient
         );
+        when(launchDarklyClient.isFeatureEnabled(eq("redetermination-reason-in-pdf"), any(LDUser.class)))
+            .thenReturn(false);
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
         verify(claimantResponseReceiptService, never())
             .createPdf(eq(claim), any());

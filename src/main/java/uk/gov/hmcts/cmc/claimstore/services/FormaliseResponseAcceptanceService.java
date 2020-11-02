@@ -27,6 +27,7 @@ import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -53,6 +54,7 @@ public class FormaliseResponseAcceptanceService {
     private final ClaimantResponseReceiptService claimantResponseReceiptService;
     private final DocumentsService documentService;
     private final boolean ctscEnabled;
+    private final LaunchDarklyClient launchDarklyClient;
 
     @Autowired
     public FormaliseResponseAcceptanceService(
@@ -62,7 +64,8 @@ public class FormaliseResponseAcceptanceService {
         CaseRepository caseRepository,
         DocumentsService documentService,
         @Value("${feature_toggles.ctsc_enabled}") boolean ctscEnabled,
-        ClaimantResponseReceiptService claimantResponseReceiptService
+        ClaimantResponseReceiptService claimantResponseReceiptService,
+        LaunchDarklyClient launchDarklyClient
     ) {
         this.countyCourtJudgmentService = countyCourtJudgmentService;
         this.settlementAgreementService = settlementAgreementService;
@@ -71,6 +74,7 @@ public class FormaliseResponseAcceptanceService {
         this.claimantResponseReceiptService = claimantResponseReceiptService;
         this.documentService = documentService;
         this.ctscEnabled = ctscEnabled;
+        this.launchDarklyClient = launchDarklyClient;
     }
 
     public void formalise(Claim claim, ResponseAcceptation responseAcceptation, String authorisation) {
@@ -265,9 +269,15 @@ public class FormaliseResponseAcceptanceService {
         if (!ctscEnabled) {
             return claim;
         }
-        PDF document = claimantResponseReceiptService.createPdf(
-            claim.toBuilder().claimantResponse(responseAcceptation).build(), filename);
-        return documentService.uploadToDocumentManagement(document, authorisation,
-            claim.toBuilder().claimantResponse(null).build());
+        PDF document;
+        if (launchDarklyClient.isFeatureEnabled("redetermination-reason-in-pdf", LaunchDarklyClient.CLAIM_STORE_USER)) {
+            document = claimantResponseReceiptService.createPdf(
+                claim.toBuilder().claimantResponse(responseAcceptation).build(), filename);
+            return documentService.uploadToDocumentManagement(document, authorisation,
+                claim.toBuilder().claimantResponse(null).build());
+        } else {
+            document = claimantResponseReceiptService.createPdf(claim, filename);
+            return documentService.uploadToDocumentManagement(document, authorisation, claim);
+        }
     }
 }
