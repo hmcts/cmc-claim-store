@@ -638,8 +638,6 @@ public class FormaliseResponseAcceptanceServiceTest {
             .formaliseOption(FormaliseOption.REFER_TO_JUDGE)
             .build();
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
-        when(launchDarklyClient.isFeatureEnabled(eq("redetermination-reason-in-pdf"), any(LDUser.class)))
-            .thenReturn(true);
         verify(claimantResponseReceiptService)
             .createPdf(any(Claim.class), any());
         verify(documentService)
@@ -663,8 +661,6 @@ public class FormaliseResponseAcceptanceServiceTest {
             claimantResponseReceiptService,
             launchDarklyClient
         );
-        when(launchDarklyClient.isFeatureEnabled(eq("redetermination-reason-in-pdf"), any(LDUser.class)))
-            .thenReturn(false);
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
         verify(claimantResponseReceiptService, never())
             .createPdf(eq(claim), any());
