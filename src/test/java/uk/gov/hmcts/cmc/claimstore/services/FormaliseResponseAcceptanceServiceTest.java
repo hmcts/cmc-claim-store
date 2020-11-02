@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import com.launchdarkly.client.LDUser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -65,39 +64,28 @@ import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.SE
 public class FormaliseResponseAcceptanceServiceTest {
 
     private static final String AUTH = "AUTH";
-
+    private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
+    private static final Claim CLAIM = SampleClaim.builder().build();
     private FormaliseResponseAcceptanceService formaliseResponseAcceptanceService;
-
     @Mock
     private SettlementAgreementService settlementAgreementService;
-
     @Mock
     private CountyCourtJudgmentService countyCourtJudgmentService;
-
     @Mock
     private EventProducer eventProducer;
-
     @Mock
     private CaseRepository caseRepository;
-
     @Mock
     private DocumentsService documentService;
-
     @Mock
     private ClaimantResponseReceiptService claimantResponseReceiptService;
-
     @Captor
     private ArgumentCaptor<CountyCourtJudgment> countyCourtJudgmentArgumentCaptor;
-
     @Captor
     private ArgumentCaptor<Settlement> settlementArgumentCaptor;
-
     @Mock
     private LaunchDarklyClient launchDarklyClient;
-
-    private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
     private PDF pdf;
-    private static final Claim CLAIM = SampleClaim.builder().build();
 
     @Before
     public void before() {
