@@ -64,23 +64,7 @@ public class ClaimantResponseContentProvider {
 
         content.put("claim", claimDataContentProvider.createContent(claim));
 
-        if (launchDarklyClient.isFeatureEnabled("redetermination-reason-in-pdf", LaunchDarklyClient.CLAIM_STORE_USER)) {
-            Optional<ClaimantResponse> claimantResponseOptional = claim.getClaimantResponse();
-            if (claimantResponseOptional.isPresent()) {
-                ResponseAcceptation responseAcceptation = (ResponseAcceptation) claimantResponseOptional.get();
-                responseAcceptation.getCourtDetermination().ifPresent(courtDetermination -> {
-                    if (courtDetermination.getRejectionReason().isPresent()) {
-                        content.put("rejectionReason", courtDetermination.getRejectionReason().get());
-                    }
-                });
-            }
-            claim.getReDetermination().ifPresent(reDetermination -> {
-                String partyType = reDetermination.getPartyType().name().toLowerCase();
-                if (!StringUtils.isBlank(reDetermination.getExplanation())) {
-                    content.put(format("reasonForReDetermination%s", partyType), reDetermination.getExplanation());
-                }
-            });
-        }
+        setRedeterminationContent(claim, content);
 
         claim.getClaimantRespondedAt().ifPresent(respondedAt -> {
             content.put("claimantSubmittedOn", formatDateTime(respondedAt));
@@ -153,6 +137,26 @@ public class ClaimantResponseContentProvider {
         }
 
         return content;
+    }
+
+    private void setRedeterminationContent(Claim claim, Map<String, Object> content) {
+        if (launchDarklyClient.isFeatureEnabled("redetermination-reason-in-pdf", LaunchDarklyClient.CLAIM_STORE_USER)) {
+            Optional<ClaimantResponse> claimantResponseOptional = claim.getClaimantResponse();
+            if (claimantResponseOptional.isPresent()) {
+                ResponseAcceptation responseAcceptation = (ResponseAcceptation) claimantResponseOptional.get();
+                responseAcceptation.getCourtDetermination().ifPresent(courtDetermination -> {
+                    if (courtDetermination.getRejectionReason().isPresent()) {
+                        content.put("rejectionReason", courtDetermination.getRejectionReason().get());
+                    }
+                });
+            }
+            claim.getReDetermination().ifPresent(reDetermination -> {
+                String partyType = reDetermination.getPartyType().name().toLowerCase();
+                if (!StringUtils.isBlank(reDetermination.getExplanation())) {
+                    content.put(format("reasonForReDetermination%s", partyType), reDetermination.getExplanation());
+                }
+            });
+        }
     }
 
     private void addFormalisedOption(

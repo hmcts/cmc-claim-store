@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
+import com.launchdarkly.client.LDUser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -625,6 +626,38 @@ public class FormaliseResponseAcceptanceServiceTest {
             .builder()
             .formaliseOption(FormaliseOption.REFER_TO_JUDGE)
             .build();
+        formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
+        verify(claimantResponseReceiptService)
+            .createPdf(any(Claim.class), any());
+        verify(documentService)
+            .uploadToDocumentManagement(pdf, AUTH, claim);
+    }
+
+    @Test
+    public void shouldCallDocumentServiceIfInterlocutoryJudgmentAndToggleEnabled() {
+        Claim claim = SampleClaim.getWithDefaultResponse();
+        ResponseAcceptation responseAcceptation = ResponseAcceptation
+            .builder()
+            .formaliseOption(FormaliseOption.REFER_TO_JUDGE)
+            .build();
+        when(launchDarklyClient.isFeatureEnabled(eq("redetermination-reason-in-pdf"), any(LDUser.class)))
+            .thenReturn(true);
+        formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
+        verify(claimantResponseReceiptService)
+            .createPdf(any(Claim.class), any());
+        verify(documentService)
+            .uploadToDocumentManagement(pdf, AUTH, claim);
+    }
+
+    @Test
+    public void shouldCallDocumentServiceIfInterlocutoryJudgmentAndToggleDisabled() {
+        Claim claim = SampleClaim.getWithDefaultResponse();
+        ResponseAcceptation responseAcceptation = ResponseAcceptation
+            .builder()
+            .formaliseOption(FormaliseOption.REFER_TO_JUDGE)
+            .build();
+        when(launchDarklyClient.isFeatureEnabled(eq("redetermination-reason-in-pdf"), any(LDUser.class)))
+            .thenReturn(false);
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
         verify(claimantResponseReceiptService)
             .createPdf(any(Claim.class), any());
