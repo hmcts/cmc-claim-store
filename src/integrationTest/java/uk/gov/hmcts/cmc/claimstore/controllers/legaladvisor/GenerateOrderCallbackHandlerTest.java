@@ -1,3 +1,4 @@
+
 package uk.gov.hmcts.cmc.claimstore.controllers.legaladvisor;
 
 import com.google.common.collect.ImmutableList;
@@ -113,7 +114,7 @@ public class GenerateOrderCallbackHandlerTest extends BaseMockSpringTest {
             AboutToStartOrSubmitCallbackResponse.class
         ).getData();
 
-        assertThat(responseData).hasSize(9);
+        assertThat(responseData).hasSize(12);
         assertThat(LocalDate.parse(responseData.get("docUploadDeadline").toString()))
             .isAfterOrEqualTo(LocalDate.now().plusDays(33));
         assertThat(LocalDate.parse(responseData.get("eyewitnessUploadDeadline").toString()))
@@ -124,9 +125,9 @@ public class GenerateOrderCallbackHandlerTest extends BaseMockSpringTest {
         assertThat(responseData.get("eyewitnessUploadForParty")).isEqualTo("BOTH");
         assertThat(responseData.get("preferredDQCourt")).isEqualTo("Preferred court");
         assertThat(responseData.get("paperDetermination")).isEqualTo("NO");
-        assertThat(responseData.get("newRequestedCourt")).isNull();
-        assertThat(responseData.get("preferredCourtObjectingParty")).isNull();
-        assertThat(responseData.get("preferredCourtObjectingReason")).isNull();
+        assertThat(responseData.get("newRequestedCourt")).isEqualTo("Court not objected");
+        assertThat(responseData.get("preferredCourtObjectingParty")).isEqualTo("None");
+        assertThat(responseData.get("preferredCourtObjectingReason")).isEqualTo("Court not objected");
         assertThat(responseData.get("otherDirectionHeaders")).isNull();
     }
 

@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum CCDResponseSubjectType {
     RES_CLAIMANT("Res_CLAIMANT"),
-    RES_DEFENDANT("Res_DEFENDANT");
+    RES_DEFENDANT("Res_DEFENDANT"),
+    NONE("None");
 
     private final String value;
 

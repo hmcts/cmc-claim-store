@@ -2,6 +2,8 @@ package uk.gov.hmcts.cmc.claimstore.repositories;
 
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
@@ -18,6 +20,7 @@ import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,6 +28,8 @@ import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 
 @Repository("searchRepository")
 public class CCDElasticSearchRepository implements CaseSearchApi {
+
+    Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final CoreCaseDataApi coreCaseDataApi;
     private final AuthTokenGenerator authTokenGenerator;
@@ -45,6 +50,9 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
     public List<Claim> getMediationClaims(String authorisation, LocalDate mediationAgreedDate) {
         User user = userService.getUser(authorisation);
 
+        logger.info("ElasticSearch query to fetch data at {} for the date {} ",
+            LocalDateTime.now(), mediationAgreedDate);
+
         Query mediationQuery = new Query(
             QueryBuilders.boolQuery()
                 .must(QueryBuilders.termQuery(
@@ -53,7 +61,7 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
                     "data.respondents.value.claimantResponse.freeMediationOption", CCDYesNoOption.YES.name()))
                 .must(QueryBuilders.rangeQuery("data.respondents.value.claimantResponse.submittedOn")
                     .from(DateUtils.startOfDay(mediationAgreedDate), true)
-                    .to(DateUtils.endOfDay(mediationAgreedDate), true)), 1000
+                    .to(DateUtils.endOfDay(mediationAgreedDate), true)), 500
         );
 
         return searchClaimsWith(user, mediationQuery);

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.events.claim;
 
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.documents.CitizenServiceDocumentsService;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
@@ -8,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.PrintableDocumentService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
@@ -29,6 +31,7 @@ public class DocumentOrchestrationService {
     private final ClaimIssueReceiptService claimIssueReceiptService;
     private final ClaimService claimService;
     private final UserService userService;
+    private final PrintableDocumentService printableDocumentService;
 
     public DocumentOrchestrationService(
         CitizenServiceDocumentsService citizenServiceDocumentsService,
@@ -36,7 +39,8 @@ public class DocumentOrchestrationService {
         PDFServiceClient pdfServiceClient,
         ClaimIssueReceiptService claimIssueReceiptService,
         ClaimService claimService,
-        UserService userService
+        UserService userService,
+        PrintableDocumentService printableDocumentService
     ) {
         this.citizenServiceDocumentsService = citizenServiceDocumentsService;
         this.sealedClaimPdfService = sealedClaimPdfService;
@@ -44,20 +48,30 @@ public class DocumentOrchestrationService {
         this.claimIssueReceiptService = claimIssueReceiptService;
         this.claimService = claimService;
         this.userService = userService;
+        this.printableDocumentService = printableDocumentService;
     }
 
-    public GeneratedDocuments generateForCitizen(Claim claim, String authorisation) {
+    public GeneratedDocuments generateForCitizen(Claim claim, String authorisation, boolean newPinLetterEnabled) {
         Optional<GeneratePinResponse> pinResponse = getPinResponse(claim.getClaimData(), authorisation);
 
         String pin = pinResponse
             .map(GeneratePinResponse::getPin)
             .orElseThrow(() -> new IllegalArgumentException("Pin generation failed"));
-
-        Document defendantPinLetterDoc = citizenServiceDocumentsService.pinLetterDocument(claim, pin);
-
-        PDF defendantPinLetter = new PDF(buildDefendantLetterFileBaseName(claim.getReferenceNumber()),
-            pdfServiceClient.generateFromHtml(defendantPinLetterDoc.template.getBytes(), defendantPinLetterDoc.values),
-            DEFENDANT_PIN_LETTER);
+        Document defendantPinLetterDoc;
+        PDF defendantPinLetter;
+        if (newPinLetterEnabled) {
+            CCDDocument pinLetter = citizenServiceDocumentsService.createDefendantPinLetter(claim, pin,
+                authorisation);
+            defendantPinLetterDoc = printableDocumentService.process(pinLetter, authorisation);
+            defendantPinLetter = new PDF(buildDefendantLetterFileBaseName(claim.getReferenceNumber()),
+                printableDocumentService.pdf(pinLetter, authorisation), DEFENDANT_PIN_LETTER);
+        } else {
+            defendantPinLetterDoc = citizenServiceDocumentsService.pinLetterDocument(claim, pin);
+            defendantPinLetter = new PDF(buildDefendantLetterFileBaseName(claim.getReferenceNumber()),
+                pdfServiceClient.generateFromHtml(defendantPinLetterDoc.template.getBytes(),
+                    defendantPinLetterDoc.values),
+                DEFENDANT_PIN_LETTER);
+        }
 
         String letterHolderId = pinResponse.map(GeneratePinResponse::getUserId)
             .orElseThrow(() -> new IllegalArgumentException("Pin generation failed"));
