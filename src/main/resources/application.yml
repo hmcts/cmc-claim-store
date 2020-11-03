@@ -68,7 +68,7 @@ idam:
 
 courtfinder:
   api:
-    url: "https://courttribunalfinder.service.gov.uk"
+    url: "https://fact.aat.platform.hmcts.net/"
 
 fees:
   api:
