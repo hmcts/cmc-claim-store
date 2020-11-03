@@ -68,7 +68,7 @@ idam:
 
 courtfinder:
   api:
-    url: "https://fact.aat.platform.hmcts.net/"
+    url: "https://fact.aat.platform.hmcts.net"
 
 fees:
   api:
