@@ -102,7 +102,7 @@ allprojects {
     }
     dependencies {
       // CVE-2020-13935
-      dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.38') {
+      dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.39') {
         entry 'tomcat-embed-core'
         entry 'tomcat-embed-el'
         entry 'tomcat-embed-websocket'
