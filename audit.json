@@ -479,5 +479,195 @@
     "source": "URI: http://cmc-claim-store-aat.service.core-compute-aat.internal/support/rpa/paid-in-full Method: PUT",
     "severity": 1,
     "timestamp": "2020-09-23T12:22:06.823+00:00"
+  },
+  {
+    "task": "OWASP Zaproxy",
+    "appname": "http://cmc-claim-store-aat.service.core-compute-aat.internal",
+    "description": "\u003cp\u003eA cookie has been set without the SameSite attribute, which means that the cookie can be sent as a result of a 'cross-site' request. The SameSite attribute is an effective counter measure to cross-site request forgery, cross-site script inclusion, and timing attacks.\u003c/p\u003e",
+    "fingerprint": "10054_Cookie Without SameSite Attribute_http://cmc-claim-store-aat.service.core-compute-aat.internal/support/rpa/paid-in-full_PUT",
+    "detail": "Cookie Without SameSite Attribute \n Evidence: Set-Cookie: dtCookie \n Solution: \u003cp\u003eEnsure that the SameSite attribute is set to either 'lax' or ideally 'strict' for all cookies.\u003c/p\u003e \n Other info: null \n Reference: \u003cp\u003ehttps://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site\u003c/p\u003e",
+    "source": "URI: http://cmc-claim-store-aat.service.core-compute-aat.internal/support/rpa/paid-in-full Method: PUT",
+    "severity": 1,
+    "timestamp": "2020-09-23T12:22:06.823+00:00"
+  },
+  {
+    "task": "OWASP Zaproxy",
+    "appname": "http://cmc-claim-store-aat.service.core-compute-aat.internal",
+    "description": "\u003cp\u003eA cookie has been set without the SameSite attribute, which means that the cookie can be sent as a result of a 'cross-site' request. The SameSite attribute is an effective counter measure to cross-site request forgery, cross-site script inclusion, and timing attacks.\u003c/p\u003e",
+    "fingerprint": "10054_Cookie Without SameSite Attribute_http://cmc-claim-store-aat.service.core-compute-aat.internal/claims/initiate-citizen-payment_POST",
+    "detail": "Cookie Without SameSite Attribute \n Evidence: Set-Cookie: dtCookie \n Solution: \u003cp\u003eEnsure that the SameSite attribute is set to either 'lax' or ideally 'strict' for all cookies.\u003c/p\u003e \n Other info: null \n Reference: \u003cp\u003ehttps://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site\u003c/p\u003e",
+    "source": "URI: http://cmc-claim-store-aat.service.core-compute-aat.internal/claims/initiate-citizen-payment Method: POST",
+    "severity": 1,
+    "timestamp": "2020-09-23T12:22:06.823+00:00"
+  },
+  {
+    "task": "OWASP Zaproxy",
+    "appname": "http://cmc-claim-store-aat.service.core-compute-aat.internal",
+    "description": "\u003cp\u003eA cookie has been set without the SameSite attribute, which means that the cookie can be sent as a result of a 'cross-site' request. The SameSite attribute is an effective counter measure to cross-site request forgery, cross-site script inclusion, and timing attacks.\u003c/p\u003e",
+    "fingerprint": "10054_Cookie Without SameSite Attribute_http://cmc-claim-store-aat.service.core-compute-aat.internal/claims/filters/defendants/email?email=foo-bar@example.com_POST",
+    "detail": "Cookie Without SameSite Attribute \n Evidence: Set-Cookie: dtCookie \n Solution: \u003cp\u003eEnsure that the SameSite attribute is set to either 'lax' or ideally 'strict' for all cookies.\u003c/p\u003e \n Other info: null \n Reference: \u003cp\u003ehttps://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site\u003c/p\u003e",
+    "source": "URI: http://cmc-claim-store-aat.service.core-compute-aat.internal/claims/filters/defendants/email?email=foo-bar@example.com Method: POST",
+    "severity": 1,
+    "timestamp": "2020-09-23T12:22:06.823+00:00"
+  },
+  {
+    "task": "OWASP Zaproxy",
+    "appname": "http://cmc-claim-store-aat.service.core-compute-aat.internal",
+    "description",: "\u003cp\u003eA cookie has been set without the SameSite attribute, which means that the cookie can be sent as a result of a 'cross-site' request. The SameSite attribute is an effective counter measure to cross-site request forgery, cross-site script inclusion, and timing attacks.\u003c/p\u003e",
+    "fingerprint": "10054_Cookie Without SameSite Attribute_http://cmc-claim-store-aat.service.core-compute-aat.internal/support/rpa/response_PUT",
+    "detail": "Cookie Without SameSite Attribute \n Evidence: Set-Cookie: dtCookie \n Solution: \u003cp\u003eEnsure that the SameSite attribute is set to either 'lax' or ideally 'strict' for all cookies.\u003c/p\u003e \n Other info: null \n Reference: \u003cp\u003ehttps://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site\u003c/p\u003e",
+    "source": "URI: http://cmc-claim-store-aat.service.core-compute-aat.internal/support/rpa/response Method: PUT",
+    "severity": 1,
+    "timestamp": "2020-09-23T12:22:06.823+00:00"
+  },
+  {
+    "task": "OWASP Zaproxy",
+    "appname": "http://cmc-claim-store-aat.service.core-compute-aat.internal",
+    "description",: "\u003cp\u003eA cookie has been set without the SameSite attribute, which means that the cookie can be sent as a result of a 'cross-site' request. The SameSite attribute is an effective counter measure to cross-site request forgery, cross-site script inclusion, and timing attacks.\u003c/p\u003e",
+    "fingerprint": "10054_Cookie Without SameSite Attribute_http://cmc-claim-store-aat.service.core-compute-aat.internal/support/rpa/more-time_PUT",
+    "detail": "Cookie Without SameSite Attribute \n Evidence: Set-Cookie: dtCookie \n Solution: \u003cp\u003eEnsure that the SameSite attribute is set to either 'lax' or ideally 'strict' for all cookies.\u003c/p\u003e \n Other info: null \n Reference: \u003cp\u003ehttps://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site\u003c/p\u003e",
+    "source": "URI: http://cmc-claim-store-aat.service.core-compute-aat.internal/support/rpa/more-time Method: PUT",
+    "severity": 1,
+    "timestamp": "2020-09-23T12:22:06.823+00:00"
+  },
+  {
+    "task": "OWASP Zaproxy",
+    "appname": "http://cmc-claim-store-aat.service.core-compute-aat.internal",
+    "description",: "\u003cp\u003eA cookie has been set without the SameSite attribute, which means that the cookie can be sent as a result of a 'cross-site' request. The SameSite attribute is an effective counter measure to cross-site request forgery, cross-site script inclusion, and timing attacks.\u003c/p\u003e",
+    "fingerprint": "10054_Cookie Without SameSite Attribute_http://cmc-claim-store-aat.service.core-compute-aat.internal/claims/submitterId/create-legal-rep-claim_POST",
+    "detail": "Cookie Without SameSite Attribute \n Evidence: Set-Cookie: dtCookie \n Solution: \u003cp\u003eEnsure that the SameSite attribute is set to either 'lax' or ideally 'strict' for all cookies.\u003c/p\u003e \n Other info: null \n Reference: \u003cp\u003ehttps://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site\u003c/p\u003e",
+    "source": "URI: http://cmc-claim-store-aat.service.core-compute-aat.internal/claims/submitterId/create-legal-rep-claim Method: POST",
+    "severity": 1,
+    "timestamp": "2020-09-23T12:22:06.823+00:00"
+  },
+  {
+    "task": "OWASP Zaproxy",
+    "appname": "http://cmc-claim-store-aat.service.core-compute-aat.internal",
+    "description",: "\u003cp\u003eA cookie has been set without the SameSite attribute, which means that the cookie can be sent as a result of a 'cross-site' request. The SameSite attribute is an effective counter measure to cross-site request forgery, cross-site script inclusion, and timing attacks.\u003c/p\u003e",
+    "fingerprint": "10054_Cookie Without SameSite Attribute_http://cmc-claim-store-aat.service.core-compute-aat.internal/claims/submitterId_POST",
+    "detail": "Cookie Without SameSite Attribute \n Evidence: Set-Cookie: dtCookie \n Solution: \u003cp\u003eEnsure that the SameSite attribute is set to either 'lax' or ideally 'strict' for all cookies.\u003c/p\u003e \n Other info: null \n Reference: \u003cp\u003ehttps://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site\u003c/p\u003e",
+    "source": "URI: http://cmc-claim-store-aat.service.core-compute-aat.internal/claims/submitterId Method: POST",
+    "severity": 1,
+    "timestamp": "2020-09-23T12:22:06.823+00:00"
+  },
+  {
+    "task": "OWASP Zaproxy",
+    "appname": "http://cmc-claim-store-aat.service.core-compute-aat.internal",
+    "description",: "\u003cp\u003eA cookie has been set without the SameSite attribute, which means that the cookie can be sent as a result of a 'cross-site' request. The SameSite attribute is an effective counter measure to cross-site request forgery, cross-site script inclusion, and timing attacks.\u003c/p\u003e",
+    "fingerprint": "10054_Cookie Without SameSite Attribute_http://cmc-claim-store-aat.service.core-compute-aat.internal/scanned-documents/externalId/documentType/documentSubtype_GET",
+    "detail": "Cookie Without SameSite Attribute \n Evidence: Set-Cookie: dtCookie \n Solution: \u003cp\u003eEnsure that the SameSite attribute is set to either 'lax' or ideally 'strict' for all cookies.\u003c/p\u003e \n Other info: null \n Reference: \u003cp\u003ehttps://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site\u003c/p\u003e",
+    "source": "URI: http://cmc-claim-store-aat.service.core-compute-aat.internal/scanned-documents/externalId/documentType/documentSubtype Method: GET",
+    "severity": 1,
+    "timestamp": "2020-09-23T12:22:06.823+00:00"
+  },
+  {
+    "task": "OWASP Zaproxy",
+    "appname": "http://cmc-claim-store-aat.service.core-compute-aat.internal",
+    "description",: "\u003cp\u003eA cookie has been set without the SameSite attribute, which means that the cookie can be sent as a result of a 'cross-site' request. The SameSite attribute is an effective counter measure to cross-site request forgery, cross-site script inclusion, and timing attacks.\u003c/p\u003e",
+    "fingerprint": "10054_Cookie Without SameSite Attribute_http://cmc-claim-store-aat.service.core-compute-aat.internal/support/sendMediation_POST",
+    "detail": "Cookie Without SameSite Attribute \n Evidence: Set-Cookie: dtCookie \n Solution: \u003cp\u003eEnsure that the SameSite attribute is set to either 'lax' or ideally 'strict' for all cookies.\u003c/p\u003e \n Other info: null \n Reference: \u003cp\u003ehttps://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site\u003c/p\u003e",
+    "source": "URI: http://cmc-claim-store-aat.service.core-compute-aat.internal/support/sendMediation Method: POST",
+    "severity": 1,
+    "timestamp": "2020-09-23T12:22:06.823+00:00"
+  },
+  {
+    "task": "OWASP Zaproxy",
+    "appname": "http://cmc-claim-store-aat.service.core-compute-aat.internal",
+    "description",: "\u003cp\u003eA cookie has been set without the SameSite attribute, which means that the cookie can be sent as a result of a 'cross-site' request. The SameSite attribute is an effective counter measure to cross-site request forgery, cross-site script inclusion, and timing attacks.\u003c/p\u003e",
+    "fingerprint": "10054_Cookie Without SameSite Attribute_http://cmc-claim-store-aat.service.core-compute-aat.internal/claims/claimReference_GET",
+    "detail": "Cookie Without SameSite Attribute \n Evidence: Set-Cookie: dtCookie \n Solution: \u003cp\u003eEnsure that the SameSite attribute is set to either 'lax' or ideally 'strict' for all cookies.\u003c/p\u003e \n Other info: null \n Reference: \u003cp\u003ehttps://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site\u003c/p\u003e",
+    "source": "URI: http://cmc-claim-store-aat.service.core-compute-aat.internal/claims/claimReference Method: GET",
+    "severity": 1,
+    "timestamp": "2020-09-23T12:22:06.823+00:00"
+  },
+  {
+    "task": "OWASP Zaproxy",
+    "appname": "http://cmc-claim-store-aat.service.core-compute-aat.internal",
+    "description",: "\u003cp\u003eA cookie has been set without the SameSite attribute, which means that the cookie can be sent as a result of a 'cross-site' request. The SameSite attribute is an effective counter measure to cross-site request forgery, cross-site script inclusion, and timing attacks.\u003c/p\u003e",
+    "fingerprint": "10054_Cookie Without SameSite Attribute_http://cmc-claim-store-aat.service.core-compute-aat.internal/claims/create-citizen-claim_PUT",
+    "detail": "Cookie Without SameSite Attribute \n Evidence: Set-Cookie: dtCookie \n Solution: \u003cp\u003eEnsure that the SameSite attribute is set to either 'lax' or ideally 'strict' for all cookies.\u003c/p\u003e \n Other info: null \n Reference: \u003cp\u003ehttps://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site\u003c/p\u003e",
+    "source": "URI: http://cmc-claim-store-aat.service.core-compute-aat.internal/claims/create-citizen-claim Method: PUT",
+    "severity": 1,
+    "timestamp": "2020-09-23T12:22:06.823+00:00"
+  },
+  {
+    "task": "OWASP Zaproxy",
+    "appname": "http://cmc-claim-store-aat.service.core-compute-aat.internal",
+    "description",: "\u003cp\u003eA cookie has been set without the SameSite attribute, which means that the cookie can be sent as a result of a 'cross-site' request. The SameSite attribute is an effective counter measure to cross-site request forgery, cross-site script inclusion, and timing attacks.\u003c/p\u003e",
+    "fingerprint": "10054_Cookie Without SameSite Attribute_http://cmc-claim-store-aat.service.core-compute-aat.internal/support/rpa/legal-claim_PUT",
+    "detail": "Cookie Without SameSite Attribute \n Evidence: Set-Cookie: dtCookie \n Solution: \u003cp\u003eEnsure that the SameSite attribute is set to either 'lax' or ideally 'strict' for all cookies.\u003c/p\u003e \n Other info: null \n Reference: \u003cp\u003ehttps://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site\u003c/p\u003e",
+    "source": "URI: http://cmc-claim-store-aat.service.core-compute-aat.internal/support/rpa/legal-claim Method: PUT",
+    "severity": 1,
+    "timestamp": "2020-09-23T12:22:06.823+00:00"
+  },
+  {
+    "task": "OWASP Zaproxy",
+    "appname": "http://cmc-claim-store-aat.service.core-compute-aat.internal",
+    "description",: "\u003cp\u003eA cookie has been set without the SameSite attribute, which means that the cookie can be sent as a result of a 'cross-site' request. The SameSite attribute is an effective counter measure to cross-site request forgery, cross-site script inclusion, and timing attacks.\u003c/p\u003e",
+    "fingerprint": "10054_Cookie Without SameSite Attribute_http://cmc-claim-store-aat.service.core-compute-aat.internal/documents/documentType/externalId_GET",
+    "detail": "Cookie Without SameSite Attribute \n Evidence: Set-Cookie: dtCookie \n Solution: \u003cp\u003eEnsure that the SameSite attribute is set to either 'lax' or ideally 'strict' for all cookies.\u003c/p\u003e \n Other info: null \n Reference: \u003cp\u003ehttps://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site\u003c/p\u003e",
+    "source": "URI: http://cmc-claim-store-aat.service.core-compute-aat.internal/documents/documentType/externalId Method: GET",
+    "severity": 1,
+    "timestamp": "2020-09-23T12:22:06.823+00:00"
+  },
+  {
+    "task": "OWASP Zaproxy",
+    "appname": "http://cmc-claim-store-aat.service.core-compute-aat.internal",
+    "description",: "\u003cp\u003eA cookie has been set without the SameSite attribute, which means that the cookie can be sent as a result of a 'cross-site' request. The SameSite attribute is an effective counter measure to cross-site request forgery, cross-site script inclusion, and timing attacks.\u003c/p\u003e",
+    "fingerprint": "10054_Cookie Without SameSite Attribute_http://cmc-claim-store-aat.service.core-compute-aat.internal/claims/claimant/submitterId/metadata_GET",
+    "detail": "Cookie Without SameSite Attribute \n Evidence: Set-Cookie: dtCookie \n Solution: \u003cp\u003eEnsure that the SameSite attribute is set to either 'lax' or ideally 'strict' for all cookies.\u003c/p\u003e \n Other info: null \n Reference: \u003cp\u003ehttps://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site\u003c/p\u003e",
+    "source": "URI: http://cmc-claim-store-aat.service.core-compute-aat.internal/claims/claimant/submitterId/metadata Method: GET",
+    "severity": 1,
+    "timestamp": "2020-09-23T12:22:06.823+00:00"
+  },
+  {
+    "task": "OWASP Zaproxy",
+    "appname": "http://cmc-claim-store-aat.service.core-compute-aat.internal",
+    "description",: "\u003cp\u003eA cookie has been set without the SameSite attribute, which means that the cookie can be sent as a result of a 'cross-site' request. The SameSite attribute is an effective counter measure to cross-site request forgery, cross-site script inclusion, and timing attacks.\u003c/p\u003e",
+    "fingerprint": "10054_Cookie Without SameSite Attribute_http://cmc-claim-store-aat.service.core-compute-aat.internal/claims/defendant/defendantId/metadata_GET",
+    "detail": "Cookie Without SameSite Attribute \n Evidence: Set-Cookie: dtCookie \n Solution: \u003cp\u003eEnsure that the SameSite attribute is set to either 'lax' or ideally 'strict' for all cookies.\u003c/p\u003e \n Other info: null \n Reference: \u003cp\u003ehttps://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site\u003c/p\u003e",
+    "source": "URI: http://cmc-claim-store-aat.service.core-compute-aat.internal/claims/defendant/defendantId/metadata Method: GET",
+    "severity": 1,
+    "timestamp": "2020-09-23T12:22:06.823+00:00"
+  },
+  {
+    "task": "OWASP Zaproxy",
+    "appname": "http://cmc-claim-store-aat.service.core-compute-aat.internal",
+    "description",: "\u003cp\u003eA cookie has been set without the SameSite attribute, which means that the cookie can be sent as a result of a 'cross-site' request. The SameSite attribute is an effective counter measure to cross-site request forgery, cross-site script inclusion, and timing attacks.\u003c/p\u003e",
+    "fingerprint": "10054_Cookie Without SameSite Attribute_http://cmc-claim-store-aat.service.core-compute-aat.internal/claims/resume-citizen-payment_PUT",
+    "detail": "Cookie Without SameSite Attribute \n Evidence: Set-Cookie: dtCookie \n Solution: \u003cp\u003eEnsure that the SameSite attribute is set to either 'lax' or ideally 'strict' for all cookies.\u003c/p\u003e \n Other info: null \n Reference: \u003cp\u003ehttps://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site\u003c/p\u003e",
+    "source": "URI: http://cmc-claim-store-aat.service.core-compute-aat.internal/claims/resume-citizen-payment Method: PUT",
+    "severity": 1,
+    "timestamp": "2020-09-23T12:22:06.823+00:00"
+  },
+  {
+    "task": "OWASP Zaproxy",
+    "appname": "http://cmc-claim-store-aat.service.core-compute-aat.internal",
+    "description",: "\u003cp\u003eA cookie has been set without the SameSite attribute, which means that the cookie can be sent as a result of a 'cross-site' request. The SameSite attribute is an effective counter measure to cross-site request forgery, cross-site script inclusion, and timing attacks.\u003c/p\u003e",
+    "fingerprint": "10054_Cookie Without SameSite Attribute_http://cmc-claim-store-aat.service.core-compute-aat.internal/testing-support/trigger-server-error_GET",
+    "detail": "Cookie Without SameSite Attribute \n Evidence: Set-Cookie: dtCookie \n Solution: \u003cp\u003eEnsure that the SameSite attribute is set to either 'lax' or ideally 'strict' for all cookies.\u003c/p\u003e \n Other info: null \n Reference: \u003cp\u003ehttps://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site\u003c/p\u003e",
+    "source": "URI: http://cmc-claim-store-aat.service.core-compute-aat.internal/testing-support/trigger-server-error Method: GET",
+    "severity": 1,
+    "timestamp": "2020-09-23T12:22:06.823+00:00"
+  },
+  {
+    "task": "OWASP Zaproxy",
+    "appname": "http://cmc-claim-store-aat.service.core-compute-aat.internal",
+    "description",: "\u003cp\u003eA cookie has been set without the SameSite attribute, which means that the cookie can be sent as a result of a 'cross-site' request. The SameSite attribute is an effective counter measure to cross-site request forgery, cross-site script inclusion, and timing attacks.\u003c/p\u003e",
+    "fingerprint": "10054_Cookie Without SameSite Attribute_http://cmc-claim-store-aat.service.core-compute-aat.internal/support/rpa/claim_PUT",
+    "detail": "Cookie Without SameSite Attribute \n Evidence: Set-Cookie: dtCookie \n Solution: \u003cp\u003eEnsure that the SameSite attribute is set to either 'lax' or ideally 'strict' for all cookies.\u003c/p\u003e \n Other info: null \n Reference: \u003cp\u003ehttps://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site\u003c/p\u003e",
+    "source": "URI: http://cmc-claim-store-aat.service.core-compute-aat.internal/support/rpa/claim Method: PUT",
+    "severity": 1,
+    "timestamp": "2020-09-23T12:22:06.823+00:00"
+  },
+  {
+    "task": "OWASP Zaproxy",
+    "appname": "http://cmc-claim-store-aat.service.core-compute-aat.internal",
+    "description",: "\u003cp\u003eA cookie has been set without the SameSite attribute, which means that the cookie can be sent as a result of a 'cross-site' request. The SameSite attribute is an effective counter measure to cross-site request forgery, cross-site script inclusion, and timing attacks.\u003c/p\u003e",
+    "fingerprint": "10054_Cookie Without SameSite Attribute_http://cmc-claim-store-aat.service.core-compute-aat.internal/support/rpa/ccj_PUT",
+    "detail": "Cookie Without SameSite Attribute \n Evidence: Set-Cookie: dtCookie \n Solution: \u003cp\u003eEnsure that the SameSite attribute is set to either 'lax' or ideally 'strict' for all cookies.\u003c/p\u003e \n Other info: null \n Reference: \u003cp\u003ehttps://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site\u003c/p\u003e",
+    "source": "URI: http://cmc-claim-store-aat.service.core-compute-aat.internal/support/rpa/ccj Method: PUT",
+    "severity": 1,
+    "timestamp": "2020-09-23T12:22:06.823+00:00"
   }
 ]
