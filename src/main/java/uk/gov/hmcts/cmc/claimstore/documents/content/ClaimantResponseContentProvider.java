@@ -154,6 +154,8 @@ public class ClaimantResponseContentProvider {
                 String partyType = reDetermination.getPartyType().name().toLowerCase();
                 if (!StringUtils.isBlank(reDetermination.getExplanation())) {
                     content.put(format("reasonForReDetermination%s", partyType), reDetermination.getExplanation());
+                } else {
+                    content.put(format("reasonForReDetermination%s", partyType), "Not Provided");
                 }
             });
         }
