@@ -127,13 +127,17 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
     }
 
     private AboutToStartOrSubmitCallbackResponse calculateResponseDeadline(CallbackParams callbackParams) {
+        LocalDate issuedOn = null;
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
+        if (claim.getIssuedOn().isPresent()) {
+            issuedOn = claim.getIssuedOn().get();
+        }
         LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(
             respondent.getPaperFormIssueDate() != null ? respondent.getPaperFormIssueDate()
-                : claim.getIssuedOn().get());
+                : issuedOn);
         List<String> validationResult = this.moreTimeRequestRule.validateMoreTimeCanBeRequested(claim, newDeadline);
         var builder = AboutToStartOrSubmitCallbackResponse.builder();
         if (!validationResult.isEmpty()) {

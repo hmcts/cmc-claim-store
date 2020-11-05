@@ -86,6 +86,7 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
     }
 
     private AboutToStartOrSubmitCallbackResponse issuePaperDefence(CallbackParams callbackParams) {
+        LocalDate issuedOn = null;
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         CCDRespondent ccdRespondent = ccdCase.getRespondents().get(0).getValue();
@@ -112,10 +113,12 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
         ccdCase = updateCaseDates(ccdCase, responseDeadline, paperFormServedDate, extendedResponseDeadline,
             paperFormIssueDate);
         Claim claim = updateClaimDates(caseDetails, responseDeadline);
-
+        if (claim.getIssuedOn().isPresent()) {
+            issuedOn = claim.getIssuedOn().get();
+        }
         var builder = AboutToStartOrSubmitCallbackResponse.builder();
         if (claimDeadlineService.isPastDeadline(nowInLocalZone(),
-            responseDeadlineCalculator.calculateResponseDeadline(claim.getIssuedOn().get()))) {
+            responseDeadlineCalculator.calculateResponseDeadline(issuedOn))) {
             builder.errors(List.of(DEFENDANT_MISSED_DEADLINE));
             return builder.build();
         }

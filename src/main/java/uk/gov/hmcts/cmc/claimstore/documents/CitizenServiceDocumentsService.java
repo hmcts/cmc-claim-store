@@ -21,6 +21,7 @@ import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -106,6 +107,10 @@ public class CitizenServiceDocumentsService {
         totalAmountComponents.add(claim.getClaimData()
             .getFeesPaidInPounds().orElse(ZERO));
 
+        LocalDate issuedOn = null;
+        if (claim.getIssuedOn().isPresent()) {
+            issuedOn = claim.getIssuedOn().get();
+        }
         if (!claim.getClaimData()
             .getInterest()
             .getType()
@@ -119,8 +124,8 @@ public class CitizenServiceDocumentsService {
                 ((AmountBreakDown) claim.getClaimData()
                     .getAmount())
                     .getTotalAmount(),
-                claim.getIssuedOn().get(),
-                claim.getIssuedOn().get()
+                issuedOn,
+                issuedOn
             );
             if (interestContent != null) {
                 totalAmountComponents.add(interestContent.getAmountRealValue());
