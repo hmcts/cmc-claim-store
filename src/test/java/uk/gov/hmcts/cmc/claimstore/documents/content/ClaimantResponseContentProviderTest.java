@@ -1,7 +1,12 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
+import com.launchdarkly.client.LDUser;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimDataContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
@@ -19,6 +24,7 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 
 import java.math.BigDecimal;
 import java.time.Clock;
@@ -26,10 +32,14 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.BY_SPECIFIED_DATE;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention.bySetDate;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ClaimantResponseContentProviderTest {
 
     private PaymentIntentionContentProvider paymentIntentionContentProvider = new PaymentIntentionContentProvider();
@@ -45,6 +55,8 @@ public class ClaimantResponseContentProviderTest {
     private ResponseRejectionContentProvider responseRejectionContentProvider = new ResponseRejectionContentProvider();
 
     private ClaimantResponseContentProvider contentProvider;
+    @Mock
+    private LaunchDarklyClient launchDarklyClient;
 
     @Before
     public void setup() {
@@ -53,8 +65,10 @@ public class ClaimantResponseContentProviderTest {
             claimDataContentProvider,
             notificationsProperties,
             responseAcceptationContentProvider,
-            responseRejectionContentProvider
-        );
+            responseRejectionContentProvider,
+            launchDarklyClient);
+        when(launchDarklyClient.isFeatureEnabled(eq("redetermination-reason-in-pdf"), any(LDUser.class)))
+            .thenReturn(true);
     }
 
     @Test
@@ -75,7 +89,6 @@ public class ClaimantResponseContentProviderTest {
                 .formaliseOption(FormaliseOption.CCJ)
                 .build())
             .build();
-
         Map<String, Object> content = contentProvider.createContent(claim);
 
         assertThat(content).containsValues("I accept this amount");
@@ -205,5 +218,146 @@ public class ClaimantResponseContentProviderTest {
         Map<String, Object> content = contentProvider.createContent(claim);
 
         assertThat(content).containsValue("Please enter judgment by determination");
+    }
+
+    @Test
+    public void shouldShowRejectionReason() {
+
+        Claim claim = SampleClaim.builder()
+            .withResponse(SampleResponse.FullAdmission.builder().buildWithPaymentOptionInstalments())
+            .withClaimantResponse(ResponseAcceptation.builder()
+                .courtDetermination(CourtDetermination.builder()
+                    .rejectionReason("Rejection proposal")
+                    .courtDecision(bySetDate())
+                    .courtPaymentIntention(PaymentIntention.builder()
+                        .paymentOption(BY_SPECIFIED_DATE)
+                        .paymentDate(ResponseAcceptationContentProvider.SYSTEM_MAX_DATE)
+                        .build())
+                    .disposableIncome(BigDecimal.valueOf(-1))
+                    .decisionType(DecisionType.COURT)
+                    .build())
+                .formaliseOption(FormaliseOption.CCJ)
+                .build())
+            .build();
+
+        Map<String, Object> content = contentProvider.createContent(claim);
+
+        assertThat(content).containsValues("Rejection proposal");
+    }
+
+    @Test
+    public void shouldShowNoRejectionReason() {
+
+        Claim claim = SampleClaim.builder()
+            .withResponse(SampleResponse.FullAdmission.builder().buildWithPaymentOptionInstalments())
+            .withClaimantResponse(ResponseAcceptation.builder()
+                .courtDetermination(CourtDetermination.builder()
+                    .rejectionReason(null)
+                    .courtDecision(bySetDate())
+                    .courtPaymentIntention(PaymentIntention.builder()
+                        .paymentOption(BY_SPECIFIED_DATE)
+                        .paymentDate(ResponseAcceptationContentProvider.SYSTEM_MAX_DATE)
+                        .build())
+                    .disposableIncome(BigDecimal.valueOf(-1))
+                    .decisionType(DecisionType.COURT)
+                    .build())
+                .formaliseOption(FormaliseOption.CCJ)
+                .build())
+            .build();
+
+        Map<String, Object> content = contentProvider.createContent(claim);
+
+        assertThat(content).doesNotContainKeys("rejectionReason");
+    }
+
+    @Test
+    public void whenNoClaimantResponse() {
+
+        Claim claim = SampleClaim.builder()
+            .withResponse(SampleResponse.FullAdmission.builder().buildWithPaymentOptionInstalments())
+            .withClaimantResponse(null)
+            .build();
+        Assertions.assertThrows(IllegalStateException.class,
+            () -> contentProvider.createContent(claim));
+    }
+
+    @Test
+    public void shouldShowReasonForReDetermination() {
+
+        Claim claim = SampleClaim.builder()
+            .withResponse(SampleResponse.FullAdmission.builder().buildWithPaymentOptionInstalments())
+            .withReDetermination(ReDetermination.builder().explanation("reason").partyType(MadeBy.CLAIMANT).build())
+            .withClaimantResponse(ResponseAcceptation.builder()
+                .courtDetermination(CourtDetermination.builder()
+                    .rejectionReason(null)
+                    .courtDecision(bySetDate())
+                    .courtPaymentIntention(PaymentIntention.builder()
+                        .paymentOption(BY_SPECIFIED_DATE)
+                        .paymentDate(ResponseAcceptationContentProvider.SYSTEM_MAX_DATE)
+                        .build())
+                    .disposableIncome(BigDecimal.valueOf(-1))
+                    .decisionType(DecisionType.COURT)
+                    .build())
+                .formaliseOption(FormaliseOption.CCJ)
+                .build())
+            .build();
+
+        Map<String, Object> content = contentProvider.createContent(claim);
+
+        assertThat(content).containsValues("reason");
+    }
+
+    @Test
+    public void shouldNotShowReasonForReDetermination() {
+
+        Claim claim = SampleClaim.builder()
+            .withResponse(SampleResponse.FullAdmission.builder().buildWithPaymentOptionInstalments())
+            .withReDetermination(ReDetermination.builder().explanation("").partyType(MadeBy.CLAIMANT).build())
+            .withClaimantResponse(ResponseAcceptation.builder()
+                .courtDetermination(CourtDetermination.builder()
+                    .rejectionReason(null)
+                    .courtDecision(bySetDate())
+                    .courtPaymentIntention(PaymentIntention.builder()
+                        .paymentOption(BY_SPECIFIED_DATE)
+                        .paymentDate(ResponseAcceptationContentProvider.SYSTEM_MAX_DATE)
+                        .build())
+                    .disposableIncome(BigDecimal.valueOf(-1))
+                    .decisionType(DecisionType.COURT)
+                    .build())
+                .formaliseOption(FormaliseOption.CCJ)
+                .build())
+            .build();
+
+        Map<String, Object> content = contentProvider.createContent(claim);
+
+        assertThat(content).containsValues("Not Provided");
+    }
+
+    @Test
+    public void shouldNotShowReasonForReDeterminationToggleOff() {
+
+        Claim claim = SampleClaim.builder()
+            .withResponse(SampleResponse.FullAdmission.builder().buildWithPaymentOptionInstalments())
+            .withReDetermination(ReDetermination.builder().explanation("reason").partyType(MadeBy.CLAIMANT).build())
+            .withClaimantResponse(ResponseAcceptation.builder()
+                .courtDetermination(CourtDetermination.builder()
+                    .rejectionReason(null)
+                    .courtDecision(bySetDate())
+                    .courtPaymentIntention(PaymentIntention.builder()
+                        .paymentOption(BY_SPECIFIED_DATE)
+                        .paymentDate(ResponseAcceptationContentProvider.SYSTEM_MAX_DATE)
+                        .build())
+                    .disposableIncome(BigDecimal.valueOf(-1))
+                    .decisionType(DecisionType.COURT)
+                    .build())
+                .formaliseOption(FormaliseOption.CCJ)
+                .build())
+            .build();
+        when(launchDarklyClient.isFeatureEnabled(eq("redetermination-reason-in-pdf"), any(LDUser.class)))
+            .thenReturn(false);
+
+        Map<String, Object> content = contentProvider.createContent(claim);
+
+        assertThat(content).doesNotContainKeys("reasonForReDeterminationclaimant");
     }
 }
