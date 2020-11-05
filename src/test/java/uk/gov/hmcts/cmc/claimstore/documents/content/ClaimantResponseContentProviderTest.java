@@ -330,7 +330,7 @@ public class ClaimantResponseContentProviderTest {
 
         Map<String, Object> content = contentProvider.createContent(claim);
 
-        assertThat(content).doesNotContainKeys("reasonForReDeterminationclaimant");
+        assertThat(content).containsValues("Not Provided");
     }
 
     @Test
