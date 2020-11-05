@@ -28,6 +28,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ISSUE_PAPER_DEFENSE_FORMS;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
@@ -113,7 +114,8 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
         ccdCase = updateCaseDates(ccdCase, responseDeadline, paperFormServedDate, extendedResponseDeadline,
             paperFormIssueDate);
         Claim claim = updateClaimDates(caseDetails, responseDeadline);
-        if (claim.getIssuedOn().isPresent()) {
+        Optional<LocalDate> issuedOnOptional = claim.getIssuedOn();
+        if (issuedOnOptional.isPresent()) {
             issuedOn = claim.getIssuedOn().get();
         }
         var builder = AboutToStartOrSubmitCallbackResponse.builder();

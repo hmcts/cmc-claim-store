@@ -39,6 +39,7 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESPONSE_MORE_TIME;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
@@ -132,7 +133,8 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
-        if (claim.getIssuedOn().isPresent()) {
+        Optional<LocalDate> issuedOnOptional = claim.getIssuedOn();
+        if (issuedOnOptional.isPresent()) {
             issuedOn = claim.getIssuedOn().get();
         }
         LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(
