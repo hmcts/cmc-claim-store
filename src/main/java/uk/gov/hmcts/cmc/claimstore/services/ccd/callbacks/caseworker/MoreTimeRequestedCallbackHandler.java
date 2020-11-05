@@ -135,7 +135,7 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
         CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
         Optional<LocalDate> issuedOnOptional = claim.getIssuedOn();
         if (issuedOnOptional.isPresent()) {
-            issuedOn = claim.getIssuedOn().get();
+            issuedOn = issuedOnOptional.get();
         }
         LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(
             respondent.getPaperFormIssueDate() != null ? respondent.getPaperFormIssueDate()

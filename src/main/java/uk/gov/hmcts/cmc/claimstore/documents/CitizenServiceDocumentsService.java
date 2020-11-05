@@ -111,7 +111,7 @@ public class CitizenServiceDocumentsService {
         LocalDate issuedOn = null;
         Optional<LocalDate> issuedOnOptional = claim.getIssuedOn();
         if (issuedOnOptional.isPresent()) {
-            issuedOn = claim.getIssuedOn().get();
+            issuedOn = issuedOnOptional.get();
         }
         if (!claim.getClaimData()
             .getInterest()

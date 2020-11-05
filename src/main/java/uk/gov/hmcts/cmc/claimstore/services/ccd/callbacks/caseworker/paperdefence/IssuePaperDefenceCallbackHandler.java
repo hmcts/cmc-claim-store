@@ -116,7 +116,7 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
         Claim claim = updateClaimDates(caseDetails, responseDeadline);
         Optional<LocalDate> issuedOnOptional = claim.getIssuedOn();
         if (issuedOnOptional.isPresent()) {
-            issuedOn = claim.getIssuedOn().get();
+            issuedOn = issuedOnOptional.get();
         }
         var builder = AboutToStartOrSubmitCallbackResponse.builder();
         if (claimDeadlineService.isPastDeadline(nowInLocalZone(),
