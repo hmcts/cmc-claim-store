@@ -115,7 +115,7 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
 
         var builder = AboutToStartOrSubmitCallbackResponse.builder();
         if (claimDeadlineService.isPastDeadline(nowInLocalZone(),
-            responseDeadlineCalculator.calculateResponseDeadline(claim.getIssuedOn()))) {
+            responseDeadlineCalculator.calculateResponseDeadline(claim.getIssuedOn().get()))) {
             builder.errors(List.of(DEFENDANT_MISSED_DEADLINE));
             return builder.build();
         }

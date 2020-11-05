@@ -119,8 +119,8 @@ public class CitizenServiceDocumentsService {
                 ((AmountBreakDown) claim.getClaimData()
                     .getAmount())
                     .getTotalAmount(),
-                claim.getIssuedOn(),
-                claim.getIssuedOn()
+                claim.getIssuedOn().get(),
+                claim.getIssuedOn().get()
             );
             if (interestContent != null) {
                 totalAmountComponents.add(interestContent.getAmountRealValue());
