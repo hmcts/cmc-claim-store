@@ -308,8 +308,8 @@ public class SupportController {
         LocalDateTime runDateTime = localDateTime == null ? LocalDateTimeFactory.nowInLocalZone() : localDateTime;
 
         String format = runDateTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss"));
-        logger.info(format("transitionClaimState %s invoked by support controller for date: %s", stateTransition,
-            format));
+        logger.info("transitionClaimState %s invoked by support controller for date: %s", stateTransition,
+            format);
         scheduledStateTransitionService.stateChangeTriggered(runDateTime, stateTransition);
     }
 
@@ -335,7 +335,7 @@ public class SupportController {
                 .generatePin(claim.getClaimData().getDefendant().getName(), authorisation
                 );
 
-            claimService.linkLetterHolder(claim, pinResponse.getUserId(), authorisation);
+            claimService.linkLetterHolder(claim, pinResponse.getUserId());
             documentGenerator.generateForNonRepresentedClaim(
                 new CitizenClaimIssuedEvent(claim, pinResponse.getPin(), fullName, authorisation)
             );

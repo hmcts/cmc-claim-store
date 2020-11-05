@@ -40,7 +40,7 @@ public class InterestMapperTest {
 
         CCDCase ccdCase = builder.build();
         assertEquals(ccdCase.getInterestEndDateType().name(), SUBMISSION.name());
-        assertEquals(ccdCase.getInterestBreakDownAmount(), "7227");
+        assertEquals("7227", ccdCase.getInterestBreakDownAmount());
         assertEquals(ccdCase.getInterestBreakDownExplanation(), explanation);
         assertNull(ccdCase.getInterestType());
         assertNull(ccdCase.getInterestRate());
