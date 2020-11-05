@@ -308,7 +308,7 @@ public class SupportController {
         LocalDateTime runDateTime = localDateTime == null ? LocalDateTimeFactory.nowInLocalZone() : localDateTime;
 
         String format = runDateTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss"));
-        logger.info("transitionClaimState %s invoked by support controller for date: %s", stateTransition,
+        logger.info("transitionClaimState {} invoked by support controller for date: {}", stateTransition,
             format);
         scheduledStateTransitionService.stateChangeTriggered(runDateTime, stateTransition);
     }
