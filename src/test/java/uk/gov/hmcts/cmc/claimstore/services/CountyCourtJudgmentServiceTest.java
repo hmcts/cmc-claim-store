@@ -452,6 +452,7 @@ public class CountyCourtJudgmentServiceTest {
 
         Claim claim = SampleClaim
             .builder()
+            .withReDetermination(null)
             .withResponseDeadline(LocalDate.now().minusMonths(2))
             .withCountyCourtJudgment(SampleCountyCourtJudgment.builder().build())
             .withCountyCourtJudgmentRequestedAt(LocalDate.of(2018, 4, 26).atStartOfDay())
@@ -462,7 +463,7 @@ public class CountyCourtJudgmentServiceTest {
         countyCourtJudgmentService.reDetermination(reDetermination, EXTERNAL_ID, AUTHORISATION);
 
         verify(claimantResponseReceiptService)
-            .createPdf(eq(claim), any());
+            .createPdf(any(Claim.class), any());
         verify(documentService)
             .uploadToDocumentManagement(pdf, AUTHORISATION, claim);
     }
