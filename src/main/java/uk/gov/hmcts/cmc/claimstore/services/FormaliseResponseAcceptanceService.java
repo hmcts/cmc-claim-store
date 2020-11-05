@@ -27,6 +27,7 @@ import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -53,6 +54,7 @@ public class FormaliseResponseAcceptanceService {
     private final ClaimantResponseReceiptService claimantResponseReceiptService;
     private final DocumentsService documentService;
     private final boolean ctscEnabled;
+    private final LaunchDarklyClient launchDarklyClient;
 
     @Autowired
     public FormaliseResponseAcceptanceService(
@@ -62,7 +64,8 @@ public class FormaliseResponseAcceptanceService {
         CaseRepository caseRepository,
         DocumentsService documentService,
         @Value("${feature_toggles.ctsc_enabled}") boolean ctscEnabled,
-        ClaimantResponseReceiptService claimantResponseReceiptService
+        ClaimantResponseReceiptService claimantResponseReceiptService,
+        LaunchDarklyClient launchDarklyClient
     ) {
         this.countyCourtJudgmentService = countyCourtJudgmentService;
         this.settlementAgreementService = settlementAgreementService;
@@ -71,6 +74,7 @@ public class FormaliseResponseAcceptanceService {
         this.claimantResponseReceiptService = claimantResponseReceiptService;
         this.documentService = documentService;
         this.ctscEnabled = ctscEnabled;
+        this.launchDarklyClient = launchDarklyClient;
     }
 
     public void formalise(Claim claim, ResponseAcceptation responseAcceptation, String authorisation) {
@@ -84,27 +88,30 @@ public class FormaliseResponseAcceptanceService {
                 formaliseSettlement(claim, responseAcceptation, authorisation);
                 break;
             case REFER_TO_JUDGE:
-                createEventForReferToJudge(claim, authorisation);
+                createEventForReferToJudge(claim, responseAcceptation, authorisation);
                 break;
             default:
                 throw new IllegalStateException("Invalid formaliseOption");
         }
     }
 
-    private void createEventForReferToJudge(Claim claim, String authorisation) {
+    private void createEventForReferToJudge(Claim claim, ResponseAcceptation responseAcceptation,
+                                            String authorisation) {
         Response response = claim.getResponse()
             .orElseThrow(() -> new IllegalArgumentException(MISSING_RESPONSE));
 
         CaseEvent caseEvent;
         Claim updatedClaim;
         if (isCompanyOrOrganisation(response.getDefendant())) {
-            updatedClaim = uploadClaimantResponseToDocumentStore(claim, authorisation,
-                buildRequestOrgRepaymentFileBaseName(claim.getReferenceNumber()));
+            updatedClaim =
+                uploadClaimantResponseToDocumentStore(claim, responseAcceptation, authorisation,
+                    buildRequestOrgRepaymentFileBaseName(claim.getReferenceNumber()));
             eventProducer.createRejectOrganisationPaymentPlanEvent(updatedClaim);
             caseEvent = REJECT_ORGANISATION_PAYMENT_PLAN;
         } else {
-            updatedClaim = uploadClaimantResponseToDocumentStore(claim, authorisation,
-                buildRequestForInterlocutoryJudgmentFileBaseName(claim.getReferenceNumber()));
+            updatedClaim =
+                uploadClaimantResponseToDocumentStore(claim, responseAcceptation, authorisation,
+                    buildRequestForInterlocutoryJudgmentFileBaseName(claim.getReferenceNumber()));
             eventProducer.createInterlocutoryJudgmentEvent(updatedClaim);
             caseEvent = INTERLOCUTORY_JUDGMENT;
         }
@@ -257,12 +264,20 @@ public class FormaliseResponseAcceptanceService {
         }
     }
 
-    private Claim uploadClaimantResponseToDocumentStore(Claim claim, String authorisation, String filename) {
+    private Claim uploadClaimantResponseToDocumentStore(Claim claim, ResponseAcceptation responseAcceptation,
+                                                        String authorisation, String filename) {
         if (!ctscEnabled) {
             return claim;
         }
-
-        PDF document = claimantResponseReceiptService.createPdf(claim, filename);
-        return documentService.uploadToDocumentManagement(document, authorisation, claim);
+        PDF document;
+        if (launchDarklyClient.isFeatureEnabled("redetermination-reason-in-pdf", LaunchDarklyClient.CLAIM_STORE_USER)) {
+            document = claimantResponseReceiptService.createPdf(
+                claim.toBuilder().claimantResponse(responseAcceptation).build(), filename);
+            return documentService.uploadToDocumentManagement(document, authorisation,
+                claim.toBuilder().claimantResponse(null).build());
+        } else {
+            document = claimantResponseReceiptService.createPdf(claim, filename);
+            return documentService.uploadToDocumentManagement(document, authorisation, claim);
+        }
     }
 }
