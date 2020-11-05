@@ -392,7 +392,7 @@ sonarqube {
         "**/ValidEmploymentConstraintValidator.java",
         "**/ValidInterestConstraintValidator.java",
         "**/ValidInterestDateConstraintValidator.java",
-        "**/ValidUnemploymentConstraintValidator.java"
+        "**/ValidUnemploymentConstraintValidator.java",
         "rpa-mapper/**",
         "**/HwfClaimNotificationService.java",
         "**/HWFFullRemissionCallbackHandler.java",
