@@ -152,7 +152,7 @@ public class PostClaimOrchestrationHandler {
                 }
             }
         } catch (Exception e) {
-            logger.error(FAILED_LOG_MSG, event, e);
+            logger.error("Failed operation processing for event {}", event, e);
         }
     }
 
@@ -184,7 +184,8 @@ public class PostClaimOrchestrationHandler {
                 );
             }
         } catch (Exception e) {
-            logger.error(FAILED_LOG_MSG, event, e);
+            logger.error("Failed operation processing for claim reference {} with exception {}",
+                event.getClaim().getId(), e.getMessage());
         }
     }
 }

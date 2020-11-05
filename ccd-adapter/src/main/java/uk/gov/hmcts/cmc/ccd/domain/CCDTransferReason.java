@@ -9,6 +9,7 @@ public enum CCDTransferReason {
     HEARING("For a hearing"),
     JUDGES_ORDER("Judge's order"),
     LA_ORDER("Legal Advisor's order"),
+    LISTING("Listing"),
     REDETERMINATION("Redetermination"),
     OTHER("Other");
 

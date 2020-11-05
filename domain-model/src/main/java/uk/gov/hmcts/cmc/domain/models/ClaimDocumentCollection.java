@@ -45,7 +45,7 @@ public class ClaimDocumentCollection {
                                                         ScannedDocumentSubtype subtype) {
         return scannedDocuments.stream()
             .filter(scannedDocument -> scannedDocument.getDocumentType().equals(scannedDocumentType))
-            .filter(scannedDocument -> scannedDocument.getSubtype().equals(subtype.value))
+            .filter(scannedDocument -> subtype.value.equals(scannedDocument.getSubtype()))
             .max(Comparator.comparing(ScannedDocument::getDeliveryDate));
     }
 }

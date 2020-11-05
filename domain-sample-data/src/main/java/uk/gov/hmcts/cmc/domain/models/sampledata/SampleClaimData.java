@@ -292,6 +292,7 @@ public class SampleClaimData {
     public static SampleClaimData submittedByLegalRepresentativeBuilder() {
         return builder()
             .clearClaimants()
+            .withExternalId(UUID.randomUUID())
             .withClaimant(SampleParty.builder()
                 .withRepresentative(SampleRepresentative.builder().build())
                 .individual())

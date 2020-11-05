@@ -51,7 +51,7 @@ public class PartyDetailsContentProviderTest {
                     .build()
             )
             .withDateOfBirth(
-                DATE_OF_BIRTH
+                null
             )
             .withPhone("9384772782883")
             .individual();
@@ -129,6 +129,18 @@ public class PartyDetailsContentProviderTest {
             null);
 
         assertThat(content.getDateOfBirth()).isEqualTo(formatDate(DATE_OF_BIRTH));
+    }
+
+    @Test
+    public void shouldNotProvideDateOfBirth() {
+        PartyDetailsContent content = provider.createContent(
+            defendant,
+            amendedDetails(),
+            DEFENDANT_EMAIL,
+            null,
+            null);
+
+        assertThat(content.getDateOfBirth()).isEqualTo(null);
     }
 
     @Test

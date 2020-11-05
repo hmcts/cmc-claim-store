@@ -7,7 +7,8 @@ import java.time.LocalDate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimantResponseFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDraftClaimFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildJudgeDirectionOrderFileName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildLADirectionOrderFileName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildNoticeOfTransferToCcbcForDefendantFileName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForInterlocutoryJudgmentFileBaseName;
@@ -138,4 +139,16 @@ public class DocumentNameUtilsTest {
         assertThat(buildRequestOrgRepaymentFileBaseName("000MC001"))
             .isEqualTo("000MC001-request-org-repayment-amount");
     }
+
+    @Test
+    public void shouldBuildJudgeDirectionOrderFileName() {
+        assertThat(buildJudgeDirectionOrderFileName("000MC001")).isEqualTo("000MC001-Judge-Directions-Order");
+    }
+
+    @Test
+    public void shouldBuildLADirectionOrderFileName() {
+        assertThat(buildLADirectionOrderFileName("000MC001"))
+            .isEqualTo("000MC001-Legal-Adviser-Directions-Order");
+    }
+
 }

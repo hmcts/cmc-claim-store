@@ -130,6 +130,7 @@ public class DocumentManagementService {
 
     @Retryable(value = DocumentManagementException.class, backoff = @Backoff(delay = 200))
     private byte[] downloadDocumentByUrl(String authorisation, URI documentManagementUrl) {
+        byte[] bytesArray = null;
         try {
             UserDetails userDetails = userService.getUserDetails(authorisation);
             String userRoles = String.join(",", this.userRoles);
@@ -151,7 +152,11 @@ public class DocumentManagementService {
 
             ByteArrayResource resource = (ByteArrayResource) responseEntity.getBody();
             //noinspection ConstantConditions let the NPE be thrown
-            return resource.getByteArray();
+            if (resource != null) {
+                bytesArray = resource.getByteArray();
+            }
+            return bytesArray;
+
         } catch (Exception ex) {
             throw new DocumentManagementException(
                 String.format("Unable to download document %s from document management.",

@@ -52,6 +52,8 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.GENERAL_LETT
 @ExtendWith(MockitoExtension.class)
 class GeneralLetterServiceTest {
 
+    public static final String GENERAL_LETTER_TEMPLATE_ID = "generalLetterTemplateId";
+    public static final String GENERAL_DOCUMENT_NAME = "document-name";
     private static final String DOC_URL = "http://success.test";
     private static final String DOC_URL_BINARY = "http://success.test/binary";
     private static final String DOC_NAME = "doc-name";
@@ -64,11 +66,7 @@ class GeneralLetterServiceTest {
         .builder()
         .build();
     private static final LocalDateTime DATE = LocalDateTime.parse("2020-11-16T13:15:30");
-    private static final byte[] PDF_BYTES = new byte[] {1, 2, 3, 4};
-
-    public static final String GENERAL_LETTER_TEMPLATE_ID = "generalLetterTemplateId";
-    public static final String GENERAL_DOCUMENT_NAME = "document-name";
-
+    private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
     private static final CCDDocument DOCUMENT = CCDDocument
         .builder()
         .documentUrl(DOC_URL)
@@ -235,5 +233,16 @@ class GeneralLetterServiceTest {
         assertThrows(RuntimeException.class,
             () -> generalLetterService.generateLetter(ccdCase, BEARER_TOKEN.name(),
                 GENERAL_LETTER_TEMPLATE_ID));
+    }
+
+    @Test
+    void shouldAttachDocument() {
+        when(documentManagementService.getDocumentMetaData(anyString(), anyString()))
+            .thenReturn(getLinks());
+        when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);
+        generalLetterService.attachGeneralLetterToCase(ccdCase, DOCUMENT, anyString(), anyString());
+        verify(documentManagementService, once()).getDocumentMetaData(anyString(), anyString());
     }
 }
