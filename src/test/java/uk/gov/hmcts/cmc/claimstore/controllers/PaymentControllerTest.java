@@ -83,8 +83,6 @@ public class PaymentControllerTest {
     @Test
     public void updateCardPaymentInvalidServiceNameReturned() {
         when(authTokenValidator.getServiceName("Bearer " + AUTHORISATION)).thenReturn("not_payment_app");
-        when(claimService.updateCardPayment(paymentUpdate)).thenReturn(claim);
-
         ResponseEntity responseEntity = paymentController.updateCardPayment(AUTHORISATION, paymentUpdate);
 
         //then
@@ -96,9 +94,6 @@ public class PaymentControllerTest {
     @Test
     public void updateCardPaymentThrowingInternalServerError() {
         when(authTokenValidator.getServiceName("Bearer " + AUTHORISATION)).thenThrow(new RuntimeException());
-
-        when(claimService.updateCardPayment(paymentUpdate)).thenReturn(claim);
-
         ResponseEntity responseEntity = paymentController.updateCardPayment(AUTHORISATION, paymentUpdate);
 
         //then
