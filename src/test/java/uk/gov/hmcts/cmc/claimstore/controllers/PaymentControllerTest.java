@@ -6,6 +6,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
@@ -76,5 +78,32 @@ public class PaymentControllerTest {
 
         //then
         Assert.assertNotNull(claim);
+    }
+
+    @Test
+    public void updateCardPaymentInvalidServiceNameReturned() {
+        when(authTokenValidator.getServiceName("Bearer " + AUTHORISATION)).thenReturn("not_payment_app");
+        when(claimService.updateCardPayment(paymentUpdate)).thenReturn(claim);
+
+        ResponseEntity responseEntity = paymentController.updateCardPayment(AUTHORISATION, paymentUpdate);
+
+        //then
+        Assert.assertEquals(HttpStatus.FORBIDDEN.value(), responseEntity.getStatusCode().value());
+
+        Assert.assertNotNull(responseEntity.getStatusCode());
+    }
+
+    @Test
+    public void updateCardPaymentThrowingInternalServerError() {
+        when(authTokenValidator.getServiceName("Bearer " + AUTHORISATION)).thenThrow(new RuntimeException());
+
+        when(claimService.updateCardPayment(paymentUpdate)).thenReturn(claim);
+
+        ResponseEntity responseEntity = paymentController.updateCardPayment(AUTHORISATION, paymentUpdate);
+
+        //then
+        Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), responseEntity.getStatusCode().value());
+
+        Assert.assertNotNull(responseEntity.getStatusCode());
     }
 }

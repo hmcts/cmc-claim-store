@@ -67,7 +67,7 @@ public class UpdatePaymentCallbackHandler extends CallbackHandler {
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
 
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
-        logger.info("Initiating the Update Payment on the claim ", claim.getExternalId());
+        logger.info("Initiating the Update Payment on the claim {0}", claim.getExternalId());
         return AboutToStartOrSubmitCallbackResponse
             .builder()
             .data(caseDetailsConverter.convertToMap(caseMapper.to(claim)))

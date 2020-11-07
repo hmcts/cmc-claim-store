@@ -50,10 +50,10 @@ public class PaymentController {
     ) {
         logger.info("Called s2s service");
         try {
-            logger.info("Payment Update - " + paymentUpdate.toString());
+            logger.info("Payment Update - {0}", paymentUpdate.toString());
             String serviceName = authTokenValidator.getServiceName("Bearer " + serviceToken);
             if ("payment_app".contains(serviceName)) {
-                logger.info("token validated", serviceToken);
+                logger.info("token validated {0}", serviceToken);
                 claimService.updateCardPayment(paymentUpdate);
                 return ResponseEntity.ok().build();
             } else {
