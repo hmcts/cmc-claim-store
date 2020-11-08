@@ -20,10 +20,9 @@ import uk.gov.hmcts.cmc.domain.models.PaymentUpdate;
 import uk.gov.hmcts.cmc.domain.models.paymentresponse.UpdatePaymentResponse;
 import uk.gov.hmcts.reform.authorisation.exceptions.InvalidTokenException;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
-
+import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.Optional;
 
 @Api
 @RestController
@@ -75,11 +74,9 @@ public class PaymentController {
             UpdatePaymentResponse updt = UpdatePaymentResponse.builder()
                 .error("Provided S2S token is missing or invalid")
                 .build();
-
-            Optional<UpdatePaymentResponse> updatePaymentResponse = Optional.of(updt);
-
             e.printStackTrace();
             logger.error(e.getMessage());
+            Optional<UpdatePaymentResponse> updatePaymentResponse = Optional.of(updt);
             logger.info("Provided S2S token is missing or invalid");
             return ResponseEntity.ok(updatePaymentResponse).status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
