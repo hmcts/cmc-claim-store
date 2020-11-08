@@ -105,8 +105,8 @@ public class PaymentControllerTest {
 
     @Test
     public void updateCardPaymentInvalidToken() {
-        when(authTokenValidator.getServiceName("Bearer " + AUTHORISATION)).
-            thenThrow(new InvalidTokenException("Invalid Token"));
+        when(authTokenValidator.getServiceName("Bearer " + AUTHORISATION))
+            .thenThrow(new InvalidTokenException("Invalid Token"));
         ResponseEntity responseEntity = paymentController.updateCardPayment(AUTHORISATION, paymentUpdate);
 
         //then
