@@ -2,6 +2,8 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.PaymentUpdate;
 import uk.gov.hmcts.cmc.domain.models.paymentresponse.UpdatePaymentResponse;
+import uk.gov.hmcts.reform.authorisation.exceptions.InvalidTokenException;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.Optional;
 
 @Api
 @RestController
@@ -44,22 +48,40 @@ public class PaymentController {
 
     @PutMapping(value = "/payment-update", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Update a Card payment")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Payment update callback was processed successfully and updated to the case",
+            response = UpdatePaymentResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 401, message = "Provided S2S token is missing or invalid"),
+        @ApiResponse(code = 403, message = "Calling service is not authorised to use the endpoint"),
+        @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<UpdatePaymentResponse> updateCardPayment(
         @RequestHeader(value = SERVICE_AUTHORIZATION_HEADER) String serviceToken,
         @Valid @NotNull @RequestBody PaymentUpdate paymentUpdate
     ) {
         logger.info("Called s2s service");
         try {
-            logger.info("Payment Update - {0}", paymentUpdate.toString());
+            logger.info("Payment Update - {}", paymentUpdate.toString());
             String serviceName = authTokenValidator.getServiceName("Bearer " + serviceToken);
             if ("payment_app".contains(serviceName)) {
-                logger.info("token validated {0}", serviceToken);
+                logger.info("token validated {}", serviceToken);
                 claimService.updateCardPayment(paymentUpdate);
                 return ResponseEntity.ok().build();
             } else {
-                logger.info("Invalid Token");
+                logger.info("Calling service is not authorised to use the endpoint");
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
+        } catch (InvalidTokenException e) {
+            UpdatePaymentResponse updt = UpdatePaymentResponse.builder()
+                .error("Provided S2S token is missing or invalid")
+                .build();
+
+            Optional<UpdatePaymentResponse> updatePaymentResponse = Optional.of(updt);
+
+            e.printStackTrace();
+            logger.error(e.getMessage());
+            logger.info("Provided S2S token is missing or invalid");
+            return ResponseEntity.ok(updatePaymentResponse).status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
