@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.PaymentUpdate;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.reform.authorisation.exceptions.InvalidTokenException;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 
 import java.math.BigDecimal;
@@ -98,6 +99,18 @@ public class PaymentControllerTest {
 
         //then
         Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), responseEntity.getStatusCode().value());
+
+        Assert.assertNotNull(responseEntity.getStatusCode());
+    }
+
+    @Test
+    public void updateCardPaymentInvalidToken() {
+        when(authTokenValidator.getServiceName("Bearer " + AUTHORISATION)).
+            thenThrow(new InvalidTokenException("Invalid Token"));
+        ResponseEntity responseEntity = paymentController.updateCardPayment(AUTHORISATION, paymentUpdate);
+
+        //then
+        Assert.assertEquals(HttpStatus.UNAUTHORIZED.value(), responseEntity.getStatusCode().value());
 
         Assert.assertNotNull(responseEntity.getStatusCode());
     }
