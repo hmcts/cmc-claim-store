@@ -71,14 +71,10 @@ public class PaymentController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
         } catch (InvalidTokenException e) {
-            UpdatePaymentResponse updt = UpdatePaymentResponse.builder()
-                .error("Provided S2S token is missing or invalid")
-                .build();
             e.printStackTrace();
             logger.error(e.getMessage());
-            Optional<UpdatePaymentResponse> updatePaymentResponse = Optional.of(updt);
             logger.info("Provided S2S token is missing or invalid");
-            return ResponseEntity.ok(updatePaymentResponse).status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
