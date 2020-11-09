@@ -40,7 +40,6 @@ public class CCDCase {
     private String feeCode;
     private String feeAccountNumber;
     private String feeAmountInPennies;
-    private String feeRemitted;
     private String externalReferenceNumber;
     private AmountType amountType;
     private String amountLowerValue;
