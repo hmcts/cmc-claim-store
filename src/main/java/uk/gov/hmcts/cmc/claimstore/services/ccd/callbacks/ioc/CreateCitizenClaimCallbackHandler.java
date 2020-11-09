@@ -92,8 +92,8 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
     private CallbackResponse createCitizenClaim(CallbackParams callbackParams) {
 
         Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
-        logger.info("Removed the Code that saves Payment to test payment-update api" +
-                "Created citizen case for callback of type {}, claim with external id {}",
+        logger.info("Removed the Code that saves Payment to test payment-update api"
+                + "Created citizen case for callback of type {}, claim with external id {}",
             callbackParams.getType(),
             claim.getExternalId());
 
