@@ -33,6 +33,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -461,6 +462,22 @@ public final class SampleClaim {
                 SampleClaimData.builder()
                     .withDefendant(SampleTheirDetails.builder().withPhone(null).withEmail(null).individualDetails())
                     .build()
+            ).build();
+    }
+
+    public static Claim getClaimWhenFeeRemittedIsMoreThanFee() {
+        return SampleClaim.builder()
+            .withClaimData(
+                SampleClaimData.builder()
+                    .withFeeRemitted(BigInteger.valueOf(5000)).build()
+            ).build();
+    }
+
+    public static Claim getClaimWhenFeeRemittedIsEqualToFee() {
+        return SampleClaim.builder()
+            .withClaimData(
+                SampleClaimData.builder()
+                    .withFeeRemitted(BigInteger.valueOf(4000)).build()
             ).build();
     }
 
