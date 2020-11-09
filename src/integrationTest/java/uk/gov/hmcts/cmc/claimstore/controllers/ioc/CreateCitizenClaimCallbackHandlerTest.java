@@ -17,26 +17,19 @@ import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.email.EmailService;
-import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 import static java.math.BigDecimal.TEN;
 import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -46,7 +39,6 @@ import static uk.gov.hmcts.cmc.ccd.sample.data.SampleData.getAmountBreakDown;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
 import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.FAILED;
-import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
 
 @TestPropertySource(
     properties = {
@@ -88,54 +80,6 @@ public class CreateCitizenClaimCallbackHandlerTest extends BaseMockSpringTest {
 
         UserDetails userDetails = SampleUserDetails.builder().withRoles("citizen").build();
         given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void shouldAddFieldsOnCaseWhenCallbackIsSuccessful() throws Exception {
-        payment = paymentBuilder.status(SUCCESS).build();
-
-        given(paymentsService.retrievePayment(eq(AUTHORISATION_TOKEN), any(ClaimData.class)))
-            .willReturn(Optional.of(payment));
-
-        MvcResult mvcResult = makeRequestAndRespondWithSuccess(CallbackType.ABOUT_TO_SUBMIT.getValue())
-            .andExpect(status().isOk())
-            .andReturn();
-        Map<String, Object> responseData = jsonMappingHelper.deserializeObjectFrom(
-            mvcResult,
-            AboutToStartOrSubmitCallbackResponse.class
-        ).getData();
-
-        assertThat(responseData).contains(
-            entry("paymentStatus", SUCCESS.toString()),
-            entry("issuedOn", ISSUE_DATE.toString()),
-            entry("previousServiceCaseReference", REFERENCE_NO)
-        );
-
-        List<Map<String, Object>> respondents = (List<Map<String, Object>>) responseData.get("respondents");
-        Map<String, Object> defendant = (Map<String, Object>) respondents.get(0).get("value");
-
-        assertThat(defendant).contains(entry("servedDate", ISSUE_DATE.plusDays(5).toString()));
-        assertThat(defendant).contains(entry("responseDeadline", RESPONSE_DEADLINE.toString()));
-    }
-
-    @Test
-    public void shouldAddFieldsOnCaseWhenCallbackIsSuccessfulButWithErrors() throws Exception {
-        payment = paymentBuilder.status(FAILED).build();
-
-        given(paymentsService.retrievePayment(eq(AUTHORISATION_TOKEN), any(ClaimData.class)))
-            .willReturn(Optional.of(payment));
-
-        MvcResult mvcResult = makeRequestAndRespondWithError(CallbackType.ABOUT_TO_SUBMIT.getValue())
-            .andExpect(status().isOk())
-            .andReturn();
-
-        List<String> responseData = jsonMappingHelper.deserializeObjectFrom(
-            mvcResult,
-            AboutToStartOrSubmitCallbackResponse.class
-        ).getErrors();
-
-        assertThat(responseData).contains("Payment not successful");
     }
 
     @Test
