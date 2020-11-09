@@ -14,11 +14,16 @@ import uk.gov.hmcts.cmc.domain.models.MediationOutcome;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.ScannedDocument;
+import uk.gov.hmcts.cmc.domain.models.ScannedDocumentType;
 import uk.gov.hmcts.cmc.domain.models.TransferContent;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.PrintRequestType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.orders.BespokeOrderDirection;
 import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -41,6 +46,7 @@ import static java.math.BigDecimal.TEN;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.GENERAL_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.ORDER_DIRECTIONS;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
@@ -114,6 +120,9 @@ public final class SampleClaim {
     private final YesNoOption offlineJourney = NO;
     private MediationOutcome mediationOutcome;
     private TransferContent transferContent;
+    private String bulkPrintLetterId = UUID.randomUUID().toString();
+    private String directionOrderType;
+    private BespokeOrderDirection bespokeOrderDirection;
 
     private SampleClaim() {
     }
@@ -628,8 +637,14 @@ public final class SampleClaim {
             null,
             null,
             transferContent,
-            null
-            );
+            null,
+            List.of(BulkPrintDetails.builder()
+                .printRequestType(PrintRequestType.PIN_LETTER_TO_DEFENDANT)
+                .printRequestedAt(LocalDate.now())
+                .printRequestId(bulkPrintLetterId).build()),
+            directionOrderType,
+            bespokeOrderDirection
+        );
     }
 
     public SampleClaim withSubmitterId(String userId) {
@@ -817,6 +832,30 @@ public final class SampleClaim {
             .createdBy(OCMC)
             .build();
         this.claimDocumentCollection.addClaimDocument(claimDocument);
+        return this;
+    }
+
+    public SampleClaim withGeneralLetter(URI uri) {
+        ClaimDocument claimDocument = ClaimDocument.builder()
+                .documentManagementUrl(uri)
+                .documentName("general-letter.pdf")
+                .documentType(GENERAL_LETTER)
+                .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
+                .createdBy(OCMC)
+                .build();
+        this.claimDocumentCollection.addClaimDocument(claimDocument);
+        return this;
+    }
+
+    public SampleClaim withOcon9xScannedDocument(URI uri) {
+        ScannedDocument scannedDocument = ScannedDocument.builder()
+            .documentManagementUrl(uri)
+            .fileName("OCON9X-form.pdf")
+            .documentType(ScannedDocumentType.FORM)
+            .subtype("OCON9x")
+            .scannedDate(LocalDateTimeFactory.nowInLocalZone())
+            .build();
+        this.claimDocumentCollection.addScannedDocument(scannedDocument);
         return this;
     }
 

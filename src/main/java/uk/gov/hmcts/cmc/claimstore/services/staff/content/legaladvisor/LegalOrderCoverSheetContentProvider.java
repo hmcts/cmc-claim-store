@@ -1,9 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,11 +19,18 @@ public class LegalOrderCoverSheetContentProvider {
     private static final String PARTY_ADDRESS = "partyAddress";
     private static final String HMCTS_EMAIL = "hmctsEmail";
     private static final String PARTY_FULL_NAME = "partyFullName";
+    private final LaunchDarklyClient launchDarklyClient;
 
     private final StaffEmailProperties staffEmailProperties;
+    private final boolean ctscEnabled;
+    private boolean addBreaksEnabled = false;
 
-    public LegalOrderCoverSheetContentProvider(StaffEmailProperties staffEmailProperties) {
+    public LegalOrderCoverSheetContentProvider(StaffEmailProperties staffEmailProperties,
+                                               @Value("${feature_toggles.ctsc_enabled}") boolean ctscEnabled,
+                                               LaunchDarklyClient launchDarklyClient) {
         this.staffEmailProperties = staffEmailProperties;
+        this.ctscEnabled = ctscEnabled;
+        this.launchDarklyClient = launchDarklyClient;
     }
 
     public Map<String, Object> createContentForClaimant(Claim claim) {
@@ -50,6 +59,11 @@ public class LegalOrderCoverSheetContentProvider {
         content.put(CLAIM_REFERENCE_NUMBER, claimReferenceNumber);
         content.put(PARTY_ADDRESS, partyAddress);
         content.put(HMCTS_EMAIL, staffEmailProperties.getRecipient());
+        content.put("ctscEnabled", ctscEnabled);
+        if (launchDarklyClient.isFeatureEnabled("legal-order-alignment", LaunchDarklyClient.CLAIM_STORE_USER)) {
+            addBreaksEnabled = true;
+        }
+        content.put("addBreaksEnabled", addBreaksEnabled);
         return content;
     }
 }

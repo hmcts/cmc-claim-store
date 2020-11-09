@@ -3,23 +3,33 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transferca
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
-import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
+import org.springframework.test.util.ReflectionTestUtils;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
+import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.TransferContent;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
+import java.util.List;
 import java.util.Map;
 
+import static java.util.Collections.singletonList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.DEFENDANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_EMAIL;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.SUBMITTER_EMAIL;
@@ -29,6 +39,7 @@ class TransferCaseNotificationsServiceTest {
 
     private static final String CASE_TRANSFERRED_TEMPLATE = "CASE_TRANSFERRED_TEMPLATE";
     private static final String TRANSFER_COURT_NAME = "Bristol";
+    private static final String TRANSFER_CCBC = "County Court Business Centre";
 
     @InjectMocks
     private TransferCaseNotificationsService transferCaseNotificationsService;
@@ -39,18 +50,30 @@ class TransferCaseNotificationsServiceTest {
     @Mock
     private NotificationsProperties notificationsProperties;
 
+    @Captor
+    ArgumentCaptor<String> emailCaptor;
+
+    @Captor
+    ArgumentCaptor<String> valueCaptor;
+
+    @Captor
+    ArgumentCaptor<Map<String, String>> aggregatedParamsCaptor;
+
     private Claim claim;
+
+    private CCDCase ccdCase;
 
     @BeforeEach
     public void beforeEach() {
 
-        NotificationTemplates notificationTemplates = mock(NotificationTemplates.class);
-        EmailTemplates emailTemplates = mock(EmailTemplates.class);
+        ReflectionTestUtils.setField(transferCaseNotificationsService,
+            "caseTransferToCcbcForClaimantTemplate", CASE_TRANSFERRED_TEMPLATE);
 
-        when(emailTemplates.getCaseTransferred()).thenReturn(CASE_TRANSFERRED_TEMPLATE);
-        when(notificationTemplates.getEmail()).thenReturn(emailTemplates);
-        when(notificationsProperties.getTemplates()).thenReturn(notificationTemplates);
-        when(notificationsProperties.getFrontendBaseUrl()).thenReturn(FRONTEND_BASE_URL);
+        ReflectionTestUtils.setField(transferCaseNotificationsService,
+            "caseTransferToCourtTemplate", CASE_TRANSFERRED_TEMPLATE);
+
+        ReflectionTestUtils.setField(transferCaseNotificationsService,
+            "frontendBaseUrl", FRONTEND_BASE_URL);
 
         claim = SampleClaim.builder()
             .withDefendantEmail(DEFENDANT_EMAIL)
@@ -58,31 +81,53 @@ class TransferCaseNotificationsServiceTest {
                 .hearingCourtName(TRANSFER_COURT_NAME)
                 .build())
             .build();
+
+        ccdCase = SampleData.getCCDLegalCase();
     }
 
     @Test
-    void shouldSendClaimUpdatedEmailToClaimant() {
-
-        transferCaseNotificationsService.sendClaimUpdatedEmailToClaimant(claim);
+    void shouldSendTransferToCourtEmailToClaimant() {
+        transferCaseNotificationsService.sendTransferToCourtEmail(ccdCase, claim);
         String partyName = claim.getClaimData().getClaimant().getName();
-        thenEmailSent(SUBMITTER_EMAIL, "to-claimant-case-transferred-000MC001", partyName);
+        thenEmailSent(SUBMITTER_EMAIL, "to-claimant-case-transferred-000MC001", partyName, TRANSFER_COURT_NAME);
     }
 
     @Test
-    void shouldSendClaimUpdatedEmailToDefendant() {
-        transferCaseNotificationsService.sendClaimUpdatedEmailToDefendant(claim);
-        String partyName = claim.getClaimData().getDefendant().getName();
-        thenEmailSent(DEFENDANT_EMAIL, "to-defendant-case-transferred-000MC001", partyName);
+    void shouldSendTransferToCcbcEmailToClaimant() {
+        transferCaseNotificationsService.sendTransferToCcbcEmail(ccdCase, claim);
+        String partyName = claim.getClaimData().getClaimant().getName();
+        thenEmailSent(SUBMITTER_EMAIL, "to-claimant-case-transferred-000MC001", partyName, TRANSFER_CCBC);
     }
 
-    private void thenEmailSent(String recipientEmail, String reference, String partyName) {
+    @Test
+    void shouldSendTransferEmailNotificationToBothClaimantAndDefendant() {
+        transferCaseNotificationsService.sendTransferToCcbcEmail(getCCDCaseWithLinkedRespondent(), claim);
+        verify(notificationService, times(2)).sendMail(
+            emailCaptor.capture(),
+            valueCaptor.capture(),
+            aggregatedParamsCaptor.capture(),
+            valueCaptor.capture());
+        assertEquals(DEFENDANT_EMAIL, emailCaptor.getAllValues().get(1));
+        assertTrue(aggregatedParamsCaptor.getAllValues().get(0).containsKey(CLAIMANT_NAME));
+        assertTrue(aggregatedParamsCaptor.getAllValues().get(1).containsKey(DEFENDANT_NAME));
+    }
+
+    public static CCDCase getCCDCaseWithLinkedRespondent() {
+        CCDRespondent respondent = CCDRespondent.builder().defendantId("123").build();
+        List<CCDCollectionElement<CCDRespondent>> respondents
+            = singletonList(CCDCollectionElement.<CCDRespondent>builder().value(respondent).build());
+        return CCDCase.builder().respondents(respondents).build();
+    }
+
+    private void thenEmailSent(String recipientEmail, String reference, String partyName, String courtName) {
 
         Map<String, String> expectedParams = Map.of(
             "claimReferenceNumber", claim.getReferenceNumber(),
             "partyName", partyName,
+            "claimantName", partyName,
             "frontendBaseUrl", FRONTEND_BASE_URL,
             "externalId", claim.getExternalId(),
-            "courtName", TRANSFER_COURT_NAME
+            "courtName", courtName
         );
 
         verify(notificationService).sendMail(

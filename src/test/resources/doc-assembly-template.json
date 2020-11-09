@@ -14,8 +14,8 @@
     "lastName": "McJudge"
   },
   "currentDate": "24-04-2019",
-  "docUploadDeadline": "11-10-2020",
-  "eyewitnessUploadDeadline": "11-10-2020",
+  "docUploadDeadline": "11-10-2022",
+  "eyewitnessUploadDeadline": "11-10-2022",
   "docUploadForParty": "CLAIMANT",
   "extraDocUploadList": [
     {
@@ -45,7 +45,7 @@
         "extraOrderDirection": "OTHER",
         "directionComment": "a direction",
         "otherDirectionHeaders": "UPLOAD",
-        "sendBy": "11-10-2020",
+        "sendBy": "11-10-2022",
         "forParty": "BOTH"
       }
     },
@@ -76,7 +76,7 @@
             "value": "second document"
           }
         ],
-        "sendBy": "11-10-2020",
+        "sendBy": "11-10-2022",
         "forParty": "BOTH"
       }
     }
@@ -102,5 +102,7 @@
   "hasMainAddressChanged": false,
   "hasPhoneChanged": false,
   "orderDrawnByJudge": false,
-  "orderDrawnByLA": false
+  "orderDrawnByLA": false,
+  "bespokeOrderWarning": false,
+  "moreTimeRequested": false
 }

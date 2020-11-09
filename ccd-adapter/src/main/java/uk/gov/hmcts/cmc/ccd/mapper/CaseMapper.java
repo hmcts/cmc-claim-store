@@ -16,7 +16,9 @@ import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
@@ -24,6 +26,7 @@ import static uk.gov.hmcts.cmc.ccd.mapper.ClaimSubmissionOperationIndicatorMappe
 import static uk.gov.hmcts.cmc.ccd.mapper.ClaimSubmissionOperationIndicatorMapper.mapFromCCDClaimSubmissionOperationIndicators;
 import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.getMediationOutcome;
 import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.toCaseName;
+import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
 
 @Component
 public class CaseMapper {
@@ -33,7 +36,9 @@ public class CaseMapper {
     private final ClaimDocumentCollectionMapper claimDocumentCollectionMapper;
     private final ReviewOrderMapper reviewOrderMapper;
     private final DirectionOrderMapper directionOrderMapper;
+    private final BespokeOrderDirectionMapper bespokeOrderDirectionMapper;
     private final TransferContentMapper transferContentMapper;
+    private final BulkPrintDetailsMapper bulkPrintDetailsMapper;
 
     public CaseMapper(
         ClaimMapper claimMapper,
@@ -41,14 +46,18 @@ public class CaseMapper {
         ClaimDocumentCollectionMapper claimDocumentCollectionMapper,
         ReviewOrderMapper reviewOrderMapper,
         DirectionOrderMapper directionOrderMapper,
-        TransferContentMapper transferContentMapper
+        BespokeOrderDirectionMapper bespokeOrderDirectionMapper,
+        TransferContentMapper transferContentMapper,
+        BulkPrintDetailsMapper bulkPrintDetailsMapper
     ) {
         this.claimMapper = claimMapper;
         this.isMigrated = isMigrated;
         this.claimDocumentCollectionMapper = claimDocumentCollectionMapper;
         this.reviewOrderMapper = reviewOrderMapper;
         this.directionOrderMapper = directionOrderMapper;
+        this.bespokeOrderDirectionMapper = bespokeOrderDirectionMapper;
         this.transferContentMapper = transferContentMapper;
+        this.bulkPrintDetailsMapper = bulkPrintDetailsMapper;
     }
 
     public CCDCase to(Claim claim) {
@@ -74,6 +83,12 @@ public class CaseMapper {
             .map(ProceedOfflineReasonType::name)
             .map(CCDProceedOnPaperReasonType::valueOf)
             .ifPresent(builder::proceedOnPaperReason);
+
+        builder.bulkPrintDetails(asStream(claim.getBulkPrintDetails())
+            .map(bulkPrintDetailsMapper::to)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList())
+        );
 
         return builder
             .id(claim.getId())
@@ -104,6 +119,7 @@ public class CaseMapper {
 
         claimDocumentCollectionMapper.from(ccdCase, builder);
         directionOrderMapper.from(ccdCase, builder);
+        bespokeOrderDirectionMapper.from(ccdCase, builder);
 
         builder
             .id(ccdCase.getId())
@@ -142,6 +158,16 @@ public class CaseMapper {
 
         if (ccdCase.getPreferredDQCourt() != null) {
             builder.preferredDQCourt(ccdCase.getPreferredDQCourt());
+        }
+
+        builder.bulkPrintDetails(asStream(ccdCase.getBulkPrintDetails())
+            .map(bulkPrintDetailsMapper::from)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList())
+        );
+
+        if (ccdCase.getDirectionOrderType() != null) {
+            builder.directionOrderType(ccdCase.getDirectionOrderType());
         }
 
         return builder.build();

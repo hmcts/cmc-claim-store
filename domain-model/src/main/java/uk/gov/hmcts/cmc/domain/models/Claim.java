@@ -9,8 +9,10 @@ import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.amount.TotalAmountCalculator;
 import uk.gov.hmcts.cmc.domain.constraints.DateNotInTheFuture;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.orders.BespokeOrderDirection;
 import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
@@ -83,6 +85,9 @@ public class Claim {
     private final String proceedOfflineOtherReasonDescription;
     private final TransferContent transferContent;
     private final YesNoOption evidenceHandled;
+    private final List<BulkPrintDetails> bulkPrintDetails;
+    private String directionOrderType;
+    private BespokeOrderDirection bespokeOrderDirection;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -132,7 +137,10 @@ public class Claim {
         ProceedOfflineReasonType proceedOfflineReason,
         String proceedOfflineOtherReasonDescription,
         TransferContent transferContent,
-        YesNoOption evidenceHandled
+        YesNoOption evidenceHandled,
+        List<BulkPrintDetails> bulkPrintDetails,
+        String directionOrderType,
+        BespokeOrderDirection bespokeOrderDirection
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -180,6 +188,9 @@ public class Claim {
         this.proceedOfflineOtherReasonDescription = proceedOfflineOtherReasonDescription;
         this.transferContent = transferContent;
         this.evidenceHandled = evidenceHandled;
+        this.bulkPrintDetails = bulkPrintDetails;
+        this.directionOrderType = directionOrderType;
+        this.bespokeOrderDirection = bespokeOrderDirection;
     }
 
     public Optional<Response> getResponse() {
@@ -194,6 +205,12 @@ public class Claim {
     public Optional<ClaimDocument> getClaimDocument(ClaimDocumentType claimDocumentType) {
         return Optional.ofNullable(claimDocumentCollection)
             .flatMap(c -> c.getDocument(claimDocumentType));
+    }
+
+    @JsonIgnore
+    public Optional<ClaimDocument> getClaimDocument(String claimDocumentId) {
+        return Optional.ofNullable(claimDocumentCollection)
+            .flatMap(c -> c.getDocument(claimDocumentId));
     }
 
     @JsonIgnore
@@ -274,6 +291,10 @@ public class Claim {
         return Optional.ofNullable(directionOrder);
     }
 
+    public Optional<BespokeOrderDirection> getBespokeOrderDirection() {
+        return Optional.ofNullable(bespokeOrderDirection);
+    }
+
     public Optional<ChannelType> getChannel() {
         return Optional.ofNullable(channel);
     }
@@ -296,6 +317,10 @@ public class Claim {
 
     public Optional<String> getPreferredDQCourt() {
         return Optional.ofNullable(preferredDQCourt);
+    }
+
+    public Optional<String> getDirectionOrderType() {
+        return Optional.ofNullable(directionOrderType);
     }
 
     public Optional<ProceedOfflineReasonType> getProceedOfflineReason() {

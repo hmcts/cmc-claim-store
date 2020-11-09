@@ -7,13 +7,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.ApplicationEventPublisher;
+import uk.gov.hmcts.cmc.ccd.domain.CCDBulkPrintDetails;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
-import uk.gov.hmcts.cmc.claimstore.events.GeneralLetterReadyToPrintEvent;
+import uk.gov.hmcts.cmc.ccd.mapper.BulkPrintDetailsMapper;
+import uk.gov.hmcts.cmc.claimstore.documents.BulkPrintHandler;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
+import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
@@ -40,16 +42,18 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.Params.BEARER_TOKEN;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
+import static uk.gov.hmcts.cmc.domain.models.bulkprint.PrintRequestType.GENERAL_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.GENERAL_LETTER_PDF;
 
 @ExtendWith(MockitoExtension.class)
 class GeneralLetterServiceTest {
 
+    public static final String GENERAL_LETTER_TEMPLATE_ID = "generalLetterTemplateId";
+    public static final String GENERAL_DOCUMENT_NAME = "document-name";
     private static final String DOC_URL = "http://success.test";
     private static final String DOC_URL_BINARY = "http://success.test/binary";
     private static final String DOC_NAME = "doc-name";
@@ -62,11 +66,7 @@ class GeneralLetterServiceTest {
         .builder()
         .build();
     private static final LocalDateTime DATE = LocalDateTime.parse("2020-11-16T13:15:30");
-    private static final byte[] PDF_BYTES = new byte[] {1, 2, 3, 4};
-
-    public static final String GENERAL_LETTER_TEMPLATE_ID = "generalLetterTemplateId";
-    public static final String GENERAL_DOCUMENT_NAME = "document-name";
-
+    private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
     private static final CCDDocument DOCUMENT = CCDDocument
         .builder()
         .documentUrl(DOC_URL)
@@ -87,8 +87,6 @@ class GeneralLetterServiceTest {
     @Mock
     private DocAssemblyService docAssemblyService;
     @Mock
-    private ApplicationEventPublisher publisher;
-    @Mock
     private DocumentManagementService documentManagementService;
     @Mock
     private DocAssemblyResponse docAssemblyResponse;
@@ -97,21 +95,25 @@ class GeneralLetterServiceTest {
     @Mock
     private UserService userService;
     @Mock
-    private  DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
+    private BulkPrintHandler bulkPrintHandler;
+    @Mock
+    private DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
 
     private GeneralLetterService generalLetterService;
     private UserDetails userDetails;
+    private BulkPrintDetailsMapper bulkPrintDetailsMapper = new BulkPrintDetailsMapper();
 
     @BeforeEach
     void setUp() {
         generalLetterService = new GeneralLetterService(
             docAssemblyService,
-            publisher,
+            bulkPrintHandler,
             new PrintableDocumentService(documentManagementService),
             clock,
             userService,
             docAssemblyTemplateBodyMapper,
-            documentManagementService);
+            documentManagementService,
+            bulkPrintDetailsMapper);
 
         String documentUrl = DOCUMENT_URI.toString();
         CCDDocument document = new CCDDocument(documentUrl, documentUrl, GENERAL_LETTER_PDF);
@@ -174,12 +176,23 @@ class GeneralLetterServiceTest {
         when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
         when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);
-        doNothing().when(publisher).publishEvent(any(GeneralLetterReadyToPrintEvent.class));
+        BulkPrintDetails bulkPrintDetails = BulkPrintDetails.builder().printRequestType(GENERAL_LETTER)
+            .printRequestId("requestId")
+            .build();
+
+        when(bulkPrintHandler
+            .printGeneralLetter(eq(claim), any(uk.gov.hmcts.reform.sendletter.api.Document.class), anyString()))
+            .thenReturn(bulkPrintDetails);
         CCDCase expected = ccdCase.toBuilder()
             .caseDocuments(ImmutableList.<CCDCollectionElement<CCDClaimDocument>>builder()
                 .addAll(ccdCase.getCaseDocuments())
                 .add(CLAIM_DOCUMENT)
                 .build())
+            .bulkPrintDetails(ImmutableList.<CCDCollectionElement<CCDBulkPrintDetails>>builder()
+                .addAll(ccdCase.getBulkPrintDetails())
+                .add(bulkPrintDetailsMapper.to(bulkPrintDetails))
+                .build()
+            )
             .draftLetterDoc(null)
             .contactChangeParty(null)
             .contactChangeContent(null)
@@ -220,5 +233,16 @@ class GeneralLetterServiceTest {
         assertThrows(RuntimeException.class,
             () -> generalLetterService.generateLetter(ccdCase, BEARER_TOKEN.name(),
                 GENERAL_LETTER_TEMPLATE_ID));
+    }
+
+    @Test
+    void shouldAttachDocument() {
+        when(documentManagementService.getDocumentMetaData(anyString(), anyString()))
+            .thenReturn(getLinks());
+        when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);
+        generalLetterService.attachGeneralLetterToCase(ccdCase, DOCUMENT, anyString(), anyString());
+        verify(documentManagementService, once()).getDocumentMetaData(anyString(), anyString());
     }
 }

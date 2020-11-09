@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase;
 
-import org.apache.commons.lang3.StringUtils;
+import org.elasticsearch.common.TriFunction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -14,10 +14,13 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.UnaryOperator;
+
+import static java.time.LocalDate.now;
 
 @Service
 public class BulkPrintTransferService {
@@ -57,17 +60,23 @@ public class BulkPrintTransferService {
         if (!claimsReadyForTransfer.isEmpty()) {
             claimsReadyForTransfer.forEach(claim -> ccdCaseMap.put(claim, caseMapper.to(claim)));
             ccdCaseMap.forEach((claim, ccdCase) -> {
-                CCDCase ccdCaseTransferred = transferCase(ccdCase, claim, authorisation);
+                CCDCase ccdCaseTransferred = transferCase(ccdCase, claim, authorisation,
+                    transferCaseDocumentPublishService::publishCaseDocuments,
+                    transferCaseNotificationsService::sendTransferToCourtEmail, this::updateCaseData);
                 CCDCase ccdCaseUpdated = updateTransferContent(ccdCaseTransferred);
                 updateCaseInCCD(ccdCaseUpdated, authorisation);
             });
         }
     }
 
-    public CCDCase transferCase(CCDCase ccdCase, Claim claim, String authorisation) {
-        CCDCase updated = transferCaseDocumentPublishService.publishCaseDocuments(ccdCase, authorisation, claim);
-        sendEmailNotifications(updated, claim);
-        return updateCaseData(updated);
+    public CCDCase transferCase(CCDCase ccdCase, Claim claim, String authorisation,
+                                TriFunction<CCDCase, String, Claim, CCDCase> transferCaseDocumentPublishService,
+                                BiConsumer<CCDCase, Claim> sendEmailNotifications,
+                                UnaryOperator<CCDCase> updateCaseData) {
+
+        CCDCase updatedCase = transferCaseDocumentPublishService.apply(ccdCase, authorisation, claim);
+        sendEmailNotifications.accept(updatedCase, claim);
+        return updateCaseData.apply(updatedCase);
     }
 
     private CCDCase updateTransferContent(CCDCase ccdCase) {
@@ -80,33 +89,24 @@ public class BulkPrintTransferService {
             .build();
     }
 
-    private CCDCase updateCaseData(CCDCase ccdCase) {
+    public CCDCase updateCaseDataWithHandOffDate(CCDCase ccdCase) {
+        return ccdCase.toBuilder().dateOfHandoff(now()).build();
+    }
+
+    public CCDCase updateCaseData(CCDCase ccdCase) {
 
         CCDTransferContent transferContent;
         if (ccdCase.getTransferContent() != null) {
             transferContent = ccdCase.getTransferContent().toBuilder()
-                .dateOfTransfer(LocalDate.now()).build();
+                .dateOfTransfer(now()).build();
         } else {
             transferContent = CCDTransferContent.builder()
-                .dateOfTransfer(LocalDate.now()).build();
+                .dateOfTransfer(now()).build();
         }
         return ccdCase.toBuilder()
             .transferContent(transferContent)
             .build();
 
-    }
-
-    private void sendEmailNotifications(CCDCase ccdCase, Claim claim) {
-
-        transferCaseNotificationsService.sendClaimUpdatedEmailToClaimant(claim);
-
-        if (isDefendantLinked(ccdCase)) {
-            transferCaseNotificationsService.sendClaimUpdatedEmailToDefendant(claim);
-        }
-    }
-
-    private boolean isDefendantLinked(CCDCase ccdCase) {
-        return !StringUtils.isBlank(ccdCase.getRespondents().get(0).getValue().getDefendantId());
     }
 
     private void updateCaseInCCD(CCDCase ccdCase, String authorisation) {

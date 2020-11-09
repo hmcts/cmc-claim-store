@@ -506,15 +506,6 @@ class SupportControllerTest {
     @Nested
     @DisplayName("Transition state service tests")
     class TransitionStateServiceTests {
-        private final String auth = "auth";
-        private final UserDetails userDetails = new UserDetails("id", null, null, null, null);
-        private final User user = new User(null, userDetails);
-
-        @BeforeEach
-        void setUpAnonymousCaseworker() {
-            when(userService.getUser(auth)).thenReturn(user);
-        }
-
         @Test
         void shouldPerformIntentionToProceedCheckWithDatetime() {
             final LocalDateTime localDateTime
@@ -522,9 +513,9 @@ class SupportControllerTest {
 
             StateTransitionInput stateTransitionInput
                 = StateTransitionInput.builder().localDateTime(localDateTime).stateTransitions(STAY_CLAIM).build();
-            controller.transitionClaimState(auth, stateTransitionInput);
+            controller.transitionClaimState(stateTransitionInput);
 
-            verify(scheduledStateTransitionService).transitionClaims(localDateTime, user,
+            verify(scheduledStateTransitionService).stateChangeTriggered(localDateTime,
                 STAY_CLAIM);
         }
 
@@ -532,9 +523,9 @@ class SupportControllerTest {
         void shouldPerformIntentionToProceedCheckWithNullDatetime() {
             StateTransitionInput stateTransitionInput
                 = StateTransitionInput.builder().localDateTime(null).stateTransitions(STAY_CLAIM).build();
-            controller.transitionClaimState(auth, stateTransitionInput);
+            controller.transitionClaimState(stateTransitionInput);
 
-            verify(scheduledStateTransitionService).transitionClaims(notNull(), eq(user),
+            verify(scheduledStateTransitionService).stateChangeTriggered(notNull(),
                 eq(STAY_CLAIM));
         }
     }
@@ -630,5 +621,17 @@ class SupportControllerTest {
             verify(mediationReportService)
                 .sendMediationReport(eq(AUTHORISATION), eq(mediationSearchDate));
         }
+
+        @Test
+        void shouldRegenerateMiloReportForGivenDate() {
+            when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
+            LocalDate mediationSearchDate = LocalDate.of(2019, 7, 7);
+            doNothing().when(mediationReportService).sendMediationReport(eq(AUTHORISATION), any());
+            controller.reSendMediation(
+                new MediationRequest(mediationSearchDate, "Holly@cow.com"));
+            verify(mediationReportService)
+                .sendMediationReport(eq(AUTHORISATION), eq(mediationSearchDate));
+        }
     }
+
 }

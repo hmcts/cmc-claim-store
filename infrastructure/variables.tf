@@ -31,7 +31,7 @@ variable "postgresql_version" {
 }
 
 variable "common_tags" {
-  type = "map"
+  type = map(string)
 }
 
 variable "mail-host" {

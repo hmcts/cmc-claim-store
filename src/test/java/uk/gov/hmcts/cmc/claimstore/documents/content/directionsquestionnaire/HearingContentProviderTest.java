@@ -19,6 +19,7 @@ import java.util.List;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleHearingLocation.defaultHearingLocation;
 
 public class HearingContentProviderTest {
@@ -32,6 +33,31 @@ public class HearingContentProviderTest {
     @Test(expected = NullPointerException.class)
     public void mapDirectionsQuestionnaireThrowsException() {
         hearingContentProvider.mapDirectionQuestionnaire(null);
+    }
+
+    @Test
+    public void mapDirectionsQuestionnaireNoneSupportRequired() {
+        DirectionsQuestionnaire dq = SampleDirectionsQuestionnaire.builder().buildNone();
+        HearingContent hearingContent = hearingContentProvider.mapDirectionQuestionnaire(dq);
+        assertEquals(2, hearingContent.getSupportRequired().size());
+
+    }
+
+    @Test
+    public void mapDirectionsQuestionnaireExtraSupportRequired() {
+        DirectionsQuestionnaire dq = DirectionsQuestionnaire.builder()
+            .requireSupport(RequireSupport.builder()
+                .languageInterpreter("English")
+                .signLanguageInterpreter("Need Sign Language")
+                .otherSupport("Extra Support")
+                .disabledAccess(YES)
+                .hearingLoop(YES)
+                .build()
+            ).build();
+
+        HearingContent hearingContent = hearingContentProvider.mapDirectionQuestionnaire(dq);
+        assertEquals(5, hearingContent.getSupportRequired().size());
+
     }
 
     @Test
