@@ -97,12 +97,14 @@ public class PaymentsService {
             claim.getExternalId());
         Payment claimPayment = claim.getClaimData().getPayment().orElseThrow(IllegalStateException::new);
         logger.info("Return URL: {}", claimPayment.getReturnUrl());
+        String serviceCallBackUrl = claimPayment.getReturnUrl().substring(0, claimPayment.getReturnUrl().indexOf("/claim"))
+            + "/payment/payment-update";
+        logger.info("Service Callback URL: {}", claimPayment.getReturnUrl());
         PaymentDto payment = paymentsClient.createCardPayment(
             authorisation,
             paymentRequest,
             claimPayment.getReturnUrl(),
-            claimPayment.getReturnUrl().substring(0, claimPayment.getReturnUrl().indexOf("/claim"))
-                + "/payment/update-card-payment"
+            serviceCallBackUrl
         );
         logger.info("Created payment for claim with external id {}: {}", claim.getExternalId(), payment);
 
