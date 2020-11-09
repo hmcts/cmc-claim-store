@@ -106,10 +106,6 @@ public class CreateCitizenClaimCallbackHandlerTest {
             .eventId(CREATE_CITIZEN_CLAIM.getValue())
             .caseDetails(caseDetails)
             .build();
-
-        when(issueDateCalculator.calculateIssueDay(any())).thenReturn(ISSUE_DATE);
-        when(responseDeadlineCalculator.calculateResponseDeadline(ISSUE_DATE)).thenReturn(RESPONSE_DEADLINE);
-        when(referenceNumberRepository.getReferenceNumberForCitizen()).thenReturn(REFERENCE_NO);
     }
 
     @Test
