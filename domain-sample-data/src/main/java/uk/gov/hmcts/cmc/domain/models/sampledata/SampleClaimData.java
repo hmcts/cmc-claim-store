@@ -33,7 +33,6 @@ public class SampleClaimData {
     private Interest interest = SampleInterest.standard();
     private String reason = "reason";
     private BigInteger feeAmount = BigInteger.valueOf(4000);
-    private BigInteger feeRemitted = BigInteger.valueOf(3000);
     private String feeAccountNumber = "PBA1234567";
     private StatementOfTruth statementOfTruth;
     private PersonalInjury personalInjury = new PersonalInjury(DamagesExpectation.MORE_THAN_THOUSAND_POUNDS);
@@ -139,11 +138,6 @@ public class SampleClaimData {
         return this;
     }
 
-    public SampleClaimData withFeeRemitted(BigInteger feeRemitted) {
-        this.feeRemitted = feeRemitted;
-        return this;
-    }
-
     public SampleClaimData withInterest(Interest interest) {
         this.interest = interest;
         return this;
@@ -202,7 +196,6 @@ public class SampleClaimData {
             payment,
             amount,
             feeAmount,
-            feeRemitted,
             interest,
             personalInjury,
             housingDisrepair,

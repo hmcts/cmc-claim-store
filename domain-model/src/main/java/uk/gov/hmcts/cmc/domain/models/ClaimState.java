@@ -25,8 +25,6 @@ public enum ClaimState {
     JUDGMENT_DECIDE_AMOUNT("judgmentDecideAmount"),
     REDETERMINATION_REQUESTED("redeterminationRequested"),
     JUDGMENT_REQUESTED("judgmentRequested"),
-    AWAITING_RESPONSE_HWF("awaitingResponseHWF"),
-    HWF_APPLICATION_PENDING("hwfApplicationPending"),
     BUSINESS_QUEUE("businessQueue");
 
     private final String state;
