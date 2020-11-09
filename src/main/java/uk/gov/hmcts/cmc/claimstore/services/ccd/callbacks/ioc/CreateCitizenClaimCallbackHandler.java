@@ -98,7 +98,7 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
             claim.getExternalId());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetailsConverter.convertToMap(caseMapper.to(updatedClaim)))
+            .data(caseDetailsConverter.convertToMap(caseMapper.to(claim)))
             .build();
     }
 
