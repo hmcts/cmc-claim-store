@@ -452,7 +452,7 @@ public class ClaimService {
     public Claim updateCardPayment(PaymentUpdate paymentUpdate) {
         final Claim[] returnClaim = {null};
         try {
-            User user = userService.authenticateAnonymousCaseWorker();
+            User user = userService.getUser().authenticateAnonymousCaseWorker();
             String authorisation = user.getAuthorisation();
             if (paymentUpdate.getStatus().equalsIgnoreCase(SUCCESS.name())) {
                 List<Claim> claimRetreived = caseRepository.getByPaymentReference(
@@ -482,6 +482,7 @@ public class ClaimService {
                 );
             }
         } catch (Exception e) {
+            e.printStackTrace();
             e.printStackTrace();
             throw e;
         }
