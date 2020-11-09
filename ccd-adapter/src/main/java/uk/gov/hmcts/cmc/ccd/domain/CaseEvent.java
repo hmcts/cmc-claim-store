@@ -88,7 +88,6 @@ public enum CaseEvent {
     REVIEW_JUDGE_COMMENTS("ReviewJudgeComments"),
     CCJ_REQUEST_UPLOAD("CCJRequestUpload"),
     CHANGE_CONTACT_DETAILS("ChangeContactDetails"),
-    HWF_PART_REMISSION_GRANTED("HWFPartRemission");
     ISSUE_PAPER_DEFENSE_FORMS("IssuePaperDefenceForms"),
     ADD_BULK_PRINT_DETAILS("UpdateBulkPrintDetails"),
     APPROVE_ORDER("ApproveOrder"),
