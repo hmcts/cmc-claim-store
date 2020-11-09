@@ -22,6 +22,7 @@
     ]
   },
   "feeAmountInPennies": 4000,
+  "feeRemitted": 3000,
   "feeCode": "X0012",
   "interestDateType": "custom",
   "interestClaimStartDate": "2018-08-25",
