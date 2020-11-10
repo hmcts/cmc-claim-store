@@ -74,6 +74,11 @@
 
   <section class="letter-content">
     <p class="address party-address">
+      {% if addBreaksEnabled %}
+      <br/>
+      <br/>
+      <br/>
+      {% endif %}
       {{ partyFullName }} <br/>
       {{ partyAddress.line1 }} <br/>
       {% if partyAddress.line2 is defined and partyAddress.line2 is not empty %}

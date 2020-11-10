@@ -34,7 +34,7 @@ public class LegalSealedClaimJsonMapper {
         return new NullAwareJsonObjectBuilder()
             .add("claimNumber", claim.getReferenceNumber())
             .add("claimIssueDate", DateFormatter.format(claim.getIssuedOn()))
-            .add("claimSubmissionDate", DateFormatter.format(claim.getServiceDate()))
+            .add("claimSubmissionDate", DateFormatter.format(claim.getCreatedAt()))
             .add("feeAmountInPennies", claim.getClaimData().getFeeAmountInPennies().orElse(ZERO))
             .add("amountLowerValue", amountRange.getLowerValue().orElse(null))
             .add("amountHigherValue", amountRange.getHigherValue())
