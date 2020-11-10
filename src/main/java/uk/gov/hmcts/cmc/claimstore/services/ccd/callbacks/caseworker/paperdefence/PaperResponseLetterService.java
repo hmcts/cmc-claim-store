@@ -164,7 +164,8 @@ public class PaperResponseLetterService {
     }
 
     private String getCourtName(CCDPartyType partyType, CCDAddress defendantAddress, CCDAddress claimantAddress) {
-        return courtFinderApi.findMoneyClaimCourtByPostcode(partyType == CCDPartyType.COMPANY
+        return courtFinderApi.findMoneyClaimCourtByPostcode((partyType == CCDPartyType.COMPANY
+            || partyType == CCDPartyType.ORGANISATION)
             ? claimantAddress.getPostCode() : defendantAddress.getPostCode())
             .stream()
             .map(Court::getName)
