@@ -73,21 +73,6 @@ public class PaymentsService {
         Claim claim
     ) {
 
-        logger.info("Calculating interest amount for claim with external id {}", claim.getExternalId());
-
-        BigDecimal amount = claim.getTotalClaimAmount()
-            .orElseThrow(() -> new IllegalStateException("Missing total claim amount"));
-        BigDecimal interest = claim.getTotalInterest().orElse(BigDecimal.ZERO);
-
-        BigDecimal amountPlusInterest = amount.add(interest);
-
-        logger.info("Retrieving fee for claim with external id {}",
-            claim.getExternalId());
-
-        FeeLookupResponseDto feeOutcome = feesClient.lookupFee(
-            FEE_CHANNEL, FEE_EVENT, amountPlusInterest
-        );
-
         logger.info("Creating payment in pay hub for claim with external id {}",
             claim.getExternalId());
         Payment claimPayment = claim.getClaimData().getPayment().orElseThrow(IllegalStateException::new);
@@ -109,6 +94,22 @@ public class PaymentsService {
         }
 
         logger.info("Service Callback URL: {}", serviceCallBackUrl);
+
+        logger.info("Calculating interest amount for claim with external id {}", claim.getExternalId());
+
+        BigDecimal amount = claim.getTotalClaimAmount()
+            .orElseThrow(() -> new IllegalStateException("Missing total claim amount"));
+        BigDecimal interest = claim.getTotalInterest().orElse(BigDecimal.ZERO);
+
+        BigDecimal amountPlusInterest = amount.add(interest);
+
+        logger.info("Retrieving fee for claim with external id {}",
+            claim.getExternalId());
+
+        FeeLookupResponseDto feeOutcome = feesClient.lookupFee(
+            FEE_CHANNEL, FEE_EVENT, amountPlusInterest
+        );
+
         CardPaymentRequest paymentRequest = buildPaymentRequest(
             claim,
             feeOutcome
