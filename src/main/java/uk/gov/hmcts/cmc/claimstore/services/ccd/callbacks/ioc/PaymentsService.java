@@ -97,10 +97,23 @@ public class PaymentsService {
             claim.getExternalId());
         Payment claimPayment = claim.getClaimData().getPayment().orElseThrow(IllegalStateException::new);
         logger.info("Return URL: {}", claimPayment.getReturnUrl());
-        String serviceCallBackUrl = claimPayment.getReturnUrl()
-            .substring(0, claimPayment.getReturnUrl().indexOf("/claim"))
-            + "/payment/payment-update";
-        logger.info("Service Callback URL: {}", claimPayment.getReturnUrl());
+        String serviceCallBackUrl = null;
+        if (claimPayment.getReturnUrl().contains("localhost")) {
+            serviceCallBackUrl = claimPayment.getReturnUrl()
+                .substring(0, claimPayment.getReturnUrl().indexOf("/claim"))
+                + "/payment/payment-update";
+        } else {
+            String env = claimPayment.getReturnUrl().substring(claimPayment.getReturnUrl()
+                .indexOf(".") + 1, claimPayment.getReturnUrl().lastIndexOf(".platform."));
+            serviceCallBackUrl = "http://cmc-claim-store-"
+                + env
+                + ".service.core-compute-"
+                + env
+                + ".internal"
+                + "/payment/payment-update";
+        }
+
+        logger.info("Service Callback URL: {}", serviceCallBackUrl);
         PaymentDto payment = paymentsClient.createCardPayment(
             authorisation,
             paymentRequest,
