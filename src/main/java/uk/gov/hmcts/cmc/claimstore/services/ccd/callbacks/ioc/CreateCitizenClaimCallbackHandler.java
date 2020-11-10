@@ -20,17 +20,21 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
+import uk.gov.hmcts.cmc.domain.models.ChannelType;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
+import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
 @Service
 @Conditional(FeesAndPaymentsConfiguration.class)
@@ -90,16 +94,31 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
     }
 
     private CallbackResponse createCitizenClaim(CallbackParams callbackParams) {
-
         Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
-        logger.info("Removed the Code that saves Payment to test payment-update api"
-                + "Created citizen case for callback of type {}, claim with external id {}",
+        logger.info("Created citizen case for callback of type {}, claim with external id {}",
             callbackParams.getType(),
             claim.getExternalId());
+        String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
+
+        logger.info("Payment not successful for claim with external id {}", claim.getExternalId());
+
+        LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
+
+        Claim updatedClaim = claim.toBuilder()
+            .channel(ChannelType.CITIZEN)
+            .claimData(claim.getClaimData().toBuilder()
+                .build())
+            .referenceNumber(referenceNumberRepository.getReferenceNumberForCitizen())
+            .createdAt(LocalDateTimeFactory.nowInUTC())
+            .issuedOn(issuedOn)
+            .serviceDate(issuedOn.plusDays(5))
+            .responseDeadline(responseDeadlineCalculator.calculateResponseDeadline(issuedOn))
+            .build();
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetailsConverter.convertToMap(caseMapper.to(claim)))
+            .data(caseDetailsConverter.convertToMap(caseMapper.to(updatedClaim)))
             .build();
+
     }
 
     private CallbackResponse startClaimIssuedPostOperations(CallbackParams callbackParams) {
