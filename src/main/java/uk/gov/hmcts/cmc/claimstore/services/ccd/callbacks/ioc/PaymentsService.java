@@ -77,11 +77,12 @@ public class PaymentsService {
             claim.getExternalId());
         Payment claimPayment = claim.getClaimData().getPayment().orElseThrow(IllegalStateException::new);
         logger.info("Return URL: {}", claimPayment.getReturnUrl());
+        logger.info("Return URL: {}", claimPayment.getReturnUrl().contains("test"));
         String serviceCallBackUrl = null;
-        if (claimPayment.getReturnUrl().contains("localhost")
-            || claimPayment.getReturnUrl().contains("returnUrl")) {
+
+        if (claimPayment.getReturnUrl().contains("test")
+            || claimPayment.getReturnUrl().contains("localhost")) {
             serviceCallBackUrl = claimPayment.getReturnUrl()
-                .substring(0, claimPayment.getReturnUrl().indexOf("/claim"))
                 + "/payment/payment-update";
         } else {
             String env = claimPayment.getReturnUrl().substring(claimPayment.getReturnUrl()
