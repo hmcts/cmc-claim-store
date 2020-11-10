@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
@@ -12,12 +13,15 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Predicate;
 
+import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_CLAIMANT_RESPONSE;
 import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
@@ -35,19 +39,22 @@ public class ClaimantResponseContentProvider {
     private final NotificationsProperties notificationsProperties;
     private final ResponseAcceptationContentProvider responseAcceptationContentProvider;
     private final ResponseRejectionContentProvider responseRejectionContentProvider;
+    private final LaunchDarklyClient launchDarklyClient;
 
     public ClaimantResponseContentProvider(
         PartyDetailsContentProvider partyDetailsContentProvider,
         ClaimDataContentProvider claimDataContentProvider,
         NotificationsProperties notificationsProperties,
         ResponseAcceptationContentProvider responseAcceptationContentProvider,
-        ResponseRejectionContentProvider responseRejectionContentProvider
+        ResponseRejectionContentProvider responseRejectionContentProvider,
+        LaunchDarklyClient launchDarklyClient
     ) {
         this.partyDetailsContentProvider = partyDetailsContentProvider;
         this.claimDataContentProvider = claimDataContentProvider;
         this.notificationsProperties = notificationsProperties;
         this.responseAcceptationContentProvider = responseAcceptationContentProvider;
         this.responseRejectionContentProvider = responseRejectionContentProvider;
+        this.launchDarklyClient = launchDarklyClient;
     }
 
     public Map<String, Object> createContent(Claim claim) {
@@ -56,6 +63,9 @@ public class ClaimantResponseContentProvider {
         Map<String, Object> content = new HashMap<>();
 
         content.put("claim", claimDataContentProvider.createContent(claim));
+
+        setRedeterminationContent(claim, content);
+
         claim.getClaimantRespondedAt().ifPresent(respondedAt -> {
             content.put("claimantSubmittedOn", formatDateTime(respondedAt));
             content.put("claimantSubmittedDate", formatDate(respondedAt));
@@ -127,6 +137,28 @@ public class ClaimantResponseContentProvider {
         }
 
         return content;
+    }
+
+    private void setRedeterminationContent(Claim claim, Map<String, Object> content) {
+        if (launchDarklyClient.isFeatureEnabled("redetermination-reason-in-pdf", LaunchDarklyClient.CLAIM_STORE_USER)) {
+            Optional<ClaimantResponse> claimantResponseOptional = claim.getClaimantResponse();
+            if (claimantResponseOptional.isPresent()) {
+                ResponseAcceptation responseAcceptation = (ResponseAcceptation) claimantResponseOptional.get();
+                responseAcceptation.getCourtDetermination().ifPresent(courtDetermination -> {
+                    if (courtDetermination.getRejectionReason().isPresent()) {
+                        content.put("rejectionReason", courtDetermination.getRejectionReason().get());
+                    }
+                });
+            }
+            claim.getReDetermination().ifPresent(reDetermination -> {
+                String partyType = reDetermination.getPartyType().name().toLowerCase();
+                if (!StringUtils.isBlank(reDetermination.getExplanation())) {
+                    content.put(format("reasonForReDetermination%s", partyType), reDetermination.getExplanation());
+                } else {
+                    content.put(format("reasonForReDetermination%s", partyType), "Not Provided");
+                }
+            });
+        }
     }
 
     private void addFormalisedOption(
