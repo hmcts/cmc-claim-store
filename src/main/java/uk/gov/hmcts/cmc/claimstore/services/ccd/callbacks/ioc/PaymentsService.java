@@ -88,11 +88,6 @@ public class PaymentsService {
             FEE_CHANNEL, FEE_EVENT, amountPlusInterest
         );
 
-        CardPaymentRequest paymentRequest = buildPaymentRequest(
-            claim,
-            feeOutcome
-        );
-
         logger.info("Creating payment in pay hub for claim with external id {}",
             claim.getExternalId());
         Payment claimPayment = claim.getClaimData().getPayment().orElseThrow(IllegalStateException::new);
@@ -114,6 +109,10 @@ public class PaymentsService {
         }
 
         logger.info("Service Callback URL: {}", serviceCallBackUrl);
+        CardPaymentRequest paymentRequest = buildPaymentRequest(
+            claim,
+            feeOutcome
+        );
         PaymentDto payment = paymentsClient.createCardPayment(
             authorisation,
             paymentRequest,
