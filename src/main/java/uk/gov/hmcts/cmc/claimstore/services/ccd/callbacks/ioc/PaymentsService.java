@@ -78,7 +78,8 @@ public class PaymentsService {
         Payment claimPayment = claim.getClaimData().getPayment().orElseThrow(IllegalStateException::new);
         logger.info("Return URL: {}", claimPayment.getReturnUrl());
         String serviceCallBackUrl = null;
-        if (claimPayment.getReturnUrl().contains("localhost")) {
+        if (claimPayment.getReturnUrl().contains("localhost")
+            || claimPayment.getReturnUrl().contains("returnUrl")) {
             serviceCallBackUrl = claimPayment.getReturnUrl()
                 .substring(0, claimPayment.getReturnUrl().indexOf("/claim"))
                 + "/payment/payment-update";
