@@ -1,6 +1,11 @@
 package uk.gov.hmcts.cmc.domain.models;
 
 import org.junit.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAddress;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
@@ -10,6 +15,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 
+@ExtendWith(MockitoExtension.class)
 public class TheirDetailsTest {
     @Test
     public void shouldBeInvalidWhenGivenNullAddress() {
@@ -61,49 +67,13 @@ public class TheirDetailsTest {
         assertThat(validationErrors).isEmpty();
     }
 
-    @Test
-    public void shouldBeInvalidWhenGivenEmptyEmail() {
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings ={"this is not a valid email address",
+        " ","  user@example.com "})
+    public void shouldBeInvalidWhenGivenEmptyEmail( String input) {
         TheirDetails theirDetails = SampleTheirDetails.builder()
-            .withEmail("")
-            .partyDetails();
-
-        Set<String> validationErrors = validate(theirDetails);
-
-        assertThat(validationErrors)
-            .hasSize(1)
-            .contains("email : not a well-formed email address");
-    }
-
-    @Test
-    public void shouldBeInvalidWhenGivenEmailWithWhitespacesOnly() {
-        TheirDetails theirDetails = SampleTheirDetails.builder()
-            .withEmail(" ")
-            .partyDetails();
-
-        Set<String> validationErrors = validate(theirDetails);
-
-        assertThat(validationErrors)
-            .hasSize(1)
-            .contains("email : not a well-formed email address");
-    }
-
-    @Test
-    public void shouldBeInvalidWhenGivenInvalidEmail() {
-        TheirDetails theirDetails = SampleTheirDetails.builder()
-            .withEmail("this is not a valid email address")
-            .partyDetails();
-
-        Set<String> validationErrors = validate(theirDetails);
-
-        assertThat(validationErrors)
-            .hasSize(1)
-            .contains("email : not a well-formed email address");
-    }
-
-    @Test
-    public void shouldBeInvalidWhenGivenNonTrimmedEmail() {
-        TheirDetails theirDetails = SampleTheirDetails.builder()
-            .withEmail(" user@example.com ")
+            .withEmail(input)
             .partyDetails();
 
         Set<String> validationErrors = validate(theirDetails);

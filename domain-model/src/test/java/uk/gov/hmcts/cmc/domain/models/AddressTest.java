@@ -1,14 +1,23 @@
 package uk.gov.hmcts.cmc.domain.models;
 
 import org.apache.commons.lang3.StringUtils;
+
 import org.junit.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAddress;
+
+
 
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 
+@ExtendWith(MockitoExtension.class)
 public class AddressTest {
 
     @Test
@@ -119,46 +128,21 @@ public class AddressTest {
             .contains("city : City should not be longer than 100 characters");
     }
 
-    @Test
-    public void shouldBeInvalidForNullPostcode() {
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings ={"SW123456"})
+    public void shouldBeInvalidForNullPostcode(String input) {
         //given
         Address address = SampleAddress.builder()
-            .postcode(null)
+            .postcode(input)
             .build();
         //when
         Set<String> errors = validate(address);
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("postcode : may not be null");
-    }
-
-    @Test
-    public void shouldBeInvalidForEmptyPostcode() {
-        //given
-        Address address = SampleAddress.builder()
-            .postcode("")
-            .build();
-        //when
-        Set<String> errors = validate(address);
-        //then
-        assertThat(errors)
-            .hasSize(1)
-            .contains("postcode : Postcode is not of valid format");
-    }
-
-    @Test
-    public void shouldBeInvalidForInvalidPostcode() {
-        //given
-        Address address = SampleAddress.builder()
-            .postcode("SW123456")
-            .build();
-        //when
-        Set<String> errors = validate(address);
-        //then
-        assertThat(errors)
-            .hasSize(1)
-            .contains("postcode : Postcode is not of valid format");
+            .containsAnyOf("postcode : may not be null", "postcode : Postcode is not of valid format",
+               "postcode : Postcode is not of valid format" );
     }
 
 }

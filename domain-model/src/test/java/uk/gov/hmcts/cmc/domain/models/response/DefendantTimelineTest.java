@@ -1,6 +1,11 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
 import org.junit.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 
 import java.util.Collections;
@@ -12,13 +17,16 @@ import static org.apache.commons.lang3.StringUtils.repeat;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 
+@ExtendWith(MockitoExtension.class)
 public class DefendantTimelineTest {
 
-    @Test
-    public void shouldPassValidationForValidDefendantTimeline() {
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings ={"Comment"})
+    public void shouldPassValidationForValidDefendantTimeline(String input) {
         DefendantTimeline timeline = new DefendantTimeline(
             singletonList(TimelineEvent.builder().eventDate("Last Year").description("description").build()),
-            "comments"
+            input
         );
 
         Set<String> response = validate(timeline);
@@ -51,32 +59,6 @@ public class DefendantTimelineTest {
     @Test
     public void shouldPassValidationForNoEventInTimeline() {
         DefendantTimeline timeline = new DefendantTimeline(Collections.emptyList(), "comments");
-
-        Set<String> response = validate(timeline);
-
-        assertThat(response)
-            .hasSize(0);
-    }
-
-    @Test
-    public void shouldPassValidationForNullComment() {
-        DefendantTimeline timeline = new DefendantTimeline(
-            singletonList(TimelineEvent.builder().eventDate("Last Year").description("description").build()),
-            null
-        );
-
-        Set<String> response = validate(timeline);
-
-        assertThat(response)
-            .hasSize(0);
-    }
-
-    @Test
-    public void shouldPassValidationForEmptyComment() {
-        DefendantTimeline timeline = new DefendantTimeline(
-            singletonList(TimelineEvent.builder().eventDate("Last Year").description("description").build()),
-            ""
-        );
 
         Set<String> response = validate(timeline);
 
