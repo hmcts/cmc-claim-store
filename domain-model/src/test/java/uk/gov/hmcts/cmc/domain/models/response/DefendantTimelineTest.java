@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -23,7 +23,7 @@ public class DefendantTimelineTest {
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {"Comment"})
-    public void shouldPassValidationForValidDefendantTimeline(String input) {
+    void shouldPassValidationForValidDefendantTimeline(String input) {
         DefendantTimeline timeline = new DefendantTimeline(
             singletonList(TimelineEvent.builder().eventDate("Last Year").description("description").build()),
             input

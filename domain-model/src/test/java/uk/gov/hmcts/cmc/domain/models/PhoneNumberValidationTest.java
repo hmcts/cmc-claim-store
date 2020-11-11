@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -15,13 +15,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 
 @ExtendWith(MockitoExtension.class)
-public class PhoneNumberValidationTest {
+class PhoneNumberValidationTest {
 
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {"(+44) (0)7931232313", "004407931232313", "07931232313",
         "0793123231*", "(0044) (0)7931232313"})
-    public void shouldBeSuccessfulValidationForPhoneNumberOfType1(String input) {
+    void shouldBeSuccessfulValidationForPhoneNumberOfType1(String input) {
         //given
         Individual party = individualWithPhone(input);
         //when

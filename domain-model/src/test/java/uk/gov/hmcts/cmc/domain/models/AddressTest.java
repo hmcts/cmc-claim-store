@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 
 @ExtendWith(MockitoExtension.class)
-public class AddressTest {
+class AddressTest {
 
     @Test
     public void shouldBeSuccessfulValidationForCorrectAddress() {
@@ -128,7 +128,7 @@ public class AddressTest {
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {"SW123456"})
-    public void shouldBeInvalidForNullPostcode(String input) {
+    void shouldBeInvalidForNullPostcode(String input) {
         //given
         Address address = SampleAddress.builder()
             .postcode(input)

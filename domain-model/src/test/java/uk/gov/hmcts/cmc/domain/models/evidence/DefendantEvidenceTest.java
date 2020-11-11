@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.evidence;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -17,12 +17,12 @@ import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 import static uk.gov.hmcts.cmc.domain.models.evidence.EvidenceType.EXPERT_WITNESS;
 
 @ExtendWith(MockitoExtension.class)
-public class DefendantEvidenceTest {
+class DefendantEvidenceTest {
 
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {"Comment"})
-    public void shouldPassValidationForValidDefendantEvidence(String input) {
+    void shouldPassValidationForValidDefendantEvidence(String input) {
         DefendantEvidence defendantEvidence = new DefendantEvidence(
             singletonList(EvidenceRow.builder().type(EXPERT_WITNESS).description("description").build()), input
         );

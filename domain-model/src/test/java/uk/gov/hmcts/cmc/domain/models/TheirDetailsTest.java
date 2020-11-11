@@ -1,9 +1,9 @@
 package uk.gov.hmcts.cmc.domain.models;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 
 @ExtendWith(MockitoExtension.class)
-public class TheirDetailsTest {
+class TheirDetailsTest {
     @Test
     public void shouldBeInvalidWhenGivenNullAddress() {
         TheirDetails theirDetails = SampleTheirDetails.builder()
@@ -68,10 +68,10 @@ public class TheirDetailsTest {
     }
 
     @ParameterizedTest
-    @NullAndEmptySource
+    @EmptySource
     @ValueSource(strings = {"this is not a valid email address",
         " ", "  user@example.com "})
-    public void shouldBeInvalidWhenGivenEmptyEmail(String input) {
+    void shouldBeInvalidWhenGivenEmptyEmail(String input) {
         TheirDetails theirDetails = SampleTheirDetails.builder()
             .withEmail(input)
             .partyDetails();
