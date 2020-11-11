@@ -30,5 +30,7 @@ dependencies {
   testCompile group: 'org.glassfish.web', name: 'javax.el', version: '2.2.6'
   testCompile group: 'com.google.guava', name: 'guava', version: '20.0'
   testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.3.3'
-  testCompile group: 'org.junit.jupiter', name:'junit-jupiter-params', version:'5.7.0'
+  testCompile group: 'org.junit.jupiter', name:'junit-jupiter-params', version:'5.5.2'
+  testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.5.2'
+  testCompile group: 'org.junit.platform', name: 'junit-platform-commons', version: '1.5.2'
 }
