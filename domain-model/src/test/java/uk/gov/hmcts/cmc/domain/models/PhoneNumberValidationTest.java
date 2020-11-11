@@ -37,46 +37,6 @@ class PhoneNumberValidationTest {
     }
 
     @Test
-    public void shouldBeSuccessfulValidationForPhoneNumberOfType2() {
-        //given
-        Individual party = individualWithPhone("004407931232313");
-        //when
-        Set<String> errors = validate(party);
-        //then
-        assertThat(errors).isEmpty();
-    }
-
-    @Test
-    public void shouldBeSuccessfulValidationForPhoneNumberOfType3() {
-        //given
-        Individual party = individualWithPhone("07931232313");
-        //when
-        Set<String> errors = validate(party);
-        //then
-        assertThat(errors).isEmpty();
-    }
-
-    @Test
-    public void shouldBeSuccessfulValidationForPhoneNumbeWithRandomCharacter() {
-        //given
-        Individual party = individualWithPhone("0793123231*");
-        //when
-        Set<String> errors = validate(party);
-        //then
-        assertThat(errors).isEmpty();
-    }
-
-    @Test
-    public void shouldBeSuccessfulValidationForPhoneNumberOfType4() {
-        //given
-        Individual party = individualWithPhone("(0044) (0)7931232313");
-        //when
-        Set<String> errors = validate(party);
-        //then
-        assertThat(errors).isEmpty();
-    }
-
-    @Test
     public void shouldBeValidWhenNumberIsNull() {
         //given
         Individual party = individualWithPhone(null);
