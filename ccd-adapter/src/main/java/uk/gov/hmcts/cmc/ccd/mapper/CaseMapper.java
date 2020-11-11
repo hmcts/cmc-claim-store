@@ -125,6 +125,7 @@ public class CaseMapper {
 
         builder
             .id(ccdCase.getId())
+            .lastModified(ccdCase.getLastModified())
             .state(EnumUtils.getEnumIgnoreCase(ClaimState.class, ccdCase.getState()))
             .ccdCaseId(ccdCase.getId())
             .submitterId(ccdCase.getSubmitterId())
