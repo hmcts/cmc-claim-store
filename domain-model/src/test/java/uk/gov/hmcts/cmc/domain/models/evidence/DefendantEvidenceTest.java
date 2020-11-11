@@ -21,7 +21,7 @@ public class DefendantEvidenceTest {
 
     @ParameterizedTest
     @NullAndEmptySource
-    @ValueSource(strings ={"Comment"})
+    @ValueSource(strings = {"Comment"})
     public void shouldPassValidationForValidDefendantEvidence(String input) {
         DefendantEvidence defendantEvidence = new DefendantEvidence(
             singletonList(EvidenceRow.builder().type(EXPERT_WITNESS).description("description").build()), input

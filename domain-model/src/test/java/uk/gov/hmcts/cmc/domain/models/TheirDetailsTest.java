@@ -69,9 +69,9 @@ public class TheirDetailsTest {
 
     @ParameterizedTest
     @NullAndEmptySource
-    @ValueSource(strings ={"this is not a valid email address",
-        " ","  user@example.com "})
-    public void shouldBeInvalidWhenGivenEmptyEmail( String input) {
+    @ValueSource(strings = {"this is not a valid email address",
+        " ", "  user@example.com "})
+    public void shouldBeInvalidWhenGivenEmptyEmail(String input) {
         TheirDetails theirDetails = SampleTheirDetails.builder()
             .withEmail(input)
             .partyDetails();

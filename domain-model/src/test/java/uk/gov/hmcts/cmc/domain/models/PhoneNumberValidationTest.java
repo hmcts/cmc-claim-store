@@ -19,7 +19,7 @@ public class PhoneNumberValidationTest {
 
     @ParameterizedTest
     @NullAndEmptySource
-    @ValueSource(strings ={"(+44) (0)7931232313", "004407931232313", "07931232313",
+    @ValueSource(strings = {"(+44) (0)7931232313", "004407931232313", "07931232313",
         "0793123231*", "(0044) (0)7931232313"})
     public void shouldBeSuccessfulValidationForPhoneNumberOfType1(String input) {
         //given

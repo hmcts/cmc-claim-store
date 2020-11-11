@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models;
 
 import org.apache.commons.lang3.StringUtils;
-
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -9,8 +8,6 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAddress;
-
-
 
 import java.util.Set;
 
@@ -130,7 +127,7 @@ public class AddressTest {
 
     @ParameterizedTest
     @NullAndEmptySource
-    @ValueSource(strings ={"SW123456"})
+    @ValueSource(strings = {"SW123456"})
     public void shouldBeInvalidForNullPostcode(String input) {
         //given
         Address address = SampleAddress.builder()
@@ -142,7 +139,7 @@ public class AddressTest {
         assertThat(errors)
             .hasSize(1)
             .containsAnyOf("postcode : may not be null", "postcode : Postcode is not of valid format",
-               "postcode : Postcode is not of valid format" );
+                "postcode : Postcode is not of valid format");
     }
 
 }

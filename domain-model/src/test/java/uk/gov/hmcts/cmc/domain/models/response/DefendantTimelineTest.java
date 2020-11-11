@@ -22,7 +22,7 @@ public class DefendantTimelineTest {
 
     @ParameterizedTest
     @NullAndEmptySource
-    @ValueSource(strings ={"Comment"})
+    @ValueSource(strings = {"Comment"})
     public void shouldPassValidationForValidDefendantTimeline(String input) {
         DefendantTimeline timeline = new DefendantTimeline(
             singletonList(TimelineEvent.builder().eventDate("Last Year").description("description").build()),
