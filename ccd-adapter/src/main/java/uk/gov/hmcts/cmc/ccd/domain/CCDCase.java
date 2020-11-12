@@ -89,6 +89,9 @@ public class CCDCase {
     private CCDClaimSubmissionOperationIndicators claimSubmissionOperationIndicators;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String state;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private LocalDateTime lastModified;
+
     private CCDYesNoOption evidenceHandled;
 
     private LocalDate docUploadDeadline;

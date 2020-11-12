@@ -643,7 +643,8 @@ public final class SampleClaim {
                 .printRequestedAt(LocalDate.now())
                 .printRequestId(bulkPrintLetterId).build()),
             directionOrderType,
-            bespokeOrderDirection
+            bespokeOrderDirection,
+            LocalDateTime.now()
         );
     }
 
