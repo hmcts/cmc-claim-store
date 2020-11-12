@@ -131,8 +131,11 @@ public class CCDCaseApi {
 
     /**
      * LLD https://tools.hmcts.net/confluence/display/ROC/Defendant+linking+with+CCD
+     * Below logic is modified to link only one letter holder Id coming in the request
+     * instead of fetch all claim & link every time
      */
-    public void linkDefendant(String authorisation) {
+
+    public void linkDefendantUsingLetterholderId(String authorisation, String letterholderId) {
         User defendantUser = userService.getUser(authorisation);
         List<String> letterHolderIds = defendantUser.getUserDetails().getRoles()
             .stream()
@@ -144,17 +147,18 @@ public class CCDCaseApi {
             return;
         }
 
-        User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
-
-        letterHolderIds
-            .forEach(letterHolderId -> caseAccessApi.findCaseIdsGivenUserIdHasAccessTo(
+        if (letterHolderIds.contains(letterholderId)) {
+            User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
+            List<String> ccdCaseIds = caseAccessApi.findCaseIdsGivenUserIdHasAccessTo(
                 anonymousCaseWorker.getAuthorisation(),
                 authTokenGenerator.generate(),
                 anonymousCaseWorker.getUserDetails().getId(),
                 JURISDICTION_ID,
                 CASE_TYPE_ID,
-                letterHolderId
-            ).forEach(caseId -> linkToCase(defendantUser, anonymousCaseWorker, letterHolderId, caseId)));
+                letterholderId
+            );
+            ccdCaseIds.forEach(ccdCaseId -> linkToCase(defendantUser, anonymousCaseWorker, letterholderId, ccdCaseId));
+        }
     }
 
     public void linkDefendant(String caseId, String defendantId, String defendantEmail) {
