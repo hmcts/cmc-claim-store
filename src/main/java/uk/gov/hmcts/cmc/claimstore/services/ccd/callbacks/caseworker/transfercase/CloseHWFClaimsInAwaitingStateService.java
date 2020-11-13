@@ -23,6 +23,8 @@ public class CloseHWFClaimsInAwaitingStateService {
 
     private final Logger logger = LoggerFactory.getLogger(CloseHWFClaimsInAwaitingStateService.class);
 
+    public static final int MAX_DAYS_ALLOWED_IN_WAITING_STATE = 95;
+
     private final CaseMapper caseMapper;
     private final UserService userService;
     private final ClaimService claimService;
@@ -50,7 +52,7 @@ public class CloseHWFClaimsInAwaitingStateService {
     }
 
     private void closeClaimsInAwaitingHWFState(Claim claim, String authorisation) {
-        if (DAYS.between(claim.getLastModified(), now()) > 95) {
+        if (DAYS.between(claim.getLastModified(), now()) > MAX_DAYS_ALLOWED_IN_WAITING_STATE) {
             coreCaseDataService.update(authorisation, caseMapper.to(claim), CaseEvent.CLOSE_AWAITING_RESPONSE_HWF);
             logger.info("Awaiting HWF Claim Closed - {}", claim.getReferenceNumber());
         }
