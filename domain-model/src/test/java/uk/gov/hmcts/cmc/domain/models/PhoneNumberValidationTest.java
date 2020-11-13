@@ -37,7 +37,7 @@ class PhoneNumberValidationTest {
     }
 
     @Test
-    public void shouldBeValidWhenNumberIsNull() {
+    void shouldBeValidWhenNumberIsNull() {
         //given
         Individual party = individualWithPhone(null);
         //when

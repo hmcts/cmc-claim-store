@@ -18,7 +18,7 @@ import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 class AddressTest {
 
     @Test
-    public void shouldBeSuccessfulValidationForCorrectAddress() {
+    void shouldBeSuccessfulValidationForCorrectAddress() {
         //given
         Address address = SampleAddress.builder().build();
         //when
@@ -28,7 +28,7 @@ class AddressTest {
     }
 
     @Test
-    public void shouldBeInvalidForNullLineOne() {
+    void shouldBeInvalidForNullLineOne() {
         //given
         Address address = SampleAddress.builder()
             .line1(null)
@@ -42,7 +42,7 @@ class AddressTest {
     }
 
     @Test
-    public void shouldBeInvalidForEmptyLineOne() {
+    void shouldBeInvalidForEmptyLineOne() {
         //given
         Address address = SampleAddress.builder()
             .line1("")
@@ -56,7 +56,7 @@ class AddressTest {
     }
 
     @Test
-    public void shouldBeInvalidForTooLongLineOne() {
+    void shouldBeInvalidForTooLongLineOne() {
         //given
         Address address = SampleAddress.builder()
             .line1(StringUtils.repeat("a", 101))
@@ -70,7 +70,7 @@ class AddressTest {
     }
 
     @Test
-    public void shouldBeInvalidForTooLongLineTwo() {
+    void shouldBeInvalidForTooLongLineTwo() {
         //given
         Address address = SampleAddress.builder()
             .line2(StringUtils.repeat("a", 101))
@@ -84,7 +84,7 @@ class AddressTest {
     }
 
     @Test
-    public void shouldBeInvalidForTooLongLineThree() {
+    void shouldBeInvalidForTooLongLineThree() {
         //given
         Address address = SampleAddress.builder()
             .line3(StringUtils.repeat("a", 101))
@@ -98,7 +98,7 @@ class AddressTest {
     }
 
     @Test
-    public void shouldBeInvalidForEmptyCity() {
+    void shouldBeInvalidForEmptyCity() {
         //given
         Address address = SampleAddress.builder()
             .city("")
@@ -112,7 +112,7 @@ class AddressTest {
     }
 
     @Test
-    public void shouldBeInvalidForTooLongCity() {
+    void shouldBeInvalidForTooLongCity() {
         //given
         Address address = SampleAddress.builder()
             .city(StringUtils.repeat("a", 101))

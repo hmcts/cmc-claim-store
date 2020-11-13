@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 
 @ExtendWith(MockitoExtension.class)
-public class DefendantTimelineTest {
+class DefendantTimelineTest {
 
     @ParameterizedTest
     @NullAndEmptySource
@@ -36,7 +36,7 @@ public class DefendantTimelineTest {
     }
 
     @Test
-    public void shouldPassValidationForMaxAllowedEvents() {
+    void shouldPassValidationForMaxAllowedEvents() {
         DefendantTimeline timeline = new DefendantTimeline(asList(new TimelineEvent[20]), "comments");
 
         Set<String> response = validate(timeline);
@@ -46,7 +46,7 @@ public class DefendantTimelineTest {
     }
 
     @Test
-    public void shouldFailValidationForEventLimitExceeds() {
+    void shouldFailValidationForEventLimitExceeds() {
         DefendantTimeline timeline = new DefendantTimeline(asList(new TimelineEvent[1001]), "comments");
 
         Set<String> response = validate(timeline);
@@ -57,7 +57,7 @@ public class DefendantTimelineTest {
     }
 
     @Test
-    public void shouldPassValidationForNoEventInTimeline() {
+    void shouldPassValidationForNoEventInTimeline() {
         DefendantTimeline timeline = new DefendantTimeline(Collections.emptyList(), "comments");
 
         Set<String> response = validate(timeline);
@@ -67,7 +67,7 @@ public class DefendantTimelineTest {
     }
 
     @Test
-    public void shouldPFailValidationForTooLongComment() {
+    void shouldPFailValidationForTooLongComment() {
         DefendantTimeline timeline = new DefendantTimeline(
             singletonList(TimelineEvent.builder().eventDate("Last Year")
                 .description("description").build()), repeat("a", 99001)

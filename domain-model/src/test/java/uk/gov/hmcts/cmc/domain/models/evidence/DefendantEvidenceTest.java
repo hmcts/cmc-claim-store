@@ -34,7 +34,7 @@ class DefendantEvidenceTest {
     }
 
     @Test
-    public void shouldPassValidationForMaxAllowedRows() {
+    void shouldPassValidationForMaxAllowedRows() {
         DefendantEvidence defendantEvidence = new DefendantEvidence(asList(new EvidenceRow[20]), "comments");
 
         Set<String> response = validate(defendantEvidence);
@@ -44,7 +44,7 @@ class DefendantEvidenceTest {
     }
 
     @Test
-    public void shouldFailValidationForRowsLimitExceeds() {
+    void shouldFailValidationForRowsLimitExceeds() {
         DefendantEvidence defendantEvidence = new DefendantEvidence(asList(new EvidenceRow[1001]), "comments");
 
         Set<String> response = validate(defendantEvidence);
@@ -55,7 +55,7 @@ class DefendantEvidenceTest {
     }
 
     @Test
-    public void shouldPFailValidationForTooLongComment() {
+    void shouldPFailValidationForTooLongComment() {
         DefendantEvidence defendantEvidence = new DefendantEvidence(
             singletonList(EvidenceRow.builder().type(EXPERT_WITNESS).description("description").build()),
             repeat("a", 99001)

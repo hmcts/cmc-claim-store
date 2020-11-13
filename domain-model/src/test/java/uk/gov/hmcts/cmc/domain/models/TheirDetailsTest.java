@@ -18,7 +18,7 @@ import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 @ExtendWith(MockitoExtension.class)
 class TheirDetailsTest {
     @Test
-    public void shouldBeInvalidWhenGivenNullAddress() {
+    void shouldBeInvalidWhenGivenNullAddress() {
         TheirDetails theirDetails = SampleTheirDetails.builder()
             .withAddress(null)
             .partyDetails();
@@ -31,7 +31,7 @@ class TheirDetailsTest {
     }
 
     @Test
-    public void shouldBeInvalidWhenGivenInvalidAddress() {
+    void shouldBeInvalidWhenGivenInvalidAddress() {
         TheirDetails theirDetails = SampleTheirDetails.builder()
             .withAddress(SampleAddress.builder()
                 .postcode("")
@@ -46,7 +46,7 @@ class TheirDetailsTest {
     }
 
     @Test
-    public void shouldBeValidWhenGivenNullEmail() {
+    void shouldBeValidWhenGivenNullEmail() {
         TheirDetails theirDetails = SampleTheirDetails.builder()
             .withEmail(null)
             .partyDetails();
@@ -57,7 +57,7 @@ class TheirDetailsTest {
     }
 
     @Test
-    public void shouldBeValidWhenGivenValidEmail() {
+    void shouldBeValidWhenGivenValidEmail() {
         TheirDetails theirDetails = SampleTheirDetails.builder()
             .withEmail("user@example.com")
             .partyDetails();
@@ -84,7 +84,7 @@ class TheirDetailsTest {
     }
 
     @Test
-    public void shouldBeValidWhenGivenNullServiceAddress() {
+    void shouldBeValidWhenGivenNullServiceAddress() {
         TheirDetails theirDetails = SampleTheirDetails.builder()
             .withServiceAddress(null)
             .partyDetails();
@@ -95,7 +95,7 @@ class TheirDetailsTest {
     }
 
     @Test
-    public void shouldBeInvalidWhenGivenInvalidServiceAddress() {
+    void shouldBeInvalidWhenGivenInvalidServiceAddress() {
         TheirDetails theirDetails = SampleTheirDetails.builder()
             .withServiceAddress(SampleAddress.builder()
                 .postcode("")
