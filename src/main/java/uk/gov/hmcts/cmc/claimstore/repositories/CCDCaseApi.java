@@ -147,7 +147,7 @@ public class CCDCaseApi {
             return;
         }
         User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
-        if (!letterholderId.isBlank() && letterHolderIds.contains(letterholderId)) {
+        if (letterholderId != null && !letterholderId.isEmpty() && letterHolderIds.contains(letterholderId)) {
             List<String> ccdCaseIds = caseAccessApi.findCaseIdsGivenUserIdHasAccessTo(
                 anonymousCaseWorker.getAuthorisation(),
                 authTokenGenerator.generate(),
