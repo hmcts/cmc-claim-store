@@ -146,9 +146,8 @@ public class CCDCaseApi {
         if (letterHolderIds.isEmpty()) {
             return;
         }
-
-        if (letterHolderIds.contains(letterholderId)) {
-            User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
+        User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
+        if (!letterholderId.isBlank() && letterHolderIds.contains(letterholderId)) {
             List<String> ccdCaseIds = caseAccessApi.findCaseIdsGivenUserIdHasAccessTo(
                 anonymousCaseWorker.getAuthorisation(),
                 authTokenGenerator.generate(),
@@ -158,6 +157,16 @@ public class CCDCaseApi {
                 letterholderId
             );
             ccdCaseIds.forEach(ccdCaseId -> linkToCase(defendantUser, anonymousCaseWorker, letterholderId, ccdCaseId));
+        } else {
+            letterHolderIds
+                .forEach(letterHolderId -> caseAccessApi.findCaseIdsGivenUserIdHasAccessTo(
+                    anonymousCaseWorker.getAuthorisation(),
+                    authTokenGenerator.generate(),
+                    anonymousCaseWorker.getUserDetails().getId(),
+                    JURISDICTION_ID,
+                    CASE_TYPE_ID,
+                    letterHolderId
+                ).forEach(caseId -> linkToCase(defendantUser, anonymousCaseWorker, letterHolderId, caseId)));
         }
     }
 

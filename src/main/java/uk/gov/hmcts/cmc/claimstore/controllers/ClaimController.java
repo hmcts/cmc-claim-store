@@ -148,7 +148,7 @@ public class ClaimController {
     @PutMapping("/defendant/link")
     @ApiOperation("Links defendant to all unlinked letter-holder cases")
     public void linkDefendantToClaim(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
-                                     @RequestHeader(value = "LetterHolderID", required = true) String letterholderId) {
+                                     @RequestHeader(value = "LetterHolderID", required = false) String letterholderId) {
         claimService.linkDefendantToClaim(authorisation, letterholderId);
     }
 
