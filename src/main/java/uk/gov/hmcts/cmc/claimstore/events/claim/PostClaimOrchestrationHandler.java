@@ -99,10 +99,8 @@ public class PostClaimOrchestrationHandler {
     @LogExecutionTime
     @EventListener
     public void citizenIssueHandler(CitizenClaimCreatedEvent event) {
-
-        final Claim claim = event.getClaim();
-
         try {
+            Claim claim = event.getClaim();
             String authorisation = event.getAuthorisation();
 
             UnaryOperator<Claim> doPinOperation = c -> generatePinOperation.perform(c, event);
@@ -159,7 +157,8 @@ public class PostClaimOrchestrationHandler {
                 );
             }
         } catch (Exception e) {
-            logger.error("Failed operation processing for event {}", event, e);
+            logger.error("Failed operation processing for claim reference {} with exception {}",
+                event.getClaim().getId(), e.getMessage());
         }
     }
 }

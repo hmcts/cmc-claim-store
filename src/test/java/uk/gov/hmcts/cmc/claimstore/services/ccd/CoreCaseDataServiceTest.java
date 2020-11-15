@@ -733,7 +733,7 @@ public class CoreCaseDataServiceTest {
     }
 
     @Test
-    public void updateupdateCardPaymentForClaim() {
+    public void updateCardPaymentForClaim() {
 
         Claim providedClaim = SampleClaim.getDefault();
         Claim expectedClaim = SampleClaim.claim(providedClaim.getClaimData(), "000MC001");

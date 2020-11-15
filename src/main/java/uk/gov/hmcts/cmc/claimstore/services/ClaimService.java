@@ -443,8 +443,7 @@ public class ClaimService {
             .submitterEmail(submitterEmail)
             .createdAt(LocalDateTimeFactory.nowInUTC())
             .features(features)
-            .claimSubmissionOperationIndicators(
-                ClaimSubmissionOperationIndicators.builder().build())
+            .claimSubmissionOperationIndicators(ClaimSubmissionOperationIndicators.builder().build())
             .build();
     }
 
