@@ -20,6 +20,7 @@ import uk.gov.hmcts.cmc.domain.models.PaymentUpdate;
 import uk.gov.hmcts.cmc.domain.models.paymentresponse.UpdatePaymentResponse;
 import uk.gov.hmcts.reform.authorisation.exceptions.InvalidTokenException;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -60,9 +61,9 @@ public class PaymentController {
         logger.info("Called s2s service");
         try {
             logger.info("Payment Update - {}", paymentUpdate.toString());
-            String serviceName = "payment_app"; //authTokenValidator.getServiceName("Bearer " + serviceToken);
+            String serviceName = authTokenValidator.getServiceName("Bearer " + serviceToken);
             if ("payment_app".contains(serviceName)) {
-                logger.info("token validated {}", serviceToken);
+                logger.info("Service Token Validated Successfully");
                 claimService.updateCardPayment(paymentUpdate);
                 return ResponseEntity.ok().build();
             } else {
@@ -70,12 +71,10 @@ public class PaymentController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
         } catch (InvalidTokenException e) {
-            e.printStackTrace();
             logger.error(e.getMessage());
             logger.info("Provided S2S token is missing or invalid");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
-            e.printStackTrace();
             logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

@@ -481,8 +481,6 @@ public class ClaimService {
                 );
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            e.printStackTrace();
             throw e;
         }
         return returnClaim[0];
