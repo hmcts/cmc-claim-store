@@ -123,8 +123,6 @@ public class CreateCitizenClaimCallbackHandlerTest {
 
     @Test
     public void shouldSuccessfullyReturnCallBackResponseWhenSuccessfulPayment() {
-        when(paymentsService.retrievePayment(eq(BEARER_TOKEN), any(ClaimData.class)))
-            .thenReturn(Optional.of(paymentBuilder.status(SUCCESS).build()));
 
         Claim claim = SampleClaim.getDefault().toBuilder()
             .referenceNumber(referenceNumberRepository.getReferenceNumberForCitizen())
@@ -151,28 +149,6 @@ public class CreateCitizenClaimCallbackHandlerTest {
         assertThat(toBeSaved.getServiceDate()).isEqualTo(ISSUE_DATE.plusDays(5));
         assertThat(toBeSaved.getReferenceNumber()).isEqualTo(REFERENCE_NO);
         assertThat(toBeSaved.getResponseDeadline()).isEqualTo(RESPONSE_DEADLINE);
-    }
-
-    @Test
-    public void shouldSuccessfullyReturnCallBackResponseWhenUnSuccessfulPayment() {
-        when(paymentsService.retrievePayment(eq(BEARER_TOKEN), any(ClaimData.class)))
-            .thenReturn(Optional.of(paymentBuilder.status(FAILED).build()));
-
-        Claim claim = SampleClaim.withFullClaimDataAndFailedPayment();
-
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
-            .thenReturn(claim);
-
-        callbackParams = CallbackParams.builder()
-            .type(CallbackType.ABOUT_TO_SUBMIT)
-            .request(callbackRequest)
-            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
-            createCitizenClaimCallbackHandler.handle(callbackParams);
-
-        assertThat(response.getErrors()).containsOnly("Payment not successful");
     }
 
     @Test
@@ -204,34 +180,6 @@ public class CreateCitizenClaimCallbackHandlerTest {
 
         Claim toBeSaved = claimArgumentCaptor.getValue();
         assertThat(toBeSaved.getClaimData()).isEqualTo(claim.getClaimData());
-    }
-
-    @Test
-    public void shouldThrowExceptionIfMissingPayment() {
-        when(paymentsService.retrievePayment(eq(BEARER_TOKEN), any(ClaimData.class)))
-            .thenReturn(Optional.empty());
-
-        Claim claim = SampleClaim.getDefault().toBuilder()
-            .claimData(withFullClaimData().getClaimData().toBuilder().payment(null).build())
-            .build();
-
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
-            .thenReturn(claim);
-
-        callbackParams = CallbackParams.builder()
-            .type(CallbackType.ABOUT_TO_SUBMIT)
-            .request(callbackRequest)
-            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
-            .build();
-
-        assertThatThrownBy(() -> createCitizenClaimCallbackHandler.handle(callbackParams))
-            .isInstanceOf(IllegalStateException.class)
-            .hasMessage(format("Claim with external id %s has no payment record", claim.getExternalId()));
-
-        verify(eventProducer, never()).createClaimCreatedEvent(
-            any(Claim.class),
-            anyString(),
-            anyString());
     }
 
     @Test
