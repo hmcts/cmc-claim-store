@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
+import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
@@ -230,7 +231,7 @@ public class CCJStaffNotificationServiceTest extends BaseMockSpringTest {
                 .ccjType(DEFAULT)
                 .build())
             .withClaimData(SampleClaimData.submittedByClaimant())
-            .withReDetermination(ReDetermination.builder().explanation(explanation).build())
+            .withReDetermination(ReDetermination.builder().explanation(explanation).partyType(MadeBy.CLAIMANT).build())
             .build();
 
         service.notifyStaffCCJReDeterminationRequest(claim, "Michael George");
