@@ -1,7 +1,6 @@
 
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,10 +23,12 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.PART_REMISSION_HWF_REJECTED;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
 @Service
@@ -37,7 +38,8 @@ public class HWFFullRemissionCallbackHandler extends CallbackHandler {
 
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
 
-    private static final List<CaseEvent> EVENTS = ImmutableList.of(CaseEvent.FULL_REMISSION_HWF_REJECTED);
+    private static final List<CaseEvent> EVENTS = Arrays.asList(CaseEvent.FULL_REMISSION_HWF_REJECTED,
+        PART_REMISSION_HWF_REJECTED);
 
     private final CaseDetailsConverter caseDetailsConverter;
 
