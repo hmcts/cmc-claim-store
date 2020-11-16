@@ -6,11 +6,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.PaymentUpdate;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.reform.authorisation.exceptions.InvalidTokenException;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 
 import java.math.BigDecimal;
@@ -31,7 +34,7 @@ import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.NOW_IN_LOCAL_ZONE;
 @RunWith(MockitoJUnitRunner.class)
 public class PaymentControllerTest {
 
-    private static final String AUTHORISATION = "Bearer: aaa";
+    private static final String AUTHORISATION = "aaa";
     private static final List<String> FEATURES = singletonList(ADMISSIONS.getValue());
 
     private PaymentController paymentController;
@@ -69,12 +72,46 @@ public class PaymentControllerTest {
 
     @Test
     public void updateCardPayment() {
-        when(authTokenValidator.getServiceName(AUTHORISATION)).thenReturn("fees_and_payments");
-        when(claimService.updateCardPayment(AUTHORISATION, paymentUpdate)).thenReturn(claim);
+        when(authTokenValidator.getServiceName("Bearer " + AUTHORISATION)).thenReturn("payment_app");
+        when(claimService.updateCardPayment(paymentUpdate)).thenReturn(claim);
 
         paymentController.updateCardPayment(AUTHORISATION, paymentUpdate);
 
         //then
         Assert.assertNotNull(claim);
+    }
+
+    @Test
+    public void updateCardPaymentInvalidServiceNameReturned() {
+        when(authTokenValidator.getServiceName("Bearer " + AUTHORISATION)).thenReturn("not_payment_app");
+        ResponseEntity responseEntity = paymentController.updateCardPayment(AUTHORISATION, paymentUpdate);
+
+        //then
+        Assert.assertEquals(HttpStatus.FORBIDDEN.value(), responseEntity.getStatusCode().value());
+
+        Assert.assertNotNull(responseEntity.getStatusCode());
+    }
+
+    @Test
+    public void updateCardPaymentThrowingInternalServerError() {
+        when(authTokenValidator.getServiceName("Bearer " + AUTHORISATION)).thenThrow(new RuntimeException());
+        ResponseEntity responseEntity = paymentController.updateCardPayment(AUTHORISATION, paymentUpdate);
+
+        //then
+        Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), responseEntity.getStatusCode().value());
+
+        Assert.assertNotNull(responseEntity.getStatusCode());
+    }
+
+    @Test
+    public void updateCardPaymentInvalidToken() {
+        when(authTokenValidator.getServiceName("Bearer " + AUTHORISATION))
+            .thenThrow(new InvalidTokenException("Invalid Token"));
+        ResponseEntity responseEntity = paymentController.updateCardPayment(AUTHORISATION, paymentUpdate);
+
+        //then
+        Assert.assertEquals(HttpStatus.UNAUTHORIZED.value(), responseEntity.getStatusCode().value());
+
+        Assert.assertNotNull(responseEntity.getStatusCode());
     }
 }

@@ -443,41 +443,45 @@ public class ClaimService {
             .submitterEmail(submitterEmail)
             .createdAt(LocalDateTimeFactory.nowInUTC())
             .features(features)
-            .claimSubmissionOperationIndicators(
-                ClaimSubmissionOperationIndicators.builder().build())
+            .claimSubmissionOperationIndicators(ClaimSubmissionOperationIndicators.builder().build())
             .build();
     }
 
     @LogExecutionTime
-    public Claim updateCardPayment(String authorisation, PaymentUpdate paymentUpdate) {
+    public Claim updateCardPayment(PaymentUpdate paymentUpdate) {
         final Claim[] returnClaim = {null};
-        if (paymentUpdate.getStatus().equalsIgnoreCase(SUCCESS.name())) {
-            List<Claim> claimRetreived = caseRepository.getByPaymentReference(
-                paymentUpdate.getReference(), authorisation);
-            claimRetreived.forEach(claim -> {
-                    Optional<Payment> paymentRetreived = claim.getClaimData().getPayment();
-                    paymentRetreived.ifPresent(payment -> {
-                        if (payment.getStatus().equals(PaymentStatus.PENDING)) {
-                            Payment paymentBuild = payment.toBuilder()
-                                .amount(paymentUpdate.getAmount())
-                                .reference(paymentUpdate.getReference())
-                                .status(SUCCESS)
-                                .feeId("" + paymentUpdate.getFees().getId())
-                                .build();
+        try {
+            User user = userService.authenticateAnonymousCaseWorker();
+            String authorisation = user.getAuthorisation();
+            if (paymentUpdate.getStatus().equalsIgnoreCase(SUCCESS.name())) {
+                List<Claim> claimRetreived = caseRepository.getByPaymentReference(
+                    paymentUpdate.getReference(), authorisation);
+                claimRetreived.forEach(claim -> {
+                        Optional<Payment> paymentRetreived = claim.getClaimData().getPayment();
+                        paymentRetreived.ifPresent(payment -> {
+                            if (!payment.getStatus().equals(SUCCESS)) {
+                                Payment paymentBuild = payment.toBuilder()
+                                    .amount(paymentUpdate.getAmount())
+                                    .reference(paymentUpdate.getReference())
+                                    .status(SUCCESS)
+                                    .feeId("" + paymentUpdate.getFees().get(0).getId())
+                                    .build();
 
-                            ClaimData claimData = claim.getClaimData().toBuilder()
-                                .payment(paymentBuild)
-                                .build();
+                                ClaimData claimData = claim.getClaimData().toBuilder()
+                                    .payment(paymentBuild)
+                                    .build();
 
-                            Claim updatedClaim = claim.toBuilder()
-                                .claimData(claimData)
-                                .build();
-                            User user = userService.getUser(authorisation);
-                            returnClaim[0] = caseRepository.updateCardPaymentForClaim(user, updatedClaim);
-                        }
-                    });
-                }
-            );
+                                Claim updatedClaim = claim.toBuilder()
+                                    .claimData(claimData)
+                                    .build();
+                                returnClaim[0] = caseRepository.updateCardPaymentForClaim(user, updatedClaim);
+                            }
+                        });
+                    }
+                );
+            }
+        } catch (Exception e) {
+            throw e;
         }
         return returnClaim[0];
     }

@@ -73,6 +73,30 @@ public class PaymentsService {
         Claim claim
     ) {
 
+        logger.info("Creating payment in pay hub for claim with external id {}",
+            claim.getExternalId());
+        Payment claimPayment = claim.getClaimData().getPayment().orElseThrow(IllegalStateException::new);
+        logger.info("Return URL: {}", claimPayment.getReturnUrl());
+        logger.info("Return URL: {}", claimPayment.getReturnUrl().contains("test"));
+        String serviceCallBackUrl = null;
+
+        if (claimPayment.getReturnUrl().contains("test")
+            || claimPayment.getReturnUrl().contains("localhost")) {
+            serviceCallBackUrl = claimPayment.getReturnUrl()
+                + "/payment/payment-update";
+        } else {
+            String env = claimPayment.getReturnUrl().substring(claimPayment.getReturnUrl()
+                .indexOf(".") + 1, claimPayment.getReturnUrl().lastIndexOf(".platform."));
+            serviceCallBackUrl = "http://cmc-claim-store-"
+                + env
+                + ".service.core-compute-"
+                + env
+                + ".internal"
+                + "/payment/payment-update";
+        }
+
+        logger.info("Service Callback URL: {}", serviceCallBackUrl);
+
         logger.info("Calculating interest amount for claim with external id {}", claim.getExternalId());
 
         BigDecimal amount = claim.getTotalClaimAmount()
@@ -92,17 +116,11 @@ public class PaymentsService {
             claim,
             feeOutcome
         );
-
-        logger.info("Creating payment in pay hub for claim with external id {}",
-            claim.getExternalId());
-        Payment claimPayment = claim.getClaimData().getPayment().orElseThrow(IllegalStateException::new);
-        logger.info("Return URL: {}", claimPayment.getReturnUrl());
         PaymentDto payment = paymentsClient.createCardPayment(
             authorisation,
             paymentRequest,
             claimPayment.getReturnUrl(),
-            claimPayment.getReturnUrl().substring(0, claimPayment.getReturnUrl().indexOf("/claim"))
-                + "/payment/update-card-payment"
+            serviceCallBackUrl
         );
         logger.info("Created payment for claim with external id {}: {}", claim.getExternalId(), payment);
 

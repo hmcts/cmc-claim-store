@@ -156,7 +156,7 @@ public class ClaimServiceTest {
             .status(PaymentStatus.SUCCESS.name())
             .reference("Ref")
             .ccdCaseNumber("CCD-111")
-            .fees(fees)
+            .fees(List.of(fees))
             .build();
     }
 
@@ -695,9 +695,9 @@ public class ClaimServiceTest {
             .build();
         when(caseRepository.getByPaymentReference(paymentUpdate.getReference(), AUTHORISATION))
             .thenReturn(List.of(claim1));
-        when(userService.getUser(AUTHORISATION)).thenReturn(USER);
+        when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
         when(caseRepository.updateCardPaymentForClaim(any(), any(Claim.class))).thenReturn(claim1);
-        Claim updatedClaim = claimService.updateCardPayment(AUTHORISATION, paymentUpdate);
+        Claim updatedClaim = claimService.updateCardPayment(paymentUpdate);
         assertNotNull(updatedClaim);
     }
 

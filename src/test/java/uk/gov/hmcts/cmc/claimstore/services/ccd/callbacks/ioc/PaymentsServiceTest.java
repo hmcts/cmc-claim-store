@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -25,8 +26,6 @@ import java.time.OffsetDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SamplePayment.PAYMENT_REFERENCE;
 
@@ -34,7 +33,6 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SamplePayment.PAYMENT_RE
 public class PaymentsServiceTest {
     private static final String BEARER_TOKEN = "Bearer let me in";
     private static final String RETURN_URL = "http://returnUrl.test";
-    private static final String SERVICE_CALLBACK_URL = "http://serviceCallbackUrl.test";
     private static final String SERVICE = "CMC";
     private static final String SITE_ID = "siteId";
     private static final String CURRENCY = "currency";
@@ -73,7 +71,6 @@ public class PaymentsServiceTest {
             DESCRIPTION
         );
         claim = SampleClaim.getDefault();
-
     }
 
     @Test
@@ -230,7 +227,8 @@ public class PaymentsServiceTest {
 
     @Test(expected = IllegalStateException.class)
     public void shouldBubbleUpExceptionIfFeeLookupFails() {
-        when(feesClient.lookupFee(eq("online"), eq("issue"), any(BigDecimal.class)))
+        when(feesClient.lookupFee(ArgumentMatchers.eq("online"),
+            ArgumentMatchers.eq("issue"), ArgumentMatchers.any(BigDecimal.class)))
             .thenThrow(IllegalStateException.class);
 
         paymentsService.createPayment(
