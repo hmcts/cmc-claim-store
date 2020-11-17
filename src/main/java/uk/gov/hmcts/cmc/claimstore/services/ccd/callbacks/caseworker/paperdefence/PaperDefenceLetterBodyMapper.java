@@ -108,7 +108,8 @@ public class PaperDefenceLetterBodyMapper {
             .partyName(partyName)
             .partyAddress(defendantAddress)
             .claimantName(applicant.getPartyName())
-            .claimantPhone(applicant.getPartyDetail().getTelephoneNumber().getTelephoneNumber())
+            .claimantPhone(applicant.getPartyDetail().getTelephoneNumber() != null ?
+                applicant.getPartyDetail().getTelephoneNumber().getTelephoneNumber(): null)
             .claimantEmail(applicant.getPartyDetail().getEmailAddress())
             .claimantAddress(claimantAddress)
             .build();
