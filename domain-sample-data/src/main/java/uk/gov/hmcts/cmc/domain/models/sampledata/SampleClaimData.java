@@ -282,6 +282,7 @@ public class SampleClaimData {
                 .individualDetails())
             .withTimeline(SampleTimeline.validDefaults())
             .withHwfMandatoryDetails(null)
+            .withFeeRemitted(null)
             .withEvidence(SampleEvidence.validDefaults());
     }
 

@@ -104,7 +104,8 @@ public enum CaseEvent {
     FULL_REMISSION_HWF_REJECTED("FullRemissionHWFRejected"),
     HWF_PART_REMISSION_GRANTED("HWFPartRemission"),
     MISC_HWF("MiscHWF"),
-    CLOSE_AWAITING_RESPONSE_HWF("CloseAwaitingResponseHWF");
+    CLOSE_AWAITING_RESPONSE_HWF("CloseAwaitingResponseHWF"),
+    HWF_FULL_REMISSION_GRANTED("HWFFullRemision");
 
     private final String value;
 
