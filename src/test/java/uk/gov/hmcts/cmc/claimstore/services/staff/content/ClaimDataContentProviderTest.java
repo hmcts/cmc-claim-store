@@ -116,6 +116,16 @@ public class ClaimDataContentProviderTest {
         assertThat(claimContent.getStatementOfTruth().getSignerRole()).containsSequence("Director");
     }
 
+    @Test
+    public void shouldReturnNoInterestWhenIssuedDateMissing() {
+        Claim claim = SampleClaim.builder()
+            .withIssuedOn(null)
+            .build();
+        ClaimContent claimContent = provider.createContent(claim);
+        assertThat(claimContent.getIssuedOn()).isEmpty();
+        assertThat(claimContent.getInterest()).isNull();
+    }
+
     private void testReason(String inputReason, String... expectations) {
         Claim claim = SampleClaim.builder()
             .withClaimData(SampleClaimData.builder().withReason(inputReason).build())

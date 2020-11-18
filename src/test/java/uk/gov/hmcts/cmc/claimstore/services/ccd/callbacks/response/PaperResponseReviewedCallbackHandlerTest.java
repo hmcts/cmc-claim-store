@@ -26,6 +26,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.ScannedDocument;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -35,11 +36,17 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocument.builder;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.PAPER_RESPONSE_PART_ADMIT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.PAPER_RESPONSE_STATES_PAID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.SUBMITTER_EMAIL;
 
@@ -63,6 +70,8 @@ class PaperResponseReviewedCallbackHandlerTest {
     private EmailTemplates emailTemplates;
     @Mock
     private NotificationTemplates notificationTemplates;
+    @Mock
+    LaunchDarklyClient launchDarklyClient;
 
     private final CaseDetails detailsBeforeEvent = CaseDetails.builder().id(1L).build();
     private final CaseDetails detailsAfterEvent = CaseDetails.builder().id(2L).build();
@@ -87,7 +96,8 @@ class PaperResponseReviewedCallbackHandlerTest {
             responseDeadlineCalculator,
             moreTimeRequestRule,
             notificationService,
-            notificationsProperties);
+            notificationsProperties,
+            launchDarklyClient);
         callbackRequest = CallbackRequest.builder()
             .eventId(CaseEvent.MORE_TIME_REQUESTED_PAPER.getValue())
             .caseDetails(CaseDetails.builder()
@@ -97,27 +107,38 @@ class PaperResponseReviewedCallbackHandlerTest {
     }
 
     @Test
-    @DisplayName("should include an error when already responded online")
+    @DisplayName("should include error when already responded online if LD enabled for restrict-review-paper-response")
     void eventNotPossibleWhenRespondedOnline() {
+        when(launchDarklyClient.isFeatureEnabled("restrict-review-paper-response")).thenReturn(true);
         claim = SampleClaim.getWithDefaultResponse();
-        when(caseDetailsConverter.extractClaim(any())).thenReturn(claim);
-
-        CallbackParams callbackParams = CallbackParams.builder()
-            .type(CallbackType.ABOUT_TO_START)
-            .request(callbackRequest)
-            .build();
-
-        var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
-        assertThat(response.getErrors()).contains(ALREADY_RESPONDED_ERROR);
+        checkEventAllowed(claim, true);
     }
 
     @Test
-    @DisplayName("should include an error when already responded offline")
+    @DisplayName("should include error when already responded offline if LD enabled for restrict-review-paper-response")
     void eventNotPossibleWhenRespondedOffline() {
-        claim = SampleClaim.withFullClaimData().toBuilder()
-            .respondedAt(LocalDateTime.now()).build();
+        when(launchDarklyClient.isFeatureEnabled("restrict-review-paper-response")).thenReturn(true);
+        claim = SampleClaim.withFullClaimData().toBuilder().respondedAt(LocalDateTime.now()).build();
+        checkEventAllowed(claim, true);
+    }
 
-        when(caseDetailsConverter.extractClaim(any())).thenReturn(claim);
+    @Test
+    @DisplayName("should include error when already responded online if LD enabled for restrict-review-paper-response")
+    void eventPossibleWhenRespondedOnlineIfNotRestricted() {
+        claim = SampleClaim.getWithDefaultResponse();
+        checkEventAllowed(claim, false);
+    }
+
+    @Test
+    @DisplayName("should include error when already responded offline if LD enabled for restrict-review-paper-response")
+    void eventPossibleWhenRespondedOfflineIfNotRestricted() {
+        claim = SampleClaim.withFullClaimData().toBuilder().respondedAt(LocalDateTime.now()).build();
+        checkEventAllowed(claim, false);
+    }
+
+    private void checkEventAllowed(Claim claim, boolean errorExpected) {
+
+        when(caseDetailsConverter.extractClaim(any())).thenReturn(this.claim);
 
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_START)
@@ -125,7 +146,8 @@ class PaperResponseReviewedCallbackHandlerTest {
             .build();
 
         var response = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
-        assertThat(response.getErrors()).contains(ALREADY_RESPONDED_ERROR);
+        assertEquals(errorExpected, response.getErrors() != null
+            && response.getErrors().contains(ALREADY_RESPONDED_ERROR));
     }
 
     @Nested
@@ -144,11 +166,11 @@ class PaperResponseReviewedCallbackHandlerTest {
         @DisplayName("fails when duplicate more time request comes through")
         void failsWhenDuplicateMoreTimeRequestedComesThrough() {
             documentCollection.addStaffUploadedDocument(
-                ClaimDocument.builder().documentType(ClaimDocumentType.PAPER_RESPONSE_MORE_TIME).build());
+                builder().documentType(ClaimDocumentType.PAPER_RESPONSE_MORE_TIME).build());
 
             documentCollectionAfter.addScannedDocument(ScannedDocument.builder().subtype("N9").build());
             documentCollectionAfter.addStaffUploadedDocument(
-                ClaimDocument.builder().documentType(ClaimDocumentType.PAPER_RESPONSE_MORE_TIME).build());
+                builder().documentType(ClaimDocumentType.PAPER_RESPONSE_MORE_TIME).build());
 
             claim = SampleClaim.withFullClaimData().toBuilder()
                 .claimDocumentCollection(documentCollection)
@@ -183,7 +205,7 @@ class PaperResponseReviewedCallbackHandlerTest {
 
             documentCollectionAfter.addScannedDocument(ScannedDocument.builder().subtype("N9").build());
             documentCollectionAfter.addStaffUploadedDocument(
-                ClaimDocument.builder().documentType(ClaimDocumentType.PAPER_RESPONSE_MORE_TIME).build());
+                builder().documentType(ClaimDocumentType.PAPER_RESPONSE_MORE_TIME).build());
 
             claim = SampleClaim.withFullClaimData().toBuilder().claimDocumentCollection(documentCollection).build();
             Claim claimAfterEvent = SampleClaim.withFullClaimData().toBuilder()
@@ -209,19 +231,46 @@ class PaperResponseReviewedCallbackHandlerTest {
         }
 
         @Test
-        @DisplayName("more time request is handled by scanned document upload")
-        void verifyMoreTimeRequestedIsHandledByScannedDocumentUpload() {
+        @DisplayName("more time request is handled by scanned document upload and email is sent")
+        void verifyMoreTimeRequestedIsHandledByScannedDocumentUploadAndEmailIsSentForN9Form() {
             when(notificationsProperties.getFrontendBaseUrl()).thenReturn("http://frontend.url");
             when(notificationsProperties.getTemplates()).thenReturn(notificationTemplates);
             when(notificationTemplates.getEmail()).thenReturn(emailTemplates);
             when(emailTemplates.getClaimantPaperResponseReceived()).thenReturn("TEMPLATE");
 
-            documentCollection.addStaffUploadedDocument(
-                ClaimDocument.builder().documentType(ClaimDocumentType.PAPER_RESPONSE_STATES_PAID).build());
+            verifyMoreTimeRequestedIsHandledByScannedDocumentUpload("N9", 1);
 
-            documentCollectionAfter.addScannedDocument(ScannedDocument.builder().subtype("N9").build());
-            documentCollectionAfter.addStaffUploadedDocument(
-                ClaimDocument.builder().documentType(ClaimDocumentType.PAPER_RESPONSE_STATES_PAID).build());
+            assertThat(claimArgumentCaptor.getValue().isMoreTimeRequested())
+                .isTrue();
+            assertThat(claimArgumentCaptor.getValue().getResponseDeadline())
+                .isEqualTo(LocalDate.now().plusDays(7));
+        }
+
+        @Test
+        @DisplayName("email is sent on mediation agreement docuemnt upload by staff")
+        void verifyEmailIsSentWhenMediationAgreementIsUploaded() {
+            when(notificationsProperties.getFrontendBaseUrl()).thenReturn("http://frontend.url");
+            when(notificationsProperties.getTemplates()).thenReturn(notificationTemplates);
+            when(notificationTemplates.getEmail()).thenReturn(emailTemplates);
+            when(emailTemplates.getClaimantPaperResponseReceived()).thenReturn("TEMPLATE");
+
+            documentCollectionAfter.addStaffUploadedDocument(builder().documentType(PAPER_RESPONSE_PART_ADMIT).build());
+
+            verifyMoreTimeRequestedIsHandledByScannedDocumentUpload("N225", 1);
+        }
+
+        @Test
+        @DisplayName("verify that email is not sent for documents other than N9, N9a, N911")
+        void verifyMoreTimeRequestedIsHandledByScannedDocumentUploadAndEmailIsNotSentForN225Form() {
+            verifyMoreTimeRequestedIsHandledByScannedDocumentUpload("N225", 0);
+        }
+
+        void verifyMoreTimeRequestedIsHandledByScannedDocumentUpload(String form, int timesEmailIsSent) {
+            ClaimDocument staffUploadedDoc = builder().documentType(PAPER_RESPONSE_STATES_PAID).build();
+            documentCollection.addStaffUploadedDocument(staffUploadedDoc);
+
+            documentCollectionAfter.addScannedDocument(ScannedDocument.builder().subtype(form).build());
+            documentCollectionAfter.addStaffUploadedDocument(staffUploadedDoc);
 
             claim = SampleClaim.withFullClaimData().toBuilder().claimDocumentCollection(documentCollection).build();
             Claim claimAfterEvent = SampleClaim.withFullClaimData().toBuilder()
@@ -230,7 +279,8 @@ class PaperResponseReviewedCallbackHandlerTest {
             when(caseDetailsConverter.extractClaim(detailsAfterEvent)).thenReturn(claimAfterEvent);
             when(caseDetailsConverter.extractClaim(detailsBeforeEvent)).thenReturn(claim);
             LocalDate newResponseDeadline = LocalDate.now().plusDays(7);
-            when(responseDeadlineCalculator.calculatePostponedResponseDeadline(claimAfterEvent.getIssuedOn()))
+            lenient().when(responseDeadlineCalculator
+                .calculatePostponedResponseDeadline(claimAfterEvent.getIssuedOn().get()))
                 .thenReturn(newResponseDeadline);
 
             callbackRequest = CallbackRequest.builder()
@@ -247,26 +297,28 @@ class PaperResponseReviewedCallbackHandlerTest {
             handler.handle(callbackParams);
 
             verify(caseMapper).to(claimArgumentCaptor.capture());
-            assertThat(claimArgumentCaptor.getValue().isMoreTimeRequested())
-                .isTrue();
-            assertThat(claimArgumentCaptor.getValue().getResponseDeadline())
-                .isEqualTo(newResponseDeadline);
+            verify(notificationService, times(timesEmailIsSent))
+                .sendMail(
+                    eq(SUBMITTER_EMAIL),
+                    eq("TEMPLATE"),
+                    anyMap(),
+                    eq("paper-response-submitted-claimant-" + REFERENCE_NUMBER));
         }
 
         @Test
         @DisplayName("response by staff uploaded document is handled")
         void verifyResponseByStaffUploadedDocumentIsHandled() {
-            when(notificationsProperties.getFrontendBaseUrl()).thenReturn("http://frontend.url");
-            when(notificationsProperties.getTemplates()).thenReturn(notificationTemplates);
-            when(notificationTemplates.getEmail()).thenReturn(emailTemplates);
-            when(emailTemplates.getClaimantPaperResponseReceived()).thenReturn("TEMPLATE");
+            lenient().when(notificationsProperties.getFrontendBaseUrl()).thenReturn("http://frontend.url");
+            lenient().when(notificationsProperties.getTemplates()).thenReturn(notificationTemplates);
+            lenient().when(notificationTemplates.getEmail()).thenReturn(emailTemplates);
+            lenient().when(emailTemplates.getClaimantPaperResponseReceived()).thenReturn("TEMPLATE");
 
             documentCollection.addScannedDocument(ScannedDocument.builder().id("N9").subtype("N9").build());
             documentCollectionAfter.addScannedDocument(ScannedDocument.builder().id("N9").subtype("N9").build());
             final LocalDateTime docReceivedTime = LocalDateTime.now();
             documentCollectionAfter.addStaffUploadedDocument(
-                ClaimDocument.builder().id("SP")
-                    .documentType(ClaimDocumentType.PAPER_RESPONSE_STATES_PAID)
+                builder().id("SP")
+                    .documentType(PAPER_RESPONSE_STATES_PAID)
                     .receivedDateTime(docReceivedTime)
                     .build()
             );

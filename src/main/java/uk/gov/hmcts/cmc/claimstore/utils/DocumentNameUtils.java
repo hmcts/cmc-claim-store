@@ -16,6 +16,12 @@ public class DocumentNameUtils {
         return format("%s-claim-form", number);
     }
 
+    public static String buildDraftClaimFileBaseName(String number) {
+        requireNonBlank(number);
+
+        return format("draft-claim-%s", number);
+    }
+
     public static String buildClaimIssueReceiptFileBaseName(String number) {
         requireNonBlank(number);
 
@@ -157,4 +163,34 @@ public class DocumentNameUtils {
 
         return format("%s-notice-of-transfer-for-defendant", caseRef);
     }
+
+    public static String buildPaperDefenceCoverLetterFileBaseName(String caseRef) {
+        requireNonBlank(caseRef);
+
+        return format("%s-issue-paper-form", caseRef);
+    }
+
+    public static String buildOconFormFileBaseName(String caseRef) {
+        requireNonBlank(caseRef);
+
+        return format("%s-issue-OCON9x-form", caseRef);
+    }
+
+    public static String buildNoticeOfTransferToCcbcForDefendantFileName(String caseRef) {
+        return getFileName(caseRef, "defendant-case-handoff");
+    }
+
+    public static String buildLADirectionOrderFileName(String caseRef) {
+        return getFileName(caseRef, "Legal-Adviser-Directions-Order");
+    }
+
+    public static String buildJudgeDirectionOrderFileName(String caseRef) {
+        return getFileName(caseRef, "Judge-Directions-Order");
+    }
+
+    private static String getFileName(String caseRef, String fileNameSuffix) {
+        requireNonBlank(caseRef);
+        return format("%s-%s", caseRef, fileNameSuffix);
+    }
+
 }

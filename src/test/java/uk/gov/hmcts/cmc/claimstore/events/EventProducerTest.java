@@ -7,6 +7,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.context.ApplicationEventPublisher;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimIssuedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.claim.HwfClaimUpdatedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferAcceptedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferMadeEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantPaperResponseEvent;
@@ -68,6 +69,18 @@ public class EventProducerTest {
 
         //then
         verify(publisher).publishEvent(any(ClaimIssuedEvent.class));
+    }
+
+    @Test
+    public void shouldCreateHwfClaimUpdatedEvent() {
+        //given
+        when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(userDetails);
+
+        //when
+        eventProducer.createHwfClaimUpdatedEvent(CLAIM, userDetails.getFullName(), AUTHORISATION);
+
+        //then
+        verify(publisher).publishEvent(any(HwfClaimUpdatedEvent.class));
     }
 
     @Test
@@ -198,9 +211,9 @@ public class EventProducerTest {
         Document coverLetter = mock(Document.class);
         List<BulkPrintTransferEvent.PrintableDocument> caseDocuments = mock(List.class);
 
-        BulkPrintTransferEvent event = new BulkPrintTransferEvent(CLAIM, coverLetter, caseDocuments);
+        BulkPrintTransferEvent event = new BulkPrintTransferEvent(CLAIM, coverLetter, caseDocuments, AUTHORISATION);
 
-        eventProducer.createBulkPrintTransferEvent(CLAIM, coverLetter, caseDocuments);
+        eventProducer.createBulkPrintTransferEvent(CLAIM, coverLetter, caseDocuments, AUTHORISATION);
 
         verify(publisher).publishEvent(eq(event));
     }

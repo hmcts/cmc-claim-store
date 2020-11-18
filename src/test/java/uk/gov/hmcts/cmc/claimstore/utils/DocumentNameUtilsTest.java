@@ -7,7 +7,11 @@ import java.time.LocalDate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimantResponseFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDraftClaimFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildJudgeDirectionOrderFileName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildLADirectionOrderFileName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildLetterFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildNoticeOfTransferToCcbcForDefendantFileName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForInterlocutoryJudgmentFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForJudgmentByAdmissionOrDeterminationFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForReferToJudgeFileBaseName;
@@ -32,6 +36,12 @@ public class DocumentNameUtilsTest {
     public void shouldBuildSealedClaimFileBaseName() {
         assertThat(buildSealedClaimFileBaseName("000MC001"))
             .isEqualTo("000MC001-claim-form");
+    }
+
+    @Test
+    public void shouldBuildDraftClaimFileBaseName() {
+        assertThat(buildDraftClaimFileBaseName("externalId"))
+            .isEqualTo("draft-claim-externalId");
     }
 
     @Test(expected = NullPointerException.class)
@@ -120,8 +130,26 @@ public class DocumentNameUtilsTest {
     }
 
     @Test
+    public void shouldBuildNoticeOfTransferToCcbcForDefendantFileName() {
+        assertThat(buildNoticeOfTransferToCcbcForDefendantFileName("000MC001"))
+            .isEqualTo("000MC001-defendant-case-handoff");
+    }
+
+    @Test
     public void shouldBuildRequestOrgRepaymentFileBaseName() {
         assertThat(buildRequestOrgRepaymentFileBaseName("000MC001"))
             .isEqualTo("000MC001-request-org-repayment-amount");
     }
+
+    @Test
+    public void shouldBuildJudgeDirectionOrderFileName() {
+        assertThat(buildJudgeDirectionOrderFileName("000MC001")).isEqualTo("000MC001-Judge-Directions-Order");
+    }
+
+    @Test
+    public void shouldBuildLADirectionOrderFileName() {
+        assertThat(buildLADirectionOrderFileName("000MC001"))
+            .isEqualTo("000MC001-Legal-Adviser-Directions-Order");
+    }
+
 }

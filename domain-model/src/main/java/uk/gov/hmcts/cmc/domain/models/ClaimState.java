@@ -4,10 +4,13 @@ import java.util.Arrays;
 
 public enum ClaimState {
     CREATE("create"),
+    HWF_APPLICATION_PENDING("hwfApplicationPending"),
+    AWAITING_RESPONSE_HWF("awaitingResponseHWF"),
     OPEN("open"),
     CLOSED("closed"),
     SETTLED("settled"),
     SETTLEMENT_AGREEMENT_MADE("settlementAgreementMade"),
+    SETTLEMENT_AGREEMENT_SIGNED("settlementAgreementSigned"),
     READY_FOR_LEGAL_ADVISOR_DIRECTIONS("readyForDirections"),
     READY_FOR_JUDGE_DIRECTIONS("readyForJudgeDirections"),
     STAYED("stayed"),
@@ -24,7 +27,6 @@ public enum ClaimState {
     READY_FOR_PAPER_DQ("readyForPaperDQ"),
     JUDGMENT_DECIDE_AMOUNT("judgmentDecideAmount"),
     REDETERMINATION_REQUESTED("redeterminationRequested"),
-    HWF_APPLICATION_PENDING("hwfApplicationPending"),
     JUDGMENT_REQUESTED("judgmentRequested"),
     BUSINESS_QUEUE("businessQueue");
 

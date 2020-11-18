@@ -39,6 +39,7 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESPONSE_MORE_TIME;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
@@ -58,11 +59,10 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
     public static final String CALCULATED_RESPONSE_DEADLINE = "calculatedResponseDeadline";
     public static final String LETTER_NAME = "%s-response-deadline-extended.pdf";
-    private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
-    private static final List<CaseEvent> EVENTS = Collections.singletonList(RESPONSE_MORE_TIME);
     public static final String PREVIEW_SENTENCE = "The response deadline will be %s .";
     public static final String RESPONSE_DEADLINE_PREVIEW = "responseDeadlinePreview";
-
+    private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
+    private static final List<CaseEvent> EVENTS = Collections.singletonList(RESPONSE_MORE_TIME);
     private static final String ERROR_MESSAGE =
         "There was a technical problem. Nothing has been sent. You need to try again.";
 
@@ -128,10 +128,18 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
     }
 
     private AboutToStartOrSubmitCallbackResponse calculateResponseDeadline(CallbackParams callbackParams) {
+        LocalDate issuedOn = null;
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
-
-        LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
+        CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
+        Optional<LocalDate> issuedOnOptional = claim.getIssuedOn();
+        if (issuedOnOptional.isPresent()) {
+            issuedOn = issuedOnOptional.get();
+        }
+        LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(
+            respondent.getPaperFormIssueDate() != null ? respondent.getPaperFormIssueDate()
+                : issuedOn);
         List<String> validationResult = this.moreTimeRequestRule.validateMoreTimeCanBeRequested(claim, newDeadline);
         var builder = AboutToStartOrSubmitCallbackResponse.builder();
         if (!validationResult.isEmpty()) {

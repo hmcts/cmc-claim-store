@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimFeatures;
 import java.time.Clock;
 import java.time.LocalDate;
 
+import static java.time.LocalDate.now;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 
 @Component
@@ -30,7 +31,7 @@ public class NoticeOfTransferLetterTemplateMapper {
 
     public DocAssemblyTemplateBody noticeOfTransferLetterBodyForCourt(CCDCase ccdCase, String authorisation) {
 
-        LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
+        LocalDate currentDate = now(clock.withZone(UTC_ZONE));
         CCDTransferContent transferContent = ccdCase.getTransferContent();
 
         return DocAssemblyTemplateBody.builder()
@@ -46,12 +47,23 @@ public class NoticeOfTransferLetterTemplateMapper {
             .build();
     }
 
+    public DocAssemblyTemplateBody noticeOfTransferToCcbcLetterBodyForDefendant(CCDCase ccdCase, String authorisation) {
+        return DocAssemblyTemplateBody.builder()
+            .currentDate(now(clock.withZone(UTC_ZONE)))
+            .referenceNumber(ccdCase.getPreviousServiceCaseReference())
+            .caseworkerName(getCaseworkerName(authorisation))
+            .caseName(ccdCase.getCaseName())
+            .partyName(getDefendantName(ccdCase))
+            .partyAddress(getDefendantAddress(ccdCase))
+            .build();
+    }
+
     public DocAssemblyTemplateBody noticeOfTransferLetterBodyForDefendant(CCDCase ccdCase, String authorisation) {
 
         String partyName = getDefendantName(ccdCase);
         CCDAddress partyAddress = getDefendantAddress(ccdCase);
 
-        LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
+        LocalDate currentDate = now(clock.withZone(UTC_ZONE));
         CCDTransferContent transferContent = ccdCase.getTransferContent();
 
         return DocAssemblyTemplateBody.builder()

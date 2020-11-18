@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
+import uk.gov.hmcts.cmc.claimstore.documents.DraftClaimReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.PdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.ReviewOrderService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.cmc.domain.models.ScannedDocumentType;
 
 import java.util.Optional;
 
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.GENERAL_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.MEDIATION_AGREEMENT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.ORDER_DIRECTIONS;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.ORDER_SANCTIONS;
@@ -34,6 +36,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     private final ClaimService claimService;
     private final DocumentManagementService documentManagementService;
     private final SealedClaimPdfService sealedClaimPdfService;
+    private final DraftClaimReceiptService draftClaimReceiptService;
     private final ClaimIssueReceiptService claimIssueReceiptService;
     private final DefendantResponseReceiptService defendantResponseReceiptService;
     private final SettlementAgreementCopyService settlementAgreementCopyService;
@@ -41,12 +44,15 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     private final ClaimantDirectionsQuestionnairePdfService claimantDirectionsQuestionnairePdfService;
     private final UserService userService;
 
+    public static final String DOCUMENT_IS_NOT_AVAILABLE_FOR_DOWNLOAD = "Document is not available for download.";
+
     @Autowired
     @SuppressWarnings("squid:S00107")
     // Content providers are formatted values and aren't worth splitting into multiple models.
     public DocumentManagementBackedDocumentsService(
         ClaimService claimService,
         DocumentManagementService documentManagementService,
+        DraftClaimReceiptService draftClaimReceiptService,
         SealedClaimPdfService sealedClaimPdfService,
         ClaimIssueReceiptService claimIssueReceiptService,
         DefendantResponseReceiptService defendantResponseReceiptService,
@@ -58,6 +64,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         this.claimService = claimService;
         this.documentManagementService = documentManagementService;
         this.sealedClaimPdfService = sealedClaimPdfService;
+        this.draftClaimReceiptService = draftClaimReceiptService;
         this.claimIssueReceiptService = claimIssueReceiptService;
         this.defendantResponseReceiptService = defendantResponseReceiptService;
         this.settlementAgreementCopyService = settlementAgreementCopyService;
@@ -70,6 +77,8 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         switch (claimDocumentType) {
             case CLAIM_ISSUE_RECEIPT:
                 return claimIssueReceiptService;
+            case DRAFT_CLAIM_RECEIPT:
+                return draftClaimReceiptService;
             case SEALED_CLAIM:
                 return sealedClaimPdfService;
             case DEFENDANT_RESPONSE_RECEIPT:
@@ -87,42 +96,52 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     }
 
     @Override
-    public byte[] getOCON9xForm(String externalId, String authorisation) {
-
+    public byte[] generateScannedDocument(String externalId, ScannedDocumentType scannedDocumentType,
+                                          ScannedDocumentSubtype scannedDocumentSubtype, String authorisation) {
         User user = userService.getUser(authorisation);
         Claim claim = claimService.getClaimByExternalId(externalId, user);
 
-        ScannedDocument oconDocument = claim.getScannedDocument(ScannedDocumentType.FORM, ScannedDocumentSubtype.OCON9X)
-            .orElseThrow(() -> new IllegalArgumentException("Document is not available for download."));
+        ScannedDocument oconDocument = claim.getScannedDocument(scannedDocumentType, scannedDocumentSubtype)
+            .orElseThrow(() -> new IllegalArgumentException(DOCUMENT_IS_NOT_AVAILABLE_FOR_DOWNLOAD));
 
         return documentManagementService.downloadScannedDocument(authorisation, oconDocument);
     }
 
     @Override
     public byte[] generateDocument(String externalId, ClaimDocumentType claimDocumentType, String authorisation) {
+        return generateDocument(externalId, claimDocumentType, null, authorisation);
+    }
+
+    @Override
+    public byte[] generateDocument(String externalId, ClaimDocumentType claimDocumentType,
+                                   String claimDocumentId, String authorisation) {
         User user = userService.getUser(authorisation);
 
         Claim claim = claimService.getClaimByExternalId(externalId, user);
         ClaimDocumentsAccessRule.assertDocumentCanBeAccessedByUser(claim, claimDocumentType, user);
 
-        return processRequest(claim, authorisation, claimDocumentType);
-    }
-
-    private byte[] processRequest(Claim claim, String authorisation, ClaimDocumentType claimDocumentType) {
-
         if (claimDocumentType == ORDER_DIRECTIONS || claimDocumentType == ORDER_SANCTIONS
             || claimDocumentType == MEDIATION_AGREEMENT) {
             return getOrderDocuments(claim, authorisation, claimDocumentType);
+        } else if (claimDocumentType == GENERAL_LETTER) {
+            return getGeneralLetters(claim, authorisation, claimDocumentId);
         } else {
             return getClaimJourneyDocuments(claim, authorisation, claimDocumentType);
         }
+    }
+
+    private byte[] getGeneralLetters(Claim claim, String authorisation, String claimDocumentId) {
+        Optional<ClaimDocument> claimDocument = claim.getClaimDocument(claimDocumentId);
+        return claimDocument
+            .map(document -> documentManagementService.downloadDocument(authorisation, document))
+            .orElseThrow(() -> new IllegalArgumentException(DOCUMENT_IS_NOT_AVAILABLE_FOR_DOWNLOAD));
     }
 
     private byte[] getOrderDocuments(Claim claim, String authorisation, ClaimDocumentType claimDocumentType) {
         Optional<ClaimDocument> claimDocument = claim.getClaimDocument(claimDocumentType);
         return claimDocument
             .map(document -> documentManagementService.downloadDocument(authorisation, document))
-            .orElseThrow(() -> new IllegalArgumentException("Document is not available for download."));
+            .orElseThrow(() -> new IllegalArgumentException(DOCUMENT_IS_NOT_AVAILABLE_FOR_DOWNLOAD));
     }
 
     private byte[] getClaimJourneyDocuments(Claim claim, String authorisation, ClaimDocumentType claimDocumentType) {

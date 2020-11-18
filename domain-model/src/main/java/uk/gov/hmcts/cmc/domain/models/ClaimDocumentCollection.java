@@ -35,11 +35,17 @@ public class ClaimDocumentCollection {
             .findFirst();
     }
 
+    public Optional<ClaimDocument> getDocument(String claimDocumentId) {
+        return Stream.concat(claimDocuments.stream(), staffUploadedDocuments.stream())
+            .filter(claimDocument -> claimDocument.getId().equals(claimDocumentId))
+            .findFirst();
+    }
+
     public Optional<ScannedDocument> getScannedDocument(ScannedDocumentType scannedDocumentType,
                                                         ScannedDocumentSubtype subtype) {
         return scannedDocuments.stream()
             .filter(scannedDocument -> scannedDocument.getDocumentType().equals(scannedDocumentType))
-            .filter(scannedDocument -> scannedDocument.getSubtype().equals(subtype.value))
+            .filter(scannedDocument -> subtype.value.equals(scannedDocument.getSubtype()))
             .max(Comparator.comparing(ScannedDocument::getDeliveryDate));
     }
 }

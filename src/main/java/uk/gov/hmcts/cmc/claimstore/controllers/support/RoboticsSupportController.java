@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentGenerator;
 import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.rpa.DefenceResponseNotificationService;
@@ -40,6 +41,7 @@ public class RoboticsSupportController {
     private static final String RPA_STATE_INVALID = "invalid";
     private static final String RPA_STATE_FAILED = "failed";
     private static final String RPA_STATE_SUCCEEDED = "succeeded";
+    private static final String REF_NUMBER_NOT_SUPPLIED = "Reference numbers not supplied";
 
     private final UserService userService;
 
@@ -80,7 +82,7 @@ public class RoboticsSupportController {
     @ApiOperation("Send RPA notifications for multiple claims")
     public Map<String, String> rpaClaimNotifications(@RequestBody List<String> referenceNumbers) {
         if (referenceNumbers == null || referenceNumbers.isEmpty()) {
-            throw new IllegalArgumentException("Reference numbers not supplied");
+            throw new IllegalArgumentException(REF_NUMBER_NOT_SUPPLIED);
         }
         User user = userService.authenticateAnonymousCaseWorker();
         String authorisation = user.getAuthorisation();
@@ -106,11 +108,35 @@ public class RoboticsSupportController {
             )));
     }
 
+    @PutMapping("/legal-claim")
+    @ApiOperation("Send RPA notifications for multiple claims")
+    public Map<String, String> rpaLegalClaimNotifications(@RequestBody List<String> referenceNumbers) {
+        if (referenceNumbers == null || referenceNumbers.isEmpty()) {
+            throw new IllegalArgumentException(REF_NUMBER_NOT_SUPPLIED);
+        }
+        User user = userService.authenticateAnonymousCaseWorker();
+        String authorisation = user.getAuthorisation();
+        return referenceNumbers.stream()
+            .collect(toMap(Function.identity(), ref -> resendRPA(
+                ref,
+                user.getAuthorisation(),
+                reference -> true,
+                claim -> {
+                    String submitterName = userService.getUserDetails(authorisation).getFullName();
+
+                    documentGenerator.generateForRepresentedClaim(
+                        new RepresentedClaimIssuedEvent(claim, submitterName, authorisation)
+                    );
+                },
+                "Failed to send claim to RPA"
+            )));
+    }
+
     @PutMapping("/more-time")
     @ApiOperation("Send RPA notifications for multiple more-time requests")
     public Map<String, String> rpaMoreTimeNotifications(@RequestBody List<String> referenceNumbers) {
         if (referenceNumbers == null || referenceNumbers.isEmpty()) {
-            throw new IllegalArgumentException("Reference numbers not supplied");
+            throw new IllegalArgumentException(REF_NUMBER_NOT_SUPPLIED);
         }
         User user = userService.authenticateAnonymousCaseWorker();
         return referenceNumbers.stream()
@@ -120,7 +146,7 @@ public class RoboticsSupportController {
                 Claim::isMoreTimeRequested,
                 claim -> moreTimeRequestedNotificationService.notifyRobotics(new MoreTimeRequestedEvent(
                     claim,
-                    responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn()),
+                    responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn().orElseThrow()),
                     claim.getDefendantEmail())),
                 "Failed to send more time request to RPA"
             )));
@@ -130,7 +156,7 @@ public class RoboticsSupportController {
     @ApiOperation("Send RPA notifications for multiple responses")
     public Map<String, String> rpaResponseNotifications(@RequestBody List<String> referenceNumbers) {
         if (referenceNumbers == null || referenceNumbers.isEmpty()) {
-            throw new IllegalArgumentException("Reference numbers not supplied");
+            throw new IllegalArgumentException(REF_NUMBER_NOT_SUPPLIED);
         }
         User user = userService.authenticateAnonymousCaseWorker();
         String authorisation = user.getAuthorisation();
@@ -149,7 +175,7 @@ public class RoboticsSupportController {
     @ApiOperation("Send RPA notifications for multiple CCJ requests")
     public Map<String, String> rpaCCJNotifications(@RequestBody List<String> referenceNumbers) {
         if (referenceNumbers == null || referenceNumbers.isEmpty()) {
-            throw new IllegalArgumentException("Reference numbers not supplied");
+            throw new IllegalArgumentException(REF_NUMBER_NOT_SUPPLIED);
         }
         User user = userService.authenticateAnonymousCaseWorker();
         String authorisation = user.getAuthorisation();
@@ -167,7 +193,7 @@ public class RoboticsSupportController {
     @ApiOperation("Send RPA notifications for multiple paid-in-full events")
     public Map<String, String> rpaPIFNotifications(@RequestBody List<String> referenceNumbers) {
         if (referenceNumbers == null || referenceNumbers.isEmpty()) {
-            throw new IllegalArgumentException("Reference numbers not supplied");
+            throw new IllegalArgumentException(REF_NUMBER_NOT_SUPPLIED);
         }
         User user = userService.authenticateAnonymousCaseWorker();
         return referenceNumbers.stream()
@@ -188,7 +214,7 @@ public class RoboticsSupportController {
         String errorMessage
     ) {
         Optional<Claim> claimOptional = claimService.getClaimByReference(reference, authorisation);
-        if (!claimOptional.isPresent()) {
+        if (claimOptional.isEmpty()) {
             return RPA_STATE_MISSING;
         }
         Claim claim = claimOptional.get();

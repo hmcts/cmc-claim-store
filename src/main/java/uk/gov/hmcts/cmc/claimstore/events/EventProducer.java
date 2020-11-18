@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.claimstore.events.ccj.InterlocutoryJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.ReDeterminationEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimCreatedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.claim.HwfClaimUpdatedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.RejectOrganisationPaymentPlanEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedEvent;
@@ -55,6 +56,10 @@ public class EventProducer {
         } else {
             publisher.publishEvent(new CitizenClaimCreatedEvent(claim, submitterName, authorisation));
         }
+    }
+
+    public void createHwfClaimUpdatedEvent(Claim claim, String submitterName, String authorisation) {
+        publisher.publishEvent(new HwfClaimUpdatedEvent(claim, submitterName, authorisation));
     }
 
     public void createRepresentedClaimCreatedEvent(Claim claim, String submitterName, String authorisation) {
@@ -136,8 +141,9 @@ public class EventProducer {
     public void createBulkPrintTransferEvent(
         Claim claim,
         Document coverLetter,
-        List<BulkPrintTransferEvent.PrintableDocument> caseDocuments
+        List<BulkPrintTransferEvent.PrintableDocument> caseDocuments,
+        String authorisation
     ) {
-        publisher.publishEvent(new BulkPrintTransferEvent(claim, coverLetter, caseDocuments));
+        publisher.publishEvent(new BulkPrintTransferEvent(claim, coverLetter, caseDocuments, authorisation));
     }
 }

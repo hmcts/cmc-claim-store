@@ -57,12 +57,16 @@ import uk.gov.hmcts.cmc.domain.models.MediationRequest;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
+import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
+import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import javax.validation.Valid;
@@ -184,7 +188,7 @@ public class SupportController {
         @ApiResponse(code = 500, message = "Unable to upload document")
     })
     @SuppressWarnings("squid:S2201") // orElseThrow does not ignore the result
-    public ResponseEntity<?> uploadDocumentToDocumentManagement(
+    public ResponseEntity<String> uploadDocumentToDocumentManagement(
         @PathVariable("referenceNumber") String referenceNumber,
         @PathVariable("documentType") ClaimDocumentType documentType
     ) {
@@ -247,10 +251,12 @@ public class SupportController {
 
     private void triggerAsyncOperation(String authorisation, Claim claim) {
         if (claim.getClaimData().isClaimantRepresented()) {
-            String submitterName = claim.getClaimData().getClaimant()
-                .getRepresentative()
-                .orElseThrow(() -> new IllegalArgumentException(MISSING_REPRESENTATIVE))
-                .getOrganisationName();
+            String submitterName = claim.getClaimData().getClaimants().stream()
+                .findFirst()
+                .map(Party::getRepresentative)
+                .map(Optional::get)
+                .map(Representative::getOrganisationName)
+                .orElseThrow(() -> new IllegalArgumentException(MISSING_REPRESENTATIVE));
 
             this.postClaimOrchestrationHandler
                 .representativeIssueHandler(new RepresentedClaimCreatedEvent(claim, submitterName, authorisation));
@@ -272,21 +278,39 @@ public class SupportController {
 
     }
 
+    /*
+    * This method is added as to enable PET to regenerate
+    * MILO report(in case of failure) for specific date
+    * */
+    @PostMapping(value = "/reSendMediation", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Re-Generate and Send Mediation Report for Telephone Mediation Service")
+    public void reSendMediation(
+        @RequestBody MediationRequest mediationRequest
+    ) {
+        User user = userService.authenticateAnonymousCaseWorker();
+        String authorisation = user.getAuthorisation();
+        LocalDateTime now = LocalDateTime.now();
+        logger.info("Support controller started MILO report generation at {}", now);
+        mediationReportService
+            .sendMediationReport(authorisation, mediationRequest.getReportDate());
+        logger.info("MILO report ended at {}, took {} seconds to generate",
+            LocalDateTime.now(), Duration.between(now, LocalDateTime.now()).getSeconds());
+
+    }
+
     @PutMapping(value = "/claims/transitionClaimState")
     @ApiOperation("Trigger scheduled state transition")
     public void transitionClaimState(
-        @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation,
         @Valid @NotNull @RequestBody StateTransitionInput stateTransitionInput
     ) {
         LocalDateTime localDateTime = stateTransitionInput.getLocalDateTime();
         StateTransitions stateTransition = stateTransitionInput.getStateTransitions();
         LocalDateTime runDateTime = localDateTime == null ? LocalDateTimeFactory.nowInLocalZone() : localDateTime;
 
-        User user = userService.getUser(authorisation);
         String format = runDateTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss"));
-        logger.info(format("transitionClaimState %s called by %s for date: %s", stateTransition,
-            user.getUserDetails().getId(), format));
-        scheduledStateTransitionService.transitionClaims(runDateTime, user, stateTransition);
+        logger.info(format("transitionClaimState %s invoked by support controller for date: %s", stateTransition,
+            format));
+        scheduledStateTransitionService.stateChangeTriggered(runDateTime, stateTransition);
     }
 
     private void resendStaffNotificationCCJRequestSubmitted(Claim claim, String authorisation) {
@@ -346,7 +370,7 @@ public class SupportController {
     }
 
     private void resendStaffNotificationOnDefendantResponseSubmitted(Claim claim, String authorization) {
-        if (!claim.getResponse().isPresent()) {
+        if (claim.getResponse().isEmpty()) {
             throw new ConflictException(CLAIM + claim.getReferenceNumber() + " does not have associated response");
         }
         DefendantResponseEvent event = new DefendantResponseEvent(claim, authorization);

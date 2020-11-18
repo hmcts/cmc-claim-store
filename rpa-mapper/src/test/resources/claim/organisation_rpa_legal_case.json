@@ -1,0 +1,71 @@
+{
+  "claimNumber": "006LR003",
+  "claimIssueDate": "25-Jul-2020",
+  "claimSubmissionDate": "25-Jul-2020",
+  "amountLowerValue": 100.99,
+  "amountHigherValue": 99000.99,
+  "feeAmountInPennies": 4000,
+  "preferredCourt": "LONDON COUNTY COUNCIL",
+  "solicitorRef": "LBA/UM1616668",
+  "defendantRef": null,
+  "briefDetails": "reason",
+  "Applicants": [
+    {
+      "partyDetail": {
+        "dateOfBirth": null,
+        "emailAddress": "claimant@mail.com",
+        "type": "ORGANISATION",
+        "primaryAddress": {
+          "PostCode": "DF1 3LJ",
+          "PostTown": "Manchester",
+          "AddressLine1": "52",
+          "AddressLine2": "Down Street",
+          "AddressLine3": "Salford"
+        },
+        "telephoneNumber": "(0)207 127 0000"
+      },
+      "partyName": "John Rambo",
+      "representativeOrganisationName": "Trading ltd",
+      "representativeOrganisationAddress": {
+        "PostCode": "DF1 3LJ",
+        "PostTown": "Manchester",
+        "AddressLine1": "52",
+        "AddressLine2": "Down Street",
+        "AddressLine3": "Salford"
+      },
+      "representativeOrganisationPhone": "01123456789",
+      "representativeOrganisationDxAddress": "xyzrt",
+      "representativeOrganisationEmail": "abn@gmail.com"
+    }
+  ],
+  "Respondents": [
+    {
+      "representativeOrganisationName": "Trading ltd",
+      "representativeOrganisationAddress": {
+        "PostCode": "DF1 3LJ",
+        "PostTown": "Manchester",
+        "AddressLine1": "52",
+        "AddressLine2": "Down Street",
+        "AddressLine3": "Salford"
+      },
+      "representativeOrganisationPhone": "01123456789",
+      "representativeOrganisationDxAddress": "xyzrt",
+      "representativeOrganisationEmail": "abn@gmail.com",
+      "claimantProvidedDetail": {
+        "lastName": null,
+        "firstName": null,
+        "title": null,
+        "name": "Dr. John Smith",
+        "emailAddress": "j.smith@example.com",
+        "type": "ORGANISATION",
+        "primaryAddress": {
+          "PostCode": "DF1 3LJ",
+          "PostTown": "Manchester",
+          "AddressLine1": "52",
+          "AddressLine2": "Down Street",
+          "AddressLine3": "Salford"
+        }
+      }
+    }
+  ]
+}

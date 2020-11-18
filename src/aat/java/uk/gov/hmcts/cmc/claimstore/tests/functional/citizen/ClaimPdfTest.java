@@ -1,8 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.tests.functional.BasePdfTest;
+import uk.gov.hmcts.cmc.claimstore.tests.helpers.Retry;
+import uk.gov.hmcts.cmc.claimstore.tests.helpers.RetryFailedFunctionalTests;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
@@ -20,12 +23,17 @@ public class ClaimPdfTest extends BasePdfTest {
         user = bootstrap.getClaimant();
     }
 
+    @Rule
+    public RetryFailedFunctionalTests retryRule = new RetryFailedFunctionalTests(3);
+
     @Test
+    @Retry
     public void shouldBeAbleToFindTestClaimDataInClaimIssueReceiptPdf() throws IOException {
         shouldBeAbleToFindTestClaimDataInPdf("claimIssueReceipt", createCase());
     }
 
     @Test
+    @Retry
     public void shouldBeAbleToFindTestClaimDataInSealedClaimPdf() throws IOException {
         user = bootstrap.getSolicitor();
         Claim createdCase = createCase();
@@ -41,7 +49,8 @@ public class ClaimPdfTest extends BasePdfTest {
     @Override
     protected void assertionsOnPdf(Claim createdCase, String pdfAsText) {
         assertThat(pdfAsText).contains("Claim number: " + createdCase.getReferenceNumber());
-        assertThat(pdfAsText).contains("Issued on: " + Formatting.formatDate(createdCase.getIssuedOn()));
+        assertThat(pdfAsText).contains("Issued on: "
+            + createdCase.getIssuedOn().map(Formatting::formatDate).orElseThrow());
         assertThat(pdfAsText).contains("Name: " + createdCase.getClaimData().getClaimant().getName());
         assertThat(pdfAsText).contains("Address: "
             + getFullAddressString(createdCase.getClaimData().getClaimant().getAddress()));

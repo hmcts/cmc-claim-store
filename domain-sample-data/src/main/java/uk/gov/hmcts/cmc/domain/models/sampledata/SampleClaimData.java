@@ -33,6 +33,7 @@ public class SampleClaimData {
     private Interest interest = SampleInterest.standard();
     private String reason = "reason";
     private BigInteger feeAmount = BigInteger.valueOf(4000);
+    private String moreInfoDetails = "Info";
     private BigInteger feeRemitted = BigInteger.valueOf(3000);
     private String feeAccountNumber = "PBA1234567";
     private StatementOfTruth statementOfTruth;
@@ -42,7 +43,10 @@ public class SampleClaimData {
     private String feeCode = "X0012";
     private Timeline timeline = SampleTimeline.validDefaults();
     private Evidence evidence = SampleEvidence.validDefaults();
-
+    private String helpWithFeesNumber = "HWF012345";
+    private String helpWithFeesType = "Claim Issue";
+    private String hwfFeeDetailsSummary = "Summary";
+    private String hwfMandatoryDetails = "Details";
     private HousingDisrepair housingDisrepair = new HousingDisrepair(
         DamagesExpectation.MORE_THAN_THOUSAND_POUNDS,
         DamagesExpectation.MORE_THAN_THOUSAND_POUNDS
@@ -194,6 +198,31 @@ public class SampleClaimData {
         return this;
     }
 
+    public SampleClaimData withHelpWithFeesNumber(String helpWithFeesNumber) {
+        this.helpWithFeesNumber = helpWithFeesNumber;
+        return this;
+    }
+
+    public SampleClaimData withHelpWithFeesType(String helpWithFeesType) {
+        this.helpWithFeesType = helpWithFeesType;
+        return this;
+    }
+
+    public SampleClaimData withMoreInfoDetails(String moreInfoDetails) {
+        this.moreInfoDetails = moreInfoDetails;
+        return this;
+    }
+
+    public SampleClaimData withHwfFeeDetailsSummary(String hwfFeeDetailsSummary) {
+        this.hwfFeeDetailsSummary = hwfFeeDetailsSummary;
+        return this;
+    }
+
+    public SampleClaimData withHwfMandatoryDetails(String hwfMandatoryDetails) {
+        this.hwfMandatoryDetails = hwfMandatoryDetails;
+        return this;
+    }
+
     public ClaimData build() {
         return new ClaimData(
             externalId,
@@ -202,6 +231,7 @@ public class SampleClaimData {
             payment,
             amount,
             feeAmount,
+            feeRemitted,
             interest,
             personalInjury,
             housingDisrepair,
@@ -213,8 +243,12 @@ public class SampleClaimData {
             feeCode,
             timeline,
             evidence,
-            feeRemitted
-        );
+            helpWithFeesNumber,
+            moreInfoDetails,
+            helpWithFeesType,
+            hwfFeeDetailsSummary,
+            hwfMandatoryDetails
+            );
     }
 
     public static ClaimData validDefaults() {
@@ -247,8 +281,9 @@ public class SampleClaimData {
                 .withPhone("0776655443322")
                 .individualDetails())
             .withTimeline(SampleTimeline.validDefaults())
-            .withEvidence(SampleEvidence.validDefaults())
-            .withFeeRemitted(null);
+            .withHwfMandatoryDetails(null)
+            .withFeeRemitted(null)
+            .withEvidence(SampleEvidence.validDefaults());
     }
 
     public static ClaimData submittedByLegalRepresentative() {
@@ -258,6 +293,7 @@ public class SampleClaimData {
     public static SampleClaimData submittedByLegalRepresentativeBuilder() {
         return builder()
             .clearClaimants()
+            .withExternalId(UUID.randomUUID())
             .withClaimant(SampleParty.builder()
                 .withRepresentative(SampleRepresentative.builder().build())
                 .individual())

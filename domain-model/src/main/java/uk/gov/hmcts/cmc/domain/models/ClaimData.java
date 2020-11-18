@@ -94,6 +94,16 @@ public class ClaimData {
     @Size(max = 80, message = "must be at most {max} characters")
     private final String preferredCourt;
 
+    private final String helpWithFeesNumber;
+
+    private final String moreInfoDetails;
+
+    private final String helpWithFeesType;
+
+    private final String hwfFeeDetailsSummary;
+
+    private final String hwfMandatoryDetails;
+
     @Builder(toBuilder = true)
     @SuppressWarnings("squid:S00107") // Number of method parameters
     public ClaimData(
@@ -103,6 +113,7 @@ public class ClaimData {
         Payment payment,
         Amount amount,
         BigInteger feeAmountInPennies,
+        BigInteger feeRemitted,
         Interest interest,
         PersonalInjury personalInjury,
         HousingDisrepair housingDisrepair,
@@ -114,7 +125,11 @@ public class ClaimData {
         String feeCode,
         Timeline timeline,
         Evidence evidence,
-        BigInteger feeRemitted
+        String helpWithFeesNumber,
+        String moreInfoDetails,
+        String helpWithFeesType,
+        String hwfFeeDetailsSummary,
+        String hwfMandatoryDetails
     ) {
         this.externalId = externalId != null ? externalId : UUID.randomUUID();
         this.claimants = claimants;
@@ -122,6 +137,7 @@ public class ClaimData {
         this.payment = payment;
         this.amount = amount;
         this.feeAmountInPennies = feeAmountInPennies;
+        this.feeRemitted = feeRemitted;
         this.interest = interest;
         this.personalInjury = personalInjury;
         this.housingDisrepair = housingDisrepair;
@@ -133,7 +149,11 @@ public class ClaimData {
         this.feeCode = feeCode;
         this.timeline = timeline;
         this.evidence = evidence;
-        this.feeRemitted = feeRemitted;
+        this.helpWithFeesNumber = helpWithFeesNumber;
+        this.moreInfoDetails = moreInfoDetails;
+        this.helpWithFeesType = helpWithFeesType;
+        this.hwfFeeDetailsSummary = hwfFeeDetailsSummary;
+        this.hwfMandatoryDetails = hwfMandatoryDetails;
     }
 
     public List<Party> getClaimants() {
@@ -243,6 +263,26 @@ public class ClaimData {
 
     public Optional<Evidence> getEvidence() {
         return Optional.ofNullable(evidence);
+    }
+
+    public Optional<String> getHelpWithFeesNumber() {
+        return Optional.ofNullable(helpWithFeesNumber);
+    }
+
+    public Optional<String> getMoreInfoDetails() {
+        return Optional.ofNullable(moreInfoDetails);
+    }
+
+    public Optional<String> gethelpWithFeesType() {
+        return Optional.ofNullable(helpWithFeesType);
+    }
+
+    public Optional<String> getHwfFeeDetailsSummary() {
+        return Optional.ofNullable(hwfFeeDetailsSummary);
+    }
+
+    public Optional<String> getHwfMandatoryDetails() {
+        return Optional.ofNullable(hwfMandatoryDetails);
     }
 
     @Override

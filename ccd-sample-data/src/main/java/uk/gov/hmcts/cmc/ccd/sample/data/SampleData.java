@@ -37,6 +37,7 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriorityDebt;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDBespokeOrderDirection;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
@@ -76,6 +77,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOtherDirectionHeaderTy
 import static uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDClaimSubmissionOperationIndicators.defaultCCDClaimSubmissionOperationIndicators;
 import static uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDTelephone.withDefaultPhoneNumber;
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.AWAITING_CITIZEN_PAYMENT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOUSAND_POUNDS_OR_LESS;
@@ -563,7 +565,7 @@ public class SampleData {
             .state(OPEN.getValue())
             .build();
     }
-    
+
     public static CCDCase addContactChangePartyClaimant(CCDCase ccdCase) {
         return ccdCase.toBuilder()
             .contactChangeParty(CCDContactPartyType.CLAIMANT)
@@ -595,6 +597,22 @@ public class SampleData {
             .build();
     }
 
+    public static CCDCase getCCDCitizenCaseAwaitingayment() {
+        List<CCDCollectionElement<CCDApplicant>> applicants
+            = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
+        List<CCDCollectionElement<CCDRespondent>> respondents
+            = singletonList(CCDCollectionElement.<CCDRespondent>builder().value(getCCDRespondentIndividual()).build());
+
+        return ccdBuilderWithDefault()
+            .amountBreakDown(getAmountBreakDown())
+            .helpWithFeesNumber("HWF12345")
+            .helpWithFeesType("Claim Issue")
+            .applicants(applicants)
+            .respondents(respondents)
+            .state(AWAITING_CITIZEN_PAYMENT.getValue())
+            .build();
+    }
+
     public static CCDCase addCCDOrderGenerationData(CCDCase ccdCase) {
         return ccdCase.toBuilder()
             .directionList(ImmutableList.of(
@@ -607,14 +625,14 @@ public class SampleData {
                             .directionComment("a direction")
                             .otherDirectionHeaders(UPLOAD)
                             .forParty(CCDDirectionPartyType.BOTH)
-                            .sendBy(LocalDate.parse("2020-10-11"))
+                            .sendBy(LocalDate.parse("2022-10-11"))
                             .build()
                     )
                     .build(),
                 CCDCollectionElement.<CCDOrderDirection>builder()
                     .value(
                         CCDOrderDirection.builder()
-                            .sendBy(LocalDate.parse("2020-10-11"))
+                            .sendBy(LocalDate.parse("2022-10-11"))
                             .extraOrderDirection(EXPERT_REPORT_PERMISSION)
                             .forParty(CCDDirectionPartyType.BOTH)
                             .expertReports(
@@ -640,8 +658,8 @@ public class SampleData {
                     )
                     .build()))
             .paperDetermination(NO)
-            .docUploadDeadline(LocalDate.parse("2020-10-11"))
-            .eyewitnessUploadDeadline(LocalDate.parse("2020-10-11"))
+            .docUploadDeadline(LocalDate.parse("2022-10-11"))
+            .eyewitnessUploadDeadline(LocalDate.parse("2022-10-11"))
             .hearingCourt("BIRMINGHAM")
             .preferredCourtObjectingReason("I like this court more")
             .newRequestedCourt("Another court")
@@ -660,6 +678,22 @@ public class SampleData {
             .expertReportPermissionPartyAskedByDefendant(YES)
             .grantExpertReportPermission(YES)
             .expertReportInstruction(SUBMIT_MORE_DOCS_INSTRUCTION)
+            .build();
+    }
+
+    public static CCDCase addCCDBespokeOrderGenerationData(CCDCase ccdCase) {
+        return ccdCase.toBuilder()
+            .directionOrderType("BESPOKE")
+            .bespokeDirectionList(ImmutableList.of(
+                CCDCollectionElement.<CCDBespokeOrderDirection>builder()
+                    .value(
+                        CCDBespokeOrderDirection.builder()
+                            .beSpokeDirectionFor(CCDDirectionPartyType.BOTH)
+                            .beSpokeDirectionExplain("a direction")
+                            .beSpokeDirectionDatetime(LocalDate.parse("2020-10-11"))
+                            .build()
+                    )
+                    .build()))
             .build();
     }
 
@@ -818,5 +852,32 @@ public class SampleData {
             .scannedDocuments(SampleStaffUploadedDoc.scannedDocsPaperResponse)
             .state(OPEN.getValue())
             .build();
+    }
+
+    public static List<CCDCollectionElement<CCDBespokeOrderDirection>> getBespokeDirectionList() {
+
+        return ImmutableList.of(
+            CCDCollectionElement.<CCDBespokeOrderDirection>builder()
+                .value(
+                    CCDBespokeOrderDirection.builder()
+            .beSpokeDirectionFor(CCDDirectionPartyType.CLAIMANT)
+            .beSpokeDirectionExplain("first direction")
+            .beSpokeDirectionDatetime(LocalDate.of(2020, 8, 4))
+            .build()).build(),
+            CCDCollectionElement.<CCDBespokeOrderDirection>builder()
+                .value(
+                    CCDBespokeOrderDirection.builder()
+                        .beSpokeDirectionFor(CCDDirectionPartyType.DEFENDANT)
+                        .beSpokeDirectionExplain("second direction")
+                        .beSpokeDirectionDatetime(LocalDate.of(2020, 8, 4))
+                        .build()).build(),
+            CCDCollectionElement.<CCDBespokeOrderDirection>builder()
+                .value(
+                    CCDBespokeOrderDirection.builder()
+                        .beSpokeDirectionFor(CCDDirectionPartyType.BOTH)
+                        .beSpokeDirectionExplain("third direction")
+                        .beSpokeDirectionDatetime(LocalDate.of(2020, 8, 4))
+                        .build()).build()
+            );
     }
 }

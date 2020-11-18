@@ -25,12 +25,14 @@ java:
         - staff-email
         - live-support-email
         - rpa-email-sealed-claim
+        - rpa-email-legal-sealed-claim
         - rpa-email-more-time-requested
         - rpa-email-response
         - rpa-email-ccj
         - rpa-email-paid-in-full
         - launchDarkly-sdk-key
         - sendgrid-api-key
+        - staff-email-legal-rep
   environment:
     REFORM_TEAM: cmc
     REFORM_SERVICE_NAME: claim-store
@@ -48,7 +50,9 @@ java:
     CMC_DB_PORT: 5432
     FEATURE_TOGGLES_SAVE_CLAIM_STATE_ENABLED: true
     FEATURE_TOGGLES_CTSC_ENABLED: false
+    FEATURE_TOGGLES_BULK_PRINT_TRANSFER_ENABLED: false
     FEATURE_TOGGLES_STAFF_EMAILS_ENABLED: true
+    FEATURE_TOGGLES_STAFF_EMAILS_ENABLED_FOR_LEGAL_REP: true
     FEATURE_AUTO_CANCEL_PAYMENTS: false
     STAFF_NOTIFICATIONS_SENDER: noreply@reform.hmcts.net
     RPA_NOTIFICATIONS_SENDER: noreply@reform.hmcts.net
@@ -71,3 +75,4 @@ java:
     RESPOND_TO_CLAIM_URL: https://moneyclaims.{{ .Values.global.environment }}.platform.hmcts.net/first-contact/start
     CORE_CASE_DATA_API_URL: http://ccd-data-store-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     DOC_ASSEMBLY_URL: http://dg-docassembly-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+

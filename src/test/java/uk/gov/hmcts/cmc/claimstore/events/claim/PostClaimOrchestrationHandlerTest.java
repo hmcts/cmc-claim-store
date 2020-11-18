@@ -18,10 +18,12 @@ import uk.gov.hmcts.cmc.claimstore.events.operations.UploadOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimCreatedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.PrintableDocumentService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimSubmissionOperationIndicators;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleHwfClaim;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
@@ -44,6 +46,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 @RunWith(MockitoJUnitRunner.class)
 public class PostClaimOrchestrationHandlerTest {
     public static final Claim CLAIM = SampleClaim.getDefault();
+    public static final Claim CLAIM_HWF = SampleHwfClaim.getDefaultHwfPending();
     private static final String SUBMITTER_NAME = "submitter-name";
     public static final String AUTHORISATION = "AUTHORISATION";
     private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
@@ -77,6 +80,8 @@ public class PostClaimOrchestrationHandlerTest {
     private PinOrchestrationService pinOrchestrationService;
     @Mock
     private AppInsights appInsights;
+    @Mock
+    private PrintableDocumentService printableDocumentService;
 
     @Before
     public void before() {
@@ -86,7 +91,8 @@ public class PostClaimOrchestrationHandlerTest {
             pdfServiceClient,
             claimIssueReceiptService,
             claimService,
-            userService
+            userService,
+            printableDocumentService
         );
 
         postClaimOrchestrationHandler = new PostClaimOrchestrationHandler(
@@ -139,6 +145,30 @@ public class PostClaimOrchestrationHandlerTest {
             eq(AUTHORISATION), any());
         verify(claimService, never()).updateClaimState(eq(AUTHORISATION), any(Claim.class), eq(ClaimState.OPEN));
         verifyNoInteractions(appInsights);
+    }
+
+    @Test
+    public void citizenIssueHandlerForHwfPendingApplication() {
+        //given
+        CitizenClaimCreatedEvent event = new CitizenClaimCreatedEvent(CLAIM_HWF, SUBMITTER_NAME, AUTHORISATION);
+
+        //when
+        postClaimOrchestrationHandler.citizenIssueHandler(event);
+
+        //then
+        verify(claimantOperationService).notifyCitizen(eq(CLAIM_HWF), any(), eq(AUTHORISATION));
+    }
+
+    @Test
+    public void citizenHwfClaimUpdateHandlerHwfPendingApplication() {
+        //given
+        HwfClaimUpdatedEvent event = new HwfClaimUpdatedEvent(CLAIM_HWF, SUBMITTER_NAME, AUTHORISATION);
+
+        //when
+        postClaimOrchestrationHandler.citizenHwfClaimUpdateHandler(event);
+
+        //then
+        verify(claimantOperationService).notifyCitizen(eq(CLAIM_HWF), any(), eq(AUTHORISATION));
     }
 
     @Test

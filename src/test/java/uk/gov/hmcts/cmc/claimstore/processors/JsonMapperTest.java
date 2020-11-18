@@ -68,6 +68,8 @@ public class JsonMapperTest {
             .withHousingDisrepair(null)
             .withPersonalInjury(null)
             .withStatementOfTruth(null)
+            .withHwfFeeDetailsSummary("Summary")
+            .withHwfMandatoryDetails("Details")
             .clearClaimants()
             .addClaimant(SampleParty.builder().withRepresentative(null).individual())
             .withDefendant(SampleTheirDetails.builder()
@@ -75,6 +77,9 @@ public class JsonMapperTest {
                 .withServiceAddress(null)
                 .withDateOfBirth(null)
                 .individualDetails())
+            .withHelpWithFeesNumber("HWF012345")
+            .withMoreInfoDetails(null)
+            .withHelpWithFeesType("Claim Issue")
             .withFeeCode("X0012")
             .build();
 
@@ -120,6 +125,11 @@ public class JsonMapperTest {
                 .withServiceAddress(null)
                 .withDateOfBirth(null)
                 .individualDetails())
+            .withHelpWithFeesNumber("HWF012345")
+            .withMoreInfoDetails(null)
+            .withHelpWithFeesType("Claim Issue")
+            .withHwfFeeDetailsSummary("Summary")
+            .withHwfMandatoryDetails("Details")
             .withTimeline(SampleTimeline.validDefaults())
             .withEvidence(SampleEvidence.validDefaults())
             .build();
@@ -164,6 +174,11 @@ public class JsonMapperTest {
             .withTimeline(null)
             .withPayment(null)
             .withEvidence(null)
+            .withMoreInfoDetails(null)
+            .withHelpWithFeesNumber("HWF012345")
+            .withHelpWithFeesType("Claim Issue")
+            .withHwfFeeDetailsSummary("Summary")
+            .withHwfMandatoryDetails("Details")
             .build();
         assertThat(output).isEqualTo(expected);
     }
@@ -259,6 +274,5 @@ public class JsonMapperTest {
             .build();
 
         assertThat(ccdOrderGenerationData).isEqualTo(expected);
-
     }
 }

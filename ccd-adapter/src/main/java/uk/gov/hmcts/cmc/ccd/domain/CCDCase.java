@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDBespokeOrderDirection;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDBespokeOrderWarning;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
@@ -87,6 +89,9 @@ public class CCDCase {
     private CCDClaimSubmissionOperationIndicators claimSubmissionOperationIndicators;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String state;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private LocalDateTime lastModified;
+
     private CCDYesNoOption evidenceHandled;
 
     private LocalDate docUploadDeadline;
@@ -151,11 +156,27 @@ public class CCDCase {
     private CCDProceedOnPaperReasonType proceedOnPaperReason;
     private String proceedOnPaperOtherReason;
     private LocalDate calculatedResponseDeadline;
+    private String helpWithFeesNumber;
+    private String moreInfoDetails;
+    private String helpWithFeesType;
+    private String hwfFeeDetailsSummary;
+    private String hwfMandatoryDetails;
     private CCDResponseType paperAdmissionType;
     private CCDTransferContent transferContent;
+    @Builder.Default
+    private List<CCDCollectionElement<CCDBulkPrintDetails>> bulkPrintDetails = Collections.emptyList();
     /**
      * Temporary variables that are not to be persisted to case data but are only used during events.
      */
     @Builder.Default
     private List<CCDCollectionElement<CCDScannedDocument>> temporaryScannedDocuments = Collections.emptyList();
+    private LocalDate dateOfHandoff;
+    private String directionOrderType;
+
+    @Builder.Default
+    private List<CCDCollectionElement<CCDBespokeOrderDirection>> bespokeDirectionList = Collections.emptyList();
+
+    @Builder.Default
+    private List<CCDBespokeOrderWarning> drawBespokeDirectionOrderWarning = Collections.emptyList();
+    private LocalDate extendedResponseDeadline;
 }

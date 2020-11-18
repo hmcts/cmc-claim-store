@@ -17,6 +17,12 @@ public class EmailTemplates {
     private String claimantClaimIssued;
 
     @NotEmpty
+    private String claimantClaimIssuedWithHwfVerficationPending;
+
+    @NotEmpty
+    private String claimantHwfUpdate;
+
+    @NotEmpty
     private String defendantClaimIssued;
 
     @NotEmpty
@@ -174,4 +180,15 @@ public class EmailTemplates {
 
     @NotEmpty
     private String caseTransferred;
+
+    @NotEmpty
+    private String defendantAskedToRespondByPost;
+
+    private String caseTransferToCourt;
+
+    @NotEmpty
+    private String caseTransferToCcbcForClaimant;
+
+    @NotEmpty
+    private String caseTransferToCcbcForDefendant;
 }

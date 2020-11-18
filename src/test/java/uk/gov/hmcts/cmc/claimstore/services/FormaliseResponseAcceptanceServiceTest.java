@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
+import com.launchdarkly.client.LDUser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +34,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SampleCourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.sampledata.statementofmeans.SampleStatementOfMeans;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -63,36 +65,28 @@ import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.SE
 public class FormaliseResponseAcceptanceServiceTest {
 
     private static final String AUTH = "AUTH";
-
+    private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
+    private static final Claim CLAIM = SampleClaim.builder().build();
     private FormaliseResponseAcceptanceService formaliseResponseAcceptanceService;
-
     @Mock
     private SettlementAgreementService settlementAgreementService;
-
     @Mock
     private CountyCourtJudgmentService countyCourtJudgmentService;
-
     @Mock
     private EventProducer eventProducer;
-
     @Mock
     private CaseRepository caseRepository;
-
     @Mock
     private DocumentsService documentService;
-
     @Mock
     private ClaimantResponseReceiptService claimantResponseReceiptService;
-
     @Captor
     private ArgumentCaptor<CountyCourtJudgment> countyCourtJudgmentArgumentCaptor;
-
     @Captor
     private ArgumentCaptor<Settlement> settlementArgumentCaptor;
-
-    private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
+    @Mock
+    private LaunchDarklyClient launchDarklyClient;
     private PDF pdf;
-    private static final Claim CLAIM = SampleClaim.builder().build();
 
     @Before
     public void before() {
@@ -111,7 +105,8 @@ public class FormaliseResponseAcceptanceServiceTest {
             caseRepository,
             documentService,
             true,
-            claimantResponseReceiptService
+            claimantResponseReceiptService,
+            launchDarklyClient
         );
     }
 
@@ -633,7 +628,39 @@ public class FormaliseResponseAcceptanceServiceTest {
             .build();
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
         verify(claimantResponseReceiptService)
-            .createPdf(eq(claim), any());
+            .createPdf(any(Claim.class), any());
+        verify(documentService)
+            .uploadToDocumentManagement(pdf, AUTH, claim);
+    }
+
+    @Test
+    public void shouldCallDocumentServiceIfInterlocutoryJudgmentAndToggleEnabled() {
+        Claim claim = SampleClaim.getWithDefaultResponse();
+        ResponseAcceptation responseAcceptation = ResponseAcceptation
+            .builder()
+            .formaliseOption(FormaliseOption.REFER_TO_JUDGE)
+            .build();
+        when(launchDarklyClient.isFeatureEnabled(eq("redetermination-reason-in-pdf"), any(LDUser.class)))
+            .thenReturn(true);
+        formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
+        verify(claimantResponseReceiptService)
+            .createPdf(any(Claim.class), any());
+        verify(documentService)
+            .uploadToDocumentManagement(pdf, AUTH, claim);
+    }
+
+    @Test
+    public void shouldCallDocumentServiceIfInterlocutoryJudgmentAndToggleDisabled() {
+        Claim claim = SampleClaim.getWithDefaultResponse();
+        ResponseAcceptation responseAcceptation = ResponseAcceptation
+            .builder()
+            .formaliseOption(FormaliseOption.REFER_TO_JUDGE)
+            .build();
+        when(launchDarklyClient.isFeatureEnabled(eq("redetermination-reason-in-pdf"), any(LDUser.class)))
+            .thenReturn(false);
+        formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
+        verify(claimantResponseReceiptService)
+            .createPdf(any(Claim.class), any());
         verify(documentService)
             .uploadToDocumentManagement(pdf, AUTH, claim);
     }
@@ -652,7 +679,8 @@ public class FormaliseResponseAcceptanceServiceTest {
             caseRepository,
             documentService,
             false,
-            claimantResponseReceiptService
+            claimantResponseReceiptService,
+            launchDarklyClient
         );
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
         verify(claimantResponseReceiptService, never())

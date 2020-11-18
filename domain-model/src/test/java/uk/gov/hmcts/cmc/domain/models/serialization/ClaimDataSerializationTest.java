@@ -51,6 +51,11 @@ public class ClaimDataSerializationTest {
                 .withServiceAddress(null)
                 .withDateOfBirth(null)
                 .individualDetails())
+            .withHelpWithFeesNumber("HWF012345")
+            .withMoreInfoDetails(null)
+            .withHelpWithFeesType("Claim Issue")
+            .withHwfFeeDetailsSummary("Summary")
+            .withHwfMandatoryDetails("Details")
             .build();
 
         assertThat(claimData).isEqualTo(other);

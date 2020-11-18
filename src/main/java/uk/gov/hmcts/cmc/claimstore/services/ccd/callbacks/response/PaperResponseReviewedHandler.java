@@ -28,6 +28,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static java.util.function.Predicate.isEqual;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.DEFENDANT_NAME;
@@ -42,6 +43,8 @@ class PaperResponseReviewedHandler {
         ClaimDocumentType.PAPER_RESPONSE_STATES_PAID);
 
     private static final List<String> PAPER_RESPONSE_SCANNED_TYPES = List.of("N9a", "N9b", "N11", "N225", "N180");
+
+    private static final List<String> DOC_TYPE_TO_MAIL = List.of("N9", "N9A", "N9B", "N11");
 
     private static final Predicate<ClaimDocument> isPaperResponseClaimDoc = doc ->
         PAPER_RESPONSE_STAFF_UPLOADED_TYPES.stream().anyMatch(isEqual(doc.getDocumentType()));
@@ -103,7 +106,7 @@ class PaperResponseReviewedHandler {
         getResponseTimeFromPaperResponse(claimAfterEvent.get())
             .ifPresent(responseClaim::respondedAt);
 
-        if (errors.isEmpty()) {
+        if (errors.isEmpty() && mailToBeSent()) {
             notifyClaimant(responseClaim.build());
         }
 
@@ -111,6 +114,14 @@ class PaperResponseReviewedHandler {
             .errors(errors)
             .data(caseDetailsConverter.convertToMap(caseMapper.to(responseClaim.build())))
             .build();
+    }
+
+    private boolean mailToBeSent() {
+        return getBulkScannedDocuments(claimAfterEvent.get())
+            .filter(doc -> getBulkScannedDocuments(claimBeforeEvent.get()).noneMatch(isEqual(doc)))
+            .anyMatch(doc -> isBlank(doc.getSubtype()) || DOC_TYPE_TO_MAIL.contains(doc.getSubtype().toUpperCase()))
+            || getStaffUploadedDocuments(claimAfterEvent.get())
+            .filter(doc -> getStaffUploadedDocuments(claimBeforeEvent.get()).noneMatch(isEqual(doc))).count() > 0;
     }
 
     private Claim toClaimAfterEvent(CallbackRequest callbackRequest) {
@@ -123,7 +134,8 @@ class PaperResponseReviewedHandler {
 
     private void updateMoreTimeRequestedResponse() {
         Claim claimByEvent = claimAfterEvent.get();
-        LocalDate deadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claimByEvent.getIssuedOn());
+        LocalDate deadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claimByEvent.getIssuedOn()
+            .orElseThrow(() -> new IllegalStateException("Missing issuedOn date")));
 
         errors.addAll(moreTimeRequestRule.validateMoreTimeCanBeRequested(claimByEvent, deadline));
         responseClaim
