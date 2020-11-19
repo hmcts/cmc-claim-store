@@ -98,7 +98,6 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
         logger.info("Created citizen case for callback of type {}, claim with external id {}",
             callbackParams.getType(),
             claim.getExternalId());
-        String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
         logger.info("Payment not marked successful for claim with external id {}", claim.getExternalId());
         LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
 

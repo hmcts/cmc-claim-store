@@ -322,6 +322,7 @@ public class ClaimService {
     }
 
     public void linkDefendantToClaim(String authorisation) {
+
         caseRepository.linkDefendant(authorisation);
     }
 
@@ -475,6 +476,7 @@ public class ClaimService {
                                     .claimData(claimData)
                                     .build();
                                 returnClaim[0] = caseRepository.updateCardPaymentForClaim(user, updatedClaim);
+                                updateClaimState(authorisation, updatedClaim, ClaimState.OPEN);
                             }
                         });
                     }
