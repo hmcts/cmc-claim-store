@@ -25,6 +25,7 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFER_TO_JUDGE_BY_DEFENDANT;
@@ -49,8 +50,8 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
-        return ccdCaseApi.getBySubmitterId(submitterId, authorisation);
+    public List<Claim> getBySubmitterId(String submitterId, String authorisation, String pageNumber) {
+        return ccdCaseApi.getBySubmitterId(submitterId, authorisation, pageNumber);
     }
 
     @Override
@@ -75,9 +76,11 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public List<Claim> getByDefendantId(String id, String authorisation) {
-        return ccdCaseApi.getByDefendantId(id, authorisation);
+    public List<Claim> getByDefendantId(String id, String authorisation, String pageNumber) {
+        return ccdCaseApi.getByDefendantId(id, authorisation, pageNumber);
     }
+
+
 
     @Override
     public List<Claim> getByClaimantEmail(String email, String authorisation) {
@@ -111,6 +114,11 @@ public class CCDCaseRepository implements CaseRepository {
         CountyCourtJudgment countyCourtJudgment
     ) {
         coreCaseDataService.saveCountyCourtJudgment(authorisation, claim.getId(), countyCourtJudgment);
+    }
+
+    @Override
+    public Map<String, String> getPaginationInfo(String authorisation) {
+        return ccdCaseApi.getPaginationInfo(authorisation);
     }
 
     @Override

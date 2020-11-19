@@ -48,8 +48,7 @@ public class CaseMetadataController {
     public List<CaseMetadata> getBySubmitterId(@PathVariable("submitterId") String submitterId) {
         return claimService.getClaimBySubmitterId(
             submitterId,
-            userService.authenticateAnonymousCaseWorker().getAuthorisation()
-        )
+            userService.authenticateAnonymousCaseWorker().getAuthorisation(), "")
             .stream()
             .map(CaseMetadata::fromClaim)
             .collect(Collectors.toList());
@@ -62,8 +61,7 @@ public class CaseMetadataController {
     ) {
         return claimService.getClaimByDefendantId(
             defendantId,
-            userService.authenticateAnonymousCaseWorker().getAuthorisation()
-        )
+            userService.authenticateAnonymousCaseWorker().getAuthorisation(), "")
             .stream()
             .map(CaseMetadata::fromClaim)
             .collect(Collectors.toList());

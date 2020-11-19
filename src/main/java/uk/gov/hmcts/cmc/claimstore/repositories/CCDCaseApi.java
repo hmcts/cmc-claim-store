@@ -79,10 +79,10 @@ public class CCDCaseApi {
         this.jobSchedulerService = jobSchedulerService;
     }
 
-    public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
+    public List<Claim> getBySubmitterId(String submitterId, String authorisation, String pageNumber) {
         User user = userService.getUser(authorisation);
 
-        return asStream(getAllCasesBy(user, ImmutableMap.of()))
+        return asStream(getAllCasesBy(user, ImmutableMap.of(), pageNumber))
             .filter(claim -> submitterId.equals(claim.getSubmitterId()))
             .collect(Collectors.toList());
     }
@@ -99,30 +99,42 @@ public class CCDCaseApi {
         return getCaseBy(authorisation, ImmutableMap.of("case.externalId", externalId));
     }
 
-    public List<Claim> getByDefendantId(String id, String authorisation) {
+    public List<Claim> getByDefendantId(String id, String authorisation, String pageNumber) {
         User user = userService.getUser(authorisation);
 
-        return asStream(getAllIssuedCasesBy(user, ImmutableMap.of()))
+        return asStream(getAllIssuedCasesBy(user, ImmutableMap.of(), pageNumber))
             .filter(claim -> id.equals(claim.getDefendantId()))
             .collect(Collectors.toList());
     }
 
+    public Map<String, String> getPaginationInfo(String authorisation) {
+        User user = userService.getUser(authorisation);
+
+        Map<String, String> searchCriteria = new HashMap<>();
+        searchCriteria.put("page", "1");
+        searchCriteria.put("sortDirection", "desc");
+
+        String serviceAuthToken = this.authTokenGenerator.generate();
+
+        return getPaginationInfoForCitizen(user, searchCriteria, serviceAuthToken);
+    }
+
     public List<Claim> getBySubmitterEmail(String submitterEmail, String authorisation) {
         User user = userService.getUser(authorisation);
-        return getAllCasesBy(user, ImmutableMap.of("case.submitterEmail", submitterEmail));
+        return getAllCasesBy(user, ImmutableMap.of("case.submitterEmail", submitterEmail), "");
     }
 
     public List<Claim> getByDefendantEmail(String defendantEmail, String authorisation) {
         User user = userService.getUser(authorisation);
 
-        return asStream(getAllIssuedCasesBy(user, ImmutableMap.of()))
+        return asStream(getAllIssuedCasesBy(user, ImmutableMap.of(), ""))
             .filter(claim -> defendantEmail.equals(claim.getDefendantEmail()))
             .collect(Collectors.toList());
     }
 
     public List<Claim> getByPaymentReference(String payReference, String authorisation) {
         User user = userService.getUser(authorisation);
-        return getAllCasesBy(user, ImmutableMap.of("case.paymentReference", payReference));
+        return getAllCasesBy(user, ImmutableMap.of("case.paymentReference", payReference), "");
     }
 
     public List<Claim> getClaimsByState(ClaimState claimState, User user) {
@@ -187,17 +199,30 @@ public class CCDCaseApi {
         this.updateDefendantIdAndEmail(anonymousCaseWorker, caseId, defendantId, defendantEmail);
     }
 
-    private List<Claim> getAllCasesBy(User user, ImmutableMap<String, String> searchString) {
-        return extractClaims(asStream(searchAll(user, searchString))
-            .filter(isAwaitingCitizenState.negate())
-            .collect(Collectors.toList()));
+    private List<Claim> getAllCasesBy(User user, ImmutableMap<String, String> searchString, String pageNumber) {
+        if (null != pageNumber && !pageNumber.isBlank()) {
+            return extractClaims(asStream(searchAllByPageNumber(user, searchString, pageNumber))
+                .filter(isAwaitingCitizenState.negate())
+                .collect(Collectors.toList()));
+        } else {
+            return extractClaims(asStream(searchAll(user, searchString))
+                .filter(isAwaitingCitizenState.negate())
+                .collect(Collectors.toList()));
+        }
     }
 
-    private List<Claim> getAllIssuedCasesBy(User user, ImmutableMap<String, String> searchString) {
-        return extractClaims(asStream(searchAll(user, searchString))
-            .filter(isCreatedState.negate())
-            .filter(isAwaitingCitizenState.negate())
-            .collect(Collectors.toList()));
+    private List<Claim> getAllIssuedCasesBy(User user, ImmutableMap<String, String> searchString, String pageNumber) {
+        if (null != pageNumber && !pageNumber.isBlank()) {
+            return extractClaims(asStream(searchAllByPageNumber(user, searchString, pageNumber))
+                .filter(isAwaitingCitizenState.negate())
+                .filter(isAwaitingCitizenState.negate())
+                .collect(Collectors.toList()));
+        } else {
+            return extractClaims(asStream(searchAll(user, searchString))
+                .filter(isCreatedState.negate())
+                .filter(isAwaitingCitizenState.negate())
+                .collect(Collectors.toList()));
+        }
     }
 
     private Optional<Claim> getCaseBy(String authorisation, Map<String, String> searchString) {
@@ -329,6 +354,10 @@ public class CCDCaseApi {
         return search(user, searchString, 1, new ArrayList<>(), null, null);
     }
 
+    private List<CaseDetails> searchAllByPageNumber(User user, Map<String, String> searchString, String pageNumber) {
+        return searchByPageNumber(user, searchString, Integer.parseInt(pageNumber), new ArrayList<>(), null, null);
+    }
+
     @SuppressWarnings("ParameterAssignment") // recursively modifying it internally only
     private List<CaseDetails> search(
         User user,
@@ -360,6 +389,26 @@ public class CCDCaseApi {
             }
         }
 
+        return results;
+    }
+
+    private List<CaseDetails> searchByPageNumber(
+        User user,
+        Map<String, String> searchString,
+        Integer page,
+        List<CaseDetails> results,
+        Integer numOfPages,
+        ClaimState state
+    ) {
+        Map<String, String> searchCriteria = new HashMap<>(searchString);
+        searchCriteria.put("page", page.toString());
+        searchCriteria.put("sortDirection", "desc");
+        if (state != null) {
+            searchCriteria.put("state", state.getValue());
+        }
+
+        String serviceAuthToken = this.authTokenGenerator.generate();
+        results.addAll(performSearch(user, searchCriteria, serviceAuthToken));
         return results;
     }
 
@@ -413,6 +462,27 @@ public class CCDCaseApi {
         }
 
         return result;
+    }
+
+    private Map<String, String> getPaginationInfoForCitizen(User user, Map<String, String> searchCriteria, String serviceAuthToken) {
+
+        Map<String, String> paginationInfo = new HashMap<>();
+
+        Integer totalClaims = null;
+        Integer totalPages = null;
+
+        totalClaims = coreCaseDataApi.getPaginationInfoForSearchForCitizens(
+                user.getAuthorisation(), serviceAuthToken, user.getUserDetails().getId(),
+                JURISDICTION_ID, CASE_TYPE_ID, searchCriteria).getTotalResultsCount();
+
+        totalPages = coreCaseDataApi.getPaginationInfoForSearchForCitizens(
+                user.getAuthorisation(), serviceAuthToken, user.getUserDetails().getId(),
+                JURISDICTION_ID, CASE_TYPE_ID, searchCriteria).getTotalPagesCount();
+
+        paginationInfo.put("totalClaims", totalClaims.toString());
+        paginationInfo.put("totalPages", totalPages.toString());
+
+        return paginationInfo;
     }
 
     private List<Claim> extractClaims(List<CaseDetails> result) {

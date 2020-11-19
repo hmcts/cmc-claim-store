@@ -5,14 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -23,6 +16,7 @@ import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantLinkStatus;
 
 import java.util.List;
+import java.util.Map;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -46,8 +40,9 @@ public class ClaimController {
     @GetMapping("/claimant/{submitterId}")
     @ApiOperation("Fetch user claims for given submitter id")
     public List<Claim> getBySubmitterId(@PathVariable("submitterId") String submitterId,
-                                        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
-        return claimService.getClaimBySubmitterId(submitterId, authorisation);
+                                        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
+                                        @RequestParam(value = "pageNo", required = false) String pageNumber) {
+        return claimService.getClaimBySubmitterId(submitterId, authorisation, pageNumber);
     }
 
     @GetMapping("/letter/{letterHolderId}")
@@ -88,9 +83,9 @@ public class ClaimController {
     @ApiOperation("Fetch claims linked to given defendant id")
     public List<Claim> getByDefendantId(
         @PathVariable("defendantId") String defendantId,
-        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
-    ) {
-        return claimService.getClaimByDefendantId(defendantId, authorisation);
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
+        @RequestParam(value = "pageNo", required = false) String pageNumber) {
+        return claimService.getClaimByDefendantId(defendantId, authorisation, pageNumber);
     }
 
     @PostMapping(value = "/{submitterId}", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -182,5 +177,11 @@ public class ClaimController {
         @Valid @NotNull @RequestBody ReviewOrder reviewOrder,
         @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation) {
         return claimService.saveReviewOrder(externalId, reviewOrder, authorisation);
+    }
+
+    @GetMapping(value = "/get-pagination-metadata")
+    @ApiOperation("Get the total claim number for an user")
+    public Map<String, String> getPaginationInfo(@RequestHeader (value = HttpHeaders.AUTHORIZATION) String authorisation) {
+        return claimService.getPaginationInfo(authorisation);
     }
 }

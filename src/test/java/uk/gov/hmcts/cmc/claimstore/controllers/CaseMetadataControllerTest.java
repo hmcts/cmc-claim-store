@@ -55,7 +55,7 @@ public class CaseMetadataControllerTest {
     @Test
     public void shouldReturnClaimsBySubmitterId() {
         // given
-        when(claimService.getClaimBySubmitterId(eq("submitter"), anyString()))
+        when(claimService.getClaimBySubmitterId(eq("submitter"), anyString(), ""))
             .thenReturn(singletonList(sampleClaim));
 
         // when
@@ -69,7 +69,7 @@ public class CaseMetadataControllerTest {
     @Test
     public void shouldReturnClaimsByDefendantId() {
         // given
-        when(claimService.getClaimByDefendantId(eq("defendant"), anyString()))
+        when(claimService.getClaimByDefendantId(eq("defendant"), anyString(), ""))
             .thenReturn(singletonList(sampleClaim));
 
         // when
