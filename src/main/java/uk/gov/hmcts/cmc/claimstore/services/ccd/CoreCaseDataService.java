@@ -684,9 +684,9 @@ public class CoreCaseDataService {
                 .defendantEmail(defendantEmail)
                 .defendantId(defendantId)
                 .build();
-
+            logger.info("<---- linkDefendant updated claim---->", defendantId, defendantEmail);
             CaseDataContent caseDataContent = caseDataContent(startEventResponse, updatedClaim);
-
+            logger.info("<---- submitting update event ---->", updatedClaim.getCcdCaseId());
             return submitUpdate(authorisation,
                 eventRequestData,
                 caseDataContent,
