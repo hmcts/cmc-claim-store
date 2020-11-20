@@ -215,7 +215,6 @@ class PaperResponseReviewedHandler {
         return uploaded || scanned;
     }
 
-
     private void notify(Claim claim, String mailTemplateId, String mailToParty) {
         if (!NA.equals(mailTemplateId)) {
             notificationService.sendMail(
@@ -226,6 +225,7 @@ class PaperResponseReviewedHandler {
             );
         }
     }
+    
     private Map<String, String> aggregateParams(Claim claim) {
         return Map.of(
             CLAIMANT_NAME, claim.getClaimData().getClaimant().getName(),
