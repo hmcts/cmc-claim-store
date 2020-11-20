@@ -52,6 +52,8 @@ class PaperResponseReviewedHandler {
     public static final String CLAIMANT = "claimant";
     public static final String DEFENDANT = "defendant";
     private static final String CCJ_REQUEST = "N225";
+    private static final String OCON9X = "OCON9x";
+    public static final String NA = "NotApplicable";
     private static final List<String> responseForms = of("N9a", "N9b", "N11");
     private static final List<String> courtForms = of("N180", "EX160", "N244", "N245", "Non_prescribed_documents");
     private static final List<String> SCANNED_DOCUMENT_TYPES = newArrayList(concat(responseForms, courtForms));
@@ -158,6 +160,8 @@ class PaperResponseReviewedHandler {
                                                         mailTemplates.getPaperResponseFromDefendantCaseHandoverToCCBC();
         } else if (CCJ_REQUEST.equals(subType)) {
             templateId = mailTemplates.getPaperResponseFormReceivedForCcjRequest();
+        } else if (OCON9X.equals(subType)) {
+            templateId = NA;
         } else if (otherDocumentTypes.contains(scannedDocument.getDocumentType())) {
             mailToParty = submittedByClaimant ? CLAIMANT : DEFENDANT;
             templateId = submittedByClaimant ? mailTemplates.getPaperResponseFromClaimantGeneralLetter() :
@@ -211,15 +215,17 @@ class PaperResponseReviewedHandler {
         return uploaded || scanned;
     }
 
-    private void notify(Claim claim, String mailTemplateId, String mailToParty) {
-        notificationService.sendMail(
-            getEmailId(claim, mailToParty),
-            mailTemplateId,
-            aggregateParams(claim),
-            PaperResponse.notifyClaimantPaperResponseSubmitted(claim.getReferenceNumber(), mailToParty)
-        );
-    }
 
+    private void notify(Claim claim, String mailTemplateId, String mailToParty) {
+        if (!NA.equals(mailTemplateId)) {
+            notificationService.sendMail(
+                getEmailId(claim, mailToParty),
+                mailTemplateId,
+                aggregateParams(claim),
+                PaperResponse.notifyClaimantPaperResponseSubmitted(claim.getReferenceNumber(), mailToParty)
+            );
+        }
+    }
     private Map<String, String> aggregateParams(Claim claim) {
         return Map.of(
             CLAIMANT_NAME, claim.getClaimData().getClaimant().getName(),

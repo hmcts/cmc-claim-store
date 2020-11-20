@@ -231,6 +231,8 @@ class PaperResponseReviewedHandlerTest {
 
         verifyMailWithCorrectTemplateIsSent(FORM, "N225", "Template7", SUBMITTER_EMAIL, true, 1);
 
+        verifyMailWithCorrectTemplateIsSent(FORM, "OCON9x", "NotApplicable", SUBMITTER_EMAIL, true, 0);
+
         verifyMailWithCorrectTemplateIsSent(OTHER, "abc", "Template6", DEFENDANT_EMAIL, false, 1);
         verifyMailWithCorrectTemplateIsSent(ScannedDocumentType.LETTER, "xyz", "Template6", DEFENDANT_EMAIL, false, 2);
 
