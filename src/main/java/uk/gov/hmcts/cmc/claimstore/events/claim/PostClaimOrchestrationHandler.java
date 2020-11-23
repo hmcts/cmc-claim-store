@@ -126,7 +126,7 @@ public class PostClaimOrchestrationHandler {
                 );
             }
         } catch (Exception e) {
-            logger.error("Failed operation processing for claim reference {} with exception {}",
+            logger.error("Failed operation processing for claim reference {} with exception {}", 
                 event.getClaim().getId(), e.getMessage());
         }
     }
