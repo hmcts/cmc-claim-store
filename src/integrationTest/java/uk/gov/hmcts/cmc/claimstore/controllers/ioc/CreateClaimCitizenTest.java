@@ -39,8 +39,7 @@ import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
 @TestPropertySource(
     properties = {
         "document_management.url=false",
-        "core_case_data.api.url=http://core-case-data-api",
-        "document_management.url=http://doc-management-api"
+        "core_case_data.api.url=http://core-case-data-api"
     }
 )
 public class CreateClaimCitizenTest extends BaseMockSpringTest {
