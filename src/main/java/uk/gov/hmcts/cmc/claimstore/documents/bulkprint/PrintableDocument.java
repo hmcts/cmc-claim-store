@@ -10,7 +10,7 @@ public abstract class PrintableDocument implements Printable {
     private final Document document;
     private final String fileName;
 
-    public PrintableDocument(Document document, String fileName) {
+    protected PrintableDocument(Document document, String fileName) {
         this.document = document;
         this.fileName = fileName + EXTENSION;
     }
