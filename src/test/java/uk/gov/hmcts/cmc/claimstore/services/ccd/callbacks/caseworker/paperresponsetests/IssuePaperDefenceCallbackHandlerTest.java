@@ -49,7 +49,7 @@ class IssuePaperDefenceCallbackHandlerTest {
     private static final String ERROR_MESSAGE = "There was a technical problem. Nothing has been sent."
         + " You need to try again.";
     private static final String CLAIMANT_ISSUED_CCJ =
-        "Claimant has requested CCJ so paper form cannot be issued.";
+        "CCJ already issued by claimant so OCON9x form cannot be sent out.";
     private static final String AUTHORISATION = "auth";
 
     @Mock
