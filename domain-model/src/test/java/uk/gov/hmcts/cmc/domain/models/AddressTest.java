@@ -1,7 +1,12 @@
 package uk.gov.hmcts.cmc.domain.models;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAddress;
 
 import java.util.Set;
@@ -9,10 +14,11 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 
-public class AddressTest {
+@ExtendWith(MockitoExtension.class)
+class AddressTest {
 
     @Test
-    public void shouldBeSuccessfulValidationForCorrectAddress() {
+    void shouldBeSuccessfulValidationForCorrectAddress() {
         //given
         Address address = SampleAddress.builder().build();
         //when
@@ -22,7 +28,7 @@ public class AddressTest {
     }
 
     @Test
-    public void shouldBeInvalidForNullLineOne() {
+    void shouldBeInvalidForNullLineOne() {
         //given
         Address address = SampleAddress.builder()
             .line1(null)
@@ -36,7 +42,7 @@ public class AddressTest {
     }
 
     @Test
-    public void shouldBeInvalidForEmptyLineOne() {
+    void shouldBeInvalidForEmptyLineOne() {
         //given
         Address address = SampleAddress.builder()
             .line1("")
@@ -50,7 +56,7 @@ public class AddressTest {
     }
 
     @Test
-    public void shouldBeInvalidForTooLongLineOne() {
+    void shouldBeInvalidForTooLongLineOne() {
         //given
         Address address = SampleAddress.builder()
             .line1(StringUtils.repeat("a", 101))
@@ -64,7 +70,7 @@ public class AddressTest {
     }
 
     @Test
-    public void shouldBeInvalidForTooLongLineTwo() {
+    void shouldBeInvalidForTooLongLineTwo() {
         //given
         Address address = SampleAddress.builder()
             .line2(StringUtils.repeat("a", 101))
@@ -78,7 +84,7 @@ public class AddressTest {
     }
 
     @Test
-    public void shouldBeInvalidForTooLongLineThree() {
+    void shouldBeInvalidForTooLongLineThree() {
         //given
         Address address = SampleAddress.builder()
             .line3(StringUtils.repeat("a", 101))
@@ -92,7 +98,7 @@ public class AddressTest {
     }
 
     @Test
-    public void shouldBeInvalidForEmptyCity() {
+    void shouldBeInvalidForEmptyCity() {
         //given
         Address address = SampleAddress.builder()
             .city("")
@@ -106,7 +112,7 @@ public class AddressTest {
     }
 
     @Test
-    public void shouldBeInvalidForTooLongCity() {
+    void shouldBeInvalidForTooLongCity() {
         //given
         Address address = SampleAddress.builder()
             .city(StringUtils.repeat("a", 101))
@@ -119,46 +125,21 @@ public class AddressTest {
             .contains("city : City should not be longer than 100 characters");
     }
 
-    @Test
-    public void shouldBeInvalidForNullPostcode() {
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {"SW123456"})
+    void shouldBeInvalidForNullPostcode(String input) {
         //given
         Address address = SampleAddress.builder()
-            .postcode(null)
+            .postcode(input)
             .build();
         //when
         Set<String> errors = validate(address);
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("postcode : may not be null");
-    }
-
-    @Test
-    public void shouldBeInvalidForEmptyPostcode() {
-        //given
-        Address address = SampleAddress.builder()
-            .postcode("")
-            .build();
-        //when
-        Set<String> errors = validate(address);
-        //then
-        assertThat(errors)
-            .hasSize(1)
-            .contains("postcode : Postcode is not of valid format");
-    }
-
-    @Test
-    public void shouldBeInvalidForInvalidPostcode() {
-        //given
-        Address address = SampleAddress.builder()
-            .postcode("SW123456")
-            .build();
-        //when
-        Set<String> errors = validate(address);
-        //then
-        assertThat(errors)
-            .hasSize(1)
-            .contains("postcode : Postcode is not of valid format");
+            .containsAnyOf("postcode : may not be null", "postcode : Postcode is not of valid format",
+                "postcode : Postcode is not of valid format");
     }
 
 }

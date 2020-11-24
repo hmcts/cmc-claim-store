@@ -198,8 +198,7 @@ public class TotalAmountCalculator {
     }
 
     private static BigDecimal daysBetween(LocalDate startDate, LocalDate endDate) {
-        // This should be enabled back and fixed properly
-        // requireValidOrderOfDates(startDate, endDate);
+
         Duration duration = Duration.between(startDate.atStartOfDay(), endDate.atStartOfDay());
 
         return duration.isNegative() ? ZERO : valueOf(duration.toDays());
