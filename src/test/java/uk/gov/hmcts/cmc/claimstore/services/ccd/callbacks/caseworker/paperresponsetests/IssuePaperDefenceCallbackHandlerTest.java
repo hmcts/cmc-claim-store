@@ -154,6 +154,7 @@ class IssuePaperDefenceCallbackHandlerTest {
             .respondents(ImmutableList.of(CCDCollectionElement.<CCDRespondent>builder()
                 .value(ccdCase.getRespondents().get(0).getValue().toBuilder()
                     .paperFormServedDate(LocalDate.now())
+                    .countyCourtJudgmentRequest(null)
                     .build())
                 .build()))
             .extendedResponseDeadline(LocalDate.now())
@@ -186,11 +187,16 @@ class IssuePaperDefenceCallbackHandlerTest {
 
     @Test
     void shouldHandleAboutToSubmitCallbackMoreTimeRequested() {
+        CCDCountyCourtJudgment ccdCountyCourtJudgment = CCDCountyCourtJudgment.builder()
+            .type(CCDCountyCourtJudgmentType.DETERMINATION)
+            .build();
         ccdCase = CCDCase.builder()
             .previousServiceCaseReference("000MC001")
             .respondents(ImmutableList.of(
                 CCDCollectionElement.<CCDRespondent>builder()
-                    .value(SampleData.getIndividualRespondentWithDQInClaimantResponse())
+                    .value(SampleData.getIndividualRespondentWithDQInClaimantResponse().toBuilder()
+                        .countyCourtJudgmentRequest(ccdCountyCourtJudgment)
+                        .build())
                     .build()
             ))
             .applicants(List.of(
@@ -240,11 +246,16 @@ class IssuePaperDefenceCallbackHandlerTest {
 
     @Test
     void shouldSendErrorsWhenExceptionThrownForCallback() {
+        CCDCountyCourtJudgment ccdCountyCourtJudgment = CCDCountyCourtJudgment.builder()
+            .type(CCDCountyCourtJudgmentType.ADMISSIONS)
+            .build();
         ccdCase = CCDCase.builder()
             .previousServiceCaseReference("000MC001")
             .respondents(ImmutableList.of(
                 CCDCollectionElement.<CCDRespondent>builder()
-                    .value(SampleData.getIndividualRespondentWithDQInClaimantResponse())
+                    .value(SampleData.getIndividualRespondentWithDQInClaimantResponse().toBuilder()
+                        .countyCourtJudgmentRequest(ccdCountyCourtJudgment)
+                        .build())
                     .build()
             ))
             .applicants(List.of(
