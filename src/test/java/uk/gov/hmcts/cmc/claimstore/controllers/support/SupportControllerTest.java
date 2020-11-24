@@ -170,7 +170,7 @@ class SupportControllerTest {
                 when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(sampleClaim));
                 when(userService.getUserDetails(AUTHORISATION)).thenReturn(USER_DETAILS);
 
-                when(claimService.linkLetterHolder(sampleClaim, letterHolderId, AUTHORISATION)).thenReturn(sampleClaim);
+                when(claimService.linkLetterHolder(sampleClaim, letterHolderId)).thenReturn(sampleClaim);
 
                 controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claim");
 
