@@ -2,8 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -34,7 +32,6 @@ public class ReferToJudgeCallbackHandler extends CallbackHandler {
     private static final List<CaseEvent> EVENTS = Collections.singletonList(REFER_TO_JUDGE);
     private static final List<Role> ROLES = ImmutableList.of(CASEWORKER);
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final CaseDetailsConverter caseDetailsConverter;
 
     @Autowired
