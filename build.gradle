@@ -392,7 +392,10 @@ sonarqube {
         "**/ValidEmploymentConstraintValidator.java",
         "**/ValidInterestConstraintValidator.java",
         "**/ValidInterestDateConstraintValidator.java",
-        "**/ValidUnemploymentConstraintValidator.java"
+        "**/ValidUnemploymentConstraintValidator.java",
+        "**/ValidIncomeConstraintValidator.java",
+        "**/ValidExpenseConstraintValidator.java",
+        "**/ValidResidenceConstraintValidator.java"
       ].join(",")
   }
 }
