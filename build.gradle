@@ -102,7 +102,7 @@ allprojects {
     }
     dependencies {
       // CVE-2020-13935
-      dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.37') {
+      dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.38') {
         entry 'tomcat-embed-core'
         entry 'tomcat-embed-el'
         entry 'tomcat-embed-websocket'
@@ -149,7 +149,7 @@ allprojects {
       // solves CVE-2020-5407
       dependencySet(
         group: 'org.springframework.security',
-        version: '5.3.2.RELEASE'
+        version: '5.4.0'
       ) {
         entry 'spring-security-crypto'
       }
@@ -393,11 +393,9 @@ sonarqube {
         "**/ValidInterestConstraintValidator.java",
         "**/ValidInterestDateConstraintValidator.java",
         "**/ValidUnemploymentConstraintValidator.java",
-        "rpa-mapper/**",
-        "**/HwfClaimNotificationService.java",
-        "**/HWFFullRemissionCallbackHandler.java",
-        "**/HWFHalfRemissionCallbackHandler.java",
-        "**/HWFNoRemissionCallbackHandler.java",
+        "**/ValidIncomeConstraintValidator.java",
+        "**/ValidExpenseConstraintValidator.java",
+        "**/ValidResidenceConstraintValidator.java"
       ].join(",")
   }
 }

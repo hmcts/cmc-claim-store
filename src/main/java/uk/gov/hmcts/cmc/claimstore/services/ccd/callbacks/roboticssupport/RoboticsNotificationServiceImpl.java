@@ -32,6 +32,7 @@ import java.util.function.Predicate;
 @Service
 public class RoboticsNotificationServiceImpl implements RoboticsNotificationService {
 
+    private static final String REFERENCE_NUMBER_NOT_SUPPLIED = "Reference number not supplied";
     private final UserService userService;
 
     private final ClaimService claimService;
@@ -73,7 +74,7 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
     @Override
     public String rpaClaimNotification(String referenceNumber) {
         if (StringUtils.isEmpty(referenceNumber)) {
-            throw new BadRequestException("Reference number not supplied");
+            throw new BadRequestException(REFERENCE_NUMBER_NOT_SUPPLIED);
         }
         User user = userService.authenticateAnonymousCaseWorker();
         String authorisation = user.getAuthorisation();
@@ -96,7 +97,7 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
     @Override
     public String rpaMoreTimeNotifications(String referenceNumber) {
         if (StringUtils.isEmpty(referenceNumber)) {
-            throw new BadRequestException("Reference number not supplied");
+            throw new BadRequestException(REFERENCE_NUMBER_NOT_SUPPLIED);
         }
         User user = userService.authenticateAnonymousCaseWorker();
         return resendRPA(referenceNumber, user.getAuthorisation(), Claim::isMoreTimeRequested,
@@ -111,7 +112,7 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
     @Override
     public String rpaResponseNotifications(String referenceNumber) {
         if (StringUtils.isEmpty(referenceNumber)) {
-            throw new BadRequestException("Reference number not supplied");
+            throw new BadRequestException(REFERENCE_NUMBER_NOT_SUPPLIED);
         }
         User user = userService.authenticateAnonymousCaseWorker();
         String authorisation = user.getAuthorisation();
@@ -125,7 +126,7 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
     @Override
     public String rpaCCJNotifications(String referenceNumber) {
         if (StringUtils.isEmpty(referenceNumber)) {
-            throw new BadRequestException("Reference number not supplied");
+            throw new BadRequestException(REFERENCE_NUMBER_NOT_SUPPLIED);
         }
         User user = userService.authenticateAnonymousCaseWorker();
         String authorisation = user.getAuthorisation();
@@ -138,7 +139,7 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
     @Override
     public String rpaPIFNotifications(String referenceNumber) {
         if (StringUtils.isEmpty(referenceNumber)) {
-            throw new BadRequestException("Reference number not supplied");
+            throw new BadRequestException(REFERENCE_NUMBER_NOT_SUPPLIED);
         }
         User user = userService.authenticateAnonymousCaseWorker();
         return resendRPA(referenceNumber, user.getAuthorisation(),

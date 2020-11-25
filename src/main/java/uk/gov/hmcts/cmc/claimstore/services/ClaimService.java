@@ -195,7 +195,10 @@ public class ClaimService {
     ) {
         User user = userService.getUser(authorisation);
 
-        Claim claim = buildClaimFrom(user, user.getUserDetails().getId(), claimData, emptyList(), false);
+        Claim claim = buildClaimFrom(user,
+            user.getUserDetails().getId(),
+            claimData,
+            emptyList());
 
         Claim createdClaim = caseRepository.initiatePayment(user, claim);
 
@@ -259,7 +262,10 @@ public class ClaimService {
                     String.format("Claim already exist with same external reference as %s", externalId));
             });
 
-        Claim claim = buildClaimFrom(user, submitterId, claimData, features, false);
+        Claim claim = buildClaimFrom(user,
+            submitterId,
+            claimData,
+            features);
 
         Claim savedClaim = caseRepository.saveClaim(user, claim);
         createClaimEvent(authorisation, user, savedClaim);
@@ -344,8 +350,7 @@ public class ClaimService {
     public Claim requestMoreTimeForResponse(String externalId, String authorisation) {
         Claim claim = getClaimByExternalId(externalId, authorisation);
 
-        LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn()
-            .orElseThrow(() -> new IllegalStateException("Missing issuedOn date")));
+        LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
 
         this.moreTimeRequestRule.assertMoreTimeCanBeRequested(claim);
 
@@ -372,7 +377,8 @@ public class ClaimService {
     }
 
     public Claim linkLetterHolder(Claim claim, String letterHolderId, String authorisation) {
-        return caseRepository.linkLetterHolder(claim.getId(), letterHolderId);
+        Claim updated = caseRepository.linkLetterHolder(claim.getId(), letterHolderId);
+        return updated;
     }
 
     public void saveCountyCourtJudgment(
@@ -466,11 +472,17 @@ public class ClaimService {
         boolean helpWithFees
     ) {
         String externalId = claimData.getExternalId().toString();
+
+        LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
+        LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
         String submitterEmail = user.getUserDetails().getEmail();
 
         Claim.ClaimBuilder claimBuilder = Claim.builder()
             .claimData(claimData)
             .submitterId(submitterId)
+            .issuedOn(issuedOn)
+            .serviceDate(issuedOn.plusDays(5))
+            .responseDeadline(responseDeadline)
             .externalId(externalId)
             .submitterEmail(submitterEmail)
             .createdAt(LocalDateTimeFactory.nowInUTC())

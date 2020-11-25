@@ -89,6 +89,7 @@ public class CoreCaseDataService {
 
     private static final String CCD_PAYMENT_CREATE_FAILURE_MESSAGE
         = "Failed creating a payment in CCD store for claim with external id %s on event %s";
+    private static final String USER_MUST_NOT_BE_NULL = "user must not be null";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -135,7 +136,7 @@ public class CoreCaseDataService {
 
     @LogExecutionTime
     public Claim createNewCase(User user, Claim claim) {
-        requireNonNull(user, "user must not be null");
+        requireNonNull(user, USER_MUST_NOT_BE_NULL);
 
         CCDCase ccdCase = caseMapper.to(claim);
 
@@ -157,7 +158,7 @@ public class CoreCaseDataService {
 
     @LogExecutionTime
     public Claim createRepresentedClaim(User user, Claim claim) {
-        requireNonNull(user, "user must not be null");
+        requireNonNull(user, USER_MUST_NOT_BE_NULL);
 
         CCDCase ccdCase = caseMapper.to(claim);
 
@@ -217,7 +218,7 @@ public class CoreCaseDataService {
         User user,
         Claim claim
     ) {
-        requireNonNull(user, "user must not be null");
+        requireNonNull(user, USER_MUST_NOT_BE_NULL);
 
         CCDCase ccdCase = caseMapper.to(claim);
 

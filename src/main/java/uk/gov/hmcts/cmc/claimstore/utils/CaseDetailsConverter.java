@@ -55,9 +55,9 @@ public class CaseDetailsConverter {
 
         // Calculating the intention to proceed here rather than in the mapper as we have access
         // to the WorkingDayIndicator here
-        LocalDate intentionToProceedDeadline = calculateIntentionToProceedDeadline(claim.getRespondedAt());
+        LocalDate intendsToProceedDeadline = calculateIntentionToProceedDeadline(claim.getRespondedAt());
         return claim.toBuilder()
-            .intentionToProceedDeadline(intentionToProceedDeadline)
+            .intentionToProceedDeadline(intendsToProceedDeadline)
             .response(updateResponseMethod(claim.getResponse().orElse(null), ccdCase))
             .build();
     }
