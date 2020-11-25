@@ -104,6 +104,6 @@
   "orderDrawnByJudge": false,
   "orderDrawnByLA": false,
   "bespokeOrderWarning": false,
-  "isOconRespone": "false",
+  "oconResponse": false,
   "moreTimeRequested": false
 }

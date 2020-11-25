@@ -108,8 +108,8 @@ public class DocAssemblyTemplateBodyMapper {
                 currentDate.plusDays(reconsiderationDaysForOnlineResponse)))
             .oconReconsiderationDeadline(workingDayIndicator.getNextWorkingDay(
                 currentDate.plusDays(reconsiderationDaysForOconResponse)))
-            .isOconRespone(Boolean.toString(ccdCase.getRespondents().get(0).getValue()
-                .getResponseMethod() == CCDResponseMethod.OCON_FORM))
+            .oconResponse(ccdCase.getRespondents().get(0).getValue()
+                .getResponseMethod() == CCDResponseMethod.OCON_FORM)
             .changeOrderDeadline(workingDayIndicator.getNextWorkingDay(
                 currentDate.plusDays(CHANGE_ORDER_DEADLINE_NO_OF_DAYS)))
             .expertReportInstruction(ccdCase.getExpertReportInstruction())

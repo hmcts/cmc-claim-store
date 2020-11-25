@@ -142,8 +142,8 @@ public class DocAssemblyTemplateBody implements FormPayload {
     private String soleTradingTraderName;
     private String organisationName;
     private boolean moreTimeRequested;
-    //tried making the below flag as boolean but docmosis not accepting
-    private String isOconRespone;
+
+    private boolean oconResponse;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate oconReconsiderationDeadline;

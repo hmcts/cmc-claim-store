@@ -179,7 +179,7 @@ class DocAssemblyTemplateBodyMapperTest {
             .expertReportInstructionClaimant(Collections.emptyList())
             .expertReportInstructionDefendant(Collections.emptyList())
             .grantExpertReportPermission(true)
-            .isOconRespone("false")
+            .oconResponse(false)
             .expertReportInstruction(SUBMIT_MORE_DOCS_INSTRUCTION);
     }
 
@@ -364,7 +364,7 @@ class DocAssemblyTemplateBodyMapperTest {
                         .build()
                 ));
 
-            docAssemblyTemplateBodyBuilder.isOconRespone("true");
+            docAssemblyTemplateBodyBuilder.oconResponse(true);
             DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
                 ccdCase,
                 userDetails
@@ -396,42 +396,11 @@ class DocAssemblyTemplateBodyMapperTest {
                 userDetails
             );
 
-            docAssemblyTemplateBodyBuilder.isOconRespone("false");
+            docAssemblyTemplateBodyBuilder.oconResponse(false);
             DocAssemblyTemplateBody expectedBody = docAssemblyTemplateBodyBuilder.build();
             assertThat(requestBody).isEqualTo(expectedBody);
         }
 
-        /*@Test
-        void shouldMapDirectionDeadLineBefore() {
-            ReflectionTestUtils.setField(docAssemblyTemplateBodyMapper, "reconsiderationDaysForOconResponse", 12);
-            ReflectionTestUtils.setField(docAssemblyTemplateBodyMapper, "reconsiderationDaysForOnlineResponse", 7);
-            ReflectionTestUtils.setField(docAssemblyTemplateBodyMapper, "directionDeadlineChangeDate",
-                "2018-06-27T11:00:00");
-            when(workingDayIndicator.getNextWorkingDay(any())).thenReturn(LocalDate.parse("2020-07-28"));
-            DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
-                ccdCase,
-                userDetails
-            );
-            verify(workingDayIndicator, times(2)).getNextWorkingDay(workingDayIndicate.capture());
-            assertEquals(LocalDate.parse("2019-05-01"), workingDayIndicate.getAllValues().get(0));
-
-        }
-
-        @Test
-        void shouldMapDirectionDeadLineAfter() {
-
-            ReflectionTestUtils.setField(docAssemblyTemplateBodyMapper, "directionDeadLineNumberOfDays", 7);
-            ReflectionTestUtils.setField(docAssemblyTemplateBodyMapper, "directionDeadlineChangeDate",
-                LocalDateTime.now().plusDays(2).toString());
-            when(workingDayIndicator.getNextWorkingDay(any())).thenReturn(LocalDate.parse("2020-07-28"));
-            DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
-                ccdCase,
-                userDetails
-            );
-            verify(workingDayIndicator, times(2)).getNextWorkingDay(workingDayIndicate.capture());
-            assertEquals(LocalDate.parse("2019-05-13"), workingDayIndicate.getAllValues().get(0));
-
-        }*/
     }
 
     @Nested
