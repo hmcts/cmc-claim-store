@@ -6,6 +6,7 @@ public enum ClaimState {
     CREATE("create"),
     HWF_APPLICATION_PENDING("hwfApplicationPending"),
     AWAITING_RESPONSE_HWF("awaitingResponseHWF"),
+    CLOSED_HWF("closedDraftNotIssued"),
     OPEN("open"),
     CLOSED("closed"),
     SETTLED("settled"),
