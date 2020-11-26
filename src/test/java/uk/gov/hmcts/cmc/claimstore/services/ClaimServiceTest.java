@@ -304,16 +304,6 @@ public class ClaimServiceTest {
         claimService.requestMoreTimeForResponse(EXTERNAL_ID, AUTHORISATION);
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void requestMoreTimeForResponseThrowsExceptionWhenIssuedDateIsMissing() {
-        Claim claim = SampleClaim.withNoResponse().toBuilder()
-            .issuedOn(null).build();
-
-        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
-            .thenReturn(Optional.of(claim));
-        claimService.requestMoreTimeForResponse(EXTERNAL_ID, AUTHORISATION);
-    }
-
     @Test
     public void getClaimByClaimantEmailShouldCallCaseRepository() {
         when(caseRepository.getByClaimantEmail(eq(claim.getSubmitterEmail()), anyString()))
@@ -686,7 +676,7 @@ public class ClaimServiceTest {
             .withExternalId(externalId)
             .withHelpWithFeesNumber("HWF01234")
             .withHelpWithFeesType("Claim Issue").build();
-
+        when(issueDateCalculator.calculateIssueDay(any())).thenReturn(LocalDate.now());
         claimService.saveHelpWithFeesClaim(USER_ID, claimData, AUTHORISATION, singletonList(ADMISSIONS.getValue()));
 
         verify(caseRepository).saveHelpWithFeesClaim(any(), any());
@@ -705,7 +695,7 @@ public class ClaimServiceTest {
         claimService.updateHelpWithFeesClaim(AUTHORISATION,
             VALID_APP.toBuilder()
                 .helpWithFeesType("Claim Issue")
-            .helpWithFeesNumber("HWF12345").build(), singletonList(ADMISSIONS.getValue()));
+                .helpWithFeesNumber("HWF12345").build(), singletonList(ADMISSIONS.getValue()));
 
         verify(caseRepository).updateHelpWithFeesClaim(any(), any(), eq(UPDATE_HELP_WITH_FEE_CLAIM));
         verify(appInsights).trackEvent(HWF_CLAIM_CREATED, AppInsights.CLAIM_EXTERNAL_ID,

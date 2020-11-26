@@ -198,7 +198,7 @@ public class ClaimService {
         Claim claim = buildClaimFrom(user,
             user.getUserDetails().getId(),
             claimData,
-            emptyList());
+            emptyList(), false);
 
         Claim createdClaim = caseRepository.initiatePayment(user, claim);
 
@@ -265,7 +265,7 @@ public class ClaimService {
         Claim claim = buildClaimFrom(user,
             submitterId,
             claimData,
-            features);
+            features, false);
 
         Claim savedClaim = caseRepository.saveClaim(user, claim);
         createClaimEvent(authorisation, user, savedClaim);
@@ -349,8 +349,12 @@ public class ClaimService {
 
     public Claim requestMoreTimeForResponse(String externalId, String authorisation) {
         Claim claim = getClaimByExternalId(externalId, authorisation);
-
-        LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
+        LocalDate issuedOn = null;
+        Optional<LocalDate> issuedOnOptional = claim.getIssuedOn();
+        if (issuedOnOptional.isPresent()) {
+            issuedOn = issuedOnOptional.get();
+        }
+        LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(issuedOn);
 
         this.moreTimeRequestRule.assertMoreTimeCanBeRequested(claim);
 
@@ -376,7 +380,7 @@ public class ClaimService {
         return caseRepository.saveClaimDocuments(authorisation, claimId, claimDocumentCollection, claimDocumentType);
     }
 
-    public Claim linkLetterHolder(Claim claim, String letterHolderId, String authorisation) {
+    public Claim linkLetterHolder(Claim claim, String letterHolderId) {
         Claim updated = caseRepository.linkLetterHolder(claim.getId(), letterHolderId);
         return updated;
     }
@@ -490,7 +494,6 @@ public class ClaimService {
             .claimSubmissionOperationIndicators(ClaimSubmissionOperationIndicators.builder().build());
 
         if (!helpWithFees) {
-            LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
             claimBuilder
                 .issuedOn(issuedOn)
                 .serviceDate(issuedOn.plusDays(5))
