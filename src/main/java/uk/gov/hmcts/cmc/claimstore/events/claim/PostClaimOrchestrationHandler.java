@@ -152,7 +152,7 @@ public class PostClaimOrchestrationHandler {
                 }
             }
         } catch (Exception e) {
-            logger.error("Failed operation processing for event {}", event, e);
+            logger.error(FAILED_LOG_MSG, event, e);
         }
     }
 

@@ -149,7 +149,7 @@ public class CoreCaseDataService {
 
     @LogExecutionTime
     public Claim createNewHelpWithFeesCase(User user, Claim claim) {
-        requireNonNull(user, "user must not be null");
+        requireNonNull(user, USER_MUST_NOT_BE_NULL);
 
         CCDCase ccdCase = caseMapper.to(claim);
 
