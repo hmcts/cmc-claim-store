@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,10 +22,12 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_INFO_REQUIRED_FOR_HWF;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
 @Service
@@ -36,7 +37,8 @@ public class HWFMiscellaneousCallbackHandler extends CallbackHandler {
 
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
 
-    private static final List<CaseEvent> EVENTS = ImmutableList.of(CaseEvent.MISC_HWF);
+    private static final List<CaseEvent> EVENTS = Arrays.asList(CaseEvent.MISC_HWF,
+        MORE_INFO_REQUIRED_FOR_HWF);
 
     private final CaseDetailsConverter caseDetailsConverter;
 
