@@ -27,7 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_INFO_REQUIRED_FOR_HWF;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.*;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
 @Service
@@ -38,7 +38,8 @@ public class HWFMiscellaneousCallbackHandler extends CallbackHandler {
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
 
     private static final List<CaseEvent> EVENTS = Arrays.asList(CaseEvent.MISC_HWF,
-        MORE_INFO_REQUIRED_FOR_HWF);
+        MORE_INFO_REQUIRED_FOR_HWF, CaseEvent.FULL_REMISSION_HWF_REJECTED,
+        PART_REMISSION_HWF_REJECTED, HWF_NO_REMISSION);
 
     private final CaseDetailsConverter caseDetailsConverter;
 
