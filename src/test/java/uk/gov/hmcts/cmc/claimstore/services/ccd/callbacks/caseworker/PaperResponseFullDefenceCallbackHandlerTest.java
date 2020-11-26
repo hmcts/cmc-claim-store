@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
+import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
@@ -99,8 +100,18 @@ class PaperResponseFullDefenceCallbackHandlerTest {
                         .partyDetail(CCDParty.builder()
                             .primaryAddress(CCDAddress.builder().postCode(postcode).build())
                             .build())
+                        .claimantProvidedDetail(CCDParty.builder()
+                            .emailAddress("abc@def.com")
+                            .type(CCDPartyType.COMPANY)
+                            .build())
                         .build())
                     .build()))
+                .applicants(
+                    com.google.common.collect.ImmutableList.of(
+                        CCDCollectionElement.<CCDApplicant>builder()
+                            .value(SampleData.getCCDApplicantIndividual())
+                            .build()
+                    ))
                 .build());
 
             String court = "Court";
