@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public interface CaseRepository {
-    List<Claim> getBySubmitterId(String submitterId, String authorisation, String pageNumber);
+    List<Claim> getBySubmitterId(String submitterId, String authorisation, String pageNumber, int index);
 
     Optional<Claim> getClaimByExternalId(String externalId, User user);
 
@@ -34,7 +34,7 @@ public interface CaseRepository {
         CountyCourtJudgment countyCourtJudgment
     );
 
-    Map<String, String> getPaginationInfo(String authorisation);
+    Map<String, String> getPaginationInfo(String authorisation, String userType);
 
     void saveDefendantResponse(
         Claim claim,
@@ -52,7 +52,7 @@ public interface CaseRepository {
 
     void linkDefendant(String authorisation, String letterholderId);
 
-    List<Claim> getByDefendantId(String id, String authorisation, String pageNumber);
+    List<Claim> getByDefendantId(String id, String authorisation, String pageNumber, int index);
 
     List<Claim> getByClaimantEmail(String email, String authorisation);
 

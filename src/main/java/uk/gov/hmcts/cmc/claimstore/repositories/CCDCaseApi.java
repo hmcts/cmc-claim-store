@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
@@ -49,6 +50,7 @@ public class CCDCaseApi {
     private final CoreCaseDataService coreCaseDataService;
     private final CaseDetailsConverter ccdCaseDataToClaim;
     private final JobSchedulerService jobSchedulerService;
+    private final CaseSearchApi caseSearchApi;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CCDCaseApi.class);
     // CCD has a page size of 25 currently, it is configurable so assume it'll never be less than 10
@@ -68,7 +70,8 @@ public class CCDCaseApi {
         CaseAccessApi caseAccessApi,
         CoreCaseDataService coreCaseDataService,
         CaseDetailsConverter ccdCaseDataToClaim,
-        JobSchedulerService jobSchedulerService
+        JobSchedulerService jobSchedulerService,
+        CaseSearchApi caseSearchApi
     ) {
         this.coreCaseDataApi = coreCaseDataApi;
         this.authTokenGenerator = authTokenGenerator;
@@ -77,14 +80,13 @@ public class CCDCaseApi {
         this.coreCaseDataService = coreCaseDataService;
         this.ccdCaseDataToClaim = ccdCaseDataToClaim;
         this.jobSchedulerService = jobSchedulerService;
+        this.caseSearchApi = caseSearchApi;
     }
 
-    public List<Claim> getBySubmitterId(String submitterId, String authorisation, String pageNumber) {
+    public List<Claim> getBySubmitterId(String submitterId, String authorisation, String pageNumber, int index) {
         User user = userService.getUser(authorisation);
 
-        return asStream(getAllCasesBy(user, ImmutableMap.of(), pageNumber))
-            .filter(claim -> submitterId.equals(claim.getSubmitterId()))
-            .collect(Collectors.toList());
+        return caseSearchApi.getClaimsForClaimant(submitterId, user, index);
     }
 
     public Optional<Claim> getByReferenceNumber(String referenceNumber, String authorisation) {
@@ -99,24 +101,30 @@ public class CCDCaseApi {
         return getCaseBy(authorisation, ImmutableMap.of("case.externalId", externalId));
     }
 
-    public List<Claim> getByDefendantId(String id, String authorisation, String pageNumber) {
+    public List<Claim> getByDefendantId(String id, String authorisation, String pageNumber, int index) {
         User user = userService.getUser(authorisation);
 
-        return asStream(getAllIssuedCasesBy(user, ImmutableMap.of(), pageNumber))
-            .filter(claim -> id.equals(claim.getDefendantId()))
-            .collect(Collectors.toList());
+        return caseSearchApi.getClaimsForDefendant(id, user, index);
     }
 
-    public Map<String, String> getPaginationInfo(String authorisation) {
-        User user = userService.getUser(authorisation);
+    public Map<String, String> getPaginationInfo(User user, String userType) {
+        UserDetails userDetails = user.getUserDetails();
+        Integer totalPageCount = 1;
+        Integer totalClaimCount = 0;
+        Map<String, String> paginationInfo = new HashMap<>();
 
-        Map<String, String> searchCriteria = new HashMap<>();
-        searchCriteria.put("page", "1");
-        searchCriteria.put("sortDirection", "desc");
+        if (userType.equalsIgnoreCase("claimant")) {
+            totalClaimCount = caseSearchApi.getClaimCountForClaimant(userDetails.getId(), user);
+        } else if (userType.equalsIgnoreCase("defendant")) {
+            totalClaimCount = caseSearchApi.getClaimCountForDefendant(userDetails.getId(), user);
+        }
+        if (totalClaimCount > 25) {
+            totalPageCount = ((int) Math.ceil((double) totalClaimCount / 25));
+        }
+        paginationInfo.put("totalClaims", totalClaimCount.toString());
+        paginationInfo.put("totalPages", totalPageCount.toString());
 
-        String serviceAuthToken = this.authTokenGenerator.generate();
-
-        return getPaginationInfoForCitizen(user, searchCriteria, serviceAuthToken);
+        return paginationInfo;
     }
 
     public List<Claim> getBySubmitterEmail(String submitterEmail, String authorisation) {
@@ -462,27 +470,6 @@ public class CCDCaseApi {
         }
 
         return result;
-    }
-
-    private Map<String, String> getPaginationInfoForCitizen(User user, Map<String, String> searchCriteria, String serviceAuthToken) {
-
-        Map<String, String> paginationInfo = new HashMap<>();
-
-        Integer totalClaims = null;
-        Integer totalPages = null;
-
-        totalClaims = coreCaseDataApi.getPaginationInfoForSearchForCitizens(
-                user.getAuthorisation(), serviceAuthToken, user.getUserDetails().getId(),
-                JURISDICTION_ID, CASE_TYPE_ID, searchCriteria).getTotalResultsCount();
-
-        totalPages = coreCaseDataApi.getPaginationInfoForSearchForCitizens(
-                user.getAuthorisation(), serviceAuthToken, user.getUserDetails().getId(),
-                JURISDICTION_ID, CASE_TYPE_ID, searchCriteria).getTotalPagesCount();
-
-        paginationInfo.put("totalClaims", totalClaims.toString());
-        paginationInfo.put("totalPages", totalPages.toString());
-
-        return paginationInfo;
     }
 
     private List<Claim> extractClaims(List<CaseDetails> result) {

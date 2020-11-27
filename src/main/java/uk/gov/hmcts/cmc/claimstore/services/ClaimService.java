@@ -100,7 +100,11 @@ public class ClaimService {
 
     public List<Claim> getClaimBySubmitterId(String submitterId, String authorisation, String pageNumber) {
         claimAuthorisationRule.assertUserIdMatchesAuthorisation(submitterId, authorisation);
-        return caseRepository.getBySubmitterId(submitterId, authorisation, pageNumber);
+        int index = 0;
+        if (null != pageNumber && !pageNumber.isBlank()) {
+            index = (25 * (Integer.valueOf(pageNumber) - 1));
+        }
+        return caseRepository.getBySubmitterId(submitterId, authorisation, pageNumber, index);
     }
 
     public Claim getClaimByLetterHolderId(String id, String authorisation) {
@@ -158,7 +162,7 @@ public class ClaimService {
     public List<Claim> getClaimByExternalReference(String externalReference, String authorisation) {
         String submitterId = userService.getUserDetails(authorisation).getId();
 
-        return asStream(caseRepository.getBySubmitterId(submitterId, authorisation, ""))
+        return asStream(caseRepository.getBySubmitterId(submitterId, authorisation, "", 0))
             .filter(claim ->
                 claim.getClaimData().getExternalReferenceNumber().filter(externalReference::equals).isPresent())
             .collect(Collectors.toList());
@@ -166,12 +170,16 @@ public class ClaimService {
 
     public List<Claim> getClaimByDefendantId(String id, String authorisation, String pageNumber) {
         claimAuthorisationRule.assertUserIdMatchesAuthorisation(id, authorisation);
+        int index = 0;
+        if (null != pageNumber && !pageNumber.isBlank()) {
+            index = (25 * (Integer.valueOf(pageNumber) - 1));
+        }
 
-        return caseRepository.getByDefendantId(id, authorisation, pageNumber);
+        return caseRepository.getByDefendantId(id, authorisation, pageNumber, index);
     }
 
-    public Map<String, String> getPaginationInfo(String authorisation) {
-        return caseRepository.getPaginationInfo(authorisation);
+    public Map<String, String> getPaginationInfo(String authorisation, String userType) {
+        return caseRepository.getPaginationInfo(authorisation, userType);
     }
 
     public List<Claim> getClaimByClaimantEmail(String email, String authorisation) {

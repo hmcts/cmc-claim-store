@@ -78,7 +78,7 @@ public class CCDElasticSearchRepositoryTest {
             eq(AUTHORISATION),
             eq(SERVICE_AUTH),
             eq(CASE_TYPE_ID),
-            eq(new Query(queryBuilder, 1000).toString())
+            eq(new Query(queryBuilder, 1000, 0).toString())
         );
     }
 
@@ -87,10 +87,7 @@ public class CCDElasticSearchRepositoryTest {
         User user = new User(AUTHORISATION, null);
         ccdElasticSearchRepository.getClaimsWithDefaultCCJ(user,
             LocalDate.of(2020, 1, 10));
-        verify(coreCaseDataApi).searchCases(
-            AUTHORISATION,
-            SERVICE_AUTH,
-            CASE_TYPE_ID,
+        verify(coreCaseDataApi).searchCases(AUTHORISATION, SERVICE_AUTH, CASE_TYPE_ID,
             SampleQueryConstants.defaultCCJCases10DaysBefore);
     }
 
@@ -98,10 +95,7 @@ public class CCDElasticSearchRepositoryTest {
     public void getClaimsReadyForTransferQueriesElastic() {
         User user = new User(AUTHORISATION, null);
         ccdElasticSearchRepository.getClaimsReadyForTransfer(user);
-        verify(coreCaseDataApi).searchCases(
-            AUTHORISATION,
-            SERVICE_AUTH,
-            CASE_TYPE_ID,
+        verify(coreCaseDataApi).searchCases(AUTHORISATION, SERVICE_AUTH, CASE_TYPE_ID,
             SampleQueryConstants.readyForTransfer);
     }
 }

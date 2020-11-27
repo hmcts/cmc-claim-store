@@ -50,8 +50,8 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public List<Claim> getBySubmitterId(String submitterId, String authorisation, String pageNumber) {
-        return ccdCaseApi.getBySubmitterId(submitterId, authorisation, pageNumber);
+    public List<Claim> getBySubmitterId(String submitterId, String authorisation, String pageNumber, int index) {
+        return ccdCaseApi.getBySubmitterId(submitterId, authorisation, pageNumber, index);
     }
 
     @Override
@@ -76,11 +76,9 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public List<Claim> getByDefendantId(String id, String authorisation, String pageNumber) {
-        return ccdCaseApi.getByDefendantId(id, authorisation, pageNumber);
+    public List<Claim> getByDefendantId(String id, String authorisation, String pageNumber, int index) {
+        return ccdCaseApi.getByDefendantId(id, authorisation, pageNumber, index);
     }
-
-
 
     @Override
     public List<Claim> getByClaimantEmail(String email, String authorisation) {
@@ -117,8 +115,8 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public Map<String, String> getPaginationInfo(String authorisation) {
-        return ccdCaseApi.getPaginationInfo(authorisation);
+    public Map<String, String> getPaginationInfo(String authorisation, String userType) {
+        return ccdCaseApi.getPaginationInfo(userService.getUser(authorisation), userType);
     }
 
     @Override

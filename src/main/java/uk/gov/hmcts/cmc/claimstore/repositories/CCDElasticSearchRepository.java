@@ -23,8 +23,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.AWAITING_CITIZEN_PAYMENT;
 
 @Repository("searchRepository")
 public class CCDElasticSearchRepository implements CaseSearchApi {
@@ -61,7 +61,7 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
                     "data.respondents.value.claimantResponse.freeMediationOption", CCDYesNoOption.YES.name()))
                 .must(QueryBuilders.rangeQuery("data.respondents.value.claimantResponse.submittedOn")
                     .from(DateUtils.startOfDay(mediationAgreedDate), true)
-                    .to(DateUtils.endOfDay(mediationAgreedDate), true)), 500
+                    .to(DateUtils.endOfDay(mediationAgreedDate), true)), 500, 0
         );
 
         return searchClaimsWith(user, mediationQuery);
@@ -77,11 +77,47 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
                     CountyCourtJudgmentType.DEFAULT.name()))
                 .must(QueryBuilders.rangeQuery("data.respondents.value.countyCourtJudgmentRequest.requestedDate")
                     .from(DateUtils.startOfDay(ccjRequestedDate), true)
-                    .to(DateUtils.endOfDay(ccjRequestedDate), true)), 1000
+                    .to(DateUtils.endOfDay(ccjRequestedDate), true)), 1000, 0
         );
 
         return searchClaimsWith(user, mediationQuery);
 
+    }
+
+    public Integer getClaimCountForClaimant(String submitterId, User user) {
+        Query getClaimsForClaimant = new Query(QueryBuilders.boolQuery()
+            .must(QueryBuilders.matchQuery("data.submitterId", submitterId))
+            .mustNot(QueryBuilders.matchQuery("state", AWAITING_CITIZEN_PAYMENT.getValue().toLowerCase())),
+            1000, 0);
+
+        return getClaimsCountById(user, getClaimsForClaimant);
+    }
+
+    public Integer getClaimCountForDefendant(String submitterId, User user) {
+
+        Query getClaimsForClaimant = new Query(QueryBuilders.boolQuery()
+            .must(QueryBuilders.matchQuery("data.respondents.value.defendantId", submitterId)),
+            1000, 0);
+
+        return getClaimsCountById(user, getClaimsForClaimant);
+    }
+
+    public List<Claim> getClaimsForClaimant(String submitterId, User user, int index) {
+
+        Query getClaimsForClaimant = new Query(QueryBuilders.boolQuery()
+            .must(QueryBuilders.matchQuery("data.submitterId", submitterId))
+            .mustNot(QueryBuilders.matchQuery("state", AWAITING_CITIZEN_PAYMENT.getValue().toLowerCase())),
+            25, index);
+        return searchClaimsWith(user, getClaimsForClaimant);
+    }
+
+    public List<Claim> getClaimsForDefendant(String submitterId, User user, int index) {
+
+        Query getClaimsForClaimant = new Query(QueryBuilders.boolQuery()
+            .must(QueryBuilders.matchQuery("data.respondents.value.defendantId", submitterId)),
+            25, index);
+
+        return searchClaimsWith(user, getClaimsForClaimant);
     }
 
     @Override
@@ -89,13 +125,13 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
         Query readyForTransferQuery = new Query(QueryBuilders.boolQuery()
             .must(QueryBuilders.termQuery("state", ClaimState.READY_FOR_TRANSFER.getValue().toLowerCase()))
             .must(QueryBuilders.existsQuery("data.hearingCourtName"))
-            .must(QueryBuilders.existsQuery("data.hearingCourtAddress")), 1000);
+            .must(QueryBuilders.existsQuery("data.hearingCourtAddress")), 1000, 1);
         return searchClaimsWith(user, readyForTransferQuery);
     }
 
     @Override
     public List<Claim> getClaims(User user, QueryBuilder queryBuilder) {
-        return searchClaimsWith(user, new Query(queryBuilder, 1000));
+        return searchClaimsWith(user, new Query(queryBuilder, 1000, 1));
     }
 
     private List<Claim> searchClaimsWith(User user, Query query) {
@@ -108,9 +144,22 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
             query.toString()
         );
 
-        return searchResult.getCases()
+        return  searchResult.getCases()
             .stream()
             .map(ccdCaseDetailsConverter::extractClaim)
             .collect(Collectors.toList());
+    }
+
+    private Integer getClaimsCountById(User user, Query query) {
+        String serviceAuthToken = this.authTokenGenerator.generate();
+
+        SearchResult searchResult = coreCaseDataApi.searchCases(
+            user.getAuthorisation(),
+            serviceAuthToken,
+            CASE_TYPE_ID,
+            query.toString()
+        );
+
+        return searchResult.getTotal();
     }
 }
