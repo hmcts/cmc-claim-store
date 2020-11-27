@@ -371,7 +371,7 @@ public class ClaimServiceTest {
         when(userService.getUserDetails(AUTHORISATION))
             .thenReturn(SampleUserDetails.builder().withUserId("300").build());
 
-        claimService.getClaimBySubmitterId(USER_ID, AUTHORISATION, "");
+        claimService.getClaimBySubmitterId(USER_ID, AUTHORISATION, 1);
     }
 
     @Test(expected = ForbiddenActionException.class)
@@ -418,7 +418,7 @@ public class ClaimServiceTest {
         when(userService.getUserDetails(AUTHORISATION))
             .thenReturn(UNAUTHORISED_USER_DETAILS);
 
-        claimService.getClaimByDefendantId(USER_ID, AUTHORISATION, "");
+        claimService.getClaimByDefendantId(USER_ID, AUTHORISATION, 1);
     }
 
     @Test(expected = ForbiddenActionException.class)
@@ -534,7 +534,7 @@ public class ClaimServiceTest {
             .thenReturn(claim);
         CreatePaymentResponse response = claimService.resumePayment(AUTHORISATION, claimData);
 
-        assertThat(response.getNextUrl()).isEqualTo(format(RETURN_URL, claim.getExternalId()));
+        assertThat(response.getNextUrl()).isEqualTo(format(RETURN_URL), claim.getExternalId());
     }
 
     @Test

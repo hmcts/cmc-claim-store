@@ -98,13 +98,15 @@ public class ClaimService {
         this.reviewOrderRule = reviewOrderRule;
     }
 
-    public List<Claim> getClaimBySubmitterId(String submitterId, String authorisation, String pageNumber) {
+    public List<Claim> getClaimBySubmitterId(String submitterId, String authorisation, Integer pageNumber) {
         claimAuthorisationRule.assertUserIdMatchesAuthorisation(submitterId, authorisation);
         int index = 0;
-        if (null != pageNumber && !pageNumber.isBlank()) {
-            index = (25 * (Integer.valueOf(pageNumber) - 1));
+        if (null != pageNumber) {
+            index = (25 * pageNumber - 1);
+            return caseRepository.getBySubmitterId(submitterId, authorisation, index);
+        } else {
+            return caseRepository.getBySubmitterId(submitterId, authorisation, index);
         }
-        return caseRepository.getBySubmitterId(submitterId, authorisation, pageNumber, index);
     }
 
     public Claim getClaimByLetterHolderId(String id, String authorisation) {
@@ -162,20 +164,21 @@ public class ClaimService {
     public List<Claim> getClaimByExternalReference(String externalReference, String authorisation) {
         String submitterId = userService.getUserDetails(authorisation).getId();
 
-        return asStream(caseRepository.getBySubmitterId(submitterId, authorisation, "", 0))
+        return asStream(caseRepository.getBySubmitterId(submitterId, authorisation, 0))
             .filter(claim ->
                 claim.getClaimData().getExternalReferenceNumber().filter(externalReference::equals).isPresent())
             .collect(Collectors.toList());
     }
 
-    public List<Claim> getClaimByDefendantId(String id, String authorisation, String pageNumber) {
+    public List<Claim> getClaimByDefendantId(String id, String authorisation, Integer pageNumber) {
         claimAuthorisationRule.assertUserIdMatchesAuthorisation(id, authorisation);
         int index = 0;
-        if (null != pageNumber && !pageNumber.isBlank()) {
-            index = (25 * (Integer.valueOf(pageNumber) - 1));
+        if (null != pageNumber) {
+            index = (25 * pageNumber - 1);
+            return caseRepository.getByDefendantId(id, authorisation, index);
+        } else {
+            return caseRepository.getByDefendantId(id, authorisation, index);
         }
-
-        return caseRepository.getByDefendantId(id, authorisation, pageNumber, index);
     }
 
     public Map<String, String> getPaginationInfo(String authorisation, String userType) {
@@ -346,8 +349,7 @@ public class ClaimService {
     }
 
     public Claim linkLetterHolder(Claim claim, String letterHolderId, String authorisation) {
-        Claim updated = caseRepository.linkLetterHolder(claim.getId(), letterHolderId);
-        return updated;
+        return caseRepository.linkLetterHolder(claim.getId(), letterHolderId);
     }
 
     public void saveCountyCourtJudgment(

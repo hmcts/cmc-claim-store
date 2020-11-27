@@ -49,7 +49,7 @@ public class ClaimController {
     @ApiOperation("Fetch user claims for given submitter id")
     public List<Claim> getBySubmitterId(@PathVariable("submitterId") String submitterId,
                                         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
-                                        @RequestParam(value = "pageNo", required = false) String pageNumber) {
+                                        @RequestParam(value = "pageNo", required = false) Integer pageNumber) {
         return claimService.getClaimBySubmitterId(submitterId, authorisation, pageNumber);
     }
 
@@ -92,7 +92,7 @@ public class ClaimController {
     public List<Claim> getByDefendantId(
         @PathVariable("defendantId") String defendantId,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
-        @RequestParam(value = "pageNo", required = false) String pageNumber) {
+        @RequestParam(value = "pageNo", required = false) Integer pageNumber) {
         return claimService.getClaimByDefendantId(defendantId, authorisation, pageNumber);
     }
 

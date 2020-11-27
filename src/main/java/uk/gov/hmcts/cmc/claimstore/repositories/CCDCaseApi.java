@@ -83,7 +83,7 @@ public class CCDCaseApi {
         this.caseSearchApi = caseSearchApi;
     }
 
-    public List<Claim> getBySubmitterId(String submitterId, String authorisation, String pageNumber, int index) {
+    public List<Claim> getBySubmitterId(String submitterId, String authorisation, int index) {
         User user = userService.getUser(authorisation);
 
         return caseSearchApi.getClaimsForClaimant(submitterId, user, index);
@@ -101,7 +101,7 @@ public class CCDCaseApi {
         return getCaseBy(authorisation, ImmutableMap.of("case.externalId", externalId));
     }
 
-    public List<Claim> getByDefendantId(String id, String authorisation, String pageNumber, int index) {
+    public List<Claim> getByDefendantId(String id, String authorisation, int index) {
         User user = userService.getUser(authorisation);
 
         return caseSearchApi.getClaimsForDefendant(id, user, index);
