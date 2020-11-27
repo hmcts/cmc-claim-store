@@ -179,9 +179,49 @@ class PaperResponseFullDefenceCallbackHandlerTest {
                 .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
                     .value(CCDRespondent.builder()
                         .partyDetail(CCDParty.builder()
-                            .primaryAddress(CCDAddress.builder().postCode(postcode).build())
+                            .primaryAddress(null)
                             .build())
                         .claimantProvidedDetail(CCDParty.builder()
+                            .primaryAddress(CCDAddress.builder().postCode(postcode).build())
+                            .emailAddress("abc@def.com")
+                            .type(CCDPartyType.SOLE_TRADER)
+                            .build())
+                        .build())
+                    .build()))
+                .applicants(
+                    com.google.common.collect.ImmutableList.of(
+                        CCDCollectionElement.<CCDApplicant>builder()
+                            .value(SampleData.getCCDApplicantIndividual())
+                            .build()
+                    ))
+                .build());
+
+            String court = "Court";
+            when(courtFinderApi.findMoneyClaimCourtByPostcode(eq(postcode)))
+                .thenReturn(List.of(Court.builder().name(court).build()));
+
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(Claim.builder()
+                .features(List.of(ClaimFeatures.DQ_FLAG.getValue()))
+                .build());
+
+            when(caseDetailsConverter.convertToMap(any(CCDCase.class))).thenReturn(Collections.emptyMap());
+
+            AboutToStartOrSubmitCallbackResponse response
+                = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
+
+            Assertions.assertEquals(court, response.getData().get("preferredDQCourt"));
+        }
+
+        @Test
+        void shouldAddPreferredCourtWhenPartyDetailIsNull() {
+            String postcode = "postcode";
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(CCDCase.builder()
+                .features(ClaimFeatures.DQ_FLAG.getValue())
+                .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
+                    .value(CCDRespondent.builder()
+                        .partyDetail(null)
+                        .claimantProvidedDetail(CCDParty.builder()
+                            .primaryAddress(CCDAddress.builder().postCode(postcode).build())
                             .emailAddress("abc@def.com")
                             .type(CCDPartyType.SOLE_TRADER)
                             .build())
