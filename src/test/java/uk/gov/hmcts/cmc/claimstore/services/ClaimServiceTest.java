@@ -374,6 +374,26 @@ public class ClaimServiceTest {
         claimService.getClaimBySubmitterId(USER_ID, AUTHORISATION, 1);
     }
 
+    @Test
+    public void getBySubmitterIdWhenPageNumberIsNull() {
+        when(userService.getUserDetails(AUTHORISATION))
+            .thenReturn(SampleUserDetails.builder().withUserId("1").build());
+
+        List<Claim> result = claimService.getClaimBySubmitterId(USER_ID, AUTHORISATION, null);
+
+        assertThat(result);
+    }
+
+    @Test
+    public void getBySubmitterIdWhenPageNumberIsNotNull() {
+        when(userService.getUserDetails(AUTHORISATION))
+            .thenReturn(SampleUserDetails.builder().withUserId("1").build());
+
+        List<Claim> result = claimService.getClaimBySubmitterId(USER_ID, AUTHORISATION, 1);
+
+        assertThat(result);
+    }
+
     @Test(expected = ForbiddenActionException.class)
     public void getByLetterHolderIdShouldThrowExceptionWhenCallerNotAuthorised() {
         when(caseRepository
@@ -663,6 +683,26 @@ public class ClaimServiceTest {
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any())).thenReturn(empty());
 
         claimService.saveReviewOrder(EXTERNAL_ID, SampleReviewOrder.getDefault(), AUTHORISATION);
+    }
+
+    @Test
+    public void getByDefendantIdWhenPageNumberIsNotNull() {
+        when(userService.getUserDetails(AUTHORISATION))
+            .thenReturn(SampleUserDetails.builder().withUserId("1").build());
+
+        List<Claim> result = claimService.getClaimByDefendantId(USER_ID, AUTHORISATION, 1);
+
+        assertThat(result);
+    }
+
+    @Test
+    public void getByDefendantIdWhenPageNumberIsNull() {
+        when(userService.getUserDetails(AUTHORISATION))
+            .thenReturn(SampleUserDetails.builder().withUserId("1").build());
+
+        List<Claim> result = claimService.getClaimByDefendantId(USER_ID, AUTHORISATION, null);
+
+        assertThat(result);
     }
 
     private static Claim createRepresentedClaimModel(ClaimData claimData) {
