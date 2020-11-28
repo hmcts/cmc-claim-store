@@ -103,28 +103,32 @@ public class CCDElasticSearchRepositoryTest {
     @Test
     public void getClaimCountForClaimantQueriesElastic() {
         User user = new User(AUTHORISATION, null);
-        ccdElasticSearchRepository.getClaimCountForClaimant(SampleClaim.USER_ID,user);
-        verify(coreCaseDataApi).searchCases(AUTHORISATION, SERVICE_AUTH, CASE_TYPE_ID, SampleQueryConstants.getClaimCountForClaimant);
+        ccdElasticSearchRepository.getClaimCountForClaimant(SampleClaim.USER_ID, user);
+        verify(coreCaseDataApi).searchCases(AUTHORISATION, SERVICE_AUTH, CASE_TYPE_ID,
+            SampleQueryConstants.getClaimCountForClaimant);
     }
 
     @Test
     public void getClaimCountForDefendantQueriesElastic() {
         User user = new User(AUTHORISATION, null);
-        ccdElasticSearchRepository.getClaimCountForDefendant(SampleClaim.USER_ID,user);
-        verify(coreCaseDataApi).searchCases(AUTHORISATION, SERVICE_AUTH, CASE_TYPE_ID, SampleQueryConstants.getClaimCountForDefendant);
+        ccdElasticSearchRepository.getClaimCountForDefendant(SampleClaim.USER_ID, user);
+        verify(coreCaseDataApi).searchCases(AUTHORISATION, SERVICE_AUTH, CASE_TYPE_ID,
+            SampleQueryConstants.getClaimCountForDefendant);
     }
 
     @Test
     public void getClaimsForClaimantQueriesElastic() {
         User user = new User(AUTHORISATION, null);
-        ccdElasticSearchRepository.getClaimsForClaimant(SampleClaim.USER_ID,user,0);
-        verify(coreCaseDataApi).searchCases(AUTHORISATION, SERVICE_AUTH, CASE_TYPE_ID, SampleQueryConstants.getClaimCountForClaimant);
+        ccdElasticSearchRepository.getClaimsForClaimant(SampleClaim.USER_ID, user, 0);
+        verify(coreCaseDataApi).searchCases(AUTHORISATION, SERVICE_AUTH, CASE_TYPE_ID,
+            SampleQueryConstants.getClaimCountForClaimant);
     }
 
     @Test
     public void getClaimsForDefendantQueriesElastic() {
         User user = new User(AUTHORISATION, null);
-        ccdElasticSearchRepository.getClaimsForDefendant(SampleClaim.USER_ID,user,0);
-        verify(coreCaseDataApi).searchCases(AUTHORISATION, SERVICE_AUTH, CASE_TYPE_ID, SampleQueryConstants.getClaimCountForDefendant);
+        ccdElasticSearchRepository.getClaimsForDefendant(SampleClaim.USER_ID, user, 0);
+        verify(coreCaseDataApi).searchCases(AUTHORISATION, SERVICE_AUTH, CASE_TYPE_ID,
+            SampleQueryConstants.getClaimCountForDefendant);
     }
 }
