@@ -24,6 +24,10 @@ public class QueryTest {
     public void queryToStringToMatch() {
         final String matchAllQueryString = "{"
             + "\"size\": 10,"
+            + "\"from\": " + 0 + ","
+            + "\"sort\": " + "[\n"
+            + "    { \"last_modified\" : {\"order\" : \"desc\"}}\n"
+            + "    ]" + ","
             + "\"query\": {\n"
             + "  \"match_all\" : {\n"
             + "    \"boost\" : 1.0\n"
