@@ -35,7 +35,7 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
     private final AuthTokenGenerator authTokenGenerator;
     private final UserService userService;
     private final CaseDetailsConverter ccdCaseDetailsConverter;
-
+    private final String STATE = "state";
     @Autowired
     public CCDElasticSearchRepository(CoreCaseDataApi coreCaseDataApi,
                                       AuthTokenGenerator authTokenGenerator,
@@ -87,7 +87,7 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
     public Integer getClaimCountForClaimant(String submitterId, User user) {
         Query getClaimsForClaimant = new Query(QueryBuilders.boolQuery()
             .must(QueryBuilders.matchQuery("data.submitterId", submitterId))
-            .mustNot(QueryBuilders.matchQuery("state", AWAITING_CITIZEN_PAYMENT.getValue().toLowerCase())),
+            .mustNot(QueryBuilders.matchQuery(STATE, AWAITING_CITIZEN_PAYMENT.getValue().toLowerCase())),
             25, 0);
 
         return getClaimsCountById(user, getClaimsForClaimant);
@@ -106,7 +106,7 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
 
         Query getClaimsForClaimant = new Query(QueryBuilders.boolQuery()
             .must(QueryBuilders.matchQuery("data.submitterId", submitterId))
-            .mustNot(QueryBuilders.matchQuery("state", AWAITING_CITIZEN_PAYMENT.getValue().toLowerCase())),
+            .mustNot(QueryBuilders.matchQuery(STATE, AWAITING_CITIZEN_PAYMENT.getValue().toLowerCase())),
             25, index);
         return searchClaimsWith(user, getClaimsForClaimant);
     }
@@ -123,7 +123,7 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
     @Override
     public List<Claim> getClaimsReadyForTransfer(User user) {
         Query readyForTransferQuery = new Query(QueryBuilders.boolQuery()
-            .must(QueryBuilders.termQuery("state", ClaimState.READY_FOR_TRANSFER.getValue().toLowerCase()))
+            .must(QueryBuilders.termQuery(STATE, ClaimState.READY_FOR_TRANSFER.getValue().toLowerCase()))
             .must(QueryBuilders.existsQuery("data.hearingCourtName"))
             .must(QueryBuilders.existsQuery("data.hearingCourtAddress")), 1000, 0);
         return searchClaimsWith(user, readyForTransferQuery);

@@ -348,7 +348,7 @@ public class ClaimService {
         return caseRepository.saveClaimDocuments(authorisation, claimId, claimDocumentCollection, claimDocumentType);
     }
 
-    public Claim linkLetterHolder(Claim claim, String letterHolderId, String authorisation) {
+    public Claim linkLetterHolder(Claim claim, String letterHolderId) {
         return caseRepository.linkLetterHolder(claim.getId(), letterHolderId);
     }
 
