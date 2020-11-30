@@ -98,7 +98,7 @@ public class RoboticsSupportController {
                     String fullName = userService.getUserDetails(authorisation).getFullName();
 
                     String userId = pinResponse.getUserId();
-                    claimService.linkLetterHolder(claim, userId);
+                    claimService.linkLetterHolder(claim, userId, authorisation);
 
                     documentGenerator.generateForCitizenRPA(
                         new CitizenClaimIssuedEvent(claim, pinResponse.getPin(), fullName, authorisation)
