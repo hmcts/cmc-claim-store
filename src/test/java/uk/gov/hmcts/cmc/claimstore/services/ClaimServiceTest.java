@@ -692,7 +692,7 @@ public class ClaimServiceTest {
 
         List<Claim> result = claimService.getClaimByDefendantId(USER_ID, AUTHORISATION, 1);
 
-        assertThat(result);
+        assertThat(result).isNotNull();
     }
 
     @Test
@@ -702,7 +702,7 @@ public class ClaimServiceTest {
 
         List<Claim> result = claimService.getClaimByDefendantId(USER_ID, AUTHORISATION, null);
 
-        assertThat(result);
+        assertThat(result).isNotNull();
     }
 
     private static Claim createRepresentedClaimModel(ClaimData claimData) {
