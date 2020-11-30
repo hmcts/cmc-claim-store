@@ -102,7 +102,7 @@ public class ClaimService {
         claimAuthorisationRule.assertUserIdMatchesAuthorisation(submitterId, authorisation);
         int index = 0;
         if (null != pageNumber) {
-            index = (25 * pageNumber - 1);
+            index = (25 * (pageNumber - 1) + index);
             return caseRepository.getBySubmitterId(submitterId, authorisation, index);
         } else {
             return caseRepository.getBySubmitterId(submitterId, authorisation, index);
@@ -174,7 +174,7 @@ public class ClaimService {
         claimAuthorisationRule.assertUserIdMatchesAuthorisation(id, authorisation);
         int index = 0;
         if (null != pageNumber) {
-            index = (25 * pageNumber - 1);
+            index = (25 * (pageNumber - 1) + index);
             return caseRepository.getByDefendantId(id, authorisation, index);
         } else {
             return caseRepository.getByDefendantId(id, authorisation, index);
