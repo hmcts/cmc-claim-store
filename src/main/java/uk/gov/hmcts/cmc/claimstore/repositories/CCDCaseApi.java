@@ -142,13 +142,14 @@ public class CCDCaseApi {
             .filter(this::isLetterHolderRole)
             .map(this::extractLetterHolderId)
             .collect(Collectors.toList());
-        LOGGER.info("<- linkDefendantUsingLetterholderId --> Letter holder value is " + letterholderId);
+
         if (letterHolderIds.isEmpty()) {
             return;
         }
+
         User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
+
         if (letterholderId != null && !letterholderId.isEmpty() && letterHolderIds.contains(letterholderId)) {
-            LOGGER.info("<- linkDefendantUsingLetterholderId --> Letter holder value is not null, Executing this logic " + letterholderId);
             List<String> ccdCaseIds = caseAccessApi.findCaseIdsGivenUserIdHasAccessTo(
                 anonymousCaseWorker.getAuthorisation(),
                 authTokenGenerator.generate(),
@@ -158,11 +159,9 @@ public class CCDCaseApi {
                 letterholderId
             );
             ccdCaseIds.forEach(ccdCaseId -> {
-                LOGGER.info("<--linkDefendantUsingLetterholderId -> Linking the case " + letterholderId);
                 linkToCase(defendantUser, anonymousCaseWorker, letterholderId, ccdCaseId);
             });
         } else {
-            LOGGER.info("<--linkDefendantUsingLetterholderId -> Letter holder value is null, Executing existing logic " + letterholderId);
             letterHolderIds
                 .forEach(letterHolderId -> caseAccessApi.findCaseIdsGivenUserIdHasAccessTo(
                     anonymousCaseWorker.getAuthorisation(),
@@ -172,7 +171,6 @@ public class CCDCaseApi {
                     CASE_TYPE_ID,
                     letterHolderId
                 ).forEach(caseId -> {
-                    LOGGER.info("<--linkDefendantUsingLetterholderId -> Linking the case " + letterholderId);
                     linkToCase(defendantUser, anonymousCaseWorker, letterHolderId, caseId);
                 }));
         }
