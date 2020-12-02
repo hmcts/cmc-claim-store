@@ -10,8 +10,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.DefendantResponseNotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -50,6 +52,12 @@ class HWFFeeRemittedCallbackHandlerTest {
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
 
+    @Mock
+    private EventProducer eventProducer;
+
+    @Mock
+    private UserService userService;
+
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
     private static final List<CaseEvent> EVENTS = ImmutableList.of(CaseEvent.HWF_FULL_REMISSION_GRANTED);
 
@@ -60,7 +68,8 @@ class HWFFeeRemittedCallbackHandlerTest {
 
     @BeforeEach
     public void setUp() {
-        handler = new HWFFeeRemittedCallbackHandler(caseDetailsConverter, deadlineCalculator, caseMapper);
+        handler = new HWFFeeRemittedCallbackHandler(caseDetailsConverter, deadlineCalculator, caseMapper,
+            eventProducer, userService);
         callbackRequest = CallbackRequest
             .builder()
             .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
@@ -74,7 +83,7 @@ class HWFFeeRemittedCallbackHandlerTest {
     }
 
     @Test
-     void shouldUpdateFeeRemitted() {
+    void shouldUpdateFeeRemitted() {
         Claim claim = SampleClaim.getClaimWithFullAdmission();
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
         Map<String, Object> mappedCaseData = new HashMap<>();

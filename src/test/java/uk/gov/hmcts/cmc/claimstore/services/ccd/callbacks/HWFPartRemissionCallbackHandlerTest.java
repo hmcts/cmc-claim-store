@@ -43,7 +43,7 @@ import static org.mockito.Mockito.when;
 class HWFPartRemissionCallbackHandlerTest {
     private static final String PART_REMISSION_EQUAL_ERROR_MESSAGE =
         "Remitted fee is same as the total fee. For full remission, "
-        + "please cancel and select the next step as \"Full remission HWF-granted\"";
+            + "please cancel and select the next step as \"Full remission HWF-granted\"";
     private static final String PART_REMISSION_IS_MORE_ERROR_MESSAGE = "Remitted fee should be less than the total fee";
     private static final String AUTHORISATION = "Bearer: aaaa";
     private static final String DOC_URL = "http://success.test";
@@ -89,7 +89,7 @@ class HWFPartRemissionCallbackHandlerTest {
     }
 
     @Test
-     void shouldUpdateFeeRemitted() {
+    void shouldUpdateFeeRemitted() {
         Claim claim = SampleClaim.getClaimWithFullAdmission();
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
         Map<String, Object> mappedCaseData = new HashMap<>();
