@@ -150,7 +150,7 @@ public class RoboticsSupportControllerTest {
             .thenReturn(Optional.of(claim2));
 
         when(userService.generatePin(anyString(), anyString())).thenReturn(PIN_RESPONSE);
-        when(claimService.linkLetterHolder(eq(claim2), anyString(), anyString())).thenThrow(new RuntimeException(
+        when(claimService.linkLetterHolder(eq(claim2), anyString())).thenThrow(new RuntimeException(
             "reason"));
 
         Map<String, String> results = controller.rpaClaimNotifications(asList("000MC001", "000MC002", "000MC003"));
