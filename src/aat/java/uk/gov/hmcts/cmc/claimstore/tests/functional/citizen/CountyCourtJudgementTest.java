@@ -88,7 +88,7 @@ public class CountyCourtJudgementTest extends BaseTest {
         );
 
         User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
-        commonOperations.linkDefendant(defendant.getAuthorisation());
+        commonOperations.linkDefendant(defendant.getAuthorisation(), createdCase.getLetterHolderId());
 
         Response response = SampleResponse.PartAdmission.validDefaults();
         commonOperations.submitResponse(response, createdCase.getExternalId(), defendant);
