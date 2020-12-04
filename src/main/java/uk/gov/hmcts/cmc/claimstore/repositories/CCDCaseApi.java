@@ -131,8 +131,11 @@ public class CCDCaseApi {
 
     /**
      * LLD https://tools.hmcts.net/confluence/display/ROC/Defendant+linking+with+CCD
+     * Below logic is modified to link only one letter holder Id coming in the request
+     * instead of fetch all claim & link every time
      */
-    public void linkDefendant(String authorisation) {
+
+    public void linkDefendantUsingLetterholderId(String authorisation, String letterholderId) {
         User defendantUser = userService.getUser(authorisation);
         List<String> letterHolderIds = defendantUser.getUserDetails().getRoles()
             .stream()
@@ -146,15 +149,31 @@ public class CCDCaseApi {
 
         User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
 
-        letterHolderIds
-            .forEach(letterHolderId -> caseAccessApi.findCaseIdsGivenUserIdHasAccessTo(
+        if (letterholderId != null && !letterholderId.isEmpty() && letterHolderIds.contains(letterholderId)) {
+            List<String> ccdCaseIds = caseAccessApi.findCaseIdsGivenUserIdHasAccessTo(
                 anonymousCaseWorker.getAuthorisation(),
                 authTokenGenerator.generate(),
                 anonymousCaseWorker.getUserDetails().getId(),
                 JURISDICTION_ID,
                 CASE_TYPE_ID,
-                letterHolderId
-            ).forEach(caseId -> linkToCase(defendantUser, anonymousCaseWorker, letterHolderId, caseId)));
+                letterholderId
+            );
+            ccdCaseIds.forEach(ccdCaseId -> {
+                linkToCase(defendantUser, anonymousCaseWorker, letterholderId, ccdCaseId);
+            });
+        } else {
+            letterHolderIds
+                .forEach(letterHolderId -> caseAccessApi.findCaseIdsGivenUserIdHasAccessTo(
+                    anonymousCaseWorker.getAuthorisation(),
+                    authTokenGenerator.generate(),
+                    anonymousCaseWorker.getUserDetails().getId(),
+                    JURISDICTION_ID,
+                    CASE_TYPE_ID,
+                    letterHolderId
+                ).forEach(caseId -> {
+                    linkToCase(defendantUser, anonymousCaseWorker, letterHolderId, caseId);
+                }));
+        }
     }
 
     public void linkDefendant(String caseId, String defendantId, String defendantEmail) {
@@ -206,7 +225,7 @@ public class CCDCaseApi {
 
     private void linkToCase(User defendantUser, User anonymousCaseWorker, String letterHolderId, String caseId) {
         String defendantId = defendantUser.getUserDetails().getId();
-
+        LOGGER.info("<--linkToCase-> Linking the case " + letterHolderId);
         LOGGER.debug("Granting access to case {} for defendant {} with letter {}", caseId, defendantId, letterHolderId);
         this.grantAccessToCase(anonymousCaseWorker, caseId, defendantId);
 
@@ -250,6 +269,7 @@ public class CCDCaseApi {
         String defendantId,
         String defendantEmail
     ) {
+        LOGGER.info("<----updateDefendantIdAndEmail---->", caseId, defendantId, caseId, defendantEmail);
         return coreCaseDataService.linkDefendant(
             defendantUser.getAuthorisation(),
             Long.valueOf(caseId),
