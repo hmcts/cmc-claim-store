@@ -167,6 +167,7 @@ public class CCDCaseApi {
             return;
         }
         User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
+
         if (letterholderId != null && !letterholderId.isEmpty() && letterHolderIds.contains(letterholderId)) {
             List<String> ccdCaseIds = caseAccessApi.findCaseIdsGivenUserIdHasAccessTo(
                 anonymousCaseWorker.getAuthorisation(),
@@ -176,7 +177,10 @@ public class CCDCaseApi {
                 CASE_TYPE_ID,
                 letterholderId
             );
-            ccdCaseIds.forEach(ccdCaseId -> linkToCase(defendantUser, anonymousCaseWorker, letterholderId, ccdCaseId));
+
+            ccdCaseIds.forEach(ccdCaseId -> {
+                linkToCase(defendantUser, anonymousCaseWorker, letterholderId, ccdCaseId);
+            });
         } else {
             letterHolderIds
                 .forEach(letterHolderId -> caseAccessApi.findCaseIdsGivenUserIdHasAccessTo(
@@ -186,7 +190,9 @@ public class CCDCaseApi {
                     JURISDICTION_ID,
                     CASE_TYPE_ID,
                     letterHolderId
-                ).forEach(caseId -> linkToCase(defendantUser, anonymousCaseWorker, letterHolderId, caseId)));
+                ).forEach(caseId -> {
+                    linkToCase(defendantUser, anonymousCaseWorker, letterHolderId, caseId);
+                }));
         }
     }
 
@@ -252,7 +258,7 @@ public class CCDCaseApi {
 
     private void linkToCase(User defendantUser, User anonymousCaseWorker, String letterHolderId, String caseId) {
         String defendantId = defendantUser.getUserDetails().getId();
-
+        LOGGER.info("<--linkToCase-> Linking the case " + letterHolderId);
         LOGGER.debug("Granting access to case {} for defendant {} with letter {}", caseId, defendantId, letterHolderId);
         this.grantAccessToCase(anonymousCaseWorker, caseId, defendantId);
 
@@ -296,6 +302,7 @@ public class CCDCaseApi {
         String defendantId,
         String defendantEmail
     ) {
+        LOGGER.info("<----updateDefendantIdAndEmail---->", caseId, defendantId, caseId, defendantEmail);
         return coreCaseDataService.linkDefendant(
             defendantUser.getAuthorisation(),
             Long.valueOf(caseId),
