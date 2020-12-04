@@ -47,7 +47,7 @@ public interface CaseRepository {
 
     void updateDirectionsQuestionnaireDeadline(Claim claim, LocalDate dqDeadline, String authorization);
 
-    void linkDefendant(String authorisation);
+    void linkDefendant(String authorisation, String letterholderId);
 
     List<Claim> getByDefendantId(String id, String authorisation);
 

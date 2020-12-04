@@ -121,7 +121,7 @@ public class RespondToClaimTest extends BaseTest {
 
         User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
 
-        commonOperations.linkDefendant(defendant.getAuthorisation());
+        commonOperations.linkDefendant(defendant.getAuthorisation(), createdCase.getLetterHolderId());
         synchronized (RespondToClaimTest.class) {
             Claim updatedCase = commonOperations.submitResponse(response, createdCase.getExternalId(), defendant)
                 .then()
@@ -142,7 +142,7 @@ public class RespondToClaimTest extends BaseTest {
 
         User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
 
-        commonOperations.linkDefendant(defendant.getAuthorisation());
+        commonOperations.linkDefendant(defendant.getAuthorisation(), createdCase.getLetterHolderId());
         synchronized (RespondToClaimTest.class) {
             Claim updatedCase = commonOperations.submitResponse(response, createdCase.getExternalId(), defendant)
                 .then()
