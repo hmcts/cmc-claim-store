@@ -319,8 +319,8 @@ public class ClaimService {
         return claim;
     }
 
-    public void linkDefendantToClaim(String authorisation) {
-        caseRepository.linkDefendant(authorisation);
+    public void linkDefendantToClaim(String authorisation, String letterholderId) {
+        caseRepository.linkDefendant(authorisation, letterholderId);
     }
 
     public Claim saveClaimDocuments(
