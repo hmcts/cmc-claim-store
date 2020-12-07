@@ -185,4 +185,10 @@
         ]]></notes>
         <cve>CVE-2020-13943</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+            httpclient
+        ]]></notes>
+        <cve>CVE-2020-13956</cve>
+    </suppress>
 </suppressions>
