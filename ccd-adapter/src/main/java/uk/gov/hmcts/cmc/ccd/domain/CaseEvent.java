@@ -105,7 +105,8 @@ public enum CaseEvent {
     HWF_PART_REMISSION_GRANTED("HWFPartRemission"),
     MISC_HWF("MiscHWF"),
     CLOSE_AWAITING_RESPONSE_HWF("CloseAwaitingResponseHWF"),
-    HWF_FULL_REMISSION_GRANTED("HWFFullRemision");
+    HWF_FULL_REMISSION_GRANTED("HWFFullRemision"),
+    RECALCULATE_INTEREST("RecalculateInterest");
 
     private final String value;
 

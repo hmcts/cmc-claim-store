@@ -34,6 +34,7 @@ public class CCDCase {
     private String submitterId;
     private String externalId;
     private LocalDateTime submittedOn;
+    private LocalDateTime lastInterestCalculationDate;
     private LocalDate issuedOn;
     private String submitterEmail;
     private String reason;
