@@ -685,9 +685,7 @@ public class CoreCaseDataService {
                 .defendantEmail(defendantEmail)
                 .defendantId(defendantId)
                 .build();
-
             CaseDataContent caseDataContent = caseDataContent(startEventResponse, updatedClaim);
-
             return submitUpdate(authorisation,
                 eventRequestData,
                 caseDataContent,
