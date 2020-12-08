@@ -319,8 +319,8 @@ public class ClaimService {
         return claim;
     }
 
-    public void linkDefendantToClaim(String authorisation) {
-        caseRepository.linkDefendant(authorisation);
+    public void linkDefendantToClaim(String authorisation, String letterholderId) {
+        caseRepository.linkDefendant(authorisation, letterholderId);
     }
 
     public Claim saveClaimDocuments(
@@ -332,7 +332,7 @@ public class ClaimService {
         return caseRepository.saveClaimDocuments(authorisation, claimId, claimDocumentCollection, claimDocumentType);
     }
 
-    public Claim linkLetterHolder(Claim claim, String letterHolderId, String authorisation) {
+    public Claim linkLetterHolder(Claim claim, String letterHolderId) {
         Claim updated = caseRepository.linkLetterHolder(claim.getId(), letterHolderId);
         return updated;
     }

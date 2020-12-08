@@ -170,6 +170,7 @@
         <cve>CVE-2020-5408</cve>
         <cve>CVE-2020-7019</cve>
         <cve>CVE-2020-5421</cve>
+        <cve>CVE-2020-7020</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[
@@ -183,5 +184,11 @@
             apache tomcat version
         ]]></notes>
         <cve>CVE-2020-13943</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+            httpclient
+        ]]></notes>
+        <cve>CVE-2020-13956</cve>
     </suppress>
 </suppressions>
