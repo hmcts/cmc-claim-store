@@ -103,7 +103,7 @@ public class ResumePaymentCallbackHandler extends CallbackHandler {
         );
 
         logger.info("Retrieved payment from pay hub with status {}, claim with external id {}",
-            originalPayment.getStatus().toString(),
+            originalPayment.getStatus(),
             claim.getExternalId());
 
         switch (originalPayment.getStatus()) {
