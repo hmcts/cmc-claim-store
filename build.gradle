@@ -34,7 +34,7 @@ def versions = [
   springfoxSwagger  : '2.9.2',
   reformJavaLogging : '5.1.1',
   restAssuredVersion: '4.2.0',
-  jackson           : '2.10.0',
+  jackson           : '2.11.0',
   junit             : '5.5.2',
   junitPlatform     : '1.5.2',
 ]
