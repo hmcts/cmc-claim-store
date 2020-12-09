@@ -193,7 +193,7 @@ dependencies {
   compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
 
-  compile group: 'org.elasticsearch', name: 'elasticsearch', version: '7.9.0'
+  compile group: 'org.elasticsearch', name: 'elasticsearch', version: '7.9.2'
   compile group: 'org.postgresql', name: 'postgresql', version: '42.2.14'
 
   compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.0-RELEASE'
@@ -201,7 +201,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformJavaLogging
   compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformJavaLogging
   compile group: 'uk.gov.hmcts.reform', name: 'pdf-service-client', version: '7.0.0'
-  compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '6.0.0'
+  compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
 
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.4'
   compile group: 'uk.gov.hmcts.reform', name: 'doc-assembly-client', version: '1.0.6'
@@ -210,7 +210,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.1'
   compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.3.0'
   compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.5'
-  compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.0.4'
+  compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.1.0'
 
   compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
   compile group: 'org.apache.commons', name: 'commons-csv', version: '1.8'
