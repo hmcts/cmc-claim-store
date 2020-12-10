@@ -13,7 +13,6 @@ import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Interest;
-import uk.gov.hmcts.cmc.domain.models.InterestDate;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
@@ -28,14 +27,12 @@ import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.valueOf;
-import static java.math.BigDecimal.ZERO;
 import static java.time.LocalDate.now;
+import static java.util.Arrays.asList;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RECALCULATE_INTEREST;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType.ABOUT_TO_SUBMIT;
-import static uk.gov.hmcts.cmc.domain.amount.TotalAmountCalculator.calculateBreakdownInterest;
-import static uk.gov.hmcts.cmc.domain.amount.TotalAmountCalculator.calculateFixedRateInterest;
-import static uk.gov.hmcts.cmc.domain.models.Interest.InterestType.BREAKDOWN;
+import static uk.gov.hmcts.cmc.domain.amount.TotalAmountCalculator.calculateInterest;
 import static uk.gov.hmcts.cmc.domain.utils.MonetaryConversions.poundsToPennies;
 
 @Service
@@ -45,6 +42,11 @@ public class HWFRecalculateInterestCallbackHandler extends CallbackHandler {
 
     private static final String FEE_EVENT = "issue";
     private static final String FEE_CHANNEL = "online";
+
+    private static final String INTEREST_NOT_CLAIMED = "Recalculation is not required as interest is not claimed";
+    private static final String NOT_HWF_CLAIM = "Recalculation is not required for non HWF Claims";
+    private static final String INTEREST_NOT_CLAIMED_TILL_JUDGEMENT = "Recalculation is not required as interest is "
+        + "not claimed till final judgement";
 
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
     private static final List<CaseEvent> EVENTS = ImmutableList.of(RECALCULATE_INTEREST);
@@ -74,50 +76,47 @@ public class HWFRecalculateInterestCallbackHandler extends CallbackHandler {
     }
 
     private CallbackResponse recalculateInterest(CallbackParams callbackParams) {
+        final var responseBuilder = AboutToStartOrSubmitCallbackResponse.builder();
+        final CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
+        final CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
+        final Claim claim = caseDetailsConverter.extractClaim(caseDetails);
 
-        CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
-        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
-        Claim claim = caseDetailsConverter.extractClaim(caseDetails);
-
-        if (recalculateInterest(claim)) {
-            BigDecimal calculatedInterest = calculateInterest(claim);
-            ccdCase.setLastInterestCalculationDate(LocalDateTime.now());
-            ccdCase.setCurrentInterestAmount(valueOf(poundsToPennies(calculatedInterest)));
-
-            BigDecimal claimAmount = ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount();
-            BigDecimal claimAmountPlusInterest = claimAmount.add(calculatedInterest);
-
-            FeeLookupResponseDto feeOutcome = feesClient.lookupFee(FEE_CHANNEL, FEE_EVENT, claimAmountPlusInterest);
-            ccdCase.setFeeAmountInPennies(valueOf(poundsToPennies(feeOutcome.getFeeAmount())));
-
-            BigDecimal totalAmountIncludingFee = claimAmountPlusInterest.add(feeOutcome.getFeeAmount());
-            ccdCase.setTotalAmount(valueOf(poundsToPennies(totalAmountIncludingFee)));
-        }
-
-        return AboutToStartOrSubmitCallbackResponse
-            .builder()
-            .data(caseDetailsConverter.convertToMap(ccdCase))
-            .build();
-    }
-
-    private BigDecimal calculateInterest(Claim claim) {
-        ClaimData claimData = claim.getClaimData();
-        Interest interest = claimData.getInterest();
-        BigDecimal claimAmount = ((AmountBreakDown) claimData.getAmount()).getTotalAmount();
-
-        if (interest.getType() == BREAKDOWN) {
-            return calculateBreakdownInterest(interest, interest.getInterestDate(), claimAmount,
-                claim.getIssuedOn().get(), now());
+        final String errorMessage = validateClaim(claim);
+        if (errorMessage != null) {
+            responseBuilder.errors(asList(errorMessage));
         } else {
-            return calculateFixedRateInterest(claim, now()).orElse(ZERO);
+            recalculateInterest(claim, ccdCase);
+            responseBuilder.data(caseDetailsConverter.convertToMap(ccdCase));
         }
+
+        return responseBuilder.build();
     }
 
-    private boolean recalculateInterest(Claim claim) {
-        ClaimData claimData = claim.getClaimData();
-        Interest interest = claimData.getInterest();
-        boolean isHelpWithFeeClaim = claimData.getHelpWithFeesNumber().isPresent();
-        InterestDate interestDate = interest != null ? interest.getInterestDate() : null;
-        return isHelpWithFeeClaim && interestDate != null && interestDate.isEndDateOnClaimComplete();
+    private void recalculateInterest(Claim claim, CCDCase ccdCase) {
+        final BigDecimal calculatedInterest = calculateInterest(claim, now()).get();
+        ccdCase.setLastInterestCalculationDate(LocalDateTime.now());
+        ccdCase.setCurrentInterestAmount(valueOf(poundsToPennies(calculatedInterest)));
+
+        final BigDecimal claimAmount = ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount();
+        final BigDecimal claimAmountPlusInterest = claimAmount.add(calculatedInterest);
+
+        final FeeLookupResponseDto feeOutcome = feesClient.lookupFee(FEE_CHANNEL, FEE_EVENT, claimAmountPlusInterest);
+        ccdCase.setFeeAmountInPennies(valueOf(poundsToPennies(feeOutcome.getFeeAmount())));
+
+        final BigDecimal totalAmountIncludingFee = claimAmountPlusInterest.add(feeOutcome.getFeeAmount());
+        ccdCase.setTotalAmount(valueOf(poundsToPennies(totalAmountIncludingFee)));
+    }
+
+    private String validateClaim(Claim claim) {
+        final ClaimData claimData = claim.getClaimData();
+        final Interest interest = claimData.getInterest();
+        if (!claimData.getHelpWithFeesNumber().isPresent()) {
+            return NOT_HWF_CLAIM;
+        } else if (interest == null) {
+            return INTEREST_NOT_CLAIMED;
+        } else if (interest.getInterestDate() == null || !interest.getInterestDate().isEndDateOnClaimComplete()) {
+            return INTEREST_NOT_CLAIMED_TILL_JUDGEMENT;
+        }
+        return null;
     }
 }

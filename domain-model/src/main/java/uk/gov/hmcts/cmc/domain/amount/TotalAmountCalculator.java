@@ -81,7 +81,7 @@ public class TotalAmountCalculator {
         );
     }
 
-    private static Optional<BigDecimal> calculateInterest(Claim claim, LocalDate toDate) {
+    public static Optional<BigDecimal> calculateInterest(Claim claim, LocalDate toDate) {
         ClaimData data = claim.getClaimData();
         Interest interest = data.getInterest();
 
@@ -171,7 +171,7 @@ public class TotalAmountCalculator {
         return null;
     }
 
-    public static Optional<BigDecimal> calculateFixedRateInterest(Claim claim, LocalDate toDate) {
+    private static Optional<BigDecimal> calculateFixedRateInterest(Claim claim, LocalDate toDate) {
         ClaimData data = claim.getClaimData();
         Amount amount = data.getAmount();
 
