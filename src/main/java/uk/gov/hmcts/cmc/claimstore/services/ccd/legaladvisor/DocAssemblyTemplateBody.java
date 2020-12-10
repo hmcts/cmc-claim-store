@@ -142,4 +142,9 @@ public class DocAssemblyTemplateBody implements FormPayload {
     private String soleTradingTraderName;
     private String organisationName;
     private boolean moreTimeRequested;
+
+    private boolean oconResponse;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    @JsonSerialize(using = LocalDateSerializer.class)
+    private LocalDate oconReconsiderationDeadline;
 }
