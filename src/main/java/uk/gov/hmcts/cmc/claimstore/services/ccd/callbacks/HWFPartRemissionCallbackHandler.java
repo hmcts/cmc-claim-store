@@ -115,6 +115,8 @@ public class HWFPartRemissionCallbackHandler extends CallbackHandler {
         String validationMessage = null;
         BigDecimal feedPaidInPounds;
         BigInteger feedPaidInPennies = null;
+        BigDecimal feeAmountAfterRemissionInPounds;
+        BigInteger feeAmountAfterRemissionInPennies = null;
         BigDecimal remittedFeesInPounds;
         BigInteger remittedFeesInPennies = null;
         Optional<BigDecimal> feesPaid = claim.getClaimData().getFeesPaidInPounds();
@@ -126,6 +128,12 @@ public class HWFPartRemissionCallbackHandler extends CallbackHandler {
         if (remittedFees.isPresent()) {
             remittedFeesInPounds = remittedFees.get();
             remittedFeesInPennies = MonetaryConversions.poundsToPennies(remittedFeesInPounds);
+
+            // Update feesAfterRemission
+            feedPaidInPounds = feesPaid.get();
+            feedPaidInPennies = MonetaryConversions.poundsToPennies(feedPaidInPounds);
+            feeAmountAfterRemissionInPennies = feedPaidInPennies - remittedFeesInPennies;
+            claim = claim.toBuilder().feeAmountAfterRemission(feeAmountAfterRemissionInPennies).build();
         }
         int value;
         if (null != feedPaidInPennies && null != remittedFeesInPennies) {
