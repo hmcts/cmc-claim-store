@@ -31,8 +31,10 @@ import static java.time.LocalDate.now;
 import static java.util.Arrays.asList;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RECALCULATE_INTEREST;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType.ABOUT_TO_START;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.cmc.domain.amount.TotalAmountCalculator.calculateInterest;
+import static uk.gov.hmcts.cmc.domain.models.Interest.InterestType.NO_INTEREST;
 import static uk.gov.hmcts.cmc.domain.utils.MonetaryConversions.poundsToPennies;
 
 @Service
@@ -62,7 +64,10 @@ public class HWFRecalculateInterestCallbackHandler extends CallbackHandler {
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
-        return ImmutableMap.of(ABOUT_TO_SUBMIT, this::recalculateInterest);
+        return ImmutableMap.of(
+            ABOUT_TO_START, this::validateClaim,
+            ABOUT_TO_SUBMIT, this::recalculateInterestAndFee
+        );
     }
 
     @Override
@@ -75,24 +80,17 @@ public class HWFRecalculateInterestCallbackHandler extends CallbackHandler {
         return ROLES;
     }
 
-    private CallbackResponse recalculateInterest(CallbackParams callbackParams) {
+    private CallbackResponse recalculateInterestAndFee(CallbackParams callbackParams) {
         final var responseBuilder = AboutToStartOrSubmitCallbackResponse.builder();
         final CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         final CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         final Claim claim = caseDetailsConverter.extractClaim(caseDetails);
-
-        final String errorMessage = validateClaim(claim);
-        if (errorMessage != null) {
-            responseBuilder.errors(asList(errorMessage));
-        } else {
-            recalculateInterest(claim, ccdCase);
-            responseBuilder.data(caseDetailsConverter.convertToMap(ccdCase));
-        }
-
+        recalculateInterestAndFee(claim, ccdCase);
+        responseBuilder.data(caseDetailsConverter.convertToMap(ccdCase));
         return responseBuilder.build();
     }
 
-    private void recalculateInterest(Claim claim, CCDCase ccdCase) {
+    private void recalculateInterestAndFee(Claim claim, CCDCase ccdCase) {
         final BigDecimal calculatedInterest = calculateInterest(claim, now()).get();
         ccdCase.setLastInterestCalculationDate(LocalDateTime.now());
         ccdCase.setCurrentInterestAmount(valueOf(poundsToPennies(calculatedInterest)));
@@ -107,16 +105,20 @@ public class HWFRecalculateInterestCallbackHandler extends CallbackHandler {
         ccdCase.setTotalAmount(valueOf(poundsToPennies(totalAmountIncludingFee)));
     }
 
-    private String validateClaim(Claim claim) {
+    private CallbackResponse validateClaim(CallbackParams callbackParams) {
+        final Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
         final ClaimData claimData = claim.getClaimData();
         final Interest interest = claimData.getInterest();
+
+        final var responseBuilder = AboutToStartOrSubmitCallbackResponse.builder();
         if (!claimData.getHelpWithFeesNumber().isPresent()) {
-            return NOT_HWF_CLAIM;
-        } else if (interest == null) {
-            return INTEREST_NOT_CLAIMED;
+            responseBuilder.errors(asList(NOT_HWF_CLAIM));
+        } else if (interest != null && interest.getType() == NO_INTEREST) {
+            responseBuilder.errors(asList(INTEREST_NOT_CLAIMED));
         } else if (interest.getInterestDate() == null || !interest.getInterestDate().isEndDateOnClaimComplete()) {
-            return INTEREST_NOT_CLAIMED_TILL_JUDGEMENT;
+            responseBuilder.errors(asList(INTEREST_NOT_CLAIMED_TILL_JUDGEMENT));
         }
-        return null;
+
+        return responseBuilder.build();
     }
 }
