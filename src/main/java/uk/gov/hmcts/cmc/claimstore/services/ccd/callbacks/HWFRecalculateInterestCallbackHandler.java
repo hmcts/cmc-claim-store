@@ -66,7 +66,7 @@ public class HWFRecalculateInterestCallbackHandler extends CallbackHandler {
     protected Map<CallbackType, Callback> callbacks() {
         return ImmutableMap.of(
             ABOUT_TO_START, this::validateClaim,
-            ABOUT_TO_SUBMIT, this::recalculateInterestAndFee
+            ABOUT_TO_SUBMIT, this::recalculateInterest
         );
     }
 
@@ -80,7 +80,7 @@ public class HWFRecalculateInterestCallbackHandler extends CallbackHandler {
         return ROLES;
     }
 
-    private CallbackResponse recalculateInterestAndFee(CallbackParams callbackParams) {
+    private CallbackResponse recalculateInterest(CallbackParams callbackParams) {
         final var responseBuilder = AboutToStartOrSubmitCallbackResponse.builder();
         final CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         final CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
