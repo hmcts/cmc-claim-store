@@ -38,8 +38,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType.ABOUT_TO_START;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType.ABOUT_TO_SUBMIT;
 import static uk.gov.hmcts.cmc.domain.models.InterestDate.InterestEndDateType.SUBMISSION;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.breakdownInterestBuilder;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.noInterestBuilder;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.standardInterestBuilder;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterestDate.builder;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterestDate.customDateToSettledOrJudgement;
@@ -81,10 +84,6 @@ class HWFRecalculateInterestCallbackHandlerTest {
             .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
             .eventId(CaseEvent.HWF_PART_REMISSION_GRANTED.getValue())
             .build();
-        callbackParams = CallbackParams.builder()
-            .type(CallbackType.ABOUT_TO_SUBMIT)
-            .request(callbackRequest)
-            .build();
         claim = SampleClaim.builder()
             .withClaimData(
                 SampleClaimData.builder()
@@ -111,11 +110,12 @@ class HWFRecalculateInterestCallbackHandlerTest {
     @Test
     void shouldGiveErrorIfClaimantHasNotClaimedInterest() {
         Claim claim = SampleClaim.getClaimWithFullAdmission();
-        ClaimData claimDataWithoutInterest = claim.getClaimData().toBuilder().interest(null).build();
-        shouldValidateClaim(claim.toBuilder().claimData(claimDataWithoutInterest).build(), INTEREST_NOT_CLAIMED);
+        ClaimData claimWithoutInterest = claim.getClaimData().toBuilder().interest(noInterestBuilder().build()).build();
+        shouldValidateClaim(claim.toBuilder().claimData(claimWithoutInterest).build(), INTEREST_NOT_CLAIMED);
     }
 
     private void shouldValidateClaim(Claim claim, String expectedErrorMessage) {
+        callbackParams = CallbackParams.builder().type(ABOUT_TO_START).request(callbackRequest).build();
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
         AboutToStartOrSubmitCallbackResponse response = callHandler();
         assertEquals(1, response.getErrors().size());
@@ -139,6 +139,7 @@ class HWFRecalculateInterestCallbackHandlerTest {
     }
 
     private void calculateAndValidate(Interest interest, String expectedInterest, String fee, String totalAmount) {
+        callbackParams = CallbackParams.builder().type(ABOUT_TO_SUBMIT).request(callbackRequest).build();
         ClaimData claimData = claim.getClaimData().toBuilder().interest(interest).build();
         claim = claim.toBuilder().claimData(claimData).build();
         FeeLookupResponseDto feeDTO = FeeLookupResponseDto.builder().feeAmount(TEN).build();
