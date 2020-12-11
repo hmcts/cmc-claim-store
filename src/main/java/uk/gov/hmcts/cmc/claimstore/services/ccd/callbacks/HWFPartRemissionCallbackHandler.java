@@ -128,12 +128,6 @@ public class HWFPartRemissionCallbackHandler extends CallbackHandler {
         if (remittedFees.isPresent()) {
             remittedFeesInPounds = remittedFees.get();
             remittedFeesInPennies = MonetaryConversions.poundsToPennies(remittedFeesInPounds);
-
-            // Update feesAfterRemission
-            feedPaidInPounds = feesPaid.get();
-            feedPaidInPennies = MonetaryConversions.poundsToPennies(feedPaidInPounds);
-            feeAmountAfterRemissionInPennies = feedPaidInPennies - remittedFeesInPennies;
-            claim = claim.toBuilder().feeAmountAfterRemission(feeAmountAfterRemissionInPennies).build();
         }
         int value;
         if (null != feedPaidInPennies && null != remittedFeesInPennies) {
