@@ -60,8 +60,6 @@ public class ClaimData {
 
     private final BigInteger feeRemitted;
 
-    private final BigInteger feeAmountAfterRemission;
-
     private final String feeCode;
 
     @Valid
@@ -211,13 +209,6 @@ public class ClaimData {
     @JsonIgnore
     public Optional<BigDecimal> getRemittedFeesInPounds() {
         return Optional.ofNullable(feeRemitted)
-            .map(BigDecimal::new)
-            .map(MonetaryConversions::penniesToPounds);
-    }
-
-    @JsonIgnore
-    public Optional<BigDecimal> getFeesAmountAfterRemissionInPounds() {
-        return Optional.ofNullable(feeAmountAfterRemission)
             .map(BigDecimal::new)
             .map(MonetaryConversions::penniesToPounds);
     }
