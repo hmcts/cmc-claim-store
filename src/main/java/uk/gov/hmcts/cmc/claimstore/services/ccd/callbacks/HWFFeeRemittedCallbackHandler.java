@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,9 @@ public class HWFFeeRemittedCallbackHandler extends CallbackHandler {
     private final EventProducer eventProducer;
 
     private final UserService userService;
+
+    private static final String INTEREST_NEEDS_RECALCULATED_ERROR_MESSAGE = "Help with Fees interest "
+        + "needs to be recalculated. To proceed select 'Recalculate Interest/Claim Fee'";
 
     @Autowired
     public HWFFeeRemittedCallbackHandler(CaseDetailsConverter caseDetailsConverter,
@@ -85,7 +89,13 @@ public class HWFFeeRemittedCallbackHandler extends CallbackHandler {
         CallbackRequest callbackRequest = callbackParams.getRequest();
 
         Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
-
+        if (LocalDateTime.now().isAfter(claim.getCreatedAt().plusDays(5))) {
+            String validationMessage = INTEREST_NEEDS_RECALCULATED_ERROR_MESSAGE;
+            var responseBuilder = AboutToStartOrSubmitCallbackResponse.builder();
+            List<String> errors = new ArrayList<>();
+            errors.add(validationMessage);
+            responseBuilder.errors(errors);
+        }
         if (!FeaturesUtils.isOnlineDQ(claim)) {
             LocalDate deadline = deadlineCalculator.calculate(LocalDateTime.now());
             claim = claim.toBuilder().directionsQuestionnaireDeadline(deadline).build();
