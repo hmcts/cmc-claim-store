@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -58,6 +59,8 @@ public class HWFPartRemissionCallbackHandler extends CallbackHandler {
 
     private final UserService userService;
 
+    private String validationMessage;
+
     @Autowired
     public HWFPartRemissionCallbackHandler(CaseDetailsConverter caseDetailsConverter,
                                            DirectionsQuestionnaireDeadlineCalculator deadlineCalculator,
@@ -92,11 +95,11 @@ public class HWFPartRemissionCallbackHandler extends CallbackHandler {
         CallbackRequest callbackRequest = callbackParams.getRequest();
 
         Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
-        String validationResult = validationResultForRemittedFee(claim);
+        claim = validationResultForRemittedFee(claim);
         List<String> errors = new ArrayList<>();
         var responseBuilder = AboutToStartOrSubmitCallbackResponse.builder();
-        if (null != validationResult) {
-            errors.add(validationResult);
+        if (null != validationMessage) {
+            errors.add(validationMessage);
             responseBuilder.errors(errors);
         } else {
             if (!FeaturesUtils.isOnlineDQ(claim)) {
@@ -111,8 +114,7 @@ public class HWFPartRemissionCallbackHandler extends CallbackHandler {
         return responseBuilder.build();
     }
 
-    private String  validationResultForRemittedFee(Claim claim) {
-        String validationMessage = null;
+    private Claim validationResultForRemittedFee(Claim claim) {
         BigDecimal feedPaidInPounds;
         BigInteger feedPaidInPennies = null;
         BigDecimal feeAmountAfterRemissionInPounds;
@@ -129,22 +131,26 @@ public class HWFPartRemissionCallbackHandler extends CallbackHandler {
             remittedFeesInPounds = remittedFees.get();
             remittedFeesInPennies = MonetaryConversions.poundsToPennies(remittedFeesInPounds);
 
+            int value;
+            if (null != feedPaidInPennies && null != remittedFeesInPennies) {
+                value = feedPaidInPennies.compareTo(remittedFeesInPennies);
+                if (value == 0) {
+                    validationMessage = PART_REMISSION_EQUAL_ERROR_MESSAGE;
+                } else if (value < 0) {
+                    validationMessage = PART_REMISSION_IS_MORE_ERROR_MESSAGE;
+                }
+            }
+
             // Update feesAfterRemission
             feedPaidInPounds = feesPaid.get();
             feedPaidInPennies = MonetaryConversions.poundsToPennies(feedPaidInPounds);
-            feeAmountAfterRemissionInPennies = feedPaidInPennies - remittedFeesInPennies;
-            claim = claim.toBuilder().feeAmountAfterRemission(feeAmountAfterRemissionInPennies).build();
+            feeAmountAfterRemissionInPennies = feedPaidInPennies.subtract(remittedFeesInPennies);
+            ClaimData claimData = claim.getClaimData().toBuilder()
+                .feeAmountAfterRemission(feeAmountAfterRemissionInPennies).build();
+            claim.toBuilder().claimData(claimData).build();
+            return claim.toBuilder().claimData(claimData).build();
         }
-        int value;
-        if (null != feedPaidInPennies && null != remittedFeesInPennies) {
-            value = feedPaidInPennies.compareTo(remittedFeesInPennies);
-            if (value == 0) {
-                validationMessage = PART_REMISSION_EQUAL_ERROR_MESSAGE;
-            } else if (value < 0) {
-                validationMessage = PART_REMISSION_IS_MORE_ERROR_MESSAGE;
-            }
-        }
-        return validationMessage;
+        return claim;
     }
 
     private CallbackResponse startHwfClaimUpdatePostOperations(CallbackParams callbackParams) {
