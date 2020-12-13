@@ -45,6 +45,9 @@ public class HWFPartRemissionCallbackHandler extends CallbackHandler {
             + "please cancel and select the next step as \"Full remission HWF-granted\"";
     private static final String PART_REMISSION_IS_MORE_ERROR_MESSAGE = "Remitted fee should be less than the total fee";
 
+    private static final String INTEREST_NEEDS_RECALCULATED_ERROR_MESSAGE = "Help with Fees interest "
+        + "needs to be recalculated. To proceed select 'Recalculate Interest/Claim Fee'";
+
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
 
     private static final List<CaseEvent> EVENTS = ImmutableList.of(CaseEvent.HWF_PART_REMISSION_GRANTED);
@@ -93,9 +96,13 @@ public class HWFPartRemissionCallbackHandler extends CallbackHandler {
 
     private CallbackResponse updateFeeRemitted(CallbackParams callbackParams) {
         CallbackRequest callbackRequest = callbackParams.getRequest();
-
+        validationMessage = null;
         Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
-        claim = validationResultForRemittedFee(claim);
+        if (LocalDateTime.now().isAfter(claim.getCreatedAt().plusDays(5))) {
+            validationMessage = INTEREST_NEEDS_RECALCULATED_ERROR_MESSAGE;
+        } else {
+            claim = validationResultForRemittedFee(claim);
+        }
         List<String> errors = new ArrayList<>();
         var responseBuilder = AboutToStartOrSubmitCallbackResponse.builder();
         if (null != validationMessage) {

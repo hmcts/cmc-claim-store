@@ -44,6 +44,7 @@
   "interest": {
     "type": "standard",
     "rate": 8,
+    "lastInterestCalculationDate": "2015-02-02T22:23:27.773037",
     "interestDate": {
       "type": "custom",
       "date": "2015-02-02",

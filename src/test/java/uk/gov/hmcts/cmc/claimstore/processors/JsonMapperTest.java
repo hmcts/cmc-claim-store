@@ -61,6 +61,7 @@ public class JsonMapperTest {
                 .withRate(new BigDecimal("8"))
                 .withReason(null)
                 .withInterestDate(interestDate)
+                .withLastInterestCalculationDate(LocalDateTime.parse("2015-02-02T22:23:27.773037"))
                 .build())
             .withExternalReferenceNumber(null)
             .withPreferredCourt(null)
@@ -111,6 +112,7 @@ public class JsonMapperTest {
                 .withRate(new BigDecimal("8"))
                 .withReason(null)
                 .withInterestDate(interestDate)
+                .withLastInterestCalculationDate(LocalDateTime.parse("2015-02-02T22:23:27.773037"))
                 .build())
             .withExternalReferenceNumber(null)
             .withPreferredCourt(null)
@@ -158,6 +160,7 @@ public class JsonMapperTest {
                     .withRate(new BigDecimal("8"))
                     .withReason(null)
                     .withInterestDate(interestDate)
+                    .withLastInterestCalculationDate(LocalDateTime.parse("2015-02-02T22:23:27.773037"))
                     .build())
             .withAmount(
                 SampleAmountRange.builder()
