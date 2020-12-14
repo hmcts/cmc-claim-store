@@ -108,7 +108,8 @@ class OrderRendererTest {
             any(UserDetails.class))).thenReturn(docAssemblyTemplateBody);
         orderRenderer.renderJudgeBespokeOrder(ccdCase, AUTHORISATION);
 
-        verify(docAssemblyService).renderTemplate(ccdCase, AUTHORISATION, BESPOKE_TEMPLATE_ID, docAssemblyTemplateBody);
+        verify(docAssemblyService).renderTemplate(ccdCase, AUTHORISATION, BESPOKE_TEMPLATE_ID, docAssemblyTemplateBody,
+            "OCMC00001-Judge-Directions-Order");
     }
 
     @Test
@@ -116,11 +117,13 @@ class OrderRendererTest {
         when(docAssemblyTemplateBodyMapper.mapBespokeDirectionOrder(any(CCDCase.class),
             any(UserDetails.class))).thenReturn(docAssemblyTemplateBody);
 
-        ccdCase = CCDCase.builder().directionOrderType(DIRECTION_TYPE_BESPOKE).build();
+        ccdCase = CCDCase.builder().directionOrderType(DIRECTION_TYPE_BESPOKE)
+            .previousServiceCaseReference("000MC001").build();
 
         orderRenderer.renderOrder(ccdCase, AUTHORISATION);
 
-        verify(docAssemblyService).renderTemplate(ccdCase, AUTHORISATION, BESPOKE_TEMPLATE_ID, docAssemblyTemplateBody);
+        verify(docAssemblyService).renderTemplate(ccdCase, AUTHORISATION, BESPOKE_TEMPLATE_ID, docAssemblyTemplateBody,
+            "000MC001-Judge-Directions-Order");
     }
 
     @Test
