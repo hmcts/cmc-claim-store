@@ -70,8 +70,8 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void linkDefendant(String authorisation) {
-        ccdCaseApi.linkDefendant(authorisation);
+    public void linkDefendant(String authorisation, String letterholderId) {
+        ccdCaseApi.linkDefendantUsingLetterholderId(authorisation, letterholderId);
     }
 
     @Override

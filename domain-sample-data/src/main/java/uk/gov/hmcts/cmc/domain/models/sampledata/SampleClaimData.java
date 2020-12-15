@@ -35,6 +35,7 @@ public class SampleClaimData {
     private BigInteger feeAmount = BigInteger.valueOf(4000);
     private String moreInfoDetails = "Info";
     private BigInteger feeRemitted = BigInteger.valueOf(3000);
+    private BigInteger feeAmountAfterRemission = BigInteger.valueOf(3000);
     private String feeAccountNumber = "PBA1234567";
     private StatementOfTruth statementOfTruth;
     private PersonalInjury personalInjury = new PersonalInjury(DamagesExpectation.MORE_THAN_THOUSAND_POUNDS);
@@ -232,6 +233,7 @@ public class SampleClaimData {
             amount,
             feeAmount,
             feeRemitted,
+            feeAmountAfterRemission,
             interest,
             personalInjury,
             housingDisrepair,

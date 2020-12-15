@@ -5,6 +5,7 @@ import uk.gov.hmcts.cmc.domain.models.InterestBreakdown;
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 public class SampleInterest {
 
@@ -14,6 +15,7 @@ public class SampleInterest {
     private String reason = "A reason";
     private BigDecimal specificDailyAmount = null;
     private InterestDate interestDate = SampleInterestDate.validDefaults();
+    private LocalDateTime lastInterestCalculationDate = interestDate.getDate().atStartOfDay();
 
     public static SampleInterest builder() {
         return new SampleInterest();
@@ -21,26 +23,26 @@ public class SampleInterest {
 
     public static SampleInterest breakdownInterestBuilder() {
         return new SampleInterest()
-                .withType(Interest.InterestType.BREAKDOWN)
-                .withInterestBreakdown(SampleInterestBreakdown.validDefaults())
-                .withRate(null)
-                .withReason(null);
+            .withType(Interest.InterestType.BREAKDOWN)
+            .withInterestBreakdown(SampleInterestBreakdown.validDefaults())
+            .withRate(null)
+            .withReason(null);
     }
 
     public static SampleInterest standardInterestBuilder() {
         return builder()
-                .withType(Interest.InterestType.STANDARD)
-                .withRate(new BigDecimal("8"))
-                .withReason(null);
+            .withType(Interest.InterestType.STANDARD)
+            .withRate(new BigDecimal("8"))
+            .withReason(null);
 //                .withInterestDate(SampleInterestDate.builder()
 //                    .withDate(LocalDate.of(2015, 02, 02)).build());
     }
 
     public static SampleInterest noInterestBuilder() {
         return builder()
-                .withType(Interest.InterestType.NO_INTEREST)
-                .withRate(null)
-                .withReason(null);
+            .withType(Interest.InterestType.NO_INTEREST)
+            .withRate(null)
+            .withReason(null);
     }
 
     public static Interest standard() {
@@ -85,14 +87,20 @@ public class SampleInterest {
         return this;
     }
 
+    public SampleInterest withLastInterestCalculationDate(LocalDateTime lastInterestCalculationDate) {
+        this.lastInterestCalculationDate = lastInterestCalculationDate;
+        return this;
+    }
+
     public Interest build() {
         return new Interest(
-                type,
-                interestBreakdown,
-                rate,
-                reason,
-                specificDailyAmount,
-                interestDate
+            type,
+            interestBreakdown,
+            rate,
+            reason,
+            specificDailyAmount,
+            interestDate,
+            lastInterestCalculationDate
         );
     }
 

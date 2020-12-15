@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -44,6 +45,9 @@ public class HWFPartRemissionCallbackHandler extends CallbackHandler {
             + "please cancel and select the next step as \"Full remission HWF-granted\"";
     private static final String PART_REMISSION_IS_MORE_ERROR_MESSAGE = "Remitted fee should be less than the total fee";
 
+    private static final String INTEREST_NEEDS_RECALCULATED_ERROR_MESSAGE = "Help with Fees interest "
+        + "needs to be recalculated. To proceed select 'Recalculate Interest/Claim Fee'";
+
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
 
     private static final List<CaseEvent> EVENTS = ImmutableList.of(CaseEvent.HWF_PART_REMISSION_GRANTED);
@@ -57,6 +61,8 @@ public class HWFPartRemissionCallbackHandler extends CallbackHandler {
     private final EventProducer eventProducer;
 
     private final UserService userService;
+
+    private String validationMessage;
 
     @Autowired
     public HWFPartRemissionCallbackHandler(CaseDetailsConverter caseDetailsConverter,
@@ -90,13 +96,17 @@ public class HWFPartRemissionCallbackHandler extends CallbackHandler {
 
     private CallbackResponse updateFeeRemitted(CallbackParams callbackParams) {
         CallbackRequest callbackRequest = callbackParams.getRequest();
-
+        validationMessage = null;
         Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
-        String validationResult = validationResultForRemittedFee(claim);
+        if (LocalDateTime.now().isAfter(claim.getCreatedAt().plusDays(5))) {
+            validationMessage = INTEREST_NEEDS_RECALCULATED_ERROR_MESSAGE;
+        } else {
+            claim = validationResultForRemittedFee(claim);
+        }
         List<String> errors = new ArrayList<>();
         var responseBuilder = AboutToStartOrSubmitCallbackResponse.builder();
-        if (null != validationResult) {
-            errors.add(validationResult);
+        if (null != validationMessage) {
+            errors.add(validationMessage);
             responseBuilder.errors(errors);
         } else {
             if (!FeaturesUtils.isOnlineDQ(claim)) {
@@ -111,10 +121,11 @@ public class HWFPartRemissionCallbackHandler extends CallbackHandler {
         return responseBuilder.build();
     }
 
-    private String  validationResultForRemittedFee(Claim claim) {
-        String validationMessage = null;
+    private Claim validationResultForRemittedFee(Claim claim) {
         BigDecimal feedPaidInPounds;
         BigInteger feedPaidInPennies = null;
+        BigDecimal feeAmountAfterRemissionInPounds;
+        BigInteger feeAmountAfterRemissionInPennies = null;
         BigDecimal remittedFeesInPounds;
         BigInteger remittedFeesInPennies = null;
         Optional<BigDecimal> feesPaid = claim.getClaimData().getFeesPaidInPounds();
@@ -126,17 +137,27 @@ public class HWFPartRemissionCallbackHandler extends CallbackHandler {
         if (remittedFees.isPresent()) {
             remittedFeesInPounds = remittedFees.get();
             remittedFeesInPennies = MonetaryConversions.poundsToPennies(remittedFeesInPounds);
-        }
-        int value;
-        if (null != feedPaidInPennies && null != remittedFeesInPennies) {
-            value = feedPaidInPennies.compareTo(remittedFeesInPennies);
-            if (value == 0) {
-                validationMessage = PART_REMISSION_EQUAL_ERROR_MESSAGE;
-            } else if (value < 0) {
-                validationMessage = PART_REMISSION_IS_MORE_ERROR_MESSAGE;
+
+            int value;
+            if (null != feedPaidInPennies && null != remittedFeesInPennies) {
+                value = feedPaidInPennies.compareTo(remittedFeesInPennies);
+                if (value == 0) {
+                    validationMessage = PART_REMISSION_EQUAL_ERROR_MESSAGE;
+                } else if (value < 0) {
+                    validationMessage = PART_REMISSION_IS_MORE_ERROR_MESSAGE;
+                }
             }
+
+            // Update feesAfterRemission
+            feedPaidInPounds = feesPaid.get();
+            feedPaidInPennies = MonetaryConversions.poundsToPennies(feedPaidInPounds);
+            feeAmountAfterRemissionInPennies = feedPaidInPennies.subtract(remittedFeesInPennies);
+            ClaimData claimData = claim.getClaimData().toBuilder()
+                .feeAmountAfterRemission(feeAmountAfterRemissionInPennies).build();
+            claim.toBuilder().claimData(claimData).build();
+            return claim.toBuilder().claimData(claimData).build();
         }
-        return validationMessage;
+        return claim;
     }
 
     private CallbackResponse startHwfClaimUpdatePostOperations(CallbackParams callbackParams) {

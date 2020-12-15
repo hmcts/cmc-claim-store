@@ -60,6 +60,8 @@ public class ClaimData {
 
     private final BigInteger feeRemitted;
 
+    private final BigInteger feeAmountAfterRemission;
+
     private final String feeCode;
 
     @Valid
@@ -114,6 +116,7 @@ public class ClaimData {
         Amount amount,
         BigInteger feeAmountInPennies,
         BigInteger feeRemitted,
+        BigInteger feeAmountAfterRemission,
         Interest interest,
         PersonalInjury personalInjury,
         HousingDisrepair housingDisrepair,
@@ -138,6 +141,7 @@ public class ClaimData {
         this.amount = amount;
         this.feeAmountInPennies = feeAmountInPennies;
         this.feeRemitted = feeRemitted;
+        this.feeAmountAfterRemission = feeAmountAfterRemission;
         this.interest = interest;
         this.personalInjury = personalInjury;
         this.housingDisrepair = housingDisrepair;
@@ -170,6 +174,10 @@ public class ClaimData {
 
     public Optional<BigInteger> getFeeRemitted() {
         return Optional.ofNullable(feeRemitted);
+    }
+
+    public Optional<BigInteger> getFeeAmountAfterRemission() {
+        return Optional.ofNullable(feeAmountAfterRemission);
     }
 
     public Interest getInterest() {
@@ -209,6 +217,13 @@ public class ClaimData {
     @JsonIgnore
     public Optional<BigDecimal> getRemittedFeesInPounds() {
         return Optional.ofNullable(feeRemitted)
+            .map(BigDecimal::new)
+            .map(MonetaryConversions::penniesToPounds);
+    }
+
+    @JsonIgnore
+    public Optional<BigDecimal> getFeesAmountAfterRemissionInPounds() {
+        return Optional.ofNullable(feeAmountAfterRemission)
             .map(BigDecimal::new)
             .map(MonetaryConversions::penniesToPounds);
     }
