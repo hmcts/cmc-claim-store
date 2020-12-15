@@ -224,11 +224,9 @@ public class OrderCreator {
         logger.info("Order creator: creating order document");
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
-        List<String> validations = new ArrayList<>();
 
-        if (ccdCase.getDirectionOrderType() != null && ccdCase.getDirectionOrderType()
-            .equalsIgnoreCase(DIRECTION_TYPE_BESPOKE)) {
-
+        if (!DIRECTION_TYPE_BESPOKE.equalsIgnoreCase(ccdCase.getDirectionOrderType())) {
+            List<String> validations = new ArrayList<>();
             generateOrderRule.validateDate(ccdCase, validations);
 
             generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase,
