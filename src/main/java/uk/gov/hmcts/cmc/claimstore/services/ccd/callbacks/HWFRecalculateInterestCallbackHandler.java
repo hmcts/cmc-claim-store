@@ -47,8 +47,8 @@ public class HWFRecalculateInterestCallbackHandler extends CallbackHandler {
 
     private static final String INTEREST_NOT_CLAIMED = "Recalculation is not required as interest is not claimed";
     private static final String NOT_HWF_CLAIM = "Recalculation is not required for non HWF Claims";
-    private static final String INTEREST_NOT_CLAIMED_TILL_JUDGEMENT = "Recalculation is not required as interest is " +
-        "only claimed to the date of claim submission";
+    private static final String INTEREST_NOT_CLAIMED_TILL_JUDGEMENT = "Recalculation is not required as interest is "
+        + "only claimed to the date of claim submission";
 
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
     private static final List<CaseEvent> EVENTS = ImmutableList.of(RECALCULATE_INTEREST);
