@@ -6,6 +6,7 @@
         ]]></notes>
         <gav regex="true">^com\.google\.guava:guava:.*$</gav>
         <cve>CVE-2018-10237</cve>
+        <cve>CVE-2020-8908</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[
