@@ -35,6 +35,7 @@ import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -68,6 +69,7 @@ public class ClaimService {
     private final PaidInFullRule paidInFullRule;
     private final ClaimAuthorisationRule claimAuthorisationRule;
     private final ReviewOrderRule reviewOrderRule;
+    private final LaunchDarklyClient launchDarklyClient;
 
     @Value("${feature_toggles.ctsc_enabled}")
     private boolean ctscEnabled;
@@ -84,7 +86,8 @@ public class ClaimService {
         AppInsights appInsights,
         PaidInFullRule paidInFullRule,
         ClaimAuthorisationRule claimAuthorisationRule,
-        ReviewOrderRule reviewOrderRule
+        ReviewOrderRule reviewOrderRule,
+        LaunchDarklyClient launchDarklyClient
     ) {
         this.userService = userService;
         this.issueDateCalculator = issueDateCalculator;
@@ -96,6 +99,7 @@ public class ClaimService {
         this.paidInFullRule = paidInFullRule;
         this.claimAuthorisationRule = claimAuthorisationRule;
         this.reviewOrderRule = reviewOrderRule;
+        this.launchDarklyClient = launchDarklyClient;
     }
 
     public List<Claim> getClaimBySubmitterId(String submitterId, String authorisation, Integer pageNumber) {
@@ -122,7 +126,8 @@ public class ClaimService {
     public Claim getFilteredClaimByExternalId(String externalId, String authorisation) {
         User user = userService.getUser(authorisation);
         return DocumentsFilter.filterDocuments(
-            getClaimByExternalId(externalId, user), user.getUserDetails(), ctscEnabled
+            getClaimByExternalId(externalId, user), user.getUserDetails(), ctscEnabled,
+            launchDarklyClient.isFeatureEnabled("paper-response-review-new-handling")
         );
     }
 

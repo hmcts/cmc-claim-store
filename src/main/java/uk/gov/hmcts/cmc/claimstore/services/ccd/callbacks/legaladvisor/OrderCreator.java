@@ -224,14 +224,16 @@ public class OrderCreator {
         logger.info("Order creator: creating order document");
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
-        List<String> validations = new ArrayList<>();
 
-        generateOrderRule.validateDate(ccdCase, validations);
+        if (!DIRECTION_TYPE_BESPOKE.equalsIgnoreCase(ccdCase.getDirectionOrderType())) {
+            List<String> validations = new ArrayList<>();
+            generateOrderRule.validateDate(ccdCase, validations);
 
-        generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase,
-            hasExpertsAtCaseLevel(callbackParams), validations);
-        if (!validations.isEmpty()) {
-            return AboutToStartOrSubmitCallbackResponse.builder().errors(validations).build();
+            generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase,
+                hasExpertsAtCaseLevel(callbackParams), validations);
+            if (!validations.isEmpty()) {
+                return AboutToStartOrSubmitCallbackResponse.builder().errors(validations).build();
+            }
         }
 
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
