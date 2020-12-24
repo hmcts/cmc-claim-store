@@ -47,6 +47,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SamplePayment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 
 import java.math.BigDecimal;
 import java.net.URI;
@@ -124,6 +125,9 @@ public class ClaimServiceTest {
     private EventProducer eventProducer;
     @Mock
     private AppInsights appInsights;
+    @Mock
+    LaunchDarklyClient launchDarklyClient;
+
     @Captor
     private ArgumentCaptor<Claim> claimArgumentCaptor;
 
@@ -142,7 +146,8 @@ public class ClaimServiceTest {
             appInsights,
             new PaidInFullRule(),
             new ClaimAuthorisationRule(userService),
-            new ReviewOrderRule());
+            new ReviewOrderRule(),
+            launchDarklyClient);
     }
 
     @Test
@@ -224,7 +229,8 @@ public class ClaimServiceTest {
             appInsights,
             new PaidInFullRule(),
             new ClaimAuthorisationRule(userService),
-            new ReviewOrderRule());
+            new ReviewOrderRule(),
+            launchDarklyClient);
 
         ClaimData claimData = SampleClaimData.validDefaults();
 
