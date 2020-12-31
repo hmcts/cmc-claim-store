@@ -89,7 +89,7 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
         Query getClaimsForClaimant = new Query(QueryBuilders.boolQuery()
             .must(QueryBuilders.matchQuery("data.submitterId", submitterId))
             .mustNot(QueryBuilders.matchQuery(CLAIM_STATE, AWAITING_CITIZEN_PAYMENT.getValue().toLowerCase())),
-            25, 0);
+            10, 0);
 
         return getClaimsCountById(user, getClaimsForClaimant);
     }
@@ -98,7 +98,7 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
 
         Query getClaimsForClaimant = new Query(QueryBuilders.boolQuery()
             .must(QueryBuilders.matchQuery("data.respondents.value.defendantId", submitterId)),
-            25, 0);
+            10, 0);
 
         return getClaimsCountById(user, getClaimsForClaimant);
     }
