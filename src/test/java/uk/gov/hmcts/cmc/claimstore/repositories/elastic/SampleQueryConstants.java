@@ -198,7 +198,7 @@ public interface SampleQueryConstants {
         + "  }\n"
         + "}}";
 
-    String getClaimCountForClaimant = "{\"size\": 25,"
+    String getClaimCountForClaimant = "{\"size\": 10,"
         + "\"from\": " + 0 + ","
         + "\"sort\": " + "[\n"
         + "    { \"last_modified\" : {\"order\" : \"desc\"}}\n"
@@ -244,7 +244,7 @@ public interface SampleQueryConstants {
         + "  }\n"
         + "}}";
 
-    String getClaimCountForDefendant = "{\"size\": 25,"
+    String getClaimCountForDefendant = "{\"size\": 10,"
         + "\"from\": " + 0 + ","
         + "\"sort\": " + "[\n"
         + "    { \"last_modified\" : {\"order\" : \"desc\"}}\n"
