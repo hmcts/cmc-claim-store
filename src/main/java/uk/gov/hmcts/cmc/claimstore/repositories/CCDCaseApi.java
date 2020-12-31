@@ -118,8 +118,8 @@ public class CCDCaseApi {
         } else if (userType.equalsIgnoreCase("defendant")) {
             totalClaimCount = caseSearchApi.getClaimCountForDefendant(userDetails.getId(), user);
         }
-        if (totalClaimCount > 25) {
-            totalPageCount = ((int) Math.ceil((double) totalClaimCount / 25));
+        if (totalClaimCount > 10) {
+            totalPageCount = ((int) Math.ceil((double) totalClaimCount / 10));
         }
         paginationInfo.put("totalClaims", totalClaimCount.toString());
         paginationInfo.put("totalPages", totalPageCount.toString());
