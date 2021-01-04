@@ -72,6 +72,7 @@ public class ClaimService {
     private final ClaimAuthorisationRule claimAuthorisationRule;
     private final ReviewOrderRule reviewOrderRule;
     private final LaunchDarklyClient launchDarklyClient;
+    private final CaseEventService caseEventService;
 
     @Value("${feature_toggles.ctsc_enabled}")
     private boolean ctscEnabled;
@@ -89,8 +90,8 @@ public class ClaimService {
         PaidInFullRule paidInFullRule,
         ClaimAuthorisationRule claimAuthorisationRule,
         ReviewOrderRule reviewOrderRule,
-        LaunchDarklyClient launchDarklyClient
-    ) {
+        LaunchDarklyClient launchDarklyClient,
+        CaseEventService caseEventService) {
         this.userService = userService;
         this.issueDateCalculator = issueDateCalculator;
         this.responseDeadlineCalculator = responseDeadlineCalculator;
@@ -102,11 +103,21 @@ public class ClaimService {
         this.claimAuthorisationRule = claimAuthorisationRule;
         this.reviewOrderRule = reviewOrderRule;
         this.launchDarklyClient = launchDarklyClient;
+        this.caseEventService = caseEventService;
     }
 
     public List<Claim> getClaimBySubmitterId(String submitterId, String authorisation) {
         claimAuthorisationRule.assertUserIdMatchesAuthorisation(submitterId, authorisation);
-        return caseRepository.getBySubmitterId(submitterId, authorisation);
+        List<Claim> claimList = caseRepository.getBySubmitterId(submitterId, authorisation);
+        claimList.stream()
+            .filter(claim -> claim.getClaimData().getHwfMandatoryDetails() != null)
+            .filter(claim -> {
+                List<CaseEvent> caseEventList = caseEventService.findEventsForCase(authorisation,
+                    String.valueOf(claim.getCcdCaseId()));
+                claim.toBuilder().lastEventTriggeredForCase(caseEventList.get(0).getValue());
+                return true;
+            });
+        return claimList;
     }
 
     public Claim getClaimByLetterHolderId(String id, String authorisation) {

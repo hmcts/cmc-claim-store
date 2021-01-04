@@ -644,7 +644,8 @@ public final class SampleHwfClaim {
                 .printRequestId(bulkPrintLetterId).build()),
             directionOrderType,
             bespokeOrderDirection,
-            LocalDateTime.now()
+            LocalDateTime.now(),
+            null
         );
     }
 

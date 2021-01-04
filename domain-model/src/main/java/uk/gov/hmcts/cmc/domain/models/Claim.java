@@ -89,6 +89,7 @@ public class Claim {
     private String directionOrderType;
     private BespokeOrderDirection bespokeOrderDirection;
     private LocalDateTime lastModified;
+    private String lastEventTriggeredForCase;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -142,7 +143,8 @@ public class Claim {
         List<BulkPrintDetails> bulkPrintDetails,
         String directionOrderType,
         BespokeOrderDirection bespokeOrderDirection,
-        LocalDateTime lastModified
+        LocalDateTime lastModified,
+        String lastEventTriggeredForCase
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -194,6 +196,7 @@ public class Claim {
         this.directionOrderType = directionOrderType;
         this.bespokeOrderDirection = bespokeOrderDirection;
         this.lastModified = lastModified;
+        this.lastEventTriggeredForCase = lastEventTriggeredForCase;
     }
 
     public Optional<LocalDate> getIssuedOn() {
