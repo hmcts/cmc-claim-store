@@ -23,7 +23,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'logging', version: '5.1.7'
   compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: '5.1.7'
 
-  compile group: 'com.sendgrid', name: 'sendgrid-java', version: '4.5.0'
+  compile group: 'com.sendgrid', name: 'sendgrid-java', version: '4.6.8'
 
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
   testCompile group: 'commons-io', name: 'commons-io', version: '2.7'
