@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
+import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
@@ -50,6 +51,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocumentType.form;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.PaperResponseOCON9xFormCallbackHandler.OCON9X_SUBTYPE;
 
 @ExtendWith(MockitoExtension.class)
@@ -99,8 +101,18 @@ class PaperResponseFullDefenceCallbackHandlerTest {
                         .partyDetail(CCDParty.builder()
                             .primaryAddress(CCDAddress.builder().postCode(postcode).build())
                             .build())
+                        .claimantProvidedDetail(CCDParty.builder()
+                            .emailAddress("abc@def.com")
+                            .type(CCDPartyType.COMPANY)
+                            .build())
                         .build())
                     .build()))
+                .applicants(
+                    com.google.common.collect.ImmutableList.of(
+                        CCDCollectionElement.<CCDApplicant>builder()
+                            .value(SampleData.getCCDApplicantIndividual())
+                            .build()
+                    ))
                 .build());
 
             String court = "Court";
@@ -117,6 +129,168 @@ class PaperResponseFullDefenceCallbackHandlerTest {
                 = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
 
             Assertions.assertEquals(court, response.getData().get("preferredDQCourt"));
+        }
+
+        @Test
+        void shouldAddPreferredCourtIfDQsEnabledAndPreferredCourtSetForOrganisation() {
+            String postcode = "postcode";
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(CCDCase.builder()
+                .features(ClaimFeatures.DQ_FLAG.getValue())
+                .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
+                    .value(CCDRespondent.builder()
+                        .partyDetail(CCDParty.builder()
+                            .primaryAddress(CCDAddress.builder().postCode(postcode).build())
+                            .build())
+                        .claimantProvidedDetail(CCDParty.builder()
+                            .emailAddress("abc@def.com")
+                            .type(CCDPartyType.ORGANISATION)
+                            .build())
+                        .build())
+                    .build()))
+                .applicants(
+                    com.google.common.collect.ImmutableList.of(
+                        CCDCollectionElement.<CCDApplicant>builder()
+                            .value(SampleData.getCCDApplicantIndividual())
+                            .build()
+                    ))
+                .build());
+
+            String court = "Court";
+            when(courtFinderApi.findMoneyClaimCourtByPostcode(eq(postcode)))
+                .thenReturn(List.of(Court.builder().name(court).build()));
+
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(Claim.builder()
+                .features(List.of(ClaimFeatures.DQ_FLAG.getValue()))
+                .build());
+
+            when(caseDetailsConverter.convertToMap(any(CCDCase.class))).thenReturn(Collections.emptyMap());
+
+            AboutToStartOrSubmitCallbackResponse response
+                = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
+
+            Assertions.assertEquals(court, response.getData().get("preferredDQCourt"));
+        }
+
+        @Test
+        void shouldAddPreferredCourtIfDQsEnabledAndPreferredCourtSetForSoleTrader() {
+            String postcode = "postcode";
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(CCDCase.builder()
+                .features(ClaimFeatures.DQ_FLAG.getValue())
+                .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
+                    .value(CCDRespondent.builder()
+                        .partyDetail(CCDParty.builder()
+                            .primaryAddress(null)
+                            .build())
+                        .claimantProvidedDetail(CCDParty.builder()
+                            .primaryAddress(CCDAddress.builder().postCode(postcode).build())
+                            .emailAddress("abc@def.com")
+                            .type(CCDPartyType.SOLE_TRADER)
+                            .build())
+                        .build())
+                    .build()))
+                .applicants(
+                    com.google.common.collect.ImmutableList.of(
+                        CCDCollectionElement.<CCDApplicant>builder()
+                            .value(SampleData.getCCDApplicantIndividual())
+                            .build()
+                    ))
+                .build());
+
+            String court = "Court";
+            when(courtFinderApi.findMoneyClaimCourtByPostcode(eq(postcode)))
+                .thenReturn(List.of(Court.builder().name(court).build()));
+
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(Claim.builder()
+                .features(List.of(ClaimFeatures.DQ_FLAG.getValue()))
+                .build());
+
+            when(caseDetailsConverter.convertToMap(any(CCDCase.class))).thenReturn(Collections.emptyMap());
+
+            AboutToStartOrSubmitCallbackResponse response
+                = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
+
+            Assertions.assertEquals(court, response.getData().get("preferredDQCourt"));
+        }
+
+        @Test
+        void shouldAddPreferredCourtWhenPartyDetailIsNull() {
+            String postcode = "postcode";
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(CCDCase.builder()
+                .features(ClaimFeatures.DQ_FLAG.getValue())
+                .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
+                    .value(CCDRespondent.builder()
+                        .partyDetail(null)
+                        .claimantProvidedDetail(CCDParty.builder()
+                            .primaryAddress(CCDAddress.builder().postCode(postcode).build())
+                            .emailAddress("abc@def.com")
+                            .type(CCDPartyType.SOLE_TRADER)
+                            .build())
+                        .build())
+                    .build()))
+                .applicants(
+                    com.google.common.collect.ImmutableList.of(
+                        CCDCollectionElement.<CCDApplicant>builder()
+                            .value(SampleData.getCCDApplicantIndividual())
+                            .build()
+                    ))
+                .build());
+
+            String court = "Court";
+            when(courtFinderApi.findMoneyClaimCourtByPostcode(eq(postcode)))
+                .thenReturn(List.of(Court.builder().name(court).build()));
+
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(Claim.builder()
+                .features(List.of(ClaimFeatures.DQ_FLAG.getValue()))
+                .build());
+
+            when(caseDetailsConverter.convertToMap(any(CCDCase.class))).thenReturn(Collections.emptyMap());
+
+            AboutToStartOrSubmitCallbackResponse response
+                = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
+
+            Assertions.assertEquals(court, response.getData().get("preferredDQCourt"));
+        }
+
+        @Test
+        void shouldAddPreferredCourtIfDQsEnabledAndNoPreferredCourtNotSet() {
+            String postcode = "postcode";
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(CCDCase.builder()
+                .preferredCourt("preferredDQCourt")
+                .features(ClaimFeatures.DQ_FLAG.getValue())
+                .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
+                    .value(CCDRespondent.builder()
+                        .partyDetail(CCDParty.builder()
+                            .primaryAddress(CCDAddress.builder().postCode(postcode).build())
+                            .build())
+                        .claimantProvidedDetail(CCDParty.builder()
+                            .emailAddress("abc@def.com")
+                            .type(CCDPartyType.COMPANY)
+                            .build())
+                        .build())
+                    .build()))
+                .applicants(
+                    com.google.common.collect.ImmutableList.of(
+                        CCDCollectionElement.<CCDApplicant>builder()
+                            .value(SampleData.getCCDApplicantIndividual())
+                            .build()
+                    ))
+                .build());
+
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(Claim.builder()
+                .features(List.of(ClaimFeatures.DQ_FLAG.getValue()))
+                .build());
+
+            when(caseDetailsConverter.convertToMap(any(CCDCase.class))).thenReturn(Collections.emptyMap());
+
+            AboutToStartOrSubmitCallbackResponse response
+                = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
+
+            assertThat(response.getData().get("preferredDQCourt")).isNull();
+        }
+
+        @Test
+        void shouldHaveCorrectCaseworkerRole() {
+            assertThat(handler.getSupportedRoles()).containsOnly(CASEWORKER);
         }
 
         @Test

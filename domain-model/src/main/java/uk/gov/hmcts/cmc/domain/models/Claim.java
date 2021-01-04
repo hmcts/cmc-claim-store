@@ -227,6 +227,11 @@ public class Claim {
             .flatMap(c -> c.getScannedDocument(scannedDocumentType, subtype));
     }
 
+    @JsonIgnore
+    public List<ScannedDocument> getScannedDocuments() {
+        return claimDocumentCollection.getScannedDocuments();
+    }
+
     public LocalDate getServiceDate() {
         if (serviceDate != null) {
             return serviceDate;

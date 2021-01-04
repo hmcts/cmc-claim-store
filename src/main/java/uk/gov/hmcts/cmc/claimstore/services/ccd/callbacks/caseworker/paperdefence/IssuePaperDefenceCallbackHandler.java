@@ -9,8 +9,8 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
-import uk.gov.hmcts.cmc.claimstore.rules.ClaimDeadlineService;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
@@ -28,11 +28,9 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ISSUE_PAPER_DEFENSE_FORMS;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
-import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
 @Service
 @ConditionalOnProperty("feature_toggles.ctsc_enabled")
@@ -42,15 +40,14 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
     private static final Logger logger = LoggerFactory.getLogger(IssuePaperDefenceCallbackHandler.class);
     private static final String ERROR_MESSAGE =
         "There was a technical problem. Nothing has been sent. You need to try again.";
-    private static final String DEFENDANT_MISSED_DEADLINE =
-        "Defendant did not respond by deadline so paper form cannot be issued.";
+    private static final String CLAIMANT_ISSUED_CCJ =
+        "OCON9x form cannot be sent out as CCJ already issued by claimant.";
 
     private final CaseDetailsConverter caseDetailsConverter;
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
     private final IssueDateCalculator issueDateCalculator;
     private final IssuePaperResponseNotificationService issuePaperResponseNotificationService;
     private final DocumentPublishService documentPublishService;
-    private final ClaimDeadlineService claimDeadlineService;
 
     @Autowired
     public IssuePaperDefenceCallbackHandler(
@@ -58,15 +55,13 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
         ResponseDeadlineCalculator responseDeadlineCalculator,
         IssueDateCalculator issueDateCalculator,
         IssuePaperResponseNotificationService issuePaperResponseNotificationService,
-        DocumentPublishService documentPublishService,
-        ClaimDeadlineService claimDeadlineService
+        DocumentPublishService documentPublishService
     ) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.responseDeadlineCalculator = responseDeadlineCalculator;
         this.issueDateCalculator = issueDateCalculator;
         this.issuePaperResponseNotificationService = issuePaperResponseNotificationService;
         this.documentPublishService = documentPublishService;
-        this.claimDeadlineService = claimDeadlineService;
     }
 
     @Override
@@ -87,7 +82,6 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
     }
 
     private AboutToStartOrSubmitCallbackResponse issuePaperDefence(CallbackParams callbackParams) {
-        LocalDate issuedOn = null;
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         CCDRespondent ccdRespondent = ccdCase.getRespondents().get(0).getValue();
@@ -114,14 +108,11 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
         ccdCase = updateCaseDates(ccdCase, responseDeadline, paperFormServedDate, extendedResponseDeadline,
             paperFormIssueDate);
         Claim claim = updateClaimDates(caseDetails, responseDeadline);
-        Optional<LocalDate> issuedOnOptional = claim.getIssuedOn();
-        if (issuedOnOptional.isPresent()) {
-            issuedOn = issuedOnOptional.get();
-        }
+
         var builder = AboutToStartOrSubmitCallbackResponse.builder();
-        if (claimDeadlineService.isPastDeadline(nowInLocalZone(),
-            responseDeadlineCalculator.calculateResponseDeadline(issuedOn))) {
-            builder.errors(List.of(DEFENDANT_MISSED_DEADLINE));
+        if (ccdRespondent.getCountyCourtJudgmentRequest() != null
+            && ccdRespondent.getCountyCourtJudgmentRequest().getType() == CCDCountyCourtJudgmentType.DEFAULT) {
+            builder.errors(List.of(CLAIMANT_ISSUED_CCJ));
             return builder.build();
         }
         try {
