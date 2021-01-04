@@ -89,7 +89,7 @@ public class CaseEventServiceTest {
     }
 
     @Test
-    public void shouldCreateQueryUsingDateFromIntentionToProceedDeadlineCalculator() {
+    public void shouldFindEventsForCases() {
         when(userService.getUser(AUTHORISATION)).thenReturn(user);
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTHORISATION);
         //when(user.getUserDetails()).thenReturn(userDetails);

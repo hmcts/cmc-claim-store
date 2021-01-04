@@ -50,7 +50,7 @@ public class CaseEventControllerTest {
     }
 
     @Test
-    public void shouldSaveClaimInRepository() {
+    public void shouldFindEventsForCasesController() {
         //given
         ClaimData input = SampleClaimData.validDefaults();
         when(caseEventService.findEventsForCase(AUTHORISATION, "1")).thenReturn(caseEventList);
