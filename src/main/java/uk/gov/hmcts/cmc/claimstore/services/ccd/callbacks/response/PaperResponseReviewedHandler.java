@@ -157,7 +157,7 @@ class PaperResponseReviewedHandler {
         } else if (courtForms.contains(subType)) {
             mailToParty = submittedByClaimant ? DEFENDANT : CLAIMANT;
             templateId = submittedByClaimant ? mailTemplates.getPaperResponseFromClaimantCaseHandoverToCCBC() :
-                                                        mailTemplates.getPaperResponseFromDefendantCaseHandoverToCCBC();
+                mailTemplates.getPaperResponseFromDefendantCaseHandoverToCCBC();
         } else if (CCJ_REQUEST.equals(subType)) {
             templateId = mailTemplates.getPaperResponseFormReceivedForCcjRequest();
         } else if (OCON9X.equals(subType)) {
@@ -165,7 +165,7 @@ class PaperResponseReviewedHandler {
         } else if (otherDocumentTypes.contains(scannedDocument.getDocumentType())) {
             mailToParty = submittedByClaimant ? CLAIMANT : DEFENDANT;
             templateId = submittedByClaimant ? mailTemplates.getPaperResponseFromClaimantGeneralLetter() :
-                                                            mailTemplates.getPaperResponseFromDefendantGeneralLetter();
+                mailTemplates.getPaperResponseFromDefendantGeneralLetter();
         } else {
             templateId = mailTemplates.getPaperResponseFormReceived();
         }
@@ -195,7 +195,8 @@ class PaperResponseReviewedHandler {
     }
 
     private void updateMoreTimeRequestedResponse(final ClaimBuilder builder, Claim claim, final List<String> errors) {
-        LocalDate deadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
+        final LocalDate deadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(
+            claim.getIssuedOn().get());
         errors.addAll(moreTimeRequestRule.validateMoreTimeCanBeRequested(claim, deadline));
         builder.responseDeadline(deadline).moreTimeRequested(true);
     }
@@ -225,7 +226,7 @@ class PaperResponseReviewedHandler {
             );
         }
     }
-    
+
     private Map<String, String> aggregateParams(Claim claim) {
         return Map.of(
             CLAIMANT_NAME, claim.getClaimData().getClaimant().getName(),
