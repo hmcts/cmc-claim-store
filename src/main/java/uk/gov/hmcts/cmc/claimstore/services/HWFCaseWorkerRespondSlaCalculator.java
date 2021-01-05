@@ -13,15 +13,21 @@ import java.time.LocalDateTime;
 public class HWFCaseWorkerRespondSlaCalculator {
 
     private final WorkingDayIndicator workingDayIndicator;
-    private final long serviceDays;
-    private final long timeForResponseInDays;
+
+    @Value("${hwfCaseWorkerRespondSla.serviceDays}")
+    private final int serviceDays;
+
+    @Value("${hwfCaseWorkerRespondSla.responseDays}")
+    private final int timeForResponseInDays;
+
+    @Value("${hwfCaseWorkerRespondSla.endOfBusinessDayHour}")
     private final int endOfBusinessDayHour;
 
     public HWFCaseWorkerRespondSlaCalculator(
         WorkingDayIndicator workingDayIndicator,
-        @Value("${hwfCaseWorkerRespondSla.serviceDays}") long serviceDays,
-        @Value("${hwfCaseWorkerRespondSla.responseDays}") long timeForResponseInDays,
-        @Value("${hwfCaseWorkerRespondSla.endOfBusinessDayHour}") int endOfBusinessDayHour
+        int serviceDays,
+        int timeForResponseInDays,
+        int endOfBusinessDayHour
     ) {
         this.workingDayIndicator = workingDayIndicator;
         this.serviceDays = serviceDays;
