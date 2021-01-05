@@ -266,3 +266,9 @@ smoke-test-citizen:
   password: "${SMOKE_TEST_USER_PASSWORD:}"
 smoke-test-solicitor:
   password: "${SMOKE_TEST_USER_PASSWORD:}"
+
+
+hwfCaseWorkerRespondSla:
+  endOfBusinessDayHour: 16
+  serviceDays: 5
+  responseDays: 5
