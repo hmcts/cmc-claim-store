@@ -5,21 +5,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.NumberUtils;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDInterestType;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.HWFCaseWorkerRespondSlaCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
+import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,8 +35,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import static java.lang.String.valueOf;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
+import static uk.gov.hmcts.cmc.domain.models.Interest.InterestType.NO_INTEREST;
 
 @Service
 public class HWFMiscellaneousCallbackHandler extends CallbackHandler {
@@ -45,6 +56,8 @@ public class HWFMiscellaneousCallbackHandler extends CallbackHandler {
 
     private final DirectionsQuestionnaireDeadlineCalculator deadlineCalculator;
 
+    private final HWFCaseWorkerRespondSlaCalculator hwfCaseWorkerRespondSlaCalculator;
+
     private final CaseMapper caseMapper;
 
     private final EventProducer eventProducer;
@@ -58,12 +71,14 @@ public class HWFMiscellaneousCallbackHandler extends CallbackHandler {
     public HWFMiscellaneousCallbackHandler(CaseDetailsConverter caseDetailsConverter,
                                            DirectionsQuestionnaireDeadlineCalculator deadlineCalculator,
                                            CaseMapper caseMapper, EventProducer eventProducer,
-                                           UserService userService) {
+                                           UserService userService,
+                                           HWFCaseWorkerRespondSlaCalculator hwfCaseWorkerRespondSlaCalculator) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.deadlineCalculator = deadlineCalculator;
         this.caseMapper = caseMapper;
         this.eventProducer = eventProducer;
         this.userService = userService;
+        this.hwfCaseWorkerRespondSlaCalculator = hwfCaseWorkerRespondSlaCalculator;
     }
 
     @Override
@@ -85,16 +100,55 @@ public class HWFMiscellaneousCallbackHandler extends CallbackHandler {
     }
 
     private CallbackResponse hwfupdateInfo(CallbackParams callbackParams) {
-        CallbackRequest callbackRequest = callbackParams.getRequest();
+        final var responseBuilder = AboutToStartOrSubmitCallbackResponse.builder();
+        final CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
+        LocalDate hwfCaseWorkerSlaDate = hwfCaseWorkerRespondSlaCalculator.calculate(ccdCase.getSubmittedOn());
 
-        Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
-        var responseBuilder = AboutToStartOrSubmitCallbackResponse.builder();
-        if (callbackRequest.getEventId().equals(CaseEvent.HWF_NO_REMISSION)
-            && LocalDateTime.now().isAfter(claim.getCreatedAt().plusDays(5))) {
+        if (!ccdCase.getInterestType().equals(CCDInterestType.NO_INTEREST)
+            && callbackParams.getRequest().getEventId().equals(CaseEvent.HWF_NO_REMISSION)
+            && LocalDateTime.now().toLocalDate().isAfter(hwfCaseWorkerSlaDate)
+            && (ccdCase.getLastInterestCalculationDate() == null
+            || (ccdCase.getLastInterestCalculationDate() != null
+            && !LocalDateTime.now().toLocalDate()
+            .isEqual(ccdCase.getLastInterestCalculationDate().toLocalDate())))) {
             String validationMessage = INTEREST_NEEDS_RECALCULATED_ERROR_MESSAGE;
             List<String> errors = new ArrayList<>();
             errors.add(validationMessage);
             responseBuilder.errors(errors);
+            return responseBuilder.build();
+        } else {
+            if (callbackParams.getRequest().getEventId().equals(CaseEvent.HWF_NO_REMISSION)) {
+                BigDecimal feeAmountInPennies = NumberUtils.parseNumber(ccdCase.getFeeAmountInPennies(),
+                    BigDecimal.class);
+                ccdCase.setFeeAmountAfterRemission(valueOf(feeAmountInPennies));
+            }
+            responseBuilder.data(caseDetailsConverter.convertToMap(ccdCase));
+        }
+        return responseBuilder.build();
+
+    }
+
+    private CallbackResponse hwfupdateInfo1(CallbackParams callbackParams) {
+        CallbackRequest callbackRequest = callbackParams.getRequest();
+
+        Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
+        var responseBuilder = AboutToStartOrSubmitCallbackResponse.builder();
+        // Check to see if 5 days have elapsed from Claim Submission days
+        final Interest interest = claim.getClaimData().getInterest();
+        LocalDate hwfCaseWorkerSlaDate = hwfCaseWorkerRespondSlaCalculator.calculate(claim.getCreatedAt());
+        if (interest != null && interest.getType() != NO_INTEREST
+            && callbackRequest.getEventId().equals(CaseEvent.HWF_NO_REMISSION)
+            && LocalDateTime.now().toLocalDate().isAfter(hwfCaseWorkerSlaDate)
+            && (interest.getLastInterestCalculationDate() == null
+            || (interest.getLastInterestCalculationDate() != null
+            && !LocalDateTime.now().toLocalDate()
+            .isEqual(interest.getLastInterestCalculationDate().toLocalDate())))) {
+            String validationMessage = INTEREST_NEEDS_RECALCULATED_ERROR_MESSAGE;
+            List<String> errors = new ArrayList<>();
+            errors.add(validationMessage);
+            responseBuilder.errors(errors);
+            return responseBuilder.build();
         }
         if (!FeaturesUtils.isOnlineDQ(claim)) {
             LocalDate deadline = deadlineCalculator.calculate(LocalDateTime.now());
@@ -102,6 +156,11 @@ public class HWFMiscellaneousCallbackHandler extends CallbackHandler {
         }
 
         Map<String, Object> dataMap = caseDetailsConverter.convertToMap(caseMapper.to(claim));
+        Optional<BigDecimal> feesPaid = claim.getClaimData().getFeesPaidInPounds();
+        if (feesPaid.isPresent() && callbackRequest.getEventId().equals(CaseEvent.HWF_NO_REMISSION)) {
+            dataMap.put("feeRemitted", MonetaryConversions
+                .poundsToPennies(BigDecimal.ZERO).toString());
+        }
 
         responseBuilder.data(dataMap);
 

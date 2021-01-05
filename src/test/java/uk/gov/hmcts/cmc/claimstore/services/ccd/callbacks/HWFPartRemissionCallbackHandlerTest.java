@@ -10,14 +10,16 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDInterestType;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.HWFCaseWorkerRespondSlaCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
-import uk.gov.hmcts.cmc.claimstore.services.notifications.DefendantResponseNotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -27,6 +29,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -61,7 +65,7 @@ class HWFPartRemissionCallbackHandlerTest {
     private CaseDetailsConverter caseDetailsConverter;
 
     @Mock
-    private DefendantResponseNotificationService defendantResponseNotificationService;
+    private HWFCaseWorkerRespondSlaCalculator hwfCaseWorkerRespondSlaCalculator;
 
     @Mock
     private EventProducer eventProducer;
@@ -72,10 +76,13 @@ class HWFPartRemissionCallbackHandlerTest {
     @Mock
     private UserDetails userDetails;
 
+    private CCDCase ccdCase;
+
     @BeforeEach
     public void setUp() {
+        ccdCase = getCCDCase();
         handler = new HWFPartRemissionCallbackHandler(caseDetailsConverter, deadlineCalculator, caseMapper,
-            eventProducer, userService);
+            eventProducer, userService, hwfCaseWorkerRespondSlaCalculator);
         callbackRequest = CallbackRequest
             .builder()
             .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
@@ -88,13 +95,27 @@ class HWFPartRemissionCallbackHandlerTest {
             .build();
     }
 
+    private CCDCase getCCDCase() {
+        return CCDCase.builder()
+            .previousServiceCaseReference("CMC")
+            .interestType(CCDInterestType.STANDARD)
+            .submittedOn(LocalDateTime.now())
+            .lastInterestCalculationDate(LocalDateTime.now())
+            .feeAmountInPennies("2")
+            .totalAmount("10")
+            .build();
+    }
+
     @Test
     void shouldUpdateFeeRemitted() {
         Claim claim = SampleClaim.getClaimWithFullAdmission();
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+        when(hwfCaseWorkerRespondSlaCalculator.calculate(ccdCase.getSubmittedOn())).thenReturn(LocalDate.now());
         Map<String, Object> mappedCaseData = new HashMap<>();
         mappedCaseData.put("feeRemitted", 4000);
         when(caseDetailsConverter.convertToMap(caseMapper.to(claim))).thenReturn(mappedCaseData);
+        when(caseDetailsConverter.convertToMap(any(CCDCase.class))).thenReturn(mappedCaseData);
         AboutToStartOrSubmitCallbackResponse response
             = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
         Map<String, Object> data = response.getData();
@@ -103,8 +124,19 @@ class HWFPartRemissionCallbackHandlerTest {
 
     @Test
     void feeRemittedIsMoreThanFee() {
+        ccdCase = CCDCase.builder()
+            .previousServiceCaseReference("CMC")
+            .interestType(CCDInterestType.STANDARD)
+            .submittedOn(LocalDateTime.now())
+            .lastInterestCalculationDate(LocalDateTime.now())
+            .feeAmountInPennies("2")
+            .feeRemitted("20")
+            .totalAmount("2")
+            .build();
         Claim claim = SampleClaim.getClaimWhenFeeRemittedIsMoreThanFee();
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+        when(hwfCaseWorkerRespondSlaCalculator.calculate(ccdCase.getSubmittedOn())).thenReturn(LocalDate.now());
         AboutToStartOrSubmitCallbackResponse response
             = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
         Assertions.assertNotNull(response.getErrors());
@@ -113,8 +145,18 @@ class HWFPartRemissionCallbackHandlerTest {
 
     @Test
     void feeRemittedIsEqualToFee() {
-
+        ccdCase = CCDCase.builder()
+            .previousServiceCaseReference("CMC")
+            .interestType(CCDInterestType.STANDARD)
+            .submittedOn(LocalDateTime.now())
+            .lastInterestCalculationDate(LocalDateTime.now())
+            .feeAmountInPennies("2")
+            .feeRemitted("2")
+            .totalAmount("2")
+            .build();
         Claim claim = SampleClaim.getClaimWhenFeeRemittedIsEqualToFee();
+        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+        when(hwfCaseWorkerRespondSlaCalculator.calculate(ccdCase.getSubmittedOn())).thenReturn(LocalDate.now());
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
         AboutToStartOrSubmitCallbackResponse response
             = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);

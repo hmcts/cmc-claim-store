@@ -6,21 +6,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.NumberUtils;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDInterestType;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.HWFCaseWorkerRespondSlaCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
-import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
+import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.math.BigDecimal;
@@ -33,7 +37,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.lang.String.valueOf;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
+import static uk.gov.hmcts.cmc.domain.utils.MonetaryConversions.poundsToPennies;
 
 @Service
 public class HWFPartRemissionCallbackHandler extends CallbackHandler {
@@ -56,6 +62,8 @@ public class HWFPartRemissionCallbackHandler extends CallbackHandler {
 
     private final DirectionsQuestionnaireDeadlineCalculator deadlineCalculator;
 
+    private final HWFCaseWorkerRespondSlaCalculator hwfCaseWorkerRespondSlaCalculator;
+
     private final CaseMapper caseMapper;
 
     private final EventProducer eventProducer;
@@ -68,12 +76,14 @@ public class HWFPartRemissionCallbackHandler extends CallbackHandler {
     public HWFPartRemissionCallbackHandler(CaseDetailsConverter caseDetailsConverter,
                                            DirectionsQuestionnaireDeadlineCalculator deadlineCalculator,
                                            CaseMapper caseMapper, EventProducer eventProducer,
-                                           UserService userService) {
+                                           UserService userService,
+                                           HWFCaseWorkerRespondSlaCalculator hwfCaseWorkerRespondSlaCalculator) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.deadlineCalculator = deadlineCalculator;
         this.caseMapper = caseMapper;
         this.eventProducer = eventProducer;
         this.userService = userService;
+        this.hwfCaseWorkerRespondSlaCalculator = hwfCaseWorkerRespondSlaCalculator;
     }
 
     @Override
@@ -95,37 +105,40 @@ public class HWFPartRemissionCallbackHandler extends CallbackHandler {
     }
 
     private CallbackResponse updateFeeRemitted(CallbackParams callbackParams) {
-        CallbackRequest callbackRequest = callbackParams.getRequest();
+        final var responseBuilder = AboutToStartOrSubmitCallbackResponse.builder();
+        final CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         validationMessage = null;
-        Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
-        if (LocalDateTime.now().isAfter(claim.getCreatedAt().plusDays(5))) {
+
+        LocalDate hwfCaseWorkerSlaDate = hwfCaseWorkerRespondSlaCalculator.calculate(ccdCase.getSubmittedOn());
+
+        // Check to see if 5 days have elapsed from Claim Submission days
+        if (!ccdCase.getInterestType().equals(CCDInterestType.NO_INTEREST)
+            && LocalDateTime.now().toLocalDate().isAfter(hwfCaseWorkerSlaDate)
+            && (ccdCase.getLastInterestCalculationDate() == null
+            || (ccdCase.getLastInterestCalculationDate() != null
+            && !LocalDateTime.now().toLocalDate()
+            .isEqual(ccdCase.getLastInterestCalculationDate().toLocalDate())))) {
             validationMessage = INTEREST_NEEDS_RECALCULATED_ERROR_MESSAGE;
         } else {
-            claim = validationResultForRemittedFee(claim);
+            ccdCase = validationResultForRemittedFee1(ccdCase);
         }
         List<String> errors = new ArrayList<>();
-        var responseBuilder = AboutToStartOrSubmitCallbackResponse.builder();
         if (null != validationMessage) {
             errors.add(validationMessage);
             responseBuilder.errors(errors);
         } else {
-            if (!FeaturesUtils.isOnlineDQ(claim)) {
-                LocalDate deadline = deadlineCalculator.calculate(LocalDateTime.now());
-                claim = claim.toBuilder().directionsQuestionnaireDeadline(deadline).build();
-            }
-
-            Map<String, Object> dataMap = caseDetailsConverter.convertToMap(caseMapper.to(claim));
-
-            responseBuilder.data(dataMap);
+            responseBuilder.data(caseDetailsConverter.convertToMap(ccdCase));
         }
         return responseBuilder.build();
     }
 
-    private Claim validationResultForRemittedFee(Claim claim) {
+    private Claim validationResultForRemittedFee(Claim claim, CCDCase ccdCase) {
         BigDecimal feedPaidInPounds;
         BigInteger feedPaidInPennies = null;
         BigDecimal feeAmountAfterRemissionInPounds;
         BigInteger feeAmountAfterRemissionInPennies = null;
+        BigInteger totalClaimAmountInPennies = null;
         BigDecimal remittedFeesInPounds;
         BigInteger remittedFeesInPennies = null;
         Optional<BigDecimal> feesPaid = claim.getClaimData().getFeesPaidInPounds();
@@ -152,12 +165,43 @@ public class HWFPartRemissionCallbackHandler extends CallbackHandler {
             feedPaidInPounds = feesPaid.get();
             feedPaidInPennies = MonetaryConversions.poundsToPennies(feedPaidInPounds);
             feeAmountAfterRemissionInPennies = feedPaidInPennies.subtract(remittedFeesInPennies);
-            ClaimData claimData = claim.getClaimData().toBuilder()
-                .feeAmountAfterRemission(feeAmountAfterRemissionInPennies).build();
-            claim.toBuilder().claimData(claimData).build();
-            return claim.toBuilder().claimData(claimData).build();
+
+            final BigDecimal totalClaimAmount = ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount();
+            totalClaimAmountInPennies = MonetaryConversions.poundsToPennies(totalClaimAmount);
+            final BigInteger totalClaimAmountUponRemissionInPennies = totalClaimAmountInPennies
+                .subtract(feeAmountAfterRemissionInPennies);
+            BigDecimal claimAmount = ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount();
+            claimAmount = claimAmount.subtract(remittedFees.get());
+            ccdCase.setTotalAmount(valueOf(poundsToPennies(claimAmount)));
+            Claim outputClaim = caseMapper.from(ccdCase);
+            ClaimData claimData = outputClaim.getClaimData().toBuilder()
+                .feeAmountAfterRemission(feeAmountAfterRemissionInPennies)
+                .build();
+            outputClaim.toBuilder().claimData(claimData).build();
+            return outputClaim.toBuilder().claimData(claimData).build();
         }
         return claim;
+    }
+
+    private CCDCase validationResultForRemittedFee1(CCDCase ccdCase) {
+
+        if (ccdCase.getFeeRemitted() != null) {
+
+            BigDecimal feeAmountInPennies = NumberUtils.parseNumber(ccdCase.getFeeAmountInPennies(), BigDecimal.class);
+            BigDecimal feeRemitted = NumberUtils.parseNumber(ccdCase.getFeeRemitted(), BigDecimal.class);
+            BigDecimal totalAmount = NumberUtils.parseNumber(ccdCase.getTotalAmount(), BigDecimal.class);
+            int value = feeAmountInPennies.compareTo(feeRemitted);
+            if (value == 0) {
+                validationMessage = PART_REMISSION_EQUAL_ERROR_MESSAGE;
+            } else if (value < 0) {
+                validationMessage = PART_REMISSION_IS_MORE_ERROR_MESSAGE;
+            }
+            totalAmount = totalAmount.subtract(feeRemitted);
+            BigDecimal feeAmountAfterRemission = feeAmountInPennies.subtract(feeRemitted);
+            ccdCase.setFeeAmountAfterRemission(valueOf(feeAmountAfterRemission));
+            ccdCase.setTotalAmount(valueOf(totalAmount));
+        }
+        return ccdCase;
     }
 
     private CallbackResponse startHwfClaimUpdatePostOperations(CallbackParams callbackParams) {

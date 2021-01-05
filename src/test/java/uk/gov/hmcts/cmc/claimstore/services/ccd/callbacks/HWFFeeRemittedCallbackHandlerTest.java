@@ -8,11 +8,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDInterestType;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.HWFCaseWorkerRespondSlaCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.DefendantResponseNotificationService;
@@ -23,6 +26,8 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -64,12 +69,18 @@ class HWFFeeRemittedCallbackHandlerTest {
     @Mock
     private DefendantResponseNotificationService defendantResponseNotificationService;
 
+    @Mock
+    private HWFCaseWorkerRespondSlaCalculator hwfCaseWorkerRespondSlaCalculator;
+
     private UserDetails userDetails;
+
+    private CCDCase ccdCase;
 
     @BeforeEach
     public void setUp() {
+        ccdCase = getCCDCase();
         handler = new HWFFeeRemittedCallbackHandler(caseDetailsConverter, deadlineCalculator, caseMapper,
-            eventProducer, userService);
+            eventProducer, userService, hwfCaseWorkerRespondSlaCalculator);
         callbackRequest = CallbackRequest
             .builder()
             .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
@@ -82,13 +93,28 @@ class HWFFeeRemittedCallbackHandlerTest {
             .build();
     }
 
+    private CCDCase getCCDCase() {
+        return CCDCase.builder()
+            .previousServiceCaseReference("CMC")
+            .interestType(CCDInterestType.STANDARD)
+            .submittedOn(LocalDateTime.now())
+            .lastInterestCalculationDate(LocalDateTime.now())
+            .feeAmountInPennies("2")
+            .totalAmount("10")
+            .build();
+    }
+
     @Test
     void shouldUpdateFeeRemitted() {
-        Claim claim = SampleClaim.getClaimWithFullAdmission();
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+
+        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+        when(hwfCaseWorkerRespondSlaCalculator.calculate(ccdCase.getSubmittedOn())).thenReturn(LocalDate.now());
         Map<String, Object> mappedCaseData = new HashMap<>();
+        mappedCaseData.put("feeRemitted", "4000");
+        Claim claim = SampleClaim.getClaimWithFullAdmission();
         when(caseDetailsConverter.convertToMap(caseMapper.to(claim)))
             .thenReturn(mappedCaseData);
+        when(caseDetailsConverter.convertToMap(any(CCDCase.class))).thenReturn(mappedCaseData);
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
             handler.handle(callbackParams);
         assertEquals("4000", response.getData().get("feeRemitted"));
