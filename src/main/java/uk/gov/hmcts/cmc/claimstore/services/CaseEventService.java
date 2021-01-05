@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-
 @Service
 public class CaseEventService {
     public static final String JURISDICTION_ID = "CMC";
@@ -22,7 +21,8 @@ public class CaseEventService {
 
     private final AuthTokenGenerator authTokenGenerator;
 
-    public CaseEventService(CaseEventsApi caseEventsApi, UserService userService, AuthTokenGenerator authTokenGenerator) {
+    public CaseEventService(CaseEventsApi caseEventsApi, UserService userService,
+                            AuthTokenGenerator authTokenGenerator) {
         this.caseEventsApi = caseEventsApi;
         this.userService = userService;
         this.authTokenGenerator = authTokenGenerator;

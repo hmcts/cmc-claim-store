@@ -112,7 +112,8 @@ public class ClaimService {
         claimAuthorisationRule.assertUserIdMatchesAuthorisation(submitterId, authorisation);
         List<Claim> claimList = caseRepository.getBySubmitterId(submitterId, authorisation);
         claimList.stream().forEach(claim -> {
-            if (claim.getState().equals(ClaimState.AWAITING_RESPONSE_HWF) || claim.getState().equals(ClaimState.HWF_APPLICATION_PENDING)) {
+            if (claim.getState().equals(ClaimState.AWAITING_RESPONSE_HWF)
+                || claim.getState().equals(ClaimState.HWF_APPLICATION_PENDING)) {
                 List<CaseEvent> caseEventList = caseEventService.findEventsForCase(authorisation,
                     String.valueOf(claim.getId()));
                 claim = claim.toBuilder().lastEventTriggeredForCase(caseEventList.get(0).getValue()).build();

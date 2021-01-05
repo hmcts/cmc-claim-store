@@ -122,6 +122,8 @@ public class ClaimServiceTest {
     @Mock
     private UserService userService;
     @Mock
+    private CaseEventService caseEventService;
+    @Mock
     private IssueDateCalculator issueDateCalculator;
     @Mock
     private ResponseDeadlineCalculator responseDeadlineCalculator;
