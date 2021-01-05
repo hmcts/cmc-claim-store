@@ -116,7 +116,7 @@ public class ClaimService {
                 || claim.getState().equals(ClaimState.HWF_APPLICATION_PENDING)) {
                 List<CaseEvent> caseEventList = caseEventService.findEventsForCase(authorisation,
                     String.valueOf(claim.getId()));
-                claim = claim.toBuilder().lastEventTriggeredForCase(caseEventList.get(0).getValue()).build();
+                claim = claim.toBuilder().lastEventTriggeredForHwfCase(caseEventList.get(0).getValue()).build();
             }
             outputClaimList.add(claim);
 
