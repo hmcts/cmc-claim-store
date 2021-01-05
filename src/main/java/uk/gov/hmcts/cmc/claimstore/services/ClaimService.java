@@ -136,8 +136,16 @@ public class ClaimService {
 
     public Claim getFilteredClaimByExternalId(String externalId, String authorisation) {
         User user = userService.getUser(authorisation);
+        Claim claim = getClaimByExternalId(externalId, user);
+        if (claim.getState().equals(ClaimState.AWAITING_RESPONSE_HWF)
+            || claim.getState().equals(ClaimState.HWF_APPLICATION_PENDING)) {
+            List<CaseEvent> caseEventList = caseEventService.findEventsForCase(authorisation,
+                String.valueOf(claim.getId()));
+            claim = claim.toBuilder().lastEventTriggeredForHwfCase(caseEventList.get(0).getValue()).build();
+        }
+
         return DocumentsFilter.filterDocuments(
-            getClaimByExternalId(externalId, user), user.getUserDetails(), ctscEnabled,
+            claim, user.getUserDetails(), ctscEnabled,
             launchDarklyClient.isFeatureEnabled("paper-response-review-new-handling")
         );
     }
