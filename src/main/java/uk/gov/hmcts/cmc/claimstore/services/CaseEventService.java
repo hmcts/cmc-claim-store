@@ -29,12 +29,11 @@ public class CaseEventService {
     }
 
     public List<CaseEvent> findEventsForCase(String authorisation, String ccdCaseId) {
-        User user = userService.getUser(authorisation);
+        User user = userService.authenticateAnonymousCaseWorker();
         List<CaseEvent> caseEventList = new ArrayList<CaseEvent>();
-        String serviceAuthorization = authTokenGenerator.generate();
 
         List<CaseEventDetail> caseEventDetails = caseEventsApi.findEventDetailsForCase(user.getAuthorisation(),
-            serviceAuthorization, user.getUserDetails().getId(),
+            authTokenGenerator.generate(), user.getUserDetails().getId(),
             JURISDICTION_ID,
             CASE_TYPE_ID, ccdCaseId);
 

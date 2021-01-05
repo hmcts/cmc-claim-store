@@ -38,6 +38,7 @@ import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -107,17 +108,19 @@ public class ClaimService {
     }
 
     public List<Claim> getClaimBySubmitterId(String submitterId, String authorisation) {
+        List<Claim> outputClaimList = new ArrayList<>();
         claimAuthorisationRule.assertUserIdMatchesAuthorisation(submitterId, authorisation);
         List<Claim> claimList = caseRepository.getBySubmitterId(submitterId, authorisation);
-        claimList.stream()
-            .filter(claim -> claim.getClaimData().getHwfMandatoryDetails() != null)
-            .filter(claim -> {
+        claimList.stream().forEach(claim -> {
+            if (claim.getState().equals(ClaimState.AWAITING_RESPONSE_HWF) || claim.getState().equals(ClaimState.HWF_APPLICATION_PENDING)) {
                 List<CaseEvent> caseEventList = caseEventService.findEventsForCase(authorisation,
-                    String.valueOf(claim.getCcdCaseId()));
-                claim.toBuilder().lastEventTriggeredForCase(caseEventList.get(0).getValue());
-                return true;
-            });
-        return claimList;
+                    String.valueOf(claim.getId()));
+                claim = claim.toBuilder().lastEventTriggeredForCase(caseEventList.get(0).getValue()).build();
+            }
+            outputClaimList.add(claim);
+
+        });
+        return outputClaimList;
     }
 
     public Claim getClaimByLetterHolderId(String id, String authorisation) {
