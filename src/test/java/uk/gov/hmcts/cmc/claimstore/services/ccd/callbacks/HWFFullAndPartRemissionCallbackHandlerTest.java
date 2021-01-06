@@ -19,6 +19,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.HWFCaseWorkerRespondSlaCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -30,30 +31,38 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 @DisplayName("HWF Part Remission Callback Handler")
-class HWFPartRemissionCallbackHandlerTest {
+class HWFFullAndPartRemissionCallbackHandlerTest {
     private static final String PART_REMISSION_EQUAL_ERROR_MESSAGE =
         "Remitted fee is same as the total fee. For full remission, "
             + "please cancel and select the next step as \"Full remission HWF-granted\"";
     private static final String PART_REMISSION_IS_MORE_ERROR_MESSAGE = "Remitted fee should be less than the total fee";
     private static final String AUTHORISATION = "Bearer: aaaa";
-    private static final String DOC_URL = "http://success.test";
-    private static final String DOC_URL_BINARY = "http://success.test/binary";
-    private HWFPartRemissionCallbackHandler handler;
+    private HWFFullAndPartRemissionCallbackHandler handler;
     private CallbackParams callbackParams;
+    private CallbackParams callbackParamsFullRemission;
     private CallbackRequest callbackRequest;
+    private CallbackRequest callbackRequestFullRemission;
+
+    private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
+    private static final List<CaseEvent> EVENTS = Arrays.asList(
+        CaseEvent.HWF_PART_REMISSION_GRANTED, CaseEvent.HWF_FULL_REMISSION_GRANTED);
 
     @Mock
     private CaseMapper caseMapper;
@@ -78,8 +87,10 @@ class HWFPartRemissionCallbackHandlerTest {
     @BeforeEach
     public void setUp() {
         ccdCase = getCCDCase();
-        handler = new HWFPartRemissionCallbackHandler(caseDetailsConverter, caseMapper,
+        handler = new HWFFullAndPartRemissionCallbackHandler(caseDetailsConverter,
             eventProducer, userService, hwfCaseWorkerRespondSlaCalculator);
+
+        //Part Remission
         callbackRequest = CallbackRequest
             .builder()
             .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
@@ -88,6 +99,18 @@ class HWFPartRemissionCallbackHandlerTest {
         callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_SUBMIT)
             .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
+            .build();
+
+        // Full remission
+        callbackRequestFullRemission = CallbackRequest
+            .builder()
+            .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
+            .eventId(CaseEvent.HWF_FULL_REMISSION_GRANTED.getValue())
+            .build();
+        callbackParamsFullRemission = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_SUBMIT)
+            .request(callbackRequestFullRemission)
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
             .build();
     }
@@ -103,6 +126,8 @@ class HWFPartRemissionCallbackHandlerTest {
             .build();
     }
 
+
+    //  Test cases for Part Remission
     @Test
     void shouldUpdateFeeRemitted() {
         Claim claim = SampleClaim.getClaimWithFullAdmission();
@@ -183,5 +208,35 @@ class HWFPartRemissionCallbackHandlerTest {
         String data = response.getConfirmationBody();
 
         assertThat(claim).isNotNull();
+    }
+
+
+    // Test cases for Full Remission
+    @Test
+    void shouldUpdateFeeRemittedForFullRemission() {
+
+        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+        when(hwfCaseWorkerRespondSlaCalculator.calculate(ccdCase.getSubmittedOn())).thenReturn(LocalDate.now());
+        Map<String, Object> mappedCaseData = new HashMap<>();
+        mappedCaseData.put("feeRemitted", "4000");
+        Claim claim = SampleClaim.getClaimWithFullAdmission();
+        when(caseDetailsConverter.convertToMap(caseMapper.to(claim)))
+            .thenReturn(mappedCaseData);
+        when(caseDetailsConverter.convertToMap(any(CCDCase.class))).thenReturn(mappedCaseData);
+        AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
+            handler.handle(callbackParamsFullRemission);
+        assertEquals("4000", response.getData().get("feeRemitted"));
+    }
+
+    @Test
+    void getSupportedRoles() {
+        List<Role> roleList = handler.getSupportedRoles();
+        assertEquals(ROLES, roleList);
+    }
+
+    @Test
+    void handledEvents() {
+        List<CaseEvent> caseEventList = handler.handledEvents();
+        assertEquals(EVENTS, caseEventList);
     }
 }

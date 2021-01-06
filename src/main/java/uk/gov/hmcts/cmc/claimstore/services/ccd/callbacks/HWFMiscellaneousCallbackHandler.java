@@ -9,10 +9,8 @@ import org.springframework.util.NumberUtils;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestType;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
-import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.HWFCaseWorkerRespondSlaCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
@@ -48,11 +46,7 @@ public class HWFMiscellaneousCallbackHandler extends CallbackHandler {
 
     private final CaseDetailsConverter caseDetailsConverter;
 
-    private final DirectionsQuestionnaireDeadlineCalculator deadlineCalculator;
-
     private final HWFCaseWorkerRespondSlaCalculator hwfCaseWorkerRespondSlaCalculator;
-
-    private final CaseMapper caseMapper;
 
     private final EventProducer eventProducer;
 
@@ -63,13 +57,10 @@ public class HWFMiscellaneousCallbackHandler extends CallbackHandler {
 
     @Autowired
     public HWFMiscellaneousCallbackHandler(CaseDetailsConverter caseDetailsConverter,
-                                           DirectionsQuestionnaireDeadlineCalculator deadlineCalculator,
-                                           CaseMapper caseMapper, EventProducer eventProducer,
+                                           EventProducer eventProducer,
                                            UserService userService,
                                            HWFCaseWorkerRespondSlaCalculator hwfCaseWorkerRespondSlaCalculator) {
         this.caseDetailsConverter = caseDetailsConverter;
-        this.deadlineCalculator = deadlineCalculator;
-        this.caseMapper = caseMapper;
         this.eventProducer = eventProducer;
         this.userService = userService;
         this.hwfCaseWorkerRespondSlaCalculator = hwfCaseWorkerRespondSlaCalculator;
@@ -112,7 +103,7 @@ public class HWFMiscellaneousCallbackHandler extends CallbackHandler {
             responseBuilder.errors(errors);
             return responseBuilder.build();
         } else {
-            if (callbackParams.getRequest().getEventId().equals(CaseEvent.HWF_NO_REMISSION)) {
+            if (callbackParams.getRequest().getEventId().equals(CaseEvent.HWF_NO_REMISSION.getValue())) {
                 BigDecimal feeAmountInPennies = NumberUtils.parseNumber(ccdCase.getFeeAmountInPennies(),
                     BigDecimal.class);
                 ccdCase.setFeeAmountAfterRemission(valueOf(feeAmountInPennies));

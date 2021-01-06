@@ -89,7 +89,7 @@ pdf-service:
   url: "${PDF_SERVICE_URL:}"
 
 document_management:
-  url: ${DOCUMENT_MANAGEMENT_URL}
+  url: "${DOCUMENT_MANAGEMENT_URL:}"
   userRoles: ${DOCUMENT_MANAGEMENT_USERROLES}
 
 core_case_data:
@@ -141,7 +141,7 @@ schedule:
 
 
 hwfCaseWorkerRespondSla:
-  timeForResponseInDays: 5
+  timeForResponseInDays: 7
   endOfBusinessDayHour: 16
 
 dateCalculations:

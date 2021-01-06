@@ -16,11 +16,8 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
-import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.HWFCaseWorkerRespondSlaCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
-import uk.gov.hmcts.cmc.claimstore.services.notifications.DefendantResponseNotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -51,8 +48,6 @@ class HWFMiscellaneousCallbackHandlerTest {
     private HWFMiscellaneousCallbackHandler handler;
     private CallbackParams callbackParams;
     private CallbackRequest callbackRequest;
-    @Mock
-    private DirectionsQuestionnaireDeadlineCalculator deadlineCalculator;
 
     @Mock
     private CaseMapper caseMapper;
@@ -61,13 +56,7 @@ class HWFMiscellaneousCallbackHandlerTest {
     private CaseDetailsConverter caseDetailsConverter;
 
     @Mock
-    private DefendantResponseNotificationService defendantResponseNotificationService;
-
-    @Mock
     private HWFCaseWorkerRespondSlaCalculator hwfCaseWorkerRespondSlaCalculator;
-
-    @Mock
-    private ClaimService claimService;
 
     @Mock
     private EventProducer eventProducer;
@@ -83,7 +72,7 @@ class HWFMiscellaneousCallbackHandlerTest {
     @BeforeEach
     public void setUp() {
         ccdCase = getCCDCase();
-        handler = new HWFMiscellaneousCallbackHandler(caseDetailsConverter, deadlineCalculator, caseMapper,
+        handler = new HWFMiscellaneousCallbackHandler(caseDetailsConverter,
             eventProducer, userService, hwfCaseWorkerRespondSlaCalculator);
         callbackRequest = CallbackRequest
             .builder()

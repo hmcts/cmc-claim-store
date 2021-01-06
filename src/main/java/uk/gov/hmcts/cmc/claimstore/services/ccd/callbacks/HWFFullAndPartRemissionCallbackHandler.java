@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +9,6 @@ import org.springframework.util.NumberUtils;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestType;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.services.HWFCaseWorkerRespondSlaCalculator;
@@ -27,6 +25,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +34,7 @@ import static java.lang.String.valueOf;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
 @Service
-public class HWFPartRemissionCallbackHandler extends CallbackHandler {
+public class HWFFullAndPartRemissionCallbackHandler extends CallbackHandler {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -49,13 +48,12 @@ public class HWFPartRemissionCallbackHandler extends CallbackHandler {
 
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
 
-    private static final List<CaseEvent> EVENTS = ImmutableList.of(CaseEvent.HWF_PART_REMISSION_GRANTED);
+    private static final List<CaseEvent> EVENTS = Arrays.asList(CaseEvent.HWF_PART_REMISSION_GRANTED,
+        CaseEvent.HWF_FULL_REMISSION_GRANTED);
 
     private final CaseDetailsConverter caseDetailsConverter;
 
     private final HWFCaseWorkerRespondSlaCalculator hwfCaseWorkerRespondSlaCalculator;
-
-    private final CaseMapper caseMapper;
 
     private final EventProducer eventProducer;
 
@@ -64,12 +62,11 @@ public class HWFPartRemissionCallbackHandler extends CallbackHandler {
     private String validationMessage;
 
     @Autowired
-    public HWFPartRemissionCallbackHandler(CaseDetailsConverter caseDetailsConverter,
-                                           CaseMapper caseMapper, EventProducer eventProducer,
-                                           UserService userService,
-                                           HWFCaseWorkerRespondSlaCalculator hwfCaseWorkerRespondSlaCalculator) {
+    public HWFFullAndPartRemissionCallbackHandler(CaseDetailsConverter caseDetailsConverter,
+                                                  EventProducer eventProducer,
+                                                  UserService userService,
+                                                  HWFCaseWorkerRespondSlaCalculator hwfCaseWorkerRespondSlaCalculator) {
         this.caseDetailsConverter = caseDetailsConverter;
-        this.caseMapper = caseMapper;
         this.eventProducer = eventProducer;
         this.userService = userService;
         this.hwfCaseWorkerRespondSlaCalculator = hwfCaseWorkerRespondSlaCalculator;
@@ -109,7 +106,15 @@ public class HWFPartRemissionCallbackHandler extends CallbackHandler {
             && !LocalDateTime.now().toLocalDate()
             .isEqual(ccdCase.getLastInterestCalculationDate().toLocalDate())))) {
             validationMessage = INTEREST_NEEDS_RECALCULATED_ERROR_MESSAGE;
-        } else {
+        } else if (callbackParams.getRequest().getEventId().equals(CaseEvent.HWF_FULL_REMISSION_GRANTED.getValue())) {
+            BigDecimal feeAmountInPennies = NumberUtils.parseNumber(ccdCase.getFeeAmountInPennies(), BigDecimal.class);
+            BigDecimal totalAmount = NumberUtils.parseNumber(ccdCase.getTotalAmount(), BigDecimal.class);
+            totalAmount = totalAmount.subtract(feeAmountInPennies);
+            ccdCase.setFeeAmountAfterRemission(valueOf(feeAmountInPennies));
+            ccdCase.setTotalAmount(valueOf(totalAmount));
+            responseBuilder.data(caseDetailsConverter.convertToMap(ccdCase));
+            return responseBuilder.build();
+        } else if (callbackParams.getRequest().getEventId().equals(CaseEvent.HWF_PART_REMISSION_GRANTED.getValue())) {
             validationResultForRemittedFee(ccdCase);
         }
         List<String> errors = new ArrayList<>();
