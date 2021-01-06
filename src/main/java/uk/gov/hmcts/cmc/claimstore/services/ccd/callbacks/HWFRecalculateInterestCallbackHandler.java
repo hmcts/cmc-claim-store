@@ -2,8 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -39,8 +37,6 @@ import static uk.gov.hmcts.cmc.domain.utils.MonetaryConversions.poundsToPennies;
 
 @Service
 public class HWFRecalculateInterestCallbackHandler extends CallbackHandler {
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private static final String FEE_EVENT = "issue";
     private static final String FEE_CHANNEL = "online";

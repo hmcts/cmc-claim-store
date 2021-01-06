@@ -38,7 +38,6 @@ public class CaseEventServiceTest {
 
     private final User user = new User("", new UserDetails(null, null, null, null, null));
 
-    private static final String AUTHORISATION = "Bearer: aaa";
     private static final String SERVICE_AUTHORISATION = "122FSDFSFDSFDSFdsafdsfadsfasdfaaa2323232";
     private static final String UUID = "UUID";
 
@@ -71,7 +70,7 @@ public class CaseEventServiceTest {
             user.getUserDetails().getId(),
             JURISDICTION_ID, CASE_TYPE_ID, "1"))
             .thenReturn(caseEventDetailList);
-        List<CaseEvent> caseEventListOutput = caseEventService.findEventsForCase(AUTHORISATION, "1");
+        List<CaseEvent> caseEventListOutput = caseEventService.findEventsForCase("1");
         assertThat(caseEventListOutput).isEqualTo(caseEventList);
     }
 }

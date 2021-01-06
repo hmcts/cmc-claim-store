@@ -114,7 +114,7 @@ public class ClaimService {
         claimList.stream().forEach(claim -> {
             if (claim.getState().equals(ClaimState.AWAITING_RESPONSE_HWF)
                 || claim.getState().equals(ClaimState.HWF_APPLICATION_PENDING)) {
-                List<CaseEvent> caseEventList = caseEventService.findEventsForCase(authorisation,
+                List<CaseEvent> caseEventList = caseEventService.findEventsForCase(
                     String.valueOf(claim.getId()));
                 claim = claim.toBuilder().lastEventTriggeredForHwfCase(caseEventList.get(0).getValue()).build();
             }
@@ -139,7 +139,7 @@ public class ClaimService {
         Claim claim = getClaimByExternalId(externalId, user);
         if (claim.getState().equals(ClaimState.AWAITING_RESPONSE_HWF)
             || claim.getState().equals(ClaimState.HWF_APPLICATION_PENDING)) {
-            List<CaseEvent> caseEventList = caseEventService.findEventsForCase(authorisation,
+            List<CaseEvent> caseEventList = caseEventService.findEventsForCase(
                 String.valueOf(claim.getId()));
             claim = claim.toBuilder().lastEventTriggeredForHwfCase(caseEventList.get(0).getValue()).build();
         }

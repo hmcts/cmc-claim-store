@@ -18,11 +18,7 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.Interest;
-import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
-import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
@@ -35,11 +31,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static java.lang.String.valueOf;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
-import static uk.gov.hmcts.cmc.domain.models.Interest.InterestType.NO_INTEREST;
 
 @Service
 public class HWFMiscellaneousCallbackHandler extends CallbackHandler {
@@ -127,44 +121,6 @@ public class HWFMiscellaneousCallbackHandler extends CallbackHandler {
         }
         return responseBuilder.build();
 
-    }
-
-    private CallbackResponse hwfupdateInfo1(CallbackParams callbackParams) {
-        CallbackRequest callbackRequest = callbackParams.getRequest();
-
-        Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
-        var responseBuilder = AboutToStartOrSubmitCallbackResponse.builder();
-        // Check to see if 5 days have elapsed from Claim Submission days
-        final Interest interest = claim.getClaimData().getInterest();
-        LocalDate hwfCaseWorkerSlaDate = hwfCaseWorkerRespondSlaCalculator.calculate(claim.getCreatedAt());
-        if (interest != null && interest.getType() != NO_INTEREST
-            && callbackRequest.getEventId().equals(CaseEvent.HWF_NO_REMISSION)
-            && LocalDateTime.now().toLocalDate().isAfter(hwfCaseWorkerSlaDate)
-            && (interest.getLastInterestCalculationDate() == null
-            || (interest.getLastInterestCalculationDate() != null
-            && !LocalDateTime.now().toLocalDate()
-            .isEqual(interest.getLastInterestCalculationDate().toLocalDate())))) {
-            String validationMessage = INTEREST_NEEDS_RECALCULATED_ERROR_MESSAGE;
-            List<String> errors = new ArrayList<>();
-            errors.add(validationMessage);
-            responseBuilder.errors(errors);
-            return responseBuilder.build();
-        }
-        if (!FeaturesUtils.isOnlineDQ(claim)) {
-            LocalDate deadline = deadlineCalculator.calculate(LocalDateTime.now());
-            claim = claim.toBuilder().directionsQuestionnaireDeadline(deadline).build();
-        }
-
-        Map<String, Object> dataMap = caseDetailsConverter.convertToMap(caseMapper.to(claim));
-        Optional<BigDecimal> feesPaid = claim.getClaimData().getFeesPaidInPounds();
-        if (feesPaid.isPresent() && callbackRequest.getEventId().equals(CaseEvent.HWF_NO_REMISSION)) {
-            dataMap.put("feeRemitted", MonetaryConversions
-                .poundsToPennies(BigDecimal.ZERO).toString());
-        }
-
-        responseBuilder.data(dataMap);
-
-        return responseBuilder.build();
     }
 
     private CallbackResponse startHwfClaimUpdatePostOperations(CallbackParams callbackParams) {

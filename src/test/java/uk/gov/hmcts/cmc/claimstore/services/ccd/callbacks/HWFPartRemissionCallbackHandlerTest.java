@@ -17,7 +17,6 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.HWFCaseWorkerRespondSlaCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -55,8 +54,6 @@ class HWFPartRemissionCallbackHandlerTest {
     private HWFPartRemissionCallbackHandler handler;
     private CallbackParams callbackParams;
     private CallbackRequest callbackRequest;
-    @Mock
-    private DirectionsQuestionnaireDeadlineCalculator deadlineCalculator;
 
     @Mock
     private CaseMapper caseMapper;
@@ -81,7 +78,7 @@ class HWFPartRemissionCallbackHandlerTest {
     @BeforeEach
     public void setUp() {
         ccdCase = getCCDCase();
-        handler = new HWFPartRemissionCallbackHandler(caseDetailsConverter, deadlineCalculator, caseMapper,
+        handler = new HWFPartRemissionCallbackHandler(caseDetailsConverter, caseMapper,
             eventProducer, userService, hwfCaseWorkerRespondSlaCalculator);
         callbackRequest = CallbackRequest
             .builder()

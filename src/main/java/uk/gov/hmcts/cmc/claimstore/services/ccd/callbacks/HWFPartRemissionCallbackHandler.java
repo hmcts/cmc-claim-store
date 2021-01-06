@@ -13,33 +13,26 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
-import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.HWFCaseWorkerRespondSlaCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimData;
-import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
-import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static java.lang.String.valueOf;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
-import static uk.gov.hmcts.cmc.domain.utils.MonetaryConversions.poundsToPennies;
 
 @Service
 public class HWFPartRemissionCallbackHandler extends CallbackHandler {
@@ -60,8 +53,6 @@ public class HWFPartRemissionCallbackHandler extends CallbackHandler {
 
     private final CaseDetailsConverter caseDetailsConverter;
 
-    private final DirectionsQuestionnaireDeadlineCalculator deadlineCalculator;
-
     private final HWFCaseWorkerRespondSlaCalculator hwfCaseWorkerRespondSlaCalculator;
 
     private final CaseMapper caseMapper;
@@ -74,12 +65,10 @@ public class HWFPartRemissionCallbackHandler extends CallbackHandler {
 
     @Autowired
     public HWFPartRemissionCallbackHandler(CaseDetailsConverter caseDetailsConverter,
-                                           DirectionsQuestionnaireDeadlineCalculator deadlineCalculator,
                                            CaseMapper caseMapper, EventProducer eventProducer,
                                            UserService userService,
                                            HWFCaseWorkerRespondSlaCalculator hwfCaseWorkerRespondSlaCalculator) {
         this.caseDetailsConverter = caseDetailsConverter;
-        this.deadlineCalculator = deadlineCalculator;
         this.caseMapper = caseMapper;
         this.eventProducer = eventProducer;
         this.userService = userService;
@@ -121,7 +110,7 @@ public class HWFPartRemissionCallbackHandler extends CallbackHandler {
             .isEqual(ccdCase.getLastInterestCalculationDate().toLocalDate())))) {
             validationMessage = INTEREST_NEEDS_RECALCULATED_ERROR_MESSAGE;
         } else {
-            ccdCase = validationResultForRemittedFee1(ccdCase);
+            validationResultForRemittedFee(ccdCase);
         }
         List<String> errors = new ArrayList<>();
         if (null != validationMessage) {
@@ -133,57 +122,7 @@ public class HWFPartRemissionCallbackHandler extends CallbackHandler {
         return responseBuilder.build();
     }
 
-    private Claim validationResultForRemittedFee(Claim claim, CCDCase ccdCase) {
-        BigDecimal feedPaidInPounds;
-        BigInteger feedPaidInPennies = null;
-        BigDecimal feeAmountAfterRemissionInPounds;
-        BigInteger feeAmountAfterRemissionInPennies = null;
-        BigInteger totalClaimAmountInPennies = null;
-        BigDecimal remittedFeesInPounds;
-        BigInteger remittedFeesInPennies = null;
-        Optional<BigDecimal> feesPaid = claim.getClaimData().getFeesPaidInPounds();
-        Optional<BigDecimal> remittedFees = claim.getClaimData().getRemittedFeesInPounds();
-        if (feesPaid.isPresent()) {
-            feedPaidInPounds = feesPaid.get();
-            feedPaidInPennies = MonetaryConversions.poundsToPennies(feedPaidInPounds);
-        }
-        if (remittedFees.isPresent()) {
-            remittedFeesInPounds = remittedFees.get();
-            remittedFeesInPennies = MonetaryConversions.poundsToPennies(remittedFeesInPounds);
-
-            int value;
-            if (null != feedPaidInPennies && null != remittedFeesInPennies) {
-                value = feedPaidInPennies.compareTo(remittedFeesInPennies);
-                if (value == 0) {
-                    validationMessage = PART_REMISSION_EQUAL_ERROR_MESSAGE;
-                } else if (value < 0) {
-                    validationMessage = PART_REMISSION_IS_MORE_ERROR_MESSAGE;
-                }
-            }
-
-            // Update feesAfterRemission
-            feedPaidInPounds = feesPaid.get();
-            feedPaidInPennies = MonetaryConversions.poundsToPennies(feedPaidInPounds);
-            feeAmountAfterRemissionInPennies = feedPaidInPennies.subtract(remittedFeesInPennies);
-
-            final BigDecimal totalClaimAmount = ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount();
-            totalClaimAmountInPennies = MonetaryConversions.poundsToPennies(totalClaimAmount);
-            final BigInteger totalClaimAmountUponRemissionInPennies = totalClaimAmountInPennies
-                .subtract(feeAmountAfterRemissionInPennies);
-            BigDecimal claimAmount = ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount();
-            claimAmount = claimAmount.subtract(remittedFees.get());
-            ccdCase.setTotalAmount(valueOf(poundsToPennies(claimAmount)));
-            Claim outputClaim = caseMapper.from(ccdCase);
-            ClaimData claimData = outputClaim.getClaimData().toBuilder()
-                .feeAmountAfterRemission(feeAmountAfterRemissionInPennies)
-                .build();
-            outputClaim.toBuilder().claimData(claimData).build();
-            return outputClaim.toBuilder().claimData(claimData).build();
-        }
-        return claim;
-    }
-
-    private CCDCase validationResultForRemittedFee1(CCDCase ccdCase) {
+    private CCDCase validationResultForRemittedFee(CCDCase ccdCase) {
 
         if (ccdCase.getFeeRemitted() != null) {
 
