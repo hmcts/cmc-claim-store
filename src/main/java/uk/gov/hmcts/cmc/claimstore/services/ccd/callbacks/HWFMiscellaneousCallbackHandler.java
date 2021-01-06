@@ -91,7 +91,7 @@ public class HWFMiscellaneousCallbackHandler extends CallbackHandler {
         LocalDate hwfCaseWorkerSlaDate = hwfCaseWorkerRespondSlaCalculator.calculate(ccdCase.getSubmittedOn());
 
         if (!ccdCase.getInterestType().equals(CCDInterestType.NO_INTEREST)
-            && callbackParams.getRequest().getEventId().equals(CaseEvent.HWF_NO_REMISSION)
+            && callbackParams.getRequest().getEventId().equals(CaseEvent.HWF_NO_REMISSION.getValue())
             && LocalDateTime.now().toLocalDate().isAfter(hwfCaseWorkerSlaDate)
             && (ccdCase.getLastInterestCalculationDate() == null
             || (ccdCase.getLastInterestCalculationDate() != null
