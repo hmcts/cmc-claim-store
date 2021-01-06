@@ -93,6 +93,7 @@ public final class SampleClaim {
     private LocalDateTime createdAt = NOW_IN_LOCAL_ZONE;
     private LocalDateTime respondedAt = NOT_RESPONDED;
     private LocalDate issuedOn = ISSUE_DATE;
+    private LocalDate serviceDate = ISSUE_DATE;
     private CountyCourtJudgment countyCourtJudgment = null;
     private LocalDateTime countyCourtJudgmentRequestedAt = null;
     private ClaimData claimData = SampleClaimData.builder().withExternalId(RAND_UUID).build();
@@ -601,7 +602,7 @@ public final class SampleClaim {
             claimData,
             createdAt,
             issuedOn,
-            issuedOn == null ? null : issuedOn.plusDays(5),
+            issuedOn.plusDays(5),
             responseDeadline,
             isMoreTimeRequested,
             submitterEmail,
@@ -706,6 +707,11 @@ public final class SampleClaim {
 
     public SampleClaim withIssuedOn(LocalDate issuedOn) {
         this.issuedOn = issuedOn;
+        return this;
+    }
+
+    public SampleClaim withServiceDate(LocalDate serviceDate) {
+        this.serviceDate = serviceDate;
         return this;
     }
 

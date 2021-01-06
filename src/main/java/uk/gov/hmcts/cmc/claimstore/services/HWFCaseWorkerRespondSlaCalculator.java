@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
+import org.quartz.DisallowConcurrentExecution;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -10,35 +11,33 @@ import java.time.LocalDateTime;
  * Calculates directions questionnaire submission deadline.
  */
 @Component
+@DisallowConcurrentExecution
 public class HWFCaseWorkerRespondSlaCalculator {
 
     private final WorkingDayIndicator workingDayIndicator;
 
-    @Value("${hwfCaseWorkerRespondSla.serviceDays}")
-    private final int serviceDays;
-
-    @Value("${hwfCaseWorkerRespondSla.responseDays}")
     private final int timeForResponseInDays;
 
-    @Value("${hwfCaseWorkerRespondSla.endOfBusinessDayHour}")
     private final int endOfBusinessDayHour;
 
     public HWFCaseWorkerRespondSlaCalculator(
         WorkingDayIndicator workingDayIndicator,
-        int serviceDays,
-        int timeForResponseInDays,
-        int endOfBusinessDayHour
+        @Value("${hwfCaseWorkerRespondSla.timeForResponseInDays}") int timeForResponseInDays,
+        @Value("${hwfCaseWorkerRespondSla.endOfBusinessDayHour}") int endOfBusinessDayHour
     ) {
         this.workingDayIndicator = workingDayIndicator;
-        this.serviceDays = serviceDays;
         this.timeForResponseInDays = timeForResponseInDays;
         this.endOfBusinessDayHour = endOfBusinessDayHour;
     }
 
     public LocalDate calculate(LocalDateTime claimCreationAt) {
-        LocalDate date = claimCreationAt.toLocalDate().plusDays(timeForResponseInDays);
+        LocalDateTime newDateTime = null;
+        LocalDate date = null;
 
-        if (isTooLateForToday(claimCreationAt.getHour())) {
+        newDateTime = claimCreationAt.plusDays(timeForResponseInDays).plusDays(2);
+        date = claimCreationAt.toLocalDate().plusDays(timeForResponseInDays).plusDays(2);
+
+        if (isTooLateForToday(newDateTime.getHour())) {
             date = date.plusDays(1);
         }
 
@@ -47,6 +46,7 @@ public class HWFCaseWorkerRespondSlaCalculator {
         }
 
         return date;
+
     }
 
     private boolean isTooLateForToday(int hour) {

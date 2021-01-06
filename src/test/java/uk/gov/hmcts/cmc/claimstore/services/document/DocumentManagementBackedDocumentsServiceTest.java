@@ -30,6 +30,8 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
 
+import java.time.LocalDate;
+
 import static org.junit.Assert.assertArrayEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -222,7 +224,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
     @Test
     public void shouldGenerateDraftClaim() {
         Claim claim = SampleClaim.builder()
-            .withIssuedOn(null)
+            .withIssuedOn(LocalDate.now())
             .withClaimData(SampleClaimData.builder()
                 .withHelpWithFeesNumber("HWF01234")
                 .build())
