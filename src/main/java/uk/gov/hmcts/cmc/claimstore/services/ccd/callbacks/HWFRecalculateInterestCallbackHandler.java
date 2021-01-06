@@ -116,7 +116,8 @@ public class HWFRecalculateInterestCallbackHandler extends CallbackHandler {
             responseBuilder.errors(asList(NOT_HWF_CLAIM));
         } else if (interest != null && interest.getType() == NO_INTEREST) {
             responseBuilder.errors(asList(INTEREST_NOT_CLAIMED));
-        } else if (interest.getInterestDate() == null || !interest.getInterestDate().isEndDateOnClaimComplete()) {
+        } else if (interest != null
+            && (interest.getInterestDate() == null || !interest.getInterestDate().isEndDateOnClaimComplete())) {
             responseBuilder.errors(asList(INTEREST_NOT_CLAIMED_TILL_JUDGEMENT));
         }
 

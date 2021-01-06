@@ -195,10 +195,13 @@ class PaperResponseReviewedHandler {
     }
 
     private void updateMoreTimeRequestedResponse(final ClaimBuilder builder, Claim claim, final List<String> errors) {
-        final LocalDate deadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(
-            claim.getIssuedOn().get());
-        errors.addAll(moreTimeRequestRule.validateMoreTimeCanBeRequested(claim, deadline));
-        builder.responseDeadline(deadline).moreTimeRequested(true);
+        Optional<LocalDate> issuedOn = claim.getIssuedOn();
+        if (issuedOn.isPresent()) {
+            final LocalDate deadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(
+                claim.getIssuedOn().get());
+            errors.addAll(moreTimeRequestRule.validateMoreTimeCanBeRequested(claim, deadline));
+            builder.responseDeadline(deadline).moreTimeRequested(true);
+        }
     }
 
     private boolean hasRequestedMoreTimeRepeatedly(final Claim claim) {
