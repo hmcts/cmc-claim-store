@@ -198,7 +198,7 @@ class PaperResponseReviewedHandler {
         Optional<LocalDate> issuedOn = claim.getIssuedOn();
         if (issuedOn.isPresent()) {
             final LocalDate deadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(
-                claim.getIssuedOn().get());
+                issuedOn.get());
             errors.addAll(moreTimeRequestRule.validateMoreTimeCanBeRequested(claim, deadline));
             builder.responseDeadline(deadline).moreTimeRequested(true);
         }
