@@ -104,13 +104,7 @@ public class ClaimService {
 
     public List<Claim> getClaimBySubmitterId(String submitterId, String authorisation, Integer pageNumber) {
         claimAuthorisationRule.assertUserIdMatchesAuthorisation(submitterId, authorisation);
-        int index = 0;
-        if (null != pageNumber) {
-            index = (10 * (pageNumber - 1) + index);
-            return caseRepository.getBySubmitterId(submitterId, authorisation, index);
-        } else {
-            return caseRepository.getBySubmitterId(submitterId, authorisation, index);
-        }
+        return caseRepository.getBySubmitterId(submitterId, authorisation, pageNumber);
     }
 
     public Claim getClaimByLetterHolderId(String id, String authorisation) {
@@ -169,7 +163,7 @@ public class ClaimService {
     public List<Claim> getClaimByExternalReference(String externalReference, String authorisation) {
         String submitterId = userService.getUserDetails(authorisation).getId();
 
-        return asStream(caseRepository.getBySubmitterId(submitterId, authorisation, 0))
+        return asStream(caseRepository.getBySubmitterId(submitterId, authorisation, null))
             .filter(claim ->
                 claim.getClaimData().getExternalReferenceNumber().filter(externalReference::equals).isPresent())
             .collect(Collectors.toList());
@@ -177,13 +171,7 @@ public class ClaimService {
 
     public List<Claim> getClaimByDefendantId(String id, String authorisation, Integer pageNumber) {
         claimAuthorisationRule.assertUserIdMatchesAuthorisation(id, authorisation);
-        int index = 0;
-        if (null != pageNumber) {
-            index = (10 * (pageNumber - 1) + index);
-            return caseRepository.getByDefendantId(id, authorisation, index);
-        } else {
-            return caseRepository.getByDefendantId(id, authorisation, index);
-        }
+        return caseRepository.getByDefendantId(id, authorisation, pageNumber);
     }
 
     public Map<String, String> getPaginationInfo(String authorisation, String userType) {

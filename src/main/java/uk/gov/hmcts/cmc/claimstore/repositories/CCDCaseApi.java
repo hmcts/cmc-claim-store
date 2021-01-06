@@ -83,10 +83,16 @@ public class CCDCaseApi {
         this.caseSearchApi = caseSearchApi;
     }
 
-    public List<Claim> getBySubmitterId(String submitterId, String authorisation, int index) {
+    public List<Claim> getBySubmitterId(String submitterId, String authorisation, Integer pageNumber) {
         User user = userService.getUser(authorisation);
-
-        return caseSearchApi.getClaimsForClaimant(submitterId, user, index);
+        if (Integer.valueOf(0).equals(pageNumber) || null == pageNumber) {
+            return asStream(getAllCasesBy(user, ImmutableMap.of()))
+                .filter(claim -> submitterId.equals(claim.getSubmitterId()))
+                .collect(Collectors.toList());
+        } else {
+            int index = 10 * (pageNumber - 1);
+            return caseSearchApi.getClaimsForClaimant(submitterId, user, index);
+        }
     }
 
     public Optional<Claim> getByReferenceNumber(String referenceNumber, String authorisation) {
@@ -101,10 +107,16 @@ public class CCDCaseApi {
         return getCaseBy(authorisation, ImmutableMap.of("case.externalId", externalId));
     }
 
-    public List<Claim> getByDefendantId(String id, String authorisation, int index) {
+    public List<Claim> getByDefendantId(String id, String authorisation, Integer pageNumber) {
         User user = userService.getUser(authorisation);
-
-        return caseSearchApi.getClaimsForDefendant(id, user, index);
+        if (Integer.valueOf(0).equals(pageNumber) || null == pageNumber) {
+            return asStream(getAllIssuedCasesBy(user, ImmutableMap.of()))
+                .filter(claim -> id.equals(claim.getDefendantId()))
+                .collect(Collectors.toList());
+        } else {
+            int index = 10 * (pageNumber - 1);
+            return caseSearchApi.getClaimsForDefendant(id, user, index);
+        }
     }
 
     public Map<String, String> getPaginationInfo(User user, String userType) {
@@ -129,20 +141,20 @@ public class CCDCaseApi {
 
     public List<Claim> getBySubmitterEmail(String submitterEmail, String authorisation) {
         User user = userService.getUser(authorisation);
-        return getAllCasesBy(user, ImmutableMap.of("case.submitterEmail", submitterEmail), "");
+        return getAllCasesBy(user, ImmutableMap.of("case.submitterEmail", submitterEmail));
     }
 
     public List<Claim> getByDefendantEmail(String defendantEmail, String authorisation) {
         User user = userService.getUser(authorisation);
 
-        return asStream(getAllIssuedCasesBy(user, ImmutableMap.of(), ""))
+        return asStream(getAllIssuedCasesBy(user, ImmutableMap.of()))
             .filter(claim -> defendantEmail.equals(claim.getDefendantEmail()))
             .collect(Collectors.toList());
     }
 
     public List<Claim> getByPaymentReference(String payReference, String authorisation) {
         User user = userService.getUser(authorisation);
-        return getAllCasesBy(user, ImmutableMap.of("case.paymentReference", payReference), "");
+        return getAllCasesBy(user, ImmutableMap.of("case.paymentReference", payReference));
     }
 
     public List<Claim> getClaimsByState(ClaimState claimState, User user) {
@@ -213,30 +225,17 @@ public class CCDCaseApi {
         this.updateDefendantIdAndEmail(anonymousCaseWorker, caseId, defendantId, defendantEmail);
     }
 
-    private List<Claim> getAllCasesBy(User user, ImmutableMap<String, String> searchString, String pageNumber) {
-        if (null != pageNumber && !pageNumber.isBlank()) {
-            return extractClaims(asStream(searchAllByPageNumber(user, searchString, pageNumber))
-                .filter(isAwaitingCitizenState.negate())
-                .collect(Collectors.toList()));
-        } else {
-            return extractClaims(asStream(searchAll(user, searchString))
-                .filter(isAwaitingCitizenState.negate())
-                .collect(Collectors.toList()));
-        }
+    private List<Claim> getAllCasesBy(User user, ImmutableMap<String, String> searchString) {
+        return extractClaims(asStream(searchAll(user, searchString))
+            .filter(isAwaitingCitizenState.negate())
+            .collect(Collectors.toList()));
     }
 
-    private List<Claim> getAllIssuedCasesBy(User user, ImmutableMap<String, String> searchString, String pageNumber) {
-        if (null != pageNumber && !pageNumber.isBlank()) {
-            return extractClaims(asStream(searchAllByPageNumber(user, searchString, pageNumber))
-                .filter(isAwaitingCitizenState.negate())
-                .filter(isAwaitingCitizenState.negate())
-                .collect(Collectors.toList()));
-        } else {
-            return extractClaims(asStream(searchAll(user, searchString))
-                .filter(isCreatedState.negate())
-                .filter(isAwaitingCitizenState.negate())
-                .collect(Collectors.toList()));
-        }
+    private List<Claim> getAllIssuedCasesBy(User user, ImmutableMap<String, String> searchString) {
+        return extractClaims(asStream(searchAll(user, searchString))
+            .filter(isCreatedState.negate())
+            .filter(isAwaitingCitizenState.negate())
+            .collect(Collectors.toList()));
     }
 
     private Optional<Claim> getCaseBy(String authorisation, Map<String, String> searchString) {
@@ -369,10 +368,6 @@ public class CCDCaseApi {
         return search(user, searchString, 1, new ArrayList<>(), null, null);
     }
 
-    private List<CaseDetails> searchAllByPageNumber(User user, Map<String, String> searchString, String pageNumber) {
-        return searchByPageNumber(user, searchString, Integer.parseInt(pageNumber), new ArrayList<>(), null, null);
-    }
-
     @SuppressWarnings("ParameterAssignment") // recursively modifying it internally only
     private List<CaseDetails> search(
         User user,
@@ -404,26 +399,6 @@ public class CCDCaseApi {
             }
         }
 
-        return results;
-    }
-
-    private List<CaseDetails> searchByPageNumber(
-        User user,
-        Map<String, String> searchString,
-        Integer page,
-        List<CaseDetails> results,
-        Integer numOfPages,
-        ClaimState state
-    ) {
-        Map<String, String> searchCriteria = new HashMap<>(searchString);
-        searchCriteria.put("page", page.toString());
-        searchCriteria.put("sortDirection", "desc");
-        if (state != null) {
-            searchCriteria.put("state", state.getValue());
-        }
-
-        String serviceAuthToken = this.authTokenGenerator.generate();
-        results.addAll(performSearch(user, searchCriteria, serviceAuthToken));
         return results;
     }
 
