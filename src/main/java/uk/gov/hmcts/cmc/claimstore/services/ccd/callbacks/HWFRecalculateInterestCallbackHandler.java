@@ -88,19 +88,21 @@ public class HWFRecalculateInterestCallbackHandler extends CallbackHandler {
     }
 
     private void recalculateInterestAndFee(Claim claim, CCDCase ccdCase) {
-        final BigDecimal[] claimAmountPlusInterest = {null};
-        final Optional<BigDecimal> calculatedInterest = Optional.of(calculateInterest(claim, now()).get());
+        BigDecimal calculatedInterest = null;
+        Optional<BigDecimal> interestOptionalValue = calculateInterest(claim, now());
+        if (interestOptionalValue.isPresent()) {
+            calculatedInterest = interestOptionalValue.get();
+        }
         ccdCase.setLastInterestCalculationDate(LocalDateTime.now());
-        calculatedInterest.ifPresent(interest -> ccdCase.setCurrentInterestAmount(valueOf(poundsToPennies(interest))));
+        ccdCase.setCurrentInterestAmount(valueOf(poundsToPennies(calculatedInterest)));
 
         final BigDecimal claimAmount = ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount();
-        calculatedInterest.ifPresent(interest -> claimAmountPlusInterest[0] = claimAmount.add(interest));
+        final BigDecimal claimAmountPlusInterest = claimAmount.add(calculatedInterest);
 
-        final FeeLookupResponseDto feeOutcome = feesClient.lookupFee(FEE_CHANNEL,
-            FEE_EVENT, claimAmountPlusInterest[0]);
+        final FeeLookupResponseDto feeOutcome = feesClient.lookupFee(FEE_CHANNEL, FEE_EVENT, claimAmountPlusInterest);
         ccdCase.setFeeAmountInPennies(valueOf(poundsToPennies(feeOutcome.getFeeAmount())));
 
-        final BigDecimal totalAmountIncludingFee = claimAmountPlusInterest[0].add(feeOutcome.getFeeAmount());
+        final BigDecimal totalAmountIncludingFee = claimAmountPlusInterest.add(feeOutcome.getFeeAmount());
         ccdCase.setTotalAmount(valueOf(poundsToPennies(totalAmountIncludingFee)));
     }
 
@@ -114,8 +116,7 @@ public class HWFRecalculateInterestCallbackHandler extends CallbackHandler {
             responseBuilder.errors(asList(NOT_HWF_CLAIM));
         } else if (interest != null && interest.getType() == NO_INTEREST) {
             responseBuilder.errors(asList(INTEREST_NOT_CLAIMED));
-        } else if (interest != null
-            && (interest.getInterestDate() == null || !interest.getInterestDate().isEndDateOnClaimComplete())) {
+        } else if (interest.getInterestDate() == null || !interest.getInterestDate().isEndDateOnClaimComplete()) {
             responseBuilder.errors(asList(INTEREST_NOT_CLAIMED_TILL_JUDGEMENT));
         }
 
