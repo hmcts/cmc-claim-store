@@ -70,7 +70,7 @@ public class DefenceResponseNotificationServiceTest extends BaseMockSpringTest {
         service.notifyRobotics(null);
     }
 
-    @Test
+    @Test(expected = IllegalStateException.class)
     public void shouldThrowExceptionWhenIssuedOnDateIsMissing() {
         claim = claim.toBuilder().issuedOn(null).build();
         event = new DefendantResponseEvent(claim, "AUTH_CODE");
