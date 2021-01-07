@@ -26,7 +26,7 @@ public class Query {
             + "\"size\": " + pageSize + ","
             + "\"from\": " + fromValue + ","
             + "\"sort\": " + "[\n"
-            + "    { \"last_modified\" : {\"order\" : \"desc\"}}\n"
+            + "    { \"created_date\" : {\"order\" : \"desc\"}}\n"
             + "    ]" + ","
             + "\"query\": "
             + queryBuilder.toString()

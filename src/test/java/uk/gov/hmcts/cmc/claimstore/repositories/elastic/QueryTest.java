@@ -26,7 +26,7 @@ public class QueryTest {
             + "\"size\": 10,"
             + "\"from\": " + 0 + ","
             + "\"sort\": " + "[\n"
-            + "    { \"last_modified\" : {\"order\" : \"desc\"}}\n"
+            + "    { \"created_date\" : {\"order\" : \"desc\"}}\n"
             + "    ]" + ","
             + "\"query\": {\n"
             + "  \"match_all\" : {\n"
