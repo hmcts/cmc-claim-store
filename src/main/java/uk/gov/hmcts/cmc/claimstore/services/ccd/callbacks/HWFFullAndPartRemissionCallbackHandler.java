@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.NumberUtils;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDInterestEndDateType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestType;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
@@ -101,6 +102,7 @@ public class HWFFullAndPartRemissionCallbackHandler extends CallbackHandler {
         // Check to see if 5 days have elapsed from Claim Submission days
         if (!ccdCase.getInterestType().equals(CCDInterestType.NO_INTEREST)
             && LocalDateTime.now().toLocalDate().isAfter(hwfCaseWorkerSlaDate)
+            && ccdCase.getInterestEndDateType().equals(CCDInterestEndDateType.SETTLED_OR_JUDGMENT)
             && (ccdCase.getLastInterestCalculationDate() == null
             || (ccdCase.getLastInterestCalculationDate() != null
             && !LocalDateTime.now().toLocalDate()

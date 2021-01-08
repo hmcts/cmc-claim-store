@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.NumberUtils;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDInterestEndDateType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestType;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
@@ -93,6 +94,7 @@ public class HWFMiscellaneousCallbackHandler extends CallbackHandler {
         if (!ccdCase.getInterestType().equals(CCDInterestType.NO_INTEREST)
             && callbackParams.getRequest().getEventId().equals(CaseEvent.HWF_NO_REMISSION.getValue())
             && LocalDateTime.now().toLocalDate().isAfter(hwfCaseWorkerSlaDate)
+            && ccdCase.getInterestEndDateType().equals(CCDInterestEndDateType.SETTLED_OR_JUDGMENT)
             && (ccdCase.getLastInterestCalculationDate() == null
             || (ccdCase.getLastInterestCalculationDate() != null
             && !LocalDateTime.now().toLocalDate()

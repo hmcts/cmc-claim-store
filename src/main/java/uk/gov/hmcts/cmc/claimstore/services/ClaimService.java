@@ -111,11 +111,12 @@ public class ClaimService {
         List<Claim> outputClaimList = new ArrayList<>();
         claimAuthorisationRule.assertUserIdMatchesAuthorisation(submitterId, authorisation);
         List<Claim> claimList = caseRepository.getBySubmitterId(submitterId, authorisation);
+        User user = userService.authenticateAnonymousCaseWorker();
         claimList.stream().forEach(claim -> {
             if (claim.getState().equals(ClaimState.AWAITING_RESPONSE_HWF)
                 || claim.getState().equals(ClaimState.HWF_APPLICATION_PENDING)) {
                 List<CaseEvent> caseEventList = caseEventService.findEventsForCase(
-                    String.valueOf(claim.getId()));
+                    String.valueOf(claim.getId()), user);
                 claim = claim.toBuilder().lastEventTriggeredForHwfCase(caseEventList.get(0).getValue()).build();
             }
             outputClaimList.add(claim);
@@ -137,10 +138,11 @@ public class ClaimService {
     public Claim getFilteredClaimByExternalId(String externalId, String authorisation) {
         User user = userService.getUser(authorisation);
         Claim claim = getClaimByExternalId(externalId, user);
+        User anonymousCaseWorkerForFetchingEvents = userService.authenticateAnonymousCaseWorker();
         if (claim.getState().equals(ClaimState.AWAITING_RESPONSE_HWF)
             || claim.getState().equals(ClaimState.HWF_APPLICATION_PENDING)) {
             List<CaseEvent> caseEventList = caseEventService.findEventsForCase(
-                String.valueOf(claim.getId()));
+                String.valueOf(claim.getId()), anonymousCaseWorkerForFetchingEvents);
             claim = claim.toBuilder().lastEventTriggeredForHwfCase(caseEventList.get(0).getValue()).build();
         }
 
@@ -514,7 +516,6 @@ public class ClaimService {
             .submitterId(submitterId)
             .issuedOn(issuedOn)
             .serviceDate(issuedOn.plusDays(5))
-            .responseDeadline(responseDeadline)
             .externalId(externalId)
             .submitterEmail(submitterEmail)
             .createdAt(LocalDateTimeFactory.nowInUTC())

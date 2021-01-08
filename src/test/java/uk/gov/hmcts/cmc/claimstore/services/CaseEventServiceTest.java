@@ -70,7 +70,7 @@ public class CaseEventServiceTest {
             user.getUserDetails().getId(),
             JURISDICTION_ID, CASE_TYPE_ID, "1"))
             .thenReturn(caseEventDetailList);
-        List<CaseEvent> caseEventListOutput = caseEventService.findEventsForCase("1");
+        List<CaseEvent> caseEventListOutput = caseEventService.findEventsForCase("1", user);
         assertThat(caseEventListOutput).isEqualTo(caseEventList);
     }
 }

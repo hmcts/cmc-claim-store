@@ -28,8 +28,7 @@ public class CaseEventService {
         this.authTokenGenerator = authTokenGenerator;
     }
 
-    public List<CaseEvent> findEventsForCase(String ccdCaseId) {
-        User user = userService.authenticateAnonymousCaseWorker();
+    public List<CaseEvent> findEventsForCase(String ccdCaseId, User user) {
         List<CaseEvent> caseEventList = new ArrayList<>();
 
         List<CaseEventDetail> caseEventDetails = caseEventsApi.findEventDetailsForCase(user.getAuthorisation(),
