@@ -42,8 +42,8 @@ public class HWFMiscellaneousCallbackHandler extends CallbackHandler {
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
 
     private static final List<CaseEvent> EVENTS = Arrays.asList(CaseEvent.MISC_HWF,
-        CaseEvent.MORE_INFO_REQUIRED_FOR_HWF, CaseEvent.FULL_REMISSION_HWF_REJECTED,
-        CaseEvent.PART_REMISSION_HWF_REJECTED, CaseEvent.HWF_NO_REMISSION);
+        CaseEvent.MORE_INFO_REQUIRED_FOR_HWF,
+        CaseEvent.HWF_NO_REMISSION);
 
     private final CaseDetailsConverter caseDetailsConverter;
 

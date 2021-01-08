@@ -100,8 +100,6 @@ public enum CaseEvent {
     PAPER_HAND_OFF("PaperHandoff"),
     MORE_INFO_REQUIRED_FOR_HWF("MoreInfoRequiredForHWF"),
     HWF_NO_REMISSION("NoRemissionHWF"),
-    PART_REMISSION_HWF_REJECTED("PartRemissionHWFRejected"),
-    FULL_REMISSION_HWF_REJECTED("FullRemissionHWFRejected"),
     HWF_PART_REMISSION_GRANTED("HWFPartRemission"),
     MISC_HWF("MiscHWF"),
     CLOSE_AWAITING_RESPONSE_HWF("CloseAwaitingResponseHWF"),
