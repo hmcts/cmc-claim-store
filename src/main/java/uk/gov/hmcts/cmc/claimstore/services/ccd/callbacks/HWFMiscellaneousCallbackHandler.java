@@ -31,7 +31,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static java.lang.String.valueOf;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
 @Service
@@ -108,7 +107,7 @@ public class HWFMiscellaneousCallbackHandler extends CallbackHandler {
             if (callbackParams.getRequest().getEventId().equals(CaseEvent.HWF_NO_REMISSION.getValue())) {
                 BigDecimal feeAmountInPennies = NumberUtils.parseNumber(ccdCase.getFeeAmountInPennies(),
                     BigDecimal.class);
-                ccdCase.setFeeAmountAfterRemission(valueOf(feeAmountInPennies));
+                ccdCase.setFeeAmountAfterRemission("0");
             }
             responseBuilder.data(caseDetailsConverter.convertToMap(ccdCase));
         }
