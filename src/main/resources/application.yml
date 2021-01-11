@@ -141,7 +141,7 @@ schedule:
 
 
 hwfCaseWorkerRespondSla:
-  timeForResponseInDays: 7
+  timeForResponseInDays: 5
   endOfBusinessDayHour: 16
 
 dateCalculations:
