@@ -107,7 +107,7 @@ public class HWFMiscellaneousCallbackHandler extends CallbackHandler {
             if (callbackParams.getRequest().getEventId().equals(CaseEvent.HWF_NO_REMISSION.getValue())) {
                 BigDecimal feeAmountInPennies = NumberUtils.parseNumber(ccdCase.getFeeAmountInPennies(),
                     BigDecimal.class);
-                ccdCase.setFeeAmountAfterRemission("0");
+                ccdCase.setFeeRemitted("0");
             }
             responseBuilder.data(caseDetailsConverter.convertToMap(ccdCase));
         }
