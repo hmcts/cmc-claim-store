@@ -1,11 +1,11 @@
-package uk.gov.hmcts.cmc.claimstore.repositories.elastic;
+package uk.gov.hmcts.cmc.claimstore.tests.helpers;
 
 public interface SampleQueryConstants {
     String mediationQuery = "{"
         + "\"size\": 500,"
         + "\"from\": " + 0 + ","
         + "\"sort\": " + "[\n"
-        + "    { \"created_date\" : {\"order\" : \"desc\"}}\n"
+        + "    { \"last_modified\" : {\"order\" : \"desc\"}}\n"
         + "    ]" + ","
         + "\"query\": {\n"
         + "  \"bool\" : {\n"
@@ -127,7 +127,7 @@ public interface SampleQueryConstants {
     String defaultCCJCases10DaysBefore = "{\"size\": 1000,"
         + "\"from\": " + 0 + ","
         + "\"sort\": " + "[\n"
-        + "    { \"created_date\" : {\"order\" : \"desc\"}}\n"
+        + "    { \"last_modified\" : {\"order\" : \"desc\"}}\n"
         + "    ]" + ","
         + "\"query\": {\n"
         + "  \"bool\" : {\n"
@@ -167,7 +167,7 @@ public interface SampleQueryConstants {
     String readyForTransfer = "{\"size\": 1000,"
         + "\"from\": " + 0 + ","
         + "\"sort\": " + "[\n"
-        + "    { \"created_date\" : {\"order\" : \"desc\"}}\n"
+        + "    { \"last_modified\" : {\"order\" : \"desc\"}}\n"
         + "    ]" + ","
         + "\"query\": {\n"
         + "  \"bool\" : {\n"
