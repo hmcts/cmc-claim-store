@@ -35,9 +35,11 @@ import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -67,6 +69,7 @@ public class ClaimService {
     private final PaidInFullRule paidInFullRule;
     private final ClaimAuthorisationRule claimAuthorisationRule;
     private final ReviewOrderRule reviewOrderRule;
+    private final LaunchDarklyClient launchDarklyClient;
 
     @Value("${feature_toggles.ctsc_enabled}")
     private boolean ctscEnabled;
@@ -83,7 +86,8 @@ public class ClaimService {
         AppInsights appInsights,
         PaidInFullRule paidInFullRule,
         ClaimAuthorisationRule claimAuthorisationRule,
-        ReviewOrderRule reviewOrderRule
+        ReviewOrderRule reviewOrderRule,
+        LaunchDarklyClient launchDarklyClient
     ) {
         this.userService = userService;
         this.issueDateCalculator = issueDateCalculator;
@@ -95,11 +99,12 @@ public class ClaimService {
         this.paidInFullRule = paidInFullRule;
         this.claimAuthorisationRule = claimAuthorisationRule;
         this.reviewOrderRule = reviewOrderRule;
+        this.launchDarklyClient = launchDarklyClient;
     }
 
-    public List<Claim> getClaimBySubmitterId(String submitterId, String authorisation) {
+    public List<Claim> getClaimBySubmitterId(String submitterId, String authorisation, Integer pageNumber) {
         claimAuthorisationRule.assertUserIdMatchesAuthorisation(submitterId, authorisation);
-        return caseRepository.getBySubmitterId(submitterId, authorisation);
+        return caseRepository.getBySubmitterId(submitterId, authorisation, pageNumber);
     }
 
     public Claim getClaimByLetterHolderId(String id, String authorisation) {
@@ -115,7 +120,8 @@ public class ClaimService {
     public Claim getFilteredClaimByExternalId(String externalId, String authorisation) {
         User user = userService.getUser(authorisation);
         return DocumentsFilter.filterDocuments(
-            getClaimByExternalId(externalId, user), user.getUserDetails(), ctscEnabled
+            getClaimByExternalId(externalId, user), user.getUserDetails(), ctscEnabled,
+            launchDarklyClient.isFeatureEnabled("paper-response-review-new-handling")
         );
     }
 
@@ -157,16 +163,19 @@ public class ClaimService {
     public List<Claim> getClaimByExternalReference(String externalReference, String authorisation) {
         String submitterId = userService.getUserDetails(authorisation).getId();
 
-        return asStream(caseRepository.getBySubmitterId(submitterId, authorisation))
+        return asStream(caseRepository.getBySubmitterId(submitterId, authorisation, null))
             .filter(claim ->
                 claim.getClaimData().getExternalReferenceNumber().filter(externalReference::equals).isPresent())
             .collect(Collectors.toList());
     }
 
-    public List<Claim> getClaimByDefendantId(String id, String authorisation) {
+    public List<Claim> getClaimByDefendantId(String id, String authorisation, Integer pageNumber) {
         claimAuthorisationRule.assertUserIdMatchesAuthorisation(id, authorisation);
+        return caseRepository.getByDefendantId(id, authorisation, pageNumber);
+    }
 
-        return caseRepository.getByDefendantId(id, authorisation);
+    public Map<String, String> getPaginationInfo(String authorisation, String userType) {
+        return caseRepository.getPaginationInfo(authorisation, userType);
     }
 
     public List<Claim> getClaimByClaimantEmail(String email, String authorisation) {
@@ -319,8 +328,8 @@ public class ClaimService {
         return claim;
     }
 
-    public void linkDefendantToClaim(String authorisation) {
-        caseRepository.linkDefendant(authorisation);
+    public void linkDefendantToClaim(String authorisation, String letterholderId) {
+        caseRepository.linkDefendant(authorisation, letterholderId);
     }
 
     public Claim saveClaimDocuments(
@@ -332,9 +341,8 @@ public class ClaimService {
         return caseRepository.saveClaimDocuments(authorisation, claimId, claimDocumentCollection, claimDocumentType);
     }
 
-    public Claim linkLetterHolder(Claim claim, String letterHolderId, String authorisation) {
-        Claim updated = caseRepository.linkLetterHolder(claim.getId(), letterHolderId);
-        return updated;
+    public Claim linkLetterHolder(Claim claim, String letterHolderId) {
+        return caseRepository.linkLetterHolder(claim.getId(), letterHolderId);
     }
 
     public void saveCountyCourtJudgment(

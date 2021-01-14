@@ -402,7 +402,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
     public void testLinkDefendantToClaim() throws Exception {
         doPut(AUTHORISATION_TOKEN, null, ROOT_PATH + "/defendant/link")
             .andExpect(status().isOk());
-        verify(caseRepository).linkDefendant(AUTHORISATION_TOKEN);
+        verify(caseRepository).linkDefendant(AUTHORISATION_TOKEN, SampleClaim.LETTER_HOLDER_ID);
     }
 
     @Test

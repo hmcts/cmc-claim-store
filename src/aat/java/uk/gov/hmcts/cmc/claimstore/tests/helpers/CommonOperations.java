@@ -105,11 +105,12 @@ public class CommonOperations {
     }
 
     @LogExecutionTime
-    public void linkDefendant(String userAuthentication) {
+    public void linkDefendant(String userAuthentication, String letterHolderId) {
         RestAssured
             .given()
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .header(HttpHeaders.AUTHORIZATION, userAuthentication)
+            .header("LetterHolderID", letterHolderId)
             .when()
             .put("/claims/defendant/link");
     }
