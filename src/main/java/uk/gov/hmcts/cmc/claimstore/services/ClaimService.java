@@ -40,6 +40,7 @@ import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -107,10 +108,10 @@ public class ClaimService {
         this.caseEventService = caseEventService;
     }
 
-    public List<Claim> getClaimBySubmitterId(String submitterId, String authorisation) {
+    public List<Claim> getClaimBySubmitterId(String submitterId, String authorisation, Integer pageNumber) {
         List<Claim> outputClaimList = new ArrayList<>();
         claimAuthorisationRule.assertUserIdMatchesAuthorisation(submitterId, authorisation);
-        List<Claim> claimList = caseRepository.getBySubmitterId(submitterId, authorisation);
+        List<Claim> claimList = caseRepository.getBySubmitterId(submitterId, authorisation, pageNumber);
         User user = userService.authenticateAnonymousCaseWorker();
         claimList.stream().forEach(claim -> {
             if (claim.getState().equals(ClaimState.AWAITING_RESPONSE_HWF)
@@ -196,10 +197,13 @@ public class ClaimService {
             .collect(Collectors.toList());
     }
 
-    public List<Claim> getClaimByDefendantId(String id, String authorisation) {
+    public List<Claim> getClaimByDefendantId(String id, String authorisation, Integer pageNumber) {
         claimAuthorisationRule.assertUserIdMatchesAuthorisation(id, authorisation);
+        return caseRepository.getByDefendantId(id, authorisation, pageNumber);
+    }
 
-        return caseRepository.getByDefendantId(id, authorisation);
+    public Map<String, String> getPaginationInfo(String authorisation, String userType) {
+        return caseRepository.getPaginationInfo(authorisation, userType);
     }
 
     public List<Claim> getClaimByClaimantEmail(String email, String authorisation) {
@@ -302,43 +306,6 @@ public class ClaimService {
         trackClaimIssued(savedClaim.getReferenceNumber(), savedClaim.getClaimData().isClaimantRepresented());
 
         return savedClaim;
-    }
-
-    @LogExecutionTime
-    public Claim saveHelpWithFeesClaim(
-        String submitterId,
-        ClaimData claimData,
-        String authorisation,
-        List<String> features
-    ) {
-        String externalId = claimData.getExternalId().toString();
-        User user = userService.getUser(authorisation);
-        caseRepository.getClaimByExternalId(externalId, user)
-            .ifPresent(claim -> {
-                throw new ConflictException("Claim already exist with same external reference as " + externalId);
-            });
-
-        Claim claim = buildClaimFrom(user, submitterId, claimData, features, true);
-        trackHelpWithFeesClaimCreated(externalId);
-        return caseRepository.saveHelpWithFeesClaim(user, claim);
-    }
-
-    @LogExecutionTime
-    public Claim updateHelpWithFeesClaim(
-        String authorisation,
-        ClaimData claimData,
-        List<String> features
-    ) {
-        String externalId = claimData.getExternalId().toString();
-        User user = userService.getUser(authorisation);
-        Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), user)
-            .toBuilder()
-            .claimData(claimData)
-            .features(features)
-            .build();
-
-        trackHelpWithFeesClaimCreated(externalId);
-        return caseRepository.updateHelpWithFeesClaim(user, claim, UPDATE_HELP_WITH_FEE_CLAIM);
     }
 
     @LogExecutionTime
@@ -516,6 +483,7 @@ public class ClaimService {
             .submitterId(submitterId)
             .issuedOn(issuedOn)
             .serviceDate(issuedOn.plusDays(5))
+            .responseDeadline(responseDeadline)
             .externalId(externalId)
             .submitterEmail(submitterEmail)
             .createdAt(LocalDateTimeFactory.nowInUTC())

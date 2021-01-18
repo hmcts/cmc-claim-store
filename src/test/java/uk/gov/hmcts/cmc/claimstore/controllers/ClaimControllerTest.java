@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -79,11 +80,11 @@ public class ClaimControllerTest {
     @Test
     public void shouldReturnClaimFromRepositoryForClaimantId() {
         //given
-        when(claimService.getClaimBySubmitterId(eq(USER_ID), eq(AUTHORISATION)))
+        when(claimService.getClaimBySubmitterId(eq(USER_ID), eq(AUTHORISATION), Mockito.anyInt()))
             .thenReturn(singletonList(CLAIM));
 
         //when
-        List<Claim> output = claimController.getBySubmitterId(USER_ID, AUTHORISATION);
+        List<Claim> output = claimController.getBySubmitterId(USER_ID, AUTHORISATION, 1);
 
         //then
         assertThat(output.get(0)).isEqualTo(CLAIM);
