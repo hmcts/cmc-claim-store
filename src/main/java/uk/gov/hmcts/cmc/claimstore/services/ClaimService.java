@@ -40,6 +40,7 @@ import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -107,10 +108,10 @@ public class ClaimService {
         this.caseEventService = caseEventService;
     }
 
-    public List<Claim> getClaimBySubmitterId(String submitterId, String authorisation) {
+    public List<Claim> getClaimBySubmitterId(String submitterId, String authorisation, Integer pageNumber) {
         List<Claim> outputClaimList = new ArrayList<>();
         claimAuthorisationRule.assertUserIdMatchesAuthorisation(submitterId, authorisation);
-        List<Claim> claimList = caseRepository.getBySubmitterId(submitterId, authorisation);
+        List<Claim> claimList = caseRepository.getBySubmitterId(submitterId, authorisation, pageNumber);
         User user = userService.authenticateAnonymousCaseWorker();
         claimList.stream().forEach(claim -> {
             if (claim.getState().equals(ClaimState.AWAITING_RESPONSE_HWF)
@@ -190,16 +191,19 @@ public class ClaimService {
     public List<Claim> getClaimByExternalReference(String externalReference, String authorisation) {
         String submitterId = userService.getUserDetails(authorisation).getId();
 
-        return asStream(caseRepository.getBySubmitterId(submitterId, authorisation))
+        return asStream(caseRepository.getBySubmitterId(submitterId, authorisation, null))
             .filter(claim ->
                 claim.getClaimData().getExternalReferenceNumber().filter(externalReference::equals).isPresent())
             .collect(Collectors.toList());
     }
 
-    public List<Claim> getClaimByDefendantId(String id, String authorisation) {
+    public List<Claim> getClaimByDefendantId(String id, String authorisation, Integer pageNumber) {
         claimAuthorisationRule.assertUserIdMatchesAuthorisation(id, authorisation);
+        return caseRepository.getByDefendantId(id, authorisation, pageNumber);
+    }
 
-        return caseRepository.getByDefendantId(id, authorisation);
+    public Map<String, String> getPaginationInfo(String authorisation, String userType) {
+        return caseRepository.getPaginationInfo(authorisation, userType);
     }
 
     public List<Claim> getClaimByClaimantEmail(String email, String authorisation) {
@@ -411,8 +415,7 @@ public class ClaimService {
     }
 
     public Claim linkLetterHolder(Claim claim, String letterHolderId) {
-        Claim updated = caseRepository.linkLetterHolder(claim.getId(), letterHolderId);
-        return updated;
+        return caseRepository.linkLetterHolder(claim.getId(), letterHolderId);
     }
 
     public void saveCountyCourtJudgment(
