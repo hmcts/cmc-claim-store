@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
@@ -82,6 +83,8 @@ public class JsonMapperTest {
             .withMoreInfoDetails(null)
             .withHelpWithFeesType("Claim Issue")
             .withFeeCode("X0012")
+            .withHwfMoreInfoNeededDocuments(asList("BANK_STATEMENTS", "PRISONERS_INCOME"))
+            .withHwfDocumentsToBeSentBefore(LocalDate.parse("2020-01-01"))
             .build();
 
         //when
@@ -134,6 +137,8 @@ public class JsonMapperTest {
             .withHwfMandatoryDetails("Details")
             .withTimeline(SampleTimeline.validDefaults())
             .withEvidence(SampleEvidence.validDefaults())
+            .withHwfMoreInfoNeededDocuments(asList("BANK_STATEMENTS", "PRISONERS_INCOME"))
+            .withHwfDocumentsToBeSentBefore(LocalDate.parse("2020-01-01"))
             .build();
 
         assertThat(output).isEqualTo(expected);
@@ -182,6 +187,8 @@ public class JsonMapperTest {
             .withHelpWithFeesType("Claim Issue")
             .withHwfFeeDetailsSummary("Summary")
             .withHwfMandatoryDetails("Details")
+            .withHwfMoreInfoNeededDocuments(asList("BANK_STATEMENTS", "PRISONERS_INCOME"))
+            .withHwfDocumentsToBeSentBefore(LocalDate.parse("2020-01-01"))
             .build();
         assertThat(output).isEqualTo(expected);
     }

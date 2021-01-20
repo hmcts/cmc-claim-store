@@ -14,10 +14,12 @@ import uk.gov.hmcts.cmc.domain.models.particulars.PersonalInjury;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 
 import java.math.BigInteger;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.noInterestBuilder;
 
@@ -48,6 +50,8 @@ public class SampleClaimData {
     private String helpWithFeesType = "Claim Issue";
     private String hwfFeeDetailsSummary = "Summary";
     private String hwfMandatoryDetails = "Details";
+    private List<String> hwfMoreInfoNeededDocuments = asList("BANK_STATEMENTS", "PRISONERS_INCOME");
+    private LocalDate hwfDocumentsToBeSentBefore;
     private HousingDisrepair housingDisrepair = new HousingDisrepair(
         DamagesExpectation.MORE_THAN_THOUSAND_POUNDS,
         DamagesExpectation.MORE_THAN_THOUSAND_POUNDS
@@ -224,6 +228,16 @@ public class SampleClaimData {
         return this;
     }
 
+    public SampleClaimData withHwfMoreInfoNeededDocuments(List<String> hwfMoreInfoNeededDocuments) {
+        this.hwfMoreInfoNeededDocuments = hwfMoreInfoNeededDocuments;
+        return this;
+    }
+
+    public SampleClaimData withHwfDocumentsToBeSentBefore(LocalDate hwfDocumentsToBeSentBefore) {
+        this.hwfDocumentsToBeSentBefore = hwfDocumentsToBeSentBefore;
+        return this;
+    }
+
     public ClaimData build() {
         return new ClaimData(
             externalId,
@@ -249,8 +263,9 @@ public class SampleClaimData {
             moreInfoDetails,
             helpWithFeesType,
             hwfFeeDetailsSummary,
-            hwfMandatoryDetails
-            );
+            hwfMandatoryDetails,
+            hwfMoreInfoNeededDocuments,
+            hwfDocumentsToBeSentBefore);
     }
 
     public static ClaimData validDefaults() {

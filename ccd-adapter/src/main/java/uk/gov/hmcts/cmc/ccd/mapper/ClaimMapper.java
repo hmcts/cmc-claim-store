@@ -125,6 +125,9 @@ public class ClaimMapper {
         claimData.getHwfMandatoryDetails()
             .ifPresent(builder::hwfMandatoryDetails);
 
+        builder.hwfMoreInfoNeededDocuments(claimData.getHwfMoreInfoNeededDocuments());
+        builder.hwfDocumentsToBeSentBefore(claimData.getHwfDocumentsToBeSentBefore());
+
         builder
             .reason(claimData.getReason());
     }
@@ -164,8 +167,9 @@ public class ClaimMapper {
                 ccdCase.getMoreInfoDetails(),
                 ccdCase.getHelpWithFeesType(),
                 ccdCase.getHwfFeeDetailsSummary(),
-                ccdCase.getHwfMandatoryDetails()
-            )
+                ccdCase.getHwfMandatoryDetails(),
+                ccdCase.getHwfMoreInfoNeededDocuments(),
+                ccdCase.getHwfDocumentsToBeSentBefore())
         );
     }
 

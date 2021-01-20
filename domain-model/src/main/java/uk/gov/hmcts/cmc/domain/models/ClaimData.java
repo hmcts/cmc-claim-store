@@ -19,6 +19,7 @@ import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -106,6 +107,10 @@ public class ClaimData {
 
     private final String hwfMandatoryDetails;
 
+    private final List<String> hwfMoreInfoNeededDocuments;
+
+    private final LocalDate hwfDocumentsToBeSentBefore;
+
     @Builder(toBuilder = true)
     @SuppressWarnings("squid:S00107") // Number of method parameters
     public ClaimData(
@@ -132,8 +137,8 @@ public class ClaimData {
         String moreInfoDetails,
         String helpWithFeesType,
         String hwfFeeDetailsSummary,
-        String hwfMandatoryDetails
-    ) {
+        String hwfMandatoryDetails,
+        List<String> hwfMoreInfoNeededDocuments, LocalDate hwfDocumentsToBeSentBefore) {
         this.externalId = externalId != null ? externalId : UUID.randomUUID();
         this.claimants = claimants;
         this.defendants = defendants;
@@ -158,6 +163,8 @@ public class ClaimData {
         this.helpWithFeesType = helpWithFeesType;
         this.hwfFeeDetailsSummary = hwfFeeDetailsSummary;
         this.hwfMandatoryDetails = hwfMandatoryDetails;
+        this.hwfMoreInfoNeededDocuments = hwfMoreInfoNeededDocuments;
+        this.hwfDocumentsToBeSentBefore = hwfDocumentsToBeSentBefore;
     }
 
     public List<Party> getClaimants() {
@@ -303,5 +310,13 @@ public class ClaimData {
     @Override
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ourStyle());
+    }
+
+    public List<String> getHwfMoreInfoNeededDocuments() {
+        return hwfMoreInfoNeededDocuments;
+    }
+
+    public LocalDate getHwfDocumentsToBeSentBefore() {
+        return hwfDocumentsToBeSentBefore;
     }
 }

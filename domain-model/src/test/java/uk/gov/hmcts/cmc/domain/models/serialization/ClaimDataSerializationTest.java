@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.standardInterestBuilder;
 
@@ -29,7 +30,8 @@ public class ClaimDataSerializationTest {
         ClaimData claimData = mapper.readValue(input, ClaimData.class);
 
         //then
-        ClaimData other = SampleClaimData.builder()
+        ClaimData other;
+        other = SampleClaimData.builder()
             .withExternalId(UUID.fromString("9f49d8df-b734-4e86-aeb6-e22f0c2ca78d"))
             .withInterest(
                 standardInterestBuilder()
@@ -56,6 +58,8 @@ public class ClaimDataSerializationTest {
             .withHelpWithFeesType("Claim Issue")
             .withHwfFeeDetailsSummary("Summary")
             .withHwfMandatoryDetails("Details")
+            .withHwfMoreInfoNeededDocuments(asList("BANK_STATEMENTS", "PRISONERS_INCOME"))
+            .withHwfDocumentsToBeSentBefore(LocalDate.now())
             .build();
 
         assertThat(claimData).isEqualTo(other);

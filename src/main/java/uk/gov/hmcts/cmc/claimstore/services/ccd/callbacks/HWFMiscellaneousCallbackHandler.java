@@ -55,6 +55,8 @@ public class HWFMiscellaneousCallbackHandler extends CallbackHandler {
     private static final String INTEREST_NEEDS_RECALCULATED_ERROR_MESSAGE = "Help with Fees interest "
         + "needs to be recalculated. To proceed select 'Recalculate Interest/Claim Fee'";
 
+    private static final String PROVIDE_DOCUMENT_NAME = "Provide Document Name";
+
     @Autowired
     public HWFMiscellaneousCallbackHandler(CaseDetailsConverter caseDetailsConverter,
                                            EventProducer eventProducer,
@@ -70,6 +72,7 @@ public class HWFMiscellaneousCallbackHandler extends CallbackHandler {
     protected Map<CallbackType, Callback> callbacks() {
         return ImmutableMap.of(
             CallbackType.ABOUT_TO_SUBMIT, this::hwfupdateInfo,
+            CallbackType.MID, this::hwfMoreInfoMidEventCallback,
             CallbackType.SUBMITTED, this::startHwfClaimUpdatePostOperations
         );
     }
@@ -128,5 +131,24 @@ public class HWFMiscellaneousCallbackHandler extends CallbackHandler {
             authorisation
         );
         return SubmittedCallbackResponse.builder().build();
+    }
+
+    private CallbackResponse hwfMoreInfoMidEventCallback(CallbackParams callbackParams) {
+        final var responseBuilder
+            = AboutToStartOrSubmitCallbackResponse.builder();
+        final CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
+        String validationMessage = PROVIDE_DOCUMENT_NAME;
+        List<String> errors = new ArrayList<>();
+
+        ccdCase.getHwfMoreInfoNeededDocuments().forEach(hwfMoreInfoNeededDocument -> {
+            if (hwfMoreInfoNeededDocument.equals("ANY_OTHER_INCOME")
+                && (ccdCase.getHwfProvideDocumentName() == null
+                || ccdCase.getHwfProvideDocumentName().equals(""))) {
+                errors.add(validationMessage);
+            }
+        });
+        responseBuilder.errors(errors);
+        return responseBuilder.build();
     }
 }

@@ -78,8 +78,13 @@
   "feeCode": "X0012",
   "feeRemitted": "3000",
   "helpWithFeesNumber": "HWF012345",
-  "hwfFeeDetailsSummary" : "Summary",
-  "hwfMandatoryDetails" : "Details",
+  "hwfFeeDetailsSummary": "Summary",
+  "hwfMandatoryDetails": "Details",
+  "hwfMoreInfoNeededDocuments": [
+    "BANK_STATEMENTS",
+    "PRISONERS_INCOME"
+  ],
+  "hwfDocumentsToBeSentBefore": "01-01-2020",
   "timeline": {
     "rows": [
       {

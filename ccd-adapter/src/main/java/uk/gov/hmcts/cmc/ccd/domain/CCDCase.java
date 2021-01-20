@@ -181,4 +181,9 @@ public class CCDCase {
     @Builder.Default
     private List<CCDBespokeOrderWarning> drawBespokeDirectionOrderWarning = Collections.emptyList();
     private LocalDate extendedResponseDeadline;
+
+    private List<String> hwfMoreInfoNeededDocuments;
+    private String hwfProvideDocumentName;
+
+    private LocalDate hwfDocumentsToBeSentBefore;
 }

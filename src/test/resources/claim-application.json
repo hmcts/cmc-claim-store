@@ -97,6 +97,11 @@
   "reason": "reason",
   "helpWithFeesNumber": "HWF012345",
   "helpWithFeesType": "Claim Issue",
-  "hwfFeeDetailsSummary" : "Summary",
-  "hwfMandatoryDetails" : "Details"
+  "hwfFeeDetailsSummary": "Summary",
+  "hwfMandatoryDetails": "Details",
+  "hwfMoreInfoNeededDocuments": [
+    "BANK_STATEMENTS",
+    "PRISONERS_INCOME"
+  ],
+  "hwfDocumentsToBeSentBefore": "2020-01-01"
 }
