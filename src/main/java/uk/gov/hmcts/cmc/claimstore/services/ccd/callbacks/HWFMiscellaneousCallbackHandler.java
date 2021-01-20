@@ -71,8 +71,8 @@ public class HWFMiscellaneousCallbackHandler extends CallbackHandler {
     @Override
     protected Map<CallbackType, Callback> callbacks() {
         return ImmutableMap.of(
+            CallbackType.ABOUT_TO_START, this::hwfMoreInfoMidEventCallback,
             CallbackType.ABOUT_TO_SUBMIT, this::hwfupdateInfo,
-            CallbackType.MID, this::hwfMoreInfoMidEventCallback,
             CallbackType.SUBMITTED, this::startHwfClaimUpdatePostOperations
         );
     }
@@ -92,9 +92,9 @@ public class HWFMiscellaneousCallbackHandler extends CallbackHandler {
         final CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         LocalDate hwfCaseWorkerSlaDate = hwfCaseWorkerRespondSlaCalculator.calculate(ccdCase.getSubmittedOn());
-
         if (!ccdCase.getInterestType().equals(CCDInterestType.NO_INTEREST)
             && callbackParams.getRequest().getEventId().equals(CaseEvent.HWF_NO_REMISSION.getValue())
+            && !callbackParams.getRequest().getEventId().equals(CaseEvent.MORE_INFO_REQUIRED_FOR_HWF.getValue())
             && LocalDateTime.now().toLocalDate().isAfter(hwfCaseWorkerSlaDate)
             && ccdCase.getInterestEndDateType().equals(CCDInterestEndDateType.SETTLED_OR_JUDGMENT)
             && (ccdCase.getLastInterestCalculationDate() == null
@@ -112,8 +112,8 @@ public class HWFMiscellaneousCallbackHandler extends CallbackHandler {
                     BigDecimal.class);
                 ccdCase.setFeeRemitted("0");
             }
-            responseBuilder.data(caseDetailsConverter.convertToMap(ccdCase));
         }
+        responseBuilder.data(caseDetailsConverter.convertToMap(ccdCase));
         return responseBuilder.build();
 
     }
@@ -134,21 +134,15 @@ public class HWFMiscellaneousCallbackHandler extends CallbackHandler {
     }
 
     private CallbackResponse hwfMoreInfoMidEventCallback(CallbackParams callbackParams) {
+
         final var responseBuilder
             = AboutToStartOrSubmitCallbackResponse.builder();
-        final CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
-        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
-        String validationMessage = PROVIDE_DOCUMENT_NAME;
-        List<String> errors = new ArrayList<>();
-
-        ccdCase.getHwfMoreInfoNeededDocuments().forEach(hwfMoreInfoNeededDocument -> {
-            if (hwfMoreInfoNeededDocument.equals("ANY_OTHER_INCOME")
-                && (ccdCase.getHwfProvideDocumentName() == null
-                || ccdCase.getHwfProvideDocumentName().equals(""))) {
-                errors.add(validationMessage);
-            }
-        });
-        responseBuilder.errors(errors);
+        if (callbackParams.getRequest().getEventId().equals(CaseEvent.MORE_INFO_REQUIRED_FOR_HWF.getValue())) {
+            final CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
+            CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
+            ccdCase.setHwfDocumentsToBeSentBefore(LocalDate.now().plusDays(14));
+            responseBuilder.data(caseDetailsConverter.convertToMap(ccdCase));
+        }
         return responseBuilder.build();
     }
 }
