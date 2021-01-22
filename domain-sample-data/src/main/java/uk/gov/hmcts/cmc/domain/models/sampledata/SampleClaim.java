@@ -124,6 +124,7 @@ public final class SampleClaim {
     private String bulkPrintLetterId = UUID.randomUUID().toString();
     private String directionOrderType;
     private BespokeOrderDirection bespokeOrderDirection;
+    private String lastEventTriggeredForHwfCase = null;
 
     private SampleClaim() {
     }
@@ -646,7 +647,7 @@ public final class SampleClaim {
             directionOrderType,
             bespokeOrderDirection,
             LocalDateTime.now(),
-            null
+            lastEventTriggeredForHwfCase
         );
     }
 
@@ -845,12 +846,12 @@ public final class SampleClaim {
 
     public SampleClaim withGeneralLetter(URI uri) {
         ClaimDocument claimDocument = ClaimDocument.builder()
-                .documentManagementUrl(uri)
-                .documentName("general-letter.pdf")
-                .documentType(GENERAL_LETTER)
-                .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
-                .createdBy(OCMC)
-                .build();
+            .documentManagementUrl(uri)
+            .documentName("general-letter.pdf")
+            .documentType(GENERAL_LETTER)
+            .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
+            .createdBy(OCMC)
+            .build();
         this.claimDocumentCollection.addClaimDocument(claimDocument);
         return this;
     }
