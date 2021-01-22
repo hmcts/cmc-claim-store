@@ -86,7 +86,7 @@ public class ClaimMapper {
                 )
             )
             .collect(Collectors.toList()));
-        //claim.response.defendant.address -- address by defendant from Claim Model
+
         builder.respondents(claimData.getDefendants().stream()
             .map(defendant -> defendantMapper.to(defendant, claim))
             .collect(Collectors.toList()));

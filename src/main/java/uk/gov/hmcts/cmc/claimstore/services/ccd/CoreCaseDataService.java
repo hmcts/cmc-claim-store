@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseEventMapper;
@@ -25,7 +24,6 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
-import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
@@ -374,19 +372,9 @@ public class CoreCaseDataService {
                 caseId,
                 isRepresented(userDetails)
             );
-            //get claimant proivded primary address here
-            CCDCase ccdCase = caseDetailsConverter.extractCCDCase(startEventResponse.getCaseDetails());
-            CCDAddress claimantProvidedAddress = ccdCase.getRespondents().get(0).getValue().getClaimantProvidedDetail().getPrimaryAddress();
 
             Claim updatedClaim = toClaim(startEventResponse);
-            //get defendant address from above updated claim
-            Address address = updatedClaim.getClaimData().getDefendant().getAddress();
-            //check if both are matching,
-            if (claimantProvidedAddress.equals(address)) {
-                boolean isMatching = true;
-            }
-            //If matching then we need to see whether this address can be sent to form caseDataCotent OR
-            //Do we need to see ClaimData can introduce a new field for claimant provided details
+
             updatedClaim = updatedClaim.toBuilder()
                 .claimDocumentCollection(claimDocumentCollection)
                 .claimSubmissionOperationIndicators(
@@ -398,6 +386,7 @@ public class CoreCaseDataService {
                 .build();
 
             CaseDataContent caseDataContent = caseDataContent(startEventResponse, updatedClaim);
+
             CaseDetails caseDetails = submitUpdate(authorisation,
                 eventRequestData,
                 caseDataContent,
