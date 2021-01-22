@@ -31,9 +31,6 @@ public class CaseEventServiceTest {
     private UserService userService;
 
     @Mock
-    private UserDetails userDetails;
-
-    @Mock
     private AuthTokenGenerator authTokenGenerator;
 
     private final User user = new User("", new UserDetails(null, null, null, null, null));
@@ -52,7 +49,6 @@ public class CaseEventServiceTest {
 
         caseEventService = new CaseEventService(
             caseEventsApi,
-            userService,
             authTokenGenerator
         );
 

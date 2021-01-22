@@ -230,7 +230,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
                 .build())
             .build();
 
-        when(claimService.getClaimByExternalId(eq(claim.getExternalId()), CLAIMANT))
+        when(claimService.getClaimByExternalId(claim.getExternalId(), CLAIMANT))
             .thenReturn(claim);
         when(draftClaimReceiptService.createPdf(any(Claim.class))).thenReturn(new PDF(
             "draftClaim",
