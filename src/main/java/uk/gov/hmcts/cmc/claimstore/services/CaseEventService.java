@@ -17,7 +17,6 @@ public class CaseEventService {
     public static final String CASE_TYPE_ID = "MoneyClaimCase";
 
     private final CaseEventsApi caseEventsApi;
-    private final UserService userService;
 
     private final AuthTokenGenerator authTokenGenerator;
 

@@ -63,11 +63,11 @@ public class ClaimantOperationServiceTest {
 
         //verify
         verify(hwfClaimNotificationService).sendMail(
-            eq(CLAIM_HWF_AWAITING_RESPONSE),
-            eq(CLAIM_HWF_AWAITING_RESPONSE.getSubmitterEmail()),
-            eq(CLAIMANT_EMAIL_TEMPLATE),
-            eq("hwf-claim-update-notification-" + CLAIM_HWF_AWAITING_RESPONSE.getReferenceNumber()),
-            eq(SUBMITTER_NAME)
+            CLAIM_HWF_AWAITING_RESPONSE,
+            CLAIM_HWF_AWAITING_RESPONSE.getSubmitterEmail(),
+            CLAIMANT_EMAIL_TEMPLATE,
+            "hwf-claim-update-notification-" + CLAIM_HWF_AWAITING_RESPONSE.getReferenceNumber(),
+            SUBMITTER_NAME
         );
     }
 
@@ -81,11 +81,11 @@ public class ClaimantOperationServiceTest {
 
         //verify
         verify(hwfClaimNotificationService).sendMail(
-            eq(CLAIM_HWF_PENDING),
-            eq(CLAIM_HWF_PENDING.getSubmitterEmail()),
-            eq(CLAIMANT_EMAIL_TEMPLATE),
-            eq("hwf-claimant-issue-creation-notification-" + CLAIM_HWF_PENDING.getReferenceNumber()),
-            eq(SUBMITTER_NAME)
+            CLAIM_HWF_PENDING,
+            CLAIM_HWF_PENDING.getSubmitterEmail(),
+            CLAIMANT_EMAIL_TEMPLATE,
+            "hwf-claimant-issue-creation-notification-" + CLAIM_HWF_PENDING.getReferenceNumber(),
+            SUBMITTER_NAME
         );
     }
 

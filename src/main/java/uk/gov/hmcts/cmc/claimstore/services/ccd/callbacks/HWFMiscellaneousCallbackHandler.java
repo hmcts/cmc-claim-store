@@ -55,8 +55,6 @@ public class HWFMiscellaneousCallbackHandler extends CallbackHandler {
     private static final String INTEREST_NEEDS_RECALCULATED_ERROR_MESSAGE = "Help with Fees interest "
         + "needs to be recalculated. To proceed select 'Recalculate Interest/Claim Fee'";
 
-    private static final String PROVIDE_DOCUMENT_NAME = "Provide Document Name";
-
     @Autowired
     public HWFMiscellaneousCallbackHandler(CaseDetailsConverter caseDetailsConverter,
                                            EventProducer eventProducer,
@@ -108,8 +106,6 @@ public class HWFMiscellaneousCallbackHandler extends CallbackHandler {
             return responseBuilder.build();
         } else {
             if (callbackParams.getRequest().getEventId().equals(CaseEvent.HWF_NO_REMISSION.getValue())) {
-                BigDecimal feeAmountInPennies = NumberUtils.parseNumber(ccdCase.getFeeAmountInPennies(),
-                    BigDecimal.class);
                 ccdCase.setFeeRemitted("0");
             }
         }

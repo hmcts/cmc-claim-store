@@ -39,13 +39,13 @@ public class HwfClaimNotificationServiceTest extends BaseNotificationServiceTest
         Mockito.when(notificationClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
             .thenThrow(Mockito.mock(NotificationClientException.class));
 
-        service.sendMail(claim, USER_EMAIL,  HWF_CLAIMANT_CLAIM_CREATED_TEMPLATE, reference, USER_FULLNAME);
-        Mockito.verify(appInsights).trackEvent(eq(NOTIFICATION_FAILURE), eq(REFERENCE_NUMBER), eq(reference));
+        service.sendMail(claim, USER_EMAIL, HWF_CLAIMANT_CLAIM_CREATED_TEMPLATE, reference, USER_FULLNAME);
+        Mockito.verify(appInsights).trackEvent(NOTIFICATION_FAILURE, REFERENCE_NUMBER, reference);
     }
 
     @Test
     public void emailClaimantShouldSendEmailUsingPredefinedTemplate() throws Exception {
-        service.sendMail(claim, USER_EMAIL,  HWF_CLAIMANT_CLAIM_CREATED_TEMPLATE, reference, USER_FULLNAME);
+        service.sendMail(claim, USER_EMAIL, HWF_CLAIMANT_CLAIM_CREATED_TEMPLATE, reference, USER_FULLNAME);
 
         Mockito.verify(notificationClient).sendEmail(
             eq(HWF_CLAIMANT_CLAIM_CREATED_TEMPLATE), anyString(), anyMap(), anyString());
@@ -53,7 +53,7 @@ public class HwfClaimNotificationServiceTest extends BaseNotificationServiceTest
 
     @Test
     public void emailClaimantShouldSendToClaimantEmail() throws Exception {
-        service.sendMail(claim, USER_EMAIL,  HWF_CLAIMANT_CLAIM_CREATED_TEMPLATE, reference, USER_FULLNAME);
+        service.sendMail(claim, USER_EMAIL, HWF_CLAIMANT_CLAIM_CREATED_TEMPLATE, reference, USER_FULLNAME);
 
         Mockito.verify(notificationClient).sendEmail(
             anyString(), eq(USER_EMAIL), anyMap(), anyString());
@@ -61,7 +61,7 @@ public class HwfClaimNotificationServiceTest extends BaseNotificationServiceTest
 
     @Test
     public void emailClaimantShouldPassClaimReferenceNumberInTemplateParameters() throws Exception {
-        service.sendMail(claim, USER_EMAIL,  HWF_CLAIMANT_CLAIM_CREATED_TEMPLATE, reference, USER_FULLNAME);
+        service.sendMail(claim, USER_EMAIL, HWF_CLAIMANT_CLAIM_CREATED_TEMPLATE, reference, USER_FULLNAME);
 
         Mockito.verify(notificationClient).sendEmail(
             eq(HWF_CLAIMANT_CLAIM_CREATED_TEMPLATE), anyString(), templateParameters.capture(), anyString());
@@ -72,7 +72,7 @@ public class HwfClaimNotificationServiceTest extends BaseNotificationServiceTest
 
     @Test
     public void emailClaimantShouldPassNameInTemplateParameters() throws Exception {
-        service.sendMail(claim, USER_EMAIL,  HWF_CLAIMANT_CLAIM_CREATED_TEMPLATE, reference, USER_FULLNAME);
+        service.sendMail(claim, USER_EMAIL, HWF_CLAIMANT_CLAIM_CREATED_TEMPLATE, reference, USER_FULLNAME);
 
         Mockito.verify(notificationClient).sendEmail(
             eq(HWF_CLAIMANT_CLAIM_CREATED_TEMPLATE), anyString(), templateParameters.capture(), anyString());

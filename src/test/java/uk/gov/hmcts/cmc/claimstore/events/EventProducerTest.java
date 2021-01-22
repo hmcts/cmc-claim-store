@@ -74,7 +74,7 @@ public class EventProducerTest {
     @Test
     public void shouldCreateHwfClaimUpdatedEvent() {
         //given
-        when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(userDetails);
+        when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetails);
 
         //when
         eventProducer.createHwfClaimUpdatedEvent(CLAIM, userDetails.getFullName(), AUTHORISATION);

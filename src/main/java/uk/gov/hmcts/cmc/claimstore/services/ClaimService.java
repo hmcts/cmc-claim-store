@@ -511,7 +511,6 @@ public class ClaimService {
         String externalId = claimData.getExternalId().toString();
 
         LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
-        LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
         String submitterEmail = user.getUserDetails().getEmail();
 
         Claim.ClaimBuilder claimBuilder = Claim.builder()

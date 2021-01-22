@@ -123,7 +123,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
             .thenReturn(PDF_BYTES);
 
         byte[] pdf = documentManagementBackendDocumentsService.generateScannedDocument(claim.getExternalId(),
-            FORM, OCON9X,  AUTHORISATION);
+            FORM, OCON9X, AUTHORISATION);
 
         assertArrayEquals(PDF_BYTES, pdf);
     }
@@ -230,7 +230,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
                 .build())
             .build();
 
-        when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(CLAIMANT)))
+        when(claimService.getClaimByExternalId(eq(claim.getExternalId()), CLAIMANT))
             .thenReturn(claim);
         when(draftClaimReceiptService.createPdf(any(Claim.class))).thenReturn(new PDF(
             "draftClaim",
