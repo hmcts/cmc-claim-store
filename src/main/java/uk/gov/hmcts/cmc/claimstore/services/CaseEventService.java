@@ -20,10 +20,9 @@ public class CaseEventService {
 
     private final AuthTokenGenerator authTokenGenerator;
 
-    public CaseEventService(CaseEventsApi caseEventsApi, UserService userService,
+    public CaseEventService(CaseEventsApi caseEventsApi,
                             AuthTokenGenerator authTokenGenerator) {
         this.caseEventsApi = caseEventsApi;
-        this.userService = userService;
         this.authTokenGenerator = authTokenGenerator;
     }
 
