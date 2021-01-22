@@ -43,6 +43,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.DEFENDANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.PAPER_RESPONSE_MORE_TIME;
+import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentType.CHERISHED;
 import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentType.LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentType.OTHER;
 
@@ -51,9 +52,9 @@ class PaperResponseReviewedHandler {
 
     public static final String CLAIMANT = "claimant";
     public static final String DEFENDANT = "defendant";
+    public static final String NA = "NotApplicable";
     private static final String CCJ_REQUEST = "N225";
     private static final String OCON9X = "OCON9x";
-    public static final String NA = "NotApplicable";
     private static final List<String> responseForms = of("N9a", "N9b", "N11");
     private static final List<String> courtForms = of("N180", "EX160", "N244", "N245", "Non_prescribed_documents");
     private static final List<String> SCANNED_DOCUMENT_TYPES = newArrayList(concat(responseForms, courtForms));
@@ -64,7 +65,7 @@ class PaperResponseReviewedHandler {
         ClaimDocumentType.PAPER_RESPONSE_PART_ADMIT,
         ClaimDocumentType.PAPER_RESPONSE_STATES_PAID);
 
-    private static final List<ScannedDocumentType> otherDocumentTypes = of(LETTER, OTHER);
+    private static final List<ScannedDocumentType> otherDocumentTypes = of(LETTER, OTHER, CHERISHED);
 
     private final CaseMapper caseMapper;
     private final NotificationsProperties notificationsProperties;
@@ -91,6 +92,41 @@ class PaperResponseReviewedHandler {
         this.notificationService = notificationService;
         this.notificationsProperties = notificationsProperties;
         this.launchDarklyClient = launchDarklyClient;
+    }
+
+    private static Optional<LocalDateTime> getResponseTimeFromPaperResponse(Claim claim) {
+        return Optional.ofNullable(getStaffUploadedPaperResponseDoc(claim)
+            .map(ClaimDocument::getReceivedDateTime)
+            .orElseGet(() -> getScannedPaperResponseDoc(claim)
+                .map(ScannedDocument::getDeliveryDate)
+                .orElse(null)
+            ));
+    }
+
+    private static Optional<ClaimDocument> getStaffUploadedPaperResponseDoc(Claim claim) {
+        return getStaffUploadedDocuments(claim)
+            .filter(doc -> STAFF_UPLOADED_DOCS.contains(doc.getDocumentType()))
+            .findFirst();
+    }
+
+    private static Optional<ScannedDocument> getScannedPaperResponseDoc(Claim claim) {
+        return getBulkScannedDocuments(claim)
+            .filter(doc -> SCANNED_DOCUMENT_TYPES.contains(doc.getSubtype()))
+            .findFirst();
+    }
+
+    private static Stream<ClaimDocument> getStaffUploadedDocuments(Claim claim) {
+        return claim.getClaimDocumentCollection()
+            .map(ClaimDocumentCollection::getStaffUploadedDocuments)
+            .stream()
+            .flatMap(List::stream);
+    }
+
+    private static Stream<ScannedDocument> getBulkScannedDocuments(Claim claim) {
+        return claim.getClaimDocumentCollection()
+            .map(ClaimDocumentCollection::getScannedDocuments)
+            .stream()
+            .flatMap(List::stream);
     }
 
     AboutToStartOrSubmitCallbackResponse handle(final CallbackParams callbackParams) {
@@ -238,15 +274,6 @@ class PaperResponseReviewedHandler {
             CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
     }
 
-    private static Optional<LocalDateTime> getResponseTimeFromPaperResponse(Claim claim) {
-        return Optional.ofNullable(getStaffUploadedPaperResponseDoc(claim)
-            .map(ClaimDocument::getReceivedDateTime)
-            .orElseGet(() -> getScannedPaperResponseDoc(claim)
-                .map(ScannedDocument::getDeliveryDate)
-                .orElse(null)
-            ));
-    }
-
     private Stream<ClaimDocument> getMoreTimeRequestedStaffUploadedDocs(final Claim claim) {
         return getStaffUploadedDocuments(claim)
             .filter(doc -> PAPER_RESPONSE_MORE_TIME.equals(doc.getDocumentType()));
@@ -255,31 +282,5 @@ class PaperResponseReviewedHandler {
     private Stream<ScannedDocument> getMoreTimeRequestedBulkScanDocs(final Claim claim) {
         return getBulkScannedDocuments(claim)
             .filter(doc -> "N9".equals(doc.getSubtype()));
-    }
-
-    private static Optional<ClaimDocument> getStaffUploadedPaperResponseDoc(Claim claim) {
-        return getStaffUploadedDocuments(claim)
-            .filter(doc -> STAFF_UPLOADED_DOCS.contains(doc.getDocumentType()))
-            .findFirst();
-    }
-
-    private static Optional<ScannedDocument> getScannedPaperResponseDoc(Claim claim) {
-        return getBulkScannedDocuments(claim)
-            .filter(doc -> SCANNED_DOCUMENT_TYPES.contains(doc.getSubtype()))
-            .findFirst();
-    }
-
-    private static Stream<ClaimDocument> getStaffUploadedDocuments(Claim claim) {
-        return claim.getClaimDocumentCollection()
-            .map(ClaimDocumentCollection::getStaffUploadedDocuments)
-            .stream()
-            .flatMap(List::stream);
-    }
-
-    private static Stream<ScannedDocument> getBulkScannedDocuments(Claim claim) {
-        return claim.getClaimDocumentCollection()
-            .map(ClaimDocumentCollection::getScannedDocuments)
-            .stream()
-            .flatMap(List::stream);
     }
 }

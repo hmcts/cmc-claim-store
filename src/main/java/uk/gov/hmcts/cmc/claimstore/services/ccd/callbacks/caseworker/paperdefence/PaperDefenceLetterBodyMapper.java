@@ -7,8 +7,12 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
+import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+
+import static java.util.Objects.nonNull;
 
 @Component
 public class PaperDefenceLetterBodyMapper {
@@ -104,7 +108,8 @@ public class PaperDefenceLetterBodyMapper {
             .referenceNumber(ccdCase.getPreviousServiceCaseReference())
             .responseDeadline(respondent.getResponseDeadline())
             .extendedResponseDeadline(extendedResponseDeadline)
-            .claimAmount(ccdCase.getTotalAmount())
+            .claimAmount(nonNull(ccdCase.getTotalAmount())
+                ? String.valueOf(MonetaryConversions.penniesToPounds(new BigDecimal(ccdCase.getTotalAmount()))) : null)
             .partyName(partyName)
             .partyAddress(defendantAddress)
             .claimantName(applicant.getPartyName())
