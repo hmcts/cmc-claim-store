@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAddress;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountRange;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimDataForHwF;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleEvidence;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterestDate;
@@ -38,7 +39,7 @@ import java.util.UUID;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
+import static org.skyscreamer.jsonassert.JSONCompareMode.LENIENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.BOTH;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType.HALF_HOUR;
@@ -62,7 +63,6 @@ public class JsonMapperTest {
                 .withRate(new BigDecimal("8"))
                 .withReason(null)
                 .withInterestDate(interestDate)
-                .withLastInterestCalculationDate(LocalDateTime.parse("2015-02-02T22:23:27.773037"))
                 .build())
             .withExternalReferenceNumber(null)
             .withPreferredCourt(null)
@@ -92,7 +92,7 @@ public class JsonMapperTest {
 
         //then
         String expected = new ResourceReader().read("/claim-application.json");
-        JSONAssert.assertEquals(expected, output, STRICT);
+        JSONAssert.assertEquals(expected, output, LENIENT);
     }
 
     @Test
@@ -109,6 +109,47 @@ public class JsonMapperTest {
             .build();
 
         ClaimData expected = SampleClaimData.builder()
+            .withExternalId(UUID.fromString("9f49d8df-b734-4e86-aeb6-e22f0c2ca78d"))
+            .withInterest(SampleInterest.builder()
+                .withType(Interest.InterestType.STANDARD)
+                .withRate(new BigDecimal("8"))
+                .withReason(null)
+                .withInterestDate(interestDate)
+                .build())
+            .withExternalReferenceNumber(null)
+            .withPreferredCourt(null)
+            .withFeeAccountNumber(null)
+            .withHousingDisrepair(null)
+            .withPersonalInjury(null)
+            .withStatementOfTruth(null)
+            .clearClaimants()
+            .addClaimant(SampleParty.builder().withRepresentative(null).individual())
+            .withDefendant(SampleTheirDetails.builder()
+                .withRepresentative(null)
+                .withServiceAddress(null)
+                .withDateOfBirth(null)
+                .individualDetails())
+            .withTimeline(SampleTimeline.validDefaults())
+            .withEvidence(SampleEvidence.validDefaults())
+            .build();
+
+        assertThat(output).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldProcessFromJsonWithHwF() {
+        //given
+        String input = new ResourceReader().read("/claim-application-hwf.json");
+
+        //when
+        ClaimData output = processor.fromJson(input, ClaimData.class);
+
+        //then
+        InterestDate interestDate = SampleInterestDate.builder()
+            .withDate(LocalDate.of(2015, 2, 2))
+            .build();
+
+        ClaimData expected = SampleClaimDataForHwF.builder()
             .withExternalId(UUID.fromString("9f49d8df-b734-4e86-aeb6-e22f0c2ca78d"))
             .withInterest(SampleInterest.builder()
                 .withType(Interest.InterestType.STANDARD)
@@ -165,7 +206,6 @@ public class JsonMapperTest {
                     .withRate(new BigDecimal("8"))
                     .withReason(null)
                     .withInterestDate(interestDate)
-                    .withLastInterestCalculationDate(LocalDateTime.parse("2015-02-02T22:23:27.773037"))
                     .build())
             .withAmount(
                 SampleAmountRange.builder()
@@ -182,13 +222,6 @@ public class JsonMapperTest {
             .withTimeline(null)
             .withPayment(null)
             .withEvidence(null)
-            .withMoreInfoDetails(null)
-            .withHelpWithFeesNumber("HWF012345")
-            .withHelpWithFeesType("Claim Issue")
-            .withHwfFeeDetailsSummary("Summary")
-            .withHwfMandatoryDetails("Details")
-            .withHwfMoreInfoNeededDocuments(asList("BANK_STATEMENTS", "PRISONERS_INCOME"))
-            .withHwfDocumentsToBeSentBefore(LocalDate.parse("2020-01-01"))
             .build();
         assertThat(output).isEqualTo(expected);
     }

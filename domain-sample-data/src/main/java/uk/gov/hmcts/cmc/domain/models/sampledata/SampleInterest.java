@@ -15,7 +15,7 @@ public class SampleInterest {
     private String reason = "A reason";
     private BigDecimal specificDailyAmount = null;
     private InterestDate interestDate = SampleInterestDate.validDefaults();
-    private LocalDateTime lastInterestCalculationDate = interestDate.getDate().atStartOfDay();
+    private LocalDateTime lastInterestCalculationDate = null;
 
     public static SampleInterest builder() {
         return new SampleInterest();

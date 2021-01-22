@@ -19,10 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.noInterestBuilder;
 
-public class SampleClaimData {
+public class SampleClaimDataForHwF {
     public static final String EXTERNAL_REFERENCE_NUMBER = "CLAIM234324";
     private static final String RETURN_URL = "http://returnUrl.test";
 
@@ -34,9 +35,9 @@ public class SampleClaimData {
     private Interest interest = SampleInterest.standard();
     private String reason = "reason";
     private BigInteger feeAmount = BigInteger.valueOf(4000);
-    private String moreInfoDetails = null;
-    private BigInteger feeRemitted = null;
-    private BigInteger feeAmountAfterRemission = null;
+    private String moreInfoDetails = "Info";
+    private BigInteger feeRemitted = BigInteger.valueOf(3000);
+    private BigInteger feeAmountAfterRemission = BigInteger.valueOf(3000);
     private String feeAccountNumber = "PBA1234567";
     private StatementOfTruth statementOfTruth;
     private PersonalInjury personalInjury = new PersonalInjury(DamagesExpectation.MORE_THAN_THOUSAND_POUNDS);
@@ -45,194 +46,194 @@ public class SampleClaimData {
     private String feeCode = "X0012";
     private Timeline timeline = SampleTimeline.validDefaults();
     private Evidence evidence = SampleEvidence.validDefaults();
-    private String helpWithFeesNumber = null;
-    private String helpWithFeesType = null;
-    private String hwfFeeDetailsSummary = null;
-    private String hwfMandatoryDetails = null;
-    private List<String> hwfMoreInfoNeededDocuments = null;
+    private String helpWithFeesNumber = "HWF012345";
+    private String helpWithFeesType = "Claim Issue";
+    private String hwfFeeDetailsSummary = "Summary";
+    private String hwfMandatoryDetails = "Details";
+    private List<String> hwfMoreInfoNeededDocuments = asList("BANK_STATEMENTS", "PRISONERS_INCOME");
     private LocalDate hwfDocumentsToBeSentBefore;
     private HousingDisrepair housingDisrepair = new HousingDisrepair(
         DamagesExpectation.MORE_THAN_THOUSAND_POUNDS,
         DamagesExpectation.MORE_THAN_THOUSAND_POUNDS
     );
 
-    public SampleClaimData(List<Party> claimants, List<TheirDetails> defendants) {
+    public SampleClaimDataForHwF(List<Party> claimants, List<TheirDetails> defendants) {
         this.claimants = claimants;
         this.defendants = defendants;
         this.statementOfTruth = new StatementOfTruth(claimants.get(0).getName(), "Director");
     }
 
-    public static SampleClaimData builder(List<Party> claimants, List<TheirDetails> defendants) {
-        return new SampleClaimData(claimants, defendants);
+    public static SampleClaimDataForHwF builder(List<Party> claimants, List<TheirDetails> defendants) {
+        return new SampleClaimDataForHwF(claimants, defendants);
     }
 
-    public static SampleClaimData builder() {
-        return new SampleClaimData(
+    public static SampleClaimDataForHwF builder() {
+        return new SampleClaimDataForHwF(
             singletonList(SampleParty.builder().individual()),
             singletonList(SampleTheirDetails.builder().withPhone("0776655443322").individualDetails()));
     }
 
-    public SampleClaimData withExternalId(UUID externalId) {
+    public SampleClaimDataForHwF withExternalId(UUID externalId) {
         this.externalId = externalId;
         return this;
     }
 
-    public SampleClaimData withHousingDisrepair(HousingDisrepair housingDisrepair) {
+    public SampleClaimDataForHwF withHousingDisrepair(HousingDisrepair housingDisrepair) {
         this.housingDisrepair = housingDisrepair;
         return this;
     }
 
-    public SampleClaimData withPersonalInjury(PersonalInjury personalInjury) {
+    public SampleClaimDataForHwF withPersonalInjury(PersonalInjury personalInjury) {
         this.personalInjury = personalInjury;
         return this;
     }
 
-    public SampleClaimData addClaimant(Party claimant) {
+    public SampleClaimDataForHwF addClaimant(Party claimant) {
         this.claimants.add(claimant);
         return this;
     }
 
-    public SampleClaimData addClaimants(List<Party> claimants) {
+    public SampleClaimDataForHwF addClaimants(List<Party> claimants) {
         this.claimants.addAll(claimants);
         return this;
     }
 
-    public SampleClaimData clearClaimants() {
+    public SampleClaimDataForHwF clearClaimants() {
         this.claimants = new ArrayList<>();
         return this;
     }
 
-    public SampleClaimData clearDefendants() {
+    public SampleClaimDataForHwF clearDefendants() {
         this.defendants = new ArrayList<>();
         return this;
     }
 
-    public SampleClaimData withClaimants(List<Party> claimants) {
+    public SampleClaimDataForHwF withClaimants(List<Party> claimants) {
         this.claimants = claimants;
         return this;
     }
 
-    public SampleClaimData withClaimant(Party party) {
+    public SampleClaimDataForHwF withClaimant(Party party) {
         this.claimants = singletonList(party);
         return this;
     }
 
-    public SampleClaimData addDefendant(TheirDetails defendant) {
+    public SampleClaimDataForHwF addDefendant(TheirDetails defendant) {
         this.defendants.add(defendant);
         return this;
     }
 
-    public SampleClaimData addDefendants(List<TheirDetails> defendants) {
+    public SampleClaimDataForHwF addDefendants(List<TheirDetails> defendants) {
         this.defendants.addAll(defendants);
         return this;
     }
 
-    public SampleClaimData withDefendants(List<TheirDetails> defendants) {
+    public SampleClaimDataForHwF withDefendants(List<TheirDetails> defendants) {
         this.defendants = defendants;
         return this;
     }
 
-    public SampleClaimData withPayment(Payment payment) {
+    public SampleClaimDataForHwF withPayment(Payment payment) {
         this.payment = payment;
         return this;
     }
 
-    public SampleClaimData withDefendant(TheirDetails defendant) {
+    public SampleClaimDataForHwF withDefendant(TheirDetails defendant) {
         this.defendants = singletonList(defendant);
         return this;
     }
 
-    public SampleClaimData withFeeAmount(BigInteger feeAmount) {
+    public SampleClaimDataForHwF withFeeAmount(BigInteger feeAmount) {
         this.feeAmount = feeAmount;
         return this;
     }
 
-    public SampleClaimData withFeeRemitted(BigInteger feeRemitted) {
+    public SampleClaimDataForHwF withFeeRemitted(BigInteger feeRemitted) {
         this.feeRemitted = feeRemitted;
         return this;
     }
 
-    public SampleClaimData withInterest(Interest interest) {
+    public SampleClaimDataForHwF withInterest(Interest interest) {
         this.interest = interest;
         return this;
     }
 
-    public SampleClaimData withReason(String reason) {
+    public SampleClaimDataForHwF withReason(String reason) {
         this.reason = reason;
         return this;
     }
 
-    public SampleClaimData withStatementOfTruth(StatementOfTruth statementOfTruth) {
+    public SampleClaimDataForHwF withStatementOfTruth(StatementOfTruth statementOfTruth) {
         this.statementOfTruth = statementOfTruth;
         return this;
     }
 
-    public SampleClaimData withFeeAccountNumber(String feeAccountNumber) {
+    public SampleClaimDataForHwF withFeeAccountNumber(String feeAccountNumber) {
         this.feeAccountNumber = feeAccountNumber;
         return this;
     }
 
-    public SampleClaimData withExternalReferenceNumber(String externalReferenceNumber) {
+    public SampleClaimDataForHwF withExternalReferenceNumber(String externalReferenceNumber) {
         this.externalReferenceNumber = externalReferenceNumber;
         return this;
     }
 
-    public SampleClaimData withPreferredCourt(String preferredCourt) {
+    public SampleClaimDataForHwF withPreferredCourt(String preferredCourt) {
         this.preferredCourt = preferredCourt;
         return this;
     }
 
-    public SampleClaimData withFeeCode(String feeCode) {
+    public SampleClaimDataForHwF withFeeCode(String feeCode) {
         this.feeCode = feeCode;
         return this;
     }
 
-    public SampleClaimData withAmount(Amount amount) {
+    public SampleClaimDataForHwF withAmount(Amount amount) {
         this.amount = amount;
         return this;
     }
 
-    public SampleClaimData withTimeline(Timeline timeline) {
+    public SampleClaimDataForHwF withTimeline(Timeline timeline) {
         this.timeline = timeline;
         return this;
     }
 
-    public SampleClaimData withEvidence(Evidence evidence) {
+    public SampleClaimDataForHwF withEvidence(Evidence evidence) {
         this.evidence = evidence;
         return this;
     }
 
-    public SampleClaimData withHelpWithFeesNumber(String helpWithFeesNumber) {
+    public SampleClaimDataForHwF withHelpWithFeesNumber(String helpWithFeesNumber) {
         this.helpWithFeesNumber = helpWithFeesNumber;
         return this;
     }
 
-    public SampleClaimData withHelpWithFeesType(String helpWithFeesType) {
+    public SampleClaimDataForHwF withHelpWithFeesType(String helpWithFeesType) {
         this.helpWithFeesType = helpWithFeesType;
         return this;
     }
 
-    public SampleClaimData withMoreInfoDetails(String moreInfoDetails) {
+    public SampleClaimDataForHwF withMoreInfoDetails(String moreInfoDetails) {
         this.moreInfoDetails = moreInfoDetails;
         return this;
     }
 
-    public SampleClaimData withHwfFeeDetailsSummary(String hwfFeeDetailsSummary) {
+    public SampleClaimDataForHwF withHwfFeeDetailsSummary(String hwfFeeDetailsSummary) {
         this.hwfFeeDetailsSummary = hwfFeeDetailsSummary;
         return this;
     }
 
-    public SampleClaimData withHwfMandatoryDetails(String hwfMandatoryDetails) {
+    public SampleClaimDataForHwF withHwfMandatoryDetails(String hwfMandatoryDetails) {
         this.hwfMandatoryDetails = hwfMandatoryDetails;
         return this;
     }
 
-    public SampleClaimData withHwfMoreInfoNeededDocuments(List<String> hwfMoreInfoNeededDocuments) {
+    public SampleClaimDataForHwF withHwfMoreInfoNeededDocuments(List<String> hwfMoreInfoNeededDocuments) {
         this.hwfMoreInfoNeededDocuments = hwfMoreInfoNeededDocuments;
         return this;
     }
 
-    public SampleClaimData withHwfDocumentsToBeSentBefore(LocalDate hwfDocumentsToBeSentBefore) {
+    public SampleClaimDataForHwF withHwfDocumentsToBeSentBefore(LocalDate hwfDocumentsToBeSentBefore) {
         this.hwfDocumentsToBeSentBefore = hwfDocumentsToBeSentBefore;
         return this;
     }
@@ -281,7 +282,7 @@ public class SampleClaimData {
         return submittedByClaimantBuilder().build();
     }
 
-    public static SampleClaimData submittedByClaimantBuilder() {
+    public static SampleClaimDataForHwF submittedByClaimantBuilder() {
         return builder()
             .withExternalId(UUID.randomUUID())
             .withFeeAccountNumber(null)
@@ -306,7 +307,7 @@ public class SampleClaimData {
         return submittedByLegalRepresentativeBuilder().build();
     }
 
-    public static SampleClaimData submittedByLegalRepresentativeBuilder() {
+    public static SampleClaimDataForHwF submittedByLegalRepresentativeBuilder() {
         return builder()
             .clearClaimants()
             .withExternalId(UUID.randomUUID())

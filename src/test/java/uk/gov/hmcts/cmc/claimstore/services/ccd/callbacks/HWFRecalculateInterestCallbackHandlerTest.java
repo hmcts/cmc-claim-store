@@ -18,8 +18,8 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountBreakdown;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimDataForHwF;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimForHwF;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -84,9 +84,9 @@ class HWFRecalculateInterestCallbackHandlerTest {
             .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
             .eventId(CaseEvent.HWF_PART_REMISSION_GRANTED.getValue())
             .build();
-        claim = SampleClaim.builder()
+        claim = SampleClaimForHwF.builder()
             .withClaimData(
-                SampleClaimData.builder()
+                SampleClaimDataForHwF.builder()
                     .withAmount(SampleAmountBreakdown.builder().build())
                     .build())
             .build();
@@ -94,7 +94,7 @@ class HWFRecalculateInterestCallbackHandlerTest {
 
     @Test
     void shouldGiveErrorIfClaimantHasNotRequestedForInterestTillFinalJudgement() {
-        Claim claim = SampleClaim.getClaimWithFullAdmission();
+        Claim claim = SampleClaimForHwF.getClaimWithFullAdmission();
         ClaimData interestTillSubmission  = claim.getClaimData().toBuilder().interest(
             standardInterestBuilder().withInterestDate(builder().withEndDateType(SUBMISSION).build()).build()).build();
         shouldValidateClaim(claim.toBuilder().claimData(interestTillSubmission).build(), INTEREST_NOT_TILL_JUDGEMENT);
@@ -102,14 +102,14 @@ class HWFRecalculateInterestCallbackHandlerTest {
 
     @Test
     void shouldGiveErrorIfClaimDoesNotNeedHWF() {
-        Claim claim = SampleClaim.getClaimWithFullAdmission();
+        Claim claim = SampleClaimForHwF.getClaimWithFullAdmission();
         ClaimData claimDataWithoutFeeNumber = claim.getClaimData().toBuilder().helpWithFeesNumber(null).build();
         shouldValidateClaim(claim.toBuilder().claimData(claimDataWithoutFeeNumber).build(), NOT_HWF_CLAIM);
     }
 
     @Test
     void shouldGiveErrorIfClaimantHasNotClaimedInterest() {
-        Claim claim = SampleClaim.getClaimWithFullAdmission();
+        Claim claim = SampleClaimForHwF.getClaimWithFullAdmission();
         ClaimData claimWithoutInterest = claim.getClaimData().toBuilder().interest(noInterestBuilder().build()).build();
         shouldValidateClaim(claim.toBuilder().claimData(claimWithoutInterest).build(), INTEREST_NOT_CLAIMED);
     }
