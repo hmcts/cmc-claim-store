@@ -78,8 +78,8 @@ public class IndividualDetailsMapper {
 
     private Address getAddress(CCDParty detail, CCDParty detailByClaimant, Function<CCDParty, CCDAddress> getAddress) {
         CCDAddress partyAddress = getAddress(detail, getAddress);
-        return addressMapper.from((partyAddress != null && detailByClaimant == null) ?
-            partyAddress : getAddress(detailByClaimant, getAddress));
+        return addressMapper.from((partyAddress != null && detailByClaimant == null)
+            ? partyAddress : getAddress(detailByClaimant, getAddress));
     }
 
     private CCDAddress getAddress(CCDParty partyDetail, Function<CCDParty, CCDAddress> extractAddress) {
