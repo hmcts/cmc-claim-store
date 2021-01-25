@@ -4,6 +4,8 @@ import java.util.Arrays;
 
 public enum CaseEvent {
     CREATE_CASE("CreateClaim"),
+    CREATE_HWF_CASE("CreateHelpWithFeesClaim"),
+    INVALID_HWF_REFERENCE("InvalidHWFReference"),
     ISSUE_CASE("IssueClaim"),
     MORE_TIME_REQUESTED_PAPER("MoreTimeRequestedPaper"),
     TEST_SUPPORT_UPDATE("TestSupportUpdate"),
@@ -66,6 +68,7 @@ public enum CaseEvent {
     //inversion of control
     INITIATE_CLAIM_PAYMENT_CITIZEN("InitiateClaimPaymentCitizen"),
     RESUME_CLAIM_PAYMENT_CITIZEN("ResumeClaimPaymentCitizen"),
+    UPDATE_HELP_WITH_FEE_CLAIM("ResumeHelpWithFeeClaimSubmission"),
     CREATE_LEGAL_REP_CLAIM("CreateLegalRepClaim"),
     STAY_CLAIM("StayClaim"),
     CREATE_CITIZEN_CLAIM("CreateCitizenClaim"),
@@ -94,7 +97,14 @@ public enum CaseEvent {
     CLAIM_NOTES("ClaimNotes"),
     MIGRATION_FROM_CLAIM_STORE_CREATE("MigrationFromClaimstoreCreate"),
     MIGRATION_FROM_CLAIM_STORE_UPDATE("MigrationFromClaimstoreUpdate"),
-    PAPER_HAND_OFF("PaperHandoff");
+    PAPER_HAND_OFF("PaperHandoff"),
+    MORE_INFO_REQUIRED_FOR_HWF("MoreInfoRequiredForHWF"),
+    HWF_NO_REMISSION("NoRemissionHWF"),
+    HWF_PART_REMISSION_GRANTED("HWFPartRemission"),
+    MISC_HWF("MiscHWF"),
+    CLOSE_AWAITING_RESPONSE_HWF("CloseAwaitingResponseHWF"),
+    HWF_FULL_REMISSION_GRANTED("HWFFullRemision"),
+    RECALCULATE_INTEREST("RecalculateInterest");
 
     private final String value;
 
