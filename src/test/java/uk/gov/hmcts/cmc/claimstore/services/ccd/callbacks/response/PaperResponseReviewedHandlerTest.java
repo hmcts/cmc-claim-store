@@ -258,7 +258,8 @@ class PaperResponseReviewedHandlerTest {
         when(caseDetailsConverter.extractClaim(detailsAfterEvent)).thenReturn(afterClaim);
         when(caseDetailsConverter.extractClaim(detailsBeforeEvent)).thenReturn(beforeClaim);
         LocalDate newResponseDeadline = LocalDate.now().plusDays(7);
-        lenient().when(responseDeadlineCalculator.calculatePostponedResponseDeadline(afterClaim.getIssuedOn()))
+        lenient().when(responseDeadlineCalculator.calculatePostponedResponseDeadline(
+            afterClaim.getIssuedOn().get()))
             .thenReturn(newResponseDeadline);
 
         callbackRequest = CallbackRequest.builder()
