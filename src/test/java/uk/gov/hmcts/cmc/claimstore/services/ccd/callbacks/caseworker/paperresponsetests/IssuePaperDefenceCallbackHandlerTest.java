@@ -83,6 +83,7 @@ class IssuePaperDefenceCallbackHandlerTest {
             .defendantId("id")
             .submitterEmail("email@email.com")
             .referenceNumber("ref. number")
+            .issuedOn(LocalDate.now())
             .build();
         //not working??
     }

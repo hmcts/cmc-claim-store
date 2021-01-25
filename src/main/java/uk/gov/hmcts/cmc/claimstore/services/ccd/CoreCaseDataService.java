@@ -54,6 +54,7 @@ import java.util.Optional;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CASE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_HWF_CASE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_LEGAL_REP_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
@@ -144,6 +145,15 @@ public class CoreCaseDataService {
         }
 
         return saveClaim(user, claim, ccdCase, CREATE_CASE);
+    }
+
+    @LogExecutionTime
+    public Claim createNewHelpWithFeesCase(User user, Claim claim) {
+        requireNonNull(user, USER_MUST_NOT_BE_NULL);
+
+        CCDCase ccdCase = caseMapper.to(claim);
+
+        return saveClaim(user, claim, ccdCase, CREATE_HWF_CASE);
     }
 
     @LogExecutionTime

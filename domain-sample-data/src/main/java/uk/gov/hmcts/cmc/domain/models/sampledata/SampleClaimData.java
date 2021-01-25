@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.particulars.PersonalInjury;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 
 import java.math.BigInteger;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -33,6 +34,9 @@ public class SampleClaimData {
     private Interest interest = SampleInterest.standard();
     private String reason = "reason";
     private BigInteger feeAmount = BigInteger.valueOf(4000);
+    private String moreInfoDetails = null;
+    private BigInteger feeRemitted = null;
+    private BigInteger feeAmountAfterRemission = null;
     private String feeAccountNumber = "PBA1234567";
     private StatementOfTruth statementOfTruth;
     private PersonalInjury personalInjury = new PersonalInjury(DamagesExpectation.MORE_THAN_THOUSAND_POUNDS);
@@ -41,7 +45,12 @@ public class SampleClaimData {
     private String feeCode = "X0012";
     private Timeline timeline = SampleTimeline.validDefaults();
     private Evidence evidence = SampleEvidence.validDefaults();
-
+    private String helpWithFeesNumber = null;
+    private String helpWithFeesType = null;
+    private String hwfFeeDetailsSummary = null;
+    private String hwfMandatoryDetails = null;
+    private List<String> hwfMoreInfoNeededDocuments = null;
+    private LocalDate hwfDocumentsToBeSentBefore;
     private HousingDisrepair housingDisrepair = new HousingDisrepair(
         DamagesExpectation.MORE_THAN_THOUSAND_POUNDS,
         DamagesExpectation.MORE_THAN_THOUSAND_POUNDS
@@ -138,6 +147,11 @@ public class SampleClaimData {
         return this;
     }
 
+    public SampleClaimData withFeeRemitted(BigInteger feeRemitted) {
+        this.feeRemitted = feeRemitted;
+        return this;
+    }
+
     public SampleClaimData withInterest(Interest interest) {
         this.interest = interest;
         return this;
@@ -188,6 +202,41 @@ public class SampleClaimData {
         return this;
     }
 
+    public SampleClaimData withHelpWithFeesNumber(String helpWithFeesNumber) {
+        this.helpWithFeesNumber = helpWithFeesNumber;
+        return this;
+    }
+
+    public SampleClaimData withHelpWithFeesType(String helpWithFeesType) {
+        this.helpWithFeesType = helpWithFeesType;
+        return this;
+    }
+
+    public SampleClaimData withMoreInfoDetails(String moreInfoDetails) {
+        this.moreInfoDetails = moreInfoDetails;
+        return this;
+    }
+
+    public SampleClaimData withHwfFeeDetailsSummary(String hwfFeeDetailsSummary) {
+        this.hwfFeeDetailsSummary = hwfFeeDetailsSummary;
+        return this;
+    }
+
+    public SampleClaimData withHwfMandatoryDetails(String hwfMandatoryDetails) {
+        this.hwfMandatoryDetails = hwfMandatoryDetails;
+        return this;
+    }
+
+    public SampleClaimData withHwfMoreInfoNeededDocuments(List<String> hwfMoreInfoNeededDocuments) {
+        this.hwfMoreInfoNeededDocuments = hwfMoreInfoNeededDocuments;
+        return this;
+    }
+
+    public SampleClaimData withHwfDocumentsToBeSentBefore(LocalDate hwfDocumentsToBeSentBefore) {
+        this.hwfDocumentsToBeSentBefore = hwfDocumentsToBeSentBefore;
+        return this;
+    }
+
     public ClaimData build() {
         return new ClaimData(
             externalId,
@@ -196,6 +245,8 @@ public class SampleClaimData {
             payment,
             amount,
             feeAmount,
+            feeRemitted,
+            feeAmountAfterRemission,
             interest,
             personalInjury,
             housingDisrepair,
@@ -206,7 +257,14 @@ public class SampleClaimData {
             preferredCourt,
             feeCode,
             timeline,
-            evidence);
+            evidence,
+            helpWithFeesNumber,
+            moreInfoDetails,
+            helpWithFeesType,
+            hwfFeeDetailsSummary,
+            hwfMandatoryDetails,
+            hwfMoreInfoNeededDocuments,
+            hwfDocumentsToBeSentBefore);
     }
 
     public static ClaimData validDefaults() {
@@ -239,6 +297,8 @@ public class SampleClaimData {
                 .withPhone("0776655443322")
                 .individualDetails())
             .withTimeline(SampleTimeline.validDefaults())
+            .withHwfMandatoryDetails(null)
+            .withFeeRemitted(null)
             .withEvidence(SampleEvidence.validDefaults());
     }
 

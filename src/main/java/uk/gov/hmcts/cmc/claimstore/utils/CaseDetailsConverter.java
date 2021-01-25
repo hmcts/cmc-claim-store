@@ -85,7 +85,7 @@ public class CaseDetailsConverter {
         Map<String, Object> tempData = new HashMap<>(caseDetails.getData());
         tempData.put("id", caseDetails.getId());
         tempData.put("state", caseDetails.getState());
-
+        tempData.put("lastModified", caseDetails.getLastModified());
         return jsonMapper.fromMap(tempData, CCDCase.class);
     }
 

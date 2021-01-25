@@ -72,7 +72,7 @@ public class AmountContentProvider {
                 claim.getClaimData().getInterest(),
                 claim.getClaimData().getInterest().getInterestDate(),
                 claimAmount,
-                claim.getIssuedOn(),
+                claim.getIssuedOn().orElseThrow(() -> new IllegalStateException("Missing issuedOn date")),
                 LocalDateTimeFactory.nowInLocalZone().toLocalDate()
             );
             interestRealValue = interestContent.getAmountRealValue();
