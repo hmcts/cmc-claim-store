@@ -44,7 +44,8 @@ public class InterestMapper implements BuilderMapper<CCDCase, Interest, CCDCase.
 
         builder
             .interestRate(interest.getRate())
-            .interestReason(interest.getReason());
+            .interestReason(interest.getReason())
+            .lastInterestCalculationDate(interest.getLastInterestCalculationDate());
     }
 
     @Override
@@ -69,7 +70,8 @@ public class InterestMapper implements BuilderMapper<CCDCase, Interest, CCDCase.
             ccdCase.getInterestRate(),
             ccdCase.getInterestReason(),
             moneyMapper.from(ccdCase.getInterestSpecificDailyAmount()),
-            interestDateMapper.from(ccdCase)
+            interestDateMapper.from(ccdCase),
+            ccdCase.getLastInterestCalculationDate()
         );
     }
 }

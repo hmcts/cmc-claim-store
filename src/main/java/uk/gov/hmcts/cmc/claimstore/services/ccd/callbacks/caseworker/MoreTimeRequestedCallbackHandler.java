@@ -39,6 +39,7 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESPONSE_MORE_TIME;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
@@ -127,12 +128,18 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
     }
 
     private AboutToStartOrSubmitCallbackResponse calculateResponseDeadline(CallbackParams callbackParams) {
+        LocalDate issuedOn = null;
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
+        Optional<LocalDate> issuedOnOptional = claim.getIssuedOn();
+        if (issuedOnOptional.isPresent()) {
+            issuedOn = issuedOnOptional.get();
+        }
         LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(
-            respondent.getPaperFormIssueDate() != null ? respondent.getPaperFormIssueDate() : claim.getIssuedOn());
+            respondent.getPaperFormIssueDate() != null ? respondent.getPaperFormIssueDate()
+                : issuedOn);
         List<String> validationResult = this.moreTimeRequestRule.validateMoreTimeCanBeRequested(claim, newDeadline);
         var builder = AboutToStartOrSubmitCallbackResponse.builder();
         if (!validationResult.isEmpty()) {

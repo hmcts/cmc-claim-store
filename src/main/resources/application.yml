@@ -60,7 +60,7 @@ quartzProperties:
 
 idam:
   api:
-    url: "http://localhost:8080"
+    url: "http://localhost:5000"
   s2s-auth:
     url: "http://localhost:4552"
     totp_secret: "AAAAAAAAAAAAAAAA"
@@ -89,7 +89,7 @@ pdf-service:
   url: "${PDF_SERVICE_URL:}"
 
 document_management:
-  url: ${DOCUMENT_MANAGEMENT_URL}
+  url: "${DOCUMENT_MANAGEMENT_URL:}"
   userRoles: ${DOCUMENT_MANAGEMENT_USERROLES}
 
 core_case_data:
@@ -134,9 +134,15 @@ milo:
 
 schedule:
   transfer-claims: ""
+  close-hwf-claims-in-awaiting-state: "${SCHEDULE_CLOSE_HWF_CLAIMS_IN_AWAITING_STATE:}"
   state-transition:
     waiting-transfer: ""
     stay-claim: ""
+
+
+hwfCaseWorkerRespondSla:
+  timeForResponseInDays: 5
+  endOfBusinessDayHour: 16
 
 dateCalculations:
   endOfBusinessDayHour: 16
@@ -164,6 +170,8 @@ notifications:
   templates:
     email:
       claimantClaimIssued: "f034e121-e9d4-441a-91b9-52d0c7d14d73"
+      claimantClaimIssuedWithHwfVerficationPending: "61193c4e-b1f8-4780-8567-21476bdbfc44"
+      claimantHwfUpdate: "5ed7ad39-4ab0-4832-afe2-30d5385abfcf"
       defendantClaimIssued: "b261ef40-ca55-4f36-b8ff-7f1f34347058"
       defendantResponseIssued: "128bfa11-0b09-4162-bb1e-36fa167af191"
       defendantResponseNeeded: "15f9985a-1775-4f64-a6c7-7616bdbabb1c"
@@ -263,3 +271,5 @@ smoke-test-citizen:
   password: "${SMOKE_TEST_USER_PASSWORD:}"
 smoke-test-solicitor:
   password: "${SMOKE_TEST_USER_PASSWORD:}"
+
+

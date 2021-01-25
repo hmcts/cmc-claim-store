@@ -38,6 +38,7 @@ import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -47,10 +48,13 @@ import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.UPDATE_HELP_WITH_FEE_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.CLAIM_EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.HWF_CLAIM_CREATED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NUMBER_OF_RECONSIDERATION;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED;
 import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_PAYMENT;
@@ -70,6 +74,7 @@ public class ClaimService {
     private final ClaimAuthorisationRule claimAuthorisationRule;
     private final ReviewOrderRule reviewOrderRule;
     private final LaunchDarklyClient launchDarklyClient;
+    private final CaseEventService caseEventService;
 
     @Value("${feature_toggles.ctsc_enabled}")
     private boolean ctscEnabled;
@@ -87,8 +92,8 @@ public class ClaimService {
         PaidInFullRule paidInFullRule,
         ClaimAuthorisationRule claimAuthorisationRule,
         ReviewOrderRule reviewOrderRule,
-        LaunchDarklyClient launchDarklyClient
-    ) {
+        LaunchDarklyClient launchDarklyClient,
+        CaseEventService caseEventService) {
         this.userService = userService;
         this.issueDateCalculator = issueDateCalculator;
         this.responseDeadlineCalculator = responseDeadlineCalculator;
@@ -100,11 +105,25 @@ public class ClaimService {
         this.claimAuthorisationRule = claimAuthorisationRule;
         this.reviewOrderRule = reviewOrderRule;
         this.launchDarklyClient = launchDarklyClient;
+        this.caseEventService = caseEventService;
     }
 
     public List<Claim> getClaimBySubmitterId(String submitterId, String authorisation, Integer pageNumber) {
+        List<Claim> outputClaimList = new ArrayList<>();
         claimAuthorisationRule.assertUserIdMatchesAuthorisation(submitterId, authorisation);
-        return caseRepository.getBySubmitterId(submitterId, authorisation, pageNumber);
+        List<Claim> claimList = caseRepository.getBySubmitterId(submitterId, authorisation, pageNumber);
+        User user = userService.authenticateAnonymousCaseWorker();
+        claimList.stream().forEach(claim -> {
+            if (claim.getState().equals(ClaimState.AWAITING_RESPONSE_HWF)
+                || claim.getState().equals(ClaimState.HWF_APPLICATION_PENDING)) {
+                List<CaseEvent> caseEventList = caseEventService.findEventsForCase(
+                    String.valueOf(claim.getId()), user);
+                claim = claim.toBuilder().lastEventTriggeredForHwfCase(caseEventList.get(0).getValue()).build();
+            }
+            outputClaimList.add(claim);
+
+        });
+        return outputClaimList;
     }
 
     public Claim getClaimByLetterHolderId(String id, String authorisation) {
@@ -119,8 +138,17 @@ public class ClaimService {
 
     public Claim getFilteredClaimByExternalId(String externalId, String authorisation) {
         User user = userService.getUser(authorisation);
+        Claim claim = getClaimByExternalId(externalId, user);
+        User anonymousCaseWorkerForFetchingEvents = userService.authenticateAnonymousCaseWorker();
+        if (claim.getState().equals(ClaimState.AWAITING_RESPONSE_HWF)
+            || claim.getState().equals(ClaimState.HWF_APPLICATION_PENDING)) {
+            List<CaseEvent> caseEventList = caseEventService.findEventsForCase(
+                String.valueOf(claim.getId()), anonymousCaseWorkerForFetchingEvents);
+            claim = claim.toBuilder().lastEventTriggeredForHwfCase(caseEventList.get(0).getValue()).build();
+        }
+
         return DocumentsFilter.filterDocuments(
-            getClaimByExternalId(externalId, user), user.getUserDetails(), ctscEnabled,
+            claim, user.getUserDetails(), ctscEnabled,
             launchDarklyClient.isFeatureEnabled("paper-response-review-new-handling")
         );
     }
@@ -204,7 +232,7 @@ public class ClaimService {
         Claim claim = buildClaimFrom(user,
             user.getUserDetails().getId(),
             claimData,
-            emptyList());
+            emptyList(), false);
 
         Claim createdClaim = caseRepository.initiatePayment(user, claim);
 
@@ -271,13 +299,50 @@ public class ClaimService {
         Claim claim = buildClaimFrom(user,
             submitterId,
             claimData,
-            features);
+            features, false);
 
         Claim savedClaim = caseRepository.saveClaim(user, claim);
         createClaimEvent(authorisation, user, savedClaim);
         trackClaimIssued(savedClaim.getReferenceNumber(), savedClaim.getClaimData().isClaimantRepresented());
 
         return savedClaim;
+    }
+
+    @LogExecutionTime
+    public Claim saveHelpWithFeesClaim(
+        String submitterId,
+        ClaimData claimData,
+        String authorisation,
+        List<String> features
+    ) {
+        String externalId = claimData.getExternalId().toString();
+        User user = userService.getUser(authorisation);
+        caseRepository.getClaimByExternalId(externalId, user)
+            .ifPresent(claim -> {
+                throw new ConflictException("Claim already exist with same external reference as " + externalId);
+            });
+
+        Claim claim = buildClaimFrom(user, submitterId, claimData, features, true);
+        trackHelpWithFeesClaimCreated(externalId);
+        return caseRepository.saveHelpWithFeesClaim(user, claim);
+    }
+
+    @LogExecutionTime
+    public Claim updateHelpWithFeesClaim(
+        String authorisation,
+        ClaimData claimData,
+        List<String> features
+    ) {
+        String externalId = claimData.getExternalId().toString();
+        User user = userService.getUser(authorisation);
+        Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), user)
+            .toBuilder()
+            .claimData(claimData)
+            .features(features)
+            .build();
+
+        trackHelpWithFeesClaimCreated(externalId);
+        return caseRepository.updateHelpWithFeesClaim(user, claim, UPDATE_HELP_WITH_FEE_CLAIM);
     }
 
     @LogExecutionTime
@@ -312,10 +377,18 @@ public class ClaimService {
         appInsights.trackEvent(event, REFERENCE_NUMBER, referenceNumber);
     }
 
+    private void trackHelpWithFeesClaimCreated(String externalId) {
+        appInsights.trackEvent(HWF_CLAIM_CREATED, CLAIM_EXTERNAL_ID, externalId);
+    }
+
     public Claim requestMoreTimeForResponse(String externalId, String authorisation) {
         Claim claim = getClaimByExternalId(externalId, authorisation);
-
-        LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
+        LocalDate issuedOn = null;
+        Optional<LocalDate> issuedOnOptional = claim.getIssuedOn();
+        if (issuedOnOptional.isPresent()) {
+            issuedOn = issuedOnOptional.get();
+        }
+        LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(issuedOn);
 
         this.moreTimeRequestRule.assertMoreTimeCanBeRequested(claim);
 
@@ -432,25 +505,32 @@ public class ClaimService {
         User user,
         String submitterId,
         ClaimData claimData,
-        List<String> features) {
+        List<String> features,
+        boolean helpWithFees
+    ) {
         String externalId = claimData.getExternalId().toString();
 
         LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
-        LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
         String submitterEmail = user.getUserDetails().getEmail();
 
-        return Claim.builder()
+        Claim.ClaimBuilder claimBuilder = Claim.builder()
             .claimData(claimData)
             .submitterId(submitterId)
             .issuedOn(issuedOn)
             .serviceDate(issuedOn.plusDays(5))
-            .responseDeadline(responseDeadline)
             .externalId(externalId)
             .submitterEmail(submitterEmail)
             .createdAt(LocalDateTimeFactory.nowInUTC())
             .features(features)
-            .claimSubmissionOperationIndicators(ClaimSubmissionOperationIndicators.builder().build())
-            .build();
+            .claimSubmissionOperationIndicators(ClaimSubmissionOperationIndicators.builder().build());
+
+        if (!helpWithFees) {
+            claimBuilder
+                .issuedOn(issuedOn)
+                .serviceDate(issuedOn.plusDays(5))
+                .responseDeadline(responseDeadlineCalculator.calculateResponseDeadline(issuedOn));
+        }
+        return claimBuilder.build();
     }
 
     private void createClaimEvent(String authorisation, User user, Claim savedClaim) {
