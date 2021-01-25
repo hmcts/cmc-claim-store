@@ -8,8 +8,8 @@ dependencies {
   compile project(':domain-model')
 
   compile group: 'org.springframework.boot', name: 'spring-boot-starter'
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
-  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.16'
+  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.16'
   compile group: 'com.google.guava', name: 'guava', version: '20.0'
 
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
