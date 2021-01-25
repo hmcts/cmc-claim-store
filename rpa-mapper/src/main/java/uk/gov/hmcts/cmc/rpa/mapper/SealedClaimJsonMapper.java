@@ -36,7 +36,8 @@ public class SealedClaimJsonMapper {
 
         return new NullAwareJsonObjectBuilder()
             .add("caseNumber", claim.getReferenceNumber())
-            .add("issueDate", DateFormatter.format(claim.getIssuedOn()))
+            .add("issueDate", DateFormatter.format(claim.getIssuedOn()
+                .orElseThrow(() -> new IllegalStateException("Missing issuedOn date"))))
             .add("serviceDate", DateFormatter.format(claim.getServiceDate()))
             .add("courtFee", claim.getClaimData().getFeesPaidInPounds().orElse(ZERO))
             .add("amountWithInterest", claim.getAmountWithInterestUntilIssueDate().orElse(null))

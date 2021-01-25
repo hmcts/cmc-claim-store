@@ -33,6 +33,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -92,6 +93,7 @@ public final class SampleClaim {
     private LocalDateTime createdAt = NOW_IN_LOCAL_ZONE;
     private LocalDateTime respondedAt = NOT_RESPONDED;
     private LocalDate issuedOn = ISSUE_DATE;
+    private LocalDate serviceDate = ISSUE_DATE;
     private CountyCourtJudgment countyCourtJudgment = null;
     private LocalDateTime countyCourtJudgmentRequestedAt = null;
     private ClaimData claimData = SampleClaimData.builder().withExternalId(RAND_UUID).build();
@@ -122,6 +124,7 @@ public final class SampleClaim {
     private String bulkPrintLetterId = UUID.randomUUID().toString();
     private String directionOrderType;
     private BespokeOrderDirection bespokeOrderDirection;
+    private String lastEventTriggeredForHwfCase = null;
 
     private SampleClaim() {
     }
@@ -464,6 +467,22 @@ public final class SampleClaim {
             ).build();
     }
 
+    public static Claim getClaimWhenFeeRemittedIsMoreThanFee() {
+        return SampleClaim.builder()
+            .withClaimData(
+                SampleClaimData.builder()
+                    .withFeeRemitted(BigInteger.valueOf(5000)).build()
+            ).build();
+    }
+
+    public static Claim getClaimWhenFeeRemittedIsEqualToFee() {
+        return SampleClaim.builder()
+            .withClaimData(
+                SampleClaimData.builder()
+                    .withFeeRemitted(BigInteger.valueOf(4000)).build()
+            ).build();
+    }
+
     public static Claim getClaimFullDefenceStatesPaidWithAcceptation() {
         return builder()
             .withDefendantEmail(DEFENDANT_EMAIL)
@@ -584,7 +603,7 @@ public final class SampleClaim {
             claimData,
             createdAt,
             issuedOn,
-            issuedOn.plusDays(5),
+            issuedOn == null ? null : issuedOn.plusDays(5),
             responseDeadline,
             isMoreTimeRequested,
             submitterEmail,
@@ -626,7 +645,9 @@ public final class SampleClaim {
                 .printRequestedAt(LocalDate.now())
                 .printRequestId(bulkPrintLetterId).build()),
             directionOrderType,
-            bespokeOrderDirection
+            bespokeOrderDirection,
+            LocalDateTime.now(),
+            lastEventTriggeredForHwfCase
         );
     }
 
@@ -687,6 +708,11 @@ public final class SampleClaim {
 
     public SampleClaim withIssuedOn(LocalDate issuedOn) {
         this.issuedOn = issuedOn;
+        return this;
+    }
+
+    public SampleClaim withServiceDate(LocalDate serviceDate) {
+        this.serviceDate = serviceDate;
         return this;
     }
 
@@ -820,12 +846,12 @@ public final class SampleClaim {
 
     public SampleClaim withGeneralLetter(URI uri) {
         ClaimDocument claimDocument = ClaimDocument.builder()
-                .documentManagementUrl(uri)
-                .documentName("general-letter.pdf")
-                .documentType(GENERAL_LETTER)
-                .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
-                .createdBy(OCMC)
-                .build();
+            .documentManagementUrl(uri)
+            .documentName("general-letter.pdf")
+            .documentType(GENERAL_LETTER)
+            .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
+            .createdBy(OCMC)
+            .build();
         this.claimDocumentCollection.addClaimDocument(claimDocument);
         return this;
     }

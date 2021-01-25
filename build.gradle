@@ -362,6 +362,7 @@ sonarqube {
     property "sonar.exclusions", [
         "**/ccd/domain/**",
         "**/cmc/domain/models/**",
+        "**/cmc/domain/amount/**",
         "**/cmc/ccd/sample/data/**",
         "**/cmc/ccd/mapper/**",
         "**/cmc/claimstore/idam/models/**",

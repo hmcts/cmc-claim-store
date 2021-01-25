@@ -146,7 +146,7 @@ public class RoboticsSupportController {
                 Claim::isMoreTimeRequested,
                 claim -> moreTimeRequestedNotificationService.notifyRobotics(new MoreTimeRequestedEvent(
                     claim,
-                    responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn()),
+                    responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn().orElseThrow()),
                     claim.getDefendantEmail())),
                 "Failed to send more time request to RPA"
             )));

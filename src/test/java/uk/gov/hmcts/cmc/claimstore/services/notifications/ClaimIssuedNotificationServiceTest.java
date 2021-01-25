@@ -49,6 +49,12 @@ public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceT
         verify(appInsights).trackEvent(eq(NOTIFICATION_FAILURE), eq(REFERENCE_NUMBER), eq(reference));
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void emailClaimantShouldThrowExceptionIfIssuedOnDateIsMissing() {
+        claim = claim.toBuilder().issuedOn(null).build();
+        service.sendMail(claim, USER_EMAIL, null, CLAIMANT_CLAIM_ISSUED_TEMPLATE, reference, USER_FULLNAME);
+    }
+
     @Test
     public void emailClaimantShouldSendEmailUsingPredefinedTemplate() throws Exception {
         service.sendMail(claim, USER_EMAIL, null, CLAIMANT_CLAIM_ISSUED_TEMPLATE, reference, USER_FULLNAME);
