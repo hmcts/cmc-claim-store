@@ -376,7 +376,6 @@ public class CoreCaseDataServiceTest {
         verify(caseDetailsConverter, atLeast(1)).extractClaim(any(CaseDetails.class));
         assertEquals(SampleClaim.CLAIM_ID, returnedClaim.getId());
 
-        verify(jobSchedulerService).rescheduleEmailNotificationsForDefendantResponse(providedClaim, FUTURE_DATE);
     }
 
     @Test
