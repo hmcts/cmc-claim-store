@@ -28,6 +28,7 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED_ONLINE;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
@@ -97,9 +98,13 @@ public class MoreTimeRequestedOnlineCallbackHandler extends CallbackHandler {
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
+        LocalDate issuedOnDate = null;
+        if (claim.getIssuedOn().isPresent()) {
+            issuedOnDate = claim.getIssuedOn().get();
+        }
         LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(
             respondent.getPaperFormIssueDate() != null
-                ? respondent.getPaperFormIssueDate() : claim.getIssuedOn().get());
+                ? respondent.getPaperFormIssueDate() : issuedOnDate);
         List<String> validationResult = this.moreTimeRequestRule.validateMoreTimeCanBeRequested(claim, newDeadline);
 
         if (!validationResult.isEmpty()) {
