@@ -115,7 +115,7 @@ public class PostClaimOrchestrationHandler {
                 updatedClaim.apply(claim);
             }
         } catch (Exception e) {
-            logger.error(FAILED_LOG_MSG, event, e);
+            logger.error(FAILED_LOG_MSG, e);
         }
     }
 
@@ -152,7 +152,7 @@ public class PostClaimOrchestrationHandler {
                 }
             }
         } catch (Exception e) {
-            logger.error(FAILED_LOG_MSG, event, e);
+            logger.error(FAILED_LOG_MSG, e);
         }
     }
 
