@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -10,7 +8,6 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
-import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
@@ -47,13 +44,11 @@ public class MoreTimeRequestedOnlineCallbackHandler extends CallbackHandler {
     private static final List<Role> ROLES = Collections.singletonList(CITIZEN);
     private static final List<CaseEvent> EVENTS = Collections.singletonList(MORE_TIME_REQUESTED_ONLINE);
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
     private final MoreTimeRequestRule moreTimeRequestRule;
     private final CaseDetailsConverter caseDetailsConverter;
     private final NotificationService notificationService;
     private final NotificationsProperties notificationsProperties;
-    private final UserService userService;
 
     @Autowired
     public MoreTimeRequestedOnlineCallbackHandler(
@@ -61,15 +56,13 @@ public class MoreTimeRequestedOnlineCallbackHandler extends CallbackHandler {
         MoreTimeRequestRule moreTimeRequestRule,
         CaseDetailsConverter caseDetailsConverter,
         NotificationService notificationService,
-        NotificationsProperties notificationsProperties,
-        UserService userService
+        NotificationsProperties notificationsProperties
     ) {
         this.responseDeadlineCalculator = responseDeadlineCalculator;
         this.moreTimeRequestRule = moreTimeRequestRule;
         this.caseDetailsConverter = caseDetailsConverter;
         this.notificationService = notificationService;
         this.notificationsProperties = notificationsProperties;
-        this.userService = userService;
     }
 
     @Override
@@ -91,7 +84,6 @@ public class MoreTimeRequestedOnlineCallbackHandler extends CallbackHandler {
     }
 
     private AboutToStartOrSubmitCallbackResponse calculateResponseDeadline(CallbackParams callbackParams) {
-        String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
         var builder = AboutToStartOrSubmitCallbackResponse.builder();
 
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();

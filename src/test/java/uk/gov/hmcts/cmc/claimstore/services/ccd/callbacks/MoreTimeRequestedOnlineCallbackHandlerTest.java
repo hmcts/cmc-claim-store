@@ -23,7 +23,6 @@ import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleMoreTimeRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
-import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.MoreTimeRequestedOnlineCallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -82,8 +81,6 @@ class MoreTimeRequestedOnlineCallbackHandlerTest {
     private NotificationTemplates templates;
     @Mock
     private EmailTemplates emailTemplates;
-    @Mock
-    private UserService userService;
 
     private Claim claim;
 
@@ -101,8 +98,7 @@ class MoreTimeRequestedOnlineCallbackHandlerTest {
             moreTimeRequestRule,
             caseDetailsConverter,
             notificationService,
-            notificationsProperties,
-            userService
+            notificationsProperties
         );
         claim = SampleClaim.getDefault();
         claim = Claim.builder()

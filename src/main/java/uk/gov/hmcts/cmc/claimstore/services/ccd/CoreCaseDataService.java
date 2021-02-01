@@ -80,9 +80,12 @@ public class CoreCaseDataService {
     private static final String SUBMITTING_CMC_CASE_UPDATE_DESCRIPTION = "Submitting CMC case update";
     private static final String SUBMITTING_CMC_CASE_CREATE_DESCRIPTION = "Submitting CMC case create";
     private static final String SUBMITTING_CMC_INITIATE_PAYMENT_DESCRIPTION = "Submitting CMC initiate payment";
-    private static  final String MORE_TIME_DEFENDANT_MSG = "Response Deadline Extended by Defendant";
+    private static final String MORE_TIME_DEFENDANT_MSG = "Response Deadline Extended by Defendant";
 
     private static final String CCD_UPDATE_FAILURE_MESSAGE
+        = "Failed updating claim in CCD store for case id %s on event %s";
+
+    private static final String CCD_MORE_TIME_REQUESTED_ONLINE_FAILURE
         = "Failed updating claim in CCD store for case id %s on event %s";
 
     private static final String CCD_STORING_FAILURE_MESSAGE
@@ -99,7 +102,6 @@ public class CoreCaseDataService {
     private final ReferenceNumberService referenceNumberService;
     private final CoreCaseDataApi coreCaseDataApi;
     private final AuthTokenGenerator authTokenGenerator;
-    private final JobSchedulerService jobSchedulerService;
     private final CCDCreateCaseService ccdCreateCaseService;
     private final CaseDetailsConverter caseDetailsConverter;
     private final WorkingDayIndicator workingDayIndicator;
@@ -114,7 +116,6 @@ public class CoreCaseDataService {
         ReferenceNumberService referenceNumberService,
         CoreCaseDataApi coreCaseDataApi,
         AuthTokenGenerator authTokenGenerator,
-        JobSchedulerService jobSchedulerService,
         CCDCreateCaseService ccdCreateCaseService,
         CaseDetailsConverter caseDetailsConverter,
         @Value("#{new Integer('${dateCalculations.stayClaimDeadlineInDays}')}")
@@ -127,7 +128,6 @@ public class CoreCaseDataService {
         this.referenceNumberService = referenceNumberService;
         this.coreCaseDataApi = coreCaseDataApi;
         this.authTokenGenerator = authTokenGenerator;
-        this.jobSchedulerService = jobSchedulerService;
         this.ccdCreateCaseService = ccdCreateCaseService;
         this.caseDetailsConverter = caseDetailsConverter;
         this.workingDayIndicator = workingDayIndicator;
@@ -310,9 +310,9 @@ public class CoreCaseDataService {
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format(
-                    "RESPONSE_MORE_TIME failure",
+                    CCD_MORE_TIME_REQUESTED_ONLINE_FAILURE,
                     claim.getExternalId(),
-                    "RESPONSE_MORE_TIME_DEFENDANT_MSG"
+                    MORE_TIME_REQUESTED_ONLINE.getValue()
                 ), exception
             );
         }
