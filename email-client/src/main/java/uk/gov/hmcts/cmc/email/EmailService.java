@@ -15,9 +15,9 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.email.sendgrid.SendGridClient;
 import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 
-import java.io.IOException;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.io.IOException;
 
 import static java.util.Collections.singletonMap;
 
@@ -51,7 +51,7 @@ public class EmailService {
 
     @Retryable(value = EmailSendFailedException.class, backoff = @Backoff(delay = 100, maxDelay = 500))
     public void sendEmail(String from, EmailData emailData) {
-        if (launchDarklyClient.isFeatureEnabled("sendgrid-roc-7497", LaunchDarklyClient.CLAIM_STORE_USER)) {
+        if (false) {
             sendEmailSendGrid(from, emailData);
         } else {
             sendEmailMTA(from, emailData);
