@@ -17,6 +17,12 @@ public class EmailTemplates {
     private String claimantClaimIssued;
 
     @NotEmpty
+    private String claimantClaimIssuedWithHwfVerficationPending;
+
+    @NotEmpty
+    private String claimantHwfUpdate;
+
+    @NotEmpty
     private String defendantClaimIssued;
 
     @NotEmpty
@@ -164,7 +170,25 @@ public class EmailTemplates {
     private String defendantMediationFailureOfflineDQ;
 
     @NotEmpty
-    private String claimantPaperResponseReceived;
+    private String paperResponseFormReceived;
+
+    @NotEmpty
+    private String paperResponseReceivedAndCaseTransferredToCCBC;
+
+    @NotEmpty
+    private String paperResponseFromClaimantCaseHandoverToCCBC;
+
+    @NotEmpty
+    private String paperResponseFromDefendantCaseHandoverToCCBC;
+
+    @NotEmpty
+    private String paperResponseFromClaimantGeneralLetter;
+
+    @NotEmpty
+    private String paperResponseFromDefendantGeneralLetter;
+
+    @NotEmpty
+    private String paperResponseFormReceivedForCcjRequest;
 
     @NotEmpty
     private String claimantContactDetailsChanged;

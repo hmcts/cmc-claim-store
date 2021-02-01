@@ -49,6 +49,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SamplePayment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 
 import java.math.BigDecimal;
 import java.net.URI;
@@ -71,12 +72,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.UPDATE_HELP_WITH_FEE_CLAIM;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.HWF_CLAIM_CREATED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NUMBER_OF_RECONSIDERATION;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
@@ -121,6 +126,8 @@ public class ClaimServiceTest {
     @Mock
     private UserService userService;
     @Mock
+    private CaseEventService caseEventService;
+    @Mock
     private IssueDateCalculator issueDateCalculator;
     @Mock
     private ResponseDeadlineCalculator responseDeadlineCalculator;
@@ -128,6 +135,9 @@ public class ClaimServiceTest {
     private EventProducer eventProducer;
     @Mock
     private AppInsights appInsights;
+    @Mock
+    LaunchDarklyClient launchDarklyClient;
+
     @Captor
     private ArgumentCaptor<Claim> claimArgumentCaptor;
 
@@ -146,7 +156,8 @@ public class ClaimServiceTest {
             appInsights,
             new PaidInFullRule(),
             new ClaimAuthorisationRule(userService),
-            new ReviewOrderRule());
+            new ReviewOrderRule(),
+            launchDarklyClient, caseEventService);
 
         Fees fees = new Fees(111, "CD", "VER", 20,
             200, "CCDD", "REF");
@@ -239,7 +250,8 @@ public class ClaimServiceTest {
             appInsights,
             new PaidInFullRule(),
             new ClaimAuthorisationRule(userService),
-            new ReviewOrderRule());
+            new ReviewOrderRule(),
+            launchDarklyClient, caseEventService);
 
         ClaimData claimData = SampleClaimData.validDefaults();
 
@@ -386,7 +398,27 @@ public class ClaimServiceTest {
         when(userService.getUserDetails(AUTHORISATION))
             .thenReturn(SampleUserDetails.builder().withUserId("300").build());
 
-        claimService.getClaimBySubmitterId(USER_ID, AUTHORISATION);
+        claimService.getClaimBySubmitterId(USER_ID, AUTHORISATION, 1);
+    }
+
+    @Test
+    public void getBySubmitterIdWhenPageNumberIsNull() {
+        when(userService.getUserDetails(AUTHORISATION))
+            .thenReturn(SampleUserDetails.builder().withUserId("1").build());
+
+        List<Claim> result = claimService.getClaimBySubmitterId(USER_ID, AUTHORISATION, null);
+
+        assertThat(result).isNotNull();
+    }
+
+    @Test
+    public void getBySubmitterIdWhenPageNumberIsNotNull() {
+        when(userService.getUserDetails(AUTHORISATION))
+            .thenReturn(SampleUserDetails.builder().withUserId("1").build());
+
+        List<Claim> result = claimService.getClaimBySubmitterId(USER_ID, AUTHORISATION, 1);
+
+        assertThat(result).isNotNull();
     }
 
     @Test(expected = ForbiddenActionException.class)
@@ -433,7 +465,7 @@ public class ClaimServiceTest {
         when(userService.getUserDetails(AUTHORISATION))
             .thenReturn(UNAUTHORISED_USER_DETAILS);
 
-        claimService.getClaimByDefendantId(USER_ID, AUTHORISATION);
+        claimService.getClaimByDefendantId(USER_ID, AUTHORISATION, 1);
     }
 
     @Test(expected = ForbiddenActionException.class)
@@ -549,7 +581,7 @@ public class ClaimServiceTest {
             .thenReturn(claim);
         CreatePaymentResponse response = claimService.resumePayment(AUTHORISATION, claimData);
 
-        assertThat(response.getNextUrl()).isEqualTo(format(RETURN_URL, claim.getExternalId()));
+        assertThat(response.getNextUrl()).isEqualTo(format(RETURN_URL), claim.getExternalId());
     }
 
     @Test
@@ -699,6 +731,53 @@ public class ClaimServiceTest {
         when(caseRepository.updateCardPaymentForClaim(any(), any(Claim.class))).thenReturn(claim1);
         Claim updatedClaim = claimService.updateCardPayment(paymentUpdate);
         assertNotNull(updatedClaim);
+    }
+
+    @Test
+    public void testSaveHelpWithFeesClaim() {
+        UUID externalId = UUID.randomUUID();
+        ClaimData claimData = SampleClaimData.builder()
+            .withExternalId(externalId)
+            .withHelpWithFeesNumber("HWF01234")
+            .withHelpWithFeesType("Claim Issue").build();
+        when(issueDateCalculator.calculateIssueDay(any())).thenReturn(LocalDate.now());
+        claimService.saveHelpWithFeesClaim(USER_ID, claimData, AUTHORISATION, singletonList(ADMISSIONS.getValue()));
+
+        verify(caseRepository).saveHelpWithFeesClaim(any(), any());
+        verify(appInsights).trackEvent(HWF_CLAIM_CREATED, AppInsights.CLAIM_EXTERNAL_ID, externalId.toString());
+    }
+
+    @Test
+    public void testUpdateHelpWithFeesClaim() {
+
+        when(caseRepository.getClaimByExternalId(VALID_APP.getExternalId().toString(), USER))
+            .thenReturn(Optional.of(claim));
+        when(caseRepository
+            .updateHelpWithFeesClaim(eq(USER), any(Claim.class), eq(UPDATE_HELP_WITH_FEE_CLAIM)))
+            .thenReturn(claim);
+
+        claimService.updateHelpWithFeesClaim(AUTHORISATION,
+            VALID_APP.toBuilder()
+                .helpWithFeesType("Claim Issue")
+                .helpWithFeesNumber("HWF12345").build(), singletonList(ADMISSIONS.getValue()));
+
+        verify(caseRepository).updateHelpWithFeesClaim(any(), any(), eq(UPDATE_HELP_WITH_FEE_CLAIM));
+        verify(appInsights).trackEvent(HWF_CLAIM_CREATED, AppInsights.CLAIM_EXTERNAL_ID,
+            VALID_APP.getExternalId().toString());
+    }
+
+    @Test(expected = ConflictException.class)
+    public void saveHelpWithFeesClaimShouldThrowConflictExceptionIfAlreadyExists() {
+        ClaimData claimData = SampleClaimData.builder()
+            .withHelpWithFeesNumber("HWF01234")
+            .withHelpWithFeesType("ClaimIssue").build();
+
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
+            .thenReturn(Optional.of(mock(Claim.class)));
+
+        claimService.saveHelpWithFeesClaim(USER_ID, claimData, AUTHORISATION, singletonList(ADMISSIONS.getValue()));
+
+        verifyNoInteractions(appInsights);
     }
 
     private static Claim createRepresentedClaimModel(ClaimData claimData) {

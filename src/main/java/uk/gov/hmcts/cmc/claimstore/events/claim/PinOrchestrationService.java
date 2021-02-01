@@ -20,6 +20,7 @@ import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ADD_BULK_PRINT_DETAILS;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.HWF_APPLICATION_PENDING;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 
 @Service
@@ -125,7 +126,8 @@ public class PinOrchestrationService {
     }
 
     private void notifyDefendant(Claim claim, String submitterName, GeneratedDocuments generatedDocuments) {
-        if (!claim.getClaimData().isClaimantRepresented()) {
+        if (Boolean.FALSE.equals((claim.getClaimData().isClaimantRepresented()))
+            && !(claim.getState().equals(HWF_APPLICATION_PENDING))) {
             claim.getClaimData().getDefendant().getEmail().ifPresent(defendantEmail ->
                 claimIssuedNotificationService.sendMail(
                     claim,

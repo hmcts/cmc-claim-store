@@ -20,29 +20,41 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleHwfClaim;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.Optional;
 
+import static java.lang.String.format;
 import static java.math.BigDecimal.TEN;
 import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
+import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.FAILED;
+import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.withFullClaimData;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreateCitizenClaimCallbackHandlerTest {
     private static final String REFERENCE_NO = "000MC001";
+    private static final String REFERENCE_NO_HWF = "1595459870527766";
     private static final LocalDate ISSUE_DATE = now();
     private static final LocalDate RESPONSE_DEADLINE = ISSUE_DATE.plusDays(14);
     private static final String BEARER_TOKEN = "Bearer let me in";
@@ -114,6 +126,8 @@ public class CreateCitizenClaimCallbackHandlerTest {
 
     @Test
     public void shouldSuccessfullyReturnCallBackResponseWhenSuccessfulPayment() {
+        when(paymentsService.retrievePayment(eq(BEARER_TOKEN), any(ClaimData.class)))
+            .thenReturn(Optional.of(paymentBuilder.status(SUCCESS).build()));
 
         Claim claim = SampleClaim.getDefault().toBuilder()
             .referenceNumber(referenceNumberRepository.getReferenceNumberForCitizen())
@@ -136,10 +150,93 @@ public class CreateCitizenClaimCallbackHandlerTest {
         verify(caseMapper).to(claimArgumentCaptor.capture());
 
         Claim toBeSaved = claimArgumentCaptor.getValue();
-        assertThat(toBeSaved.getIssuedOn()).isEqualTo(ISSUE_DATE);
+        assertThat(toBeSaved.getIssuedOn()).contains(ISSUE_DATE);
         assertThat(toBeSaved.getServiceDate()).isEqualTo(ISSUE_DATE.plusDays(5));
         assertThat(toBeSaved.getReferenceNumber()).isEqualTo(REFERENCE_NO);
         assertThat(toBeSaved.getResponseDeadline()).isEqualTo(RESPONSE_DEADLINE);
+    }
+
+    @Test
+    public void shouldSuccessfullyReturnCallBackResponseWhenClaimIsHwfPending() {
+        caseDetails.setId(Long.valueOf(REFERENCE_NO_HWF));
+        callbackRequest = CallbackRequest.builder()
+            .eventId(CREATE_CITIZEN_CLAIM.getValue())
+            .caseDetails(caseDetails)
+            .build();
+
+        Claim claim = SampleHwfClaim.getDefaultHwfPending().toBuilder()
+            .id(Long.valueOf(REFERENCE_NO_HWF))
+            .referenceNumber(REFERENCE_NO_HWF)
+            .issuedOn(ISSUE_DATE)
+            .responseDeadline(RESPONSE_DEADLINE)
+            .claimData(withFullClaimData().getClaimData())
+            .build();
+
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+            .thenReturn(claim);
+
+        callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_SUBMIT)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
+
+        createCitizenClaimCallbackHandler.handle(callbackParams);
+
+        verify(caseMapper).to(claimArgumentCaptor.capture());
+
+        Claim toBeSaved = claimArgumentCaptor.getValue();
+        assertThat(toBeSaved.getReferenceNumber()).isEqualTo(REFERENCE_NO_HWF);
+    }
+
+    @Test
+    public void shouldSuccessfullyReturnCallBackResponseWhenClaimIsHwfAwaitingResponse() {
+
+        Claim claim = SampleHwfClaim.getDefaultAwaitingResponseHwf().toBuilder()
+            .id(Long.valueOf(REFERENCE_NO_HWF))
+            .referenceNumber(REFERENCE_NO_HWF)
+            .issuedOn(ISSUE_DATE)
+            .responseDeadline(RESPONSE_DEADLINE)
+            .claimData(withFullClaimData().getClaimData())
+            .build();
+
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+            .thenReturn(claim);
+
+        callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_SUBMIT)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
+
+        createCitizenClaimCallbackHandler.handle(callbackParams);
+
+        verify(caseMapper).to(claimArgumentCaptor.capture());
+
+        Claim toBeSaved = claimArgumentCaptor.getValue();
+        assertThat(toBeSaved.getReferenceNumber()).isEqualTo(REFERENCE_NO_HWF);
+    }
+
+    @Test
+    public void shouldSuccessfullyReturnCallBackResponseWhenUnSuccessfulPayment() {
+        when(paymentsService.retrievePayment(eq(BEARER_TOKEN), any(ClaimData.class)))
+            .thenReturn(Optional.of(paymentBuilder.status(FAILED).build()));
+
+        Claim claim = SampleClaim.withFullClaimDataAndFailedPayment();
+
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+            .thenReturn(claim);
+
+        callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_SUBMIT)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
+            createCitizenClaimCallbackHandler.handle(callbackParams);
+
+        assertThat(response.getErrors()).containsOnly("Payment not successful");
     }
 
     @Test
@@ -174,7 +271,35 @@ public class CreateCitizenClaimCallbackHandlerTest {
     }
 
     @Test
+    public void shouldThrowExceptionIfMissingPayment() {
+        when(paymentsService.retrievePayment(eq(BEARER_TOKEN), any(ClaimData.class)))
+            .thenReturn(Optional.empty());
+
+        Claim claim = SampleClaim.getDefault().toBuilder()
+            .claimData(withFullClaimData().getClaimData().toBuilder().payment(null).build())
+            .build();
+
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+            .thenReturn(claim);
+
+        callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_SUBMIT)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
+
+        assertThatThrownBy(() -> createCitizenClaimCallbackHandler.handle(callbackParams))
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessage(format("Claim with external id %s has no payment record", claim.getExternalId()));
+
+        verify(eventProducer, never()).createClaimCreatedEvent(
+            any(Claim.class),
+            anyString(),
+            anyString());
+    }
+
+    @Test
     public void shouldHaveCorrectCitizenRepSupportingRole() {
-        assertThat(createCitizenClaimCallbackHandler.getSupportedRoles()).containsOnly(CITIZEN);
+        assertThat(createCitizenClaimCallbackHandler.getSupportedRoles()).contains(CITIZEN, CASEWORKER);
     }
 }

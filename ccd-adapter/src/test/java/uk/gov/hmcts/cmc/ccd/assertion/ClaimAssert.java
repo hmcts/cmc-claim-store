@@ -56,7 +56,7 @@ public class ClaimAssert extends CustomAssert<ClaimAssert, Claim> {
 
         compare("issuedOn",
             expected.getIssuedOn(),
-            Optional.ofNullable(actual.getIssuedOn()));
+            actual.getIssuedOn());
 
         compare("submitterEmail",
             expected.getSubmitterEmail(),

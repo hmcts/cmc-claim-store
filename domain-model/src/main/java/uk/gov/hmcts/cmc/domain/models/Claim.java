@@ -30,7 +30,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
     value = {"totalClaimAmount", "totalAmountTillToday", "totalAmountTillDateOfIssue",
         "amountWithInterestUntilIssueDate", "totalInterestTillDateOfIssue", "totalInterest",
         "serviceDate", "amountWithInterest", "directionsQuestionnaireDeadline", "claimSubmissionOperationIndicators",
-        "proceedOfflineOtherReasonDescription"},
+        "proceedOfflineOtherReasonDescription", "lastEventTriggeredForHwfCase", "lastModified"},
     allowGetters = true
 )
 @Getter
@@ -88,6 +88,8 @@ public class Claim {
     private final List<BulkPrintDetails> bulkPrintDetails;
     private String directionOrderType;
     private BespokeOrderDirection bespokeOrderDirection;
+    private LocalDateTime lastModified;
+    private String lastEventTriggeredForHwfCase;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -122,7 +124,7 @@ public class Claim {
         ClaimDocumentCollection claimDocumentCollection,
         LocalDate claimantResponseDeadline,
         ClaimState state,
-        ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators,
+         ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators,
         Long ccdCaseId,
         ReviewOrder reviewOrder,
         DirectionOrder directionOrder,
@@ -140,7 +142,9 @@ public class Claim {
         YesNoOption evidenceHandled,
         List<BulkPrintDetails> bulkPrintDetails,
         String directionOrderType,
-        BespokeOrderDirection bespokeOrderDirection
+        BespokeOrderDirection bespokeOrderDirection,
+        LocalDateTime lastModified,
+        String lastEventTriggeredForHwfCase
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -191,6 +195,12 @@ public class Claim {
         this.bulkPrintDetails = bulkPrintDetails;
         this.directionOrderType = directionOrderType;
         this.bespokeOrderDirection = bespokeOrderDirection;
+        this.lastModified = lastModified;
+        this.lastEventTriggeredForHwfCase = lastEventTriggeredForHwfCase;
+    }
+
+    public Optional<LocalDate> getIssuedOn() {
+        return Optional.ofNullable(issuedOn);
     }
 
     public Optional<Response> getResponse() {
@@ -218,6 +228,11 @@ public class Claim {
                                                         ScannedDocumentSubtype subtype) {
         return Optional.ofNullable(claimDocumentCollection)
             .flatMap(c -> c.getScannedDocument(scannedDocumentType, subtype));
+    }
+
+    @JsonIgnore
+    public List<ScannedDocument> getScannedDocuments() {
+        return claimDocumentCollection.getScannedDocuments();
     }
 
     public LocalDate getServiceDate() {
@@ -252,6 +267,9 @@ public class Claim {
     }
 
     public Optional<BigDecimal> getTotalInterestTillDateOfIssue() {
+        if (issuedOn == null) {
+            return Optional.empty();
+        }
         return TotalAmountCalculator.calculateInterestForClaim(this, issuedOn);
     }
 

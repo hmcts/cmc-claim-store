@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,25 +23,34 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.ChannelType;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.Payment;
+import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.time.LocalDate;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.String.format;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_HWF_CASE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INVALID_HWF_REFERENCE;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.AWAITING_RESPONSE_HWF;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.HWF_APPLICATION_PENDING;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
 @Service
 @Conditional(FeesAndPaymentsConfiguration.class)
 public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
-    private static final List<CaseEvent> EVENTS = Collections.singletonList(CREATE_CITIZEN_CLAIM);
-    private static final List<Role> ROLES = Collections.singletonList(CITIZEN);
+    private static final List<CaseEvent> EVENTS = Arrays.asList(CREATE_CITIZEN_CLAIM,
+        CREATE_HWF_CASE, INVALID_HWF_REFERENCE);
+    private static final List<Role> ROLES = Arrays.asList(CITIZEN, CASEWORKER);
 
     private final ImmutableMap<CallbackType, Callback> callbacks = ImmutableMap.of(
         CallbackType.ABOUT_TO_SUBMIT, this::createCitizenClaim,
@@ -94,24 +104,49 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
     }
 
     private CallbackResponse createCitizenClaim(CallbackParams callbackParams) {
+        Claim updatedClaim = null;
         Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
         logger.info("Created citizen case for callback of type {}, claim with external id {}",
             callbackParams.getType(),
             claim.getExternalId());
-        logger.info("Payment not marked successful for claim with external id {}", claim.getExternalId());
-        LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
+        String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
 
-        Claim updatedClaim = claim.toBuilder()
-            .channel(ChannelType.CITIZEN)
-            .claimData(claim.getClaimData().toBuilder()
-                .build())
-            .referenceNumber(referenceNumberRepository.getReferenceNumberForCitizen())
-            .createdAt(LocalDateTimeFactory.nowInUTC())
-            .issuedOn(issuedOn)
-            .serviceDate(issuedOn.plusDays(5))
-            .responseDeadline(responseDeadlineCalculator.calculateResponseDeadline(issuedOn))
-            .build();
+        if (claim.getState().equals(HWF_APPLICATION_PENDING) || claim.getState().equals(AWAITING_RESPONSE_HWF)) {
+            updatedClaim = claim.toBuilder()
+                .channel(ChannelType.CITIZEN)
+                .claimData(claim.getClaimData().toBuilder()
+                    .build())
+                .referenceNumber(String.valueOf(claim.getId()))
+                .build();
+        } else {
+            Payment payment = paymentsService.retrievePayment(authorisation, claim.getClaimData())
+                .orElseThrow(() -> new IllegalStateException(format(
+                    "Claim with external id %s has no payment record",
+                    claim.getExternalId()))
+                );
 
+            if (payment.getStatus() != PaymentStatus.SUCCESS) {
+                logger.info("Payment not successful for claim with external id {}", claim.getExternalId());
+
+                return AboutToStartOrSubmitCallbackResponse.builder()
+                    .errors(ImmutableList.of("Payment not successful"))
+                    .build();
+            }
+
+            LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
+
+            updatedClaim = claim.toBuilder()
+                .channel(ChannelType.CITIZEN)
+                .claimData(claim.getClaimData().toBuilder()
+                    .payment(payment)
+                    .build())
+                .referenceNumber(referenceNumberRepository.getReferenceNumberForCitizen())
+                .createdAt(LocalDateTimeFactory.nowInUTC())
+                .issuedOn(issuedOn)
+                .serviceDate(issuedOn.plusDays(5))
+                .responseDeadline(responseDeadlineCalculator.calculateResponseDeadline(issuedOn))
+                .build();
+        }
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetailsConverter.convertToMap(caseMapper.to(updatedClaim)))
             .build();
@@ -124,11 +159,19 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
             claim.getExternalId());
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
         User user = userService.getUser(authorisation);
-        eventProducer.createClaimCreatedEvent(
-            claim,
-            user.getUserDetails().getFullName(),
-            authorisation
-        );
+        if (claim.getState().equals(AWAITING_RESPONSE_HWF)) {
+            eventProducer.createHwfClaimUpdatedEvent(
+                claim,
+                user.getUserDetails().getFullName(),
+                authorisation
+            );
+        } else {
+            eventProducer.createClaimCreatedEvent(
+                claim,
+                user.getUserDetails().getFullName(),
+                authorisation
+            );
+        }
         return SubmittedCallbackResponse.builder().build();
     }
 }

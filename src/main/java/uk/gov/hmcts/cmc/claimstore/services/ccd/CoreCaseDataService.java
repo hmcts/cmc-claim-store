@@ -54,6 +54,7 @@ import java.util.Optional;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CASE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_HWF_CASE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_LEGAL_REP_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
@@ -91,6 +92,7 @@ public class CoreCaseDataService {
 
     private static final String CCD_PAYMENT_CREATE_FAILURE_MESSAGE
         = "Failed creating a payment in CCD store for claim with external id %s on event %s";
+    private static final String USER_MUST_NOT_BE_NULL = "user must not be null";
 
     private static final String CCD_PAYMENT_UPDATE_FAILURE_MESSAGE
         = "Failed Updating a payment in CCD store for claim with external id %s on event %s";
@@ -140,7 +142,7 @@ public class CoreCaseDataService {
 
     @LogExecutionTime
     public Claim createNewCase(User user, Claim claim) {
-        requireNonNull(user, "user must not be null");
+        requireNonNull(user, USER_MUST_NOT_BE_NULL);
 
         CCDCase ccdCase = caseMapper.to(claim);
 
@@ -152,8 +154,17 @@ public class CoreCaseDataService {
     }
 
     @LogExecutionTime
+    public Claim createNewHelpWithFeesCase(User user, Claim claim) {
+        requireNonNull(user, USER_MUST_NOT_BE_NULL);
+
+        CCDCase ccdCase = caseMapper.to(claim);
+
+        return saveClaim(user, claim, ccdCase, CREATE_HWF_CASE);
+    }
+
+    @LogExecutionTime
     public Claim createRepresentedClaim(User user, Claim claim) {
-        requireNonNull(user, "user must not be null");
+        requireNonNull(user, USER_MUST_NOT_BE_NULL);
 
         CCDCase ccdCase = caseMapper.to(claim);
 
@@ -213,7 +224,7 @@ public class CoreCaseDataService {
         User user,
         Claim claim
     ) {
-        requireNonNull(user, "user must not be null");
+        requireNonNull(user, USER_MUST_NOT_BE_NULL);
 
         CCDCase ccdCase = caseMapper.to(claim);
 
@@ -690,9 +701,7 @@ public class CoreCaseDataService {
                 .defendantEmail(defendantEmail)
                 .defendantId(defendantId)
                 .build();
-
             CaseDataContent caseDataContent = caseDataContent(startEventResponse, updatedClaim);
-
             return submitUpdate(authorisation,
                 eventRequestData,
                 caseDataContent,

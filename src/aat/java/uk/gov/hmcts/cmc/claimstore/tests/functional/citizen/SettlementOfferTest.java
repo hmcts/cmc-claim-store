@@ -224,7 +224,7 @@ public class SettlementOfferTest extends BaseTest {
 
         User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
         commonOperations.linkDefendant(
-            defendant.getAuthorisation()
+            defendant.getAuthorisation(), createdCase.getLetterHolderId()
         );
 
         Claim updatedCase = countersignAnOffer(createdCase, defendant);
@@ -238,7 +238,7 @@ public class SettlementOfferTest extends BaseTest {
     private Claim createClaimWithDisputeResponse(Claim createdCase, User defendant) {
 
         commonOperations.linkDefendant(
-            defendant.getAuthorisation()
+            defendant.getAuthorisation(), createdCase.getLetterHolderId()
         );
 
         Response response = SampleResponse.FullDefence.builder()
@@ -257,7 +257,7 @@ public class SettlementOfferTest extends BaseTest {
 
         User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
         commonOperations.linkDefendant(
-            defendant.getAuthorisation()
+            defendant.getAuthorisation(), createdCase.getLetterHolderId()
         );
 
         Response response = SampleResponse.FullAdmission.builder().build();

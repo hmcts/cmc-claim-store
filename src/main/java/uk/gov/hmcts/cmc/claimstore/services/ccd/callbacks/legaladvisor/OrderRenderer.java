@@ -62,7 +62,8 @@ public class OrderRenderer {
             docAssemblyTemplateBodyMapper.from(ccdCase, userDetails), file);
     }
 
-    private DocAssemblyResponse renderBespokeOrder(CCDCase ccdCase, String authorisation, String templateId) {
+    private DocAssemblyResponse renderBespokeOrder(CCDCase ccdCase, String authorisation, String templateId,
+                                                   String file) {
         UserDetails userDetails = userService.getUserDetails(authorisation);
 
         logger.info("Rendering bespoke order template: {}, external id: {}", templateId, ccdCase.getExternalId());
@@ -70,7 +71,7 @@ public class OrderRenderer {
         return docAssemblyService.renderTemplate(ccdCase,
             authorisation,
             templateId,
-            docAssemblyTemplateBodyMapper.mapBespokeDirectionOrder(ccdCase, userDetails));
+            docAssemblyTemplateBodyMapper.mapBespokeDirectionOrder(ccdCase, userDetails), file);
     }
 
     public DocAssemblyResponse renderLegalAdvisorOrder(CCDCase ccdCase, String authorisation) {
@@ -84,7 +85,9 @@ public class OrderRenderer {
     }
 
     public DocAssemblyResponse renderJudgeBespokeOrder(CCDCase ccdCase, String authorisation) {
-        return renderBespokeOrder(ccdCase, authorisation, bespokeTemplateId);
+        final String caseReference = ccdCase.getPreviousServiceCaseReference();
+        return renderBespokeOrder(ccdCase, authorisation, bespokeTemplateId,
+            buildJudgeDirectionOrderFileName(caseReference));
     }
 
 }

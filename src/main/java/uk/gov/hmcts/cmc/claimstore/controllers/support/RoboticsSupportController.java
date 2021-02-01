@@ -98,7 +98,7 @@ public class RoboticsSupportController {
                     String fullName = userService.getUserDetails(authorisation).getFullName();
 
                     String userId = pinResponse.getUserId();
-                    claimService.linkLetterHolder(claim, userId, authorisation);
+                    claimService.linkLetterHolder(claim, userId);
 
                     documentGenerator.generateForCitizenRPA(
                         new CitizenClaimIssuedEvent(claim, pinResponse.getPin(), fullName, authorisation)
@@ -146,7 +146,7 @@ public class RoboticsSupportController {
                 Claim::isMoreTimeRequested,
                 claim -> moreTimeRequestedNotificationService.notifyRobotics(new MoreTimeRequestedEvent(
                     claim,
-                    responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn()),
+                    responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn().orElseThrow()),
                     claim.getDefendantEmail())),
                 "Failed to send more time request to RPA"
             )));
