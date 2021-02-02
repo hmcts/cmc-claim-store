@@ -107,33 +107,6 @@ public class ClaimantOperationServiceTest {
         );
     }
 
-    //@Test
-    public void shouldNotifyCitizenForAwaitingResponseHwf() {
-
-        //given
-        given(emailTemplates.getClaimantClaimIssuedWithHwfVerficationPending()).willReturn(CLAIMANT_EMAIL_TEMPLATE);
-
-        //when
-        claimantOperationService.notifyCitizen(CLAIM_HWF_AWAITING_RESPONSE, SUBMITTER_NAME, AUTHORISATION);
-        try {
-            given(notificationClient.sendEmail(CLAIMANT_EMAIL_TEMPLATE, CLAIM_HWF_AWAITING_RESPONSE.getSubmitterEmail(),
-                Mockito.any(), "hwf-claim-update-notification-" + CLAIM_HWF_AWAITING_RESPONSE.getReferenceNumber()))
-                .willReturn(Mockito.any(SendEmailResponse.class));
-        } catch (NotificationClientException e) {
-            e.printStackTrace();
-        }
-        HwfClaimNotificationService hwfClaimNotificationServiceObj
-            = new HwfClaimNotificationService(notificationClient, notificationsProperties, appInsights);
-        //verify
-        verify(hwfClaimNotificationServiceObj).sendMail(
-            CLAIM_HWF_AWAITING_RESPONSE,
-            CLAIM_HWF_AWAITING_RESPONSE.getSubmitterEmail(),
-            CLAIMANT_EMAIL_TEMPLATE,
-            "hwf-claim-update-notification-" + CLAIM_HWF_AWAITING_RESPONSE.getReferenceNumber(),
-            SUBMITTER_NAME
-        );
-    }
-
     @Test
     public void shouldNotifyCitizenForHwfPendingForMoreInfoRequired() {
         LocalDateTime todaysDateTime = LocalDateTime.now();
