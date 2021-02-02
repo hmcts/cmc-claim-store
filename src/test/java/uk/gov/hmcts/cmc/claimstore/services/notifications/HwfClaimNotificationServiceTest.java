@@ -7,12 +7,16 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.ccd.domain.HwFMoreInfoRequiredDocuments;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimForHwF;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -84,6 +88,28 @@ public class HwfClaimNotificationServiceTest extends BaseNotificationServiceTest
             eq(HWF_CLAIMANT_CLAIM_CREATED_TEMPLATE), anyString(), templateParameters.capture(), anyString());
 
         String name = claim.getClaimData().getClaimant().getName();
+
+        assertThat(templateParameters.getValue())
+            .containsEntry(NotificationTemplateParameters.CLAIMANT_NAME, name);
+    }
+
+    @Test
+    public void emailClaimantShouldPassNameInTemplateParametersForMoreInfo() throws Exception {
+        //    HwFMoreInfoRequiredDocuments
+        ClaimData claimData = claim.getClaimData();
+        ClaimData updatedClaimData = claimData.toBuilder().hwfMoreInfoNeededDocuments
+            (Arrays.asList(HwFMoreInfoRequiredDocuments.ANY_OTHER_INCOME.name())).build();
+        Claim claimLocal = SampleClaimForHwF.getDefault().toBuilder().respondedAt(LocalDateTime.now())
+            .lastEventTriggeredForHwfCase(MORE_INFO_REQUIRED_FOR_HWF.getValue())
+            .claimData(updatedClaimData)
+            .build();
+
+        service.sendMail(claimLocal, USER_EMAIL, HWF_CLAIMANT_CLAIM_CREATED_TEMPLATE, reference, USER_FULLNAME);
+
+        Mockito.verify(notificationClient).sendEmail(
+            eq(HWF_CLAIMANT_CLAIM_CREATED_TEMPLATE), anyString(), templateParameters.capture(), anyString());
+
+        String name = claimLocal.getClaimData().getClaimant().getName();
 
         assertThat(templateParameters.getValue())
             .containsEntry(NotificationTemplateParameters.CLAIMANT_NAME, name);

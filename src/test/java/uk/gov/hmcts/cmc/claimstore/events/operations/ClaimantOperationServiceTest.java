@@ -4,7 +4,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
@@ -12,12 +14,23 @@ import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimCreationEventsStatusService
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.HwfClaimNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimForHwF;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleHwfClaim;
+import uk.gov.service.notify.NotificationClient;
+import uk.gov.service.notify.NotificationClientException;
+import uk.gov.service.notify.SendEmailResponse;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_INFO_REQUIRED_FOR_HWF;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.AWAITING_RESPONSE_HWF;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.HWF_APPLICATION_PENDING;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClaimantOperationServiceTest {
@@ -43,6 +56,12 @@ public class ClaimantOperationServiceTest {
     private ClaimCreationEventsStatusService eventsStatusService;
     @Mock
     private HwfClaimNotificationService hwfClaimNotificationService;
+    @Mock
+    private NotificationClient notificationClient;
+    @Mock
+    private NotificationsProperties notificationsProperties;
+    @Mock
+    private AppInsights appInsights;
 
     @Before
     public void before() {
@@ -87,6 +106,57 @@ public class ClaimantOperationServiceTest {
             "hwf-claimant-issue-creation-notification-" + CLAIM_HWF_PENDING.getReferenceNumber(),
             SUBMITTER_NAME
         );
+    }
+
+    //@Test
+    public void shouldNotifyCitizenForAwaitingResponseHwf() {
+        HwfClaimNotificationService hwfClaimNotificationServiceObj
+            = new HwfClaimNotificationService(notificationClient, notificationsProperties, appInsights);
+        //given
+        given(emailTemplates.getClaimantClaimIssuedWithHwfVerficationPending()).willReturn(CLAIMANT_EMAIL_TEMPLATE);
+
+        //when
+        claimantOperationService.notifyCitizen(CLAIM_HWF_AWAITING_RESPONSE, SUBMITTER_NAME, AUTHORISATION);
+        try {
+            given(notificationClient.sendEmail(CLAIMANT_EMAIL_TEMPLATE, CLAIM_HWF_AWAITING_RESPONSE.getSubmitterEmail(),
+                Mockito.any(), "hwf-claim-update-notification-" + CLAIM_HWF_AWAITING_RESPONSE.getReferenceNumber()))
+                .willReturn(Mockito.any(SendEmailResponse.class));
+        } catch (NotificationClientException e) {
+
+        }
+        //verify
+        verify(hwfClaimNotificationServiceObj).sendMail(
+            CLAIM_HWF_AWAITING_RESPONSE,
+            CLAIM_HWF_AWAITING_RESPONSE.getSubmitterEmail(),
+            CLAIMANT_EMAIL_TEMPLATE,
+            "hwf-claim-update-notification-" + CLAIM_HWF_AWAITING_RESPONSE.getReferenceNumber(),
+            SUBMITTER_NAME
+        );
+    }
+
+    @Test
+    public void shouldNotifyCitizenForHwfPendingForMoreInfoRequired() {
+        LocalDateTime todaysDateTime = LocalDateTime.now();
+        Claim CLAIM_HWF_PENDING_NW = SampleClaimForHwF.getDefault().toBuilder().respondedAt(todaysDateTime)
+            .lastEventTriggeredForHwfCase(MORE_INFO_REQUIRED_FOR_HWF.getValue()).build();
+
+        //when
+        claimantOperationService.notifyCitizen(CLAIM_HWF_PENDING_NW, SUBMITTER_NAME, AUTHORISATION);
+
+        assertThat(CLAIM_HWF_PENDING_NW.getState().equals(HWF_APPLICATION_PENDING));
+    }
+
+    @Test
+    public void shouldNotifyCitizenForHwfPendingForMoreInfoRequired1() {
+        LocalDateTime todaysDateTime = LocalDateTime.now();
+        Claim CLAIM_HWF_PENDING_NW = SampleClaimForHwF.getDefault().toBuilder().respondedAt(todaysDateTime)
+            .state(AWAITING_RESPONSE_HWF)
+            .lastEventTriggeredForHwfCase(MORE_INFO_REQUIRED_FOR_HWF.getValue()).build();
+
+        //when
+        claimantOperationService.notifyCitizen(CLAIM_HWF_PENDING_NW, SUBMITTER_NAME, AUTHORISATION);
+
+        assertThat(CLAIM_HWF_PENDING_NW.getState().equals(AWAITING_RESPONSE_HWF));
     }
 
     @Test
