@@ -9,12 +9,17 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimForHwF;
 import uk.gov.service.notify.NotificationClientException;
+
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_INFO_REQUIRED_FOR_HWF;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NOTIFICATION_FAILURE;
 
@@ -29,6 +34,8 @@ public class HwfClaimNotificationServiceTest extends BaseNotificationServiceTest
 
     @Before
     public void beforeEachTest() {
+        claim = SampleClaimForHwF.getDefault().toBuilder().respondedAt(LocalDateTime.now())
+            .lastEventTriggeredForHwfCase(MORE_INFO_REQUIRED_FOR_HWF.getValue()).build();
         service = new HwfClaimNotificationService(notificationClient, properties, appInsights);
         Mockito.when(properties.getFrontendBaseUrl()).thenReturn(FRONTEND_BASE_URL);
         Mockito.when(properties.getRespondToClaimUrl()).thenReturn(RESPOND_TO_CLAIM_URL);
