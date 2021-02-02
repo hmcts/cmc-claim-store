@@ -15,9 +15,9 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.email.sendgrid.SendGridClient;
 import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 
+import java.io.IOException;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.io.IOException;
 
 import static java.util.Collections.singletonMap;
 
