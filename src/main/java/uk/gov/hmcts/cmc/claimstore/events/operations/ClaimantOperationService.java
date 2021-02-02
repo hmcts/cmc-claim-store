@@ -9,7 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.HwfClaimNotificationSe
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_HWF_CASE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_INFO_REQUIRED_FOR_HWF;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SENDING_CLAIMANT_NOTIFICATION;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.AWAITING_RESPONSE_HWF;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.HWF_APPLICATION_PENDING;
@@ -45,15 +45,26 @@ public class ClaimantOperationService {
                 "hwf-claimant-issue-creation-notification-" + claim.getReferenceNumber(),
                 submitterName
             );
-            return eventsStatusService.updateClaimOperationCompletion(authorisation, claim, CREATE_HWF_CASE);
+            return claim;
         } else if (claim.getState().equals(AWAITING_RESPONSE_HWF)) {
-            hwfClaimNotificationService.sendMail(
-                claim,
-                claim.getSubmitterEmail(),
-                notificationsProperties.getTemplates().getEmail().getClaimantHwfUpdate(),
-                "hwf-claim-update-notification-" + claim.getReferenceNumber(),
-                submitterName
-            );
+            if (claim.getLastEventTriggeredForHwfCase() != null
+                && claim.getLastEventTriggeredForHwfCase().equals(MORE_INFO_REQUIRED_FOR_HWF.getValue())) {
+                hwfClaimNotificationService.sendMail(
+                    claim,
+                    claim.getSubmitterEmail(),
+                    notificationsProperties.getTemplates().getEmail().getClaimantHwfMoreInfoRequired(),
+                    "hwf-claim-update-notification-" + claim.getReferenceNumber(),
+                    submitterName
+                );
+            } else {
+                hwfClaimNotificationService.sendMail(
+                    claim,
+                    claim.getSubmitterEmail(),
+                    notificationsProperties.getTemplates().getEmail().getClaimantHwfUpdate(),
+                    "hwf-claim-update-notification-" + claim.getReferenceNumber(),
+                    submitterName
+                );
+            }
             return claim;
         } else {
             claimIssuedNotificationService.sendMail(

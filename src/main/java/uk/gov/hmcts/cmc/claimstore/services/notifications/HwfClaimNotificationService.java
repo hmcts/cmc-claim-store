@@ -8,6 +8,7 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.HwFMoreInfoRequiredDocuments;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
@@ -17,11 +18,17 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.party.NamedParty;
 import uk.gov.hmcts.cmc.domain.models.party.TitledParty;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
+import uk.gov.hmcts.cmc.rpa.DateFormatter;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_INFO_REQUIRED_FOR_HWF;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_TYPE;
@@ -29,6 +36,8 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.DEFENDANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.ISSUED_ON;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.MORE_INFO_DOCUMENT_LIST;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.RESPOND_TO_CLAIM_URL;
 
 @Service
@@ -100,6 +109,14 @@ public class HwfClaimNotificationService {
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
         parameters.put(RESPOND_TO_CLAIM_URL, notificationsProperties.getRespondToClaimUrl());
         parameters.put(EXTERNAL_ID, claim.getExternalId());
+        if (claim.getLastEventTriggeredForHwfCase() != null
+            && claim.getLastEventTriggeredForHwfCase().equals(MORE_INFO_REQUIRED_FOR_HWF.getValue())) {
+            parameters.put(MORE_INFO_DOCUMENT_LIST, createHwfMoreInfoDocumentsListFromClaimData(claim));
+            Optional<LocalDate> claimIssuedOn = claim.getIssuedOn();
+            if (claimIssuedOn.isPresent()) {
+                parameters.put(ISSUED_ON, DateFormatter.format(claimIssuedOn.get()));
+            }
+        }
         return parameters.build();
     }
 
@@ -110,6 +127,25 @@ public class HwfClaimNotificationService {
         }
 
         return title.append(party.getName()).toString();
+    }
+
+    private String createHwfMoreInfoDocumentsListFromClaimData(Claim claim) {
+        List<String> moreInfoNeededDocumentsList = claim.getClaimData().getHwfMoreInfoNeededDocuments();
+        StringBuilder documents = new StringBuilder();
+        List<HwFMoreInfoRequiredDocuments> enumList = Arrays.asList(HwFMoreInfoRequiredDocuments.values());
+
+        enumList.forEach(hwFMoreInfoRequiredDocument -> {
+            if (moreInfoNeededDocumentsList.contains(hwFMoreInfoRequiredDocument.name())) {
+                if (hwFMoreInfoRequiredDocument.name()
+                    .equals(HwFMoreInfoRequiredDocuments.ANY_OTHER_INCOME.name())) {
+                    documents.append("•\t ").append(moreInfoNeededDocumentsList
+                        .get(moreInfoNeededDocumentsList.size() - 1));
+                } else {
+                    documents.append(hwFMoreInfoRequiredDocument.getDescription());
+                }
+            }
+        });
+        return documents.toString();
     }
 
 }
