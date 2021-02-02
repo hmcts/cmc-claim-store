@@ -877,7 +877,14 @@ public class SampleData {
                         .beSpokeDirectionFor(CCDDirectionPartyType.BOTH)
                         .beSpokeDirectionExplain("third direction")
                         .beSpokeDirectionDatetime(LocalDate.of(2020, 8, 4))
+                        .build()).build(),
+            CCDCollectionElement.<CCDBespokeOrderDirection>builder()
+                .value(
+                    CCDBespokeOrderDirection.builder()
+                        .beSpokeDirectionFor(CCDDirectionPartyType.NOT_EITHER)
+                        .beSpokeDirectionExplain("fourth direction")
+                        .beSpokeDirectionDatetime(LocalDate.of(2020, 8, 4))
                         .build()).build()
-            );
+        );
     }
 }
