@@ -51,7 +51,7 @@ public class EmailService {
 
     @Retryable(value = EmailSendFailedException.class, backoff = @Backoff(delay = 100, maxDelay = 500))
     public void sendEmail(String from, EmailData emailData) {
-        if (false) {
+        if (launchDarklyClient.isFeatureEnabled("sendgrid-roc-7497", LaunchDarklyClient.CLAIM_STORE_USER)) {
             sendEmailSendGrid(from, emailData);
         } else {
             sendEmailMTA(from, emailData);
