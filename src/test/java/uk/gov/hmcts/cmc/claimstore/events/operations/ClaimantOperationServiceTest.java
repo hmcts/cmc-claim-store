@@ -20,10 +20,9 @@ import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.time.LocalDateTime;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -110,8 +109,7 @@ public class ClaimantOperationServiceTest {
 
     //@Test
     public void shouldNotifyCitizenForAwaitingResponseHwf() {
-        HwfClaimNotificationService hwfClaimNotificationServiceObj
-            = new HwfClaimNotificationService(notificationClient, notificationsProperties, appInsights);
+
         //given
         given(emailTemplates.getClaimantClaimIssuedWithHwfVerficationPending()).willReturn(CLAIMANT_EMAIL_TEMPLATE);
 
@@ -122,8 +120,10 @@ public class ClaimantOperationServiceTest {
                 Mockito.any(), "hwf-claim-update-notification-" + CLAIM_HWF_AWAITING_RESPONSE.getReferenceNumber()))
                 .willReturn(Mockito.any(SendEmailResponse.class));
         } catch (NotificationClientException e) {
-
+            e.printStackTrace();
         }
+        HwfClaimNotificationService hwfClaimNotificationServiceObj
+            = new HwfClaimNotificationService(notificationClient, notificationsProperties, appInsights);
         //verify
         verify(hwfClaimNotificationServiceObj).sendMail(
             CLAIM_HWF_AWAITING_RESPONSE,
@@ -137,26 +137,27 @@ public class ClaimantOperationServiceTest {
     @Test
     public void shouldNotifyCitizenForHwfPendingForMoreInfoRequired() {
         LocalDateTime todaysDateTime = LocalDateTime.now();
-        Claim CLAIM_HWF_PENDING_NW = SampleClaimForHwF.getDefault().toBuilder().respondedAt(todaysDateTime)
+        Claim updatedClaim = SampleClaimForHwF.getDefault().toBuilder().respondedAt(todaysDateTime)
             .lastEventTriggeredForHwfCase(MORE_INFO_REQUIRED_FOR_HWF.getValue()).build();
 
         //when
-        claimantOperationService.notifyCitizen(CLAIM_HWF_PENDING_NW, SUBMITTER_NAME, AUTHORISATION);
+        claimantOperationService.notifyCitizen(updatedClaim, SUBMITTER_NAME, AUTHORISATION);
 
-        assertThat(CLAIM_HWF_PENDING_NW.getState().equals(HWF_APPLICATION_PENDING));
+        assertThat(updatedClaim.getState().equals(HWF_APPLICATION_PENDING));
     }
 
     @Test
     public void shouldNotifyCitizenForHwfPendingForMoreInfoRequired1() {
         LocalDateTime todaysDateTime = LocalDateTime.now();
-        Claim CLAIM_HWF_PENDING_NW = SampleClaimForHwF.getDefault().toBuilder().respondedAt(todaysDateTime)
+        Claim hwfClaimApplicationPendingStateObj = SampleClaimForHwF.getDefault()
+            .toBuilder().respondedAt(todaysDateTime)
             .state(AWAITING_RESPONSE_HWF)
             .lastEventTriggeredForHwfCase(MORE_INFO_REQUIRED_FOR_HWF.getValue()).build();
 
         //when
-        claimantOperationService.notifyCitizen(CLAIM_HWF_PENDING_NW, SUBMITTER_NAME, AUTHORISATION);
+        claimantOperationService.notifyCitizen(hwfClaimApplicationPendingStateObj, SUBMITTER_NAME, AUTHORISATION);
 
-        assertThat(CLAIM_HWF_PENDING_NW.getState().equals(AWAITING_RESPONSE_HWF));
+        assertThat(hwfClaimApplicationPendingStateObj.getState().equals(AWAITING_RESPONSE_HWF));
     }
 
     @Test

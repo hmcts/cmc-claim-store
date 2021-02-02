@@ -97,8 +97,8 @@ public class HwfClaimNotificationServiceTest extends BaseNotificationServiceTest
     public void emailClaimantShouldPassNameInTemplateParametersForMoreInfo() throws Exception {
         //    HwFMoreInfoRequiredDocuments
         ClaimData claimData = claim.getClaimData();
-        ClaimData updatedClaimData = claimData.toBuilder().hwfMoreInfoNeededDocuments
-            (Arrays.asList(HwFMoreInfoRequiredDocuments.ANY_OTHER_INCOME.name())).build();
+        ClaimData updatedClaimData = claimData.toBuilder()
+            .hwfMoreInfoNeededDocuments(Arrays.asList(HwFMoreInfoRequiredDocuments.ANY_OTHER_INCOME.name())).build();
         Claim claimLocal = SampleClaimForHwF.getDefault().toBuilder().respondedAt(LocalDateTime.now())
             .lastEventTriggeredForHwfCase(MORE_INFO_REQUIRED_FOR_HWF.getValue())
             .claimData(updatedClaimData)
