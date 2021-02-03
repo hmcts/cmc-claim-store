@@ -60,7 +60,7 @@ quartzProperties:
 
 idam:
   api:
-    url: "http://localhost:8080"
+    url: "http://localhost:5000"
   s2s-auth:
     url: "http://localhost:4552"
     totp_secret: "AAAAAAAAAAAAAAAA"
@@ -93,7 +93,7 @@ pdf-service:
   url: "${PDF_SERVICE_URL:}"
 
 document_management:
-  url: ${DOCUMENT_MANAGEMENT_URL}
+  url: "${DOCUMENT_MANAGEMENT_URL:}"
   userRoles: ${DOCUMENT_MANAGEMENT_USERROLES}
 
 core_case_data:
@@ -138,9 +138,15 @@ milo:
 
 schedule:
   transfer-claims: ""
+  close-hwf-claims-in-awaiting-state: "${SCHEDULE_CLOSE_HWF_CLAIMS_IN_AWAITING_STATE:}"
   state-transition:
     waiting-transfer: ""
     stay-claim: ""
+
+
+hwfCaseWorkerRespondSla:
+  timeForResponseInDays: 5
+  endOfBusinessDayHour: 16
 
 dateCalculations:
   endOfBusinessDayHour: 16
@@ -158,7 +164,8 @@ dateCalculations:
 
 directionDeadline:
   changeDate: "2020-07-27T11:00:00"
-  numberOfDays: 7
+  onlineNumberOfDays: 7
+  oconNumberOfDays: 12
 
 notifications:
   govNotifyApiKey: ${GOV_NOTIFY_API_KEY:}
@@ -167,6 +174,9 @@ notifications:
   templates:
     email:
       claimantClaimIssued: "f034e121-e9d4-441a-91b9-52d0c7d14d73"
+      claimantClaimIssuedWithHwfVerficationPending: "61193c4e-b1f8-4780-8567-21476bdbfc44"
+      claimantHwfUpdate: "5ed7ad39-4ab0-4832-afe2-30d5385abfcf"
+      claimantHwfMoreInfoRequired: "2e678370-ed56-4971-b9d9-3b195e3229ef"
       defendantClaimIssued: "b261ef40-ca55-4f36-b8ff-7f1f34347058"
       defendantResponseIssued: "128bfa11-0b09-4162-bb1e-36fa167af191"
       defendantResponseNeeded: "15f9985a-1775-4f64-a6c7-7616bdbabb1c"
@@ -216,7 +226,13 @@ notifications:
       defendantReadyForTransfer: "487fdd65-131e-4547-a3ed-f632872fe957"
       claimantMediationFailureOfflineDQ: "55d06073-0b81-4daf-a3b4-1698c7810189"
       defendantMediationFailureOfflineDQ: "15a38762-2141-4a70-8cc9-22a27db985bc"
-      claimantPaperResponseReceived: "b8bc5ed5-3362-4bcc-b678-c4298f149560"
+      paperResponseFormReceived: "b8bc5ed5-3362-4bcc-b678-c4298f149560"
+      paperResponseReceivedAndCaseTransferredToCCBC: "f93c9fda-e606-4587-bd9b-babf9f81046e"
+      paperResponseFromClaimantCaseHandoverToCCBC: "6dee0d12-3794-47b6-bbf4-95f797d819a9"
+      paperResponseFromDefendantCaseHandoverToCCBC: "28cfdcc2-387d-4e8d-8d96-ed1b32b7538d"
+      paperResponseFromClaimantGeneralLetter: "49920be9-c328-4a4e-ac2d-e488cf83b683"
+      paperResponseFromDefendantGeneralLetter: "b60a6eaa-2032-491e-b17d-340004879a2d"
+      paperResponseFormReceivedForCcjRequest: "b2939b4e-6d87-4203-a0d0-ff7ab676d24b"
       defendantContactDetailsChanged: "39b8c7a0-6d8a-4bee-8b79-e0f1df73d249"
       claimantContactDetailsChanged: "bc227831-a2f5-4399-bfa4-06a392bc5a80"
       caseTransferToCourt: "841843ef-2d49-4c6b-8179-6e42443e049d"
@@ -260,3 +276,5 @@ smoke-test-citizen:
   password: "${SMOKE_TEST_USER_PASSWORD:}"
 smoke-test-solicitor:
   password: "${SMOKE_TEST_USER_PASSWORD:}"
+
+

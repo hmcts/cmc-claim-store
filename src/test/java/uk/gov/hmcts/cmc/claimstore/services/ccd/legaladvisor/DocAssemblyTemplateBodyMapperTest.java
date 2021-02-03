@@ -21,6 +21,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.GeneralLetterContent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseMethod;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDBespokeOrderWarning;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
@@ -34,12 +35,11 @@ import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 
 import java.time.Clock;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Collections;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -48,6 +48,7 @@ import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.BOTH;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.CLAIMANT;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.DEFENDANT;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.NOT_EITHER;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType.FOUR_HOURS;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EXPERT_REPORT_PERMISSION;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.OTHER;
@@ -69,7 +70,8 @@ class DocAssemblyTemplateBodyMapperTest {
     @Mock
     private ResponseDeadlineCalculator responseDeadlineCalculator;
 
-    @Captor ArgumentCaptor<LocalDate> workingDayIndicate;
+    @Captor
+    ArgumentCaptor<LocalDate> workingDayIndicate;
 
     private DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
     private CCDCase ccdCase;
@@ -178,6 +180,7 @@ class DocAssemblyTemplateBodyMapperTest {
             .expertReportInstructionClaimant(Collections.emptyList())
             .expertReportInstructionDefendant(Collections.emptyList())
             .grantExpertReportPermission(true)
+            .oconResponse(false)
             .expertReportInstruction(SUBMIT_MORE_DOCS_INSTRUCTION);
     }
 
@@ -325,37 +328,6 @@ class DocAssemblyTemplateBodyMapperTest {
         }
 
         @Test
-        void shouldMapDirectionDeadLineBefore() {
-            ReflectionTestUtils.setField(docAssemblyTemplateBodyMapper, "directionDeadLineNumberOfDays", 7);
-            ReflectionTestUtils.setField(docAssemblyTemplateBodyMapper, "directionDeadlineChangeDate",
-                "2018-06-27T11:00:00");
-            when(workingDayIndicator.getNextWorkingDay(any())).thenReturn(LocalDate.parse("2020-07-28"));
-            DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
-                ccdCase,
-                userDetails
-            );
-            verify(workingDayIndicator, times(2)).getNextWorkingDay(workingDayIndicate.capture());
-            assertEquals(LocalDate.parse("2019-05-01"), workingDayIndicate.getAllValues().get(0));
-
-        }
-
-        @Test
-        void shouldMapDirectionDeadLineAfter() {
-
-            ReflectionTestUtils.setField(docAssemblyTemplateBodyMapper, "directionDeadLineNumberOfDays", 7);
-            ReflectionTestUtils.setField(docAssemblyTemplateBodyMapper, "directionDeadlineChangeDate",
-                LocalDateTime.now().plusDays(2).toString());
-            when(workingDayIndicator.getNextWorkingDay(any())).thenReturn(LocalDate.parse("2020-07-28"));
-            DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
-                ccdCase,
-                userDetails
-            );
-            verify(workingDayIndicator, times(2)).getNextWorkingDay(workingDayIndicate.capture());
-            assertEquals(LocalDate.parse("2019-05-13"), workingDayIndicate.getAllValues().get(0));
-
-        }
-
-        @Test
         void shouldMapTemplateBodyWhenOtherDirectionIsNull() {
             ccdCase = SampleData.addCCDOrderGenerationData(ccdCase).toBuilder()
                 .otherDirections(ImmutableList.of(CCDCollectionElement
@@ -375,6 +347,61 @@ class DocAssemblyTemplateBodyMapperTest {
             assertThat(requestBody).isEqualTo(expectedBody);
             verify(directionOrderService).getHearingCourt(any());
         }
+
+        @Test
+        void shouldMapTemplateBodyWithOconResponse() {
+            ReflectionTestUtils.setField(docAssemblyTemplateBodyMapper, "reconsiderationDaysForOconResponse", 12);
+            ReflectionTestUtils.setField(docAssemblyTemplateBodyMapper, "reconsiderationDaysForOnlineResponse", 7);
+            LocalDate now = LocalDate.now();
+            CCDRespondent ccdRespondentIndividual = SampleData.getCCDRespondentIndividual()
+                .toBuilder()
+                .responseDeadline(now)
+                .responseMethod(CCDResponseMethod.OCON_FORM)
+                .build();
+            ccdCase.setRespondents(
+                ImmutableList.of(
+                    CCDCollectionElement.<CCDRespondent>builder()
+                        .value(ccdRespondentIndividual)
+                        .build()
+                ));
+
+            docAssemblyTemplateBodyBuilder.oconResponse(true);
+            DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
+                ccdCase,
+                userDetails
+            );
+            DocAssemblyTemplateBody expectedBody = docAssemblyTemplateBodyBuilder.build();
+            assertThat(requestBody).isEqualTo(expectedBody);
+            verify(workingDayIndicator, times(3)).getNextWorkingDay(workingDayIndicate.capture());
+            assertEquals(LocalDate.parse("2019-05-01"), workingDayIndicate.getAllValues().get(0));
+            assertEquals(LocalDate.parse("2019-05-06"), workingDayIndicate.getAllValues().get(1));
+
+        }
+
+        @Test
+        void shouldMapTemplateBodyWithOnlineResponse() {
+            LocalDate now = LocalDate.now();
+            CCDRespondent ccdRespondentIndividual = SampleData.getCCDRespondentIndividual()
+                .toBuilder()
+                .responseDeadline(now)
+                .responseMethod(CCDResponseMethod.DIGITAL)
+                .build();
+            ccdCase.setRespondents(
+                ImmutableList.of(
+                    CCDCollectionElement.<CCDRespondent>builder()
+                        .value(ccdRespondentIndividual)
+                        .build()
+                ));
+            DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
+                ccdCase,
+                userDetails
+            );
+
+            docAssemblyTemplateBodyBuilder.oconResponse(false);
+            DocAssemblyTemplateBody expectedBody = docAssemblyTemplateBodyBuilder.build();
+            assertThat(requestBody).isEqualTo(expectedBody);
+        }
+
     }
 
     @Nested
@@ -761,6 +788,12 @@ class DocAssemblyTemplateBodyMapperTest {
                             .builder()
                             .directionComment("third direction")
                             .forParty(BOTH)
+                            .sendBy(LocalDate.parse("2020-08-04"))
+                            .build(),
+                        BespokeDirection
+                            .builder()
+                            .directionComment("fourth direction")
+                            .forParty(NOT_EITHER)
                             .sendBy(LocalDate.parse("2020-08-04"))
                             .build()))
                 .build();

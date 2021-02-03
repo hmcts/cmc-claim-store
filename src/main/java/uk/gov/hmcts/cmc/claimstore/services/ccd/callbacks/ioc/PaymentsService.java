@@ -122,7 +122,7 @@ public class PaymentsService {
             claimPayment.getReturnUrl(),
             serviceCallBackUrl
         );
-        logger.info("Created payment for claim with external id {}: {}", claim.getExternalId(), payment);
+        logger.info("Created payment for claim with external id {}", claim.getExternalId());
 
         payment.setAmount(feeOutcome.getFeeAmount());
         return from(payment, claimPayment);

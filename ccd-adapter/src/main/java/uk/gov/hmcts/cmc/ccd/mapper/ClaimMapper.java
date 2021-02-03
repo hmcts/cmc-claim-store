@@ -102,6 +102,31 @@ public class ClaimMapper {
         claimData.getFeeAmountInPennies()
             .map(BigInteger::toString)
             .ifPresent(builder::feeAmountInPennies);
+        claimData.getFeeRemitted()
+            .map(BigInteger::toString)
+            .ifPresent(builder::feeRemitted);
+
+        claimData.getFeeAmountAfterRemission()
+            .map(BigInteger::toString)
+            .ifPresent(builder::feeAmountAfterRemission);
+
+        claimData.getHelpWithFeesNumber()
+            .ifPresent(builder::helpWithFeesNumber);
+
+        claimData.getMoreInfoDetails()
+            .ifPresent(builder::moreInfoDetails);
+
+        claimData.gethelpWithFeesType()
+            .ifPresent(builder::helpWithFeesType);
+
+        claimData.getHwfFeeDetailsSummary()
+            .ifPresent(builder::hwfFeeDetailsSummary);
+
+        claimData.getHwfMandatoryDetails()
+            .ifPresent(builder::hwfMandatoryDetails);
+
+        builder.hwfMoreInfoNeededDocuments(claimData.getHwfMoreInfoNeededDocuments());
+        builder.hwfDocumentsToBeSentBefore(claimData.getHwfDocumentsToBeSentBefore());
 
         builder
             .reason(claimData.getReason());
@@ -117,6 +142,11 @@ public class ClaimMapper {
         List<Party> claimants = asStream(ccdCase.getApplicants())
             .map(claimantMapper::from)
             .collect(Collectors.toList());
+        if (ccdCase.getHwfProvideDocumentName() != null) {
+            ccdCase.getHwfMoreInfoNeededDocuments()
+                .add(ccdCase.getHwfProvideDocumentName());
+        }
+
         claimBuilder.claimData(
             new ClaimData(
                 UUID.fromString(ccdCase.getExternalId()),
@@ -125,6 +155,8 @@ public class ClaimMapper {
                 paymentMapper.from(ccdCase),
                 amountMapper.from(ccdCase),
                 createBigInteger(ccdCase.getFeeAmountInPennies()),
+                createBigInteger(ccdCase.getFeeRemitted()),
+                createBigInteger(ccdCase.getFeeAmountAfterRemission()),
                 interestMapper.from(ccdCase),
                 personalInjuryMapper.from(ccdCase),
                 housingDisrepairMapper.from(ccdCase),
@@ -135,8 +167,14 @@ public class ClaimMapper {
                 ccdCase.getPreferredCourt(),
                 ccdCase.getFeeCode(),
                 timelineMapper.from(ccdCase),
-                evidenceMapper.from(ccdCase)
-            )
+                evidenceMapper.from(ccdCase),
+                ccdCase.getHelpWithFeesNumber(),
+                ccdCase.getMoreInfoDetails(),
+                ccdCase.getHelpWithFeesType(),
+                ccdCase.getHwfFeeDetailsSummary(),
+                ccdCase.getHwfMandatoryDetails(),
+                ccdCase.getHwfMoreInfoNeededDocuments(),
+                ccdCase.getHwfDocumentsToBeSentBefore())
         );
     }
 

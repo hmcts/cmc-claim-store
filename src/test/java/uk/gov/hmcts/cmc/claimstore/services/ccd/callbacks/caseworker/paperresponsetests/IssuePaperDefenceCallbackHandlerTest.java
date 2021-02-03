@@ -9,15 +9,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
-import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
+import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
-import uk.gov.hmcts.cmc.claimstore.rules.ClaimDeadlineService;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
@@ -48,28 +46,10 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
 @ExtendWith(MockitoExtension.class)
 class IssuePaperDefenceCallbackHandlerTest {
-    private static final String DOC_URL = "http://success.test";
-    private static final String DOC_URL_BINARY = "http://success.test/binary";
-    private static final String DOC_NAME = "doc-name";
-    private static final LocalDateTime DATE = LocalDateTime.parse("2020-11-16T13:15:30");
-    private static final CCDDocument DOCUMENT = CCDDocument
-        .builder()
-        .documentUrl(DOC_URL)
-        .documentBinaryUrl(DOC_URL_BINARY)
-        .documentFileName(DOC_NAME)
-        .build();
-    private static final CCDCollectionElement<CCDClaimDocument> CLAIM_DOCUMENT =
-        CCDCollectionElement.<CCDClaimDocument>builder()
-            .value(CCDClaimDocument.builder()
-                .documentLink(DOCUMENT)
-                .createdDatetime(DATE)
-                .documentType(CCDClaimDocumentType.GENERAL_LETTER)
-                .build())
-            .build();
     private static final String ERROR_MESSAGE = "There was a technical problem. Nothing has been sent."
         + " You need to try again.";
-    private static final String DEFENDANT_MISSED_DEADLINE =
-        "Defendant did not respond by deadline so paper form cannot be issued.";
+    private static final String CLAIMANT_ISSUED_CCJ =
+        "OCON9x form cannot be sent out as CCJ already issued by claimant.";
     private static final String AUTHORISATION = "auth";
 
     @Mock
@@ -82,14 +62,11 @@ class IssuePaperDefenceCallbackHandlerTest {
     private DocumentPublishService documentPublishService;
     @Mock
     private IssuePaperResponseNotificationService issuePaperResponseNotificationService;
-    @Mock
-    private ClaimDeadlineService claimDeadlineService;
 
     private Claim claim;
     private CallbackRequest callbackRequest;
     private IssuePaperDefenceCallbackHandler issuePaperDefenceCallbackHandler;
     private CCDCase ccdCase;
-    private CallbackParams callbackParams;
 
     @BeforeEach
     void setUp() {
@@ -98,8 +75,7 @@ class IssuePaperDefenceCallbackHandlerTest {
             responseDeadlineCalculator,
             issueDateCalculator,
             issuePaperResponseNotificationService,
-            documentPublishService,
-            claimDeadlineService
+            documentPublishService
         );
         claim = Claim.builder()
             .claimData(SampleClaimData.builder().build())
@@ -107,6 +83,7 @@ class IssuePaperDefenceCallbackHandlerTest {
             .defendantId("id")
             .submitterEmail("email@email.com")
             .referenceNumber("ref. number")
+            .issuedOn(LocalDate.now())
             .build();
         //not working??
     }
@@ -178,6 +155,7 @@ class IssuePaperDefenceCallbackHandlerTest {
             .respondents(ImmutableList.of(CCDCollectionElement.<CCDRespondent>builder()
                 .value(ccdCase.getRespondents().get(0).getValue().toBuilder()
                     .paperFormServedDate(LocalDate.now())
+                    .countyCourtJudgmentRequest(null)
                     .build())
                 .build()))
             .extendedResponseDeadline(LocalDate.now())
@@ -210,11 +188,16 @@ class IssuePaperDefenceCallbackHandlerTest {
 
     @Test
     void shouldHandleAboutToSubmitCallbackMoreTimeRequested() {
+        CCDCountyCourtJudgment ccdCountyCourtJudgment = CCDCountyCourtJudgment.builder()
+            .type(CCDCountyCourtJudgmentType.DETERMINATION)
+            .build();
         ccdCase = CCDCase.builder()
             .previousServiceCaseReference("000MC001")
             .respondents(ImmutableList.of(
                 CCDCollectionElement.<CCDRespondent>builder()
-                    .value(SampleData.getIndividualRespondentWithDQInClaimantResponse())
+                    .value(SampleData.getIndividualRespondentWithDQInClaimantResponse().toBuilder()
+                        .countyCourtJudgmentRequest(ccdCountyCourtJudgment)
+                        .build())
                     .build()
             ))
             .applicants(List.of(
@@ -235,7 +218,6 @@ class IssuePaperDefenceCallbackHandlerTest {
 
         LocalDate date = LocalDate.now();
         when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(date);
-        when(responseDeadlineCalculator.calculateResponseDeadline(any())).thenReturn(date);
         when(responseDeadlineCalculator.calculatePostponedResponseDeadline(any(LocalDate.class)))
             .thenReturn(date);
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(updatedCCDCase);
@@ -265,11 +247,16 @@ class IssuePaperDefenceCallbackHandlerTest {
 
     @Test
     void shouldSendErrorsWhenExceptionThrownForCallback() {
+        CCDCountyCourtJudgment ccdCountyCourtJudgment = CCDCountyCourtJudgment.builder()
+            .type(CCDCountyCourtJudgmentType.ADMISSIONS)
+            .build();
         ccdCase = CCDCase.builder()
             .previousServiceCaseReference("000MC001")
             .respondents(ImmutableList.of(
                 CCDCollectionElement.<CCDRespondent>builder()
-                    .value(SampleData.getIndividualRespondentWithDQInClaimantResponse())
+                    .value(SampleData.getIndividualRespondentWithDQInClaimantResponse().toBuilder()
+                        .countyCourtJudgmentRequest(ccdCountyCourtJudgment)
+                        .build())
                     .build()
             ))
             .applicants(List.of(
@@ -307,12 +294,17 @@ class IssuePaperDefenceCallbackHandlerTest {
     }
 
     @Test
-    void whenDefendantMissedDeadlineDate() {
+    void whenClaimantIssuedCCJ() {
+        CCDCountyCourtJudgment ccdCountyCourtJudgment = CCDCountyCourtJudgment.builder()
+            .type(CCDCountyCourtJudgmentType.DEFAULT)
+            .build();
         ccdCase = CCDCase.builder()
             .previousServiceCaseReference("000MC001")
             .respondents(ImmutableList.of(
                 CCDCollectionElement.<CCDRespondent>builder()
-                    .value(SampleData.getIndividualRespondentWithDQInClaimantResponse())
+                    .value(SampleData.getIndividualRespondentWithDQInClaimantResponse().toBuilder()
+                        .countyCourtJudgmentRequest(ccdCountyCourtJudgment)
+                        .build())
                     .build()
             ))
             .applicants(List.of(
@@ -342,10 +334,9 @@ class IssuePaperDefenceCallbackHandlerTest {
             .thenReturn(date);
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
-        when(claimDeadlineService.isPastDeadline(any(), any())).thenReturn(true);
         AboutToStartOrSubmitCallbackResponse actualResponse =
             (AboutToStartOrSubmitCallbackResponse) issuePaperDefenceCallbackHandler.handle(callbackParams);
-        assertThat(actualResponse.getErrors().get(0)).isEqualTo(DEFENDANT_MISSED_DEADLINE);
+        assertThat(actualResponse.getErrors().get(0)).isEqualTo(CLAIMANT_ISSUED_CCJ);
     }
 
     @Test

@@ -21,9 +21,11 @@ import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import static java.math.BigDecimal.ZERO;
 import static java.util.Objects.requireNonNull;
@@ -74,6 +76,10 @@ public class CitizenServiceDocumentsService {
         return new Document(new String(documentTemplates.getSealedClaim()), claimContentProvider.createContent(claim));
     }
 
+    public Document draftClaimDocument(Claim claim) {
+        return new Document(new String(documentTemplates.getDraftClaim()), claimContentProvider.createContent(claim));
+    }
+
     public Document pinLetterDocument(Claim claim, String defendantPin) {
         return new Document(
             new String(documentTemplates.getDefendantPinLetter()),
@@ -102,6 +108,11 @@ public class CitizenServiceDocumentsService {
         totalAmountComponents.add(claim.getClaimData()
             .getFeesPaidInPounds().orElse(ZERO));
 
+        LocalDate issuedOn = null;
+        Optional<LocalDate> issuedOnOptional = claim.getIssuedOn();
+        if (issuedOnOptional.isPresent()) {
+            issuedOn = issuedOnOptional.get();
+        }
         if (!claim.getClaimData()
             .getInterest()
             .getType()
@@ -115,8 +126,8 @@ public class CitizenServiceDocumentsService {
                 ((AmountBreakDown) claim.getClaimData()
                     .getAmount())
                     .getTotalAmount(),
-                claim.getIssuedOn(),
-                claim.getIssuedOn()
+                issuedOn,
+                issuedOn
             );
             if (interestContent != null) {
                 totalAmountComponents.add(interestContent.getAmountRealValue());

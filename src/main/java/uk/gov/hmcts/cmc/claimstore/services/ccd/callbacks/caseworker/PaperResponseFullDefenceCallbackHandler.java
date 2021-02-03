@@ -3,9 +3,11 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 import net.logstash.logback.encoder.org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
+import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefenceType;
@@ -77,16 +79,13 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
             && StringUtils.isBlank(ccdCase.getPreferredCourt())) {
 
             CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
-            CCDAddress address = respondent.getPartyDetail() != null
-                && respondent.getPartyDetail().getPrimaryAddress() != null
-                ? respondent.getPartyDetail().getPrimaryAddress()
-                : respondent.getClaimantProvidedDetail().getPrimaryAddress();
+            CCDPartyType partyType = ccdCase.getRespondents().get(0).getValue().getClaimantProvidedDetail().getType();
+            CCDApplicant applicant = ccdCase.getApplicants().get(0).getValue();
+            CCDParty givenRespondent = respondent.getClaimantProvidedDetail();
 
-            String courtName = courtFinderApi.findMoneyClaimCourtByPostcode(address.getPostCode())
-                .stream()
-                .map(Court::getName)
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("No court found"));
+            CCDAddress defendantAddress = getDefendantAddress(respondent, givenRespondent);
+            CCDAddress claimantAddress = getClaimantAddress(applicant);
+            String courtName = getCourtName(partyType, defendantAddress, claimantAddress);
 
             data.put("preferredDQCourt", courtName);
         }
@@ -188,6 +187,26 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
                     ccdCase.getPreviousServiceCaseReference()))
                 .build())
             .build();
+    }
+
+    private String getCourtName(CCDPartyType partyType, CCDAddress defendantAddress, CCDAddress claimantAddress) {
+        return courtFinderApi.findMoneyClaimCourtByPostcode((partyType == CCDPartyType.COMPANY
+            || partyType == CCDPartyType.ORGANISATION)
+            ? claimantAddress.getPostCode() : defendantAddress.getPostCode())
+            .stream()
+            .map(Court::getName)
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException("No court found"));
+    }
+
+    private CCDAddress getClaimantAddress(CCDApplicant applicant) {
+        return applicant.getPartyDetail().getPrimaryAddress();
+    }
+
+    private CCDAddress getDefendantAddress(CCDRespondent respondent, CCDParty givenRespondent) {
+
+        return respondent.getPartyDetail() != null && respondent.getPartyDetail().getPrimaryAddress() != null
+            ? respondent.getPartyDetail().getPrimaryAddress() : givenRespondent.getPrimaryAddress();
     }
 
     @Override

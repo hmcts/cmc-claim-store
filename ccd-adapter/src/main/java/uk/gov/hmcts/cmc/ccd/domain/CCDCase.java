@@ -34,12 +34,15 @@ public class CCDCase {
     private String submitterId;
     private String externalId;
     private LocalDateTime submittedOn;
+    private LocalDateTime lastInterestCalculationDate;
     private LocalDate issuedOn;
     private String submitterEmail;
     private String reason;
     private String feeCode;
     private String feeAccountNumber;
     private String feeAmountInPennies;
+    private String feeRemitted;
+    private String feeAmountAfterRemission;
     private String externalReferenceNumber;
     private AmountType amountType;
     private String amountLowerValue;
@@ -89,6 +92,9 @@ public class CCDCase {
     private CCDClaimSubmissionOperationIndicators claimSubmissionOperationIndicators;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String state;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private LocalDateTime lastModified;
+
     private CCDYesNoOption evidenceHandled;
 
     private LocalDate docUploadDeadline;
@@ -153,6 +159,11 @@ public class CCDCase {
     private CCDProceedOnPaperReasonType proceedOnPaperReason;
     private String proceedOnPaperOtherReason;
     private LocalDate calculatedResponseDeadline;
+    private String helpWithFeesNumber;
+    private String moreInfoDetails;
+    private String helpWithFeesType;
+    private String hwfFeeDetailsSummary;
+    private String hwfMandatoryDetails;
     private CCDResponseType paperAdmissionType;
     private CCDTransferContent transferContent;
     @Builder.Default
@@ -171,4 +182,9 @@ public class CCDCase {
     @Builder.Default
     private List<CCDBespokeOrderWarning> drawBespokeDirectionOrderWarning = Collections.emptyList();
     private LocalDate extendedResponseDeadline;
+
+    private List<String> hwfMoreInfoNeededDocuments;
+    private String hwfProvideDocumentName;
+
+    private LocalDate hwfDocumentsToBeSentBefore;
 }

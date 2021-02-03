@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
+import uk.gov.hmcts.cmc.rpa.DateFormatter;
 import uk.gov.hmcts.cmc.rpa.mapper.DefenceResponseJsonMapper;
 
 import static java.util.Objects.requireNonNull;
@@ -49,6 +50,8 @@ public class DefenceResponseNotificationService {
 
     private EmailData prepareEmailData(Claim claim) {
         requireNonNull(claim);
+        DateFormatter.format(claim.getIssuedOn()
+            .orElseThrow(() -> new IllegalStateException("Missing issuedOn date")));
         EmailAttachment responsePDFAttachment = createResponsePdfAttachment(claim);
 
         return new EmailData(emailProperties.getResponseRecipient(),
