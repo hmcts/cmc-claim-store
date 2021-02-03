@@ -374,7 +374,7 @@ public class CoreCaseDataService {
             );
 
             Claim updatedClaim = toClaim(startEventResponse);
-
+            //startEventResponse.getCaseDetails().getData().get("respondents");
             updatedClaim = updatedClaim.toBuilder()
                 .claimDocumentCollection(claimDocumentCollection)
                 .claimSubmissionOperationIndicators(
@@ -547,7 +547,7 @@ public class CoreCaseDataService {
         try {
             UserDetails userDetails = userService.getUserDetails(authorisation);
 
-            EventRequestData eventRequestData = eventRequest(caseEvent, userDetails.getId());
+                EventRequestData eventRequestData = eventRequest(caseEvent, userDetails.getId());
 
             StartEventResponse startEventResponse = startUpdate(
                 authorisation,

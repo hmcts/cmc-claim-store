@@ -81,6 +81,7 @@ public class IndividualDetailsMapper {
         return addressMapper.from((partyAddress != null && detailByClaimant == null)
             ? partyAddress : getAddress(detailByClaimant, getAddress));
     }
+    //partyaddress !=null && paryaddress.notequals claimaint address --> partyAddress
 
     private CCDAddress getAddress(CCDParty partyDetail, Function<CCDParty, CCDAddress> extractAddress) {
         return Optional.ofNullable(partyDetail).map(extractAddress).orElse(null);

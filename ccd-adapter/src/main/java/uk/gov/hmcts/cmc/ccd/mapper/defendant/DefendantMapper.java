@@ -76,7 +76,7 @@ public class DefendantMapper {
 
         respondentBuilder.partyDetail(partyDetail.build());
         claim.getResponse().ifPresent(toResponse(respondentBuilder, partyDetail));
-
+        //upadtes claimantProvidedDetail
         theirDetailsMapper.to(respondentBuilder, theirDetails);
 
         respondentBuilder.claimantResponse(claimantResponseMapper.to(claim));
