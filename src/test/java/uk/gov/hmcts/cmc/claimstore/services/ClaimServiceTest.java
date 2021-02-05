@@ -305,8 +305,6 @@ public class ClaimServiceTest {
         claimService.requestMoreTimeForResponse(EXTERNAL_ID, AUTHORISATION);
 
         verify(caseRepository, once()).requestMoreTimeForResponse(eq(AUTHORISATION), eq(claim), eq(newDeadline));
-        verify(eventProducer, once())
-            .createMoreTimeForResponseRequestedEvent(eq(claim), eq(newDeadline), eq(VALID_DEFENDANT.getEmail()));
     }
 
     @Test(expected = NotFoundException.class)

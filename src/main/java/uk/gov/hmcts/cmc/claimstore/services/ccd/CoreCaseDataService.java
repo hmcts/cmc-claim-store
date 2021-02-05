@@ -83,8 +83,12 @@ public class CoreCaseDataService {
     private static final String SUBMITTING_CMC_CASE_CREATE_DESCRIPTION = "Submitting CMC case create";
     private static final String SUBMITTING_CMC_INITIATE_PAYMENT_DESCRIPTION = "Submitting CMC initiate payment";
     private static final String SUBMITTING_CMC_UPDATE_PAYMENT_DESCRIPTION = "Submitting CMC update payment";
+    private static final String MORE_TIME_DEFENDANT_MSG = "Response Deadline Extended by Defendant";
 
     private static final String CCD_UPDATE_FAILURE_MESSAGE
+        = "Failed updating claim in CCD store for case id %s on event %s";
+
+    private static final String CCD_MORE_TIME_REQUESTED_ONLINE_FAILURE
         = "Failed updating claim in CCD store for case id %s on event %s";
 
     private static final String CCD_STORING_FAILURE_MESSAGE
@@ -104,7 +108,6 @@ public class CoreCaseDataService {
     private final ReferenceNumberService referenceNumberService;
     private final CoreCaseDataApi coreCaseDataApi;
     private final AuthTokenGenerator authTokenGenerator;
-    private final JobSchedulerService jobSchedulerService;
     private final CCDCreateCaseService ccdCreateCaseService;
     private final CaseDetailsConverter caseDetailsConverter;
     private final WorkingDayIndicator workingDayIndicator;
@@ -119,7 +122,6 @@ public class CoreCaseDataService {
         ReferenceNumberService referenceNumberService,
         CoreCaseDataApi coreCaseDataApi,
         AuthTokenGenerator authTokenGenerator,
-        JobSchedulerService jobSchedulerService,
         CCDCreateCaseService ccdCreateCaseService,
         CaseDetailsConverter caseDetailsConverter,
         @Value("#{new Integer('${dateCalculations.stayClaimDeadlineInDays}')}")
@@ -132,7 +134,6 @@ public class CoreCaseDataService {
         this.referenceNumberService = referenceNumberService;
         this.coreCaseDataApi = coreCaseDataApi;
         this.authTokenGenerator = authTokenGenerator;
-        this.jobSchedulerService = jobSchedulerService;
         this.ccdCreateCaseService = ccdCreateCaseService;
         this.caseDetailsConverter = caseDetailsConverter;
         this.workingDayIndicator = workingDayIndicator;
@@ -275,41 +276,49 @@ public class CoreCaseDataService {
         Claim claim,
         LocalDate newResponseDeadline
     ) {
-        Long caseId = claim.getId();
         try {
             UserDetails userDetails = userService.getUserDetails(authorisation);
+            EventRequestData eventRequestData = EventRequestData.builder()
+                .userId(userDetails.getId())
+                .jurisdictionId(JURISDICTION_ID)
+                .caseTypeId(CASE_TYPE_ID)
+                .eventId(MORE_TIME_REQUESTED_ONLINE.getValue())
+                .ignoreWarning(true)
+                .build();
 
-            EventRequestData eventRequestData = eventRequest(MORE_TIME_REQUESTED_ONLINE, userDetails.getId());
-
-            StartEventResponse startEventResponse = startUpdate(
-                authorisation,
-                eventRequestData,
-                caseId,
-                isRepresented(userDetails)
-            );
-
+            StartEventResponse startEventResponse = startUpdate(authorisation,
+                eventRequestData, claim.getId(), false);
             Claim updatedClaim = toClaimBuilder(startEventResponse)
                 .responseDeadline(newResponseDeadline)
                 .moreTimeRequested(true)
                 .build();
+            CCDCase ccdCase = caseMapper.to(updatedClaim);
+            CaseDataContent caseDataContent = CaseDataContent.builder()
+                .eventToken(startEventResponse.getToken())
+                .event(Event.builder()
+                    .id(startEventResponse.getEventId())
+                    .summary(MORE_TIME_DEFENDANT_MSG)
+                    .description(MORE_TIME_DEFENDANT_MSG)
+                    .build())
+                .data(ccdCase)
+                .build();
 
-            CaseDataContent caseDataContent = caseDataContent(startEventResponse, updatedClaim);
-
-            CaseDetails caseDetails = submitUpdate(authorisation,
+            CaseDetails caseDetails = submitUpdate(
+                authorisation,
                 eventRequestData,
                 caseDataContent,
-                caseId,
-                isRepresented(userDetails)
+                claim.getId(),
+                false
             );
 
-            jobSchedulerService.rescheduleEmailNotificationsForDefendantResponse(claim, newResponseDeadline);
             return caseDetailsConverter.extractClaim(caseDetails);
+
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format(
-                    CCD_UPDATE_FAILURE_MESSAGE,
-                    caseId,
-                    MORE_TIME_REQUESTED_ONLINE
+                    CCD_MORE_TIME_REQUESTED_ONLINE_FAILURE,
+                    claim.getExternalId(),
+                    MORE_TIME_REQUESTED_ONLINE.getValue()
                 ), exception
             );
         }
@@ -1012,6 +1021,7 @@ public class CoreCaseDataService {
 
             CaseDetails caseDetails = submitUpdate(authorisation,
                 eventRequestData,
+
                 caseDataContent,
                 caseId,
                 isRepresented(userDetails)
@@ -1199,7 +1209,7 @@ public class CoreCaseDataService {
         User user,
         Claim claim
     ) {
-        requireNonNull(user, "user must not be null");
+        requireNonNull(user, USER_MUST_NOT_BE_NULL);
 
         CCDCase ccdCase = caseMapper.to(claim);
 

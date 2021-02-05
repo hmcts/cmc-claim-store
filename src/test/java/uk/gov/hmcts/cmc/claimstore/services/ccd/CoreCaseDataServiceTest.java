@@ -15,7 +15,6 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireService;
-import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
@@ -105,8 +104,6 @@ public class CoreCaseDataServiceTest {
     @Mock
     private CCDCreateCaseService ccdCreateCaseService;
     @Mock
-    private JobSchedulerService jobSchedulerService;
-    @Mock
     private CaseDetailsConverter caseDetailsConverter;
     @Mock
     private WorkingDayIndicator workingDayIndicator;
@@ -194,7 +191,6 @@ public class CoreCaseDataServiceTest {
             referenceNumberService,
             coreCaseDataApi,
             authTokenGenerator,
-            jobSchedulerService,
             ccdCreateCaseService,
             caseDetailsConverter,
             intentionToProceedDeadlineDays,
@@ -406,7 +402,6 @@ public class CoreCaseDataServiceTest {
         verify(caseDetailsConverter, atLeast(1)).extractClaim(any(CaseDetails.class));
         assertEquals(SampleClaim.CLAIM_ID, returnedClaim.getId());
 
-        verify(jobSchedulerService).rescheduleEmailNotificationsForDefendantResponse(providedClaim, FUTURE_DATE);
     }
 
     @Test
