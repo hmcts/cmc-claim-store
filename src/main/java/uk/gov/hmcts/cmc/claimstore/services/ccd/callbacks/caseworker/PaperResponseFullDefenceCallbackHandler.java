@@ -120,7 +120,7 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
             boolean eventPresent = caseEventList.stream()
                 .anyMatch((caseEvent) -> caseEvent.getValue().equals("PaperResponseOCON9xForm"));
             if (!eventPresent) {
-                return AboutToStartOrSubmitCallbackResponse.builder().errors(List.of(OCON9X_REVIEW)).build();
+                return AboutToStartOrSubmitCallbackResponse.builder().warnings(List.of(OCON9X_REVIEW)).build();
             }
         }
 
