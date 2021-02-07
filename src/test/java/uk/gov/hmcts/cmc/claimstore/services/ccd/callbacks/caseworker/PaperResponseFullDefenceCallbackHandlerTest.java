@@ -89,6 +89,8 @@ class PaperResponseFullDefenceCallbackHandlerTest {
     private CaseEventService caseEventService;
     @Mock
     private UserService userService;
+    @Captor
+    private ArgumentCaptor<CCDCase> ccdCaseArgumentCaptor;
 
     @Test
     void showWarningMessage() {
@@ -446,9 +448,6 @@ class PaperResponseFullDefenceCallbackHandlerTest {
     class AboutToSubmitTests {
 
         private CCDCase ccdCase;
-
-        @Captor
-        private ArgumentCaptor<CCDCase> ccdCaseArgumentCaptor;
 
         @BeforeEach
         void setUp() {
