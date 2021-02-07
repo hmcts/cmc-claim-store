@@ -7,14 +7,22 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.ccd.domain.HwFMoreInfoRequiredDocuments;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimForHwF;
 import uk.gov.service.notify.NotificationClientException;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_INFO_REQUIRED_FOR_HWF;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NOTIFICATION_FAILURE;
 
@@ -29,6 +37,8 @@ public class HwfClaimNotificationServiceTest extends BaseNotificationServiceTest
 
     @Before
     public void beforeEachTest() {
+        claim = SampleClaimForHwF.getDefault().toBuilder().respondedAt(LocalDateTime.now())
+            .lastEventTriggeredForHwfCase(MORE_INFO_REQUIRED_FOR_HWF.getValue()).build();
         service = new HwfClaimNotificationService(notificationClient, properties, appInsights);
         Mockito.when(properties.getFrontendBaseUrl()).thenReturn(FRONTEND_BASE_URL);
         Mockito.when(properties.getRespondToClaimUrl()).thenReturn(RESPOND_TO_CLAIM_URL);
@@ -78,6 +88,28 @@ public class HwfClaimNotificationServiceTest extends BaseNotificationServiceTest
             eq(HWF_CLAIMANT_CLAIM_CREATED_TEMPLATE), anyString(), templateParameters.capture(), anyString());
 
         String name = claim.getClaimData().getClaimant().getName();
+
+        assertThat(templateParameters.getValue())
+            .containsEntry(NotificationTemplateParameters.CLAIMANT_NAME, name);
+    }
+
+    @Test
+    public void emailClaimantShouldPassNameInTemplateParametersForMoreInfo() throws Exception {
+        //    HwFMoreInfoRequiredDocuments
+        ClaimData claimData = claim.getClaimData();
+        ClaimData updatedClaimData = claimData.toBuilder()
+            .hwfMoreInfoNeededDocuments(Arrays.asList(HwFMoreInfoRequiredDocuments.ANY_OTHER_INCOME.name())).build();
+        Claim claimLocal = SampleClaimForHwF.getDefault().toBuilder().respondedAt(LocalDateTime.now())
+            .lastEventTriggeredForHwfCase(MORE_INFO_REQUIRED_FOR_HWF.getValue())
+            .claimData(updatedClaimData)
+            .build();
+
+        service.sendMail(claimLocal, USER_EMAIL, HWF_CLAIMANT_CLAIM_CREATED_TEMPLATE, reference, USER_FULLNAME);
+
+        Mockito.verify(notificationClient).sendEmail(
+            eq(HWF_CLAIMANT_CLAIM_CREATED_TEMPLATE), anyString(), templateParameters.capture(), anyString());
+
+        String name = claimLocal.getClaimData().getClaimant().getName();
 
         assertThat(templateParameters.getValue())
             .containsEntry(NotificationTemplateParameters.CLAIMANT_NAME, name);
