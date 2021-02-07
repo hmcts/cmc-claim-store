@@ -118,7 +118,7 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
             List<CaseEvent> caseEventList = caseEventService.findEventsForCase(
                 String.valueOf(ccdCase.getId()), userService.getUser(authorisation));
             boolean eventPresent = caseEventList.stream()
-                .anyMatch((caseEvent) -> caseEvent.getValue().equals("PaperResponseOCON9xForm"));
+                .anyMatch(caseEvent -> caseEvent.getValue().equals("PaperResponseOCON9xForm"));
             if (!eventPresent) {
                 return AboutToStartOrSubmitCallbackResponse.builder().warnings(List.of(OCON9X_REVIEW)).build();
             }
