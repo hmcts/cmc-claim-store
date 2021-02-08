@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 
 import java.util.List;
+import java.util.Optional;
 
 public class ClaimContent {
 
@@ -100,5 +101,9 @@ public class ClaimContent {
 
     public StatementOfTruth getStatementOfTruth() {
         return statementOfTruth;
+    }
+
+    public Optional<String> getHelpWithFeesNumber() {
+        return Optional.ofNullable(helpWithFeesNumber);
     }
 }

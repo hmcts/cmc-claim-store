@@ -86,7 +86,8 @@ public class ClaimDataContentProvider {
             .collect(Collectors.toList());
 
         if (claim.getClaimData().getHelpWithFeesNumber().isPresent()) {
-            HwFNumber = claim.getClaimData().getHelpWithFeesNumber().get();
+            HwFNumber = claim.getClaimData().getHelpWithFeesNumber();
+            //HwFNumber = Optional.ofNullable(getObjectOrNullIfNotAvailable()).map(claim.getClaimData().getHelpWithFeesNumber()::toString).orElse(null);
         }
 
         return new ClaimContent(
