@@ -98,7 +98,7 @@ public class CoreCaseDataService {
     private static final String USER_MUST_NOT_BE_NULL = "user must not be null";
 
     private static final String CCD_PAYMENT_UPDATE_FAILURE_MESSAGE
-        = "Failed Updating a payment in CCD store for claim with external id %s on event %s";
+        = "Failed Updating a payments in CCD store for claim with external id %s on event %s";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
