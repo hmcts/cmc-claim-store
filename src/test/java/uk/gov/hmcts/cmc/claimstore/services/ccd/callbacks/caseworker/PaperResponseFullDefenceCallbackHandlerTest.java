@@ -92,104 +92,6 @@ class PaperResponseFullDefenceCallbackHandlerTest {
     @Captor
     private ArgumentCaptor<CCDCase> ccdCaseArgumentCaptor;
 
-    @Test
-    void showWarningMessage() {
-
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder().data(Map.of("defenceType", CCDDefenceType.DISPUTE.name())).build())
-            .eventId(CaseEvent.PAPER_RESPONSE_FULL_DEFENCE.getValue())
-            .build();
-
-        callbackParams = CallbackParams.builder()
-            .type(CallbackType.ABOUT_TO_SUBMIT)
-            .params(Map.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
-            .request(request)
-            .build();
-
-        CCDCase ccdCase = CCDCase.builder()
-            .respondents(List.of(
-                CCDCollectionElement.<CCDRespondent>builder()
-                    .value(CCDRespondent.builder()
-                        .partyDetail(CCDParty.builder().build())
-                        .claimantProvidedDetail(CCDParty.builder().build())
-                        .build())
-                    .build()
-                )
-            )
-            .scannedDocuments(List.of(
-                CCDCollectionElement.<CCDScannedDocument>builder()
-                    .value(CCDScannedDocument.builder()
-                        .type(form)
-                        .subtype(OCON9X_SUBTYPE)
-                        .deliveryDate(LocalDateTime.now())
-                        .build()
-                    ).build()
-                )
-            )
-            .build();
-
-        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-        User mockUser = mock(User.class);
-        when(userService.getUser(anyString())).thenReturn(mockUser);
-        when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancements"), any(LDUser.class))).thenReturn(true);
-        AboutToStartOrSubmitCallbackResponse actualResponse =
-            (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
-
-        assertThat(actualResponse.getWarnings().get(0)).isEqualTo(OCON9X_REVIEW);
-
-    }
-
-    @Test
-    void showNoWarningMessage() {
-
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder().data(Map.of("defenceType", CCDDefenceType.DISPUTE.name())).build())
-            .eventId(CaseEvent.PAPER_RESPONSE_FULL_DEFENCE.getValue())
-            .build();
-
-        callbackParams = CallbackParams.builder()
-            .type(CallbackType.ABOUT_TO_SUBMIT)
-            .params(Map.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
-            .request(request)
-            .build();
-
-        when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
-        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
-
-        CCDCase ccdCase = CCDCase.builder()
-            .respondents(List.of(
-                CCDCollectionElement.<CCDRespondent>builder()
-                    .value(CCDRespondent.builder()
-                        .partyDetail(CCDParty.builder().build())
-                        .claimantProvidedDetail(CCDParty.builder().build())
-                        .build())
-                    .build()
-                )
-            )
-            .scannedDocuments(List.of(
-                CCDCollectionElement.<CCDScannedDocument>builder()
-                    .value(CCDScannedDocument.builder()
-                        .type(form)
-                        .subtype(OCON9X_SUBTYPE)
-                        .deliveryDate(LocalDateTime.now())
-                        .build()
-                    ).build()
-                )
-            )
-            .build();
-
-        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-        User mockUser = mock(User.class);
-        when(userService.getUser(anyString())).thenReturn(mockUser);
-        when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancements"), any(LDUser.class))).thenReturn(true);
-        when(caseEventService.findEventsForCase(any(String.class), any(User.class))).thenReturn(CASE_EVENTS);
-        AboutToStartOrSubmitCallbackResponse actualResponse =
-            (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
-
-        Assertions.assertNull(actualResponse.getWarnings());
-
-    }
-
     @Nested
     class AboutToStartTests {
 
@@ -205,6 +107,82 @@ class PaperResponseFullDefenceCallbackHandlerTest {
                 .params(Map.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
                 .request(request)
                 .build();
+
+        }
+
+        @Test
+        void showWarningMessage() {
+
+            CCDCase ccdCase = CCDCase.builder()
+                .respondents(List.of(
+                    CCDCollectionElement.<CCDRespondent>builder()
+                        .value(CCDRespondent.builder()
+                            .partyDetail(CCDParty.builder().build())
+                            .claimantProvidedDetail(CCDParty.builder().build())
+                            .build())
+                        .build()
+                    )
+                )
+                .scannedDocuments(List.of(
+                    CCDCollectionElement.<CCDScannedDocument>builder()
+                        .value(CCDScannedDocument.builder()
+                            .type(form)
+                            .subtype(OCON9X_SUBTYPE)
+                            .deliveryDate(LocalDateTime.now())
+                            .build()
+                        ).build()
+                    )
+                )
+                .build();
+
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            User mockUser = mock(User.class);
+            when(userService.getUser(anyString())).thenReturn(mockUser);
+            when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancements"), any(LDUser.class))).thenReturn(true);
+            AboutToStartOrSubmitCallbackResponse actualResponse =
+                (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
+
+            assertThat(actualResponse.getErrors().get(0)).isEqualTo(OCON9X_REVIEW);
+
+        }
+
+        @Test
+        void showNoWarningMessage() {
+            String court = "Court";
+            String postcode = "postcode";
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(CCDCase.builder()
+                .features(ClaimFeatures.DQ_FLAG.getValue())
+                .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
+                    .value(CCDRespondent.builder()
+                        .partyDetail(CCDParty.builder()
+                            .primaryAddress(CCDAddress.builder().postCode(postcode).build())
+                            .build())
+                        .claimantProvidedDetail(CCDParty.builder()
+                            .emailAddress("abc@def.com")
+                            .type(CCDPartyType.COMPANY)
+                            .build())
+                        .build())
+                    .build()))
+                .applicants(
+                    com.google.common.collect.ImmutableList.of(
+                        CCDCollectionElement.<CCDApplicant>builder()
+                            .value(SampleData.getCCDApplicantIndividual())
+                            .build()
+                    ))
+                .build());
+            User mockUser = mock(User.class);
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(Claim.builder()
+                .features(List.of(ClaimFeatures.DQ_FLAG.getValue()))
+                .build());
+            when(courtFinderApi.findMoneyClaimCourtByPostcode(eq(postcode)))
+                .thenReturn(List.of(Court.builder().name(court).build()));
+            when(userService.getUser(anyString())).thenReturn(mockUser);
+            when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancements"), any(LDUser.class))).thenReturn(true);
+            when(caseEventService.findEventsForCase(any(String.class), any(User.class))).thenReturn(CASE_EVENTS);
+            AboutToStartOrSubmitCallbackResponse actualResponse =
+                (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
+
+            Assertions.assertNull(actualResponse.getErrors());
 
         }
 
@@ -464,7 +442,6 @@ class PaperResponseFullDefenceCallbackHandlerTest {
 
             when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
             when(clock.getZone()).thenReturn(ZoneOffset.UTC);
-            when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancements"), any(LDUser.class))).thenReturn(false);
 
             ccdCase = CCDCase.builder()
                 .respondents(List.of(

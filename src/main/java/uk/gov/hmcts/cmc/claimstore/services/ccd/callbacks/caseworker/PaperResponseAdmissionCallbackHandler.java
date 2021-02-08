@@ -30,10 +30,12 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.net.URI;
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -69,6 +71,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
     private final LaunchDarklyClient launchDarklyClient;
 
     private final Map<CallbackType, Callback> callbacks = Map.of(
+        CallbackType.ABOUT_TO_START, this::aboutToStart,
         CallbackType.ABOUT_TO_SUBMIT, this::aboutToSubmit
     );
 
@@ -98,8 +101,9 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
         this.launchDarklyClient = launchDarklyClient;
     }
 
-    private CallbackResponse aboutToSubmit(CallbackParams callbackParams) {
-        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackParams.getRequest().getCaseDetails());
+    private CallbackResponse aboutToStart(CallbackParams callbackParams) {
+        CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
         if (launchDarklyClient.isFeatureEnabled("ocon-enhancements", LaunchDarklyClient.CLAIM_STORE_USER)) {
             List<CaseEvent> caseEventList = caseEventService.findEventsForCase(
@@ -107,15 +111,21 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
             boolean eventPresent = caseEventList.stream()
                 .anyMatch(caseEvent -> caseEvent.getValue().equals("PaperResponseOCON9xForm"));
             if (!eventPresent) {
-                return AboutToStartOrSubmitCallbackResponse.builder().warnings(List.of(OCON9X_REVIEW)).build();
+                return AboutToStartOrSubmitCallbackResponse.builder().errors(List.of(OCON9X_REVIEW)).build();
             }
         }
+        Map<String, Object> data = new HashMap<>(caseDetailsConverter.convertToMap(ccdCase));
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(data)
+            .build();
+    }
 
+    private CallbackResponse aboutToSubmit(CallbackParams callbackParams) {
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackParams.getRequest().getCaseDetails());
         List<CCDCollectionElement<CCDScannedDocument>> updatedCCDScannedDocs = ccdCase.getScannedDocuments()
             .stream()
             .map(e -> e.getValue().getSubtype().equals(FORM_NAME) ? renameFile(e, ccdCase) : e)
             .collect(Collectors.toList());
-
         List<CCDCollectionElement<CCDRespondent>> updatedRespondent = ccdCase.getRespondents()
             .stream()
             .map(e -> e.toBuilder()

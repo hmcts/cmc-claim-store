@@ -86,6 +86,16 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
     private CallbackResponse aboutToStart(CallbackParams callbackParams) {
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
+        String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
+        if (launchDarklyClient.isFeatureEnabled("ocon-enhancements", LaunchDarklyClient.CLAIM_STORE_USER)) {
+            List<CaseEvent> caseEventList = caseEventService.findEventsForCase(
+                String.valueOf(ccdCase.getId()), userService.getUser(authorisation));
+            boolean eventPresent = caseEventList.stream()
+                .anyMatch(caseEvent -> caseEvent.getValue().equals("PaperResponseOCON9xForm"));
+            if (!eventPresent) {
+                return AboutToStartOrSubmitCallbackResponse.builder().errors(List.of(OCON9X_REVIEW)).build();
+            }
+        }
 
         Map<String, Object> data = new HashMap<>(caseDetailsConverter.convertToMap(ccdCase));
 
@@ -112,17 +122,7 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
     private CallbackResponse aboutToSubmit(CallbackParams callbackParams) {
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
-
         String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
-        if (launchDarklyClient.isFeatureEnabled("ocon-enhancements", LaunchDarklyClient.CLAIM_STORE_USER)) {
-            List<CaseEvent> caseEventList = caseEventService.findEventsForCase(
-                String.valueOf(ccdCase.getId()), userService.getUser(authorisation));
-            boolean eventPresent = caseEventList.stream()
-                .anyMatch(caseEvent -> caseEvent.getValue().equals("PaperResponseOCON9xForm"));
-            if (!eventPresent) {
-                return AboutToStartOrSubmitCallbackResponse.builder().warnings(List.of(OCON9X_REVIEW)).build();
-            }
-        }
 
         List<CCDCollectionElement<CCDRespondent>> updatedRespondents = updateRespondents(caseDetails, ccdCase);
 
