@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 import uk.gov.hmcts.cmc.domain.models.party.NamedParty;
 
 import java.util.Optional;
+import javax.swing.text.html.Option;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -46,6 +47,7 @@ public abstract class TheirDetails extends CollectionId implements NamedParty {
     @Valid
     private final Representative representative;
 
+    private final Address claimantProvidedAddress;
     @Valid
     private final Address serviceAddress;
 
@@ -59,6 +61,7 @@ public abstract class TheirDetails extends CollectionId implements NamedParty {
         String email,
         Representative representative,
         Address serviceAddress,
+        Address claimantProvidedAddress,
         String phone
     ) {
         super(id);
@@ -67,6 +70,7 @@ public abstract class TheirDetails extends CollectionId implements NamedParty {
         this.email = email;
         this.representative = representative;
         this.serviceAddress = serviceAddress;
+        this.claimantProvidedAddress = claimantProvidedAddress;
         this.phone = phone;
     }
 
@@ -94,6 +98,8 @@ public abstract class TheirDetails extends CollectionId implements NamedParty {
     public Optional<String> getPhone() {
         return Optional.ofNullable(phone);
     }
+
+    public Optional<Address> getclaimantProvidedAddress() { return Optional.ofNullable(claimantProvidedAddress); }
 
     @Override
     public String toString() {

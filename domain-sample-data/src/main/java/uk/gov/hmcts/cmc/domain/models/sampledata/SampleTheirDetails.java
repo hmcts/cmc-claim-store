@@ -20,6 +20,7 @@ public class SampleTheirDetails {
     private String firstName = "John";
     private String lastName = "Smith";
     private Address address = SampleAddress.builder().build();
+    private Address claimantProvidedAddress = SampleAddress.builder().build();
     private String email = DEFENDANT_EMAIL;
     private String contactPerson = "Arnold Schwarzenegger";
     private String businessName = "Sole Trading & Sons";
@@ -107,12 +108,12 @@ public class SampleTheirDetails {
 
     public TheirDetails partyDetails() {
         return new IndividualDetails(collectionId, name, title, firstName, lastName,
-            address, email, representative, serviceAddress, dateOfBirth, phoneNumber);
+            address, email, representative, serviceAddress, dateOfBirth, claimantProvidedAddress, phoneNumber);
     }
 
     public IndividualDetails individualDetails() {
         return new IndividualDetails(collectionId, name, title, firstName, lastName,
-            address, email, representative, serviceAddress, dateOfBirth, phoneNumber);
+            address, email, representative, serviceAddress, dateOfBirth, claimantProvidedAddress, phoneNumber);
     }
 
     public List<TheirDetails> individualDetails(int count) {
@@ -120,7 +121,7 @@ public class SampleTheirDetails {
         for (int i = 0; i < count; i++) {
             individualDetailsList.add(
                 new IndividualDetails(collectionId, name, title, firstName, lastName,
-                    address, email, representative, serviceAddress, dateOfBirth, phoneNumber)
+                    address, email, representative, serviceAddress, dateOfBirth, claimantProvidedAddress, phoneNumber)
             );
         }
         return individualDetailsList;
@@ -128,17 +129,17 @@ public class SampleTheirDetails {
 
     public CompanyDetails companyDetails() {
         return new CompanyDetails(collectionId, name, address, email, representative, serviceAddress, contactPerson,
-            phoneNumber);
+            claimantProvidedAddress, phoneNumber);
     }
 
     public OrganisationDetails organisationDetails() {
         return new OrganisationDetails(collectionId, name, address, email, representative, serviceAddress,
-            contactPerson, companiesHouseNumber, phoneNumber);
+            contactPerson, companiesHouseNumber, claimantProvidedAddress, phoneNumber);
     }
 
     public SoleTraderDetails soleTraderDetails() {
         return new SoleTraderDetails(collectionId, name, firstName, lastName, address, email,
-            representative, serviceAddress, title, businessName, phoneNumber);
+            representative, serviceAddress, claimantProvidedAddress, title, businessName, phoneNumber);
     }
 
 }

@@ -67,7 +67,8 @@ public class IndividualDetailsMapper {
             .firstName(respondent.getClaimantProvidedDetail().getFirstName())
             .lastName(respondent.getClaimantProvidedDetail().getLastName())
             .title(respondent.getClaimantProvidedDetail().getTitle())
-            .address(getAddress(partyDetail, detailFromClaimant, CCDParty::getPrimaryAddress))
+            .address(getAddress1(detailFromClaimant, CCDParty::getPrimaryAddress))
+            .claimantProvidedAddress(getAddress1(detailFromClaimant, CCDParty::getPrimaryAddress))
             .email(getDetail(partyDetail, detailFromClaimant, x -> x.getEmailAddress()))
             .phoneNumber(telephoneMapper.from(getDetail(partyDetail, detailFromClaimant, CCDParty::getTelephoneNumber)))
             .representative(representativeMapper.from(respondent))
@@ -82,6 +83,11 @@ public class IndividualDetailsMapper {
             ? partyAddress : getAddress(detailByClaimant, getAddress));
     }
     //partyaddress !=null && paryaddress.notequals claimaint address --> partyAddress
+
+    private Address getAddress1(CCDParty detail, Function<CCDParty, CCDAddress> getAddress) {
+        CCDAddress partyAddress = getAddress(detail, getAddress);
+        return addressMapper.from(partyAddress);
+    }
 
     private CCDAddress getAddress(CCDParty partyDetail, Function<CCDParty, CCDAddress> extractAddress) {
         return Optional.ofNullable(partyDetail).map(extractAddress).orElse(null);
