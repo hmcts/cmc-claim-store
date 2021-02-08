@@ -55,7 +55,8 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
     private static final List<CaseEvent> EVENTS = List.of(PAPER_RESPONSE_ADMISSION);
     private static final List<Role> ROLES = List.of(CASEWORKER);
     private static final String FORM_NAME = "OCON9x";
-    private static final String OCON9X_REVIEW =
+    private static final String OCON_PAPER_FORM = "PaperResponseOCON9xForm";
+    private static final String OCON9X_REVIEW_MSG =
         "Before you continue please esure you review the OCON9x review response";
     private final CaseDetailsConverter caseDetailsConverter;
     private final DefendantResponseNotificationService defendantResponseNotificationService;
@@ -106,12 +107,12 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
         if (launchDarklyClient.isFeatureEnabled("ocon-enhancements", LaunchDarklyClient.CLAIM_STORE_USER)) {
-            List<CaseEvent> caseEventList = caseEventService.findEventsForCase(
+            List<CaseEvent> caseEvents = caseEventService.findEventsForCase(
                 String.valueOf(ccdCase.getId()), userService.getUser(authorisation));
-            boolean eventPresent = caseEventList.stream()
-                .anyMatch(caseEvent -> caseEvent.getValue().equals("PaperResponseOCON9xForm"));
-            if (!eventPresent) {
-                return AboutToStartOrSubmitCallbackResponse.builder().errors(List.of(OCON9X_REVIEW)).build();
+            boolean isPresent = caseEvents.stream()
+                .anyMatch(event -> event.getValue().equals(OCON_PAPER_FORM));
+            if (!isPresent) {
+                return AboutToStartOrSubmitCallbackResponse.builder().errors(List.of(OCON9X_REVIEW_MSG)).build();
             }
         }
         Map<String, Object> data = new HashMap<>(caseDetailsConverter.convertToMap(ccdCase));
