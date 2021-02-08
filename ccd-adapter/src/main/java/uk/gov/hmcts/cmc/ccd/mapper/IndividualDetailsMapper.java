@@ -67,7 +67,7 @@ public class IndividualDetailsMapper {
             .firstName(respondent.getClaimantProvidedDetail().getFirstName())
             .lastName(respondent.getClaimantProvidedDetail().getLastName())
             .title(respondent.getClaimantProvidedDetail().getTitle())
-            .address(getAddress1(detailFromClaimant, CCDParty::getPrimaryAddress))
+            .address(getAddress1(partyDetail, CCDParty::getPrimaryAddress))
             .claimantProvidedAddress(getAddress1(detailFromClaimant, CCDParty::getPrimaryAddress))
             .email(getDetail(partyDetail, detailFromClaimant, x -> x.getEmailAddress()))
             .phoneNumber(telephoneMapper.from(getDetail(partyDetail, detailFromClaimant, CCDParty::getTelephoneNumber)))
