@@ -51,7 +51,6 @@ public class ClaimDataContentProvider {
         requireNonNull(claim);
 
         List<BigDecimal> totalAmountComponents = new ArrayList<>();
-        String HwFNumber = null;
         AmountBreakDown amountBreakDown = (AmountBreakDown) claim.getClaimData().getAmount();
         totalAmountComponents.add(amountBreakDown.getTotalAmount());
         totalAmountComponents.add(claim.getClaimData().getFeesPaidInPounds().orElse(ZERO));
@@ -73,6 +72,8 @@ public class ClaimDataContentProvider {
             totalAmountComponents.add(interestContent.getAmountRealValue());
         }
 
+        Optional<String> helpWithFeesNumber = claim.getClaimData().getHelpWithFeesNumber();
+
         Optional<StatementOfTruth> optionalStatementOfTruth = claim.getClaimData().getStatementOfTruth();
 
         List<TimelineEvent> events = claim.getClaimData().getTimeline().map(Timeline::getEvents).orElse(null);
@@ -84,11 +85,6 @@ public class ClaimDataContentProvider {
             .filter(Objects::nonNull)
             .map(toEvidenceContent)
             .collect(Collectors.toList());
-
-        if (claim.getClaimData().getHelpWithFeesNumber().isPresent()) {
-            HwFNumber = claim.getClaimData().getHelpWithFeesNumber();
-            //HwFNumber = Optional.ofNullable(getObjectOrNullIfNotAvailable()).map(claim.getClaimData().getHelpWithFeesNumber()::toString).orElse(null);
-        }
 
         return new ClaimContent(
             claim.getReferenceNumber(),
@@ -107,7 +103,7 @@ public class ClaimDataContentProvider {
             evidences,
             mapToAmountRowContent(amountBreakDown.getRows()),
             optionalStatementOfTruth.orElse(null),
-            HwFNumber
+            helpWithFeesNumber.orElse(null)
         );
     }
 
