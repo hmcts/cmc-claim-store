@@ -21,6 +21,7 @@ public class ClaimContent {
     private final List<EvidenceContent> evidences;
     private final List<AmountRowContent> amountBreakdown;
     private final StatementOfTruth statementOfTruth;
+    private final String helpWithFeesNumber;
 
     @SuppressWarnings("squid:S00107") // Suppressed due to MVP timelines, require more time to investigate and fix
     public ClaimContent(
@@ -35,7 +36,8 @@ public class ClaimContent {
             List<TimelineEvent> events,
             List<EvidenceContent> evidences,
             List<AmountRowContent> amountBreakdown,
-            StatementOfTruth statementOfTruth
+            StatementOfTruth statementOfTruth,
+            String helpWithFeesNumber
     ) {
         this.referenceNumber = referenceNumber;
         this.submittedOn = submittedOn;
@@ -49,6 +51,7 @@ public class ClaimContent {
         this.evidences = evidences;
         this.amountBreakdown = amountBreakdown;
         this.statementOfTruth = statementOfTruth;
+        this.helpWithFeesNumber = helpWithFeesNumber;
     }
 
     public String getReferenceNumber() {

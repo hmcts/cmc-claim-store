@@ -454,13 +454,25 @@
       <tr>
         <td><strong>Total:</strong></td>
         <td>
-          {{ claim.claimTotalAmount }}
+          {{ claim.claimTotalAmount }} {{ claim.helpWithFeesNumber }}
         </td>
       </tr>
     </table>
   </div>
 </div>
 
+<div class="section">
+  {% if claim.helpWithFeesNumber is defined or claim.helpWithFeesNumber is not empty %}
+  <div class="section-heading">
+    <table>
+      <tr class="section-body">
+        <td><strong>HwF reference number</strong></td>
+        <td>{{ claim.helpWithFeesNumber }}</td>
+      </tr>
+    </table>
+  </div>
+  {% endif %}
+</div>
 <div class="section">
   <div class="section-heading">
     <strong>Statement of truth</strong>

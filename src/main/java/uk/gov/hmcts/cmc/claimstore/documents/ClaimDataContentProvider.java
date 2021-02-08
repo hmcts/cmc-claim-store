@@ -51,6 +51,7 @@ public class ClaimDataContentProvider {
         requireNonNull(claim);
 
         List<BigDecimal> totalAmountComponents = new ArrayList<>();
+        String HwFNumber = null;
         AmountBreakDown amountBreakDown = (AmountBreakDown) claim.getClaimData().getAmount();
         totalAmountComponents.add(amountBreakDown.getTotalAmount());
         totalAmountComponents.add(claim.getClaimData().getFeesPaidInPounds().orElse(ZERO));
@@ -84,6 +85,10 @@ public class ClaimDataContentProvider {
             .map(toEvidenceContent)
             .collect(Collectors.toList());
 
+        if (claim.getClaimData().getHelpWithFeesNumber().isPresent()) {
+            HwFNumber = claim.getClaimData().getHelpWithFeesNumber().get();
+        }
+
         return new ClaimContent(
             claim.getReferenceNumber(),
             formatDateTime(claim.getCreatedAt()),
@@ -100,7 +105,8 @@ public class ClaimDataContentProvider {
             events,
             evidences,
             mapToAmountRowContent(amountBreakDown.getRows()),
-            optionalStatementOfTruth.orElse(null)
+            optionalStatementOfTruth.orElse(null),
+            HwFNumber
         );
     }
 
