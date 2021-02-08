@@ -174,7 +174,7 @@ class PaperResponseFullDefenceCallbackHandlerTest {
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(Claim.builder()
                 .features(List.of(ClaimFeatures.DQ_FLAG.getValue()))
                 .build());
-            when(courtFinderApi.findMoneyClaimCourtByPostcode(eq(postcode)))
+            when(courtFinderApi.findMoneyClaimCourtByPostcode(postcode))
                 .thenReturn(List.of(Court.builder().name(court).build()));
             when(userService.getUser(anyString())).thenReturn(mockUser);
             when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancements"), any(LDUser.class))).thenReturn(true);
