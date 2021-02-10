@@ -58,14 +58,15 @@ public class MediationReportService {
         this.emailFromAddress = emailFromAddress;
     }
 
-    public void sendMediationReport(String authorisation, LocalDate mediationDate, String emailToAddressFromSupportController) {
+    public void sendMediationReport(String authorisation, LocalDate mediationDate,
+                                    String emailToAddressFromSupportController) {
         try {
             MediationCSVGenerator generator = new MediationCSVGenerator(caseSearchApi, mediationDate, authorisation);
             generator.createMediationCSV();
             String csvData = generator.getCsvData();
 
-            emailService.sendEmail(emailFromAddress, prepareMediationEmailData(csvData, mediationDate, emailToAddressFromSupportController));
-
+            emailService.sendEmail(emailFromAddress,
+                prepareMediationEmailData(csvData, mediationDate, emailToAddressFromSupportController));
 
             Map<String, String> problematicRecords = generator.getProblematicRecords();
             if (!problematicRecords.isEmpty()) {
@@ -85,11 +86,12 @@ public class MediationReportService {
         );
     }
 
-    private EmailData prepareMediationEmailData(String mediationCSV, LocalDate mediationDate, String emailToAddressFromSupportController) {
+    private EmailData prepareMediationEmailData(String mediationCSV,
+                                                LocalDate mediationDate, String emailToAddressFromSupportController) {
         LocalDate csvReportingDate = mediationDate.plusDays(1);
         String fileName = "MediationCSV." + csvReportingDate.toString() + ".csv";
         EmailAttachment mediationCSVAttachment = EmailAttachment.csv(mediationCSV.getBytes(), fileName);
-        if (StringUtils.isBlank(emailToAddressFromSupportController)) {
+        if (!StringUtils.isBlank(emailToAddressFromSupportController)) {
             logger.info("MILO: Sending email to support controller mail address");
             return new EmailData(
                 emailToAddressFromSupportController,
