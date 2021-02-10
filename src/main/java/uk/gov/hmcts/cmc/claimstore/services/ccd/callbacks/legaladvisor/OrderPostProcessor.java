@@ -25,7 +25,6 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrde
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
-import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
@@ -58,7 +57,6 @@ public class OrderPostProcessor {
     private final ClaimService claimService;
     private AppInsights appInsights;
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final LaunchDarklyClient launchDarklyClient;
     private static final String REVIEW_OR_DRAW_ORDER = "reviewOrDrawOrder";
     public static final String LA_DRAW_ORDER = "LA_DRAW_ORDER";
 
@@ -70,8 +68,7 @@ public class OrderPostProcessor {
         AppInsights appInsights,
         DirectionOrderService directionOrderService,
         DocumentManagementService documentManagementService,
-        ClaimService claimService,
-        LaunchDarklyClient launchDarklyClient
+        ClaimService claimService
     ) {
         this.clock = clock;
         this.orderDrawnNotificationService = orderDrawnNotificationService;
@@ -81,7 +78,6 @@ public class OrderPostProcessor {
         this.appInsights = appInsights;
         this.documentManagementService = documentManagementService;
         this.claimService = claimService;
-        this.launchDarklyClient = launchDarklyClient;
     }
 
     public CallbackResponse copyDraftToCaseDocument(CallbackParams callbackParams) {
@@ -120,15 +116,11 @@ public class OrderPostProcessor {
     }
 
     public CallbackResponse persistHearingCourtAndMigrateExpertReport(CallbackParams callbackParams) {
-        logger.info("persistHearingCourtAndMigrateExpertReport: {}",callbackParams);
-        if(callbackParams.getRequest().getCaseDetails().getData() != null &&
-            LA_DRAW_ORDER.equals(callbackParams.getRequest().getCaseDetails().
-                getData().get(REVIEW_OR_DRAW_ORDER))){
+        if (callbackParams.getRequest().getCaseDetails().getData() != null
+            && LA_DRAW_ORDER.equals(callbackParams.getRequest().getCaseDetails()
+            .getData().get(REVIEW_OR_DRAW_ORDER))) {
             return copyDraftToCaseDocument(callbackParams);
         }
-        /*if(!launchDarklyClient.isFeatureEnabled("la-approval-change", LaunchDarklyClient.CLAIM_STORE_USER)){
-            callbackParams.getRequest().getCaseDetails().getData().remove(REVIEW_OR_DRAW_ORDER);
-        }*/
 
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
@@ -151,14 +143,10 @@ public class OrderPostProcessor {
 
     public CallbackResponse notifyPartiesAndPrintOrderOrRaiseAppInsight(CallbackParams callbackParams) {
 
-        /*if(!launchDarklyClient.isFeatureEnabled("la-approval-change", LaunchDarklyClient.CLAIM_STORE_USER)){
-            callbackParams.getRequest().getCaseDetails().getData().remove(REVIEW_OR_DRAW_ORDER);
-        }*/
-        logger.info("notifyPartiesAndPrintOrderOrRaiseAppInsight: 1");
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackParams.getRequest().getCaseDetails());
-        if(CCDReviewOrDrawOrder.LA_DRAW_ORDER.equals(ccdCase.getReviewOrDrawOrder())){
-            logger.info("notifyPartiesAndPrintOrderOrRaiseAppInsight: 2 {}",ccdCase.getReviewOrDrawOrder());
-            logger.info("LA drawing order without judge review for claim: {}", ccdCase.getPreviousServiceCaseReference());
+        if (CCDReviewOrDrawOrder.LA_DRAW_ORDER.equals(ccdCase.getReviewOrDrawOrder())) {
+            logger.info("LA drawing order without judge review for claim: {}",
+                ccdCase.getPreviousServiceCaseReference());
             return notifyPartiesAndPrintOrder(callbackParams);
         }
         logger.info("Generate order callback: raise app insight");
@@ -192,6 +180,10 @@ public class OrderPostProcessor {
                 break;
             case DRAW_JUDGES_ORDER:
                 appInsights.trackEvent(AppInsightsEvent.DRAW_JUDGES_ORDER, AppInsights.REFERENCE_NUMBER,
+                    ccdCase.getPreviousServiceCaseReference());
+                break;
+            case GENERATE_ORDER:
+                appInsights.trackEvent(AppInsightsEvent.LA_GENERATE_DRAW_ORDER, AppInsights.REFERENCE_NUMBER,
                     ccdCase.getPreviousServiceCaseReference());
                 break;
             default:
