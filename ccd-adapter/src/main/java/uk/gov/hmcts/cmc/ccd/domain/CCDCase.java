@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDBespokeOrderDirection;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDBespokeOrderWarning;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDReviewOrDrawOrder;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 
@@ -186,4 +187,6 @@ public class CCDCase {
     private String hwfProvideDocumentName;
 
     private LocalDate hwfDocumentsToBeSentBefore;
+
+    private CCDReviewOrDrawOrder reviewOrDrawOrder;
 }

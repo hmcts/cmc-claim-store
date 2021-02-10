@@ -1,6 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legaladvisor;
 
 import com.google.common.collect.ImmutableList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -9,6 +11,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDReviewOrDrawOrder;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
@@ -22,6 +25,7 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrde
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
@@ -36,6 +40,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.ORDER_DIRECTIONS;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.DRAFTED_BY_LEGAL_ADVISOR;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.Params.BEARER_TOKEN;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
@@ -51,6 +57,10 @@ public class OrderPostProcessor {
     private final DocumentManagementService documentManagementService;
     private final ClaimService claimService;
     private AppInsights appInsights;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final LaunchDarklyClient launchDarklyClient;
+    private static final String REVIEW_OR_DRAW_ORDER = "reviewOrDrawOrder";
+    public static final String LA_DRAW_ORDER = "LA_DRAW_ORDER";
 
     public OrderPostProcessor(
         Clock clock,
@@ -60,7 +70,8 @@ public class OrderPostProcessor {
         AppInsights appInsights,
         DirectionOrderService directionOrderService,
         DocumentManagementService documentManagementService,
-        ClaimService claimService
+        ClaimService claimService,
+        LaunchDarklyClient launchDarklyClient
     ) {
         this.clock = clock;
         this.orderDrawnNotificationService = orderDrawnNotificationService;
@@ -70,6 +81,7 @@ public class OrderPostProcessor {
         this.appInsights = appInsights;
         this.documentManagementService = documentManagementService;
         this.claimService = claimService;
+        this.launchDarklyClient = launchDarklyClient;
     }
 
     public CallbackResponse copyDraftToCaseDocument(CallbackParams callbackParams) {
@@ -108,6 +120,16 @@ public class OrderPostProcessor {
     }
 
     public CallbackResponse persistHearingCourtAndMigrateExpertReport(CallbackParams callbackParams) {
+        logger.info("persistHearingCourtAndMigrateExpertReport: {}",callbackParams);
+        if(callbackParams.getRequest().getCaseDetails().getData() != null &&
+            LA_DRAW_ORDER.equals(callbackParams.getRequest().getCaseDetails().
+                getData().get(REVIEW_OR_DRAW_ORDER))){
+            return copyDraftToCaseDocument(callbackParams);
+        }
+        /*if(!launchDarklyClient.isFeatureEnabled("la-approval-change", LaunchDarklyClient.CLAIM_STORE_USER)){
+            callbackParams.getRequest().getCaseDetails().getData().remove(REVIEW_OR_DRAW_ORDER);
+        }*/
+
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
         HearingCourt hearingCourt = directionOrderService.getHearingCourt(ccdCase);
@@ -125,6 +147,23 @@ public class OrderPostProcessor {
             .builder()
             .data(caseDetailsConverter.convertToMap(cleanUpDynamicList(updatedCase)))
             .build();
+    }
+
+    public CallbackResponse notifyPartiesAndPrintOrderOrRaiseAppInsight(CallbackParams callbackParams) {
+
+        /*if(!launchDarklyClient.isFeatureEnabled("la-approval-change", LaunchDarklyClient.CLAIM_STORE_USER)){
+            callbackParams.getRequest().getCaseDetails().getData().remove(REVIEW_OR_DRAW_ORDER);
+        }*/
+        logger.info("notifyPartiesAndPrintOrderOrRaiseAppInsight: 1");
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackParams.getRequest().getCaseDetails());
+        if(CCDReviewOrDrawOrder.LA_DRAW_ORDER.equals(ccdCase.getReviewOrDrawOrder())){
+            logger.info("notifyPartiesAndPrintOrderOrRaiseAppInsight: 2 {}",ccdCase.getReviewOrDrawOrder());
+            logger.info("LA drawing order without judge review for claim: {}", ccdCase.getPreviousServiceCaseReference());
+            return notifyPartiesAndPrintOrder(callbackParams);
+        }
+        logger.info("Generate order callback: raise app insight");
+        appInsights.trackEvent(DRAFTED_BY_LEGAL_ADVISOR, REFERENCE_NUMBER, ccdCase.getPreviousServiceCaseReference());
+        return AboutToStartOrSubmitCallbackResponse.builder().build();
     }
 
     private CCDCase cleanUpDynamicList(CCDCase ccdCase) {
