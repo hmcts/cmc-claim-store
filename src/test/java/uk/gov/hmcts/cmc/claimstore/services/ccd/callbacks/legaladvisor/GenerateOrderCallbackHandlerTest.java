@@ -4,7 +4,11 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -13,11 +17,21 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.test.util.ReflectionTestUtils;
-import uk.gov.hmcts.cmc.ccd.domain.*;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.*;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDReviewOrDrawOrder;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
@@ -349,7 +363,8 @@ public class GenerateOrderCallbackHandlerTest {
             generateOrderCallbackHandler.handle(callbackParams);
 
             verify(appInsights)
-                .trackEvent(AppInsightsEvent.LA_GENERATE_DRAW_ORDER, REFERENCE_NUMBER, ccdCase.getPreviousServiceCaseReference());
+                .trackEvent(AppInsightsEvent.LA_GENERATE_DRAW_ORDER, REFERENCE_NUMBER,
+                    ccdCase.getPreviousServiceCaseReference());
             verify(orderDrawnNotificationService).notifyDefendant(claim);
             verify(orderDrawnNotificationService).notifyClaimant(claim);
             verify(legalOrderService).print(
