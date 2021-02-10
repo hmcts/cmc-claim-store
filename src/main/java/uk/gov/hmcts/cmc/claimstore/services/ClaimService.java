@@ -547,7 +547,8 @@ public class ClaimService {
                 claimRetreived.forEach(claim -> {
                         Optional<Payment> paymentRetreived = claim.getClaimData().getPayment();
                         paymentRetreived.ifPresent(payment -> {
-                            if (payment.getStatus() == null || !payment.getStatus().equals(SUCCESS)) {
+                            if (payment.getStatus() == null || !payment.getStatus().equals(SUCCESS)
+                                || payment.getStatus().equals(SUCCESS)) {
                                 Payment paymentBuild = payment.toBuilder()
                                     .amount(paymentUpdate.getAmount())
                                     .reference(paymentUpdate.getReference())
