@@ -56,7 +56,6 @@ public enum CaseEvent {
     REFERRED_TO_MEDIATION("ReferredToMediation"),
     DRAW_ORDER("DrawOrder"),
     DRAW_JUDGES_ORDER("DrawJudgesOrder"),
-    LA_GENERATE_DRAW_ORDER("GenerateOrder"),
     RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS("ResetClaimSubmissionOperationIndicators"),
     CLAIMANT_DIRECTIONS_QUESTIONNAIRE_UPLOAD("ClaimantDirectionsQuestionnaireUpload"),
     ORDER_REVIEW_REQUESTED("OrderReviewRequested"),
