@@ -1,9 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.services.notifications;
 
+import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -31,9 +30,6 @@ public class HwfClaimNotificationServiceTest extends BaseNotificationServiceTest
 
     private final String reference = "hwf-claimant-notification-" + claim.getReferenceNumber();
     private HwfClaimNotificationService service;
-
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
 
     @Before
     public void beforeEachTest() {
@@ -125,12 +121,15 @@ public class HwfClaimNotificationServiceTest extends BaseNotificationServiceTest
 
     @Test
     public void recoveryShouldNotLogPII() {
-        expectedException.expect(NotificationException.class);
-        service.logNotificationFailure(
-            new NotificationException("expected exception"),
-            "reference"
-        );
 
-        assertWasLogged("Failure: failed to send notification (reference) due to expected exception");
+        try {
+            service.logNotificationFailure(
+                new NotificationException("expected exception"),
+                "reference"
+            );
+            Assert.fail("Expected a NotificationException to be thrown");
+        } catch (NotificationException expected) {
+            assertWasLogged("Failure: failed to send notification (reference) due to expected exception");
+        }
     }
 }
