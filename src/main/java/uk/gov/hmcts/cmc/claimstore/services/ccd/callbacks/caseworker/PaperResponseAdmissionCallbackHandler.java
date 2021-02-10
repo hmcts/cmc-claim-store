@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -13,6 +14,9 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
+import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentOrchestrationService;
+import uk.gov.hmcts.cmc.claimstore.rpa.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.CaseEventService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
@@ -35,6 +39,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import java.net.URI;
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +75,8 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
     private final GeneralLetterService generalLetterService;
     private final CaseEventService caseEventService;
     private final LaunchDarklyClient launchDarklyClient;
+    private final DocumentOrchestrationService documentOrchestrationService;
+    private final ClaimIssuedNotificationService notificationService;
 
     private final Map<CallbackType, Callback> callbacks = Map.of(
         CallbackType.ABOUT_TO_START, this::aboutToStart,
@@ -77,17 +84,22 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
     );
 
     public PaperResponseAdmissionCallbackHandler(CaseDetailsConverter caseDetailsConverter,
-             DefendantResponseNotificationService defendantResponseNotificationService,
-             CaseMapper caseMapper,
-             DocAssemblyService docAssemblyService,
-             DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper,
-             @Value("${doc_assembly.paperResponseAdmissionTemplateId}") String paperResponseAdmissionTemplateId,
-             UserService userService,
-             DocumentManagementService documentManagementService,
-             Clock clock,
-             GeneralLetterService generalLetterService,
-             CaseEventService caseEventService,
-             LaunchDarklyClient launchDarklyClient) {
+                                                 DefendantResponseNotificationService
+                                                     defendantResponseNotificationService,
+                                                 CaseMapper caseMapper,
+                                                 DocAssemblyService docAssemblyService,
+                                                 DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper,
+                                                 @Value("${doc_assembly.paperResponseAdmissionTemplateId}")
+                                                     String paperResponseAdmissionTemplateId,
+                                                 UserService userService,
+                                                 DocumentManagementService documentManagementService,
+                                                 Clock clock,
+                                                 GeneralLetterService generalLetterService,
+                                                 CaseEventService caseEventService,
+                                                 LaunchDarklyClient launchDarklyClient,
+                                                 DocumentOrchestrationService documentOrchestrationService,
+                                                 @Qualifier("rpa/claim-issued-notification-service")
+                                                     ClaimIssuedNotificationService notificationService) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.defendantResponseNotificationService = defendantResponseNotificationService;
         this.caseMapper = caseMapper;
@@ -100,6 +112,8 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
         this.generalLetterService = generalLetterService;
         this.caseEventService = caseEventService;
         this.launchDarklyClient = launchDarklyClient;
+        this.documentOrchestrationService = documentOrchestrationService;
+        this.notificationService = notificationService;
     }
 
     private CallbackResponse aboutToStart(CallbackParams callbackParams) {
@@ -158,6 +172,9 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
         }
 
         sendClaimantEmail(claim);
+
+        PDF sealedClaimPdf = documentOrchestrationService.getSealedClaimPdf(claim);
+        notificationService.notifyRobotics(claim, Arrays.asList(sealedClaimPdf));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetailsConverter.convertToMap(updatedCCDCase))

@@ -21,8 +21,10 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentOrchestrationService;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.rpa.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.CaseEventService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
@@ -108,6 +110,10 @@ class PaperResponseAdmissionCallbackHandlerTest {
     private LaunchDarklyClient launchDarklyClient;
     @Mock
     private CaseEventService caseEventService;
+    @Mock
+    private DocumentOrchestrationService documentOrchestrationService;
+    @Mock
+    private ClaimIssuedNotificationService notificationService;
 
     @BeforeEach
     void setUp() {
@@ -115,7 +121,7 @@ class PaperResponseAdmissionCallbackHandlerTest {
         handler = new PaperResponseAdmissionCallbackHandler(caseDetailsConverter,
             defendantResponseNotificationService, caseMapper, docAssemblyService, docAssemblyTemplateBodyMapper,
             paperResponseAdmissionTemplateId, userService, documentManagementService, clock, generalLetterService,
-            caseEventService, launchDarklyClient);
+            caseEventService, launchDarklyClient, documentOrchestrationService, notificationService);
         CallbackRequest callbackRequest = getCallBackRequest();
         callbackParams = getBuild(callbackRequest, CallbackType.ABOUT_TO_SUBMIT);
 
