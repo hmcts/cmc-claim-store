@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
 import net.logstash.logback.encoder.org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
@@ -17,7 +18,10 @@ import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestion
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
+import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentOrchestrationService;
+import uk.gov.hmcts.cmc.claimstore.rpa.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.CaseEventService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
@@ -26,6 +30,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -35,6 +40,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,13 +65,18 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
     private final UserService userService;
     private final CaseEventService caseEventService;
     private final LaunchDarklyClient launchDarklyClient;
+    private final DocumentOrchestrationService documentOrchestrationService;
+    private final ClaimIssuedNotificationService notificationService;
 
     public PaperResponseFullDefenceCallbackHandler(CaseDetailsConverter caseDetailsConverter, Clock clock,
                                                    EventProducer eventProducer, CaseMapper caseMapper,
                                                    CourtFinderApi courtFinderApi,
                                                    UserService userService,
                                                    CaseEventService caseEventService,
-                                                   LaunchDarklyClient launchDarklyClient) {
+                                                   LaunchDarklyClient launchDarklyClient,
+                                                   DocumentOrchestrationService documentOrchestrationService,
+                                                   @Qualifier("rpa/claim-issued-notification-service")
+                                                       ClaimIssuedNotificationService notificationService) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.clock = clock;
         this.eventProducer = eventProducer;
@@ -74,6 +85,8 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
         this.userService = userService;
         this.caseEventService = caseEventService;
         this.launchDarklyClient = launchDarklyClient;
+        this.documentOrchestrationService = documentOrchestrationService;
+        this.notificationService = notificationService;
     }
 
     protected Map<CallbackType, Callback> callbacks() {
@@ -138,6 +151,9 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
             .build();
 
         eventProducer.createDefendantPaperResponseEvent(caseMapper.from(updatedCcdCase), authorisation);
+        Claim claim = caseMapper.from(updatedCcdCase);
+        PDF sealedClaimPdf = documentOrchestrationService.getSealedClaimPdf(claim);
+        notificationService.notifyRobotics(claim, Arrays.asList(sealedClaimPdf));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetailsConverter.convertToMap(updatedCcdCase))
