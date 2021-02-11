@@ -147,8 +147,8 @@ public class GenerateOrderCallbackHandlerTest {
             caseDetailsConverter, legalOrderService, appInsights, directionOrderService,
             documentManagementService, claimService);
 
-        generateOrderCallbackHandler = new GenerateOrderCallbackHandler(orderCreator, orderPostProcessor,
-            caseDetailsConverter, appInsights);
+        generateOrderCallbackHandler = new GenerateOrderCallbackHandler(orderCreator, orderPostProcessor
+        );
 
         ReflectionTestUtils.setField(generateOrderCallbackHandler, "templateId", "testTemplateId");
 
@@ -329,7 +329,7 @@ public class GenerateOrderCallbackHandlerTest {
         }
 
         @Test
-        public void shouldNotifyPartiesAndPrintDocumentsOnEventSubmitted() {
+        void shouldNotifyPartiesAndPrintDocumentsOnEventSubmitted() {
             callbackParams = CallbackParams.builder()
                 .type(CallbackType.SUBMITTED)
                 .request(callbackRequest)

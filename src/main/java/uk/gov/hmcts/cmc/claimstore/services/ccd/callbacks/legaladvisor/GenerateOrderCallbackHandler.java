@@ -2,19 +2,15 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legaladvisor;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
-import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 
 import java.util.Collections;
 import java.util.List;
@@ -30,27 +26,19 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
     private static final List<Role> ROLES = Collections.singletonList(LEGAL_ADVISOR);
     private static final List<CaseEvent> EVENTS = ImmutableList.of(GENERATE_ORDER, ACTION_REVIEW_COMMENTS);
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final OrderCreator orderCreator;
     private final OrderPostProcessor orderPostProcessor;
 
     @Value("${doc_assembly.templateId}")
     private String templateId;
 
-    private final CaseDetailsConverter caseDetailsConverter;
-    private final AppInsights appInsights;
-
     @Autowired
     public GenerateOrderCallbackHandler(
         OrderCreator orderCreator,
-        OrderPostProcessor orderPostProcessor,
-        CaseDetailsConverter caseDetailsConverter,
-        AppInsights appInsights
+        OrderPostProcessor orderPostProcessor
     ) {
         this.orderCreator = orderCreator;
         this.orderPostProcessor = orderPostProcessor;
-        this.caseDetailsConverter = caseDetailsConverter;
-        this.appInsights = appInsights;
     }
 
     @Override
