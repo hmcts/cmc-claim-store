@@ -49,7 +49,11 @@ public class IndividualDetailsMapper {
             .ifPresent(phoneNo -> claimantProvidedDetails.telephoneNumber(telephoneMapper.to(phoneNo)));
 
         individual.getEmail().ifPresent(claimantProvidedDetails::emailAddress);
-        claimantProvidedDetails.primaryAddress(addressMapper.to(individual.getAddress()));
+        if (individual.getAddress() != null) {
+            claimantProvidedDetails.primaryAddress(addressMapper.to(individual.getAddress()));
+        } else {
+            claimantProvidedDetails.primaryAddress((addressMapper.to(individual.getclaimantProvidedAddress())));
+        }
 
         builder
             .claimantProvidedPartyName(individual.getName())

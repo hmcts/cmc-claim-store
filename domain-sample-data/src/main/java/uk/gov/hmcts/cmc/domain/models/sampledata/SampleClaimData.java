@@ -237,6 +237,7 @@ public class SampleClaimData {
             .withDefendant(SampleTheirDetails.builder()
                 .withRepresentative(null)
                 .withPhone("0776655443322")
+                .withClaimantProvidedAddress(null)
                 .individualDetails())
             .withTimeline(SampleTimeline.validDefaults())
             .withEvidence(SampleEvidence.validDefaults());

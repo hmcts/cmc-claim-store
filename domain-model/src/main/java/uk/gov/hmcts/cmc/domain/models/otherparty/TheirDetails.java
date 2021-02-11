@@ -99,7 +99,7 @@ public abstract class TheirDetails extends CollectionId implements NamedParty {
         return Optional.ofNullable(phone);
     }
 
-    public Optional<Address> getclaimantProvidedAddress() { return Optional.ofNullable(claimantProvidedAddress); }
+    public Address getclaimantProvidedAddress() { return claimantProvidedAddress; }
 
     @Override
     public String toString() {

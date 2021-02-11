@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.ClaimantContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.PersonContentProvider;
+import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
@@ -43,11 +44,17 @@ public class ClaimContentProvider {
         );
 
         TheirDetails defendant = claim.getClaimData().getDefendant();
+        Address defendantAddressToUpdate = null;
+        if (defendant.getAddress() == null) {
+            defendantAddressToUpdate = defendant.getclaimantProvidedAddress();
+        } else {
+            defendantAddressToUpdate = defendant.getAddress();
+        }
 
         map.put("defendant", personContentProvider.createContent(
             PartyUtils.getType(defendant),
             defendant.getName(),
-            defendant.getAddress(),
+            defendantAddressToUpdate,
             null,
             defendant.getEmail().orElse(null),
             PartyUtils.getContactPerson(defendant).orElse(null),

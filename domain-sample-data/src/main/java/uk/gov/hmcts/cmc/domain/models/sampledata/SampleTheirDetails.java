@@ -20,7 +20,7 @@ public class SampleTheirDetails {
     private String firstName = "John";
     private String lastName = "Smith";
     private Address address = SampleAddress.builder().build();
-    private Address claimantProvidedAddress = SampleAddress.builder().build();
+    private Address claimantProvidedAddress;
     private String email = DEFENDANT_EMAIL;
     private String contactPerson = "Arnold Schwarzenegger";
     private String businessName = "Sole Trading & Sons";
@@ -103,6 +103,11 @@ public class SampleTheirDetails {
 
     public SampleTheirDetails withCollectionId(String collectionId) {
         this.collectionId = collectionId;
+        return this;
+    }
+
+    public SampleTheirDetails withClaimantProvidedAddress(Address address) {
+        this.claimantProvidedAddress = address;
         return this;
     }
 
