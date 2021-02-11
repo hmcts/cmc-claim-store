@@ -14,8 +14,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -92,7 +90,6 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.DQ_FLAG;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 public class GenerateOrderCallbackHandlerTest {
 
     private static final String BEARER_TOKEN = "Bearer let me in";
@@ -383,8 +380,7 @@ public class GenerateOrderCallbackHandlerTest {
         }
 
         @Test
-        public void shouldAddDraftDocumentToCaseDocumentsOnLADrawOrder() {
-
+        void shouldAddDraftDocumentToCaseDocumentsOnLADrawOrder() {
             CCDCollectionElement<CCDClaimDocument> existingDocument =
                 CCDCollectionElement.<CCDClaimDocument>builder()
                     .value(CCDClaimDocument.builder()
@@ -395,17 +391,8 @@ public class GenerateOrderCallbackHandlerTest {
                         .build())
                     .build();
 
-            CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList()).toBuilder()
-                .draftOrderDoc(DOCUMENT).reviewOrDrawOrder(CCDReviewOrDrawOrder.LA_DRAW_ORDER)
-                .directionOrder(CCDDirectionOrder.builder()
-                    .hearingCourtName(SampleData.MANCHESTER_CIVIL_JUSTICE_CENTRE_CIVIL_AND_FAMILY_COURTS)
-                    .hearingCourtAddress(SampleData.getHearingCourtAddress())
-                    .build())
-                .caseDocuments(ImmutableList.of(existingDocument))
-                .build();
-
             ImmutableMap<String, Object> data = ImmutableMap.of("data", "existingData",
-                "caseDocuments", ImmutableList.of(CLAIM_DOCUMENT),"reviewOrDrawOrder","LA_DRAW_ORDER");
+                "caseDocuments", ImmutableList.of(CLAIM_DOCUMENT), "reviewOrDrawOrder", "LA_DRAW_ORDER");
 
             callbackRequest = CallbackRequest
                 .builder()
@@ -417,6 +404,14 @@ public class GenerateOrderCallbackHandlerTest {
                 .type(CallbackType.ABOUT_TO_SUBMIT)
                 .request(callbackRequest)
                 .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+                .build();
+            CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList()).toBuilder()
+                .draftOrderDoc(DOCUMENT).reviewOrDrawOrder(CCDReviewOrDrawOrder.LA_DRAW_ORDER)
+                .directionOrder(CCDDirectionOrder.builder()
+                    .hearingCourtName(SampleData.MANCHESTER_CIVIL_JUSTICE_CENTRE_CIVIL_AND_FAMILY_COURTS)
+                    .hearingCourtAddress(SampleData.getHearingCourtAddress())
+                    .build())
+                .caseDocuments(ImmutableList.of(existingDocument))
                 .build();
             when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
             when(clock.getZone()).thenReturn(ZoneOffset.UTC);
@@ -443,8 +438,6 @@ public class GenerateOrderCallbackHandlerTest {
                 entry("data", "existingData")
             );
         }
-
-
     }
 
     @Nested
