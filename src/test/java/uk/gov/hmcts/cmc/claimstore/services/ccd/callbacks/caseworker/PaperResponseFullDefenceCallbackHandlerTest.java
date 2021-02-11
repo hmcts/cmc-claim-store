@@ -27,11 +27,8 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
-import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
-import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentOrchestrationService;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
-import uk.gov.hmcts.cmc.claimstore.rpa.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.CaseEventService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
@@ -94,12 +91,6 @@ class PaperResponseFullDefenceCallbackHandlerTest {
     private UserService userService;
     @Captor
     private ArgumentCaptor<CCDCase> ccdCaseArgumentCaptor;
-    @Mock
-    private DocumentOrchestrationService documentOrchestrationService;
-    @Mock
-    private ClaimIssuedNotificationService notificationService;
-    @Mock
-    private PDF pdf;
 
     @Nested
     class AboutToStartTests {
@@ -430,7 +421,6 @@ class PaperResponseFullDefenceCallbackHandlerTest {
         void shouldSetResponseDefenceType() {
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
             Claim claim = caseMapper.from(ccdCase);
-            when(documentOrchestrationService.getSealedClaimPdf(claim)).thenReturn(pdf);
             handler.handle(callbackParams);
 
             verify(caseDetailsConverter).convertToMap(ccdCaseArgumentCaptor.capture());
