@@ -59,7 +59,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
     private static final String FORM_NAME = "OCON9x";
     private static final String OCON_PAPER_FORM = "PaperResponseOCON9xForm";
     private static final String OCON9X_REVIEW_MSG =
-        "Before you continue please ensure you review the OCON9x review response";
+        "Before continuing you must complete the ‘Review OCON9x paper response’ event";
     private final CaseDetailsConverter caseDetailsConverter;
     private final DefendantResponseNotificationService defendantResponseNotificationService;
     private final CaseMapper caseMapper;
