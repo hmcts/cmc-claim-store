@@ -33,7 +33,7 @@ public class FullAdmissionResponseContentProvider {
             .put("responseTypeSelected", fullAdmissionResponse.getResponseType().getDescription());
 
         if (fullAdmissionResponse.getPaymentIntention() != null
-            || fullAdmissionResponse.getPaymentIntention().getPaymentOption() != null) {
+            && fullAdmissionResponse.getPaymentIntention().getPaymentOption() != null) {
             contentBuilder.putAll(paymentIntentionContentProvider.createContent(
                 fullAdmissionResponse.getPaymentIntention().getPaymentOption(),
                 fullAdmissionResponse.getPaymentIntention().getRepaymentPlan().orElse(null),
