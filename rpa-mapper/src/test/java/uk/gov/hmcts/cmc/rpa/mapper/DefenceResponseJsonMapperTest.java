@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.rpa.mapper;
 
 import org.json.JSONException;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.DQ_FLAG;
 @ContextConfiguration(classes = ModuleConfiguration.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SuppressWarnings({"LineLength"})
+@Ignore
 public class DefenceResponseJsonMapperTest extends BaseResponseJsonMapper {
 
     private static final String INDIVIDUAL = "/defence/individual_rpa_case.json";

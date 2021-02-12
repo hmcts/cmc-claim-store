@@ -49,10 +49,10 @@ public class IndividualDetailsMapper {
             .ifPresent(phoneNo -> claimantProvidedDetails.telephoneNumber(telephoneMapper.to(phoneNo)));
 
         individual.getEmail().ifPresent(claimantProvidedDetails::emailAddress);
-        if (individual.getAddress() != null) {
-            claimantProvidedDetails.primaryAddress(addressMapper.to(individual.getAddress()));
-        } else {
+        if (individual.getclaimantProvidedAddress() != null) {
             claimantProvidedDetails.primaryAddress((addressMapper.to(individual.getclaimantProvidedAddress())));
+        } else {
+            claimantProvidedDetails.primaryAddress(addressMapper.to(individual.getAddress()));
         }
 
         builder
@@ -71,7 +71,7 @@ public class IndividualDetailsMapper {
             .firstName(respondent.getClaimantProvidedDetail().getFirstName())
             .lastName(respondent.getClaimantProvidedDetail().getLastName())
             .title(respondent.getClaimantProvidedDetail().getTitle())
-            .address(getAddress1(partyDetail, CCDParty::getPrimaryAddress))
+            .address(getAddress(partyDetail, detailFromClaimant, CCDParty::getPrimaryAddress))
             .claimantProvidedAddress(getAddress1(detailFromClaimant, CCDParty::getPrimaryAddress))
             .email(getDetail(partyDetail, detailFromClaimant, x -> x.getEmailAddress()))
             .phoneNumber(telephoneMapper.from(getDetail(partyDetail, detailFromClaimant, CCDParty::getTelephoneNumber)))
@@ -83,8 +83,7 @@ public class IndividualDetailsMapper {
 
     private Address getAddress(CCDParty detail, CCDParty detailByClaimant, Function<CCDParty, CCDAddress> getAddress) {
         CCDAddress partyAddress = getAddress(detail, getAddress);
-        return addressMapper.from((partyAddress != null && detailByClaimant == null)
-            ? partyAddress : getAddress(detailByClaimant, getAddress));
+        return addressMapper.from(partyAddress != null ? partyAddress : getAddress(detailByClaimant, getAddress));
     }
     //partyaddress !=null && paryaddress.notequals claimaint address --> partyAddress
 
