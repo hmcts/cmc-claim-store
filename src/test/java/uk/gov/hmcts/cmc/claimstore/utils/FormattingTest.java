@@ -33,9 +33,9 @@ public class FormattingTest {
         assertThat(formattedDate).isEqualTo("1 July 2017");
     }
 
-    @Test(expected = NullPointerException.class)
-    public void formatDateShouldThrowNullPointerWhenGivenNullDate() {
-        Formatting.formatDate((LocalDate) null);
+    @Test
+    public void formatDateShouldReturnEmptyStringWhenGivenNullDate() {
+        assertThat(Formatting.formatDate((LocalDate) null)).isEmpty();
     }
 
     @Test(expected = NullPointerException.class)

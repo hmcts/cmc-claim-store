@@ -120,4 +120,12 @@ public class SealedClaimJsonMapperTest {
         //then
         assertEquals(expected, mapper.map(claim).toString(), STRICT);
     }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldThrowExceptionWhenMissingIssuedDate() {
+        Claim claim = SampleClaim.getDefault().toBuilder()
+            .issuedOn(null)
+            .build();
+        mapper.map(claim);
+    }
 }

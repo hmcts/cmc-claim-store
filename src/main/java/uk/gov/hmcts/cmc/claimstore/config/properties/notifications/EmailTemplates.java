@@ -17,6 +17,15 @@ public class EmailTemplates {
     private String claimantClaimIssued;
 
     @NotEmpty
+    private String claimantClaimIssuedWithHwfVerficationPending;
+
+    @NotEmpty
+    private String claimantHwfUpdate;
+
+    @NotEmpty
+    private String claimantHwfMoreInfoRequired;
+
+    @NotEmpty
     private String defendantClaimIssued;
 
     @NotEmpty
@@ -143,13 +152,13 @@ public class EmailTemplates {
     private String claimantIntentionToProceedForOnlineDq;
 
     @NotEmpty
-    private  String claimantSettledAfterFullDefence;
+    private String claimantSettledAfterFullDefence;
 
     @NotEmpty
-    private  String claimantMediationSuccess;
+    private String claimantMediationSuccess;
 
     @NotEmpty
-    private  String defendantMediationSuccess;
+    private String defendantMediationSuccess;
 
     @NotEmpty
     private String claimantReadyForTransfer;

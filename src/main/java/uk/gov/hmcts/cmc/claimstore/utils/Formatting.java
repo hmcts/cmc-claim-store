@@ -45,6 +45,9 @@ public class Formatting {
     }
 
     public static String formatDate(LocalDate date) {
+        if (date == null) {
+            return "";
+        }
         return formatTemporalWithPattern(date, DATE_PATTERN);
     }
 
