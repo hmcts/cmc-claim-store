@@ -63,6 +63,11 @@
       padding: 5px;
     }
 
+    .custom_header {
+      border-top: 1px solid #999;
+      padding-left: 0px;
+    }
+
     table tr:last-child td {
       border-bottom: 1px solid #999;
     }
@@ -460,7 +465,18 @@
     </table>
   </div>
 </div>
-
+{% if claim.helpWithFeesNumber is defined %}
+<div class="section">
+  <div class="section-heading">
+    <table>
+      <tr class="section-body">
+        <td class="custom_header"><strong>HwF reference number</strong></td>
+        <td>{{ claim.helpWithFeesNumber }}</td>
+      </tr>
+    </table>
+  </div>
+</div>
+{% endif %}
 <div class="section">
   <div class="section-heading">
     <strong>Statement of truth</strong>
