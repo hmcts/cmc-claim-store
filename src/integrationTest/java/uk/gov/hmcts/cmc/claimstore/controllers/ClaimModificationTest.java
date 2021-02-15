@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -11,7 +10,6 @@ import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.idam.models.UserInfo;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
@@ -244,8 +242,8 @@ public class ClaimModificationTest extends BaseMockSpringTest {
             .payment(Payment.builder()
                 .amount(BigDecimal.TEN)
                 .nextUrl("http://next.url")
-                .reference(REASON)
                 .returnUrl(RETURN_URL)
+                .reference("blah".repeat(4))
                 .status(PaymentStatus.INITIATED)
                 .build())
             .build();
@@ -534,7 +532,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
     public void testSaveReviewOrder() throws Exception {
         Claim claim = SampleClaim.getDefault();
         ReviewOrder reviewOrder = ReviewOrder.builder()
-            .reason(REASON)
+            .reason("blah".repeat(4))
             .requestedAt(LocalDateTime.now())
             .requestedBy(ReviewOrder.RequestedBy.CLAIMANT).build();
 

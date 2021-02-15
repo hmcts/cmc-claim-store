@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -56,17 +57,22 @@ public class ClaimDataContentProvider {
 
         InterestContent interestContent = null;
 
-        if (!Objects.equals(claim.getClaimData().getInterest().getType(), Interest.InterestType.NO_INTEREST)) {
+        LocalDate issuedOn = claim.getIssuedOn().orElse(null);
+        if (!Objects.equals(claim.getClaimData().getInterest().getType(), Interest.InterestType.NO_INTEREST)
+            && issuedOn != null) {
+
             interestContent = interestContentProvider.createContent(
                 claim.getClaimData().getInterest(),
                 claim.getClaimData().getInterest().getInterestDate(),
                 amountBreakDown.getTotalAmount(),
-                claim.getIssuedOn(),
-                claim.getIssuedOn()
+                issuedOn,
+                issuedOn
             );
 
             totalAmountComponents.add(interestContent.getAmountRealValue());
         }
+
+        Optional<String> helpWithFeesNumber = claim.getClaimData().getHelpWithFeesNumber();
 
         Optional<StatementOfTruth> optionalStatementOfTruth = claim.getClaimData().getStatementOfTruth();
 
@@ -83,7 +89,7 @@ public class ClaimDataContentProvider {
         return new ClaimContent(
             claim.getReferenceNumber(),
             formatDateTime(claim.getCreatedAt()),
-            formatDate(claim.getIssuedOn()),
+            formatDate(issuedOn),
             split(claim.getClaimData().getReason()),
             formatMoney(amountBreakDown.getTotalAmount()),
             formatMoney(claim.getClaimData().getFeesPaidInPounds().orElse(ZERO)),
@@ -96,7 +102,8 @@ public class ClaimDataContentProvider {
             events,
             evidences,
             mapToAmountRowContent(amountBreakDown.getRows()),
-            optionalStatementOfTruth.orElse(null)
+            optionalStatementOfTruth.orElse(null),
+            helpWithFeesNumber.orElse(null)
         );
     }
 

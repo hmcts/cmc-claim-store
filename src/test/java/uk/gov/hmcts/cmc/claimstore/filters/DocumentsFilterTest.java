@@ -45,7 +45,7 @@ class DocumentsFilterTest {
     @Test
     void filterDefendantViewableDocs() {
 
-        Claim filteredClaimForDefendant = DocumentsFilter.filterDocuments(claim, VALID_DEFENDANT, true);
+        Claim filteredClaimForDefendant = DocumentsFilter.filterDocuments(claim, VALID_DEFENDANT, true, true);
 
         List<ClaimDocument> claimDocsFromFilter = filteredClaimForDefendant.getClaimDocumentCollection()
             .map(ClaimDocumentCollection::getClaimDocuments)
@@ -70,7 +70,7 @@ class DocumentsFilterTest {
         UserDetails validClaimant
             = SampleUserDetails.builder().withUserId(USER_ID).withMail(SUBMITTER_EMAIL).build();
 
-        Claim filteredClaimForDefendant = DocumentsFilter.filterDocuments(claim, validClaimant, true);
+        Claim filteredClaimForDefendant = DocumentsFilter.filterDocuments(claim, validClaimant, true, true);
 
         List<ClaimDocument> claimDocsFromFilter = filteredClaimForDefendant.getClaimDocumentCollection()
             .map(ClaimDocumentCollection::getClaimDocuments)
@@ -94,7 +94,7 @@ class DocumentsFilterTest {
         UserDetails validCaseworker
             = SampleUserDetails.builder().withUserId("5").withMail("cw@worker.com")
             .withRoles("caseworker-cmc").build();
-        Claim filteredClaimForDefendant = DocumentsFilter.filterDocuments(claim, validCaseworker, true);
+        Claim filteredClaimForDefendant = DocumentsFilter.filterDocuments(claim, validCaseworker, true, true);
 
         assertEquals(5, filteredClaimForDefendant.getClaimDocumentCollection()
             .map(ClaimDocumentCollection::getClaimDocuments)
@@ -107,7 +107,7 @@ class DocumentsFilterTest {
         UserDetails unrelatedUser
             = SampleUserDetails.builder().withUserId("18").withMail("unknown@worker.com")
             .build();
-        Claim filteredClaimForDefendant = DocumentsFilter.filterDocuments(claim, unrelatedUser, true);
+        Claim filteredClaimForDefendant = DocumentsFilter.filterDocuments(claim, unrelatedUser, true, true);
 
         assertTrue(filteredClaimForDefendant.getClaimDocumentCollection()
             .map(ClaimDocumentCollection::getClaimDocuments)
@@ -118,7 +118,7 @@ class DocumentsFilterTest {
     @Test
     void filterClaimThatHasNoDocuments() {
         Claim claimNoDoc = SampleClaim.builder().build();
-        Claim filteredClaimForDefendant = DocumentsFilter.filterDocuments(claimNoDoc, VALID_DEFENDANT, true);
+        Claim filteredClaimForDefendant = DocumentsFilter.filterDocuments(claimNoDoc, VALID_DEFENDANT, true, true);
 
         assertTrue(filteredClaimForDefendant.getClaimDocumentCollection()
             .map(ClaimDocumentCollection::getClaimDocuments)
@@ -128,7 +128,7 @@ class DocumentsFilterTest {
 
     @Test
     void shouldIncludeGeneralLetterAndOcon9XScannedFormDocumentIfCtscEnabled() {
-        Claim filteredClaimForDefendant = DocumentsFilter.filterDocuments(claim, VALID_DEFENDANT, true);
+        Claim filteredClaimForDefendant = DocumentsFilter.filterDocuments(claim, VALID_DEFENDANT, true, true);
 
         assertEquals(4, filteredClaimForDefendant.getClaimDocumentCollection()
             .map(ClaimDocumentCollection::getClaimDocuments)
@@ -143,7 +143,7 @@ class DocumentsFilterTest {
 
     @Test
     void shouldNotIncludeGeneralLetterAndOcon9XScannedFormDocumentIfCtscNotEnabled() {
-        Claim filteredClaimForDefendant = DocumentsFilter.filterDocuments(claim, VALID_DEFENDANT, false);
+        Claim filteredClaimForDefendant = DocumentsFilter.filterDocuments(claim, VALID_DEFENDANT, false, true);
 
         assertEquals(3, filteredClaimForDefendant.getClaimDocumentCollection()
             .map(ClaimDocumentCollection::getClaimDocuments)

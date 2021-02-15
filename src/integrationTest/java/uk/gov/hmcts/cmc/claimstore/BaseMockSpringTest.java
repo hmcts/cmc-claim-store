@@ -48,6 +48,7 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDraw
 import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 import uk.gov.hmcts.cmc.scheduler.services.JobService;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -251,6 +252,7 @@ public abstract class BaseMockSpringTest {
         return webClient.perform(
             put(urlTemplate, uriVars)
                 .header(HttpHeaders.AUTHORIZATION, auth)
+                .header("LetterHolderID", SampleClaim.LETTER_HOLDER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonMappingHelper.toJson(content)));
     }
