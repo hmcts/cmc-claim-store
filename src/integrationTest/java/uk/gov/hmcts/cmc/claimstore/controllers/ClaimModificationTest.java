@@ -451,8 +451,6 @@ public class ClaimModificationTest extends BaseMockSpringTest {
 
         verify(caseRepository)
             .requestMoreTimeForResponse(eq(AUTHORISATION_TOKEN_CITIZEN), eq(claim), any(LocalDate.class));
-        verify(eventProducer)
-            .createMoreTimeForResponseRequestedEvent(eq(claim), any(LocalDate.class), anyString());
 
         assertThat(result)
             .isNotNull();
