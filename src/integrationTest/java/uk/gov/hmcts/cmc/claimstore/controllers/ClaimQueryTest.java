@@ -63,7 +63,7 @@ public class ClaimQueryTest extends BaseMockSpringTest {
     @Test
     public void testGetBySubmitterId() throws Exception {
         Claim claim = SampleClaim.getDefault();
-        when(caseRepository.getBySubmitterId(SampleClaim.USER_ID, BEARER_TOKEN, 1))
+        when(caseRepository.getBySubmitterId(SampleClaim.USER_ID, BEARER_TOKEN, null))
             .thenReturn(List.of(claim));
 
         List<Claim> retrievedClaims = jsonMappingHelper.fromJson(
@@ -204,7 +204,7 @@ public class ClaimQueryTest extends BaseMockSpringTest {
             .build();
 
         when(caseRepository.getBySubmitterId(SampleClaim.USER_ID,
-            BEARER_TOKEN, 1))
+            BEARER_TOKEN, null))
             .thenReturn(List.of(otherClaim, claim));
 
         List<Claim> retrievedClaims = jsonMappingHelper.fromJson(
@@ -256,7 +256,7 @@ public class ClaimQueryTest extends BaseMockSpringTest {
             .submitterId(SampleClaim.USER_ID + "claimant")
             .defendantId(defendantId)
             .build();
-        when(caseRepository.getByDefendantId(defendantId, BEARER_TOKEN, 1))
+        when(caseRepository.getByDefendantId(defendantId, BEARER_TOKEN, null))
             .thenReturn(List.of(claim));
 
         List<Claim> retrievedClaims = jsonMappingHelper.fromJson(
