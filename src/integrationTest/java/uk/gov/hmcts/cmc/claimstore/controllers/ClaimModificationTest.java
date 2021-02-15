@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -10,6 +11,7 @@ import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserInfo;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
@@ -429,7 +431,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
     public void testLinkDefendantToClaim() throws Exception {
         doPut(BEARER_TOKEN, null, ROOT_PATH + "/defendant/link")
             .andExpect(status().isOk());
-        verify(caseRepository).linkDefendant(BEARER_TOKEN);
+        verify(caseRepository).linkDefendant(BEARER_TOKEN, SampleClaim.LETTER_HOLDER_ID);
     }
 
     @Test
