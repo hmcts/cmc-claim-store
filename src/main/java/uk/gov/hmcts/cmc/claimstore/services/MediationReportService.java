@@ -88,15 +88,14 @@ public class MediationReportService {
 
     private EmailData prepareMediationEmailData(String mediationCSV,
                                                 LocalDate mediationDate, String emailToAddressFromSupportController) {
-        LocalDate csvReportingDate = mediationDate.plusDays(1);
-        String fileName = "MediationCSV." + csvReportingDate.toString() + ".csv";
+        String fileName = "MediationCSV." + mediationDate.toString() + ".csv";
         EmailAttachment mediationCSVAttachment = EmailAttachment.csv(mediationCSV.getBytes(), fileName);
         if (!StringUtils.isBlank(emailToAddressFromSupportController)) {
             logger.info("MILO: Sending email to support controller mail address");
             return new EmailData(
                 emailToAddressFromSupportController,
                 "MediationCSV " + mediationDate.toString(),
-                "OCMC mediation" + csvReportingDate.format(DateTimeFormatter.ofPattern("HH:mm dd/mm/yyyy")),
+                "OCMC mediation" + mediationDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                 Collections.singletonList(mediationCSVAttachment)
             );
         } else {
@@ -104,7 +103,7 @@ public class MediationReportService {
             return new EmailData(
                 emailToAddress,
                 "MediationCSV " + mediationDate.toString(),
-                "OCMC mediation" + csvReportingDate.format(DateTimeFormatter.ofPattern("HH:mm dd/mm/yyyy")),
+                "OCMC mediation" + mediationDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                 Collections.singletonList(mediationCSVAttachment)
             );
         }
