@@ -17,11 +17,12 @@ import uk.gov.hmcts.cmc.rpa.DateFormatter;
 import uk.gov.hmcts.cmc.rpa.mapper.helper.RPAMapperHelper;
 import uk.gov.hmcts.cmc.rpa.mapper.json.NullAwareJsonObjectBuilder;
 
-import java.math.BigDecimal;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import java.math.BigDecimal;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.PAPER_RESPONSE_ADMISSION;
 import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractFromSubclass;
 
 @Component
@@ -40,6 +41,17 @@ public class DefenceResponseJsonMapper {
             .orElseThrow(() -> new IllegalArgumentException("Missing response"));
         String defendantsEmail = claim.getDefendantEmail();
 
+        if(claim.getLastEventTriggeredForHwfCase().equals(PAPER_RESPONSE_ADMISSION.getValue())) {
+            return new NullAwareJsonObjectBuilder()
+                .add("caseNumber", claim.getReferenceNumber())
+                .add("responseSubmittedOn", DateFormatter.format(claim.getRespondedAt()))
+                .add("defenceResponse", defenceResponse(response))
+                .add("defendant", defendantMapper.map(response.getDefendant(), claim.getClaimData().getDefendant(), defendantsEmail))
+                .add("mediation", isMediationSelected(response))
+                .add("amountAdmitted", getAmountAdmitted(response))
+                .add("hearingRequirements", areHearingRequirementsRequested(claim, response))
+                .build();
+        }
         return new NullAwareJsonObjectBuilder()
             .add("caseNumber", claim.getReferenceNumber())
             .add("responseSubmittedOn", DateFormatter.format(claim.getRespondedAt()))

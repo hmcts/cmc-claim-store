@@ -4,6 +4,7 @@ plugins {
 
 dependencies {
   compile project(':domain-model')
+  compile project(':ccd-adapter')
 
   compile group: 'org.springframework.boot', name: 'spring-boot-starter'
   compile group: 'javax.json', name: 'javax.json-api', version: '1.1.4'

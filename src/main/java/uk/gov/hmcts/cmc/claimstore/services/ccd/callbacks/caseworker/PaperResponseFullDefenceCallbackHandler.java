@@ -18,6 +18,8 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
+import uk.gov.hmcts.cmc.claimstore.rpa.DefenceResponseNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.CaseEventService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
@@ -61,13 +63,15 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
     private final UserService userService;
     private final CaseEventService caseEventService;
     private final LaunchDarklyClient launchDarklyClient;
+    private final DefenceResponseNotificationService defenceResponseNotificationService;
 
     public PaperResponseFullDefenceCallbackHandler(CaseDetailsConverter caseDetailsConverter, Clock clock,
                                                    EventProducer eventProducer, CaseMapper caseMapper,
                                                    CourtFinderApi courtFinderApi,
                                                    UserService userService,
                                                    CaseEventService caseEventService,
-                                                   LaunchDarklyClient launchDarklyClient) {
+                                                   LaunchDarklyClient launchDarklyClient,
+                                                   DefenceResponseNotificationService defenceResponseNotificationService) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.clock = clock;
         this.eventProducer = eventProducer;
@@ -76,6 +80,7 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
         this.userService = userService;
         this.caseEventService = caseEventService;
         this.launchDarklyClient = launchDarklyClient;
+        this.defenceResponseNotificationService = defenceResponseNotificationService;
     }
 
     protected Map<CallbackType, Callback> callbacks() {
@@ -149,9 +154,10 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
 
     private CallbackResponse submitted(CallbackParams callbackParams) {
         String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
-        CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
-        Claim claim = caseDetailsConverter.extractClaim(caseDetails);
-        eventProducer.createDefendantResponseEvent(claim, authorisation);
+        Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails())
+            .toBuilder().lastEventTriggeredForHwfCase(callbackParams.getRequest().getEventId()).build();
+        DefendantResponseEvent event = new DefendantResponseEvent(claim, authorisation);
+        defenceResponseNotificationService.notifyRobotics(event);
         return SubmittedCallbackResponse.builder().build();
     }
 

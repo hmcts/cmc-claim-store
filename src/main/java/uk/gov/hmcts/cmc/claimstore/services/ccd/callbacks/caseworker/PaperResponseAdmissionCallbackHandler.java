@@ -13,7 +13,8 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
-import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
+import uk.gov.hmcts.cmc.claimstore.rpa.DefenceResponseNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.CaseEventService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
@@ -72,7 +73,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
     private final GeneralLetterService generalLetterService;
     private final CaseEventService caseEventService;
     private final LaunchDarklyClient launchDarklyClient;
-    private final EventProducer eventProducer;
+    private final DefenceResponseNotificationService defenceResponseNotificationService;
 
     private final Map<CallbackType, Callback> callbacks = Map.of(
         CallbackType.ABOUT_TO_START, this::aboutToStart,
@@ -94,7 +95,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
                                                  GeneralLetterService generalLetterService,
                                                  CaseEventService caseEventService,
                                                  LaunchDarklyClient launchDarklyClient,
-                                                 EventProducer eventProducer) {
+                                                 DefenceResponseNotificationService defenceResponseNotificationService) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.defendantResponseNotificationService = defendantResponseNotificationService;
         this.caseMapper = caseMapper;
@@ -107,7 +108,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
         this.generalLetterService = generalLetterService;
         this.caseEventService = caseEventService;
         this.launchDarklyClient = launchDarklyClient;
-        this.eventProducer = eventProducer;
+        this.defenceResponseNotificationService = defenceResponseNotificationService;
     }
 
     private CallbackResponse aboutToStart(CallbackParams callbackParams) {
@@ -162,7 +163,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
         if (isDefendentLinked(updatedCCDCase)) {
             sendDefendantEmail(updatedCCDCase, claim);
         } else {
-            updatedCCDCase = sendDefendantLetter(callbackParams, updatedCCDCase, claim);
+            //updatedCCDCase = sendDefendantLetter(callbackParams, updatedCCDCase, claim);
         }
 
         sendClaimantEmail(claim);
@@ -174,9 +175,11 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
 
     private CallbackResponse submitted(CallbackParams callbackParams) {
         String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
-        CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
-        Claim claim = caseDetailsConverter.extractClaim(caseDetails);
-        eventProducer.createDefendantResponseEvent(claim, authorisation);
+        Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails())
+            .toBuilder().lastEventTriggeredForHwfCase(callbackParams.getRequest().getEventId()).build();
+        DefendantResponseEvent event = new DefendantResponseEvent(claim, authorisation);
+        defenceResponseNotificationService.notifyRobotics(event);
+
         return SubmittedCallbackResponse.builder().build();
     }
 
