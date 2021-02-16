@@ -101,7 +101,7 @@ public enum CaseEvent {
     MORE_INFO_REQUIRED_FOR_HWF("MoreInfoRequiredForHWF"),
     HWF_NO_REMISSION("NoRemissionHWF"),
     HWF_PART_REMISSION_GRANTED("HWFPartRemission"),
-    MISC_HWF("MiscHWF"),
+    UPDATE_HWF_NUMBER("UpdateHWFNumber"),
     CLOSE_AWAITING_RESPONSE_HWF("CloseAwaitingResponseHWF"),
     HWF_FULL_REMISSION_GRANTED("HWFFullRemision"),
     RECALCULATE_INTEREST("RecalculateInterest");
