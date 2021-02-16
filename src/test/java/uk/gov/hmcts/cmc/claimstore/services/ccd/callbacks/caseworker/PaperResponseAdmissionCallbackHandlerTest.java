@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefenceType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
@@ -54,6 +55,7 @@ import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -77,6 +79,8 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 class PaperResponseAdmissionCallbackHandlerTest {
 
     private static final String AUTHORISATION = "Bearer: aaaa";
+
+    private static final String BEARER_TOKEN = "Bearer let me in";
     private static final String DOC_URL = "http://success.test";
     private static final String DOC_URL_BINARY = "http://success.test/binary";
     private static final String OCON9X_REVIEW =
@@ -410,6 +414,37 @@ class PaperResponseAdmissionCallbackHandlerTest {
                 (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
 
             Assertions.assertNull(actualResponse.getErrors());
+
+        }
+    }
+
+    @Nested
+    class SubmitedTests {
+
+        @BeforeEach
+        void setUp() {
+            CallbackRequest request = CallbackRequest.builder()
+                .caseDetails(CaseDetails.builder().data(Map.of("defenceType", CCDDefenceType.DISPUTE.name())).build())
+                .eventId(CaseEvent.PAPER_RESPONSE_FULL_DEFENCE.getValue())
+                .build();
+
+            callbackParams = CallbackParams.builder()
+                .type(CallbackType.SUBMITTED)
+                .params(Map.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+                .request(request)
+                .build();
+        }
+
+        @Test
+        void shouldSendRpaNotification() {
+
+            when(caseDetailsConverter.extractClaim(callbackParams.getRequest()
+                .getCaseDetails())).thenReturn(Claim.builder().build());
+
+            handler.handle(callbackParams);
+
+            assertEquals(callbackParams.getRequest().getCaseDetails(), CaseDetails
+                .builder().data(Map.of("defenceType", CCDDefenceType.DISPUTE.name())).build());
 
         }
     }
