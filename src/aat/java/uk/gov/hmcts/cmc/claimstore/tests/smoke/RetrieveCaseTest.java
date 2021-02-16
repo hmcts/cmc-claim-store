@@ -7,10 +7,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.CCDElasticSearchRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.mapping.JsonMapperFactory;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.claimstore.tests.helpers.SampleQueryConstants;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -35,6 +37,9 @@ public class RetrieveCaseTest extends BaseTest {
     private static final String AUTHORISATION = "Bearer: aaa";
     private static final String SERVICE_AUTH = "Authorization";
     private static final JsonMapper jsonMapper = JsonMapperFactory.create();
+    private static final UserDetails USER_DETAILS = SampleUserDetails.builder()
+        .withRoles(Role.CITIZEN.getRole())
+        .withUserId(SampleClaim.USER_ID).build();
 
     @Mock
     private CoreCaseDataApi coreCaseDataApi;
@@ -63,7 +68,7 @@ public class RetrieveCaseTest extends BaseTest {
 
     @Test
     public void getClaimsForClaimantQueriesElastic() {
-        User user = new User(AUTHORISATION, null);
+        User user = new User(AUTHORISATION, USER_DETAILS);
         ccdElasticSearchRepository.getClaimsForClaimant(SampleClaim.USER_ID, user, 0);
         verify(coreCaseDataApi).searchCases(AUTHORISATION, SERVICE_AUTH, CASE_TYPE_ID,
             SampleQueryConstants.getClaimCountForClaimant);
@@ -71,7 +76,7 @@ public class RetrieveCaseTest extends BaseTest {
 
     @Test
     public void getClaimsForDefendantQueriesElastic() {
-        User user = new User(AUTHORISATION, null);
+        User user = new User(AUTHORISATION, USER_DETAILS);
         ccdElasticSearchRepository.getClaimsForDefendant(SampleClaim.USER_ID, user, 0);
         verify(coreCaseDataApi).searchCases(AUTHORISATION, SERVICE_AUTH, CASE_TYPE_ID,
             SampleQueryConstants.getClaimCountForDefendant);
