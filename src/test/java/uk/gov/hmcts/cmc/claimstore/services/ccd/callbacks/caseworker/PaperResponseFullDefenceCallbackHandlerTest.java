@@ -68,7 +68,7 @@ class PaperResponseFullDefenceCallbackHandlerTest {
     private static final String BEARER_TOKEN = "Bearer let me in";
     private static final LocalDateTime DATE = LocalDateTime.parse("2020-11-16T13:15:30");
     private static final String OCON9X_REVIEW =
-        "Before you continue please esure you review the OCON9x review response";
+        "Before continuing you must complete the ‘Review OCON9x paper response’ event";
     private static final List<CaseEvent> CASE_EVENTS = Arrays.asList(CaseEvent.PAPER_RESPONSE_OCON_9X_FORM);
     @Mock
     private CaseDetailsConverter caseDetailsConverter;

@@ -54,7 +54,7 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
     private static final List<Role> ROLES = List.of(CASEWORKER);
     private static final List<CaseEvent> EVENTS = List.of(PAPER_RESPONSE_FULL_DEFENCE);
     private static final String OCON9X_REVIEW =
-        "Before you continue please esure you review the OCON9x review response";
+        "Before continuing you must complete the ‘Review OCON9x paper response’ event";
     private final CaseDetailsConverter caseDetailsConverter;
     private final Clock clock;
     private final EventProducer eventProducer;
