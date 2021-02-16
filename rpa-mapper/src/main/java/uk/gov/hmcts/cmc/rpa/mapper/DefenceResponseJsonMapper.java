@@ -41,7 +41,8 @@ public class DefenceResponseJsonMapper {
             .orElseThrow(() -> new IllegalArgumentException("Missing response"));
         String defendantsEmail = claim.getDefendantEmail();
 
-        if(claim.getLastEventTriggeredForHwfCase().equals(PAPER_RESPONSE_ADMISSION.getValue())) {
+        if (claim.getLastEventTriggeredForHwfCase() != null
+            && claim.getLastEventTriggeredForHwfCase().equals(PAPER_RESPONSE_ADMISSION.getValue())) {
             return new NullAwareJsonObjectBuilder()
                 .add("caseNumber", claim.getReferenceNumber())
                 .add("responseSubmittedOn", DateFormatter.format(claim.getRespondedAt()))
@@ -100,12 +101,12 @@ public class DefenceResponseJsonMapper {
         jsonObjectBuilder.add("paymentType", paymentOption.name());
         String fullPaymentDeadLine = paymentOption == PaymentOption.BY_SPECIFIED_DATE
             ? paymentIntention.getPaymentDate().map(DateFormatter::format)
-                .orElseThrow(() -> new IllegalArgumentException("Missing payment date"))
+            .orElseThrow(() -> new IllegalArgumentException("Missing payment date"))
             : null;
         jsonObjectBuilder.add("fullPaymentDeadline", fullPaymentDeadLine);
         JsonObject installmentObj = paymentOption == PaymentOption.INSTALMENTS
             ? RPAMapperHelper.toJson(paymentIntention.getRepaymentPlan()
-                .orElseThrow(() -> new IllegalArgumentException("Missing repayment plan")))
+            .orElseThrow(() -> new IllegalArgumentException("Missing repayment plan")))
             : null;
         jsonObjectBuilder.add("instalments", installmentObj);
 
@@ -141,10 +142,10 @@ public class DefenceResponseJsonMapper {
 
         switch (response.getResponseType()) {
             case FULL_DEFENCE:
-                FullDefenceResponse fullDefenceResponse = (FullDefenceResponse)response;
+                FullDefenceResponse fullDefenceResponse = (FullDefenceResponse) response;
                 return fullDefenceResponse.getDirectionsQuestionnaire().isPresent();
             case PART_ADMISSION:
-                PartAdmissionResponse partAdmissionResponse = (PartAdmissionResponse)response;
+                PartAdmissionResponse partAdmissionResponse = (PartAdmissionResponse) response;
                 return partAdmissionResponse.getDirectionsQuestionnaire().isPresent();
             case FULL_ADMISSION:
             default:
