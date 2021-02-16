@@ -95,7 +95,8 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
                                                  GeneralLetterService generalLetterService,
                                                  CaseEventService caseEventService,
                                                  LaunchDarklyClient launchDarklyClient,
-                                                 DefenceResponseNotificationService defenceResponseNotificationService) {
+                                                 DefenceResponseNotificationService
+                                                     defenceResponseNotificationService) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.defendantResponseNotificationService = defendantResponseNotificationService;
         this.caseMapper = caseMapper;
@@ -163,7 +164,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
         if (isDefendentLinked(updatedCCDCase)) {
             sendDefendantEmail(updatedCCDCase, claim);
         } else {
-            //updatedCCDCase = sendDefendantLetter(callbackParams, updatedCCDCase, claim);
+            updatedCCDCase = sendDefendantLetter(callbackParams, updatedCCDCase, claim);
         }
 
         sendClaimantEmail(claim);

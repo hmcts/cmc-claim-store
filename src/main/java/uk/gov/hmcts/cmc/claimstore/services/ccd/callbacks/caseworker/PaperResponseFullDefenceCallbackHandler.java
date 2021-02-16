@@ -71,7 +71,8 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
                                                    UserService userService,
                                                    CaseEventService caseEventService,
                                                    LaunchDarklyClient launchDarklyClient,
-                                                   DefenceResponseNotificationService defenceResponseNotificationService) {
+                                                   DefenceResponseNotificationService
+                                                       defenceResponseNotificationService) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.clock = clock;
         this.eventProducer = eventProducer;
