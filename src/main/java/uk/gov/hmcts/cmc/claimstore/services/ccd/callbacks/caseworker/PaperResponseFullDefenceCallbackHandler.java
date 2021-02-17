@@ -18,6 +18,8 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.services.CaseEventService;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
@@ -25,6 +27,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -46,21 +49,31 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.Pape
 public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
     private static final List<Role> ROLES = List.of(CASEWORKER);
     private static final List<CaseEvent> EVENTS = List.of(PAPER_RESPONSE_FULL_DEFENCE);
-
+    private static final String OCON9X_REVIEW =
+        "Before continuing you must complete the ‘Review OCON9x paper response’ event";
     private final CaseDetailsConverter caseDetailsConverter;
     private final Clock clock;
     private final EventProducer eventProducer;
     private final CaseMapper caseMapper;
     private final CourtFinderApi courtFinderApi;
+    private final UserService userService;
+    private final CaseEventService caseEventService;
+    private final LaunchDarklyClient launchDarklyClient;
 
     public PaperResponseFullDefenceCallbackHandler(CaseDetailsConverter caseDetailsConverter, Clock clock,
-                                                   EventProducer eventProducer, CaseMapper caseMapper,
-                                                   CourtFinderApi courtFinderApi) {
+           EventProducer eventProducer, CaseMapper caseMapper,
+           CourtFinderApi courtFinderApi,
+           UserService userService,
+           CaseEventService caseEventService,
+           LaunchDarklyClient launchDarklyClient) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.clock = clock;
         this.eventProducer = eventProducer;
         this.caseMapper = caseMapper;
         this.courtFinderApi = courtFinderApi;
+        this.userService = userService;
+        this.caseEventService = caseEventService;
+        this.launchDarklyClient = launchDarklyClient;
     }
 
     protected Map<CallbackType, Callback> callbacks() {
@@ -73,6 +86,17 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
     private CallbackResponse aboutToStart(CallbackParams callbackParams) {
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
+        String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
+        if (launchDarklyClient.isFeatureEnabled("ocon-enhancements", LaunchDarklyClient.CLAIM_STORE_USER)) {
+            List<CaseEvent> caseEventList = caseEventService.findEventsForCase(
+                String.valueOf(ccdCase.getId()), userService.getUser(authorisation));
+            boolean eventPresent = caseEventList.stream()
+                .anyMatch(caseEvent -> caseEvent.getValue().equals("PaperResponseOCON9xForm"));
+            if (!eventPresent) {
+                return AboutToStartOrSubmitCallbackResponse.builder().errors(List.of(OCON9X_REVIEW)).build();
+            }
+        }
+
         Map<String, Object> data = new HashMap<>(caseDetailsConverter.convertToMap(ccdCase));
 
         if (FeaturesUtils.isOnlineDQ(caseDetailsConverter.extractClaim(caseDetails))
@@ -98,6 +122,7 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
     private CallbackResponse aboutToSubmit(CallbackParams callbackParams) {
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
+        String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
 
         List<CCDCollectionElement<CCDRespondent>> updatedRespondents = updateRespondents(caseDetails, ccdCase);
 
@@ -112,7 +137,6 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
             .intentionToProceedDeadline(intentionToProceedDeadline)
             .build();
 
-        String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
         eventProducer.createDefendantPaperResponseEvent(caseMapper.from(updatedCcdCase), authorisation);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
