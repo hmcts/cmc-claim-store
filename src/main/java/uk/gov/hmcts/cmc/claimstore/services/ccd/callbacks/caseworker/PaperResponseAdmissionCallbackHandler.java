@@ -13,7 +13,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
-import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.services.CaseEventService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
@@ -32,7 +31,6 @@ import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.net.URI;
 import java.time.Clock;
@@ -72,29 +70,26 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
     private final GeneralLetterService generalLetterService;
     private final CaseEventService caseEventService;
     private final LaunchDarklyClient launchDarklyClient;
-    private final EventProducer eventProducer;
 
     private final Map<CallbackType, Callback> callbacks = Map.of(
         CallbackType.ABOUT_TO_START, this::aboutToStart,
-        CallbackType.ABOUT_TO_SUBMIT, this::aboutToSubmit,
-        CallbackType.SUBMITTED, this::submitted
+        CallbackType.ABOUT_TO_SUBMIT, this::aboutToSubmit
     );
 
     public PaperResponseAdmissionCallbackHandler(CaseDetailsConverter caseDetailsConverter,
-                                                 DefendantResponseNotificationService
-                                                     defendantResponseNotificationService,
-                                                 CaseMapper caseMapper,
-                                                 DocAssemblyService docAssemblyService,
-                                                 DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper,
-                                                 @Value("${doc_assembly.paperResponseAdmissionTemplateId}")
-                                                     String paperResponseAdmissionTemplateId,
-                                                 UserService userService,
-                                                 DocumentManagementService documentManagementService,
-                                                 Clock clock,
-                                                 GeneralLetterService generalLetterService,
-                                                 CaseEventService caseEventService,
-                                                 LaunchDarklyClient launchDarklyClient,
-                                                 EventProducer eventProducer) {
+             DefendantResponseNotificationService
+                 defendantResponseNotificationService,
+             CaseMapper caseMapper,
+             DocAssemblyService docAssemblyService,
+             DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper,
+             @Value("${doc_assembly.paperResponseAdmissionTemplateId}")
+                 String paperResponseAdmissionTemplateId,
+             UserService userService,
+             DocumentManagementService documentManagementService,
+             Clock clock,
+             GeneralLetterService generalLetterService,
+             CaseEventService caseEventService,
+             LaunchDarklyClient launchDarklyClient) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.defendantResponseNotificationService = defendantResponseNotificationService;
         this.caseMapper = caseMapper;
@@ -107,7 +102,6 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
         this.generalLetterService = generalLetterService;
         this.caseEventService = caseEventService;
         this.launchDarklyClient = launchDarklyClient;
-        this.eventProducer = eventProducer;
     }
 
     private CallbackResponse aboutToStart(CallbackParams callbackParams) {
@@ -170,14 +164,6 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetailsConverter.convertToMap(updatedCCDCase))
             .build();
-    }
-
-    private CallbackResponse submitted(CallbackParams callbackParams) {
-        String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
-        CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
-        Claim claim = caseDetailsConverter.extractClaim(caseDetails);
-        eventProducer.createDefendantResponseEvent(claim, authorisation);
-        return SubmittedCallbackResponse.builder().build();
     }
 
     private CCDParty getPartyDetail(CCDCollectionElement<CCDRespondent> e) {

@@ -26,13 +26,11 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
-import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -63,11 +61,11 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
     private final LaunchDarklyClient launchDarklyClient;
 
     public PaperResponseFullDefenceCallbackHandler(CaseDetailsConverter caseDetailsConverter, Clock clock,
-                                                   EventProducer eventProducer, CaseMapper caseMapper,
-                                                   CourtFinderApi courtFinderApi,
-                                                   UserService userService,
-                                                   CaseEventService caseEventService,
-                                                   LaunchDarklyClient launchDarklyClient) {
+           EventProducer eventProducer, CaseMapper caseMapper,
+           CourtFinderApi courtFinderApi,
+           UserService userService,
+           CaseEventService caseEventService,
+           LaunchDarklyClient launchDarklyClient) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.clock = clock;
         this.eventProducer = eventProducer;
@@ -81,8 +79,7 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
     protected Map<CallbackType, Callback> callbacks() {
         return Map.of(
             CallbackType.ABOUT_TO_START, this::aboutToStart,
-            CallbackType.ABOUT_TO_SUBMIT, this::aboutToSubmit,
-            CallbackType.SUBMITTED, this::submitted
+            CallbackType.ABOUT_TO_SUBMIT, this::aboutToSubmit
         );
     }
 
@@ -145,14 +142,6 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetailsConverter.convertToMap(updatedCcdCase))
             .build();
-    }
-
-    private CallbackResponse submitted(CallbackParams callbackParams) {
-        String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
-        CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
-        Claim claim = caseDetailsConverter.extractClaim(caseDetails);
-        eventProducer.createDefendantResponseEvent(claim, authorisation);
-        return SubmittedCallbackResponse.builder().build();
     }
 
     private List<CCDCollectionElement<CCDScannedDocument>> updateScannedDocuments(CCDCase ccdCase) {

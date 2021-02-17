@@ -29,19 +29,16 @@ public class FullAdmissionResponseContentProvider {
     public Map<String, Object> createContent(FullAdmissionResponse fullAdmissionResponse,
                                              BigDecimal claimAmountTillDate) {
         requireNonNull(fullAdmissionResponse);
-        ImmutableMap.Builder<String, Object> contentBuilder = new ImmutableMap.Builder<String, Object>()
-            .put("responseTypeSelected", fullAdmissionResponse.getResponseType().getDescription());
 
-        if (fullAdmissionResponse.getPaymentIntention() != null
-            && fullAdmissionResponse.getPaymentIntention().getPaymentOption() != null) {
-            contentBuilder.putAll(paymentIntentionContentProvider.createContent(
+        ImmutableMap.Builder<String, Object> contentBuilder = new ImmutableMap.Builder<String, Object>()
+            .put("responseTypeSelected", fullAdmissionResponse.getResponseType().getDescription())
+            .putAll(paymentIntentionContentProvider.createContent(
                 fullAdmissionResponse.getPaymentIntention().getPaymentOption(),
                 fullAdmissionResponse.getPaymentIntention().getRepaymentPlan().orElse(null),
                 fullAdmissionResponse.getPaymentIntention().getPaymentDate().orElse(null),
                 formatMoney(claimAmountTillDate), ""
                 )
             );
-        }
 
         fullAdmissionResponse.getStatementOfMeans().ifPresent(
             statementOfMeans -> contentBuilder.putAll(
