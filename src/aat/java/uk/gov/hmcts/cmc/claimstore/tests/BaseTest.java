@@ -1,14 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.tests;
 
-import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -44,16 +39,4 @@ public abstract class BaseTest {
 
     @Autowired
     protected TestData testData;
-
-    @MockBean
-    protected Authentication authentication;
-    @MockBean
-    protected SecurityContext securityContext;
-    @MockBean
-    protected JwtDecoder jwtDecoder;
-
-    @Before
-    public void setUpBase() {
-        SecurityContextHolder.setContext(securityContext);
-    }
 }
