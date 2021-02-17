@@ -20,6 +20,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
@@ -48,6 +49,7 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
     private final IssueDateCalculator issueDateCalculator;
     private final IssuePaperResponseNotificationService issuePaperResponseNotificationService;
     private final DocumentPublishService documentPublishService;
+    private final LaunchDarklyClient launchDarklyClient;
 
     @Autowired
     public IssuePaperDefenceCallbackHandler(
@@ -55,13 +57,15 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
         ResponseDeadlineCalculator responseDeadlineCalculator,
         IssueDateCalculator issueDateCalculator,
         IssuePaperResponseNotificationService issuePaperResponseNotificationService,
-        DocumentPublishService documentPublishService
+        DocumentPublishService documentPublishService,
+        LaunchDarklyClient launchDarklyClient
     ) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.responseDeadlineCalculator = responseDeadlineCalculator;
         this.issueDateCalculator = issueDateCalculator;
         this.issuePaperResponseNotificationService = issuePaperResponseNotificationService;
         this.documentPublishService = documentPublishService;
+        this.launchDarklyClient = launchDarklyClient;
     }
 
     @Override
@@ -110,7 +114,8 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
         Claim claim = updateClaimDates(caseDetails, responseDeadline);
 
         var builder = AboutToStartOrSubmitCallbackResponse.builder();
-        if (ccdRespondent.getCountyCourtJudgmentRequest() != null
+        if (!launchDarklyClient.isFeatureEnabled("ocon-enhancements", LaunchDarklyClient.CLAIM_STORE_USER)
+            && ccdRespondent.getCountyCourtJudgmentRequest() != null
             && ccdRespondent.getCountyCourtJudgmentRequest().getType() == CCDCountyCourtJudgmentType.DEFAULT) {
             builder.errors(List.of(CLAIMANT_ISSUED_CCJ));
             return builder.build();

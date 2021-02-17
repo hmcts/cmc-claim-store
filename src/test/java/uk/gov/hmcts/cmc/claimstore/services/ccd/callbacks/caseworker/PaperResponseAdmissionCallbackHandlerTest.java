@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
 import com.google.common.collect.ImmutableMap;
+import com.launchdarkly.client.LDUser;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +21,9 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.CaseEventService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
@@ -35,6 +38,8 @@ import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
@@ -45,6 +50,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneOffset;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -53,6 +59,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -70,6 +78,9 @@ class PaperResponseAdmissionCallbackHandlerTest {
     private static final String AUTHORISATION = "Bearer: aaaa";
     private static final String DOC_URL = "http://success.test";
     private static final String DOC_URL_BINARY = "http://success.test/binary";
+    private static final String OCON9X_REVIEW =
+        "Before continuing you must complete the ‘Review OCON9x paper response’ event";
+    private static final List<CaseEvent> CASE_EVENTS = Arrays.asList(CaseEvent.PAPER_RESPONSE_OCON_9X_FORM);
     private PaperResponseAdmissionCallbackHandler handler;
     private CallbackParams callbackParams;
     @Mock
@@ -93,28 +104,41 @@ class PaperResponseAdmissionCallbackHandlerTest {
     @Mock
     private GeneralLetterService generalLetterService;
     private UserDetails userDetails;
+    @Mock
+    private LaunchDarklyClient launchDarklyClient;
+    @Mock
+    private CaseEventService caseEventService;
 
     @BeforeEach
     void setUp() {
         String paperResponseAdmissionTemplateId = "CV-CMC-GOR-ENG-0016.docx";
         handler = new PaperResponseAdmissionCallbackHandler(caseDetailsConverter,
             defendantResponseNotificationService, caseMapper, docAssemblyService, docAssemblyTemplateBodyMapper,
-            paperResponseAdmissionTemplateId, userService, documentManagementService, clock, generalLetterService);
-        CallbackRequest callbackRequest = CallbackRequest
-            .builder()
-            .caseDetails(CaseDetails.builder().data(Collections.EMPTY_MAP).build())
-            .eventId(CaseEvent.PAPER_RESPONSE_ADMISSION.getValue())
-            .build();
-        callbackParams = CallbackParams.builder()
-            .type(CallbackType.ABOUT_TO_SUBMIT)
-            .request(callbackRequest)
-            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
-            .build();
+            paperResponseAdmissionTemplateId, userService, documentManagementService, clock, generalLetterService,
+            caseEventService, launchDarklyClient);
+        CallbackRequest callbackRequest = getCallBackRequest();
+        callbackParams = getBuild(callbackRequest, CallbackType.ABOUT_TO_SUBMIT);
 
         userDetails = SampleUserDetails.builder()
             .withForename("Forename")
             .withSurname("Surname")
             .withRoles("caseworker-cmc")
+            .build();
+    }
+
+    private CallbackRequest getCallBackRequest() {
+        return CallbackRequest
+            .builder()
+            .caseDetails(CaseDetails.builder().data(Collections.EMPTY_MAP).build())
+            .eventId(CaseEvent.PAPER_RESPONSE_ADMISSION.getValue())
+            .build();
+    }
+
+    private CallbackParams getBuild(CallbackRequest callbackRequest, CallbackType aboutToSubmit) {
+        return CallbackParams.builder()
+            .type(aboutToSubmit)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
             .build();
     }
 
@@ -347,6 +371,43 @@ class PaperResponseAdmissionCallbackHandlerTest {
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
             handler.handle(callbackParams);
             verify(generalLetterService).printLetter(anyString(), any(CCDDocument.class), any(Claim.class));
+        }
+    }
+
+    @Nested
+    class AboutToStartTests {
+
+        @BeforeEach
+        void setUp() {
+
+            CallbackRequest callbackRequest = getCallBackRequest();
+            callbackParams = getBuild(callbackRequest, CallbackType.ABOUT_TO_START);
+            CCDCase ccdCase = getCCDCase(PART_ADMISSION, CCDRespondent.builder()
+                .defendantId("1234"), "OCON9x");
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            User mockUser = mock(User.class);
+            when(userService.getUser(anyString())).thenReturn(mockUser);
+            when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancements"), any(LDUser.class))).thenReturn(true);
+        }
+
+        @Test
+        void showWarningMessage() {
+            AboutToStartOrSubmitCallbackResponse actualResponse =
+                (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
+
+            assertThat(actualResponse.getErrors().get(0)).isEqualTo(OCON9X_REVIEW);
+
+        }
+
+        @Test
+        void showNoWarningMessage() {
+
+            when(caseEventService.findEventsForCase(any(String.class), any(User.class))).thenReturn(CASE_EVENTS);
+            AboutToStartOrSubmitCallbackResponse actualResponse =
+                (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
+
+            Assertions.assertNull(actualResponse.getErrors());
+
         }
     }
 }
