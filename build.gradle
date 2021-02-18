@@ -207,7 +207,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'doc-assembly-client', version: '1.07'
   compile group: 'uk.gov.hmcts.reform', name: 'fees-java-client', version: '0.0.6'
   compile group: 'uk.gov.hmcts.reform', name: 'payments-client', version: '0.0.6'
-  compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.1'
+  compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.4'
   compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '3.0.2'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
   compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.1.0'
@@ -223,8 +223,8 @@ dependencies {
 
   compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '11.0'
 
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
-  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.18'
+  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.18'
 
   testCompile project(':domain-sample-data')
   testCompile project(path: ":ccd-adapter", configuration: 'testArtifacts')
