@@ -151,8 +151,9 @@ public class DocumentUploadHandlerTest {
 
     @Test
     public void citizenClaimIssuedEventThrowsExceptionWhenClaimNotPresent() {
+        DocumentGeneratedEvent documentGeneratedEvent = new DocumentGeneratedEvent(null, AUTHORISATION);
         try {
-            documentUploadHandler.uploadCitizenClaimDocument(new DocumentGeneratedEvent(null, AUTHORISATION));
+            documentUploadHandler.uploadCitizenClaimDocument(documentGeneratedEvent);
             Assert.fail("Expected a NullPointerException to be thrown");
         } catch (NullPointerException expected) {
             assertThat(expected).hasMessage(CLAIM_MUST_NOT_BE_NULL);
@@ -172,12 +173,13 @@ public class DocumentUploadHandlerTest {
 
     @Test
     public void representedClaimIssuedEventForDocumentUploadThrowsExceptionWhenClaimNotPresent() {
+        Claim claim = SampleClaim.getLegalDataWithReps();
+        String referenceNumber = claim.getReferenceNumber();
+        PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(referenceNumber), PDF_CONTENT, SEALED_CLAIM);
+        DocumentGeneratedEvent event = new DocumentGeneratedEvent(null, AUTHORISATION,
+            sealedClaim);
         try {
-            Claim claim = SampleClaim.getLegalDataWithReps();
-            String referenceNumber = claim.getReferenceNumber();
-            PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(referenceNumber), PDF_CONTENT, SEALED_CLAIM);
-            documentUploadHandler.uploadCitizenClaimDocument(new DocumentGeneratedEvent(null, AUTHORISATION,
-                sealedClaim));
+            documentUploadHandler.uploadCitizenClaimDocument(event);
             Assert.fail("Expected a NullPointerException to be thrown");
         } catch (NullPointerException expected) {
             assertThat(expected).hasMessage(CLAIM_MUST_NOT_BE_NULL);
@@ -208,8 +210,9 @@ public class DocumentUploadHandlerTest {
 
     @Test
     public void defendantResponseEventForDocumentUploadThrowsExceptionWhenClaimNotPresent() {
+        DefendantResponseEvent defendantResponseEvent = new DefendantResponseEvent(null, AUTHORISATION);
         try {
-            documentUploadHandler.uploadDefendantResponseDocument(new DefendantResponseEvent(null, AUTHORISATION));
+            documentUploadHandler.uploadDefendantResponseDocument(defendantResponseEvent);
             Assert.fail("Expected a NullPointerException to be thrown");
         } catch (NullPointerException expected) {
             assertThat(expected).hasMessage(CLAIM_MUST_NOT_BE_NULL);
@@ -230,10 +233,9 @@ public class DocumentUploadHandlerTest {
 
     @Test
     public void agreementCountersignedEventForDocumentUploadThrowsExceptionWhenClaimNotPresent() {
-
+        AgreementCountersignedEvent event = new AgreementCountersignedEvent(null, null, AUTHORISATION);
         try {
-            documentUploadHandler.uploadSettlementAgreementDocument(
-                new AgreementCountersignedEvent(null, null, AUTHORISATION));
+            documentUploadHandler.uploadSettlementAgreementDocument(event);
             Assert.fail("Expected a NullPointerException to be thrown");
         } catch (NullPointerException expected) {
             assertThat(expected).hasMessage(CLAIM_MUST_NOT_BE_NULL);
@@ -242,11 +244,10 @@ public class DocumentUploadHandlerTest {
 
     @Test
     public void agreementCountersignedEventForDocumentUploadThrowsNotFoundExceptionWhenSettlementNotPresent() {
-
+        AgreementCountersignedEvent event = new AgreementCountersignedEvent(SampleClaim.getDefault(),
+            null, AUTHORISATION);
         try {
-            documentUploadHandler.uploadSettlementAgreementDocument(
-                new AgreementCountersignedEvent(SampleClaim.getDefault(),
-                    null, AUTHORISATION));
+            documentUploadHandler.uploadSettlementAgreementDocument(event);
             Assert.fail("Expected a NotFoundException to be thrown");
         } catch (NotFoundException expected) {
             assertThat(expected).hasMessage("Settlement Agreement does not exist for this claim");
@@ -267,9 +268,9 @@ public class DocumentUploadHandlerTest {
 
     @Test
     public void countersignSettlementAgreementEventForDocumentUploadThrowsExceptionWhenClaimNotPresent() {
+        CountersignSettlementAgreementEvent event = new CountersignSettlementAgreementEvent(null, AUTHORISATION);
         try {
-            documentUploadHandler.uploadSettlementAgreementDocument(
-                new CountersignSettlementAgreementEvent(null, AUTHORISATION)
+            documentUploadHandler.uploadSettlementAgreementDocument(event
             );
             Assert.fail("Expected a NullPointerException to be thrown");
         } catch (NullPointerException expected) {
@@ -334,10 +335,9 @@ public class DocumentUploadHandlerTest {
 
     @Test
     public void reviewOrderEventForDocumentUploadThrowsExceptionWhenClaimNotPresent() {
+        ReviewOrderEvent event = new ReviewOrderEvent(AUTHORISATION, null);
         try {
-            documentUploadHandler.uploadReviewOrderRequestDocument(
-                new ReviewOrderEvent(AUTHORISATION, null)
-            );
+            documentUploadHandler.uploadReviewOrderRequestDocument(event);
             Assert.fail("Expected a NullPointerException to be thrown");
         } catch (NullPointerException expected) {
             assertThat(expected).hasMessage(CLAIM_MUST_NOT_BE_NULL);
@@ -346,12 +346,9 @@ public class DocumentUploadHandlerTest {
 
     @Test
     public void reviewOrderEventForDocumentUploadThrowsExceptionWhenReviewOrderNotPresent() {
+        ReviewOrderEvent event = new ReviewOrderEvent(AUTHORISATION, SampleClaim.getDefault());
         try {
-            documentUploadHandler.uploadReviewOrderRequestDocument(
-                new ReviewOrderEvent(
-                    AUTHORISATION,
-                    SampleClaim.getDefault()
-                ));
+            documentUploadHandler.uploadReviewOrderRequestDocument(event);
             Assert.fail("Expected a NotFoundException to be thrown");
         } catch (NotFoundException expected) {
             assertThat(expected).hasMessage("Review Order does not exist for this claim");

@@ -28,9 +28,9 @@ public class ClaimSubmissionOperationIndicatorRuleTest {
             .defendantNotification(YES)
             .staffNotification(YES)
             .build();
-
+        ClaimSubmissionOperationIndicatorRule operationIndicatorRule = new ClaimSubmissionOperationIndicatorRule();
         try {
-            new ClaimSubmissionOperationIndicatorRule().assertOperationIndicatorUpdateIsValid(claim, input);
+            operationIndicatorRule.assertOperationIndicatorUpdateIsValid(claim, input);
             Assert.fail("Expected a BadRequestException to be thrown");
         } catch (BadRequestException expected) {
             assertThat(expected).hasMessage("Invalid input. The following indicator(s)[claimantNotification, "
@@ -69,9 +69,9 @@ public class ClaimSubmissionOperationIndicatorRuleTest {
             .defendantNotification(YES)
             .staffNotification(YES)
             .build();
-
+        ClaimSubmissionOperationIndicatorRule operationIndicatorRule = new ClaimSubmissionOperationIndicatorRule();
         try {
-            new ClaimSubmissionOperationIndicatorRule().assertOperationIndicatorUpdateIsValid(claim, input);
+            operationIndicatorRule.assertOperationIndicatorUpdateIsValid(claim, input);
             Assert.fail("Expected a BadRequestException to be thrown");
         } catch (BadRequestException expected) {
             assertThat(expected).hasMessage("Invalid input. The following indicator(s)[sealedClaimUpload,"

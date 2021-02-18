@@ -100,17 +100,16 @@ public class DocumentManagementServiceTest {
 
     @Test
     public void uploadDocumentToDocumentManagementThrowsException() {
+        UserDetails userDetails = new UserDetails("id", "mail@mail.com",
+            "userFirstName", "userLastName", Collections.singletonList("role"));
+
+        String authorisation = "authString";
+        when(userService.getUserDetails(eq(authorisation))).thenReturn(userDetails);
+
+        when(documentUploadClient
+            .upload(anyString(), anyString(), anyString(), eq(USER_ROLES), any(Classification.class), anyList()))
+            .thenReturn(unsuccessfulDocumentManagementUploadResponse());
         try {
-            UserDetails userDetails = new UserDetails("id", "mail@mail.com",
-                "userFirstName", "userLastName", Collections.singletonList("role"));
-
-            String authorisation = "authString";
-            when(userService.getUserDetails(eq(authorisation))).thenReturn(userDetails);
-
-            when(documentUploadClient
-                .upload(anyString(), anyString(), anyString(), eq(USER_ROLES), any(Classification.class), anyList()))
-                .thenReturn(unsuccessfulDocumentManagementUploadResponse());
-
             documentManagementService.uploadDocument(authorisation, document);
             Assert.fail("Expected a DocumentManagementException to be thrown");
         } catch (DocumentManagementException expected) {
@@ -175,19 +174,19 @@ public class DocumentManagementServiceTest {
     @Test
     public void downloadDocumentFromDocumentManagementThrowException() {
         URI docUri = mock(URI.class);
+        UserDetails userDetails = new UserDetails("id", "mail@mail.com",
+            "userFirstName", "userLastName", Collections.singletonList("role"));
+        when(userService.getUserDetails(anyString())).thenReturn(userDetails);
+
+        when(documentMetadataDownloadClient
+            .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString())
+        ).thenReturn(null);
+
+        ClaimDocument claimDocument = ClaimDocument.builder()
+            .documentManagementUrl(docUri)
+            .documentName("0000-claim")
+            .build();
         try {
-            UserDetails userDetails = new UserDetails("id", "mail@mail.com",
-                "userFirstName", "userLastName", Collections.singletonList("role"));
-            when(userService.getUserDetails(anyString())).thenReturn(userDetails);
-
-            when(documentMetadataDownloadClient
-                .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString())
-            ).thenReturn(null);
-
-            ClaimDocument claimDocument = ClaimDocument.builder()
-                .documentManagementUrl(docUri)
-                .documentName("0000-claim")
-                .build();
             documentManagementService.downloadDocument("auth string", claimDocument);
             Assert.fail("Expected a DocumentManagementException to be thrown");
         } catch (DocumentManagementException expected) {

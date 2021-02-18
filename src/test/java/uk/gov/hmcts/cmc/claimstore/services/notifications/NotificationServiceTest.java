@@ -55,12 +55,14 @@ public class NotificationServiceTest extends BaseNotificationServiceTest {
 
     @Test
     public void recoveryShouldNotLogPII() {
+        NotificationException exception = new NotificationException("expected exception");
+        ImmutableMap<String, String> reference = ImmutableMap.of(CLAIM_REFERENCE_NUMBER, "reference");
         try {
             service.logNotificationFailure(
-                new NotificationException("expected exception"),
+                exception,
                 null,
                 "hidden@email.com",
-                ImmutableMap.of(CLAIM_REFERENCE_NUMBER, "reference"),
+                reference,
                 "reference"
             );
             Assert.fail("Expected a NotificationException to be thrown");

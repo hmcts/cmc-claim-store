@@ -145,17 +145,16 @@ public class CallbackHandlerFactoryTest {
 
     @Test
     public void shouldThrowIfUnsupportedEventForCallback() {
+        CallbackRequest callbackRequest = CallbackRequest
+            .builder()
+            .eventId(SEALED_CLAIM_UPLOAD.getValue())
+            .build();
+        CallbackParams params = CallbackParams.builder()
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
         try {
-            CallbackRequest callbackRequest = CallbackRequest
-                .builder()
-                .eventId(SEALED_CLAIM_UPLOAD.getValue())
-                .build();
-            CallbackParams params = CallbackParams.builder()
-                .request(callbackRequest)
-                .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
-                .build();
-            callbackHandlerFactory
-                .dispatch(params);
+            callbackHandlerFactory.dispatch(params);
             Assert.fail("Expected a CallbackException to be thrown");
         } catch (CallbackException expected) {
             assertThat(expected).hasMessage("Could not handle callback for event SealedClaimUpload");
@@ -164,16 +163,15 @@ public class CallbackHandlerFactoryTest {
 
     @Test
     public void shouldThrowIfUnknownEvent() {
+        CallbackRequest callbackRequest = CallbackRequest
+            .builder()
+            .eventId("nope")
+            .build();
+        CallbackParams params = CallbackParams.builder()
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
         try {
-            CallbackRequest callbackRequest = CallbackRequest
-                .builder()
-                .eventId("nope")
-                .build();
-            CallbackParams params = CallbackParams.builder()
-                .request(callbackRequest)
-                .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
-                .build();
-
             callbackHandlerFactory.dispatch(params);
             Assert.fail("Expected a CallbackException to be thrown");
         } catch (CallbackException expected) {
@@ -183,26 +181,23 @@ public class CallbackHandlerFactoryTest {
 
     @Test
     public void shouldThrowIfUserDoesNotHaveSupportedRoles() {
+        UserDetails userDetails = SampleUserDetails.builder().withRoles("citizen").build();
+        when(userService.getUserDetails(eq(BEARER_TOKEN))).thenReturn(userDetails);
+
+        CallbackRequest callbackRequest = CallbackRequest
+            .builder()
+            .eventId(DRAW_ORDER.getValue())
+            .build();
+        CallbackParams params = CallbackParams.builder()
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
+
+        when(drawOrderCallbackHandler.getSupportedRoles())
+            .thenReturn(ImmutableList.of(LEGAL_ADVISOR));
         try {
-            UserDetails userDetails = SampleUserDetails.builder().withRoles("citizen").build();
-            when(userService.getUserDetails(eq(BEARER_TOKEN))).thenReturn(userDetails);
-
-            CallbackRequest callbackRequest = CallbackRequest
-                .builder()
-                .eventId(DRAW_ORDER.getValue())
-                .build();
-            CallbackParams params = CallbackParams.builder()
-                .request(callbackRequest)
-                .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
-                .build();
-
-            when(drawOrderCallbackHandler.getSupportedRoles())
-                .thenReturn(ImmutableList.of(LEGAL_ADVISOR));
-
             callbackHandlerFactory.dispatch(params);
-
             verify(userService).getUserDetails(eq(BEARER_TOKEN));
-
             Assert.fail("Expected a ForbiddenActionException to be thrown");
         } catch (ForbiddenActionException expected) {
             assertThat(expected).hasMessage("User does not have supported role for event DrawOrder");

@@ -144,9 +144,10 @@ public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceT
 
     @Test
     public void recoveryShouldNotLogPII() {
+        NotificationException exception = new NotificationException("expected exception");
         try {
             service.logNotificationFailure(
-                new NotificationException("expected exception"),
+                exception,
                 null,
                 "hidden@email.com",
                 null,

@@ -121,12 +121,9 @@ public class HwfClaimNotificationServiceTest extends BaseNotificationServiceTest
 
     @Test
     public void recoveryShouldNotLogPII() {
-
+        NotificationException exception = new NotificationException("expected exception");
         try {
-            service.logNotificationFailure(
-                new NotificationException("expected exception"),
-                "reference"
-            );
+            service.logNotificationFailure(exception, "reference");
             Assert.fail("Expected a NotificationException to be thrown");
         } catch (NotificationException expected) {
             assertWasLogged("Failure: failed to send notification (reference) due to expected exception");
