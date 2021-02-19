@@ -126,9 +126,9 @@ public abstract class BaseMockSpringTest {
     protected LegalOrderService legalOrderService;
     @MockBean
     protected UserService userService;
-    @MockBean
+    @MockBean(name = "courtFinderApi")
     protected CourtFinderApi courtFinderApi;
-    @MockBean
+    @MockBean(name = "docAssemblyApi")
     protected DocAssemblyApi docAssemblyApi;
     @MockBean
     protected AuthTokenGenerator authTokenGenerator;
@@ -136,7 +136,7 @@ public abstract class BaseMockSpringTest {
     protected AppInsights appInsights;
     @MockBean
     protected ReferenceNumberRepository referenceNumberRepository;
-    @MockBean
+    @MockBean(name = "coreCaseDataApi")
     protected CoreCaseDataApi coreCaseDataApi;
     @MockBean
     protected PaymentsService paymentsService;

@@ -1,9 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.documents;
 
+import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -14,10 +13,10 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @RunWith(MockitoJUnitRunner.class)
 public class SettlementAgreementCopyServiceTest {
-    @Rule
-    public final ExpectedException exceptionRule = ExpectedException.none();
     @Mock
     private SettlementAgreementPDFContentProvider contentProvider;
     @Mock
@@ -39,8 +38,11 @@ public class SettlementAgreementCopyServiceTest {
     @Test
     public void shouldThrowErrorWhenSettlementDoesNotExist() {
         Claim claim = SampleClaim.getDefault();
-        exceptionRule.expect(NotFoundException.class);
-        exceptionRule.expectMessage("Settlement Agreement does not exist for this claim");
-        settlementAgreementCopyService.createPdf(claim);
+        try {
+            settlementAgreementCopyService.createPdf(claim);
+            Assert.fail("Expected a NotFoundException to be thrown");
+        } catch (NotFoundException expected) {
+            assertThat(expected).hasMessage("Settlement Agreement does not exist for this claim");
+        }
     }
 }
