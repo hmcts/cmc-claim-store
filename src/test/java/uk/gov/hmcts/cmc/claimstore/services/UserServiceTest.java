@@ -95,7 +95,7 @@ class UserServiceTest {
     }
 
     @Test
-    public void getAuthorisationTokenForGivenUser() {
+    void getAuthorisationTokenForGivenUser() {
 
         when(idamApi.authenticateUser(anyString(), eq(CODE), any(), any()))
             .thenReturn(new AuthenticateUserResponse(CODE));
@@ -108,7 +108,7 @@ class UserServiceTest {
     }
 
     @Test
-    public void generatePinShouldGenerateValidPin() {
+    void generatePinShouldGenerateValidPin() {
 
         when(idamApi.generatePin(any(GeneratePinRequest.class), eq(AUTHORISATION)))
             .thenReturn(new GeneratePinResponse(PIN, UID));
@@ -121,14 +121,14 @@ class UserServiceTest {
     }
 
     @Test
-    public void authenticateUserShouldReturnUser() {
+    void authenticateUserShouldReturnUser() {
 
         when(idamApi.authenticateUser(anyString(), eq(CODE), any(), any()))
             .thenReturn(new AuthenticateUserResponse(CODE));
         when(idamApi.exchangeTokenForTests(eq(CODE), eq(AUTHORIZATION_CODE), any(), any(), any()))
             .thenReturn(new TokenExchangeResponse("I am a valid token"));
 
-        when(idamApi.retrieveUserInfo(eq(AUTHORISATION)))
+        when(idamApi.retrieveUserInfo(AUTHORISATION))
             .thenReturn(userInfo);
 
         User user = userService.authenticateUserForTests(USERNAME, PASSWORD);

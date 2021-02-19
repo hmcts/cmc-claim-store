@@ -37,7 +37,6 @@ import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -104,7 +103,6 @@ public class ClaimService {
     }
 
     public List<Claim> getClaimBySubmitterId(String submitterId, String authorisation, Integer pageNumber) {
-        List<Claim> outputClaimList = new ArrayList<>();
         claimAuthorisationRule.assertUserIdMatchesAuthorisation(submitterId, authorisation);
         return caseRepository.getBySubmitterId(submitterId, authorisation, pageNumber);
     }
