@@ -71,7 +71,6 @@ public class ClaimService {
     private final ClaimAuthorisationRule claimAuthorisationRule;
     private final ReviewOrderRule reviewOrderRule;
     private final LaunchDarklyClient launchDarklyClient;
-    private final CaseEventService caseEventService;
 
     @Value("${feature_toggles.ctsc_enabled}")
     private boolean ctscEnabled;
@@ -89,8 +88,7 @@ public class ClaimService {
         PaidInFullRule paidInFullRule,
         ClaimAuthorisationRule claimAuthorisationRule,
         ReviewOrderRule reviewOrderRule,
-        LaunchDarklyClient launchDarklyClient,
-        CaseEventService caseEventService) {
+        LaunchDarklyClient launchDarklyClient) {
         this.userService = userService;
         this.issueDateCalculator = issueDateCalculator;
         this.responseDeadlineCalculator = responseDeadlineCalculator;
@@ -102,13 +100,11 @@ public class ClaimService {
         this.claimAuthorisationRule = claimAuthorisationRule;
         this.reviewOrderRule = reviewOrderRule;
         this.launchDarklyClient = launchDarklyClient;
-        this.caseEventService = caseEventService;
     }
 
     public List<Claim> getClaimBySubmitterId(String submitterId, String authorisation, Integer pageNumber) {
         claimAuthorisationRule.assertUserIdMatchesAuthorisation(submitterId, authorisation);
-        List<Claim> claimList = caseRepository.getBySubmitterId(submitterId, authorisation, pageNumber);
-        return claimList;
+        return caseRepository.getBySubmitterId(submitterId, authorisation, pageNumber);
     }
 
     public Claim getClaimByLetterHolderId(String id, String authorisation) {
