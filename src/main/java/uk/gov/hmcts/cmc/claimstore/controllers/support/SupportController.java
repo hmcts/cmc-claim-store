@@ -274,14 +274,14 @@ public class SupportController {
         @RequestBody MediationRequest mediationRequest
     ) {
         mediationReportService
-            .sendMediationReport(authorisation, mediationRequest.getReportDate());
+            .sendMediationReport(authorisation, mediationRequest.getReportDate(), mediationRequest.getRecipientEmail());
 
     }
 
     /*
-    * This method is added as to enable PET to regenerate
-    * MILO report(in case of failure) for specific date
-    * */
+     * This method is added as to enable PET to regenerate
+     * MILO report(in case of failure) for specific date
+     * */
     @PostMapping(value = "/reSendMediation", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Re-Generate and Send Mediation Report for Telephone Mediation Service")
     public void reSendMediation(
@@ -292,7 +292,7 @@ public class SupportController {
         LocalDateTime now = LocalDateTime.now();
         logger.info("Support controller started MILO report generation at {}", now);
         mediationReportService
-            .sendMediationReport(authorisation, mediationRequest.getReportDate());
+            .sendMediationReport(authorisation, mediationRequest.getReportDate(), mediationRequest.getRecipientEmail());
         logger.info("MILO report ended at {}, took {} seconds to generate",
             LocalDateTime.now(), Duration.between(now, LocalDateTime.now()).getSeconds());
 
