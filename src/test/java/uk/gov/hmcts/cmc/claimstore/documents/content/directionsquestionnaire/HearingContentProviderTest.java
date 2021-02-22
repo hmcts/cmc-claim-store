@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content.directionsquestionnaire;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -18,7 +19,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleHearingLocation.defaultHearingLocation;
 
@@ -109,8 +109,8 @@ public class HearingContentProviderTest {
             .build();
         HearingContent hearingContent = hearingContentProvider.mapDirectionQuestionnaire(dq);
 
-        assertThat(hearingContent.getExpertReports(), Matchers.is(Matchers.empty()));
-        assertThat(hearingContent.getUnavailableDates(), Matchers.is(Matchers.empty()));
+        MatcherAssert.assertThat(hearingContent.getExpertReports(), Matchers.is(Matchers.empty()));
+        MatcherAssert.assertThat(hearingContent.getUnavailableDates(), Matchers.is(Matchers.empty()));
 
     }
 

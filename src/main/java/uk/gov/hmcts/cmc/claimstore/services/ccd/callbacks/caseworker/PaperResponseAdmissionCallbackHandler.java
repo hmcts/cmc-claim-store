@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.claimstore.services.CaseEventService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
@@ -26,12 +27,15 @@ import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.DefendantResponseNotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.net.URI;
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -40,6 +44,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.GENERAL_LETTER;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.PAPER_RESPONSE_ADMISSION;
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType.FULL_ADMISSION;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.Params.BEARER_TOKEN;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.ResponseSubmitted.referenceForClaimant;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.ResponseSubmitted.referenceForDefendant;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
@@ -50,6 +55,9 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
     private static final List<CaseEvent> EVENTS = List.of(PAPER_RESPONSE_ADMISSION);
     private static final List<Role> ROLES = List.of(CASEWORKER);
     private static final String FORM_NAME = "OCON9x";
+    private static final String OCON_PAPER_FORM = "PaperResponseOCON9xForm";
+    private static final String OCON9X_REVIEW_MSG =
+        "Before continuing you must complete the ‘Review OCON9x paper response’ event";
     private final CaseDetailsConverter caseDetailsConverter;
     private final DefendantResponseNotificationService defendantResponseNotificationService;
     private final CaseMapper caseMapper;
@@ -60,21 +68,28 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
     private final DocumentManagementService documentManagementService;
     private final Clock clock;
     private final GeneralLetterService generalLetterService;
+    private final CaseEventService caseEventService;
+    private final LaunchDarklyClient launchDarklyClient;
 
     private final Map<CallbackType, Callback> callbacks = Map.of(
+        CallbackType.ABOUT_TO_START, this::aboutToStart,
         CallbackType.ABOUT_TO_SUBMIT, this::aboutToSubmit
     );
 
     public PaperResponseAdmissionCallbackHandler(CaseDetailsConverter caseDetailsConverter,
-             DefendantResponseNotificationService defendantResponseNotificationService,
+             DefendantResponseNotificationService
+                 defendantResponseNotificationService,
              CaseMapper caseMapper,
              DocAssemblyService docAssemblyService,
              DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper,
-             @Value("${doc_assembly.paperResponseAdmissionTemplateId}") String paperResponseAdmissionTemplateId,
+             @Value("${doc_assembly.paperResponseAdmissionTemplateId}")
+                 String paperResponseAdmissionTemplateId,
              UserService userService,
              DocumentManagementService documentManagementService,
              Clock clock,
-             GeneralLetterService generalLetterService) {
+             GeneralLetterService generalLetterService,
+             CaseEventService caseEventService,
+             LaunchDarklyClient launchDarklyClient) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.defendantResponseNotificationService = defendantResponseNotificationService;
         this.caseMapper = caseMapper;
@@ -85,6 +100,27 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
         this.documentManagementService = documentManagementService;
         this.clock = clock;
         this.generalLetterService = generalLetterService;
+        this.caseEventService = caseEventService;
+        this.launchDarklyClient = launchDarklyClient;
+    }
+
+    private CallbackResponse aboutToStart(CallbackParams callbackParams) {
+        CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
+        String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
+        if (launchDarklyClient.isFeatureEnabled("ocon-enhancements", LaunchDarklyClient.CLAIM_STORE_USER)) {
+            List<CaseEvent> caseEvents = caseEventService.findEventsForCase(
+                String.valueOf(ccdCase.getId()), userService.getUser(authorisation));
+            boolean isPresent = caseEvents.stream()
+                .anyMatch(event -> event.getValue().equals(OCON_PAPER_FORM));
+            if (!isPresent) {
+                return AboutToStartOrSubmitCallbackResponse.builder().errors(List.of(OCON9X_REVIEW_MSG)).build();
+            }
+        }
+        Map<String, Object> data = new HashMap<>(caseDetailsConverter.convertToMap(ccdCase));
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(data)
+            .build();
     }
 
     private CallbackResponse aboutToSubmit(CallbackParams callbackParams) {
@@ -93,7 +129,6 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
             .stream()
             .map(e -> e.getValue().getSubtype().equals(FORM_NAME) ? renameFile(e, ccdCase) : e)
             .collect(Collectors.toList());
-
         List<CCDCollectionElement<CCDRespondent>> updatedRespondent = ccdCase.getRespondents()
             .stream()
             .map(e -> e.toBuilder()
