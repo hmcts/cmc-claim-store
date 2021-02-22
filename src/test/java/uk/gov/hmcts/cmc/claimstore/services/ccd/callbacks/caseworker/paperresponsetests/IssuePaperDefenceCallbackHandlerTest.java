@@ -2,6 +2,8 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.paperrespo
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.launchdarkly.client.LDUser;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +28,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.paperdefenc
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -62,6 +65,8 @@ class IssuePaperDefenceCallbackHandlerTest {
     private DocumentPublishService documentPublishService;
     @Mock
     private IssuePaperResponseNotificationService issuePaperResponseNotificationService;
+    @Mock
+    private LaunchDarklyClient launchDarklyClient;
 
     private Claim claim;
     private CallbackRequest callbackRequest;
@@ -75,7 +80,8 @@ class IssuePaperDefenceCallbackHandlerTest {
             responseDeadlineCalculator,
             issueDateCalculator,
             issuePaperResponseNotificationService,
-            documentPublishService
+            documentPublishService,
+            launchDarklyClient
         );
         claim = Claim.builder()
             .claimData(SampleClaimData.builder().build())
@@ -117,16 +123,9 @@ class IssuePaperDefenceCallbackHandlerTest {
             .data(Collections.emptyMap())
             .build();
         callbackRequest =
-            CallbackRequest.builder()
-                .eventId(CaseEvent.ISSUE_PAPER_DEFENSE_FORMS.getValue())
-                .caseDetails(caseDetails)
-                .build();
+            getCallbackRequest(caseDetails);
 
-        CallbackParams callbackParams = CallbackParams.builder()
-            .type(CallbackType.ABOUT_TO_SUBMIT)
-            .request(callbackRequest)
-            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
-            .build();
+        CallbackParams callbackParams = getBuild();
 
         issuePaperDefenceCallbackHandler.handle(callbackParams);
 
@@ -169,16 +168,9 @@ class IssuePaperDefenceCallbackHandlerTest {
             .data(Collections.emptyMap())
             .build();
         callbackRequest =
-            CallbackRequest.builder()
-                .eventId(CaseEvent.ISSUE_PAPER_DEFENSE_FORMS.getValue())
-                .caseDetails(caseDetails)
-                .build();
+            getCallbackRequest(caseDetails);
 
-        CallbackParams callbackParams = CallbackParams.builder()
-            .type(CallbackType.ABOUT_TO_SUBMIT)
-            .request(callbackRequest)
-            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
-            .build();
+        CallbackParams callbackParams = getBuild();
 
         issuePaperDefenceCallbackHandler.handle(callbackParams);
         verify(documentPublishService).publishDocuments(any(CCDCase.class), any(Claim.class), eq(AUTHORISATION),
@@ -191,21 +183,7 @@ class IssuePaperDefenceCallbackHandlerTest {
         CCDCountyCourtJudgment ccdCountyCourtJudgment = CCDCountyCourtJudgment.builder()
             .type(CCDCountyCourtJudgmentType.DETERMINATION)
             .build();
-        ccdCase = CCDCase.builder()
-            .previousServiceCaseReference("000MC001")
-            .respondents(ImmutableList.of(
-                CCDCollectionElement.<CCDRespondent>builder()
-                    .value(SampleData.getIndividualRespondentWithDQInClaimantResponse().toBuilder()
-                        .countyCourtJudgmentRequest(ccdCountyCourtJudgment)
-                        .build())
-                    .build()
-            ))
-            .applicants(List.of(
-                CCDCollectionElement.<CCDApplicant>builder()
-                    .value(SampleData.getCCDApplicantIndividual())
-                    .build()
-            ))
-            .build();
+        ccdCase = getCCDData(ccdCountyCourtJudgment);
 
         CCDCase updatedCCDCase = ccdCase.toBuilder()
             .respondents(ImmutableList.of(CCDCollectionElement.<CCDRespondent>builder()
@@ -228,16 +206,9 @@ class IssuePaperDefenceCallbackHandlerTest {
             .data(Collections.emptyMap())
             .build();
         callbackRequest =
-            CallbackRequest.builder()
-                .eventId(CaseEvent.ISSUE_PAPER_DEFENSE_FORMS.getValue())
-                .caseDetails(caseDetails)
-                .build();
+            getCallbackRequest(caseDetails);
 
-        CallbackParams callbackParams = CallbackParams.builder()
-            .type(CallbackType.ABOUT_TO_SUBMIT)
-            .request(callbackRequest)
-            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
-            .build();
+        CallbackParams callbackParams = getBuild();
 
         issuePaperDefenceCallbackHandler.handle(callbackParams);
         verify(documentPublishService).publishDocuments(any(CCDCase.class), any(Claim.class), eq(AUTHORISATION),
@@ -250,35 +221,14 @@ class IssuePaperDefenceCallbackHandlerTest {
         CCDCountyCourtJudgment ccdCountyCourtJudgment = CCDCountyCourtJudgment.builder()
             .type(CCDCountyCourtJudgmentType.ADMISSIONS)
             .build();
-        ccdCase = CCDCase.builder()
-            .previousServiceCaseReference("000MC001")
-            .respondents(ImmutableList.of(
-                CCDCollectionElement.<CCDRespondent>builder()
-                    .value(SampleData.getIndividualRespondentWithDQInClaimantResponse().toBuilder()
-                        .countyCourtJudgmentRequest(ccdCountyCourtJudgment)
-                        .build())
-                    .build()
-            ))
-            .applicants(List.of(
-                CCDCollectionElement.<CCDApplicant>builder()
-                    .value(SampleData.getCCDApplicantIndividual())
-                    .build()
-            ))
-            .build();
+        ccdCase = getCCDData(ccdCountyCourtJudgment);
         CaseDetails caseDetails = CaseDetails.builder()
             .id(10L)
             .data(Collections.emptyMap())
             .build();
         callbackRequest =
-            CallbackRequest.builder()
-                .eventId(CaseEvent.ISSUE_PAPER_DEFENSE_FORMS.getValue())
-                .caseDetails(caseDetails)
-                .build();
-        CallbackParams callbackParams = CallbackParams.builder()
-            .type(CallbackType.ABOUT_TO_SUBMIT)
-            .request(callbackRequest)
-            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
-            .build();
+            getCallbackRequest(caseDetails);
+        CallbackParams callbackParams = getBuild();
         LocalDate date = LocalDate.now();
         when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(date);
         when(responseDeadlineCalculator.calculateResponseDeadline(any(LocalDate.class))).thenReturn(date);
@@ -298,7 +248,36 @@ class IssuePaperDefenceCallbackHandlerTest {
         CCDCountyCourtJudgment ccdCountyCourtJudgment = CCDCountyCourtJudgment.builder()
             .type(CCDCountyCourtJudgmentType.DEFAULT)
             .build();
-        ccdCase = CCDCase.builder()
+        ccdCase = getCCDData(ccdCountyCourtJudgment);
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(10L)
+            .data(Collections.emptyMap())
+            .build();
+        callbackRequest =
+            getCallbackRequest(caseDetails);
+        CallbackParams callbackParams = getBuild();
+        LocalDate date = LocalDate.now();
+        when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(date);
+        when(responseDeadlineCalculator.calculateResponseDeadline(any(LocalDate.class))).thenReturn(date);
+        when(responseDeadlineCalculator.calculatePostponedResponseDeadline(any(LocalDate.class)))
+            .thenReturn(date);
+        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+        when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancements"), any(LDUser.class))).thenReturn(false);
+        AboutToStartOrSubmitCallbackResponse actualResponse =
+            (AboutToStartOrSubmitCallbackResponse) issuePaperDefenceCallbackHandler.handle(callbackParams);
+        assertThat(actualResponse.getErrors().get(0)).isEqualTo(CLAIMANT_ISSUED_CCJ);
+    }
+
+    private CallbackRequest getCallbackRequest(CaseDetails caseDetails) {
+        return CallbackRequest.builder()
+            .eventId(CaseEvent.ISSUE_PAPER_DEFENSE_FORMS.getValue())
+            .caseDetails(caseDetails)
+            .build();
+    }
+
+    private CCDCase getCCDData(CCDCountyCourtJudgment ccdCountyCourtJudgment) {
+        return CCDCase.builder()
             .previousServiceCaseReference("000MC001")
             .respondents(ImmutableList.of(
                 CCDCollectionElement.<CCDRespondent>builder()
@@ -313,20 +292,20 @@ class IssuePaperDefenceCallbackHandlerTest {
                     .build()
             ))
             .build();
+    }
+
+    @Test
+    void whenClaimantIssuedCCJButNoValidation() {
+        CCDCountyCourtJudgment ccdCountyCourtJudgment = CCDCountyCourtJudgment.builder()
+            .type(CCDCountyCourtJudgmentType.DEFAULT)
+            .build();
+        ccdCase = getCCDData(ccdCountyCourtJudgment);
         CaseDetails caseDetails = CaseDetails.builder()
             .id(10L)
             .data(Collections.emptyMap())
             .build();
-        callbackRequest =
-            CallbackRequest.builder()
-                .eventId(CaseEvent.ISSUE_PAPER_DEFENSE_FORMS.getValue())
-                .caseDetails(caseDetails)
-                .build();
-        CallbackParams callbackParams = CallbackParams.builder()
-            .type(CallbackType.ABOUT_TO_SUBMIT)
-            .request(callbackRequest)
-            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
-            .build();
+        callbackRequest = getCallbackRequest(caseDetails);
+        CallbackParams callbackParams = getBuild();
         LocalDate date = LocalDate.now();
         when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(date);
         when(responseDeadlineCalculator.calculateResponseDeadline(any(LocalDate.class))).thenReturn(date);
@@ -334,9 +313,18 @@ class IssuePaperDefenceCallbackHandlerTest {
             .thenReturn(date);
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+        when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancements"), any(LDUser.class))).thenReturn(true);
         AboutToStartOrSubmitCallbackResponse actualResponse =
             (AboutToStartOrSubmitCallbackResponse) issuePaperDefenceCallbackHandler.handle(callbackParams);
-        assertThat(actualResponse.getErrors().get(0)).isEqualTo(CLAIMANT_ISSUED_CCJ);
+        Assertions.assertNull(actualResponse.getErrors());
+    }
+
+    private CallbackParams getBuild() {
+        return CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_SUBMIT)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
+            .build();
     }
 
     @Test

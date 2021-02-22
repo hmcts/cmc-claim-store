@@ -77,7 +77,7 @@ class HWFMiscellaneousCallbackHandlerTest {
         callbackRequest = CallbackRequest
             .builder()
             .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
-            .eventId(CaseEvent.MISC_HWF.getValue())
+            .eventId(CaseEvent.UPDATE_HWF_NUMBER.getValue())
             .build();
         callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_SUBMIT)
