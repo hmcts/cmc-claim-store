@@ -223,7 +223,10 @@ public class CommonOperations {
             .given()
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .header(HttpHeaders.AUTHORIZATION, user.getAuthorisation())
-            .header("Content-Security-Policy", "default-src 'none'; script-src 'self'; connect-src 'self'; img-src 'self'; style-src 'self';base-uri 'self';form-action 'self';frame-ancestors 'none';")
+            .header("Content-Security-Policy",
+                "default-src 'none'; script-src 'self'; connect-src 'self';"
+                    + " img-src 'self'; style-src 'self';base-uri 'self';form-action 'self';"
+                    + "frame-ancestors 'none';")
             .body(jsonMapper.toJson(ccj))
             .when()
             .post("/claims/" + externalId + "/county-court-judgment");
