@@ -51,7 +51,7 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
     public List<Claim> getMediationClaims(String authorisation, LocalDate mediationAgreedDate) {
         User user = userService.getUser(authorisation);
 
-        logger.info("ElasticSearch query to fetch data at {} for the date {} ",
+        logger.info("MILO: ElasticSearch query to fetch data at {} for the date {} ",
             LocalDateTime.now(), mediationAgreedDate);
 
         Query mediationQuery = new Query(
