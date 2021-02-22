@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.rpa;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,7 +32,6 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -43,6 +43,17 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class RoboticsNotificationServiceTest {
 
+    private static final String FORE_NAME = "forename";
+    private static final String SURNAME = "surname";
+    private static final UserDetails USER_DETAILS = SampleUserDetails.builder()
+        .withForename(FORE_NAME)
+        .withSurname(SURNAME)
+        .build();
+    private static final String REFERENCE_NUMBER = "000MC001";
+    private static final GeneratePinResponse PIN_RESPONSE = new GeneratePinResponse("pin", "userid");
+    private static final String RPA_STATE_SUCCEEDED = "succeeded";
+    private static final String RPA_STATE_FAILED = "failed: reason";
+    private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
     RoboticsNotificationServiceImpl roboticsNotificationService;
     @Mock
     private UserService userService;
@@ -64,18 +75,6 @@ public class RoboticsNotificationServiceTest {
     private SealedClaimPdfService sealedClaimPdfService;
     @Mock
     private PaidInFullNotificationService paidInFullNotificationService;
-
-    private static final String FORE_NAME = "forename";
-    private static final String SURNAME = "surname";
-    private static final UserDetails USER_DETAILS = SampleUserDetails.builder()
-        .withForename(FORE_NAME)
-        .withSurname(SURNAME)
-        .build();
-    private static final String REFERENCE_NUMBER = "000MC001";
-    private static final GeneratePinResponse PIN_RESPONSE = new GeneratePinResponse("pin", "userid");
-    private static final String RPA_STATE_SUCCEEDED = "succeeded";
-    private static final String RPA_STATE_FAILED = "failed: reason";
-    private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
 
     @Before
     public void setup() {
@@ -99,7 +98,7 @@ public class RoboticsNotificationServiceTest {
         when(claimService.getClaimByReference(anyString(), anyString()))
             .thenReturn(Optional.of(claim2));
         String response = roboticsNotificationService.rpaClaimNotification(REFERENCE_NUMBER);
-        assertThat(response, is(RPA_STATE_SUCCEEDED));
+        MatcherAssert.assertThat(response, is(RPA_STATE_SUCCEEDED));
     }
 
     @Test
@@ -111,7 +110,7 @@ public class RoboticsNotificationServiceTest {
         doNothing()
             .when(defenceResponseNotificationService).notifyRobotics(any(DefendantResponseEvent.class));
         String response = roboticsNotificationService.rpaResponseNotifications(REFERENCE_NUMBER);
-        assertThat(response, is(RPA_STATE_SUCCEEDED));
+        MatcherAssert.assertThat(response, is(RPA_STATE_SUCCEEDED));
         verify(defenceResponseNotificationService, times(1))
             .notifyRobotics(any(DefendantResponseEvent.class));
     }
@@ -124,7 +123,7 @@ public class RoboticsNotificationServiceTest {
                 .withMoneyReceivedOn(LocalDate.now())
                 .build()));
         String response = roboticsNotificationService.rpaPIFNotifications(REFERENCE_NUMBER);
-        assertThat(response, is(RPA_STATE_SUCCEEDED));
+        MatcherAssert.assertThat(response, is(RPA_STATE_SUCCEEDED));
         verify(paidInFullNotificationService, times(1))
             .notifyRobotics(any(PaidInFullEvent.class));
     }
@@ -139,7 +138,7 @@ public class RoboticsNotificationServiceTest {
         doNothing()
             .when(ccjNotificationService).notifyRobotics(any(CountyCourtJudgmentEvent.class));
         String response = roboticsNotificationService.rpaCCJNotifications(REFERENCE_NUMBER);
-        assertThat(response, is(RPA_STATE_SUCCEEDED));
+        MatcherAssert.assertThat(response, is(RPA_STATE_SUCCEEDED));
         verify(ccjNotificationService, times(1))
             .notifyRobotics(any(CountyCourtJudgmentEvent.class));
     }
@@ -154,7 +153,7 @@ public class RoboticsNotificationServiceTest {
             .doThrow(new RuntimeException("reason"))
             .when(moreTimeRequestedNotificationService).notifyRobotics(any(MoreTimeRequestedEvent.class));
         String response = roboticsNotificationService.rpaMoreTimeNotifications(REFERENCE_NUMBER);
-        assertThat(response, is(RPA_STATE_SUCCEEDED));
+        MatcherAssert.assertThat(response, is(RPA_STATE_SUCCEEDED));
         verify(moreTimeRequestedNotificationService, times(1))
             .notifyRobotics(any(MoreTimeRequestedEvent.class));
     }

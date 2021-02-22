@@ -2,10 +2,9 @@ package uk.gov.hmcts.cmc.claimstore.services;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -22,6 +21,7 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDet
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doCallRealMethod;
@@ -48,9 +48,6 @@ public class CallbackHandlerFactoryTest {
     private CallbackResponse callbackResponse;
     @Mock
     private UserService userService;
-
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
 
     private CallbackHandlerFactory callbackHandlerFactory;
 
@@ -148,9 +145,6 @@ public class CallbackHandlerFactoryTest {
 
     @Test
     public void shouldThrowIfUnsupportedEventForCallback() {
-        expectedException.expect(CallbackException.class);
-        expectedException.expectMessage("Could not handle callback for event SealedClaimUpload");
-
         CallbackRequest callbackRequest = CallbackRequest
             .builder()
             .eventId(SEALED_CLAIM_UPLOAD.getValue())
@@ -159,15 +153,16 @@ public class CallbackHandlerFactoryTest {
             .request(callbackRequest)
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
             .build();
-        callbackHandlerFactory
-            .dispatch(params);
+        try {
+            callbackHandlerFactory.dispatch(params);
+            Assert.fail("Expected a CallbackException to be thrown");
+        } catch (CallbackException expected) {
+            assertThat(expected).hasMessage("Could not handle callback for event SealedClaimUpload");
+        }
     }
 
     @Test
     public void shouldThrowIfUnknownEvent() {
-        expectedException.expect(CallbackException.class);
-        expectedException.expectMessage("Could not handle callback for event nope");
-
         CallbackRequest callbackRequest = CallbackRequest
             .builder()
             .eventId("nope")
@@ -176,15 +171,16 @@ public class CallbackHandlerFactoryTest {
             .request(callbackRequest)
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
             .build();
-
-        callbackHandlerFactory.dispatch(params);
+        try {
+            callbackHandlerFactory.dispatch(params);
+            Assert.fail("Expected a CallbackException to be thrown");
+        } catch (CallbackException expected) {
+            assertThat(expected).hasMessage("Could not handle callback for event nope");
+        }
     }
 
     @Test
     public void shouldThrowIfUserDoesNotHaveSupportedRoles() {
-        expectedException.expect(ForbiddenActionException.class);
-        expectedException.expectMessage("User does not have supported role for event DrawOrder");
-
         UserDetails userDetails = SampleUserDetails.builder().withRoles("citizen").build();
         when(userService.getUserDetails(eq(BEARER_TOKEN))).thenReturn(userDetails);
 
@@ -199,9 +195,12 @@ public class CallbackHandlerFactoryTest {
 
         when(drawOrderCallbackHandler.getSupportedRoles())
             .thenReturn(ImmutableList.of(LEGAL_ADVISOR));
-
-        callbackHandlerFactory.dispatch(params);
-
-        verify(userService).getUserDetails(eq(BEARER_TOKEN));
+        try {
+            callbackHandlerFactory.dispatch(params);
+            verify(userService).getUserDetails(eq(BEARER_TOKEN));
+            Assert.fail("Expected a ForbiddenActionException to be thrown");
+        } catch (ForbiddenActionException expected) {
+            assertThat(expected).hasMessage("User does not have supported role for event DrawOrder");
+        }
     }
 }
