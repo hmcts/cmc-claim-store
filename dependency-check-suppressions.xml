@@ -173,6 +173,8 @@
         <cve>CVE-2020-5421</cve>
         <cve>CVE-2020-7020</cve>
         <cve>CVE-2020-28052</cve>
+        <cve>CVE-2020-7021</cve>
+        <cve>CVE-2021-22132</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[

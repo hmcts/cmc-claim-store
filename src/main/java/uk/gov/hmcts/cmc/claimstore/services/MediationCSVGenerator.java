@@ -132,7 +132,7 @@ public class MediationCSVGenerator {
             csvPrinter.flush();
             csvData = stringBuilder.toString();
         } catch (Exception e) {
-            logger.error("Mediation csv generation failed,records details are {}", problematicRecords);
+            logger.error("MILO: Mediation csv generation failed,records details are {}", problematicRecords);
             throw new MediationCSVGenerationException("Error generating Mediation CSV", e);
         }
     }
@@ -144,6 +144,7 @@ public class MediationCSVGenerator {
             .flatMap(List::stream)
             .collect(Collectors.toList());
 
+        logger.info("MILO: total no of claims retrieved {}", result.size());
         if (result.isEmpty()) {
             result.add(MediationRow.builder().build());
         }
@@ -158,7 +159,7 @@ public class MediationCSVGenerator {
                 createMediationRow(claim, DEFENDANT_PARTY_TYPE)
             );
         } catch (MediationCSVGenerationException e) {
-            logger.error("Mediation csv generation failed for {} and error {}",
+            logger.error("MILO: Mediation csv generation failed for {} and error {}",
                 claim.getReferenceNumber(), e.getMessage());
             problematicRecords.put(claim.getReferenceNumber(), e.getMessage());
             return Collections.emptyList();
