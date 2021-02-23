@@ -153,7 +153,8 @@ public class HWFFullAndPartRemissionCallbackHandler extends CallbackHandler {
     }
 
     private CallbackResponse startHwfClaimUpdatePostOperations(CallbackParams callbackParams) {
-        Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
+        Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails())
+            .toBuilder().lastEventTriggeredForHwfCase(callbackParams.getRequest().getEventId()).build();
         logger.info("Created citizen case for callback of type {}, claim with external id {}",
             callbackParams.getType(),
             claim.getExternalId());
