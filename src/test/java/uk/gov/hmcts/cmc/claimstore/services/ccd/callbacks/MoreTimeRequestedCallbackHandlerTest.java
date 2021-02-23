@@ -26,6 +26,7 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.Notifications
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleMoreTimeRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.rules.ClaimDeadlineService;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -37,6 +38,7 @@ import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -106,6 +108,10 @@ class MoreTimeRequestedCallbackHandlerTest {
     private GeneralLetterService generalLetterService;
     @Mock
     private UserService userService;
+    @Mock
+    private LaunchDarklyClient launchDarklyClient;
+    @Mock
+    private ClaimDeadlineService claimDeadlineService;
 
     private Claim claim;
 
@@ -127,7 +133,9 @@ class MoreTimeRequestedCallbackHandlerTest {
             notificationsProperties,
             generalLetterService,
             userService,
-            GENERAL_LETTER_TEMPLATE
+            GENERAL_LETTER_TEMPLATE,
+            launchDarklyClient,
+            claimDeadlineService
         );
         claim = SampleClaim.getDefault();
         claim = Claim.builder()

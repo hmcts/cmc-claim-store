@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.rules.ClaimDeadlineService;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -31,6 +32,7 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -53,6 +55,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.RESPONSE_DEADLINE;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
+import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
 @Service
 @ConditionalOnProperty("feature_toggles.ctsc_enabled")
@@ -65,7 +68,8 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
     private static final List<CaseEvent> EVENTS = Collections.singletonList(RESPONSE_MORE_TIME);
     private static final String ERROR_MESSAGE =
         "There was a technical problem. Nothing has been sent. You need to try again.";
-
+    private static final String DEADLINE_WARNING_MSG =
+        "Placeholder decided warning message will come here";
     private static final String STANDARD_DEADLINE_TEXT = String.join("%n",
         "You’ve been given an extra 14 days to respond to the claim made against you by %s.",
         "",
@@ -84,6 +88,8 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
     private final UserService userService;
     private final GeneralLetterService generalLetterService;
     private final String generalLetterTemplateId;
+    private final LaunchDarklyClient launchDarklyClient;
+    private final ClaimDeadlineService claimDeadlineService;
 
     @Autowired
     public MoreTimeRequestedCallbackHandler(
@@ -95,7 +101,9 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
         NotificationsProperties notificationsProperties,
         GeneralLetterService generalLetterService,
         UserService userService,
-        @Value("${doc_assembly.generalLetterTemplateId}") String generalLetterTemplateId
+        @Value("${doc_assembly.generalLetterTemplateId}") String generalLetterTemplateId,
+        LaunchDarklyClient launchDarklyClient,
+        ClaimDeadlineService claimDeadlineService
     ) {
         this.eventProducer = eventProducer;
         this.responseDeadlineCalculator = responseDeadlineCalculator;
@@ -106,6 +114,8 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
         this.notificationsProperties = notificationsProperties;
         this.userService = userService;
         this.generalLetterTemplateId = generalLetterTemplateId;
+        this.launchDarklyClient = launchDarklyClient;
+        this.claimDeadlineService = claimDeadlineService;
     }
 
     @Override
@@ -129,6 +139,7 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
 
     private AboutToStartOrSubmitCallbackResponse calculateResponseDeadline(CallbackParams callbackParams) {
         LocalDate issuedOn = null;
+        LocalDate newDeadline;
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
@@ -137,9 +148,18 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
         if (issuedOnOptional.isPresent()) {
             issuedOn = issuedOnOptional.get();
         }
-        LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(
-            respondent.getPaperFormIssueDate() != null ? respondent.getPaperFormIssueDate()
-                : issuedOn);
+        if (launchDarklyClient.isFeatureEnabled("ocon-enhancement-2", LaunchDarklyClient.CLAIM_STORE_USER)) {
+            LocalDate existingDeadline =
+                responseDeadlineCalculator.calculateResponseDeadline(ccdCase.getIssuedOn());
+            final boolean isPastDeadline = claimDeadlineService.isPastDeadline(nowInLocalZone(), existingDeadline);
+            newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(
+                respondent.getPaperFormIssueDate() != null && !isPastDeadline ? respondent.getPaperFormIssueDate()
+                    : issuedOn);
+        } else {
+            newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(
+                respondent.getPaperFormIssueDate() != null ? respondent.getPaperFormIssueDate()
+                    : issuedOn);
+        }
         List<String> validationResult = this.moreTimeRequestRule.validateMoreTimeCanBeRequested(claim, newDeadline);
         var builder = AboutToStartOrSubmitCallbackResponse.builder();
         if (!validationResult.isEmpty()) {
@@ -157,6 +177,16 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
 
         var response = AboutToStartOrSubmitCallbackResponse.builder();
+
+        if (launchDarklyClient.isFeatureEnabled("ocon-enhancement-2", LaunchDarklyClient.CLAIM_STORE_USER)) {
+            LocalDate existingDeadline =
+                responseDeadlineCalculator.calculateResponseDeadline(ccdCase.getIssuedOn());
+            final boolean isPastDeadline = claimDeadlineService.isPastDeadline(nowInLocalZone(), existingDeadline);
+            if (isPastDeadline) {
+                response.warnings(List.of(DEADLINE_WARNING_MSG)).build();
+            }
+        }
+
         if (letterNeededForDefendant(ccdCase)) {
             LocalDate deadline = ccdCase.getCalculatedResponseDeadline();
             String content = String.format(STANDARD_DEADLINE_TEXT, getClaimantName(ccdCase), formatDate(deadline));
@@ -166,9 +196,12 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
 
             return response
                 .data(Map.of(DRAFT_LETTER_DOC, CCDDocument.builder().documentUrl(letterUrl).build()))
+                .warnings(List.of(DEADLINE_WARNING_MSG))
                 .build();
         } else {
-            return response.build();
+            return response
+                .warnings(List.of(DEADLINE_WARNING_MSG))
+                .build();
         }
     }
 

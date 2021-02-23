@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
 import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
+import uk.gov.hmcts.cmc.claimstore.rules.ClaimDeadlineService;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
@@ -67,6 +68,8 @@ class IssuePaperDefenceCallbackHandlerTest {
     private IssuePaperResponseNotificationService issuePaperResponseNotificationService;
     @Mock
     private LaunchDarklyClient launchDarklyClient;
+    @Mock
+    private ClaimDeadlineService claimDeadlineService;
 
     private Claim claim;
     private CallbackRequest callbackRequest;
@@ -81,7 +84,8 @@ class IssuePaperDefenceCallbackHandlerTest {
             issueDateCalculator,
             issuePaperResponseNotificationService,
             documentPublishService,
-            launchDarklyClient
+            launchDarklyClient,
+            claimDeadlineService
         );
         claim = Claim.builder()
             .claimData(SampleClaimData.builder().build())
@@ -264,6 +268,7 @@ class IssuePaperDefenceCallbackHandlerTest {
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
         when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancements"), any(LDUser.class))).thenReturn(false);
+        when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancement-2"), any(LDUser.class))).thenReturn(false);
         AboutToStartOrSubmitCallbackResponse actualResponse =
             (AboutToStartOrSubmitCallbackResponse) issuePaperDefenceCallbackHandler.handle(callbackParams);
         assertThat(actualResponse.getErrors().get(0)).isEqualTo(CLAIMANT_ISSUED_CCJ);
@@ -314,6 +319,7 @@ class IssuePaperDefenceCallbackHandlerTest {
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
         when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancements"), any(LDUser.class))).thenReturn(true);
+        when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancement-2"), any(LDUser.class))).thenReturn(false);
         AboutToStartOrSubmitCallbackResponse actualResponse =
             (AboutToStartOrSubmitCallbackResponse) issuePaperDefenceCallbackHandler.handle(callbackParams);
         Assertions.assertNull(actualResponse.getErrors());
