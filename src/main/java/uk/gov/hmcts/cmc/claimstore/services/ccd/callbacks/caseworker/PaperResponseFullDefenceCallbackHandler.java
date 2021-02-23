@@ -18,6 +18,8 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
+import uk.gov.hmcts.cmc.claimstore.rpa.DefenceResponseNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.CaseEventService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
@@ -26,11 +28,13 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -59,13 +63,15 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
     private final UserService userService;
     private final CaseEventService caseEventService;
     private final LaunchDarklyClient launchDarklyClient;
+    private final DefenceResponseNotificationService defenceResponseNotificationService;
 
     public PaperResponseFullDefenceCallbackHandler(CaseDetailsConverter caseDetailsConverter, Clock clock,
-           EventProducer eventProducer, CaseMapper caseMapper,
-           CourtFinderApi courtFinderApi,
-           UserService userService,
-           CaseEventService caseEventService,
-           LaunchDarklyClient launchDarklyClient) {
+                                                   EventProducer eventProducer, CaseMapper caseMapper,
+                                                   CourtFinderApi courtFinderApi,
+                                                   UserService userService,
+                                                   CaseEventService caseEventService,
+                                                   LaunchDarklyClient launchDarklyClient,
+                                                   DefenceResponseNotificationService defenceResponseNotificationService) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.clock = clock;
         this.eventProducer = eventProducer;
@@ -74,12 +80,14 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
         this.userService = userService;
         this.caseEventService = caseEventService;
         this.launchDarklyClient = launchDarklyClient;
+        this.defenceResponseNotificationService = defenceResponseNotificationService;
     }
 
     protected Map<CallbackType, Callback> callbacks() {
         return Map.of(
             CallbackType.ABOUT_TO_START, this::aboutToStart,
-            CallbackType.ABOUT_TO_SUBMIT, this::aboutToSubmit
+            CallbackType.ABOUT_TO_SUBMIT, this::aboutToSubmit,
+            CallbackType.SUBMITTED, this::submitted
         );
     }
 
@@ -142,6 +150,15 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetailsConverter.convertToMap(updatedCcdCase))
             .build();
+    }
+
+    private CallbackResponse submitted(CallbackParams callbackParams) {
+        String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
+        Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails())
+            .toBuilder().lastEventTriggeredForHwfCase(callbackParams.getRequest().getEventId()).build();
+        DefendantResponseEvent event = new DefendantResponseEvent(claim, authorisation);
+        defenceResponseNotificationService.notifyRobotics(event);
+        return SubmittedCallbackResponse.builder().build();
     }
 
     private List<CCDCollectionElement<CCDScannedDocument>> updateScannedDocuments(CCDCase ccdCase) {
