@@ -122,8 +122,6 @@ public class ClaimServiceTest {
     @Mock
     private UserService userService;
     @Mock
-    private CaseEventService caseEventService;
-    @Mock
     private IssueDateCalculator issueDateCalculator;
     @Mock
     private ResponseDeadlineCalculator responseDeadlineCalculator;
@@ -153,7 +151,7 @@ public class ClaimServiceTest {
             new PaidInFullRule(),
             new ClaimAuthorisationRule(userService),
             new ReviewOrderRule(),
-            launchDarklyClient, caseEventService);
+            launchDarklyClient);
     }
 
     @Test
@@ -236,7 +234,7 @@ public class ClaimServiceTest {
             new PaidInFullRule(),
             new ClaimAuthorisationRule(userService),
             new ReviewOrderRule(),
-            launchDarklyClient, caseEventService);
+            launchDarklyClient);
 
         ClaimData claimData = SampleClaimData.validDefaults();
 
