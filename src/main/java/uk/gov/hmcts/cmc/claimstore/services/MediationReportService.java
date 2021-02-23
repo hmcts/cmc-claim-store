@@ -1,6 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import com.google.common.collect.ImmutableMap;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -14,7 +17,6 @@ import uk.gov.hmcts.cmc.email.EmailService;
 
 import java.time.Clock;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,6 +37,8 @@ public class MediationReportService {
     private final String emailFromAddress;
     private final Clock clock;
 
+    Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
     public MediationReportService(
         EmailService emailService,
@@ -54,16 +58,19 @@ public class MediationReportService {
         this.emailFromAddress = emailFromAddress;
     }
 
-    public void sendMediationReport(String authorisation, LocalDate mediationDate) {
+    public void sendMediationReport(String authorisation, LocalDate mediationDate,
+                                    String emailToAddressFromSupportController) {
         try {
             MediationCSVGenerator generator = new MediationCSVGenerator(caseSearchApi, mediationDate, authorisation);
             generator.createMediationCSV();
             String csvData = generator.getCsvData();
 
-            emailService.sendEmail(emailFromAddress, prepareMediationEmailData(csvData));
+            emailService.sendEmail(emailFromAddress,
+                prepareMediationEmailData(csvData, mediationDate, emailToAddressFromSupportController));
 
             Map<String, String> problematicRecords = generator.getProblematicRecords();
             if (!problematicRecords.isEmpty()) {
+                logger.info("MILO: problematicRecords count is {}", problematicRecords.size());
                 reportMediationExceptions(mediationDate, problematicRecords);
             }
         } catch (MediationCSVGenerationException e) {
@@ -72,22 +79,34 @@ public class MediationReportService {
     }
 
     public void automatedMediationReport() throws Exception {
+        logger.info("MILO: Triggering MILO report for {}", LocalDate.now(clock).minusDays(1));
         sendMediationReport(
             userService.authenticateAnonymousCaseWorker().getAuthorisation(),
-            LocalDate.now(clock).minusDays(1)
+            LocalDate.now(clock).minusDays(1), ""
         );
     }
 
-    private EmailData prepareMediationEmailData(String mediationCSV) {
-        String fileName = "MediationCSV." + LocalDate.now().toString() + ".csv";
+    private EmailData prepareMediationEmailData(String mediationCSV,
+                                                LocalDate mediationDate, String emailToAddressFromSupportController) {
+        String fileName = "MediationCSV." + mediationDate.toString() + ".csv";
         EmailAttachment mediationCSVAttachment = EmailAttachment.csv(mediationCSV.getBytes(), fileName);
-
-        return new EmailData(
-            emailToAddress,
-            "MediationCSV " + LocalDate.now().toString(),
-            "OCMC mediation" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm dd/mm/yyyy")),
-            Collections.singletonList(mediationCSVAttachment)
-        );
+        if (!StringUtils.isBlank(emailToAddressFromSupportController)) {
+            logger.info("MILO: Sending email to support controller mail address");
+            return new EmailData(
+                emailToAddressFromSupportController,
+                "MediationCSV " + mediationDate.toString(),
+                "OCMC mediation" + mediationDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                Collections.singletonList(mediationCSVAttachment)
+            );
+        } else {
+            logger.info("MILO: Sending email to mediation team");
+            return new EmailData(
+                emailToAddress,
+                "MediationCSV " + mediationDate.toString(),
+                "OCMC mediation" + mediationDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                Collections.singletonList(mediationCSVAttachment)
+            );
+        }
     }
 
     private void reportMediationException(RuntimeException e, LocalDate reportDate) {
