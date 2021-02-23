@@ -29,6 +29,7 @@ import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.claimstore.rpa.DefenceResponseNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.CaseEventService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
@@ -91,6 +92,8 @@ class PaperResponseFullDefenceCallbackHandlerTest {
     private UserService userService;
     @Captor
     private ArgumentCaptor<CCDCase> ccdCaseArgumentCaptor;
+    @Mock
+    private DefenceResponseNotificationService defenceResponseNotificationService;
 
     @Nested
     class AboutToStartTests {
@@ -639,6 +642,36 @@ class PaperResponseFullDefenceCallbackHandlerTest {
             handler.handle(callbackParams);
 
             verify(eventProducer).createDefendantPaperResponseEvent(claim, BEARER_TOKEN);
+        }
+    }
+
+    @Nested
+    class SubmitedTests {
+
+        @BeforeEach
+        void setUp() {
+            CallbackRequest request = CallbackRequest.builder()
+                .caseDetails(CaseDetails.builder().data(Map.of("defenceType", CCDDefenceType.DISPUTE.name())).build())
+                .eventId(CaseEvent.PAPER_RESPONSE_FULL_DEFENCE.getValue())
+                .build();
+
+            callbackParams = CallbackParams.builder()
+                .type(CallbackType.SUBMITTED)
+                .params(Map.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+                .request(request)
+                .build();
+        }
+
+        @Test
+        void shouldSendRpaNotification() {
+
+            when(caseDetailsConverter.extractClaim(callbackParams.getRequest()
+                .getCaseDetails())).thenReturn(Claim.builder().build());
+            handler.handle(callbackParams);
+
+            assertEquals(callbackParams.getRequest().getCaseDetails(),
+                CaseDetails.builder().data(Map.of("defenceType", CCDDefenceType.DISPUTE.name())).build());
+
         }
     }
 }
