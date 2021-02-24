@@ -196,13 +196,11 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
 
             return response
                 .data(Map.of(DRAFT_LETTER_DOC, CCDDocument.builder().documentUrl(letterUrl).build()))
-                .warnings(List.of(DEADLINE_WARNING_MSG))
                 .build();
         } else {
-            return response
-                .warnings(List.of(DEADLINE_WARNING_MSG))
-                .build();
+            return response.build();
         }
+
     }
 
     private CCDCase setLetterContent(CCDCase ccdCase, String content, String authorisation) {
