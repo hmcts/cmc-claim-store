@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.launchdarkly.client.LDUser;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -45,6 +46,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.net.URI;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -85,6 +87,8 @@ class MoreTimeRequestedCallbackHandlerTest {
     private static final URI DOCUMENT_URI = URI.create("http://localhost/doc.pdf");
     private static final String ERROR_MESSAGE = "There was a technical problem. Nothing has been sent."
         + " You need to try again.";
+    private static final String DEADLINE_WARNING_MSG =
+        "Placeholder decided warning message will come here";
     private static final String AUTHORISATION = "auth";
     private static final LocalDate deadline = LocalDate.now();
 
@@ -199,6 +203,7 @@ class MoreTimeRequestedCallbackHandlerTest {
             when(responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn().get()))
                 .thenReturn(deadline);
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+            when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancement-2"), any(LDUser.class))).thenReturn(true);
 
         }
 
@@ -286,6 +291,36 @@ class MoreTimeRequestedCallbackHandlerTest {
             verify(generalLetterService, times(0))
                 .generateLetter(any(CCDCase.class), eq(AUTHORISATION), eq(GENERAL_LETTER_TEMPLATE));
 
+        }
+
+        @Test
+        void shouldShowWarningMessage() {
+
+            UserDetails userDetails = SampleUserDetails.builder()
+                .withForename("Case")
+                .withSurname("worker")
+                .withRoles("caseworker-cmc")
+                .build();
+
+            when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(userDetails);
+
+            ccdCase = ccdCase.toBuilder()
+                .calculatedResponseDeadline(deadline)
+                .issuedOn(LocalDate.now().minusDays(20))
+                .build();
+            when(responseDeadlineCalculator.calculateResponseDeadline(any(LocalDate.class)))
+                .thenReturn(LocalDate.now());
+            when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancement-2"), any(LDUser.class))).thenReturn(true);
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            when(claimDeadlineService.isPastDeadline(any(LocalDateTime.class), any(LocalDate.class))).thenReturn(true);
+            when(generalLetterService
+                .generateLetter(any(CCDCase.class), eq(AUTHORISATION), eq(GENERAL_LETTER_TEMPLATE)))
+                .thenReturn(DOC_URL);
+
+            AboutToStartOrSubmitCallbackResponse response
+                = (AboutToStartOrSubmitCallbackResponse) moreTimeRequestedCallbackHandler.handle(callbackParams);
+
+            assertThat(response.getWarnings().get(0)).isEqualTo(DEADLINE_WARNING_MSG);
         }
     }
 
