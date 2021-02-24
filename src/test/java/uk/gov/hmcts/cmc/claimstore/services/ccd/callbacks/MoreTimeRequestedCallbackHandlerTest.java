@@ -154,6 +154,7 @@ class MoreTimeRequestedCallbackHandlerTest {
         CCDDocument document = new CCDDocument(documentUrl, documentUrl, GENERAL_LETTER_PDF);
         ccdCase = CCDCase.builder()
             .previousServiceCaseReference("000MC001")
+            .issuedOn(LocalDate.now().minusDays(20))
             .respondents(ImmutableList.of(
                 CCDCollectionElement.<CCDRespondent>builder()
                     .value(SampleData.getIndividualRespondentWithDQInClaimantResponse())
@@ -200,15 +201,16 @@ class MoreTimeRequestedCallbackHandlerTest {
                 .request(callbackRequest)
                 .build();
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-            when(responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn().get()))
+            when(responseDeadlineCalculator.calculatePostponedResponseDeadline(any(LocalDate.class)))
                 .thenReturn(deadline);
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
-            when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancement-2"), any(LDUser.class))).thenReturn(true);
 
         }
 
         @Test
         void shouldValidateRequestOnAboutToStartEvent() {
+            when(claimDeadlineService.isPastDeadline(any(), any())).thenReturn(true);
+            when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancement-2"), any(LDUser.class))).thenReturn(true);
             when(moreTimeRequestRule.validateMoreTimeCanBeRequested(any(Claim.class), any(LocalDate.class)))
                 .thenReturn(List.of("a", "b", "c"));
 
@@ -220,6 +222,22 @@ class MoreTimeRequestedCallbackHandlerTest {
 
         @Test
         void shouldProvideResponseDeadline() {
+            when(claimDeadlineService.isPastDeadline(any(), any())).thenReturn(true);
+            when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancement-2"), any(LDUser.class))).thenReturn(true);
+            when(moreTimeRequestRule.validateMoreTimeCanBeRequested(any(Claim.class), any(LocalDate.class)))
+                .thenReturn(Lists.emptyList());
+
+            AboutToStartOrSubmitCallbackResponse response
+                = (AboutToStartOrSubmitCallbackResponse) moreTimeRequestedCallbackHandler.handle(callbackParams);
+
+            assertThat(response.getData()).hasSize(2)
+                .containsEntry(CALCULATED_RESPONSE_DEADLINE, deadline)
+                .containsEntry(RESPONSE_DEADLINE_PREVIEW, String.format(PREVIEW_SENTENCE, formatDate(deadline)));
+        }
+
+        @Test
+        void whenResponseDeadlineNoPassed() {
+            when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancement-2"), any(LDUser.class))).thenReturn(false);
             when(moreTimeRequestRule.validateMoreTimeCanBeRequested(any(Claim.class), any(LocalDate.class)))
                 .thenReturn(Lists.emptyList());
 
@@ -302,7 +320,7 @@ class MoreTimeRequestedCallbackHandlerTest {
                 .withRoles("caseworker-cmc")
                 .build();
 
-            when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(userDetails);
+            when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetails);
 
             ccdCase = ccdCase.toBuilder()
                 .calculatedResponseDeadline(deadline)
@@ -321,6 +339,36 @@ class MoreTimeRequestedCallbackHandlerTest {
                 = (AboutToStartOrSubmitCallbackResponse) moreTimeRequestedCallbackHandler.handle(callbackParams);
 
             assertThat(response.getWarnings().get(0)).isEqualTo(DEADLINE_WARNING_MSG);
+        }
+
+        @Test
+        void shouldNotShowWarningMessage() {
+
+            UserDetails userDetails = SampleUserDetails.builder()
+                .withForename("Case")
+                .withSurname("worker")
+                .withRoles("caseworker-cmc")
+                .build();
+
+            when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetails);
+
+            ccdCase = ccdCase.toBuilder()
+                .calculatedResponseDeadline(deadline)
+                .issuedOn(LocalDate.now().minusDays(20))
+                .build();
+            when(responseDeadlineCalculator.calculateResponseDeadline(any(LocalDate.class)))
+                .thenReturn(LocalDate.now());
+            when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancement-2"), any(LDUser.class))).thenReturn(true);
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            when(claimDeadlineService.isPastDeadline(any(LocalDateTime.class), any(LocalDate.class))).thenReturn(false);
+            when(generalLetterService
+                .generateLetter(any(CCDCase.class), eq(AUTHORISATION), eq(GENERAL_LETTER_TEMPLATE)))
+                .thenReturn(DOC_URL);
+
+            AboutToStartOrSubmitCallbackResponse response
+                = (AboutToStartOrSubmitCallbackResponse) moreTimeRequestedCallbackHandler.handle(callbackParams);
+
+            assertThat(response.getWarnings()).isNull();
         }
     }
 

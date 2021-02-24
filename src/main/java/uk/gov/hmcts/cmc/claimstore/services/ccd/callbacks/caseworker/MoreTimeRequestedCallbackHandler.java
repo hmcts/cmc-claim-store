@@ -41,7 +41,6 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESPONSE_MORE_TIME;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
@@ -138,27 +137,22 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
     }
 
     private AboutToStartOrSubmitCallbackResponse calculateResponseDeadline(CallbackParams callbackParams) {
-        LocalDate issuedOn = null;
         LocalDate newDeadline;
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
-        Optional<LocalDate> issuedOnOptional = claim.getIssuedOn();
-        if (issuedOnOptional.isPresent()) {
-            issuedOn = issuedOnOptional.get();
-        }
         if (launchDarklyClient.isFeatureEnabled("ocon-enhancement-2", LaunchDarklyClient.CLAIM_STORE_USER)) {
             LocalDate existingDeadline =
                 responseDeadlineCalculator.calculateResponseDeadline(ccdCase.getIssuedOn());
             final boolean isPastDeadline = claimDeadlineService.isPastDeadline(nowInLocalZone(), existingDeadline);
             newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(
                 respondent.getPaperFormIssueDate() != null && !isPastDeadline ? respondent.getPaperFormIssueDate()
-                    : issuedOn);
+                    : ccdCase.getIssuedOn());
         } else {
             newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(
                 respondent.getPaperFormIssueDate() != null ? respondent.getPaperFormIssueDate()
-                    : issuedOn);
+                    : ccdCase.getIssuedOn());
         }
         List<String> validationResult = this.moreTimeRequestRule.validateMoreTimeCanBeRequested(claim, newDeadline);
         var builder = AboutToStartOrSubmitCallbackResponse.builder();
