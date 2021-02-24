@@ -209,4 +209,18 @@ public class CaseMetadataControllerTest {
             assertNull(metadata.getPaymentReference());
         }
     }
+
+    @Test
+    public void shouldReturnClaimForGetByExternalId() {
+        // given
+        when(claimService.getClaimByExternalId("reference",userService.authenticateAnonymousCaseWorker()))
+            .thenReturn(sampleClaim);
+
+        // when
+        CaseMetadata output = controller.getByExternalId("reference");
+
+        // then
+        assertNotNull(output);
+        assertValid(sampleClaim, output);
+    }
 }
