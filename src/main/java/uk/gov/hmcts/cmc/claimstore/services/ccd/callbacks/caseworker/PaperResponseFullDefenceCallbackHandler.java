@@ -178,7 +178,8 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
                 updatedParty = Individual.builder()
                     .name(individual.getName())
                     .phone(individual.getPhone().isPresent() ? individual.getPhone().get() : null)
-                    .correspondenceAddress(individual.getCorrespondenceAddress().isPresent() ? individual.getCorrespondenceAddress().get() : null)
+                    .correspondenceAddress(individual.getCorrespondenceAddress().isPresent()
+                        ? individual.getCorrespondenceAddress().get() : null)
                     .dateOfBirth(individual.getDateOfBirth())
                     .address(claim.getClaimData().getDefendant().getAddress()).build();
             } else if (defendant.getClass().equals(Company.class)) {
@@ -186,7 +187,8 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
                 updatedParty = Company.builder()
                     .name(company.getName())
                     .phone(company.getPhone().isPresent() ? company.getPhone().get() : null)
-                    .correspondenceAddress(company.getCorrespondenceAddress().isPresent() ? company.getCorrespondenceAddress().get() : null)
+                    .correspondenceAddress(company.getCorrespondenceAddress().isPresent()
+                        ? company.getCorrespondenceAddress().get() : null)
                     //.dateOfBirth(company.getDateOfBirth())
                     .address(claim.getClaimData().getDefendant().getAddress()).build();
             } else if (defendant.getClass().equals(Organisation.class)) {
@@ -194,7 +196,8 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
                 updatedParty = Organisation.builder()
                     .name(organisation.getName())
                     .phone(organisation.getPhone().isPresent() ? organisation.getPhone().get() : null)
-                    .correspondenceAddress(organisation.getCorrespondenceAddress().isPresent() ? organisation.getCorrespondenceAddress().get() : null)
+                    .correspondenceAddress(organisation.getCorrespondenceAddress().isPresent()
+                        ? organisation.getCorrespondenceAddress().get() : null)
                     //   .dateOfBirth(organisation.getDateOfBirth())
                     .address(claim.getClaimData().getDefendant().getAddress()).build();
             } else if (defendant.getClass().equals(SoleTrader.class)) {
@@ -202,7 +205,8 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
                 updatedParty = SoleTrader.builder()
                     .name(soleTrader.getName())
                     .phone(soleTrader.getPhone().isPresent() ? soleTrader.getPhone().get() : null)
-                    .correspondenceAddress(soleTrader.getCorrespondenceAddress().isPresent() ? soleTrader.getCorrespondenceAddress().get() : null)
+                    .correspondenceAddress(soleTrader.getCorrespondenceAddress().isPresent()
+                        ? soleTrader.getCorrespondenceAddress().get() : null)
                     //.dateOfBirth(soleTrader.getDateOfBirth())
                     .address(claim.getClaimData().getDefendant().getAddress()).build();
             }
