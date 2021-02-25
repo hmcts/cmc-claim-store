@@ -28,6 +28,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
+import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.party.Company;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
@@ -173,40 +174,43 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
         }
         if (defendant != null && defendant.getAddress() == null) {
             Party updatedParty = null;
+            Optional<String> phoneOptional = defendant.getPhone();
+            Optional<Address> correspondenceAddressOptional = defendant.getCorrespondenceAddress();
+
+            String phone = phoneOptional.isPresent() ? phoneOptional.get() : null;
+            Address correspondenceAddress = correspondenceAddressOptional.isPresent()
+                ? correspondenceAddressOptional.get() : null;
+
             if (defendant.getClass().equals(Individual.class)) {
                 Individual individual = (Individual) defendant;
                 updatedParty = Individual.builder()
                     .name(individual.getName())
-                    .phone(individual.getPhone().isPresent() ? individual.getPhone().get() : null)
-                    .correspondenceAddress(individual.getCorrespondenceAddress().isPresent()
-                        ? individual.getCorrespondenceAddress().get() : null)
+                    .phone(phone)
+                    .correspondenceAddress(correspondenceAddress)
                     .dateOfBirth(individual.getDateOfBirth())
                     .address(claim.getClaimData().getDefendant().getAddress()).build();
             } else if (defendant.getClass().equals(Company.class)) {
                 Company company = (Company) defendant;
                 updatedParty = Company.builder()
                     .name(company.getName())
-                    .phone(company.getPhone().isPresent() ? company.getPhone().get() : null)
-                    .correspondenceAddress(company.getCorrespondenceAddress().isPresent()
-                        ? company.getCorrespondenceAddress().get() : null)
+                    .phone(phone)
+                    .correspondenceAddress(correspondenceAddress)
                     //.dateOfBirth(company.getDateOfBirth())
                     .address(claim.getClaimData().getDefendant().getAddress()).build();
             } else if (defendant.getClass().equals(Organisation.class)) {
                 Organisation organisation = (Organisation) defendant;
                 updatedParty = Organisation.builder()
                     .name(organisation.getName())
-                    .phone(organisation.getPhone().isPresent() ? organisation.getPhone().get() : null)
-                    .correspondenceAddress(organisation.getCorrespondenceAddress().isPresent()
-                        ? organisation.getCorrespondenceAddress().get() : null)
+                    .phone(phone)
+                    .correspondenceAddress(correspondenceAddress)
                     //   .dateOfBirth(organisation.getDateOfBirth())
                     .address(claim.getClaimData().getDefendant().getAddress()).build();
             } else if (defendant.getClass().equals(SoleTrader.class)) {
                 SoleTrader soleTrader = (SoleTrader) defendant;
                 updatedParty = SoleTrader.builder()
                     .name(soleTrader.getName())
-                    .phone(soleTrader.getPhone().isPresent() ? soleTrader.getPhone().get() : null)
-                    .correspondenceAddress(soleTrader.getCorrespondenceAddress().isPresent()
-                        ? soleTrader.getCorrespondenceAddress().get() : null)
+                    .phone(phone)
+                    .correspondenceAddress(correspondenceAddress)
                     //.dateOfBirth(soleTrader.getDateOfBirth())
                     .address(claim.getClaimData().getDefendant().getAddress()).build();
             }
