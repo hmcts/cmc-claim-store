@@ -293,7 +293,8 @@ class MoreTimeRequestedCallbackHandlerTest {
 
             when(moreTimeRequestRule.validateMoreTimeCanBeRequested(any(Claim.class), any(LocalDate.class)))
                 .thenReturn(Lists.emptyList());
-
+            when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancement-2"), any(LDUser.class))).thenReturn(true);
+            when(claimDeadlineService.isPastDeadline(any(), any())).thenReturn(false);
             AboutToStartOrSubmitCallbackResponse response
                 = (AboutToStartOrSubmitCallbackResponse) moreTimeRequestedCallbackHandler.handle(callbackParams);
 
