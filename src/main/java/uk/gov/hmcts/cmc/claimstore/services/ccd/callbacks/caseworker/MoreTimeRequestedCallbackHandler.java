@@ -63,12 +63,11 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
     public static final String LETTER_NAME = "%s-response-deadline-extended.pdf";
     public static final String PREVIEW_SENTENCE = "The response deadline will be %s .";
     public static final String RESPONSE_DEADLINE_PREVIEW = "responseDeadlinePreview";
+    public static final String DEADLINE_WARN_MSG = "deadlineWarningMessage";
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
     private static final List<CaseEvent> EVENTS = Collections.singletonList(RESPONSE_MORE_TIME);
     private static final String ERROR_MESSAGE =
         "There was a technical problem. Nothing has been sent. You need to try again.";
-    private static final String DEADLINE_WARNING_MSG =
-        "Placeholder decided warning message will come here";
     private static final String STANDARD_DEADLINE_TEXT = String.join("%n",
         "You’ve been given an extra 14 days to respond to the claim made against you by %s.",
         "",
@@ -76,7 +75,6 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
         "",
         "If you don’t respond, you could get a County Court Judgment (CCJ). This may make it harder to get "
             + "credit, such as a mobile phone contract, credit card or mortgage.");
-
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final EventProducer eventProducer;
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
@@ -89,6 +87,7 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
     private final String generalLetterTemplateId;
     private final LaunchDarklyClient launchDarklyClient;
     private final ClaimDeadlineService claimDeadlineService;
+    private String deadlineMessage = "";
 
     @Autowired
     public MoreTimeRequestedCallbackHandler(
@@ -160,8 +159,18 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
             return builder.errors(validationResult).build();
         }
 
+        if (launchDarklyClient.isFeatureEnabled("ocon-enhancement-2", LaunchDarklyClient.CLAIM_STORE_USER)) {
+            LocalDate existingDeadline =
+                responseDeadlineCalculator.calculateResponseDeadline(ccdCase.getIssuedOn());
+            final boolean isPastDeadline = claimDeadlineService.isPastDeadline(nowInLocalZone(), existingDeadline);
+            if (isPastDeadline) {
+                deadlineMessage = "Placeholder decided warning message will come here";
+            }
+        }
+
         Map<String, Object> data = Map.of(CALCULATED_RESPONSE_DEADLINE, newDeadline,
-            RESPONSE_DEADLINE_PREVIEW, String.format(PREVIEW_SENTENCE, formatDate(newDeadline)));
+            RESPONSE_DEADLINE_PREVIEW, String.format(PREVIEW_SENTENCE, formatDate(newDeadline)), DEADLINE_WARN_MSG,
+            deadlineMessage);
 
         return builder.data(data).build();
     }
@@ -171,15 +180,6 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
 
         var response = AboutToStartOrSubmitCallbackResponse.builder();
-
-        if (launchDarklyClient.isFeatureEnabled("ocon-enhancement-2", LaunchDarklyClient.CLAIM_STORE_USER)) {
-            LocalDate existingDeadline =
-                responseDeadlineCalculator.calculateResponseDeadline(ccdCase.getIssuedOn());
-            final boolean isPastDeadline = claimDeadlineService.isPastDeadline(nowInLocalZone(), existingDeadline);
-            if (isPastDeadline) {
-                response.warnings(List.of(DEADLINE_WARNING_MSG)).build();
-            }
-        }
 
         if (letterNeededForDefendant(ccdCase)) {
             LocalDate deadline = ccdCase.getCalculatedResponseDeadline();

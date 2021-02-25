@@ -72,13 +72,13 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.GENERAL_LETT
 @ExtendWith(MockitoExtension.class)
 class MoreTimeRequestedCallbackHandlerTest {
 
+    public static final String DEADLINE_WARN_MSG = "deadlineWarningMessage";
     private static final String DEFENDANT_TEMPLATE_ID = "defendant template id";
     private static final String CLAIMANT_TEMPLATE_ID = "claimant template id";
     private static final String DOC_URL = "http://success.test";
     private static final String DOC_URL_BINARY = "http://success.test/binary";
     private static final String DOC_NAME = "doc-name";
     private static final String FRONTEND_BASE_URL = "http://some.host.dot.com";
-
     private static final String GENERAL_LETTER_TEMPLATE = "generalLetterTemplate";
     private static final CCDDocument DRAFT_LETTER_DOC = CCDDocument.builder()
         .documentFileName(DOC_NAME)
@@ -230,7 +230,7 @@ class MoreTimeRequestedCallbackHandlerTest {
             AboutToStartOrSubmitCallbackResponse response
                 = (AboutToStartOrSubmitCallbackResponse) moreTimeRequestedCallbackHandler.handle(callbackParams);
 
-            assertThat(response.getData()).hasSize(2)
+            assertThat(response.getData()).hasSize(3)
                 .containsEntry(CALCULATED_RESPONSE_DEADLINE, deadline)
                 .containsEntry(RESPONSE_DEADLINE_PREVIEW, String.format(PREVIEW_SENTENCE, formatDate(deadline)));
         }
@@ -244,9 +244,61 @@ class MoreTimeRequestedCallbackHandlerTest {
             AboutToStartOrSubmitCallbackResponse response
                 = (AboutToStartOrSubmitCallbackResponse) moreTimeRequestedCallbackHandler.handle(callbackParams);
 
-            assertThat(response.getData()).hasSize(2)
+            assertThat(response.getData()).hasSize(3)
                 .containsEntry(CALCULATED_RESPONSE_DEADLINE, deadline)
                 .containsEntry(RESPONSE_DEADLINE_PREVIEW, String.format(PREVIEW_SENTENCE, formatDate(deadline)));
+        }
+
+        @Test
+        void shouldShowWarningMessage() {
+
+            UserDetails userDetails = SampleUserDetails.builder()
+                .withForename("Case")
+                .withSurname("worker")
+                .withRoles("caseworker-cmc")
+                .build();
+
+            ccdCase = ccdCase.toBuilder()
+                .calculatedResponseDeadline(deadline)
+                .issuedOn(LocalDate.now().minusDays(20))
+                .build();
+            when(responseDeadlineCalculator.calculateResponseDeadline(any(LocalDate.class)))
+                .thenReturn(LocalDate.now());
+            when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancement-2"), any(LDUser.class))).thenReturn(true);
+            when(claimDeadlineService.isPastDeadline(any(LocalDateTime.class), any(LocalDate.class))).thenReturn(true);
+            when(moreTimeRequestRule.validateMoreTimeCanBeRequested(any(Claim.class), any(LocalDate.class)))
+                .thenReturn(Lists.emptyList());
+
+            AboutToStartOrSubmitCallbackResponse response
+                = (AboutToStartOrSubmitCallbackResponse) moreTimeRequestedCallbackHandler.handle(callbackParams);
+
+            assertThat(response.getData()).hasSize(3)
+                .containsEntry(DEADLINE_WARN_MSG, DEADLINE_WARNING_MSG);
+
+        }
+
+        @Test
+        void shouldNotShowWarningMessage() {
+
+            UserDetails userDetails = SampleUserDetails.builder()
+                .withForename("Case")
+                .withSurname("worker")
+                .withRoles("caseworker-cmc")
+                .build();
+
+            ccdCase = ccdCase.toBuilder()
+                .calculatedResponseDeadline(deadline)
+                .issuedOn(LocalDate.now().minusDays(20))
+                .build();
+
+            when(moreTimeRequestRule.validateMoreTimeCanBeRequested(any(Claim.class), any(LocalDate.class)))
+                .thenReturn(Lists.emptyList());
+
+            AboutToStartOrSubmitCallbackResponse response
+                = (AboutToStartOrSubmitCallbackResponse) moreTimeRequestedCallbackHandler.handle(callbackParams);
+
+            assertThat(response.getData()).hasSize(3)
+                .containsEntry(DEADLINE_WARN_MSG, "");
         }
     }
 
@@ -309,66 +361,6 @@ class MoreTimeRequestedCallbackHandlerTest {
             verify(generalLetterService, times(0))
                 .generateLetter(any(CCDCase.class), eq(AUTHORISATION), eq(GENERAL_LETTER_TEMPLATE));
 
-        }
-
-        @Test
-        void shouldShowWarningMessage() {
-
-            UserDetails userDetails = SampleUserDetails.builder()
-                .withForename("Case")
-                .withSurname("worker")
-                .withRoles("caseworker-cmc")
-                .build();
-
-            when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetails);
-
-            ccdCase = ccdCase.toBuilder()
-                .calculatedResponseDeadline(deadline)
-                .issuedOn(LocalDate.now().minusDays(20))
-                .build();
-            when(responseDeadlineCalculator.calculateResponseDeadline(any(LocalDate.class)))
-                .thenReturn(LocalDate.now());
-            when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancement-2"), any(LDUser.class))).thenReturn(true);
-            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-            when(claimDeadlineService.isPastDeadline(any(LocalDateTime.class), any(LocalDate.class))).thenReturn(true);
-            when(generalLetterService
-                .generateLetter(any(CCDCase.class), eq(AUTHORISATION), eq(GENERAL_LETTER_TEMPLATE)))
-                .thenReturn(DOC_URL);
-
-            AboutToStartOrSubmitCallbackResponse response
-                = (AboutToStartOrSubmitCallbackResponse) moreTimeRequestedCallbackHandler.handle(callbackParams);
-
-            assertThat(response.getWarnings().get(0)).isEqualTo(DEADLINE_WARNING_MSG);
-        }
-
-        @Test
-        void shouldNotShowWarningMessage() {
-
-            UserDetails userDetails = SampleUserDetails.builder()
-                .withForename("Case")
-                .withSurname("worker")
-                .withRoles("caseworker-cmc")
-                .build();
-
-            when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetails);
-
-            ccdCase = ccdCase.toBuilder()
-                .calculatedResponseDeadline(deadline)
-                .issuedOn(LocalDate.now().minusDays(20))
-                .build();
-            when(responseDeadlineCalculator.calculateResponseDeadline(any(LocalDate.class)))
-                .thenReturn(LocalDate.now());
-            when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancement-2"), any(LDUser.class))).thenReturn(true);
-            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-            when(claimDeadlineService.isPastDeadline(any(LocalDateTime.class), any(LocalDate.class))).thenReturn(false);
-            when(generalLetterService
-                .generateLetter(any(CCDCase.class), eq(AUTHORISATION), eq(GENERAL_LETTER_TEMPLATE)))
-                .thenReturn(DOC_URL);
-
-            AboutToStartOrSubmitCallbackResponse response
-                = (AboutToStartOrSubmitCallbackResponse) moreTimeRequestedCallbackHandler.handle(callbackParams);
-
-            assertThat(response.getWarnings()).isNull();
         }
     }
 
