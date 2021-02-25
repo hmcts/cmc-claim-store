@@ -87,7 +87,6 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
     private final String generalLetterTemplateId;
     private final LaunchDarklyClient launchDarklyClient;
     private final ClaimDeadlineService claimDeadlineService;
-    private String deadlineMessage = "";
 
     @Autowired
     public MoreTimeRequestedCallbackHandler(
@@ -159,6 +158,7 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
             return builder.errors(validationResult).build();
         }
 
+        String deadlineMessage = "";
         if (launchDarklyClient.isFeatureEnabled("ocon-enhancement-2", LaunchDarklyClient.CLAIM_STORE_USER)) {
             LocalDate existingDeadline =
                 responseDeadlineCalculator.calculateResponseDeadline(ccdCase.getIssuedOn());
