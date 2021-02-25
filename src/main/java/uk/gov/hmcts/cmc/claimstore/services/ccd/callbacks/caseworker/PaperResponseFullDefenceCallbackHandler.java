@@ -174,7 +174,7 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
         if (defendant != null && defendant.getAddress() == null) {
             Party updatedParty = null;
             if (defendant.getClass().equals(Individual.class)) {
-                Individual individualDefendant = (Individual) defendant);
+                Individual individualDefendant = (Individual) defendant;
                 updatedParty = individualDefendant.builder()
                     .address(claim.getClaimData().getDefendant().getAddress()).build();
             } else if (defendant.getClass().equals(Company.class)) {
