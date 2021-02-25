@@ -29,6 +29,13 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.party.Company;
+import uk.gov.hmcts.cmc.domain.models.party.Individual;
+import uk.gov.hmcts.cmc.domain.models.party.Organisation;
+import uk.gov.hmcts.cmc.domain.models.party.Party;
+import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
+import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -42,6 +49,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.PAPER_RESPONSE_FULL_DEFENCE;
@@ -154,9 +162,34 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
     }
 
     private CallbackResponse submitted(CallbackParams callbackParams) {
+        Party defendant = null;
         String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
+
         Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails())
             .toBuilder().lastEventTriggeredForHwfCase(callbackParams.getRequest().getEventId()).build();
+        Optional<Response> response = claim.getResponse();
+        if (response.isPresent()) {
+            defendant = response.get().getDefendant();
+        }
+        if (defendant != null && defendant.getAddress() == null) {
+            Party updatedParty = null;
+            if (defendant.getClass().equals(Individual.class)) {
+                updatedParty = ((Individual) defendant).builder()
+                    .address(claim.getClaimData().getDefendant().getAddress()).build();
+            } else if (defendant.getClass().equals(Company.class)) {
+                updatedParty = ((Company) defendant).builder()
+                    .address(claim.getClaimData().getDefendant().getAddress()).build();
+            } else if (defendant.getClass().equals(Organisation.class)) {
+                updatedParty = ((Organisation) defendant).builder()
+                    .address(claim.getClaimData().getDefendant().getAddress()).build();
+            } else if (defendant.getClass().equals(SoleTrader.class)) {
+                updatedParty = ((SoleTrader) defendant).builder()
+                    .address(claim.getClaimData().getDefendant().getAddress()).build();
+            }
+            Response updatedResponse = ((FullDefenceResponse) response.get())
+                .toBuilder().defendant(updatedParty).build();
+            claim = claim.toBuilder().response(updatedResponse).build();
+        }
         DefendantResponseEvent event = new DefendantResponseEvent(claim, authorisation);
         defenceResponseNotificationService.notifyRobotics(event);
         return SubmittedCallbackResponse.builder().build();
