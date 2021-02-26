@@ -51,7 +51,11 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.UPDATE_HELP_WITH_FEE_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.CLAIM_EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.*;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.HWF_CLAIM_CREATED;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NUMBER_OF_RECONSIDERATION;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED;
 import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_PAYMENT;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
