@@ -63,7 +63,7 @@ public class OCON9XResponeTest extends BaseTest {
             .and()
             .extract().body().as(Claim.class);
         assertThat(updatedCase.getResponse().isPresent()).isTrue();
-        assertThat(updatedCase.getResponse().get().getResponseMethod()).isEqualTo(ResponseMethod.OCON_FORM);
+        assertThat(updatedCase.getResponse().get().getResponseMethod().get()).isEqualTo(ResponseMethod.OCON_FORM);
         assertThat(updatedCase.getRespondedAt()).isNotNull();
     }
 
@@ -88,7 +88,7 @@ public class OCON9XResponeTest extends BaseTest {
             .and()
             .extract().body().as(Claim.class);
         assertThat(updatedCase.getResponse().isPresent()).isTrue();
-        assertThat(updatedCase.getResponse().get().getResponseMethod()).isEqualTo(ResponseMethod.OCON_FORM);
+        assertThat(updatedCase.getResponse().get().getResponseMethod().get()).isEqualTo(ResponseMethod.OCON_FORM);
         assertThat(updatedCase.getRespondedAt()).isNotNull();
     }
 

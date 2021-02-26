@@ -62,26 +62,7 @@ public class ClaimControllerTest extends BaseTest {
             .when()
             .get("/claims/" + createdCase.getReferenceNumber())
             .as(Claim.class);
-
-        System.out.println(" ********createdCase1 " + createdCase.getReferenceNumber());
-        System.out.println(" ******** " + claim.getReferenceNumber());
         assertThat(claim.getReferenceNumber()).isEqualTo(createdCase.getReferenceNumber());
         assertThat(claim.getResponse()).isEqualTo(createdCase.getResponse());
     }
-
-    //Place holder for HWF claim test
-    /*@Test
-    @Retry
-    public void shouldBeAbleToCreateHelpWithFeesClaim() {
-
-        Claim claim = RestAssured
-            .given()
-            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .header(HttpHeaders.AUTHORIZATION,  claimant.getAuthorisation())
-            .when()
-            .body(jsonMapper.toJson(SampleHwfClaim.getDefaultHwfPending()))
-            .post("/claims/"+ claimant.getUserDetails().getId() +"/hwf")
-            .as(Claim.class);
-
-    }*/
 }
