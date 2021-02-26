@@ -195,15 +195,15 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
                     .name(company.getName())
                     .phone(phone)
                     .correspondenceAddress(correspondenceAddress)
-                    //.dateOfBirth(company.getDateOfBirth())
                     .address(claim.getClaimData().getDefendant().getAddress()).build();
             } else if (defendant.getClass().equals(Organisation.class)) {
                 Organisation organisation = (Organisation) defendant;
+                Optional<String> contactPersonOptional = organisation.getContactPerson();
                 updatedParty = Organisation.builder()
                     .name(organisation.getName())
                     .phone(phone)
+                    .contactPerson(contactPersonOptional.isPresent() ? contactPersonOptional.get() : null)
                     .correspondenceAddress(correspondenceAddress)
-                    //   .dateOfBirth(organisation.getDateOfBirth())
                     .address(claim.getClaimData().getDefendant().getAddress()).build();
             } else if (defendant.getClass().equals(SoleTrader.class)) {
                 SoleTrader soleTrader = (SoleTrader) defendant;
@@ -211,7 +211,6 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
                     .name(soleTrader.getName())
                     .phone(phone)
                     .correspondenceAddress(correspondenceAddress)
-                    //.dateOfBirth(soleTrader.getDateOfBirth())
                     .address(claim.getClaimData().getDefendant().getAddress()).build();
             }
             Response updatedResponse = ((FullDefenceResponse) response.get())
