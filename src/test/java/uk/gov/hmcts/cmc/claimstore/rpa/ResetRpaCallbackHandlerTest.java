@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.rpa;
 
 import com.google.common.collect.ImmutableMap;
 import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,9 +19,10 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+
 import java.util.HashMap;
 import java.util.Map;
-import static org.junit.Assert.assertThat;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -71,7 +73,7 @@ public class ResetRpaCallbackHandlerTest {
         callbackRequest = getCallbackRequest(CLAIM);
         AboutToStartOrSubmitCallbackResponse response
             = (AboutToStartOrSubmitCallbackResponse) resetRpaCallbackHandler.handle(getCallbackParams(callbackRequest));
-        assertThat(response.getData().get(REFERENCE_KEY), CoreMatchers.is(REFERENCE));
+        MatcherAssert.assertThat(response.getData().get(REFERENCE_KEY), CoreMatchers.is(REFERENCE));
         verify(roboticsNotificationService).rpaClaimNotification(eq(REFERENCE));
     }
 
@@ -80,7 +82,7 @@ public class ResetRpaCallbackHandlerTest {
         callbackRequest = getCallbackRequest(MORE_TIME);
         AboutToStartOrSubmitCallbackResponse response
             = (AboutToStartOrSubmitCallbackResponse) resetRpaCallbackHandler.handle(getCallbackParams(callbackRequest));
-        assertThat(response.getData().get(REFERENCE_KEY), CoreMatchers.is(REFERENCE));
+        MatcherAssert.assertThat(response.getData().get(REFERENCE_KEY), CoreMatchers.is(REFERENCE));
         verify(roboticsNotificationService).rpaMoreTimeNotifications(eq(REFERENCE));
     }
 
@@ -89,7 +91,7 @@ public class ResetRpaCallbackHandlerTest {
         callbackRequest = getCallbackRequest(CCJ);
         AboutToStartOrSubmitCallbackResponse response
             = (AboutToStartOrSubmitCallbackResponse) resetRpaCallbackHandler.handle(getCallbackParams(callbackRequest));
-        assertThat(response.getData().get(REFERENCE_KEY), CoreMatchers.is(REFERENCE));
+        MatcherAssert.assertThat(response.getData().get(REFERENCE_KEY), CoreMatchers.is(REFERENCE));
         verify(roboticsNotificationService).rpaCCJNotifications(eq(REFERENCE));
     }
 
@@ -98,7 +100,7 @@ public class ResetRpaCallbackHandlerTest {
         callbackRequest = getCallbackRequest(DEFENDANT_RESPONSE);
         AboutToStartOrSubmitCallbackResponse response
             = (AboutToStartOrSubmitCallbackResponse) resetRpaCallbackHandler.handle(getCallbackParams(callbackRequest));
-        assertThat(response.getData().get(REFERENCE_KEY), CoreMatchers.is(REFERENCE));
+        MatcherAssert.assertThat(response.getData().get(REFERENCE_KEY), CoreMatchers.is(REFERENCE));
         verify(roboticsNotificationService).rpaResponseNotifications(eq(REFERENCE));
     }
 
@@ -107,7 +109,7 @@ public class ResetRpaCallbackHandlerTest {
         callbackRequest = getCallbackRequest(PAID_IN_FULL);
         AboutToStartOrSubmitCallbackResponse response
             = (AboutToStartOrSubmitCallbackResponse) resetRpaCallbackHandler.handle(getCallbackParams(callbackRequest));
-        assertThat(response.getData().get(REFERENCE_KEY), CoreMatchers.is(REFERENCE));
+        MatcherAssert.assertThat(response.getData().get(REFERENCE_KEY), CoreMatchers.is(REFERENCE));
         verify(roboticsNotificationService).rpaPIFNotifications(eq(REFERENCE));
     }
 

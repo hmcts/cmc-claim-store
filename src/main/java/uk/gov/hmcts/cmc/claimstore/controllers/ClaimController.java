@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
@@ -23,6 +24,7 @@ import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantLinkStatus;
 
 import java.util.List;
+import java.util.Map;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -46,8 +48,9 @@ public class ClaimController {
     @GetMapping("/claimant/{submitterId}")
     @ApiOperation("Fetch user claims for given submitter id")
     public List<Claim> getBySubmitterId(@PathVariable("submitterId") String submitterId,
-                                        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
-        return claimService.getClaimBySubmitterId(submitterId, authorisation);
+                                        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
+                                        @RequestParam(value = "pageNo", required = false) Integer pageNumber) {
+        return claimService.getClaimBySubmitterId(submitterId, authorisation, pageNumber);
     }
 
     @GetMapping("/letter/{letterHolderId}")
@@ -88,9 +91,9 @@ public class ClaimController {
     @ApiOperation("Fetch claims linked to given defendant id")
     public List<Claim> getByDefendantId(
         @PathVariable("defendantId") String defendantId,
-        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
-    ) {
-        return claimService.getClaimByDefendantId(defendantId, authorisation);
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
+        @RequestParam(value = "pageNo", required = false) Integer pageNumber) {
+        return claimService.getClaimByDefendantId(defendantId, authorisation, pageNumber);
     }
 
     @PostMapping(value = "/{submitterId}", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -102,6 +105,27 @@ public class ClaimController {
         @RequestHeader(value = "Features", required = false) List<String> features
     ) {
         return claimService.saveClaim(submitterId, claimData, authorisation, features);
+    }
+
+    @PostMapping(value = "/{submitterId}/hwf", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Creates a new Help With Fees claim")
+    public Claim saveHelpWithFeesClaim(
+        @Valid @NotNull @RequestBody ClaimData claimData,
+        @PathVariable("submitterId") String submitterId,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
+        @RequestHeader(value = "Features", required = false) List<String> features
+    ) {
+        return claimService.saveHelpWithFeesClaim(submitterId, claimData, authorisation, features);
+    }
+
+    @PutMapping(value = "/resume-hwf", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Resume the claim with hwf submission")
+    public Claim updateHelpWithFeesClaim(
+        @Valid @NotNull @RequestBody ClaimData claimData,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
+        @RequestHeader(value = "Features", required = false) List<String> features
+    ) {
+        return claimService.updateHelpWithFeesClaim(authorisation, claimData, features);
     }
 
     @PostMapping(value = "/{submitterId}/create-legal-rep-claim", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -182,5 +206,13 @@ public class ClaimController {
         @Valid @NotNull @RequestBody ReviewOrder reviewOrder,
         @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation) {
         return claimService.saveReviewOrder(externalId, reviewOrder, authorisation);
+    }
+
+    @GetMapping(value = "/pagination-metadata")
+    @ApiOperation("Get the total claim number for an user")
+    public Map<String, String> fetchPaginationInfo(
+        @RequestHeader (value = HttpHeaders.AUTHORIZATION) String authorisation,
+        @RequestParam(value = "userType", required = false) String userType) {
+        return claimService.getPaginationInfo(authorisation, userType);
     }
 }

@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.util.Map;
 import java.util.Objects;
 
+import static java.util.Map.entry;
 import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper.admissionResponse;
@@ -140,24 +141,22 @@ public class DefendantResponseNotificationService {
 
         LocalDate decisionDeadline = freeMediationDecisionDateCalculator.calculateDecisionDate(LocalDate.now());
 
-        ImmutableMap.Builder<String, String> parameters = new ImmutableMap.Builder<>();
-        parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
-        parameters.put(CLAIMANT_TYPE, PartyUtils.getType(claim.getClaimData().getClaimant()));
-        parameters.put(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName());
-        parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
-        parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
-        parameters.put(MEDIATION_DECISION_DEADLINE, formatDate(decisionDeadline));
-        parameters.put(FREE_MEDIATION_REQUESTED, isFreeMediationApplicable && isFreeMediationRequested ? "yes" : "");
-        parameters.put(
-            FREE_MEDIATION_NOT_REQUESTED, isFreeMediationApplicable && !isFreeMediationRequested ? "yes" : ""
+        return Map.ofEntries(
+            entry(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName()),
+            entry(CLAIMANT_TYPE, PartyUtils.getType(claim.getClaimData().getClaimant())),
+            entry(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName()),
+            entry(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl()),
+            entry(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber()),
+            entry(MEDIATION_DECISION_DEADLINE, formatDate(decisionDeadline)),
+            entry(FREE_MEDIATION_REQUESTED, isFreeMediationApplicable && isFreeMediationRequested ? "yes" : ""),
+            entry(FREE_MEDIATION_NOT_REQUESTED, isFreeMediationApplicable && !isFreeMediationRequested ? "yes" : ""),
+            entry(ISSUED_ON, formatDate(claim.getIssuedOn()
+                .orElseThrow(() -> new IllegalStateException("Missing issuedOn date")))),
+            entry(RESPONSE_DEADLINE, formatDate(claim.getResponseDeadline())),
+            entry(INTENTION_TO_PROCEED_DEADLINE, formatDate(claim.getRespondedAt()
+                .plusDays(INTENTION_TO_PROCEED_LIMIT)
+                .toLocalDate()))
         );
-        parameters.put(ISSUED_ON, formatDate(claim.getIssuedOn()));
-        parameters.put(RESPONSE_DEADLINE, formatDate(claim.getResponseDeadline()));
-        parameters.put(INTENTION_TO_PROCEED_DEADLINE, formatDate(claim.getRespondedAt()
-            .plusDays(INTENTION_TO_PROCEED_LIMIT)
-            .toLocalDate()));
-
-        return parameters.build();
     }
 
     private EmailTemplates getEmailTemplates() {

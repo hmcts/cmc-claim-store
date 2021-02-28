@@ -136,6 +136,7 @@ class MoreTimeRequestedCallbackHandlerTest {
             .defendantId("id")
             .submitterEmail("email@email.com")
             .referenceNumber("ref. number")
+            .issuedOn(LocalDate.now())
             .build();
         String documentUrl = DOCUMENT_URI.toString();
         CCDDocument document = new CCDDocument(documentUrl, documentUrl, GENERAL_LETTER_PDF);
@@ -187,7 +188,7 @@ class MoreTimeRequestedCallbackHandlerTest {
                 .request(callbackRequest)
                 .build();
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-            when(responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn()))
+            when(responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn().get()))
                 .thenReturn(deadline);
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
 
