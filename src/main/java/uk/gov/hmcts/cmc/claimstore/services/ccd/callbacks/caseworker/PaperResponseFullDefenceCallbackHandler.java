@@ -30,6 +30,9 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.otherparty.CompanyDetails;
+import uk.gov.hmcts.cmc.domain.models.otherparty.OrganisationDetails;
+import uk.gov.hmcts.cmc.domain.models.otherparty.SoleTraderDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Company;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.party.Organisation;
@@ -163,62 +166,84 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
     }
 
     private CallbackResponse submitted(CallbackParams callbackParams) {
-        Party defendant = null;
-        String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
+        if (launchDarklyClient.isFeatureEnabled("ocon-enhancements", LaunchDarklyClient.CLAIM_STORE_USER)) {
+            Party defendant = null;
+            String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
 
-        Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails())
-            .toBuilder().lastEventTriggeredForHwfCase(callbackParams.getRequest().getEventId()).build();
-        Optional<Response> response = claim.getResponse();
-        if (response.isPresent()) {
-            defendant = response.get().getDefendant();
-        }
-        if (defendant != null && defendant.getAddress() == null) {
+            Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails())
+                .toBuilder().lastEventTriggeredForHwfCase(callbackParams.getRequest().getEventId()).build();
+            Optional<Response> response = claim.getResponse();
+            if (response.isPresent()) {
+                defendant = response.get().getDefendant();
+            }
             Party updatedParty = null;
+            // new code
             Optional<String> phoneOptional = defendant.getPhone();
             Optional<Address> correspondenceAddressOptional = defendant.getCorrespondenceAddress();
 
-            String phone = phoneOptional.isPresent() ? phoneOptional.get() : null;
+            String phone = phoneOptional.isPresent() ? phoneOptional.get()
+                : (claim.getClaimData().getDefendant().getPhone().isPresent()
+                ? claim.getClaimData().getDefendant().getPhone().get() : null);
+
             Address correspondenceAddress = correspondenceAddressOptional.isPresent()
-                ? correspondenceAddressOptional.get() : null;
+                ? correspondenceAddressOptional.get()
+                : (claim.getClaimData().getDefendant().getServiceAddress().isPresent()
+                ? claim.getClaimData().getDefendant().getServiceAddress().get() : null);
 
             if (defendant.getClass().equals(Individual.class)) {
                 Individual individual = (Individual) defendant;
                 updatedParty = Individual.builder()
-                    .name(individual.getName())
+                    .name(individual.getName() != null ? individual.getName()
+                        : claim.getClaimData().getDefendant().getName())
                     .phone(phone)
                     .correspondenceAddress(correspondenceAddress)
                     .dateOfBirth(individual.getDateOfBirth())
-                    .address(claim.getClaimData().getDefendant().getAddress()).build();
+                    .address(individual.getAddress() != null ? individual.getAddress()
+                        : claim.getClaimData().getDefendant().getAddress()).build();
             } else if (defendant.getClass().equals(Company.class)) {
                 Company company = (Company) defendant;
+                CompanyDetails companyDetails = (CompanyDetails) claim.getClaimData().getDefendant();
                 updatedParty = Company.builder()
-                    .name(company.getName())
+                    .name(company.getName() != null ? company.getName()
+                        : claim.getClaimData().getDefendant().getName())
                     .phone(phone)
                     .correspondenceAddress(correspondenceAddress)
-                    .address(claim.getClaimData().getDefendant().getAddress()).build();
+                    .contactPerson(companyDetails.getContactPerson().isPresent()
+                        ? companyDetails.getContactPerson().get() : null)
+                    .address(company.getAddress() != null ? company.getAddress()
+                        : claim.getClaimData().getDefendant().getAddress()).build();
             } else if (defendant.getClass().equals(Organisation.class)) {
                 Organisation organisation = (Organisation) defendant;
+                OrganisationDetails organisationDetails = (OrganisationDetails) claim.getClaimData().getDefendant();
                 Optional<String> contactPersonOptional = organisation.getContactPerson();
                 updatedParty = Organisation.builder()
-                    .name(organisation.getName())
+                    .name(organisation.getName() != null ? organisation.getName()
+                        : claim.getClaimData().getDefendant().getName())
                     .phone(phone)
-                    .contactPerson(contactPersonOptional.isPresent() ? contactPersonOptional.get() : null)
+                    .contactPerson(contactPersonOptional.isPresent() ? contactPersonOptional.get()
+                        : organisationDetails.getContactPerson().isPresent() ? organisationDetails.getContactPerson().get() : null)
                     .correspondenceAddress(correspondenceAddress)
-                    .address(claim.getClaimData().getDefendant().getAddress()).build();
+                    .address(organisation.getAddress() != null ? organisation.getAddress()
+                        : claim.getClaimData().getDefendant().getAddress()).build();
             } else if (defendant.getClass().equals(SoleTrader.class)) {
                 SoleTrader soleTrader = (SoleTrader) defendant;
+                SoleTraderDetails soleTraderDetails = (SoleTraderDetails) claim.getClaimData().getDefendant();
                 updatedParty = SoleTrader.builder()
-                    .name(soleTrader.getName())
+                    .name(soleTrader.getName() != null ? soleTrader.getName()
+                        : claim.getClaimData().getDefendant().getName())
+                    .businessName(soleTraderDetails.getBusinessName().isPresent()
+                        ? soleTraderDetails.getBusinessName().get() : null)
                     .phone(phone)
                     .correspondenceAddress(correspondenceAddress)
-                    .address(claim.getClaimData().getDefendant().getAddress()).build();
+                    .address(soleTrader.getAddress() != null ? soleTrader.getAddress()
+                        : claim.getClaimData().getDefendant().getAddress()).build();
             }
             Response updatedResponse = ((FullDefenceResponse) response.get())
                 .toBuilder().defendant(updatedParty).build();
-            claim = claim.toBuilder().response(updatedResponse).build();
+            Claim updatedClaim = claim.toBuilder().response(updatedResponse).build();
+            DefendantResponseEvent event = new DefendantResponseEvent(updatedClaim, authorisation);
+            defenceResponseNotificationService.notifyRobotics(event);
         }
-        DefendantResponseEvent event = new DefendantResponseEvent(claim, authorisation);
-        defenceResponseNotificationService.notifyRobotics(event);
         return SubmittedCallbackResponse.builder().build();
     }
 

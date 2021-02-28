@@ -37,6 +37,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimFeatures;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
@@ -94,6 +95,8 @@ class PaperResponseFullDefenceCallbackHandlerTest {
     private ArgumentCaptor<CCDCase> ccdCaseArgumentCaptor;
     @Mock
     private DefenceResponseNotificationService defenceResponseNotificationService;
+    @Mock
+    private Claim mockClaim;
 
     @Nested
     class AboutToStartTests {
@@ -667,6 +670,19 @@ class PaperResponseFullDefenceCallbackHandlerTest {
 
             when(caseDetailsConverter.extractClaim(callbackParams.getRequest()
                 .getCaseDetails())).thenReturn(Claim.builder().build());
+            handler.handle(callbackParams);
+
+            assertEquals(callbackParams.getRequest().getCaseDetails(),
+                CaseDetails.builder().data(Map.of("defenceType", CCDDefenceType.DISPUTE.name())).build());
+
+        }
+
+        @Test
+        void shouldSendRpaNotificationForIndividual() {
+            Claim claim = SampleClaim.getClaimFullDefenceStatesPaidWithAcceptation();
+            when(mockClaim.getResponse().get().getDefendant().getAddress()).thenReturn(null);
+            when(caseDetailsConverter.extractClaim(callbackParams.getRequest()
+                .getCaseDetails())).thenReturn(mockClaim);
             handler.handle(callbackParams);
 
             assertEquals(callbackParams.getRequest().getCaseDetails(),
