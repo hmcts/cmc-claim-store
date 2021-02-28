@@ -221,7 +221,8 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
                         : claim.getClaimData().getDefendant().getName())
                     .phone(phone)
                     .contactPerson(contactPersonOptional.isPresent() ? contactPersonOptional.get()
-                        : organisationDetails.getContactPerson().isPresent() ? organisationDetails.getContactPerson().get() : null)
+                        : organisationDetails.getContactPerson().isPresent()
+                        ? organisationDetails.getContactPerson().get() : null)
                     .correspondenceAddress(correspondenceAddress)
                     .address(organisation.getAddress() != null ? organisation.getAddress()
                         : claim.getClaimData().getDefendant().getAddress()).build();

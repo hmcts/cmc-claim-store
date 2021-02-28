@@ -307,7 +307,7 @@ class PaperResponseFullDefenceCallbackHandlerTest {
             String postcode = "postcode";
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(getCCDData(postcode,
                 CCDCase.builder()
-                .preferredCourt("preferredDQCourt"), CCDPartyType.COMPANY));
+                    .preferredCourt("preferredDQCourt"), CCDPartyType.COMPANY));
 
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(Claim.builder()
                 .features(List.of(ClaimFeatures.DQ_FLAG.getValue()))
@@ -663,31 +663,6 @@ class PaperResponseFullDefenceCallbackHandlerTest {
                 .params(Map.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
                 .request(request)
                 .build();
-        }
-
-        @Test
-        void shouldSendRpaNotification() {
-
-            when(caseDetailsConverter.extractClaim(callbackParams.getRequest()
-                .getCaseDetails())).thenReturn(Claim.builder().build());
-            handler.handle(callbackParams);
-
-            assertEquals(callbackParams.getRequest().getCaseDetails(),
-                CaseDetails.builder().data(Map.of("defenceType", CCDDefenceType.DISPUTE.name())).build());
-
-        }
-
-        @Test
-        void shouldSendRpaNotificationForIndividual() {
-            Claim claim = SampleClaim.getClaimFullDefenceStatesPaidWithAcceptation();
-            when(mockClaim.getResponse().get().getDefendant().getAddress()).thenReturn(null);
-            when(caseDetailsConverter.extractClaim(callbackParams.getRequest()
-                .getCaseDetails())).thenReturn(mockClaim);
-            handler.handle(callbackParams);
-
-            assertEquals(callbackParams.getRequest().getCaseDetails(),
-                CaseDetails.builder().data(Map.of("defenceType", CCDDefenceType.DISPUTE.name())).build());
-
         }
     }
 }
