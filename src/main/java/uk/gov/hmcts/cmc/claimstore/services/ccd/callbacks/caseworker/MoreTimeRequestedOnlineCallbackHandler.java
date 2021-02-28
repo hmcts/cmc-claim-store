@@ -132,8 +132,9 @@ public class MoreTimeRequestedOnlineCallbackHandler extends CallbackHandler {
         }
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
         UserDetails defendant = userService.getUserDetails(authorisation);
+        Optional<LocalDate> responseDeadline = claim.getClaimantResponseDeadline();
         eventProducer.createMoreTimeForResponseRequestedEvent(claim,
-            claim.getClaimantResponseDeadline().isPresent() ? claim.getClaimantResponseDeadline().get() : null,
+            responseDeadline.isPresent() ? responseDeadline.get() : null,
             defendant.getEmail());
         appInsights.trackEvent(RESPONSE_MORE_TIME_REQUESTED, REFERENCE_NUMBER, claim.getReferenceNumber());
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
