@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.controllers.support.CaseMetadataController;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
@@ -55,7 +56,7 @@ public class CaseMetadataControllerTest {
     @Test
     public void shouldReturnClaimsBySubmitterId() {
         // given
-        when(claimService.getClaimBySubmitterId(eq("submitter"), anyString()))
+        when(claimService.getClaimBySubmitterId(eq("submitter"), anyString(), Mockito.anyInt()))
             .thenReturn(singletonList(sampleClaim));
 
         // when
@@ -69,7 +70,7 @@ public class CaseMetadataControllerTest {
     @Test
     public void shouldReturnClaimsByDefendantId() {
         // given
-        when(claimService.getClaimByDefendantId(eq("defendant"), anyString()))
+        when(claimService.getClaimByDefendantId(eq("defendant"), anyString(), Mockito.anyInt()))
             .thenReturn(singletonList(sampleClaim));
 
         // when
@@ -191,7 +192,7 @@ public class CaseMetadataControllerTest {
         assertEquals(dto.getExternalId(), metadata.getExternalId());
         assertEquals(dto.getReferenceNumber(), metadata.getReferenceNumber());
         assertEquals(dto.getCreatedAt(), metadata.getCreatedAt());
-        assertEquals(dto.getIssuedOn(), metadata.getIssuedOn());
+        assertEquals(dto.getIssuedOn().orElseThrow(), metadata.getIssuedOn());
         assertEquals(dto.getResponseDeadline(), metadata.getResponseDeadline());
         assertEquals(dto.isMoreTimeRequested(), metadata.getMoreTimeRequested());
         assertEquals(dto.getIntentionToProceedDeadline(), metadata.getIntentionToProceedDeadline());

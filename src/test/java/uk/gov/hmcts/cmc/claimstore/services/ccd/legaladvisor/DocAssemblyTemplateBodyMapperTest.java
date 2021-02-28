@@ -48,6 +48,7 @@ import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.BOTH;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.CLAIMANT;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.DEFENDANT;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.NOT_EITHER;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType.FOUR_HOURS;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EXPERT_REPORT_PERMISSION;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.OTHER;
@@ -787,6 +788,12 @@ class DocAssemblyTemplateBodyMapperTest {
                             .builder()
                             .directionComment("third direction")
                             .forParty(BOTH)
+                            .sendBy(LocalDate.parse("2020-08-04"))
+                            .build(),
+                        BespokeDirection
+                            .builder()
+                            .directionComment("fourth direction")
+                            .forParty(NOT_EITHER)
                             .sendBy(LocalDate.parse("2020-08-04"))
                             .build()))
                 .build();

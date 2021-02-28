@@ -19,8 +19,8 @@ dependencies {
   //   The below fixes https://nvd.nist.gov/vuln/detail/CVE-2019-12384 while waiting for spring to pull new version
   compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.3'
 
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
-  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.18'
+  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.18'
 
   testCompile project(':domain-sample-data')
   testCompile group: 'junit', name: 'junit', version: '4.13.1'
@@ -29,11 +29,11 @@ dependencies {
   testCompile group: 'javax.el', name: 'javax.el-api', version: '3.0.0'
   testCompile group: 'org.glassfish.web', name: 'javax.el', version: '2.2.6'
   testCompile group: 'com.google.guava', name: 'guava', version: '20.0'
-  testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.3.3'
-  testCompile group: 'org.junit.jupiter', name:'junit-jupiter-params', version:'5.5.2'
-  testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.5.2'
-  testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.5.2'
-  testCompile group: 'org.junit.platform', name: 'junit-platform-commons', version: '1.5.2'
+  testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.6.28'
+  testCompile group: 'org.junit.jupiter', name:'junit-jupiter-params', version:'5.7.0'
+  testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.7.0'
+  testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.7.0'
+  testCompile group: 'org.junit.platform', name: 'junit-platform-commons', version: '1.7.0'
 
 }
 

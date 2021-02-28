@@ -1,9 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.services.notifications;
 
+import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters;
@@ -30,9 +29,6 @@ public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceT
     private final String reference = "claimant-issue-notification-" + claim.getReferenceNumber();
     private ClaimIssuedNotificationService service;
 
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
-
     @Before
     public void beforeEachTest() {
         service = new ClaimIssuedNotificationService(notificationClient, properties, appInsights);
@@ -47,6 +43,12 @@ public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceT
 
         service.sendMail(claim, USER_EMAIL, null, CLAIMANT_CLAIM_ISSUED_TEMPLATE, reference, USER_FULLNAME);
         verify(appInsights).trackEvent(eq(NOTIFICATION_FAILURE), eq(REFERENCE_NUMBER), eq(reference));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void emailClaimantShouldThrowExceptionIfIssuedOnDateIsMissing() {
+        claim = claim.toBuilder().issuedOn(null).build();
+        service.sendMail(claim, USER_EMAIL, null, CLAIMANT_CLAIM_ISSUED_TEMPLATE, reference, USER_FULLNAME);
     }
 
     @Test
@@ -142,18 +144,21 @@ public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceT
 
     @Test
     public void recoveryShouldNotLogPII() {
-        expectedException.expect(NotificationException.class);
-        service.logNotificationFailure(
-            new NotificationException("expected exception"),
-            null,
-            "hidden@email.com",
-            null,
-            null,
-            "reference",
-            null
-        );
-
-        assertWasLogged("Failure: failed to send notification (reference) due to expected exception");
-        assertWasNotLogged("hidden@email.com");
+        NotificationException exception = new NotificationException("expected exception");
+        try {
+            service.logNotificationFailure(
+                exception,
+                null,
+                "hidden@email.com",
+                null,
+                null,
+                "reference",
+                null
+            );
+            Assert.fail("Expected a NotificationException to be thrown");
+        } catch (NotificationException expected) {
+            assertWasLogged("Failure: failed to send notification (reference) due to expected exception");
+            assertWasNotLogged("hidden@email.com");
+        }
     }
 }
