@@ -88,7 +88,7 @@ class MoreTimeRequestedCallbackHandlerTest {
     private static final String ERROR_MESSAGE = "There was a technical problem. Nothing has been sent."
         + " You need to try again.";
     private static final String DEADLINE_WARNING_MSG =
-        "Placeholder decided warning message will come here";
+        "A request for more time must be made within 19 days from claim issue.";
     private static final String AUTHORISATION = "auth";
     private static final LocalDate deadline = LocalDate.now();
 

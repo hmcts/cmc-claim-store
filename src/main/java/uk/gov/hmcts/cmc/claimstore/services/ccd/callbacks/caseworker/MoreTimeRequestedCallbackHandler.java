@@ -164,7 +164,7 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
                 responseDeadlineCalculator.calculateResponseDeadline(ccdCase.getIssuedOn());
             final boolean isPastDeadline = claimDeadlineService.isPastDeadline(nowInLocalZone(), existingDeadline);
             if (isPastDeadline) {
-                deadlineMessage = "Placeholder decided warning message will come here";
+                deadlineMessage = "A request for more time must be made within 19 days from claim issue.";
             }
         }
 
