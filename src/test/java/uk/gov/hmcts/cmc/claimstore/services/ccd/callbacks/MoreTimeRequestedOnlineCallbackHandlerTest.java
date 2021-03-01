@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
@@ -23,8 +24,11 @@ import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleMoreTimeRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.MoreTimeRequestedOnlineCallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -81,6 +85,10 @@ class MoreTimeRequestedOnlineCallbackHandlerTest {
     private NotificationTemplates templates;
     @Mock
     private EmailTemplates emailTemplates;
+    @Mock
+    private AppInsights appInsights;
+    @Mock
+    private UserService userService;
 
     private Claim claim;
 
@@ -98,8 +106,8 @@ class MoreTimeRequestedOnlineCallbackHandlerTest {
             moreTimeRequestRule,
             caseDetailsConverter,
             notificationService,
-            notificationsProperties
-        );
+            notificationsProperties,
+            eventProducer, appInsights, userService);
         claim = SampleClaim.getDefault();
         claim = Claim.builder()
             .claimData(SampleClaimData.builder().build())
@@ -222,6 +230,12 @@ class MoreTimeRequestedOnlineCallbackHandlerTest {
 
         @Test
         void shouldSendEmailToLinkedDefendant() {
+            when(userService.getUserDetails(AUTHORISATION))
+                .thenReturn(SampleUserDetails.builder()
+                    .withUserId(SampleClaim.USER_ID)
+                    .withMail(SampleClaim.SUBMITTER_EMAIL)
+                    .withRoles(Role.CITIZEN.getRole())
+                    .build());
             when(emailTemplates.getDefendantMoreTimeRequested()).thenReturn(DEFENDANT_TEMPLATE_ID);
             moreTimeRequestedCallbackHandler.handle(callbackParams);
             verify(notificationService, once()).sendMail(
@@ -234,6 +248,12 @@ class MoreTimeRequestedOnlineCallbackHandlerTest {
 
         @Test
         void sendEmailToClaimant() {
+            when(userService.getUserDetails(AUTHORISATION))
+                .thenReturn(SampleUserDetails.builder()
+                    .withUserId(SampleClaim.USER_ID)
+                    .withMail(SampleClaim.SUBMITTER_EMAIL)
+                    .withRoles(Role.CITIZEN.getRole())
+                    .build());
             when(emailTemplates.getClaimantMoreTimeRequested()).thenReturn(CLAIMANT_TEMPLATE_ID);
             moreTimeRequestedCallbackHandler.handle(callbackParams);
             verify(notificationService, once()).sendMail(
