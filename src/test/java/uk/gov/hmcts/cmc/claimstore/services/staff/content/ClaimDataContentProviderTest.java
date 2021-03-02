@@ -116,6 +116,12 @@ public class ClaimDataContentProviderTest {
         assertThat(claimContent.getStatementOfTruth().getSignerRole()).containsSequence("Director");
     }
 
+    @Test
+    public void shouldProvideExpectedHwFNumber() {
+        ClaimContent claimContent = provider.createContent(claim);
+        assertThat(claimContent.getHelpWithFeesNumber()).isEmpty();
+    }
+
     private void testReason(String inputReason, String... expectations) {
         Claim claim = SampleClaim.builder()
             .withClaimData(SampleClaimData.builder().withReason(inputReason).build())

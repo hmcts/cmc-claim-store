@@ -18,16 +18,34 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
+import uk.gov.hmcts.cmc.claimstore.rpa.DefenceResponseNotificationService;
+import uk.gov.hmcts.cmc.claimstore.services.CaseEventService;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
+import uk.gov.hmcts.cmc.domain.models.Address;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.otherparty.CompanyDetails;
+import uk.gov.hmcts.cmc.domain.models.otherparty.OrganisationDetails;
+import uk.gov.hmcts.cmc.domain.models.otherparty.SoleTraderDetails;
+import uk.gov.hmcts.cmc.domain.models.party.Company;
+import uk.gov.hmcts.cmc.domain.models.party.Individual;
+import uk.gov.hmcts.cmc.domain.models.party.Organisation;
+import uk.gov.hmcts.cmc.domain.models.party.Party;
+import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
+import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -35,6 +53,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.PAPER_RESPONSE_FULL_DEFENCE;
@@ -46,33 +65,59 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.Pape
 public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
     private static final List<Role> ROLES = List.of(CASEWORKER);
     private static final List<CaseEvent> EVENTS = List.of(PAPER_RESPONSE_FULL_DEFENCE);
-
+    private static final String OCON9X_REVIEW =
+        "Before continuing you must complete the ‘Review OCON9x paper response’ event";
     private final CaseDetailsConverter caseDetailsConverter;
     private final Clock clock;
     private final EventProducer eventProducer;
     private final CaseMapper caseMapper;
     private final CourtFinderApi courtFinderApi;
+    private final UserService userService;
+    private final CaseEventService caseEventService;
+    private final LaunchDarklyClient launchDarklyClient;
+    private final DefenceResponseNotificationService defenceResponseNotificationService;
 
     public PaperResponseFullDefenceCallbackHandler(CaseDetailsConverter caseDetailsConverter, Clock clock,
                                                    EventProducer eventProducer, CaseMapper caseMapper,
-                                                   CourtFinderApi courtFinderApi) {
+                                                   CourtFinderApi courtFinderApi,
+                                                   UserService userService,
+                                                   CaseEventService caseEventService,
+                                                   LaunchDarklyClient launchDarklyClient,
+                                                   DefenceResponseNotificationService
+                                                       defenceResponseNotificationService) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.clock = clock;
         this.eventProducer = eventProducer;
         this.caseMapper = caseMapper;
         this.courtFinderApi = courtFinderApi;
+        this.userService = userService;
+        this.caseEventService = caseEventService;
+        this.launchDarklyClient = launchDarklyClient;
+        this.defenceResponseNotificationService = defenceResponseNotificationService;
     }
 
     protected Map<CallbackType, Callback> callbacks() {
         return Map.of(
             CallbackType.ABOUT_TO_START, this::aboutToStart,
-            CallbackType.ABOUT_TO_SUBMIT, this::aboutToSubmit
+            CallbackType.ABOUT_TO_SUBMIT, this::aboutToSubmit,
+            CallbackType.SUBMITTED, this::submitted
         );
     }
 
     private CallbackResponse aboutToStart(CallbackParams callbackParams) {
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
+        String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
+        if (launchDarklyClient.isFeatureEnabled("ocon-enhancements", LaunchDarklyClient.CLAIM_STORE_USER)) {
+            List<CaseEvent> caseEventList = caseEventService.findEventsForCase(
+                String.valueOf(ccdCase.getId()), userService.getUser(authorisation));
+            boolean eventPresent = caseEventList.stream()
+                .anyMatch(caseEvent -> caseEvent.getValue().equals("PaperResponseOCON9xForm"));
+            if (!eventPresent) {
+                return AboutToStartOrSubmitCallbackResponse.builder().errors(List.of(OCON9X_REVIEW)).build();
+            }
+        }
+
         Map<String, Object> data = new HashMap<>(caseDetailsConverter.convertToMap(ccdCase));
 
         if (FeaturesUtils.isOnlineDQ(caseDetailsConverter.extractClaim(caseDetails))
@@ -98,6 +143,7 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
     private CallbackResponse aboutToSubmit(CallbackParams callbackParams) {
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
+        String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
 
         List<CCDCollectionElement<CCDRespondent>> updatedRespondents = updateRespondents(caseDetails, ccdCase);
 
@@ -112,12 +158,94 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
             .intentionToProceedDeadline(intentionToProceedDeadline)
             .build();
 
-        String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
         eventProducer.createDefendantPaperResponseEvent(caseMapper.from(updatedCcdCase), authorisation);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetailsConverter.convertToMap(updatedCcdCase))
             .build();
+    }
+
+    private CallbackResponse submitted(CallbackParams callbackParams) {
+        if (launchDarklyClient.isFeatureEnabled("ocon-enhancements", LaunchDarklyClient.CLAIM_STORE_USER)) {
+            Party defendant = null;
+            String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
+
+            Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails())
+                .toBuilder().lastEventTriggeredForHwfCase(callbackParams.getRequest().getEventId()).build();
+            Optional<Response> response = claim.getResponse();
+            if (response.isPresent()) {
+                defendant = response.get().getDefendant();
+            }
+            Party updatedParty = null;
+            // new code
+            Optional<String> phoneOptional = defendant.getPhone();
+            Optional<Address> correspondenceAddressOptional = defendant.getCorrespondenceAddress();
+
+            String phone = phoneOptional.isPresent() ? phoneOptional.get()
+                : (claim.getClaimData().getDefendant().getPhone().isPresent()
+                ? claim.getClaimData().getDefendant().getPhone().get() : null);
+
+            Address correspondenceAddress = correspondenceAddressOptional.isPresent()
+                ? correspondenceAddressOptional.get()
+                : (claim.getClaimData().getDefendant().getServiceAddress().isPresent()
+                ? claim.getClaimData().getDefendant().getServiceAddress().get() : null);
+
+            if (defendant.getClass().equals(Individual.class)) {
+                Individual individual = (Individual) defendant;
+                updatedParty = Individual.builder()
+                    .name(individual.getName() != null ? individual.getName()
+                        : claim.getClaimData().getDefendant().getName())
+                    .phone(phone)
+                    .correspondenceAddress(correspondenceAddress)
+                    .dateOfBirth(individual.getDateOfBirth())
+                    .address(individual.getAddress() != null ? individual.getAddress()
+                        : claim.getClaimData().getDefendant().getAddress()).build();
+            } else if (defendant.getClass().equals(Company.class)) {
+                Company company = (Company) defendant;
+                CompanyDetails companyDetails = (CompanyDetails) claim.getClaimData().getDefendant();
+                updatedParty = Company.builder()
+                    .name(company.getName() != null ? company.getName()
+                        : claim.getClaimData().getDefendant().getName())
+                    .phone(phone)
+                    .correspondenceAddress(correspondenceAddress)
+                    .contactPerson(companyDetails.getContactPerson().isPresent()
+                        ? companyDetails.getContactPerson().get() : null)
+                    .address(company.getAddress() != null ? company.getAddress()
+                        : claim.getClaimData().getDefendant().getAddress()).build();
+            } else if (defendant.getClass().equals(Organisation.class)) {
+                Organisation organisation = (Organisation) defendant;
+                OrganisationDetails organisationDetails = (OrganisationDetails) claim.getClaimData().getDefendant();
+                Optional<String> contactPersonOptional = organisation.getContactPerson();
+                updatedParty = Organisation.builder()
+                    .name(organisation.getName() != null ? organisation.getName()
+                        : claim.getClaimData().getDefendant().getName())
+                    .phone(phone)
+                    .contactPerson(contactPersonOptional.isPresent() ? contactPersonOptional.get()
+                        : organisationDetails.getContactPerson().isPresent()
+                        ? organisationDetails.getContactPerson().get() : null)
+                    .correspondenceAddress(correspondenceAddress)
+                    .address(organisation.getAddress() != null ? organisation.getAddress()
+                        : claim.getClaimData().getDefendant().getAddress()).build();
+            } else if (defendant.getClass().equals(SoleTrader.class)) {
+                SoleTrader soleTrader = (SoleTrader) defendant;
+                SoleTraderDetails soleTraderDetails = (SoleTraderDetails) claim.getClaimData().getDefendant();
+                updatedParty = SoleTrader.builder()
+                    .name(soleTrader.getName() != null ? soleTrader.getName()
+                        : claim.getClaimData().getDefendant().getName())
+                    .businessName(soleTraderDetails.getBusinessName().isPresent()
+                        ? soleTraderDetails.getBusinessName().get() : null)
+                    .phone(phone)
+                    .correspondenceAddress(correspondenceAddress)
+                    .address(soleTrader.getAddress() != null ? soleTrader.getAddress()
+                        : claim.getClaimData().getDefendant().getAddress()).build();
+            }
+            Response updatedResponse = ((FullDefenceResponse) response.get())
+                .toBuilder().defendant(updatedParty).build();
+            Claim updatedClaim = claim.toBuilder().response(updatedResponse).build();
+            DefendantResponseEvent event = new DefendantResponseEvent(updatedClaim, authorisation);
+            defenceResponseNotificationService.notifyRobotics(event);
+        }
+        return SubmittedCallbackResponse.builder().build();
     }
 
     private List<CCDCollectionElement<CCDScannedDocument>> updateScannedDocuments(CCDCase ccdCase) {

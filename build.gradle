@@ -25,7 +25,7 @@ dependencyUpdates.resolutionStrategy = {
   }
 }
 
-def springBootVersion = '2.2.6.RELEASE'
+def springBootVersion = plugins.getPlugin('org.springframework.boot').class.package.implementationVersion
 def springCloudVersion = 'Hoxton.SR2'
 
 def versions = [
@@ -203,13 +203,13 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'pdf-service-client', version: '7.0.0'
   compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
 
-  compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.4'
-  compile group: 'uk.gov.hmcts.reform', name: 'doc-assembly-client', version: '1.0.6'
+  compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.6'
+  compile group: 'uk.gov.hmcts.reform', name: 'doc-assembly-client', version: '1.07'
   compile group: 'uk.gov.hmcts.reform', name: 'fees-java-client', version: '0.0.6'
   compile group: 'uk.gov.hmcts.reform', name: 'payments-client', version: '0.0.6'
-  compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.1'
+  compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.4'
   compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '3.0.2'
-  compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.5'
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
   compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.1.0'
 
   compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
@@ -223,8 +223,8 @@ dependencies {
 
   compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '11.0'
 
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
-  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.18'
+  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.18'
 
   testCompile project(':domain-sample-data')
   testCompile project(path: ":ccd-adapter", configuration: 'testArtifacts')
@@ -396,7 +396,8 @@ sonarqube {
         "**/ValidUnemploymentConstraintValidator.java",
         "**/ValidIncomeConstraintValidator.java",
         "**/ValidExpenseConstraintValidator.java",
-        "**/ValidResidenceConstraintValidator.java"
+        "**/ValidResidenceConstraintValidator.java",
+        "**/PaperResponseFullDefenceCallbackHandler.java"
       ].join(",")
   }
 }
