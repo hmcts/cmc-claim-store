@@ -409,7 +409,8 @@ sonarqube {
         "**/ValidUnemploymentConstraintValidator.java",
         "**/ValidIncomeConstraintValidator.java",
         "**/ValidExpenseConstraintValidator.java",
-        "**/ValidResidenceConstraintValidator.java"
+        "**/ValidResidenceConstraintValidator.java",
+        "**/PaperResponseFullDefenceCallbackHandler.java"
       ].join(",")
   }
 }
