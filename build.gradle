@@ -245,7 +245,7 @@ dependencies {
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.16.1'
   testCompile group: 'org.mockito', name: 'mockito-core', version: '3.3.3'
   testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.6.28'
-  testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.14.3'
+  testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.15.2'
 
   testCompile group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
   testCompile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: '2.4.0'
