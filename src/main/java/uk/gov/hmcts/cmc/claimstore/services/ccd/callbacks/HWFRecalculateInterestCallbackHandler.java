@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
+import uk.gov.hmcts.cmc.domain.models.ChannelType;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Interest;
@@ -82,7 +83,10 @@ public class HWFRecalculateInterestCallbackHandler extends CallbackHandler {
         final CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         final CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         final Claim claim = caseDetailsConverter.extractClaim(caseDetails);
-        recalculateInterestAndFee(claim, ccdCase);
+        Claim updatedClaim = claim.toBuilder()
+            .lastEventTriggeredForHwfCase(callbackParams.getRequest().getEventId())
+            .build();
+        recalculateInterestAndFee(updatedClaim, ccdCase);
         responseBuilder.data(caseDetailsConverter.convertToMap(ccdCase));
         return responseBuilder.build();
     }

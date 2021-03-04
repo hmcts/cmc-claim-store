@@ -117,6 +117,7 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
                 .claimData(claim.getClaimData().toBuilder()
                     .build())
                 .referenceNumber(String.valueOf(claim.getId()))
+                .lastEventTriggeredForHwfCase(callbackParams.getRequest().getEventId())
                 .build();
         } else {
             Payment payment = paymentsService.retrievePayment(authorisation, claim.getClaimData())
