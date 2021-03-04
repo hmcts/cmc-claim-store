@@ -149,7 +149,7 @@ allprojects {
       // solves CVE-2020-5407
       dependencySet(
         group: 'org.springframework.security',
-        version: '5.4.0'
+        version: '5.4.5'
       ) {
         entry 'spring-security-crypto'
       }
@@ -396,7 +396,8 @@ sonarqube {
         "**/ValidUnemploymentConstraintValidator.java",
         "**/ValidIncomeConstraintValidator.java",
         "**/ValidExpenseConstraintValidator.java",
-        "**/ValidResidenceConstraintValidator.java"
+        "**/ValidResidenceConstraintValidator.java",
+        "**/PaperResponseFullDefenceCallbackHandler.java"
       ].join(",")
   }
 }
