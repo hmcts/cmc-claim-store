@@ -39,6 +39,7 @@ import static java.lang.String.format;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_HWF_CASE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INVALID_HWF_REFERENCE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ISSUE_HWF_CASE;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.AWAITING_RESPONSE_HWF;
@@ -49,7 +50,7 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 @Conditional(FeesAndPaymentsConfiguration.class)
 public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
     private static final List<CaseEvent> EVENTS = Arrays.asList(CREATE_CITIZEN_CLAIM,
-        CREATE_HWF_CASE, INVALID_HWF_REFERENCE);
+        CREATE_HWF_CASE, INVALID_HWF_REFERENCE, ISSUE_HWF_CASE);
     private static final List<Role> ROLES = Arrays.asList(CITIZEN, CASEWORKER);
 
     private final ImmutableMap<CallbackType, Callback> callbacks = ImmutableMap.of(
@@ -110,43 +111,61 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
             callbackParams.getType(),
             claim.getExternalId());
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
-
+        String eventTriggered = callbackParams.getRequest().getEventId();
         if (claim.getState().equals(HWF_APPLICATION_PENDING) || claim.getState().equals(AWAITING_RESPONSE_HWF)) {
-            updatedClaim = claim.toBuilder()
-                .channel(ChannelType.CITIZEN)
-                .claimData(claim.getClaimData().toBuilder()
-                    .build())
-                .referenceNumber(String.valueOf(claim.getId()))
-                .lastEventTriggeredForHwfCase(callbackParams.getRequest().getEventId())
-                .build();
-        } else {
-            Payment payment = paymentsService.retrievePayment(authorisation, claim.getClaimData())
-                .orElseThrow(() -> new IllegalStateException(format(
-                    "Claim with external id %s has no payment record",
-                    claim.getExternalId()))
-                );
 
-            if (payment.getStatus() != PaymentStatus.SUCCESS) {
-                logger.info("Payment not successful for claim with external id {}", claim.getExternalId());
-
-                return AboutToStartOrSubmitCallbackResponse.builder()
-                    .errors(ImmutableList.of("Payment not successful"))
+            if (eventTriggered.equals(CREATE_HWF_CASE.getValue())) {
+                updatedClaim = claim.toBuilder()
+                    .channel(ChannelType.CITIZEN)
+                    .claimData(claim.getClaimData().toBuilder()
+                        .build())
+                    .referenceNumber(String.valueOf(claim.getId()))
+                    .lastEventTriggeredForHwfCase(eventTriggered)
                     .build();
             }
+        } else {
+            if (eventTriggered.equals(ISSUE_HWF_CASE.getValue())) {
+                LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
 
-            LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
+                updatedClaim = claim.toBuilder()
+                    .channel(ChannelType.CITIZEN)
+                    .claimData(claim.getClaimData().toBuilder()
+                        .build())
+                    .referenceNumber(referenceNumberRepository.getReferenceNumberForCitizen())
+                    .createdAt(LocalDateTimeFactory.nowInUTC())
+                    .issuedOn(issuedOn)
+                    .serviceDate(issuedOn.plusDays(5))
+                    .responseDeadline(responseDeadlineCalculator.calculateResponseDeadline(issuedOn))
+                    .build();
+            } else {
+                Payment payment = paymentsService.retrievePayment(authorisation, claim.getClaimData())
+                    .orElseThrow(() -> new IllegalStateException(format(
+                        "Claim with external id %s has no payment record",
+                        claim.getExternalId()))
+                    );
 
-            updatedClaim = claim.toBuilder()
-                .channel(ChannelType.CITIZEN)
-                .claimData(claim.getClaimData().toBuilder()
-                    .payment(payment)
-                    .build())
-                .referenceNumber(referenceNumberRepository.getReferenceNumberForCitizen())
-                .createdAt(LocalDateTimeFactory.nowInUTC())
-                .issuedOn(issuedOn)
-                .serviceDate(issuedOn.plusDays(5))
-                .responseDeadline(responseDeadlineCalculator.calculateResponseDeadline(issuedOn))
-                .build();
+                if (payment.getStatus() != PaymentStatus.SUCCESS) {
+                    logger.info("Payment not successful for claim with external id {}", claim.getExternalId());
+
+                    return AboutToStartOrSubmitCallbackResponse.builder()
+                        .errors(ImmutableList.of("Payment not successful"))
+                        .build();
+                }
+
+                LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
+
+                updatedClaim = claim.toBuilder()
+                    .channel(ChannelType.CITIZEN)
+                    .claimData(claim.getClaimData().toBuilder()
+                        .payment(payment)
+                        .build())
+                    .referenceNumber(referenceNumberRepository.getReferenceNumberForCitizen())
+                    .createdAt(LocalDateTimeFactory.nowInUTC())
+                    .issuedOn(issuedOn)
+                    .serviceDate(issuedOn.plusDays(5))
+                    .responseDeadline(responseDeadlineCalculator.calculateResponseDeadline(issuedOn))
+                    .build();
+            }
         }
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetailsConverter.convertToMap(caseMapper.to(updatedClaim)))

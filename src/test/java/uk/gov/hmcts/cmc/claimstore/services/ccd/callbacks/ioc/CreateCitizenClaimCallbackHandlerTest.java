@@ -44,6 +44,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_HWF_CASE;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
@@ -160,7 +161,7 @@ public class CreateCitizenClaimCallbackHandlerTest {
     public void shouldSuccessfullyReturnCallBackResponseWhenClaimIsHwfPending() {
         caseDetails.setId(Long.valueOf(REFERENCE_NO_HWF));
         callbackRequest = CallbackRequest.builder()
-            .eventId(CREATE_CITIZEN_CLAIM.getValue())
+            .eventId(CREATE_HWF_CASE.getValue())
             .caseDetails(caseDetails)
             .build();
 
@@ -191,7 +192,10 @@ public class CreateCitizenClaimCallbackHandlerTest {
 
     @Test
     public void shouldSuccessfullyReturnCallBackResponseWhenClaimIsHwfAwaitingResponse() {
-
+        callbackRequest = CallbackRequest.builder()
+            .eventId(CREATE_HWF_CASE.getValue())
+            .caseDetails(caseDetails)
+            .build();
         Claim claim = SampleHwfClaim.getDefaultAwaitingResponseHwf().toBuilder()
             .id(Long.valueOf(REFERENCE_NO_HWF))
             .referenceNumber(REFERENCE_NO_HWF)
