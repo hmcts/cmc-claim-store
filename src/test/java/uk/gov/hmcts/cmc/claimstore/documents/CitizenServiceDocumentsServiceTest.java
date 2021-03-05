@@ -170,23 +170,4 @@ public class CitizenServiceDocumentsServiceTest {
             .build();
         AssertionsForClassTypes.assertThat(requestBody).isEqualTo(expectedBody);
     }
-
-    @Test
-    public void shouldReturnSealedClaimDocumentWhenDefendantAddressIsNull() {
-        //given
-        when(documentTemplates.getSealedClaim()).thenReturn(PDF_BYTES);
-
-        Claim claim = SampleClaim.getDefault();
-        Map<String, Object> documentContent = new HashMap<>();
-        documentContent.put("referenceNumber", "000MC001");
-        when(claimContentProvider.createContent(claim)).thenReturn(documentContent);
-        //when
-        Document result = citizenServiceDocumentsService.sealedClaimDocument(claim);
-        //then
-        assertThat(result.template).isEqualTo(new String(PDF_BYTES));
-
-        //verify
-        verify(claimContentProvider).createContent(eq(claim));
-        verify(documentTemplates).getSealedClaim();
-    }
 }
