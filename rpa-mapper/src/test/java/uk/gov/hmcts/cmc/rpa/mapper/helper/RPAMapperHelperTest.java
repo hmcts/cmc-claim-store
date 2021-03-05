@@ -42,7 +42,8 @@ public class RPAMapperHelperTest {
         Address address = SampleAddress.builder().postcode("MK15 5EW").build();
         Party ownParty = SampleParty.builder().withAddress(address).individual();
 
-        TheirDetails theirDetails = SampleTheirDetails.builder().withClaimantProvidedAddress(address).individualDetails();
+        TheirDetails theirDetails = SampleTheirDetails.builder().withClaimantProvidedAddress(address)
+            .individualDetails();
 
         assertThat(RPAMapperHelper.isAddressAmended(ownParty, theirDetails)).isFalse();
     }
