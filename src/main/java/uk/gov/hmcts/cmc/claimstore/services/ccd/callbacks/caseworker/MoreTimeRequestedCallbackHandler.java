@@ -225,11 +225,11 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
 
         var builder = AboutToStartOrSubmitCallbackResponse.builder();
         try {
-            eventProducer.createMoreTimeForResponseRequestedEvent(
+            /*eventProducer.createMoreTimeForResponseRequestedEvent(
                 updatedClaim,
                 updatedClaim.getResponseDeadline(),
                 updatedClaim.getClaimData().getDefendant().getEmail().orElse(null)
-            );
+            );*/
 
             sendNotificationToClaimant(updatedClaim);
 
@@ -238,7 +238,7 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
             } else {
                 String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
                 String filename = String.format(LETTER_NAME, updatedClaim.getReferenceNumber());
-                updatedCase = generalLetterService.publishLetter(updatedCase, updatedClaim, authorisation, filename);
+                //updatedCase = generalLetterService.publishLetter(updatedCase, updatedClaim, authorisation, filename);
             }
             return builder.data(caseDetailsConverter.convertToMap(updatedCase)).build();
         } catch (Exception e) {
