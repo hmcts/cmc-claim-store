@@ -11,7 +11,7 @@ dependencies {
   compile group: 'org.springframework.retry', name: 'spring-retry'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
-  compile group: 'org.postgresql', name: 'postgresql', version: '42.2.14'
+  compile group: 'org.postgresql', name: 'postgresql', version: '42.2.19'
   compile group: 'com.google.guava', name: 'guava', version: '20.0'
   compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
 
