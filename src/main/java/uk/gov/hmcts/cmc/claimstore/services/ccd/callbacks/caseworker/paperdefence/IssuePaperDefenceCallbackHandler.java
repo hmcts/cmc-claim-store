@@ -163,14 +163,12 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
     private LocalDate getResponseDeadline(CCDRespondent ccdRespondent, LocalDate paperFormIssueDate, CCDCase ccdCase,
                                           boolean isPastDeadline) {
 
-        if (isPastDeadline) {
+        if (isPastDeadline && CCDYesNoOption.NO.equals(ccdRespondent.getResponseMoreTimeNeededOption())) {
+            return responseDeadlineCalculator.calculateResponseDeadline(ccdCase.getIssuedOn());
+        } else if (CCDYesNoOption.YES.equals(ccdRespondent.getResponseMoreTimeNeededOption())) {
             return responseDeadlineCalculator.calculatePostponedResponseDeadline(ccdCase.getIssuedOn());
         } else {
-            if (CCDYesNoOption.YES.equals(ccdRespondent.getResponseMoreTimeNeededOption())) {
-                return responseDeadlineCalculator.calculatePostponedResponseDeadline(ccdCase.getIssuedOn());
-            } else {
-                return responseDeadlineCalculator.calculateResponseDeadline(paperFormIssueDate);
-            }
+            return responseDeadlineCalculator.calculateResponseDeadline(paperFormIssueDate);
         }
     }
 

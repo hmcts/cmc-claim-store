@@ -63,7 +63,8 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
     public static final String LETTER_NAME = "%s-response-deadline-extended.pdf";
     public static final String PREVIEW_SENTENCE = "The response deadline will be %s .";
     public static final String RESPONSE_DEADLINE_PREVIEW = "responseDeadlinePreview";
-    public static final String DEADLINE_WARN_MSG = "deadlineWarningMessage";
+    private static final String DEADLINE_WARNING_MSG =
+        "A request for more time must be made within 19 days from claim issue.";
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
     private static final List<CaseEvent> EVENTS = Collections.singletonList(RESPONSE_MORE_TIME);
     private static final String ERROR_MESSAGE =
@@ -158,19 +159,8 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
             return builder.errors(validationResult).build();
         }
 
-        String deadlineMessage = "";
-        if (launchDarklyClient.isFeatureEnabled("ocon-enhancement-2", LaunchDarklyClient.CLAIM_STORE_USER)) {
-            LocalDate existingDeadline =
-                responseDeadlineCalculator.calculateResponseDeadline(ccdCase.getIssuedOn());
-            final boolean isPastDeadline = claimDeadlineService.isPastDeadline(nowInLocalZone(), existingDeadline);
-            if (isPastDeadline) {
-                deadlineMessage = "A request for more time must be made within 19 days from claim issue.";
-            }
-        }
-
         Map<String, Object> data = Map.of(CALCULATED_RESPONSE_DEADLINE, newDeadline,
-            RESPONSE_DEADLINE_PREVIEW, String.format(PREVIEW_SENTENCE, formatDate(newDeadline)), DEADLINE_WARN_MSG,
-            deadlineMessage);
+            RESPONSE_DEADLINE_PREVIEW, String.format(PREVIEW_SENTENCE, formatDate(newDeadline)));
 
         return builder.data(data).build();
     }
@@ -180,6 +170,15 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
 
         var response = AboutToStartOrSubmitCallbackResponse.builder();
+
+        if (launchDarklyClient.isFeatureEnabled("ocon-enhancement-2", LaunchDarklyClient.CLAIM_STORE_USER)) {
+            LocalDate existingDeadline =
+                responseDeadlineCalculator.calculateResponseDeadline(ccdCase.getIssuedOn());
+            final boolean isPastDeadline = claimDeadlineService.isPastDeadline(nowInLocalZone(), existingDeadline);
+            if (isPastDeadline) {
+                response.warnings(List.of(DEADLINE_WARNING_MSG)).build();
+            }
+        }
 
         if (letterNeededForDefendant(ccdCase)) {
             LocalDate deadline = ccdCase.getCalculatedResponseDeadline();
@@ -225,11 +224,11 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
 
         var builder = AboutToStartOrSubmitCallbackResponse.builder();
         try {
-            /*eventProducer.createMoreTimeForResponseRequestedEvent(
+            eventProducer.createMoreTimeForResponseRequestedEvent(
                 updatedClaim,
                 updatedClaim.getResponseDeadline(),
                 updatedClaim.getClaimData().getDefendant().getEmail().orElse(null)
-            );*/
+            );
 
             sendNotificationToClaimant(updatedClaim);
 
@@ -238,7 +237,7 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
             } else {
                 String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
                 String filename = String.format(LETTER_NAME, updatedClaim.getReferenceNumber());
-                //updatedCase = generalLetterService.publishLetter(updatedCase, updatedClaim, authorisation, filename);
+                updatedCase = generalLetterService.publishLetter(updatedCase, updatedClaim, authorisation, filename);
             }
             return builder.data(caseDetailsConverter.convertToMap(updatedCase)).build();
         } catch (Exception e) {
