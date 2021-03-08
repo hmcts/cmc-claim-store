@@ -83,6 +83,8 @@ public class UserService {
         return idamApi.generatePin(new GeneratePinRequest(name), authorisation);
     }
 
+    @LogExecutionTime
+    @Cacheable(value = "userOIDTokenCache")
     public String getAuthorisationToken(String username, String password) {
         logger.info("IDAM /o/token invoked.");
         TokenExchangeResponse tokenExchangeResponse = idamApi.exchangeToken(
