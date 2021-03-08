@@ -149,10 +149,12 @@ class PaperResponseReviewedHandler {
 
         getResponseTimeFromPaperResponse(afterClaim)
             .ifPresent(claimBuilder::respondedAt);
+        //We need this flag to identify paper response event to map and retain values
         claimBuilder.paperResponse(YesNoOption.YES).build();
         AboutToStartOrSubmitCallbackResponseBuilder response = AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetailsConverter.convertToMap(caseMapper.to(claimBuilder.build())));
-
+        //reset it back
+        claimBuilder.paperResponse(YesNoOption.NO).build();
         if (!errors.isEmpty()) {
             return response.errors(errors).build();
         }
