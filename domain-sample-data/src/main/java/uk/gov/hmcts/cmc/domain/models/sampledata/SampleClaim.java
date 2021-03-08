@@ -647,7 +647,9 @@ public final class SampleClaim {
             directionOrderType,
             bespokeOrderDirection,
             LocalDateTime.now(),
-            lastEventTriggeredForHwfCase
+            lastEventTriggeredForHwfCase,
+            null,
+            null
         );
     }
 
