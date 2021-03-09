@@ -199,7 +199,6 @@ class MoreTimeRequestedCallbackHandlerTest {
                 .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
                 .request(callbackRequest)
                 .build();
-            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
             when(responseDeadlineCalculator.calculatePostponedResponseDeadline(any(LocalDate.class)))
                 .thenReturn(deadline);
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
@@ -208,6 +207,7 @@ class MoreTimeRequestedCallbackHandlerTest {
 
         @Test
         void shouldValidateRequestOnAboutToStartEvent() {
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
             when(claimDeadlineService.isPastDeadline(any(), any())).thenReturn(true);
             when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancement-2"), any(LDUser.class))).thenReturn(true);
             when(moreTimeRequestRule.validateMoreTimeCanBeRequested(any(Claim.class), any(LocalDate.class)))
@@ -221,6 +221,7 @@ class MoreTimeRequestedCallbackHandlerTest {
 
         @Test
         void shouldProvideResponseDeadline() {
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
             when(claimDeadlineService.isPastDeadline(any(), any())).thenReturn(true);
             when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancement-2"), any(LDUser.class))).thenReturn(true);
             when(moreTimeRequestRule.validateMoreTimeCanBeRequested(any(Claim.class), any(LocalDate.class)))
@@ -236,6 +237,7 @@ class MoreTimeRequestedCallbackHandlerTest {
 
         @Test
         void whenResponseDeadlineNoPassed() {
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
             when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancement-2"), any(LDUser.class))).thenReturn(false);
             when(moreTimeRequestRule.validateMoreTimeCanBeRequested(any(Claim.class), any(LocalDate.class)))
                 .thenReturn(Lists.emptyList());
@@ -247,6 +249,32 @@ class MoreTimeRequestedCallbackHandlerTest {
                 .containsEntry(CALCULATED_RESPONSE_DEADLINE, deadline)
                 .containsEntry(RESPONSE_DEADLINE_PREVIEW, String.format(PREVIEW_SENTENCE, formatDate(deadline)));
         }
+
+        @Test
+        void whenResponseDeadlineNoPassedPaperFormDateNotNull() {
+
+            ccdCase = CCDCase.builder()
+                .respondents(ImmutableList.of(
+                    CCDCollectionElement.<CCDRespondent>builder()
+                        .value(SampleData.getIndividualRespondentWithDQInClaimantResponse().toBuilder()
+                            .paperFormIssueDate(LocalDate.now())
+                            .build())
+                        .build()
+                ))
+                .build();
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancement-2"), any(LDUser.class))).thenReturn(false);
+            when(moreTimeRequestRule.validateMoreTimeCanBeRequested(any(Claim.class), any(LocalDate.class)))
+                .thenReturn(Lists.emptyList());
+
+            AboutToStartOrSubmitCallbackResponse response
+                = (AboutToStartOrSubmitCallbackResponse) moreTimeRequestedCallbackHandler.handle(callbackParams);
+
+            assertThat(response.getData()).hasSize(2)
+                .containsEntry(CALCULATED_RESPONSE_DEADLINE, deadline)
+                .containsEntry(RESPONSE_DEADLINE_PREVIEW, String.format(PREVIEW_SENTENCE, formatDate(deadline)));
+        }
+
     }
 
     @Nested
@@ -429,7 +457,6 @@ class MoreTimeRequestedCallbackHandlerTest {
                 .build();
 
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
             when(notificationsProperties.getTemplates()).thenReturn(templates);
             when(templates.getEmail()).thenReturn(emailTemplates);
             when(notificationsProperties.getFrontendBaseUrl()).thenReturn(FRONTEND_BASE_URL);
@@ -437,6 +464,7 @@ class MoreTimeRequestedCallbackHandlerTest {
 
         @Test
         void shouldSendEmailToLinkedDefendant() {
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
             when(emailTemplates.getDefendantMoreTimeRequested()).thenReturn(DEFENDANT_TEMPLATE_ID);
             moreTimeRequestedCallbackHandler.handle(callbackParams);
             verify(notificationService, once()).sendMail(
@@ -448,7 +476,53 @@ class MoreTimeRequestedCallbackHandlerTest {
         }
 
         @Test
+        void shouldNotSendEmailToLinkedDefendant() {
+            claim = claim.toBuilder()
+                .defendantEmail(null).defendantId(null).build();
+
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+            moreTimeRequestedCallbackHandler.handle(callbackParams);
+            verify(notificationService, times(0)).sendMail(
+                eq(claim.getDefendantEmail()),
+                eq(DEFENDANT_TEMPLATE_ID),
+                anyMap(),
+                eq(SampleMoreTimeRequestedEvent.getReference("defendant", claim.getReferenceNumber()))
+            );
+        }
+
+        @Test
+        void whenNotDefendantEmailShouldNotSendEmailToLinkedDefendant() {
+            claim = claim.toBuilder()
+                .defendantEmail(null).defendantId(DEFENDANT_ID).build();
+
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+            moreTimeRequestedCallbackHandler.handle(callbackParams);
+            verify(notificationService, times(0)).sendMail(
+                eq(claim.getDefendantEmail()),
+                eq(DEFENDANT_TEMPLATE_ID),
+                anyMap(),
+                eq(SampleMoreTimeRequestedEvent.getReference("defendant", claim.getReferenceNumber()))
+            );
+        }
+
+        @Test
+        void whenNotDefendantIdShouldNotSendEmailToLinkedDefendant() {
+            claim = claim.toBuilder()
+                .defendantEmail(DEFENDANT_EMAIL).defendantId(null).build();
+
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+            moreTimeRequestedCallbackHandler.handle(callbackParams);
+            verify(notificationService, times(0)).sendMail(
+                eq(claim.getDefendantEmail()),
+                eq(DEFENDANT_TEMPLATE_ID),
+                anyMap(),
+                eq(SampleMoreTimeRequestedEvent.getReference("defendant", claim.getReferenceNumber()))
+            );
+        }
+
+        @Test
         void sendEmailToClaimant() {
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
             when(emailTemplates.getClaimantMoreTimeRequested()).thenReturn(CLAIMANT_TEMPLATE_ID);
             moreTimeRequestedCallbackHandler.handle(callbackParams);
             verify(notificationService, once()).sendMail(
