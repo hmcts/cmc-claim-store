@@ -86,6 +86,7 @@ public class HWFRecalculateInterestCallbackHandler extends CallbackHandler {
             .lastEventTriggeredForHwfCase(callbackParams.getRequest().getEventId())
             .build();
         recalculateInterestAndFee(updatedClaim, ccdCase);
+        ccdCase.setLastEventTriggeredForHwfCase(callbackParams.getRequest().getEventId());
         responseBuilder.data(caseDetailsConverter.convertToMap(ccdCase));
         return responseBuilder.build();
     }
