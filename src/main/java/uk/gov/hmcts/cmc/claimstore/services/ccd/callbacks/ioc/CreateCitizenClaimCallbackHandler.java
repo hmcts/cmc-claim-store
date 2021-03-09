@@ -114,7 +114,8 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
         String eventTriggered = callbackParams.getRequest().getEventId();
         if (claim.getState().equals(HWF_APPLICATION_PENDING) || claim.getState().equals(AWAITING_RESPONSE_HWF)) {
 
-            if (eventTriggered.equals(CREATE_HWF_CASE.getValue())) {
+            if (eventTriggered.equals(CREATE_HWF_CASE.getValue())
+                || eventTriggered.equals(INVALID_HWF_REFERENCE.getValue())) {
                 updatedClaim = claim.toBuilder()
                     .channel(ChannelType.CITIZEN)
                     .claimData(claim.getClaimData().toBuilder()

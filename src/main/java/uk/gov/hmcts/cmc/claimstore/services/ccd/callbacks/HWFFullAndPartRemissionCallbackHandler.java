@@ -118,6 +118,7 @@ public class HWFFullAndPartRemissionCallbackHandler extends CallbackHandler {
             errors.add(validationMessage);
             responseBuilder.errors(errors);
         } else {
+            ccdCase.setLastEventTriggeredForHwfCase(callbackParams.getRequest().getEventId());
             responseBuilder.data(caseDetailsConverter.convertToMap(ccdCase));
         }
         return responseBuilder.build();
