@@ -319,7 +319,7 @@ class MoreTimeRequestedCallbackHandlerTest {
                 .withRoles("caseworker-cmc")
                 .build();
 
-            when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(userDetails);
+            when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetails);
 
             ccdCase = ccdCase.toBuilder()
                 .calculatedResponseDeadline(deadline)
