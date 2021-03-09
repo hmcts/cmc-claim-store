@@ -27,7 +27,9 @@ dependencies {
 
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
   testCompile group: 'commons-io', name: 'commons-io', version: '2.7'
-
+  testCompile 'junit:junit:4.12'
+  compile 'junit:junit:4.12'
   testCompile group: 'org.mockito', name: 'mockito-core', version: '3.3.3'
 }
+
 
