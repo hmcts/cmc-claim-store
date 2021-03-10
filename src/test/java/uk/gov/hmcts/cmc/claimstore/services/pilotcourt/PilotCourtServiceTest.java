@@ -138,7 +138,6 @@ class PilotCourtServiceTest {
 
         //Simulate courtfinder being down on init
         Court court = Court.builder().build();
-        //Request request = Request.create(Request.HttpMethod.GET, "URL", ImmutableMap.of(), Request.Body.empty());
         when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString())).thenThrow(FeignException.errorStatus("",
             Response.builder().request(request).build()))
             .thenReturn(ImmutableList.of(court));
