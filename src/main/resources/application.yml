@@ -238,9 +238,9 @@ notifications:
       defendantAskedToRespondByPost: "18bfc30c-7ad1-44eb-b05c-eef63482e3be"
 
 staff-notifications:
-  sender: ""
-  recipient: ""
-  legalRecipient: ""
+  sender: "-"
+  recipient: "-"
+  legalRecipient: "-"
 
 feature_toggles:
   watermark_pdf: false
