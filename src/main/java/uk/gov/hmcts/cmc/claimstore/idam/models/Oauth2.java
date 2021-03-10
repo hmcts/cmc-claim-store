@@ -13,9 +13,9 @@ public class Oauth2 {
 
     @Autowired
     public Oauth2(
-        @Value("${frontend.base.url:-}") String baseUrl,
-        @Value("${oauth2.client.id:-}") String clientId,
-        @Value("${oauth2.client.secret:-}") String clientSecret
+        @Value("${frontend.base.url}") String baseUrl,
+        @Value("${oauth2.client.id}") String clientId,
+        @Value("${oauth2.client.secret}") String clientSecret
     ) {
         this.clientId = clientId;
         this.redirectUrl = baseUrl + "/receiver";
