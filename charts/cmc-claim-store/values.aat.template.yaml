@@ -6,3 +6,33 @@ java:
     MILO_CSV_SCHEDULE: "0 0 8 * * ?"
     CLAIM_STAYED_SCHEDULE: "0 0 16 ? * MON-FRI *"
     SCHEDULE_TRANSFER_CLAIMS: '0 0 12 1 * ?'
+    SCHEDULER_DB_USERNAME: scheduler
+    STAFF_NOTIFICATIONS_RECIPIENT: civilmoneyclaims+staffnotifications@gmail.com
+    APPINSIGHTS_INSTRUMENTATIONKEY: fake-key
+    CLAIM_STORE_DB_USERNAME: claimstore
+    GOV_NOTIFY_API_KEY: markryanlive-37ba0bfe-68ed-4e8e-9e19-f3a4cc331d80-58d5cf36-fb3c-4bee-bf05-670308acdc3d
+    LIVE_SUPPORT_RECIPIENT: civilmoneyclaims+live-support-int-tests@gmail.com
+    FEATURE_TOGGLES_CCD_ENABLED: true
+    CLAIM_STORE_DB_PASSWORD: claimstore
+    RPA_NOTIFICATIONS_PAIDINFULLRECIPIENT: civilmoneyclaims+rpa-paid-in-full@gmail.com
+    DOCMOSIS_TEMPLATES_ENDPOINT_AUTH: ZGV2ZWxvcGVyczpPbUp4REJPbDJEMTJoNzdKbDd3cExFb041aUVrWEw
+    LAUNCH_DARKLY_SDK_KEY: sdk-c732c882-b5df-4e9b-9ec1-679836b93907
+    STAFF_NOTIFICATIONS_LEGAL_RECIPIENT: ab@ss.com
+    FEATURE_TOGGLES_ASYNC_EVENT_OPERATIONS_ENABLED: true
+    FEATURE_TOGGLES_DIRECTIONS_QUESTIONNAIRE_ENABLED: true
+    GOV_PAY_AUTH_KEY_CMC: 7t9jk8qt31jntnqn8mut1ab7956eflukd82grjhshogc45node4h89m9e3
+    MILO_CSV_RECIPIENT: civilmoneyclaims+milo-receipient@gmail.com
+    FEATURE_TOGGLES_CCD_ASYNC_ENABLED: false
+    SEND_LETTER_URL: http://rpe-send-letter-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    RPA_NOTIFICATIONS_MORETIMEREQUESTEDRECIPIENT: civilmoneyclaims+rpa-more-time-requested@gmail.com
+    LIVE_SUPPORT_SENDER: no-reply@example.com
+    IDAM_CASEWORKER_ANONYMOUS_USERNAME: civilmoneyclaims+anonymouscitizen@gmail.com
+    RPA_NOTIFICATIONS_RESPONSERECIPIENT: civilmoneyclaims+rpa-defence-response@gmail.com
+    OAUTH2_CLIENT_SECRET: 12345678
+    IDAM_CASEWORKER_SYSTEM_USERNAME: civilmoneyclaims+systemupdate@gmail.com
+    IDAM_CASEWORKER_ANONYMOUS_PASSWORD: Password12
+    RPA_NOTIFICATIONS_SEALEDCLAIMRECIPIENT: civilmoneyclaims+sealed-claim-recipient@gmail.com
+    DOCMOSIS_ACCESS_KEY: ZDYxMTkzZTQtMGY2Mi00NDM1LWIyN2ItNGRkNzdjOTczMjAwOjQ1NTE0ODQ
+    RPA_NOTIFICATIONS_COUNTYCOURTJUDGEMENTRECIPIENT: civilmoneyclaims+country-court-judgement@gmail.com
+    POSTCODE_LOOKUP_API_KEY: NhjoVbGqxiHGK5f9SWc7xhaTHQsa6MHG
+    IDAM_CASEWORKER_SYSTEM_PASSWORD: Password12
