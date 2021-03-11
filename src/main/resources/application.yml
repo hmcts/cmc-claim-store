@@ -39,10 +39,10 @@ spring:
     url: jdbc:postgresql://${CMC_DB_HOST:}:${CMC_DB_PORT:}/${CMC_DB_NAME:cmc}${CMC_DB_CONNECTION_OPTIONS:}
 
 launchdarkly:
-  sdk-key: "${LAUNCH_DARKLY_SDK_KEY:-}"
+  sdk-key: "${LAUNCH_DARKLY_SDK_KEY:}"
 
 sendgrid:
-  api-key: "${SENDGRID_API_KEY:-}"
+  api-key: "${SENDGRID_API_KEY:}"
 
 quartzProperties:
   org.quartz:
@@ -72,14 +72,14 @@ courtfinder:
 
 fees:
   api:
-    url: ${FEES_URL:-}
+    url: ${FEES_URL:}
     service: "civil money claims"
     jurisdiction1: "civil"
     jurisdiction2: "county court"
 
 payments:
   api:
-    url: ${PAY_URL:-}
+    url: ${PAY_URL:}
     service: "CMC"
     siteId: "AA00"
     currency: "GBP"
@@ -90,7 +90,7 @@ pdf-service:
 
 document_management:
   url: "${DOCUMENT_MANAGEMENT_URL:}"
-  userRoles: ${DOCUMENT_MANAGEMENT_USERROLES:-}
+  userRoles: ${DOCUMENT_MANAGEMENT_USERROLES:}
 
 core_case_data:
   api:
@@ -128,9 +128,9 @@ pilot-courts:
   datafile: "/data/pilot-courts.csv"
 
 milo:
-  schedule: "${MILO_CSV_SCHEDULE:0 0 3 * * ?}"
-  recipient: ${MILO_CSV_RECIPIENT:-}
-  sender: ${MILO_CSV_SENDER:-}
+  schedule: "${MILO_CSV_SCHEDULE:}"
+  recipient: ${MILO_CSV_RECIPIENT:}
+  sender: ${MILO_CSV_SENDER:}
 
 schedule:
   transfer-claims: ""
@@ -164,7 +164,7 @@ directionDeadline:
   oconNumberOfDays: 12
 
 notifications:
-  govNotifyApiKey: ${GOV_NOTIFY_API_KEY:-}
+  govNotifyApiKey: ${GOV_NOTIFY_API_KEY:}
   frontendBaseUrl: "${FRONTEND_BASE_URL:}"
   respondToClaimUrl: "${RESPOND_TO_CLAIM_URL:}"
   templates:
@@ -238,9 +238,9 @@ notifications:
       defendantAskedToRespondByPost: "18bfc30c-7ad1-44eb-b05c-eef63482e3be"
 
 staff-notifications:
-  sender: "-"
-  recipient: "-"
-  legalRecipient: "-"
+  sender: ""
+  recipient: ""
+  legalRecipient: ""
 
 feature_toggles:
   watermark_pdf: false
@@ -267,10 +267,10 @@ oauth2:
 spring:
   profiles: 'aat'
 
-test-instance-uri: "${TEST_URL:-}"
+test-instance-uri: "${TEST_URL:}"
 smoke-test-citizen:
-  password: "${SMOKE_TEST_USER_PASSWORD:-}"
+  password: "${SMOKE_TEST_USER_PASSWORD:}"
 smoke-test-solicitor:
-  password: "${SMOKE_TEST_USER_PASSWORD:-}"
+  password: "${SMOKE_TEST_USER_PASSWORD:}"
 
 
