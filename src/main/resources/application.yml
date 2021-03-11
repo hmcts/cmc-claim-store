@@ -266,8 +266,6 @@ oauth2:
 ---
 spring:
   profiles: 'aat'
-  config:
-    use-legacy-processing: true
 
 test-instance-uri: "${TEST_URL:-}"
 smoke-test-citizen:
