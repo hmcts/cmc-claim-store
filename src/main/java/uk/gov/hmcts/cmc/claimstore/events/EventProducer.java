@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.InterlocutoryJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.ReDeterminationEvent;
+import uk.gov.hmcts.cmc.claimstore.events.claim.CaseworkerHwfClaimIssueEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimCreatedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.HwfClaimUpdatedEvent;
@@ -56,6 +57,11 @@ public class EventProducer {
         } else {
             publisher.publishEvent(new CitizenClaimCreatedEvent(claim, submitterName, authorisation));
         }
+    }
+
+    public void issueHelpWithFeesClaimEvent(Claim claim, String submitterName, String authorisation) {
+        publisher.publishEvent(new CaseworkerHwfClaimIssueEvent(claim, submitterName, authorisation));
+
     }
 
     public void createHwfClaimUpdatedEvent(Claim claim, String submitterName, String authorisation) {

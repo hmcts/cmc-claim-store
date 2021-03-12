@@ -187,11 +187,20 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
                 authorisation
             );
         } else {
-            eventProducer.createClaimCreatedEvent(
-                claim,
-                user.getUserDetails().getFullName(),
-                authorisation
-            );
+            String eventTriggered = callbackParams.getRequest().getEventId();
+            if (eventTriggered.equals(ISSUE_HWF_CASE.getValue())) {
+                eventProducer.issueHelpWithFeesClaimEvent(
+                    claim,
+                    user.getUserDetails().getFullName(),
+                    authorisation
+                );
+            } else {
+                eventProducer.createClaimCreatedEvent(
+                    claim,
+                    user.getUserDetails().getFullName(),
+                    authorisation
+                );
+            }
         }
         return SubmittedCallbackResponse.builder().build();
     }

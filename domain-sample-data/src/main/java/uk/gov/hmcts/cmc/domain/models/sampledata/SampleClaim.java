@@ -146,6 +146,33 @@ public final class SampleClaim {
             .build();
     }
 
+    public static Claim getDefaultWithClaimStateAsCreate() {
+        ClaimSubmissionOperationIndicators operationIndicators = ClaimSubmissionOperationIndicators.builder()
+            .bulkPrint(YesNoOption.YES)
+            .staffNotification(YesNoOption.YES)
+            .defendantNotification(YesNoOption.YES)
+            .sealedClaimUpload(YesNoOption.YES)
+            .claimIssueReceiptUpload(YesNoOption.YES)
+            .rpa(YesNoOption.YES)
+            .claimantNotification(YesNoOption.YES)
+            .build();
+
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimantBuilder().withExternalId(RAND_UUID).build())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .ccjType(CountyCourtJudgmentType.ADMISSIONS)
+                    .paymentOption(IMMEDIATELY)
+                    .build()
+            ).withResponse(SampleResponse.FullDefence
+                .builder()
+                .withDefenceType(DefenceType.DISPUTE)
+                .withMediation(YES)
+                .build()
+            ).withState(ClaimState.CREATE)
+            .build();
+    }
+
     public static Claim getDefaultWithoutResponse() {
         return getDefaultWithoutResponse(DEFENDANT_EMAIL);
     }
