@@ -191,4 +191,11 @@
         ]]></notes>
         <cve>CVE-2020-13956</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+            Launch Darkly Related
+        ]]></notes>
+        <cve>CVE-2020-8908</cve>
+        <cve>CVE-2018-10237</cve>
+    </suppress>
 </suppressions>
