@@ -186,4 +186,5 @@ public class CCDCase {
     private String hwfProvideDocumentName;
 
     private LocalDate hwfDocumentsToBeSentBefore;
+    private String lastEventTriggeredForHwfCase;
 }
