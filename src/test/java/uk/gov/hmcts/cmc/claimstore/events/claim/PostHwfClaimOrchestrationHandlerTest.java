@@ -121,9 +121,9 @@ public class PostHwfClaimOrchestrationHandlerTest {
         postHwfClaimOrchestrationHandler.caseworkerHwfClaimIssueEvent(event);
 
         //then
-        verify(citizenServiceDocumentsService).sealedClaimDocument(eq(CLAIM));
+        verify(citizenServiceDocumentsService).sealedClaimDocument(CLAIM);
         verify(pdfServiceClient).generateFromHtml(any(), anyMap());
-        verify(claimIssueReceiptService).createPdf(eq(CLAIM));
+        verify(claimIssueReceiptService).createPdf(CLAIM);
         verify(pinOrchestrationService).process(eq(CLAIM), anyString(), anyString());
         verify(claimantOperationService).notifyCitizen(eq(CLAIM), any(), eq(AUTHORISATION));
         verify(rpaOperationService).notify(eq(CLAIM), eq(AUTHORISATION), any());
@@ -151,9 +151,9 @@ public class PostHwfClaimOrchestrationHandlerTest {
         postHwfClaimOrchestrationHandler.caseworkerHwfClaimIssueEvent(event);
 
         //then
-        verify(citizenServiceDocumentsService).sealedClaimDocument(eq(UPDATEDCLAIM));
+        verify(citizenServiceDocumentsService).sealedClaimDocument(UPDATEDCLAIM);
         verify(pdfServiceClient).generateFromHtml(any(), anyMap());
-        verify(claimIssueReceiptService).createPdf(eq(UPDATEDCLAIM));
+        verify(claimIssueReceiptService).createPdf(UPDATEDCLAIM);
         verify(pinOrchestrationService).process(eq(UPDATEDCLAIM), anyString(), anyString());
         verify(claimantOperationService).notifyCitizen(eq(UPDATEDCLAIM), any(), eq(AUTHORISATION));
         verify(rpaOperationService).notify(eq(UPDATEDCLAIM), eq(AUTHORISATION), any());
@@ -177,9 +177,9 @@ public class PostHwfClaimOrchestrationHandlerTest {
         postHwfClaimOrchestrationHandler.caseworkerHwfClaimIssueEvent(event);
 
         //then
-        verify(citizenServiceDocumentsService).sealedClaimDocument(eq(UPDATEDCLAIM));
+        verify(citizenServiceDocumentsService).sealedClaimDocument(UPDATEDCLAIM);
         verify(pdfServiceClient).generateFromHtml(any(), anyMap());
-        verify(claimIssueReceiptService).createPdf(eq(UPDATEDCLAIM));
+        verify(claimIssueReceiptService).createPdf(UPDATEDCLAIM);
         verify(pinOrchestrationService).process(eq(UPDATEDCLAIM), anyString(), anyString());
     }
 
@@ -195,8 +195,8 @@ public class PostHwfClaimOrchestrationHandlerTest {
         postHwfClaimOrchestrationHandler.caseworkerHwfClaimIssueEvent(event);
 
         //then
-        verify(citizenServiceDocumentsService).sealedClaimDocument(eq(updatedClm));
+        verify(citizenServiceDocumentsService).sealedClaimDocument(updatedClm);
         verify(pdfServiceClient).generateFromHtml(any(), anyMap());
-        verify(claimIssueReceiptService).createPdf(eq(updatedClm));
+        verify(claimIssueReceiptService).createPdf(updatedClm);
     }
 }
