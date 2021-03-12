@@ -45,10 +45,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_HWF_CASE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INVALID_HWF_REFERENCE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ISSUE_HWF_CASE;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.AWAITING_RESPONSE_HWF;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
 import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.FAILED;
 import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
@@ -164,6 +166,39 @@ public class CreateCitizenClaimCallbackHandlerTest {
         caseDetails.setId(Long.valueOf(REFERENCE_NO_HWF));
         callbackRequest = CallbackRequest.builder()
             .eventId(CREATE_HWF_CASE.getValue())
+            .caseDetails(caseDetails)
+            .build();
+
+        Claim claim = SampleHwfClaim.getDefaultHwfPending().toBuilder()
+            .id(Long.valueOf(REFERENCE_NO_HWF))
+            .referenceNumber(REFERENCE_NO_HWF)
+            .issuedOn(ISSUE_DATE)
+            .responseDeadline(RESPONSE_DEADLINE)
+            .claimData(withFullClaimData().getClaimData())
+            .build();
+
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+            .thenReturn(claim);
+
+        callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_SUBMIT)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
+
+        createCitizenClaimCallbackHandler.handle(callbackParams);
+
+        verify(caseMapper).to(claimArgumentCaptor.capture());
+
+        Claim toBeSaved = claimArgumentCaptor.getValue();
+        assertThat(toBeSaved.getReferenceNumber()).isEqualTo(REFERENCE_NO_HWF);
+    }
+
+    @Test
+    public void shouldSuccessfullyReturnCallBackResponseWhenClaimIsInvalidHwfReference() {
+        caseDetails.setId(Long.valueOf(REFERENCE_NO_HWF));
+        callbackRequest = CallbackRequest.builder()
+            .eventId(INVALID_HWF_REFERENCE.getValue())
             .caseDetails(caseDetails)
             .build();
 
@@ -339,5 +374,72 @@ public class CreateCitizenClaimCallbackHandlerTest {
 
         Claim toBeSaved = claimArgumentCaptor.getValue();
         assertThat(toBeSaved.getReferenceNumber()).isEqualTo(REFERENCE_NO);
+    }
+
+    @Test
+    public void shouldSuccessfullyReturnCallBackResponseForPostOperationsForHwfUpdateEvent() {
+        Claim claim = SampleClaim.getDefault().toBuilder()
+            .claimData(withFullClaimData().getClaimData())
+            .state(AWAITING_RESPONSE_HWF)
+            .build();
+
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+            .thenReturn(claim);
+
+        callbackParams = CallbackParams.builder()
+            .type(CallbackType.SUBMITTED)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
+
+        when(userService.getUser(BEARER_TOKEN))
+            .thenReturn(new User(BEARER_TOKEN, SampleUserDetails.builder()
+                .withRoles("letter-" + claim.getLetterHolderId())
+                .build()));
+
+        createCitizenClaimCallbackHandler.handle(callbackParams);
+
+        verify(eventProducer, once()).createHwfClaimUpdatedEvent(
+            claimArgumentCaptor.capture(),
+            eq("Steven Smith"),
+            eq(BEARER_TOKEN));
+
+        Claim toBeSaved = claimArgumentCaptor.getValue();
+        assertThat(toBeSaved.getClaimData()).isEqualTo(claim.getClaimData());
+    }
+
+    @Test
+    public void shouldSuccessfullyReturnCallBackResponseForPostOperationsForHwfIssueEvent() {
+        Claim claim = SampleClaim.getDefault().toBuilder()
+            .claimData(withFullClaimData().getClaimData())
+            .build();
+        callbackRequest = CallbackRequest.builder()
+            .eventId(ISSUE_HWF_CASE.getValue())
+            .caseDetails(caseDetails)
+            .build();
+
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+            .thenReturn(claim);
+
+        callbackParams = CallbackParams.builder()
+            .type(CallbackType.SUBMITTED)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
+
+        when(userService.getUser(BEARER_TOKEN))
+            .thenReturn(new User(BEARER_TOKEN, SampleUserDetails.builder()
+                .withRoles("letter-" + claim.getLetterHolderId())
+                .build()));
+
+        createCitizenClaimCallbackHandler.handle(callbackParams);
+
+        verify(eventProducer, once()).issueHelpWithFeesClaimEvent(
+            claimArgumentCaptor.capture(),
+            eq("Steven Smith"),
+            eq(BEARER_TOKEN));
+
+        Claim toBeSaved = claimArgumentCaptor.getValue();
+        assertThat(toBeSaved.getClaimData()).isEqualTo(claim.getClaimData());
     }
 }

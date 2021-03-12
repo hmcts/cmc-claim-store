@@ -147,6 +147,24 @@ public final class SampleClaim {
     }
 
     public static Claim getDefaultWithClaimStateAsCreate() {
+
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimantBuilder().withExternalId(RAND_UUID).build())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .ccjType(CountyCourtJudgmentType.ADMISSIONS)
+                    .paymentOption(IMMEDIATELY)
+                    .build()
+            ).withResponse(SampleResponse.FullDefence
+                .builder()
+                .withDefenceType(DefenceType.DISPUTE)
+                .withMediation(YES)
+                .build()
+            ).withState(ClaimState.CREATE)
+            .build();
+    }
+
+    public static Claim getDefaultWithClaimStateAsCreateWithoutOperators() {
         ClaimSubmissionOperationIndicators operationIndicators = ClaimSubmissionOperationIndicators.builder()
             .bulkPrint(YesNoOption.YES)
             .staffNotification(YesNoOption.YES)
@@ -170,6 +188,7 @@ public final class SampleClaim {
                 .withMediation(YES)
                 .build()
             ).withState(ClaimState.CREATE)
+            .withClaimSubmissionOperationIndicators(operationIndicators)
             .build();
     }
 

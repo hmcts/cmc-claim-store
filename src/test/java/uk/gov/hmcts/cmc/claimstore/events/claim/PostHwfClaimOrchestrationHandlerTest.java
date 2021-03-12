@@ -182,4 +182,21 @@ public class PostHwfClaimOrchestrationHandlerTest {
         verify(claimIssueReceiptService).createPdf(eq(UPDATEDCLAIM));
         verify(pinOrchestrationService).process(eq(UPDATEDCLAIM), anyString(), anyString());
     }
+
+    @Test
+    public void caseWorkerHwfClaimIssueHandlerWhenClaimIsInCreateStateNoClaimSubmissionIndicators() {
+        Claim updatedClm = SampleClaim.getDefaultWithClaimStateAsCreateWithoutOperators();
+
+        //given
+        CaseworkerHwfClaimIssueEvent event = new CaseworkerHwfClaimIssueEvent(updatedClm,
+            SUBMITTER_NAME, AUTHORISATION);
+
+        //when
+        postHwfClaimOrchestrationHandler.caseworkerHwfClaimIssueEvent(event);
+
+        //then
+        verify(citizenServiceDocumentsService).sealedClaimDocument(eq(updatedClm));
+        verify(pdfServiceClient).generateFromHtml(any(), anyMap());
+        verify(claimIssueReceiptService).createPdf(eq(updatedClm));
+    }
 }
