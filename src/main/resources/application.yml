@@ -1,4 +1,7 @@
 ---
+spring:
+  main:
+    lazy-initialization: true
 server:
   port: 4400
 
