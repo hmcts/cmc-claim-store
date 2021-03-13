@@ -22,7 +22,8 @@ spring:
     allow-bean-definition-overriding: true  # https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.1-Release-Notes#bean-overriding
   application:
     name: 'claim-store'
-  lazy-initialization: true
+  config:
+    use-legacy-processing: true
   mail:
     default-encoding: UTF-8
     test-connection: true
@@ -240,8 +241,8 @@ notifications:
 
 staff-notifications:
   sender:
-  recipient:
-  legalRecipient:
+  recipient: "optional: ${STAFF_NOTIFICATIONS_RECIPIENT}"
+  legalRecipient: "optional: ${STAFF_NOTIFICATIONS_LEGAL_RECIPIENT}"
 
 send-letter:
   url: ${SEND_LETTER_URL:false}
