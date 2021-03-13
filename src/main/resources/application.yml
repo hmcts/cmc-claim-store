@@ -165,7 +165,7 @@ directionDeadline:
   oconNumberOfDays: 12
 
 notifications:
-  govNotifyApiKey: "${GOV_NOTIFY_API_KEY}"
+  govNotifyApiKey: "optional: ${GOV_NOTIFY_API_KEY}"
   frontendBaseUrl: "${FRONTEND_BASE_URL:}"
   respondToClaimUrl: "${RESPOND_TO_CLAIM_URL:}"
   templates:
