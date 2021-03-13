@@ -180,7 +180,6 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-json'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
-  compile group: 'org.springframework.boot', name: 'spring-boot-properties-migrator'
   compile group: 'org.jetbrains', name: 'annotations', version:'16.0.1'
 
   compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
