@@ -260,6 +260,11 @@ feature_toggles:
 rpa:
   notifications:
     countyCourtJudgementRecipient: "optional: ${RPA_NOTIFICATIONS_COUNTY_COURT_JUDGEMENT_RECIPIENT}"
+    sealedClaimRecipient: "optional: ${RPA_NOTIFICATIONS_COUNTY_COURT_JUDGEMENT_RECIPIENT}"
+    responseRecipient: "optional: ${RPA_NOTIFICATIONS_COUNTY_COURT_JUDGEMENT_RECIPIENT}"
+    paidInFullRecipient: "optional: ${RPA_NOTIFICATIONS_COUNTY_COURT_JUDGEMENT_RECIPIENT}"
+    moreTimeRequestedRecipient: "optional: ${RPA_NOTIFICATIONS_COUNTY_COURT_JUDGEMENT_RECIPIENT}"
+    legalSealedClaimRecipient: "optional: ${RPA_NOTIFICATIONS_COUNTY_COURT_JUDGEMENT_RECIPIENT}"
 
 feign:
   httpclient:
