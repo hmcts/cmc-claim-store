@@ -257,6 +257,10 @@ feature_toggles:
   bulk_print_transfer_enabled: false
   staff_emails_enabled_for_legal_rep: true
 
+rpa:
+  notifications:
+    countyCourtJudgementRecipient: "optional: ${RPA_NOTIFICATIONS_COUNTY_COURT_JUDGEMENT_RECIPIENT}"
+
 feign:
   httpclient:
     enabled: true
