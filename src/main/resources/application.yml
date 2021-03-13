@@ -243,6 +243,9 @@ staff-notifications:
   recipient:
   legalRecipient:
 
+send-letter:
+  url: ${SEND_LETTER_URL:false}
+
 feature_toggles:
   watermark_pdf: false
   reminderEmails: false
