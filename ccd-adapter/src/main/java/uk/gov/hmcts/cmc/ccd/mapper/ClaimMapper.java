@@ -127,6 +127,7 @@ public class ClaimMapper {
 
         builder.hwfMoreInfoNeededDocuments(claimData.getHwfMoreInfoNeededDocuments());
         builder.hwfDocumentsToBeSentBefore(claimData.getHwfDocumentsToBeSentBefore());
+        builder.lastEventTriggeredForHwfCase(claim.getLastEventTriggeredForHwfCase());
 
         builder
             .reason(claimData.getReason());
@@ -175,7 +176,8 @@ public class ClaimMapper {
                 ccdCase.getHwfMandatoryDetails(),
                 ccdCase.getHwfMoreInfoNeededDocuments(),
                 ccdCase.getHwfDocumentsToBeSentBefore())
-        );
+        )
+            .lastEventTriggeredForHwfCase(ccdCase.getLastEventTriggeredForHwfCase());
     }
 
     private List<TheirDetails> getDefendants(CCDCase ccdCase, Claim.ClaimBuilder claimBuilder) {
