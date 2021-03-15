@@ -22,8 +22,6 @@ spring:
     allow-bean-definition-overriding: true  # https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.1-Release-Notes#bean-overriding
   application:
     name: 'claim-store'
-  config:
-    use-legacy-processing: true
   mail:
     default-encoding: UTF-8
     test-connection: true
@@ -166,7 +164,7 @@ directionDeadline:
   oconNumberOfDays: 12
 
 notifications:
-  govNotifyApiKey: "${GOV_NOTIFY_API_KEY:}"
+  govNotifyApiKey: ${GOV_NOTIFY_API_KEY:}
   frontendBaseUrl: "${FRONTEND_BASE_URL:}"
   respondToClaimUrl: "${RESPOND_TO_CLAIM_URL:}"
   templates:
@@ -241,11 +239,8 @@ notifications:
 
 staff-notifications:
   sender:
-  recipient: "optional: ${STAFF_NOTIFICATIONS_RECIPIENT}"
-  legalRecipient: "optional: ${STAFF_NOTIFICATIONS_LEGAL_RECIPIENT}"
-
-send-letter:
-  url: ${SEND_LETTER_URL:false}
+  recipient:
+  legalRecipient:
 
 feature_toggles:
   watermark_pdf: false
@@ -256,15 +251,6 @@ feature_toggles:
   auto_cancel_payments: "${FEATURE_AUTO_CANCEL_PAYMENTS:false}"
   bulk_print_transfer_enabled: false
   staff_emails_enabled_for_legal_rep: true
-
-rpa:
-  notifications:
-    countyCourtJudgementRecipient: "optional: ${RPA_NOTIFICATIONS_COUNTY_COURT_JUDGEMENT_RECIPIENT}"
-    sealedClaimRecipient: "optional: ${RPA_NOTIFICATIONS_COUNTY_COURT_JUDGEMENT_RECIPIENT}"
-    responseRecipient: "optional: ${RPA_NOTIFICATIONS_COUNTY_COURT_JUDGEMENT_RECIPIENT}"
-    paidInFullRecipient: "optional: ${RPA_NOTIFICATIONS_COUNTY_COURT_JUDGEMENT_RECIPIENT}"
-    moreTimeRequestedRecipient: "optional: ${RPA_NOTIFICATIONS_COUNTY_COURT_JUDGEMENT_RECIPIENT}"
-    legalSealedClaimRecipient: "optional: ${RPA_NOTIFICATIONS_COUNTY_COURT_JUDGEMENT_RECIPIENT}"
 
 feign:
   httpclient:
