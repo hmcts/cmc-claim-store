@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.appinsights;
 public enum AppInsightsEvent {
     CLAIM_ISSUED_LEGAL("Claim issued - Legal"),
     CLAIM_ISSUED_CITIZEN("Claim issued - Citizen"),
+    HWF_CLAIM_ISSUED_CITIZEN("Help with Fees Claim issued - Caseworker"),
     HWF_CLAIM_CREATED("Help With Fees claim created"),
     CLAIM_ATTEMPT_DUPLICATE("Claim attempt - Duplicate"),
     RESPONSE_FULL_DEFENCE_SUBMITTED("Defendant Response - Full defence submitted"),

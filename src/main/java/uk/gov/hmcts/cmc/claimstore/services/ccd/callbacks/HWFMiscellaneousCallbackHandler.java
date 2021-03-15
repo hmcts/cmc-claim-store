@@ -107,6 +107,7 @@ public class HWFMiscellaneousCallbackHandler extends CallbackHandler {
                 ccdCase.setFeeRemitted("0");
             }
         }
+        ccdCase.setLastEventTriggeredForHwfCase(callbackParams.getRequest().getEventId());
         responseBuilder.data(caseDetailsConverter.convertToMap(ccdCase));
         return responseBuilder.build();
 
