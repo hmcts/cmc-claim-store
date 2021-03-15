@@ -82,7 +82,11 @@ public class HWFRecalculateInterestCallbackHandler extends CallbackHandler {
         final CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         final CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         final Claim claim = caseDetailsConverter.extractClaim(caseDetails);
-        recalculateInterestAndFee(claim, ccdCase);
+        Claim updatedClaim = claim.toBuilder()
+            .lastEventTriggeredForHwfCase(callbackParams.getRequest().getEventId())
+            .build();
+        recalculateInterestAndFee(updatedClaim, ccdCase);
+        ccdCase.setLastEventTriggeredForHwfCase(callbackParams.getRequest().getEventId());
         responseBuilder.data(caseDetailsConverter.convertToMap(ccdCase));
         return responseBuilder.build();
     }
