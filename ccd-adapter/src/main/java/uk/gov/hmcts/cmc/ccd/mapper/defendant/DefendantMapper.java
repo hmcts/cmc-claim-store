@@ -52,6 +52,8 @@ public class DefendantMapper {
 
         CCDRespondent.CCDRespondentBuilder respondentBuilder = CCDRespondent.builder();
         respondentBuilder.servedDate(claim.getServiceDate());
+        respondentBuilder.paperFormIssueDate(claim.getPaperFormIssueDate());
+        respondentBuilder.paperFormServedDate(claim.getPaperFormServedDate());
         respondentBuilder.responseDeadline(claim.getResponseDeadline());
         respondentBuilder.letterHolderId(claim.getLetterHolderId());
         respondentBuilder.defendantId(claim.getDefendantId());
@@ -97,6 +99,8 @@ public class DefendantMapper {
 
         builder
             .serviceDate(ccdRespondent.getServedDate())
+            .paperFormIssueDate(ccdRespondent.getPaperFormIssueDate())
+            .paperFormServedDate(ccdRespondent.getPaperFormServedDate())
             .letterHolderId(ccdRespondent.getLetterHolderId())
             .responseDeadline(ccdRespondent.getResponseDeadline())
             .defendantEmail(Optional.ofNullable(partyDetail)
