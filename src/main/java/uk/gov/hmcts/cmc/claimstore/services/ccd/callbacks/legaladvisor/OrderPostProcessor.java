@@ -1,6 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legaladvisor;
 
 import com.google.common.collect.ImmutableList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -9,6 +11,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDReviewOrDrawOrder;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
@@ -36,6 +39,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.ORDER_DIRECTIONS;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.DRAFTED_BY_LEGAL_ADVISOR;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.Params.BEARER_TOKEN;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
@@ -51,6 +56,9 @@ public class OrderPostProcessor {
     private final DocumentManagementService documentManagementService;
     private final ClaimService claimService;
     private AppInsights appInsights;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private static final String REVIEW_OR_DRAW_ORDER = "reviewOrDrawOrder";
+    public static final String LA_DRAW_ORDER = "LA_DRAW_ORDER";
 
     public OrderPostProcessor(
         Clock clock,
@@ -108,6 +116,12 @@ public class OrderPostProcessor {
     }
 
     public CallbackResponse persistHearingCourtAndMigrateExpertReport(CallbackParams callbackParams) {
+        if (callbackParams.getRequest().getCaseDetails().getData() != null
+            && LA_DRAW_ORDER.equals(callbackParams.getRequest().getCaseDetails()
+            .getData().get(REVIEW_OR_DRAW_ORDER))) {
+            return copyDraftToCaseDocument(callbackParams);
+        }
+
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
         HearingCourt hearingCourt = directionOrderService.getHearingCourt(ccdCase);
@@ -125,6 +139,19 @@ public class OrderPostProcessor {
             .builder()
             .data(caseDetailsConverter.convertToMap(cleanUpDynamicList(updatedCase)))
             .build();
+    }
+
+    public CallbackResponse notifyPartiesAndPrintOrderOrRaiseAppInsight(CallbackParams callbackParams) {
+
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackParams.getRequest().getCaseDetails());
+        if (CCDReviewOrDrawOrder.LA_DRAW_ORDER.equals(ccdCase.getReviewOrDrawOrder())) {
+            logger.info("LA drawing order without judge review for claim: {}",
+                ccdCase.getPreviousServiceCaseReference());
+            return notifyPartiesAndPrintOrder(callbackParams);
+        }
+        logger.info("Generate order callback: raise app insight");
+        appInsights.trackEvent(DRAFTED_BY_LEGAL_ADVISOR, REFERENCE_NUMBER, ccdCase.getPreviousServiceCaseReference());
+        return AboutToStartOrSubmitCallbackResponse.builder().build();
     }
 
     private CCDCase cleanUpDynamicList(CCDCase ccdCase) {
@@ -153,6 +180,10 @@ public class OrderPostProcessor {
                 break;
             case DRAW_JUDGES_ORDER:
                 appInsights.trackEvent(AppInsightsEvent.DRAW_JUDGES_ORDER, AppInsights.REFERENCE_NUMBER,
+                    ccdCase.getPreviousServiceCaseReference());
+                break;
+            case GENERATE_ORDER:
+                appInsights.trackEvent(AppInsightsEvent.LA_GENERATE_DRAW_ORDER, AppInsights.REFERENCE_NUMBER,
                     ccdCase.getPreviousServiceCaseReference());
                 break;
             default:
