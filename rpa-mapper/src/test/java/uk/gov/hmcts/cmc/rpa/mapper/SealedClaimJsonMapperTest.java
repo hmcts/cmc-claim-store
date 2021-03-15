@@ -29,9 +29,6 @@ import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class SealedClaimJsonMapperTest {
 
-    @Autowired
-    private SealedClaimJsonMapper mapper;
-
     private final LocalDate issueDate = LocalDate.of(2018, 4, 26);
     private final Interest interest = SampleInterest.builder()
         .withInterestDate(
@@ -42,11 +39,14 @@ public class SealedClaimJsonMapperTest {
         .withType(Interest.InterestType.STANDARD)
         .withRate(new BigDecimal(8))
         .build();
+    @Autowired
+    private SealedClaimJsonMapper mapper;
 
     @Test
     public void shouldMapIndividualCitizenClaimToRPA() throws JSONException {
         Claim claim = SampleClaim.builder()
             .withClaimData(SampleClaimData.builder()
+                .withHelpWithFeesNumber("HWF12345")
                 .withClaimant(SampleParty.builder().individual())
                 .withDefendant(SampleTheirDetails.builder()
                     .withDateOfBirth(null)
@@ -66,6 +66,7 @@ public class SealedClaimJsonMapperTest {
     public void shouldMapSoleTraderCitizenClaimToRPA() throws JSONException {
         Claim claim = SampleClaim.builder()
             .withClaimData(SampleClaimData.builder()
+                .withHelpWithFeesNumber("HWF12345")
                 .withClaimant(SampleParty.builder().withBusinessName("AutoTraders").soleTrader())
                 .withDefendant(SampleTheirDetails.builder().withBusinessName("RoboticsTraders")
                     .withDateOfBirth(null)
@@ -85,6 +86,7 @@ public class SealedClaimJsonMapperTest {
     public void shouldMapCompanyCitizenClaimToRPA() throws JSONException {
         Claim claim = SampleClaim.builder()
             .withClaimData(SampleClaimData.builder()
+                .withHelpWithFeesNumber("HWF12345")
                 .withClaimant(SampleParty.builder().company())
                 .withDefendant(SampleTheirDetails.builder()
                     .withDateOfBirth(null)
@@ -104,6 +106,7 @@ public class SealedClaimJsonMapperTest {
     public void shouldMapOrganisationCitizenClaimToRPA() throws JSONException {
         Claim claim = SampleClaim.builder()
             .withClaimData(SampleClaimData.builder()
+                .withHelpWithFeesNumber("HWF12345")
                 .withClaimant(SampleParty.builder()
                     .organisation())
                 .withDefendant(SampleTheirDetails.builder()
