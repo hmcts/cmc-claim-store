@@ -5,9 +5,13 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
+import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
@@ -28,6 +32,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED_ONLINE;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.MoreTimeRequested.referenceForClaimant;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.MoreTimeRequested.referenceForDefendant;
@@ -49,6 +55,9 @@ public class MoreTimeRequestedOnlineCallbackHandler extends CallbackHandler {
     private final CaseDetailsConverter caseDetailsConverter;
     private final NotificationService notificationService;
     private final NotificationsProperties notificationsProperties;
+    private final EventProducer eventProducer;
+    private final AppInsights appInsights;
+    private final UserService userService;
 
     @Autowired
     public MoreTimeRequestedOnlineCallbackHandler(
@@ -56,13 +65,17 @@ public class MoreTimeRequestedOnlineCallbackHandler extends CallbackHandler {
         MoreTimeRequestRule moreTimeRequestRule,
         CaseDetailsConverter caseDetailsConverter,
         NotificationService notificationService,
-        NotificationsProperties notificationsProperties
-    ) {
+        NotificationsProperties notificationsProperties,
+        EventProducer eventProducer, AppInsights appInsights,
+        UserService userService) {
         this.responseDeadlineCalculator = responseDeadlineCalculator;
         this.moreTimeRequestRule = moreTimeRequestRule;
         this.caseDetailsConverter = caseDetailsConverter;
         this.notificationService = notificationService;
         this.notificationsProperties = notificationsProperties;
+        this.eventProducer = eventProducer;
+        this.appInsights = appInsights;
+        this.userService = userService;
     }
 
     @Override
@@ -108,16 +121,24 @@ public class MoreTimeRequestedOnlineCallbackHandler extends CallbackHandler {
     }
 
     private CallbackResponse performPostProcesses(CallbackParams callbackParams) {
-        var builder = AboutToStartOrSubmitCallbackResponse.builder();
 
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
-        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
+
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
         sendNotificationToClaimant(claim);
 
         if (claim.getDefendantEmail() != null && claim.getDefendantId() != null) {
             sendEmailNotificationToDefendant(claim);
         }
+        String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
+        UserDetails defendant = userService.getUserDetails(authorisation);
+        Optional<LocalDate> responseDeadline = claim.getClaimantResponseDeadline();
+        eventProducer.createMoreTimeForResponseRequestedEvent(claim,
+            responseDeadline.isPresent() ? responseDeadline.get() : null,
+            defendant.getEmail());
+        appInsights.trackEvent(RESPONSE_MORE_TIME_REQUESTED, REFERENCE_NUMBER, claim.getReferenceNumber());
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
+        var builder = AboutToStartOrSubmitCallbackResponse.builder();
         return builder.data(caseDetailsConverter.convertToMap(ccdCase)).build();
     }
 
