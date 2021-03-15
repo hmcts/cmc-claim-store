@@ -189,4 +189,6 @@ public class CCDCase {
     private LocalDate hwfDocumentsToBeSentBefore;
 
     private CCDReviewOrDrawOrder reviewOrDrawOrder;
+  
+    private String lastEventTriggeredForHwfCase;
 }
