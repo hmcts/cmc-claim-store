@@ -38,7 +38,6 @@ import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -74,7 +73,6 @@ public class ClaimService {
     private final ClaimAuthorisationRule claimAuthorisationRule;
     private final ReviewOrderRule reviewOrderRule;
     private final LaunchDarklyClient launchDarklyClient;
-    private final CaseEventService caseEventService;
 
     @Value("${feature_toggles.ctsc_enabled}")
     private boolean ctscEnabled;
@@ -92,8 +90,7 @@ public class ClaimService {
         PaidInFullRule paidInFullRule,
         ClaimAuthorisationRule claimAuthorisationRule,
         ReviewOrderRule reviewOrderRule,
-        LaunchDarklyClient launchDarklyClient,
-        CaseEventService caseEventService) {
+        LaunchDarklyClient launchDarklyClient) {
         this.userService = userService;
         this.issueDateCalculator = issueDateCalculator;
         this.responseDeadlineCalculator = responseDeadlineCalculator;
@@ -105,25 +102,11 @@ public class ClaimService {
         this.claimAuthorisationRule = claimAuthorisationRule;
         this.reviewOrderRule = reviewOrderRule;
         this.launchDarklyClient = launchDarklyClient;
-        this.caseEventService = caseEventService;
     }
 
     public List<Claim> getClaimBySubmitterId(String submitterId, String authorisation, Integer pageNumber) {
-        List<Claim> outputClaimList = new ArrayList<>();
         claimAuthorisationRule.assertUserIdMatchesAuthorisation(submitterId, authorisation);
-        List<Claim> claimList = caseRepository.getBySubmitterId(submitterId, authorisation, pageNumber);
-        User user = userService.authenticateAnonymousCaseWorker();
-        claimList.stream().forEach(claim -> {
-            if (claim.getState().equals(ClaimState.AWAITING_RESPONSE_HWF)
-                || claim.getState().equals(ClaimState.HWF_APPLICATION_PENDING)) {
-                List<CaseEvent> caseEventList = caseEventService.findEventsForCase(
-                    String.valueOf(claim.getId()), user);
-                claim = claim.toBuilder().lastEventTriggeredForHwfCase(caseEventList.get(0).getValue()).build();
-            }
-            outputClaimList.add(claim);
-
-        });
-        return outputClaimList;
+        return caseRepository.getBySubmitterId(submitterId, authorisation, pageNumber);
     }
 
     public Claim getClaimByLetterHolderId(String id, String authorisation) {
@@ -139,13 +122,6 @@ public class ClaimService {
     public Claim getFilteredClaimByExternalId(String externalId, String authorisation) {
         User user = userService.getUser(authorisation);
         Claim claim = getClaimByExternalId(externalId, user);
-        User anonymousCaseWorkerForFetchingEvents = userService.authenticateAnonymousCaseWorker();
-        if (claim.getState().equals(ClaimState.AWAITING_RESPONSE_HWF)
-            || claim.getState().equals(ClaimState.HWF_APPLICATION_PENDING)) {
-            List<CaseEvent> caseEventList = caseEventService.findEventsForCase(
-                String.valueOf(claim.getId()), anonymousCaseWorkerForFetchingEvents);
-            claim = claim.toBuilder().lastEventTriggeredForHwfCase(caseEventList.get(0).getValue()).build();
-        }
 
         return DocumentsFilter.filterDocuments(
             claim, user.getUserDetails(), ctscEnabled,

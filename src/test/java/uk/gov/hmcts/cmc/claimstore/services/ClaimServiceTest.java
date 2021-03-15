@@ -65,9 +65,9 @@ import static java.time.LocalDate.now;
 import static java.util.Collections.singletonList;
 import static java.util.Optional.empty;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -157,7 +157,7 @@ public class ClaimServiceTest {
             new PaidInFullRule(),
             new ClaimAuthorisationRule(userService),
             new ReviewOrderRule(),
-            launchDarklyClient, caseEventService);
+            launchDarklyClient);
 
         Fees fees = new Fees(111, "CD", "VER", 20,
             200, "CCDD", "REF");
@@ -251,7 +251,7 @@ public class ClaimServiceTest {
             new PaidInFullRule(),
             new ClaimAuthorisationRule(userService),
             new ReviewOrderRule(),
-            launchDarklyClient, caseEventService);
+            launchDarklyClient);
 
         ClaimData claimData = SampleClaimData.validDefaults();
 

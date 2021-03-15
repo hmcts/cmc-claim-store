@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
+import uk.gov.hmcts.cmc.claimstore.rules.ClaimDeadlineService;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
@@ -31,6 +33,7 @@ import java.util.Map;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ISSUE_PAPER_DEFENSE_FORMS;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
+import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
 @Service
 @ConditionalOnProperty("feature_toggles.ctsc_enabled")
@@ -48,6 +51,8 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
     private final IssueDateCalculator issueDateCalculator;
     private final IssuePaperResponseNotificationService issuePaperResponseNotificationService;
     private final DocumentPublishService documentPublishService;
+    private final LaunchDarklyClient launchDarklyClient;
+    private final ClaimDeadlineService claimDeadlineService;
 
     @Autowired
     public IssuePaperDefenceCallbackHandler(
@@ -55,13 +60,17 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
         ResponseDeadlineCalculator responseDeadlineCalculator,
         IssueDateCalculator issueDateCalculator,
         IssuePaperResponseNotificationService issuePaperResponseNotificationService,
-        DocumentPublishService documentPublishService
+        DocumentPublishService documentPublishService,
+        LaunchDarklyClient launchDarklyClient,
+        ClaimDeadlineService claimDeadlineService
     ) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.responseDeadlineCalculator = responseDeadlineCalculator;
         this.issueDateCalculator = issueDateCalculator;
         this.issuePaperResponseNotificationService = issuePaperResponseNotificationService;
         this.documentPublishService = documentPublishService;
+        this.launchDarklyClient = launchDarklyClient;
+        this.claimDeadlineService = claimDeadlineService;
     }
 
     @Override
@@ -92,13 +101,22 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
         if (!ccdRespondent.isOconFormSent()) {
             paperFormIssueDate = issueDateCalculator.calculateIssueDay(LocalDateTime.now());
             paperFormServedDate = responseDeadlineCalculator.calculateServiceDate(paperFormIssueDate);
-            if (CCDYesNoOption.YES.equals(ccdRespondent.getResponseMoreTimeNeededOption())) {
-                responseDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(paperFormIssueDate);
+            if (launchDarklyClient.isFeatureEnabled("ocon-enhancement-2", LaunchDarklyClient.CLAIM_STORE_USER)) {
+                LocalDate existingDeadline =
+                    responseDeadlineCalculator.calculateResponseDeadline(ccdCase.getIssuedOn());
+                final boolean isPastDeadline = claimDeadlineService.isPastDeadline(nowInLocalZone(), existingDeadline);
+                responseDeadline = getResponseDeadline(ccdRespondent, paperFormIssueDate, ccdCase, isPastDeadline);
+                extendedResponseDeadline = getExtendedResponseDeadline(ccdCase, paperFormIssueDate, isPastDeadline);
             } else {
-                responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(paperFormIssueDate);
+                if (CCDYesNoOption.YES.equals(ccdRespondent.getResponseMoreTimeNeededOption())) {
+                    responseDeadline =
+                        responseDeadlineCalculator.calculatePostponedResponseDeadline(paperFormIssueDate);
+                } else {
+                    responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(paperFormIssueDate);
+                }
+                extendedResponseDeadline =
+                    responseDeadlineCalculator.calculatePostponedResponseDeadline(paperFormIssueDate);
             }
-            extendedResponseDeadline =
-                responseDeadlineCalculator.calculatePostponedResponseDeadline(paperFormIssueDate);
         } else {
             paperFormServedDate = ccdRespondent.getPaperFormServedDate();
             responseDeadline = ccdRespondent.getResponseDeadline();
@@ -110,7 +128,8 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
         Claim claim = updateClaimDates(caseDetails, responseDeadline);
 
         var builder = AboutToStartOrSubmitCallbackResponse.builder();
-        if (ccdRespondent.getCountyCourtJudgmentRequest() != null
+        if (!launchDarklyClient.isFeatureEnabled("ocon-enhancements", LaunchDarklyClient.CLAIM_STORE_USER)
+            && ccdRespondent.getCountyCourtJudgmentRequest() != null
             && ccdRespondent.getCountyCourtJudgmentRequest().getType() == CCDCountyCourtJudgmentType.DEFAULT) {
             builder.errors(List.of(CLAIMANT_ISSUED_CCJ));
             return builder.build();
@@ -125,6 +144,31 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
         } catch (Exception e) {
             logger.error("Error notifying citizens", e);
             return builder.errors(Collections.singletonList(ERROR_MESSAGE)).build();
+        }
+    }
+
+    private LocalDate getExtendedResponseDeadline(CCDCase ccdCase, LocalDate paperFormIssueDate,
+                                                  boolean isPastDeadline) {
+        LocalDate extendedResponseDeadline;
+        if (isPastDeadline) {
+            extendedResponseDeadline =
+                responseDeadlineCalculator.calculatePostponedResponseDeadline(ccdCase.getIssuedOn());
+        } else {
+            extendedResponseDeadline =
+                responseDeadlineCalculator.calculatePostponedResponseDeadline(paperFormIssueDate);
+        }
+        return extendedResponseDeadline;
+    }
+
+    private LocalDate getResponseDeadline(CCDRespondent ccdRespondent, LocalDate paperFormIssueDate, CCDCase ccdCase,
+                                          boolean isPastDeadline) {
+
+        if (isPastDeadline && CCDYesNoOption.NO.equals(ccdRespondent.getResponseMoreTimeNeededOption())) {
+            return responseDeadlineCalculator.calculateResponseDeadline(ccdCase.getIssuedOn());
+        } else if (CCDYesNoOption.YES.equals(ccdRespondent.getResponseMoreTimeNeededOption())) {
+            return responseDeadlineCalculator.calculatePostponedResponseDeadline(ccdCase.getIssuedOn());
+        } else {
+            return responseDeadlineCalculator.calculateResponseDeadline(paperFormIssueDate);
         }
     }
 
