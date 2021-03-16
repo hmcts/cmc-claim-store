@@ -646,6 +646,8 @@ public final class SampleClaimForHwF {
             directionOrderType,
             bespokeOrderDirection,
             LocalDateTime.now(),
+            null,
+            null,
             null
         );
     }
