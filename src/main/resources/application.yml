@@ -22,6 +22,8 @@ spring:
     allow-bean-definition-overriding: true  # https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.1-Release-Notes#bean-overriding
   application:
     name: 'claim-store'
+  config:
+    import: "optional:configtree:/mnt/secrets/cmc/"
   mail:
     default-encoding: UTF-8
     test-connection: true
