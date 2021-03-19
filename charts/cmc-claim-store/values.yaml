@@ -10,7 +10,6 @@ java:
   aadIdentityName: money-claims
   keyVaults:
     cmc:
-      resourceGroup: cmc
       secrets:
         - name: claim-store-db-password
           alias: CLAIM_STORE_DB_PASSWORD
