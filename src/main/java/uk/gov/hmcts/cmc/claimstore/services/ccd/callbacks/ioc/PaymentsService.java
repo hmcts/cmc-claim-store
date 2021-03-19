@@ -85,7 +85,7 @@ public class PaymentsService {
             authorisation,
             paymentRequest,
             claimPayment.getReturnUrl(),
-            null
+            ""
         );
         logger.info("Created payment for claim with external id {}", claim.getExternalId());
         payment.setAmount(feeOutcome.getFeeAmount());
