@@ -1,16 +1,16 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.breathingspace;
 
 import com.google.common.collect.ImmutableMap;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDBreathingSpace;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
-import uk.gov.hmcts.cmc.claimstore.idam.models.User;
-import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
@@ -33,25 +33,26 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 @Service
 public class BreathingSpaceEnteredCallbackHandler extends CallbackHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
-
     private static final List<CaseEvent> EVENTS = Arrays.asList(CaseEvent.BREATHING_SPACE_ENTERED);
-
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final CaseDetailsConverter caseDetailsConverter;
-
-    private final EventProducer eventProducer;
-
-    private final UserService userService;
+    private final NotificationsProperties notificationsProperties;
+    private final String breathingSpaceEnteredTemplateID;
+    private final BreathingSpaceLetterService breathingSpaceLetterService;
+    private final BreathingSpaceEmailService breathingSpaceEmailService;
 
     @Autowired
     public BreathingSpaceEnteredCallbackHandler(CaseDetailsConverter caseDetailsConverter,
-                                                EventProducer eventProducer,
-                                                UserService userService) {
+        NotificationsProperties notificationsProperties,
+        @Value("${doc_assembly.breathingSpaceEnteredTemplateID}") String breathingSpaceEnteredTemplateID,
+        BreathingSpaceLetterService breathingSpaceLetterService,
+        BreathingSpaceEmailService breathingSpaceEmailService) {
         this.caseDetailsConverter = caseDetailsConverter;
-        this.eventProducer = eventProducer;
-        this.userService = userService;
+        this.notificationsProperties = notificationsProperties;
+        this.breathingSpaceEnteredTemplateID = breathingSpaceEnteredTemplateID;
+        this.breathingSpaceLetterService = breathingSpaceLetterService;
+        this.breathingSpaceEmailService = breathingSpaceEmailService;
     }
 
     @Override
@@ -87,12 +88,24 @@ public class BreathingSpaceEnteredCallbackHandler extends CallbackHandler {
 
     private CallbackResponse breathingSpaceEnteredAboutToSubmitCallBack(CallbackParams callbackParams) {
 
-        final var responseBuilder = AboutToStartOrSubmitCallbackResponse.builder();
         final CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
-        responseBuilder.data(caseDetailsConverter.convertToMap(ccdCase));
+        Claim claim = caseDetailsConverter.extractClaim(caseDetails);
+        String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
+        CCDCase updatedCase = ccdCase;
 
-        return responseBuilder.build();
+        breathingSpaceEmailService.sendNotificationToClaimant(claim,
+            notificationsProperties.getTemplates().getEmail().getBreathingSpaceEmailToClaimant());
+        if (isDefendentLinked(claim)) {
+            breathingSpaceEmailService.sendEmailNotificationToDefendant(claim,
+                notificationsProperties.getTemplates().getEmail().getBreathingSpaceEmailToDefendant());
+        } else {
+            updatedCase = breathingSpaceLetterService.sendLetterToDefendant(ccdCase, claim, authorisation,
+                breathingSpaceEnteredTemplateID);
+        }
+
+        var builder = AboutToStartOrSubmitCallbackResponse.builder();
+        return builder.data(caseDetailsConverter.convertToMap(updatedCase)).build();
     }
 
     private CallbackResponse breathingSpaceEnteredPostOperations(CallbackParams callbackParams) {
@@ -101,9 +114,11 @@ public class BreathingSpaceEnteredCallbackHandler extends CallbackHandler {
         logger.info("Created citizen case for callback of type {}, claim with external id {}",
             callbackParams.getType(),
             claim.getExternalId());
-        String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
-        User user = userService.getUser(authorisation);
 
         return SubmittedCallbackResponse.builder().build();
+    }
+
+    private boolean isDefendentLinked(Claim claim) {
+        return !StringUtils.isBlank(claim.getDefendantId());
     }
 }
