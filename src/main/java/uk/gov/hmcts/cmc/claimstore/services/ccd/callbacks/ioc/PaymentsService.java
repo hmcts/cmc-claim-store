@@ -1,4 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,14 +11,15 @@ import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.reform.fees.client.FeesClient;
 import uk.gov.hmcts.reform.fees.client.model.FeeLookupResponseDto;
-import uk.gov.hmcts.reform.payments.request.CardPaymentRequest;
 import uk.gov.hmcts.reform.payments.client.PaymentsClient;
 import uk.gov.hmcts.reform.payments.client.models.FeeDto;
 import uk.gov.hmcts.reform.payments.client.models.PaymentDto;
+import uk.gov.hmcts.reform.payments.request.CardPaymentRequest;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 @Service
 @Conditional(FeesAndPaymentsConfiguration.class)
 public class PaymentsService {
@@ -29,6 +31,7 @@ public class PaymentsService {
     private final FeesClient feesClient;
     private final String currency;
     private final String description;
+
     public PaymentsService(
         PaymentsClient paymentsClient,
         FeesClient feesClient,
@@ -41,6 +44,7 @@ public class PaymentsService {
         this.currency = currency;
         this.description = description;
     }
+
     public Optional<Payment> retrievePayment(
         String authorisation,
         ClaimData claimData
@@ -54,6 +58,7 @@ public class PaymentsService {
         PaymentDto paymentDto = paymentsClient.retrieveCardPayment(authorisation, claimPayment.getReference());
         return Optional.of(from(paymentDto, claimPayment));
     }
+
     public Payment createPayment(
         String authorisation,
         Claim claim
@@ -86,10 +91,12 @@ public class PaymentsService {
         payment.setAmount(feeOutcome.getFeeAmount());
         return from(payment, claimPayment);
     }
+
     public void cancelPayment(String authorisation, String paymentReference) {
         logger.info("Cancelling payment {}", paymentReference);
         paymentsClient.cancelCardPayment(authorisation, paymentReference);
     }
+
     private FeeDto[] buildFees(String ccdCaseId, FeeLookupResponseDto feeOutcome) {
         return new FeeDto[]{
             FeeDto.builder()
@@ -100,6 +107,7 @@ public class PaymentsService {
                 .build()
         };
     }
+
     private CardPaymentRequest buildPaymentRequest(
         Claim claim,
         FeeLookupResponseDto feeOutcome
@@ -116,6 +124,7 @@ public class PaymentsService {
             .caseType(CASE_TYPE_ID)
             .build();
     }
+
     private Payment from(PaymentDto paymentDto, Payment claimPayment) {
         String dateCreated = Optional.ofNullable(paymentDto.getDateCreated())
             .map(date -> date.toLocalDate().toString())
