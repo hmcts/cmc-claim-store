@@ -116,10 +116,11 @@ doc_assembly:
   oconFormIndividualWithoutDQs: "CV-CMC-GOR-ENG-0013.docx"
   oconFormSoleTraderWithoutDQs: "CV-CMC-GOR-ENG-0014.docx"
   oconFormOrganisationWithoutDQs: "CV-CMC-GOR-ENG-0015.docx"
-
   noticeOfTransferToCcbcSentToDefendantTemplateId: "CV-CMC-GOR-ENG-0016.docx"
   paperResponseAdmissionTemplateId: "CV-CMC-GOR-ENG-0016.docx"
   defendantPinLetterTemplateID: "CV-CMC-LET-ENG-00630.docx"
+  breathingSpaceEnteredTemplateID: "CV-CMC-LET-ENG-00635.docx"
+  breathingSpaceLiftedTemplateID: "CV-CMC-LET-ENG-00636.docx"
 
 nonworking-days:
   datafile: ${NONWORKINGDAYS_DATAFILE:/data/non-working_days.dat}

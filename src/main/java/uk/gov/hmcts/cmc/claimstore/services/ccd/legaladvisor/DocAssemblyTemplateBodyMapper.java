@@ -29,17 +29,15 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 @Component
 public class DocAssemblyTemplateBodyMapper {
 
-    @Value("${directionDeadline.onlineNumberOfDays}")
-    private long reconsiderationDaysForOnlineResponse;
-
-    @Value("${directionDeadline.oconNumberOfDays}")
-    private long reconsiderationDaysForOconResponse;
-
     public static final long CHANGE_ORDER_DEADLINE_NO_OF_DAYS = 12L;
     private final Clock clock;
     private final DirectionOrderService directionOrderService;
     private final WorkingDayIndicator workingDayIndicator;
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
+    @Value("${directionDeadline.onlineNumberOfDays}")
+    private long reconsiderationDaysForOnlineResponse;
+    @Value("${directionDeadline.oconNumberOfDays}")
+    private long reconsiderationDaysForOconResponse;
 
     @Autowired
     public DocAssemblyTemplateBodyMapper(
@@ -215,10 +213,10 @@ public class DocAssemblyTemplateBodyMapper {
 
     public DocAssemblyTemplateBody paperResponseAdmissionLetter(CCDCase ccdCase, String caseworkerName) {
         LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
-        CCDRespondent defendant =  ccdCase.getRespondents().get(0).getValue();
+        CCDRespondent defendant = ccdCase.getRespondents().get(0).getValue();
         String partyName = defendant.getPartyName() != null
             ? defendant.getPartyName()
-            :  defendant.getClaimantProvidedPartyName();
+            : defendant.getClaimantProvidedPartyName();
         CCDAddress partyAddress = getDefendantAddress(ccdCase.getRespondents().get(0).getValue());
 
         return DocAssemblyTemplateBody.builder()
@@ -231,16 +229,32 @@ public class DocAssemblyTemplateBodyMapper {
             .build();
     }
 
+    public DocAssemblyTemplateBody breathingSpaceLetter(CCDCase ccdCase) {
+        CCDRespondent defendant = ccdCase.getRespondents().get(0).getValue();
+        String partyName = defendant.getPartyName() != null
+            ? defendant.getPartyName()
+            : defendant.getClaimantProvidedPartyName();
+        CCDAddress partyAddress = getDefendantAddress(ccdCase.getRespondents().get(0).getValue());
+        CCDApplicant claimant = ccdCase.getApplicants().get(0).getValue();
+
+        return DocAssemblyTemplateBody.builder()
+            .referenceNumber(ccdCase.getPreviousServiceCaseReference())
+            .claimantName(claimant.getPartyName())
+            .partyName(partyName)
+            .partyAddress(partyAddress)
+            .build();
+    }
+
     public DocAssemblyTemplateBody mapBespokeDirectionOrder(CCDCase ccdCase, UserDetails userDetails) {
         LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
 
         return DocAssemblyTemplateBody.builder()
             .claimant(Party.builder()
-            .partyName(ccdCase.getApplicants()
-                .get(0)
-                .getValue()
-                .getPartyName())
-            .build())
+                .partyName(ccdCase.getApplicants()
+                    .get(0)
+                    .getValue()
+                    .getPartyName())
+                .build())
             .defendant(Party.builder()
                 .partyName(ccdCase.getRespondents()
                     .get(0)
