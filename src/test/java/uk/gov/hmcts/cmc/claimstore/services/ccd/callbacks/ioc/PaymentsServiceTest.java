@@ -189,7 +189,7 @@ public class PaymentsServiceTest {
             BEARER_TOKEN,
             expectedPaymentRequest,
             RETURN_URL,
-            null
+            ""
         )).thenReturn(paymentDto);
 
         paymentsService.createPayment(
