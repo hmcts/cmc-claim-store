@@ -13,7 +13,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import java.util.Map;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.MoreTimeRequested.referenceForClaimant;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.MoreTimeRequested.referenceForDefendant;
@@ -48,10 +47,10 @@ public class BreathingSpaceEmailServiceTest {
         breathingSpaceEmailService.sendEmailNotificationToDefendant(claim, DEFENDANT_EMAIL_TEMPLATE);
 
         verify(notificationService).sendMail(
-            eq(claim.getDefendantEmail()),
-            eq(DEFENDANT_EMAIL_TEMPLATE),
-            eq(expectedParams),
-            eq(referenceForDefendant(claim.getReferenceNumber())));
+            claim.getDefendantEmail(),
+            DEFENDANT_EMAIL_TEMPLATE,
+            expectedParams,
+            referenceForDefendant(claim.getReferenceNumber()));
 
     }
 
@@ -67,9 +66,9 @@ public class BreathingSpaceEmailServiceTest {
         breathingSpaceEmailService.sendNotificationToClaimant(claim, CLAIMANT_EMAIL_TEMPLATE);
 
         verify(notificationService).sendMail(
-            eq(claim.getSubmitterEmail()),
-            eq(CLAIMANT_EMAIL_TEMPLATE),
-            eq(expectedParams),
-            eq(referenceForClaimant(claim.getReferenceNumber())));
+            claim.getSubmitterEmail(),
+            CLAIMANT_EMAIL_TEMPLATE,
+            expectedParams,
+            referenceForClaimant(claim.getReferenceNumber()));
     }
 }
