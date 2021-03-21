@@ -265,6 +265,7 @@ claim-store:
 oauth2:
   client:
     id: 'cmc_citizen'
+    secret:
 ---
 spring:
   profiles: 'aat'
