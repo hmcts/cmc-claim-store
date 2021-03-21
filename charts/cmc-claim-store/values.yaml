@@ -98,5 +98,4 @@ java:
     RESPOND_TO_CLAIM_URL: https://moneyclaims.{{ .Values.global.environment }}.platform.hmcts.net/first-contact/start
     CORE_CASE_DATA_API_URL: http://ccd-data-store-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     DOC_ASSEMBLY_URL: http://dg-docassembly-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
-    SPRING_CLOUD_BOOTSTRAP_ENABLED: true
 
