@@ -62,7 +62,7 @@ public class BreathingSpaceMapper implements BuilderMapper<CCDCase, BreathingSpa
     }
 
     private CCDBreathingSpaceType toCCDBreathingSpaceType(BreathingSpaceType breathingSpaceType) {
-        return CCDBreathingSpaceType.valueOf(breathingSpaceType.getKey());
+        return CCDBreathingSpaceType.valueOf(breathingSpaceType.name());
     }
 
     private BreathingSpaceType fromCCDBreathingSpaceType(CCDBreathingSpaceType ccdBreathingSpaceType) {
