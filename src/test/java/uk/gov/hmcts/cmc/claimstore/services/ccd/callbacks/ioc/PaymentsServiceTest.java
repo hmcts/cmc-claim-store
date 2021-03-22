@@ -68,7 +68,6 @@ public class PaymentsServiceTest {
         paymentsService = new PaymentsService(
             paymentsClient,
             feesClient,
-            CASE_TYPE_ID,
             CURRENCY,
             DESCRIPTION
         );
