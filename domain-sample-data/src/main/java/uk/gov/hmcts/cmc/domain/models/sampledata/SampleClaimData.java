@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
+import uk.gov.hmcts.cmc.domain.models.BreathingSpace;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.Payment;
@@ -55,6 +56,7 @@ public class SampleClaimData {
         DamagesExpectation.MORE_THAN_THOUSAND_POUNDS,
         DamagesExpectation.MORE_THAN_THOUSAND_POUNDS
     );
+    private BreathingSpace breathingSpace;
 
     public SampleClaimData(List<Party> claimants, List<TheirDetails> defendants) {
         this.claimants = claimants;
@@ -264,7 +266,8 @@ public class SampleClaimData {
             hwfFeeDetailsSummary,
             hwfMandatoryDetails,
             hwfMoreInfoNeededDocuments,
-            hwfDocumentsToBeSentBefore);
+            hwfDocumentsToBeSentBefore,
+            breathingSpace);
     }
 
     public static ClaimData validDefaults() {
