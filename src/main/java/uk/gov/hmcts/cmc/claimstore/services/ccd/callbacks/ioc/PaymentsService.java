@@ -35,7 +35,6 @@ public class PaymentsService {
     public PaymentsService(
         PaymentsClient paymentsClient,
         FeesClient feesClient,
-        @Value("${payments.api.caseType}") String caseType,
         @Value("${payments.api.currency}") String currency,
         @Value("${payments.api.description}") String description
     ) {
