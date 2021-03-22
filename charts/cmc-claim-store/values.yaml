@@ -9,8 +9,7 @@ java:
   applicationPort: 4400
   aadIdentityName: money-claims
   keyVaults:
-    cmc:
-      resourceGroup: cmc
+    "cmc":
       secrets:
         - name: claim-store-db-password
           alias: CLAIM_STORE_DB_PASSWORD
