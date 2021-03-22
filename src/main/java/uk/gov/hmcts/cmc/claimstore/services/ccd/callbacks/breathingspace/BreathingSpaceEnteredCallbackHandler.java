@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -79,9 +80,9 @@ public class BreathingSpaceEnteredCallbackHandler extends CallbackHandler {
         final var responseBuilder = AboutToStartOrSubmitCallbackResponse.builder();
         final CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
-        if (ccdCase.getBreathingSpace() != null) {
-            List<String> errors = new ArrayList<>();
-            validationMessage = "Breathing Space is already entered for this Claim";
+        validateBreathingSpaceDetails(ccdCase, CallbackType.ABOUT_TO_START);
+        List<String> errors = new ArrayList<>();
+        if (null != validationMessage) {
             errors.add(validationMessage);
             responseBuilder.errors(errors);
         }
@@ -94,7 +95,7 @@ public class BreathingSpaceEnteredCallbackHandler extends CallbackHandler {
         final CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         List<String> errors = new ArrayList<>();
-        validateBreathingSpaceDetails(ccdCase);
+        validateBreathingSpaceDetails(ccdCase, CallbackType.MID);
         if (null != validationMessage) {
             errors.add(validationMessage);
             responseBuilder.errors(errors);
@@ -105,21 +106,36 @@ public class BreathingSpaceEnteredCallbackHandler extends CallbackHandler {
         return responseBuilder.build();
     }
 
-    private void validateBreathingSpaceDetails(CCDCase ccdCase) {
+    private void validateBreathingSpaceDetails(CCDCase ccdCase, CallbackType callbackType) {
         if (ccdCase.getBreathingSpace() != null) {
-            CCDBreathingSpace ccdBreathingSpace = ccdCase.getBreathingSpace();
-            if (ccdBreathingSpace.getBsReferenceNumber() != null
-                && ccdBreathingSpace.getBsReferenceNumber().length() > 16) {
-                validationMessage = "The reference number must be maximum of 16 Characters";
-            } else if (ccdBreathingSpace.getBsEnteredDateByInsolvencyTeam() != null
-                && ccdBreathingSpace.getBsEnteredDateByInsolvencyTeam().isAfter(LocalDate.now())) {
-                validationMessage = "The start date must not be after today's date";
-            } else if (ccdBreathingSpace.getBsExpectedEndDate() != null
-                && ccdBreathingSpace.getBsExpectedEndDate().isBefore(ccdBreathingSpace.getBsEnteredDateByInsolvencyTeam())) {
-                validationMessage = "The expected end date must not be before start date";
-            } else if (ccdBreathingSpace.getBsExpectedEndDate() != null
-                && ccdBreathingSpace.getBsExpectedEndDate().isBefore(LocalDate.now())) {
-                validationMessage = "The expected end date must not be before today's date";
+            if (callbackType.equals(CallbackType.ABOUT_TO_START)) {
+                validationMessage = "Breathing Space is already entered for this Claim";
+            } else {
+                CCDBreathingSpace ccdBreathingSpace = ccdCase.getBreathingSpace();
+                if (ccdBreathingSpace.getBsReferenceNumber() != null
+                    && ccdBreathingSpace.getBsReferenceNumber().length() > 16) {
+                    validationMessage = "The reference number must be maximum of 16 Characters";
+                } else if (ccdBreathingSpace.getBsEnteredDateByInsolvencyTeam() != null
+                    && ccdBreathingSpace.getBsEnteredDateByInsolvencyTeam().isAfter(LocalDate.now())) {
+                    validationMessage = "The start date must not be after today's date";
+                } else if (ccdBreathingSpace.getBsExpectedEndDate() != null
+                    && ccdBreathingSpace.getBsExpectedEndDate().isBefore(ccdBreathingSpace.getBsEnteredDateByInsolvencyTeam())) {
+                    validationMessage = "The expected end date must not be before start date";
+                } else if (ccdBreathingSpace.getBsExpectedEndDate() != null
+                    && ccdBreathingSpace.getBsExpectedEndDate().isBefore(LocalDate.now())) {
+                    validationMessage = "The expected end date must not be before today's date";
+                }
+            }
+        } else {
+            if (callbackType.equals(CallbackType.ABOUT_TO_START)) {
+                if (ccdCase.getState().equals(ClaimState.TRANSFERRED.getValue())
+                    || ccdCase.getState().equals(ClaimState.BUSINESS_QUEUE.getValue())
+                    || ccdCase.getState().equals(ClaimState.HWF_APPLICATION_PENDING.getValue())
+                    || ccdCase.getState().equals(ClaimState.AWAITING_RESPONSE_HWF.getValue())
+                    || ccdCase.getState().equals(ClaimState.CLOSED_HWF.getValue())) {
+                    validationMessage = "This Event cannot be triggered since the Claim is in "
+                        + ccdCase.getState() + " state";
+                }
             }
         }
     }
