@@ -1,11 +1,14 @@
 package uk.gov.hmcts.cmc.ccd.domain;
 
-import lombok.Builder;
-import lombok.Value;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.*;
 
 import java.time.LocalDate;
 
-@Value
+@JsonIgnoreProperties(ignoreUnknown = true)
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder(toBuilder = true)
 public class CCDBreathingSpace {
 

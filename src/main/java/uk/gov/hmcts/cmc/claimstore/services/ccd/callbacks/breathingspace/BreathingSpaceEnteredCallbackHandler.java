@@ -23,10 +23,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.util.*;
 
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
@@ -42,12 +40,14 @@ public class BreathingSpaceEnteredCallbackHandler extends CallbackHandler {
     private final BreathingSpaceLetterService breathingSpaceLetterService;
     private final BreathingSpaceEmailService breathingSpaceEmailService;
 
+    private String validationMessage;
+
     @Autowired
     public BreathingSpaceEnteredCallbackHandler(CaseDetailsConverter caseDetailsConverter,
-        NotificationsProperties notificationsProperties,
-        @Value("${doc_assembly.breathingSpaceEnteredTemplateID}") String breathingSpaceEnteredTemplateID,
-        BreathingSpaceLetterService breathingSpaceLetterService,
-        BreathingSpaceEmailService breathingSpaceEmailService) {
+                                                NotificationsProperties notificationsProperties,
+                                                @Value("${doc_assembly.breathingSpaceEnteredTemplateID}") String breathingSpaceEnteredTemplateID,
+                                                BreathingSpaceLetterService breathingSpaceLetterService,
+                                                BreathingSpaceEmailService breathingSpaceEmailService) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.notificationsProperties = notificationsProperties;
         this.breathingSpaceEnteredTemplateID = breathingSpaceEnteredTemplateID;
@@ -58,6 +58,7 @@ public class BreathingSpaceEnteredCallbackHandler extends CallbackHandler {
     @Override
     protected Map<CallbackType, Callback> callbacks() {
         return ImmutableMap.of(
+            CallbackType.ABOUT_TO_START, this::breathingSpaceEnteredAboutToStartCallBack,
             CallbackType.MID, this::breathingSpaceEnteredMidCallBack,
             CallbackType.ABOUT_TO_SUBMIT, this::breathingSpaceEnteredAboutToSubmitCallBack,
             CallbackType.SUBMITTED, this::breathingSpaceEnteredPostOperations
@@ -74,22 +75,64 @@ public class BreathingSpaceEnteredCallbackHandler extends CallbackHandler {
         return ROLES;
     }
 
-    private CallbackResponse breathingSpaceEnteredMidCallBack(CallbackParams callbackParams) {
-
+    private CallbackResponse breathingSpaceEnteredAboutToStartCallBack(CallbackParams callbackParams) {
         final var responseBuilder = AboutToStartOrSubmitCallbackResponse.builder();
         final CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
-        CCDBreathingSpace ccdBreathingSpace = ccdCase.getBreathingSpace();
+        if (ccdCase.getBreathingSpace() != null) {
+            List<String> errors = new ArrayList<>();
+            validationMessage = "Breathing Space is already entered for this Claim";
+            errors.add(validationMessage);
+            responseBuilder.errors(errors);
+        }
+        return responseBuilder.build();
+    }
 
-        return responseBuilder
-            .data(Map.of("breathingSpaceSummary", ccdBreathingSpace))
-            .build();
+    private CallbackResponse breathingSpaceEnteredMidCallBack(CallbackParams callbackParams) {
+        validationMessage = null;
+        final var responseBuilder = AboutToStartOrSubmitCallbackResponse.builder();
+        final CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
+        List<String> errors = new ArrayList<>();
+        validateBreathingSpaceDetails(ccdCase);
+        if (null != validationMessage) {
+            errors.add(validationMessage);
+            responseBuilder.errors(errors);
+        } else {
+            CCDBreathingSpace ccdBreathingSpace = ccdCase.getBreathingSpace();
+            responseBuilder.data(Map.of("breathingSpaceSummary", ccdBreathingSpace));
+        }
+        return responseBuilder.build();
+    }
+
+    private void validateBreathingSpaceDetails(CCDCase ccdCase) {
+        if (ccdCase.getBreathingSpace() != null) {
+            CCDBreathingSpace ccdBreathingSpace = ccdCase.getBreathingSpace();
+            if (ccdBreathingSpace.getBsReferenceNumber() != null
+                && ccdBreathingSpace.getBsReferenceNumber().length() > 16) {
+                validationMessage = "The reference number must be maximum of 16 Characters";
+            } else if (ccdBreathingSpace.getBsEnteredDateByInsolvencyTeam() != null
+                && ccdBreathingSpace.getBsEnteredDateByInsolvencyTeam().isAfter(LocalDate.now())) {
+                validationMessage = "The start date must not be after today's date";
+            } else if (ccdBreathingSpace.getBsExpectedEndDate() != null
+                && ccdBreathingSpace.getBsExpectedEndDate().isBefore(ccdBreathingSpace.getBsEnteredDateByInsolvencyTeam())) {
+                validationMessage = "The expected end date must not be before start date";
+            } else if (ccdBreathingSpace.getBsExpectedEndDate() != null
+                && ccdBreathingSpace.getBsExpectedEndDate().isBefore(LocalDate.now())) {
+                validationMessage = "The expected end date must not be before today's date";
+            }
+        }
     }
 
     private CallbackResponse breathingSpaceEnteredAboutToSubmitCallBack(CallbackParams callbackParams) {
 
         final CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
+        if (ccdCase.getBreathingSpace() != null) {
+            CCDBreathingSpace ccdBreathingSpace = ccdCase.getBreathingSpace();
+            ccdBreathingSpace.setBsEnteredDate(LocalDate.now());
+            ccdCase.setBreathingSpace(ccdBreathingSpace);
+        }
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
         CCDCase updatedCase = ccdCase;
@@ -109,6 +152,7 @@ public class BreathingSpaceEnteredCallbackHandler extends CallbackHandler {
     }
 
     private CallbackResponse breathingSpaceEnteredPostOperations(CallbackParams callbackParams) {
+        final CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails())
             .toBuilder().lastEventTriggeredForHwfCase(callbackParams.getRequest().getEventId()).build();
         logger.info("Created citizen case for callback of type {}, claim with external id {}",
