@@ -277,7 +277,7 @@ public class PaymentsServiceTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void shouldBubbleUpExceptionIfPaymentCreationFails() {cancelCardPayment
+    public void shouldBubbleUpExceptionIfPaymentCreationFails() {
         when(paymentsClient.createCardPayment(
             eq(BEARER_TOKEN),
             any(CardPaymentRequest.class),
