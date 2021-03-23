@@ -48,9 +48,9 @@ public class BreathingSpaceEnteredCallbackHandler extends CallbackHandler {
 
     @Autowired
     public BreathingSpaceEnteredCallbackHandler(CaseDetailsConverter caseDetailsConverter,
-                                                NotificationsProperties notificationsProperties,
-                                                @Value("${doc_assembly.breathingSpaceEnteredTemplateID}") String breathingSpaceEnteredTemplateID,
-                                                EventProducer eventProducer) {
+            NotificationsProperties notificationsProperties,
+            @Value("${doc_assembly.breathingSpaceEnteredTemplateID}") String breathingSpaceEnteredTemplateID,
+            EventProducer eventProducer) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.notificationsProperties = notificationsProperties;
         this.breathingSpaceEnteredTemplateID = breathingSpaceEnteredTemplateID;
