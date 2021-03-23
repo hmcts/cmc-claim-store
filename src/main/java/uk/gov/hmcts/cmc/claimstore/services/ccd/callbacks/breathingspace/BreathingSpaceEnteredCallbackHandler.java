@@ -48,9 +48,9 @@ public class BreathingSpaceEnteredCallbackHandler extends CallbackHandler {
 
     @Autowired
     public BreathingSpaceEnteredCallbackHandler(CaseDetailsConverter caseDetailsConverter,
-            NotificationsProperties notificationsProperties,
-            @Value("${doc_assembly.breathingSpaceEnteredTemplateID}") String breathingSpaceEnteredTemplateID,
-            EventProducer eventProducer) {
+                                                NotificationsProperties notificationsProperties,
+                                                @Value("${doc_assembly.breathingSpaceEnteredTemplateID}") String breathingSpaceEnteredTemplateID,
+                                                EventProducer eventProducer) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.notificationsProperties = notificationsProperties;
         this.breathingSpaceEnteredTemplateID = breathingSpaceEnteredTemplateID;
@@ -121,10 +121,6 @@ public class BreathingSpaceEnteredCallbackHandler extends CallbackHandler {
                     && ccdBreathingSpace.getBsEnteredDateByInsolvencyTeam().isAfter(LocalDate.now())) {
                     validationMessage = "The start date must not be after today's date";
                 } else if (ccdBreathingSpace.getBsExpectedEndDate() != null
-                    && ccdBreathingSpace.getBsExpectedEndDate()
-                    .isBefore(ccdBreathingSpace.getBsEnteredDateByInsolvencyTeam())) {
-                    validationMessage = "The expected end date must not be before start date";
-                } else if (ccdBreathingSpace.getBsExpectedEndDate() != null
                     && ccdBreathingSpace.getBsExpectedEndDate().isBefore(LocalDate.now())) {
                     validationMessage = "The expected end date must not be before today's date";
                 }
@@ -137,7 +133,7 @@ public class BreathingSpaceEnteredCallbackHandler extends CallbackHandler {
                     || ccdCase.getState().equals(ClaimState.AWAITING_RESPONSE_HWF.getValue())
                     || ccdCase.getState().equals(ClaimState.CLOSED_HWF.getValue())) {
                     validationMessage = "This Event cannot be triggered since the Claim is in "
-                        + ccdCase.getState() + " state";
+                        + ccdCase.getState() + " state(Claim is not in Online Journey)";
                 }
             }
         }
