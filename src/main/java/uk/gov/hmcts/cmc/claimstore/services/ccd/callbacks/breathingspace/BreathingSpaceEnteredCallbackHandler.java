@@ -48,9 +48,9 @@ public class BreathingSpaceEnteredCallbackHandler extends CallbackHandler {
 
     @Autowired
     public BreathingSpaceEnteredCallbackHandler(CaseDetailsConverter caseDetailsConverter,
-            NotificationsProperties notificationsProperties,
-            @Value("${doc_assembly.breathingSpaceEnteredTemplateID}") String breathingSpaceEnteredTemplateID,
-            EventProducer eventProducer) {
+                                                NotificationsProperties notificationsProperties,
+                                                @Value("${doc_assembly.breathingSpaceEnteredTemplateID}") String breathingSpaceEnteredTemplateID,
+                                                EventProducer eventProducer) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.notificationsProperties = notificationsProperties;
         this.breathingSpaceEnteredTemplateID = breathingSpaceEnteredTemplateID;
@@ -78,6 +78,7 @@ public class BreathingSpaceEnteredCallbackHandler extends CallbackHandler {
     }
 
     private CallbackResponse breathingSpaceEnteredAboutToStartCallBack(CallbackParams callbackParams) {
+        validationMessage = null;
         final var responseBuilder = AboutToStartOrSubmitCallbackResponse.builder();
         final CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
