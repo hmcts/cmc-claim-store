@@ -68,7 +68,8 @@ public enum AppInsightsEvent {
     DRAW_JUDGES_ORDER("Directions drawn - Judge"),
     LA_GENERATE_DRAW_ORDER("LA generates and draws order"),
     JDDO_PILOT_ELIGIBLE("Ready for directions - Judge"),
-    COURT_FINDER_API_FAILURE("Failed to get address from Court Finder API");
+    COURT_FINDER_API_FAILURE("Failed to get address from Court Finder API"),
+    BREATHING_SPACE_ENTERED("Breathing Space Entered");
 
     private final String displayName;
 

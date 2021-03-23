@@ -1,22 +1,11 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDBreathingSpace;
 import uk.gov.hmcts.cmc.ccd.domain.CCDBreathingSpaceType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.domain.models.BreathingSpace;
 import uk.gov.hmcts.cmc.domain.models.BreathingSpaceType;
-import uk.gov.hmcts.cmc.domain.models.Payment;
-import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
-import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
-
-import static java.time.format.DateTimeFormatter.ISO_DATE;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Component
 public class BreathingSpaceMapper implements BuilderMapper<CCDCase, BreathingSpace, CCDCase.CCDCaseBuilder> {

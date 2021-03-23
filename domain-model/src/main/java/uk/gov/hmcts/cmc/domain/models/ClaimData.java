@@ -113,7 +113,6 @@ public class ClaimData {
 
     private final BreathingSpace breathingSpace;
 
-
     @Builder(toBuilder = true)
     @SuppressWarnings("squid:S00107") // Number of method parameters
     public ClaimData(

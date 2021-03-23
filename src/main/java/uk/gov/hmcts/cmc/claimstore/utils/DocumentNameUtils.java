@@ -195,7 +195,7 @@ public class DocumentNameUtils {
 
     public static String buildBreathingSpaceEnteredFileBaseName(String caseRef) {
         requireNonBlank(caseRef);
-        return format("%s-breathing-space-entered.pdf", caseRef);
+        return format("%s-breathing-space-entered", caseRef);
     }
 
 }

@@ -41,6 +41,7 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
 
 public class EventProducerTest {
     private static final String AUTHORISATION = "Bearer: aaa";
+    private static final String LETTER_TEMPLATEID = "CV-CMC-LET-ENG-00635.docx";
 
     private final UserDetails userDetails
         = SampleUserDetails.builder().withUserId(USER_ID).withMail(CLAIMANT_EMAIL).build();
@@ -217,4 +218,5 @@ public class EventProducerTest {
 
         verify(publisher).publishEvent(eq(event));
     }
+
 }
