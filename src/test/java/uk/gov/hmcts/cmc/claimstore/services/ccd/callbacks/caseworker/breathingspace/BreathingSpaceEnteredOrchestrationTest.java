@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.BreathingSpaceEnteredEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.breathingspace.BreathingSpaceEmailService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.breathingspace.BreathingSpaceEntetedOrchestrationHandler;
@@ -92,4 +93,38 @@ public class BreathingSpaceEnteredOrchestrationTest {
             any(Claim.class),
             anyString());
     }
+
+    @Test
+    public void shouldSendLetterToDefendantUsingPredefinedTemplate() {
+        Claim claim = Claim.builder()
+            .referenceNumber("000MC001")
+            .build();
+        BreathingSpaceEnteredEvent event = new BreathingSpaceEnteredEvent(claim, ccdCase, AUTHORISATION,
+            BREATHING_SPACE_LETTER_TEMPLATE_ID, CLAIMANT_EMAIL_TEMPLATE, DEFENDANT_EMAIL_TEMPLATE);
+
+        handler.caseworkerBreathingSpaceEnteredEvent(event);
+
+        verify(breathingSpaceLetterService).sendLetterToDefendant(
+            any(CCDCase.class),
+            any(Claim.class),
+            anyString(),
+            anyString());
+    }
+
+    @Test
+    public void shouldAddTracking() {
+        Claim claim = Claim.builder()
+            .referenceNumber("000MC001")
+            .build();
+        BreathingSpaceEnteredEvent event = new BreathingSpaceEnteredEvent(claim, ccdCase, AUTHORISATION,
+            BREATHING_SPACE_LETTER_TEMPLATE_ID, CLAIMANT_EMAIL_TEMPLATE, DEFENDANT_EMAIL_TEMPLATE);
+
+        handler.caseworkerBreathingSpaceEnteredEvent(event);
+
+        verify(appInsights).trackEvent(
+            AppInsightsEvent.BREATHING_SPACE_ENTERED,
+            AppInsights.REFERENCE_NUMBER,
+            SampleClaim.REFERENCE_NUMBER);
+    }
+
 }

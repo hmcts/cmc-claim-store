@@ -5,7 +5,9 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.context.ApplicationEventPublisher;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
+import uk.gov.hmcts.cmc.claimstore.events.claim.BreathingSpaceEnteredEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.HwfClaimUpdatedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferAcceptedEvent;
@@ -40,9 +42,10 @@ import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleMoreTime
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
 
 public class EventProducerTest {
+    public static final String DEFENDANT_EMAIL_TEMPLATE = "Defendant Email Template";
+    public static final String CLAIMANT_EMAIL_TEMPLATE = "Claimant Email Template";
     private static final String AUTHORISATION = "Bearer: aaa";
     private static final String LETTER_TEMPLATEID = "CV-CMC-LET-ENG-00635.docx";
-
     private final UserDetails userDetails
         = SampleUserDetails.builder().withUserId(USER_ID).withMail(CLAIMANT_EMAIL).build();
 
@@ -217,6 +220,15 @@ public class EventProducerTest {
         eventProducer.createBulkPrintTransferEvent(CLAIM, coverLetter, caseDocuments, AUTHORISATION);
 
         verify(publisher).publishEvent(eq(event));
+    }
+
+    @Test
+    public void shouldCreateBreathingSpaceEnteredEvent() {
+
+        eventProducer.createBreathingSpaceEnteredEvent(CLAIM, CCDCase.builder().build(), AUTHORISATION,
+            LETTER_TEMPLATEID, CLAIMANT_EMAIL_TEMPLATE, DEFENDANT_EMAIL_TEMPLATE);
+
+        verify(publisher).publishEvent(any(BreathingSpaceEnteredEvent.class));
     }
 
 }
