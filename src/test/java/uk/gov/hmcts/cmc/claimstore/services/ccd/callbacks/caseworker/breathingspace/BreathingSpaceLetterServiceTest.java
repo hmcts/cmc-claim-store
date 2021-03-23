@@ -37,7 +37,6 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.Params.BEARER_TOKEN;
@@ -49,6 +48,7 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.GENERAL_LETT
 class BreathingSpaceLetterServiceTest {
 
     public static final String BREATHING_SPACE_LETTER_TEMPLATE_ID = "breathingSpaceEnteredTemplateID";
+    private static final String AUTHORISATION = "Bearer: aaaa";
     private static final String DOC_URL = "http://success.test";
     private static final String DOC_URL_BINARY = "http://success.test/binary";
     private static final String DOC_NAME = "doc-name";
@@ -129,8 +129,8 @@ class BreathingSpaceLetterServiceTest {
         breathingSpaceLetterService.sendLetterToDefendant(ccdCase, claim, BEARER_TOKEN.name(),
             BREATHING_SPACE_LETTER_TEMPLATE_ID);
 
-        verify(docAssemblyService, once()).renderTemplate(eq(ccdCase), eq(BEARER_TOKEN.name()),
-            eq(BREATHING_SPACE_LETTER_TEMPLATE_ID), eq(docAssemblyTemplateBody));
+        verify(docAssemblyService, once()).renderTemplate(ccdCase, BEARER_TOKEN.name(),
+            BREATHING_SPACE_LETTER_TEMPLATE_ID, docAssemblyTemplateBody);
     }
 
     @Test
@@ -209,7 +209,7 @@ class BreathingSpaceLetterServiceTest {
             .thenReturn(docAssemblyTemplateBody);
 
         assertThrows(DocumentGenerationFailedException.class,
-            () -> breathingSpaceLetterService.sendLetterToDefendant(ccdCase, claim, BEARER_TOKEN.name(),
+            () -> breathingSpaceLetterService.sendLetterToDefendant(ccdCase, claim, AUTHORISATION,
                 BREATHING_SPACE_LETTER_TEMPLATE_ID));
     }
 }
