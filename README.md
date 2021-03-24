@@ -37,7 +37,7 @@ To build project please execute the following command:
 $ ./gradlew build
 ```
 
-### Running
+#### Running
 
 Before you run an application you have to define `CLAIM_STORE_DB_USERNAME` and `CLAIM_STORE_DB_PASSWORD` environment variables.
 
