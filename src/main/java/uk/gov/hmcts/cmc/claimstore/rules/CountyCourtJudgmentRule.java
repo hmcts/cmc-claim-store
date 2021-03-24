@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.domain.models.offers.StatementType;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import javax.validation.constraints.NotNull;
 
 import static java.util.Objects.isNull;
@@ -142,12 +143,12 @@ public class CountyCourtJudgmentRule {
     }
 
     private boolean isBreathingSpaceEntered(Claim claim) {
-        BreathingSpace breathingSpace;
         ClaimData claimData = claim.getClaimData();
-        if (claimData.getBreathingSpace().isPresent()) {
-            breathingSpace = claimData.getBreathingSpace().get();
-            if (nonNull(breathingSpace.getBsEnteredDate())
-                && isNull(breathingSpace.getBsLiftedDate())) {
+        Optional<BreathingSpace> breathingSpace = claimData.getBreathingSpace();
+        if (breathingSpace.isPresent()) {
+            BreathingSpace bs = breathingSpace.get();
+            if (nonNull(bs.getBsEnteredDate())
+                && isNull(bs.getBsLiftedDate())) {
                 return true;
             }
         }

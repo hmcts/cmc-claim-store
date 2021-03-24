@@ -187,4 +187,38 @@ public class CountyCourtJudgmentRuleTest {
             .build();
         countyCourtJudgmentRule.assertCountyCourtJudgmentCannotBeRequested(claim);
     }
+
+    @Test
+    public void shouldReturnTureWhenBreathingSpaceLiftedNotNull() {
+        BreathingSpace breathingSpace = BreathingSpace.builder()
+            .bsEnteredDate(LocalDate.now())
+            .bsLiftedDate(LocalDate.now().plusDays(60))
+            .build();
+        Claim claim = SampleClaim.builder()
+            .withClaimId(12345678L)
+            .withClaimData(ClaimData.builder()
+                .breathingSpace(breathingSpace)
+                .build())
+            .build();
+        assertThatCode(() ->
+            countyCourtJudgmentRule.assertCountyCourtJudgmentCannotBeRequested(claim)
+        ).doesNotThrowAnyException();
+    }
+
+    @Test
+    public void shouldReturnTureWhenBreathingSpaceLiftedNull() {
+        BreathingSpace breathingSpace = BreathingSpace.builder()
+            .bsEnteredDate(null)
+            .bsLiftedDate(null)
+            .build();
+        Claim claim = SampleClaim.builder()
+            .withClaimId(12345678L)
+            .withClaimData(ClaimData.builder()
+                .breathingSpace(breathingSpace)
+                .build())
+            .build();
+        assertThatCode(() ->
+            countyCourtJudgmentRule.assertCountyCourtJudgmentCannotBeRequested(claim)
+        ).doesNotThrowAnyException();
+    }
 }
