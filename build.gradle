@@ -395,7 +395,8 @@ sonarqube {
         "**/ValidIncomeConstraintValidator.java",
         "**/ValidExpenseConstraintValidator.java",
         "**/ValidResidenceConstraintValidator.java",
-        "**/PaperResponseFullDefenceCallbackHandler.java"
+        "**/PaperResponseFullDefenceCallbackHandler.java",
+        "**/cmc/claimstore/services/ccd/callbacks/roboticssupport/RoboticsNotificationServiceImpl.java"
       ].join(",")
   }
 }
