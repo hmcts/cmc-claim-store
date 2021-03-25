@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.appinsights;
 public enum AppInsightsEvent {
     CLAIM_ISSUED_LEGAL("Claim issued - Legal"),
     CLAIM_ISSUED_CITIZEN("Claim issued - Citizen"),
+    HWF_CLAIM_ISSUED_CITIZEN("Help with Fees Claim issued - Caseworker"),
     HWF_CLAIM_CREATED("Help With Fees claim created"),
     CLAIM_ATTEMPT_DUPLICATE("Claim attempt - Duplicate"),
     RESPONSE_FULL_DEFENCE_SUBMITTED("Defendant Response - Full defence submitted"),
@@ -65,6 +66,7 @@ public enum AppInsightsEvent {
     READY_FOR_TRANSFER("Ready for transfer"),
     DRAW_ORDER("Judge draws LA order"),
     DRAW_JUDGES_ORDER("Directions drawn - Judge"),
+    LA_GENERATE_DRAW_ORDER("LA generates and draws order"),
     JDDO_PILOT_ELIGIBLE("Ready for directions - Judge"),
     COURT_FINDER_API_FAILURE("Failed to get address from Court Finder API");
 

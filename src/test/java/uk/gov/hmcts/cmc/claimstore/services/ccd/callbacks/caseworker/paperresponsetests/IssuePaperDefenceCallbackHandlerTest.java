@@ -3,8 +3,11 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.paperrespo
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.launchdarkly.client.LDUser;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -18,6 +21,7 @@ import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
 import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
+import uk.gov.hmcts.cmc.claimstore.rules.ClaimDeadlineService;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
@@ -67,6 +71,8 @@ class IssuePaperDefenceCallbackHandlerTest {
     private IssuePaperResponseNotificationService issuePaperResponseNotificationService;
     @Mock
     private LaunchDarklyClient launchDarklyClient;
+    @Mock
+    private ClaimDeadlineService claimDeadlineService;
 
     private Claim claim;
     private CallbackRequest callbackRequest;
@@ -75,15 +81,12 @@ class IssuePaperDefenceCallbackHandlerTest {
 
     @BeforeEach
     void setUp() {
-        issuePaperDefenceCallbackHandler = new IssuePaperDefenceCallbackHandler(
-            caseDetailsConverter,
-            responseDeadlineCalculator,
-            issueDateCalculator,
-            issuePaperResponseNotificationService,
-            documentPublishService,
-            launchDarklyClient
-        );
-        claim = Claim.builder()
+        issuePaperDefenceCallbackHandler = getIssuePaperDefenceCallbackHandler();
+        claim = getClaim();
+    }
+
+    private Claim getClaim() {
+        return Claim.builder()
             .claimData(SampleClaimData.builder().build())
             .defendantEmail("email@email.com")
             .defendantId("id")
@@ -91,7 +94,19 @@ class IssuePaperDefenceCallbackHandlerTest {
             .referenceNumber("ref. number")
             .issuedOn(LocalDate.now())
             .build();
-        //not working??
+    }
+
+    @NotNull
+    private IssuePaperDefenceCallbackHandler getIssuePaperDefenceCallbackHandler() {
+        return new IssuePaperDefenceCallbackHandler(
+            caseDetailsConverter,
+            responseDeadlineCalculator,
+            issueDateCalculator,
+            issuePaperResponseNotificationService,
+            documentPublishService,
+            launchDarklyClient,
+            claimDeadlineService
+        );
     }
 
     @Test
@@ -183,14 +198,9 @@ class IssuePaperDefenceCallbackHandlerTest {
         CCDCountyCourtJudgment ccdCountyCourtJudgment = CCDCountyCourtJudgment.builder()
             .type(CCDCountyCourtJudgmentType.DETERMINATION)
             .build();
-        ccdCase = getCCDData(ccdCountyCourtJudgment);
+        ccdCase = getCCDData(ccdCountyCourtJudgment, CCDYesNoOption.YES);
 
         CCDCase updatedCCDCase = ccdCase.toBuilder()
-            .respondents(ImmutableList.of(CCDCollectionElement.<CCDRespondent>builder()
-                .value(ccdCase.getRespondents().get(0).getValue().toBuilder()
-                    .responseMoreTimeNeededOption(CCDYesNoOption.YES)
-                    .build())
-                .build()))
             .extendedResponseDeadline(LocalDate.now())
             .build();
 
@@ -221,7 +231,7 @@ class IssuePaperDefenceCallbackHandlerTest {
         CCDCountyCourtJudgment ccdCountyCourtJudgment = CCDCountyCourtJudgment.builder()
             .type(CCDCountyCourtJudgmentType.ADMISSIONS)
             .build();
-        ccdCase = getCCDData(ccdCountyCourtJudgment);
+        ccdCase = getCCDData(ccdCountyCourtJudgment, CCDYesNoOption.YES);
         CaseDetails caseDetails = CaseDetails.builder()
             .id(10L)
             .data(Collections.emptyMap())
@@ -248,7 +258,7 @@ class IssuePaperDefenceCallbackHandlerTest {
         CCDCountyCourtJudgment ccdCountyCourtJudgment = CCDCountyCourtJudgment.builder()
             .type(CCDCountyCourtJudgmentType.DEFAULT)
             .build();
-        ccdCase = getCCDData(ccdCountyCourtJudgment);
+        ccdCase = getCCDData(ccdCountyCourtJudgment, CCDYesNoOption.YES);
         CaseDetails caseDetails = CaseDetails.builder()
             .id(10L)
             .data(Collections.emptyMap())
@@ -258,12 +268,12 @@ class IssuePaperDefenceCallbackHandlerTest {
         CallbackParams callbackParams = getBuild();
         LocalDate date = LocalDate.now();
         when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(date);
-        when(responseDeadlineCalculator.calculateResponseDeadline(any(LocalDate.class))).thenReturn(date);
         when(responseDeadlineCalculator.calculatePostponedResponseDeadline(any(LocalDate.class)))
             .thenReturn(date);
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
         when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancements"), any(LDUser.class))).thenReturn(false);
+        when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancement-2"), any(LDUser.class))).thenReturn(false);
         AboutToStartOrSubmitCallbackResponse actualResponse =
             (AboutToStartOrSubmitCallbackResponse) issuePaperDefenceCallbackHandler.handle(callbackParams);
         assertThat(actualResponse.getErrors().get(0)).isEqualTo(CLAIMANT_ISSUED_CCJ);
@@ -276,13 +286,15 @@ class IssuePaperDefenceCallbackHandlerTest {
             .build();
     }
 
-    private CCDCase getCCDData(CCDCountyCourtJudgment ccdCountyCourtJudgment) {
+    private CCDCase getCCDData(CCDCountyCourtJudgment ccdCountyCourtJudgment, CCDYesNoOption option) {
         return CCDCase.builder()
+            .issuedOn(LocalDate.now().minusDays(20))
             .previousServiceCaseReference("000MC001")
             .respondents(ImmutableList.of(
                 CCDCollectionElement.<CCDRespondent>builder()
                     .value(SampleData.getIndividualRespondentWithDQInClaimantResponse().toBuilder()
                         .countyCourtJudgmentRequest(ccdCountyCourtJudgment)
+                        .responseMoreTimeNeededOption(option)
                         .build())
                     .build()
             ))
@@ -299,7 +311,7 @@ class IssuePaperDefenceCallbackHandlerTest {
         CCDCountyCourtJudgment ccdCountyCourtJudgment = CCDCountyCourtJudgment.builder()
             .type(CCDCountyCourtJudgmentType.DEFAULT)
             .build();
-        ccdCase = getCCDData(ccdCountyCourtJudgment);
+        ccdCase = getCCDData(ccdCountyCourtJudgment, CCDYesNoOption.YES);
         CaseDetails caseDetails = CaseDetails.builder()
             .id(10L)
             .data(Collections.emptyMap())
@@ -308,12 +320,12 @@ class IssuePaperDefenceCallbackHandlerTest {
         CallbackParams callbackParams = getBuild();
         LocalDate date = LocalDate.now();
         when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(date);
-        when(responseDeadlineCalculator.calculateResponseDeadline(any(LocalDate.class))).thenReturn(date);
         when(responseDeadlineCalculator.calculatePostponedResponseDeadline(any(LocalDate.class)))
             .thenReturn(date);
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
         when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancements"), any(LDUser.class))).thenReturn(true);
+        when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancement-2"), any(LDUser.class))).thenReturn(false);
         AboutToStartOrSubmitCallbackResponse actualResponse =
             (AboutToStartOrSubmitCallbackResponse) issuePaperDefenceCallbackHandler.handle(callbackParams);
         Assertions.assertNull(actualResponse.getErrors());
@@ -330,6 +342,111 @@ class IssuePaperDefenceCallbackHandlerTest {
     @Test
     void shouldHaveCorrectCaseworkerRole() {
         assertThat(issuePaperDefenceCallbackHandler.getSupportedRoles()).containsOnly(CASEWORKER);
+    }
+
+    @Nested
+    @DisplayName("RequestDeadlineScenario")
+    class RequestDeadlineTest {
+        @BeforeEach
+        void setUp() {
+
+            issuePaperDefenceCallbackHandler = getIssuePaperDefenceCallbackHandler();
+            claim = getClaim();
+            LocalDate date = LocalDate.now();
+            when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(date);
+            when(responseDeadlineCalculator.calculateResponseDeadline(any(LocalDate.class))).thenReturn(date);
+            when(responseDeadlineCalculator.calculatePostponedResponseDeadline(any(LocalDate.class)))
+                .thenReturn(date);
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+            when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancements"), any(LDUser.class))).thenReturn(false);
+            when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancement-2"), any(LDUser.class))).thenReturn(true);
+        }
+
+        @Test
+        void whenResponseDeadlinePassedSendingOCON() {
+            CCDCountyCourtJudgment ccdCountyCourtJudgment = CCDCountyCourtJudgment.builder()
+                .type(CCDCountyCourtJudgmentType.DEFAULT)
+                .build();
+            ccdCase = getCCDData(ccdCountyCourtJudgment, CCDYesNoOption.YES);
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(10L)
+                .data(Collections.emptyMap())
+                .build();
+            callbackRequest =
+                getCallbackRequest(caseDetails);
+            CallbackParams callbackParams = getBuild();
+
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            when(claimDeadlineService.isPastDeadline(any(LocalDateTime.class), any(LocalDate.class))).thenReturn(true);
+            AboutToStartOrSubmitCallbackResponse actualResponse =
+                (AboutToStartOrSubmitCallbackResponse) issuePaperDefenceCallbackHandler.handle(callbackParams);
+            assertThat(actualResponse.getErrors().get(0)).isEqualTo(CLAIMANT_ISSUED_CCJ);
+        }
+
+        @Test
+        void whenResponseDeadlineNotPassedMoretimeTimeRequesedSendingOCON() {
+            CCDCountyCourtJudgment ccdCountyCourtJudgment = CCDCountyCourtJudgment.builder()
+                .type(CCDCountyCourtJudgmentType.DEFAULT)
+                .build();
+            ccdCase = getCCDData(ccdCountyCourtJudgment, CCDYesNoOption.YES);
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(10L)
+                .data(Collections.emptyMap())
+                .build();
+            callbackRequest =
+                getCallbackRequest(caseDetails);
+            CallbackParams callbackParams = getBuild();
+
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            when(claimDeadlineService.isPastDeadline(any(LocalDateTime.class), any(LocalDate.class))).thenReturn(false);
+            AboutToStartOrSubmitCallbackResponse actualResponse =
+                (AboutToStartOrSubmitCallbackResponse) issuePaperDefenceCallbackHandler.handle(callbackParams);
+            assertThat(actualResponse.getErrors().get(0)).isEqualTo(CLAIMANT_ISSUED_CCJ);
+        }
+
+        @Test
+        void whenResponseDeadlinePassedMoretimeTimeNotRequesedSendingOCON() {
+            CCDCountyCourtJudgment ccdCountyCourtJudgment = CCDCountyCourtJudgment.builder()
+                .type(CCDCountyCourtJudgmentType.DEFAULT)
+                .build();
+            ccdCase = getCCDData(ccdCountyCourtJudgment, CCDYesNoOption.NO);
+
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(10L)
+                .data(Collections.emptyMap())
+                .build();
+            callbackRequest =
+                getCallbackRequest(caseDetails);
+            CallbackParams callbackParams = getBuild();
+
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            when(claimDeadlineService.isPastDeadline(any(LocalDateTime.class), any(LocalDate.class))).thenReturn(true);
+            AboutToStartOrSubmitCallbackResponse actualResponse =
+                (AboutToStartOrSubmitCallbackResponse) issuePaperDefenceCallbackHandler.handle(callbackParams);
+            assertThat(actualResponse.getErrors().get(0)).isEqualTo(CLAIMANT_ISSUED_CCJ);
+        }
+
+        @Test
+        void whenResponseDeadlineNotPassedMoretimeTimeNotRequesedSendingOCON() {
+            CCDCountyCourtJudgment ccdCountyCourtJudgment = CCDCountyCourtJudgment.builder()
+                .type(CCDCountyCourtJudgmentType.DEFAULT)
+                .build();
+            ccdCase = getCCDData(ccdCountyCourtJudgment, CCDYesNoOption.NO);
+
+            CaseDetails caseDetails = CaseDetails.builder()
+                .id(10L)
+                .data(Collections.emptyMap())
+                .build();
+            callbackRequest =
+                getCallbackRequest(caseDetails);
+            CallbackParams callbackParams = getBuild();
+
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            when(claimDeadlineService.isPastDeadline(any(LocalDateTime.class), any(LocalDate.class))).thenReturn(false);
+            AboutToStartOrSubmitCallbackResponse actualResponse =
+                (AboutToStartOrSubmitCallbackResponse) issuePaperDefenceCallbackHandler.handle(callbackParams);
+            assertThat(actualResponse.getErrors().get(0)).isEqualTo(CLAIMANT_ISSUED_CCJ);
+        }
     }
 
 }

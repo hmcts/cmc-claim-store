@@ -191,7 +191,7 @@ public final class SampleClaim {
             .withClaimSubmissionOperationIndicators(operationIndicators)
             .build();
     }
-
+  
     public static Claim getDefaultWithDefendantAddressNull() {
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimantWithDefendantAddressNullBuilder()
@@ -711,7 +711,9 @@ public final class SampleClaim {
             directionOrderType,
             bespokeOrderDirection,
             LocalDateTime.now(),
-            lastEventTriggeredForHwfCase
+            lastEventTriggeredForHwfCase,
+            null,
+            null
         );
     }
 

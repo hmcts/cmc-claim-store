@@ -17,7 +17,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
@@ -27,8 +30,10 @@ import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDReviewOrDrawOrder;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionOrderService;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireService;
@@ -44,6 +49,7 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDraw
 import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
+import uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
@@ -57,6 +63,8 @@ import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -79,6 +87,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOtherDirectionHeaderTy
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.DRAFTED_BY_LEGAL_ADVISOR;
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.DQ_FLAG;
+import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 
 @ExtendWith(MockitoExtension.class)
 public class GenerateOrderCallbackHandlerTest {
@@ -118,6 +127,26 @@ public class GenerateOrderCallbackHandlerTest {
 
     private CallbackRequest callbackRequest;
     private GenerateOrderCallbackHandler generateOrderCallbackHandler;
+    private static final LocalDateTime DATE = LocalDateTime.parse("2020-11-16T13:15:30");
+    private static final String DOCUMENT_URL = "http://bla.test";
+    private static final String DOCUMENT_BINARY_URL = "http://bla.binary.test";
+    private static final String DOCUMENT_FILE_NAME = "sealed_claim.pdf";
+
+    private static final CCDDocument DOCUMENT = CCDDocument
+        .builder()
+        .documentUrl(DOCUMENT_URL)
+        .documentBinaryUrl(DOCUMENT_BINARY_URL)
+        .documentFileName(DOCUMENT_FILE_NAME)
+        .build();
+
+    private static final CCDCollectionElement<CCDClaimDocument> CLAIM_DOCUMENT =
+        CCDCollectionElement.<CCDClaimDocument>builder()
+            .value(CCDClaimDocument.builder()
+                .documentLink(DOCUMENT)
+                .createdDatetime(DATE)
+                .documentType(CCDClaimDocumentType.ORDER_DIRECTIONS)
+                .build())
+            .build();
 
     @BeforeEach
     void setUp() {
@@ -129,8 +158,8 @@ public class GenerateOrderCallbackHandlerTest {
             caseDetailsConverter, legalOrderService, appInsights, directionOrderService,
             documentManagementService, claimService);
 
-        generateOrderCallbackHandler = new GenerateOrderCallbackHandler(orderCreator, orderPostProcessor,
-            caseDetailsConverter, appInsights);
+        generateOrderCallbackHandler = new GenerateOrderCallbackHandler(orderCreator, orderPostProcessor
+        );
 
         ReflectionTestUtils.setField(generateOrderCallbackHandler, "templateId", "testTemplateId");
 
@@ -207,6 +236,47 @@ public class GenerateOrderCallbackHandlerTest {
             verify(appInsights)
                 .trackEvent(DRAFTED_BY_LEGAL_ADVISOR, REFERENCE_NUMBER, ccdCase.getPreviousServiceCaseReference());
         }
+
+        @Test
+        void shouldNotifyPartiesAndPrintDocumentsOnEventSubmitted() {
+
+            CCDCollectionElement<CCDClaimDocument> existingDocument =
+                CCDCollectionElement.<CCDClaimDocument>builder()
+                    .value(CCDClaimDocument.builder()
+                        .documentLink(CCDDocument
+                            .builder()
+                            .documentUrl("http://anotherbla.test")
+                            .build())
+                        .build())
+                    .build();
+
+            CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList()).toBuilder()
+                .draftOrderDoc(DOCUMENT).reviewOrDrawOrder(CCDReviewOrDrawOrder.LA_DRAW_ORDER)
+                .directionOrder(CCDDirectionOrder.builder()
+                    .hearingCourtName(SampleData.MANCHESTER_CIVIL_JUSTICE_CENTRE_CIVIL_AND_FAMILY_COURTS)
+                    .hearingCourtAddress(SampleData.getHearingCourtAddress())
+                    .build())
+                .caseDocuments(ImmutableList.of(existingDocument))
+                .build();
+
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+
+            Claim claim = SampleClaim.builder().build();
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+
+            generateOrderCallbackHandler.handle(callbackParams);
+
+            verify(appInsights)
+                .trackEvent(AppInsightsEvent.LA_GENERATE_DRAW_ORDER, REFERENCE_NUMBER,
+                    ccdCase.getPreviousServiceCaseReference());
+            verify(orderDrawnNotificationService).notifyDefendant(claim);
+            verify(orderDrawnNotificationService).notifyClaimant(claim);
+            verify(legalOrderService).print(
+                BEARER_TOKEN,
+                claim,
+                DOCUMENT);
+        }
+
     }
 
     @Nested
@@ -292,6 +362,81 @@ public class GenerateOrderCallbackHandlerTest {
             assertThat(returnedValue.getExpertReportInstructionClaimant()).isNull();
             assertThat(returnedValue.getExpertReportInstructionDefendant()).isNull();
 
+        }
+
+        @Test
+        void shouldCopyDocumentsToCaseWhenGenerateAndDraw() {
+            CCDCase ccdCase = CCDCase.builder().hearingCourt("BIRMINGHAM").build();
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
+                .thenReturn(ccdCase);
+
+            generateOrderCallbackHandler.handle(callbackParams);
+
+            ArgumentCaptor<CCDCase> argument = ArgumentCaptor.forClass(CCDCase.class);
+            verify(caseDetailsConverter).convertToMap(argument.capture());
+            CCDCase returnedValue = argument.getValue();
+
+            assertThat(returnedValue.getHearingCourt()).isNull();
+        }
+
+        @Test
+        void shouldAddDraftDocumentToCaseDocumentsOnLADrawOrder() {
+            CCDCollectionElement<CCDClaimDocument> existingDocument =
+                CCDCollectionElement.<CCDClaimDocument>builder()
+                    .value(CCDClaimDocument.builder()
+                        .documentLink(CCDDocument
+                            .builder()
+                            .documentUrl("http://anotherbla.test")
+                            .build())
+                        .build())
+                    .build();
+
+            ImmutableMap<String, Object> data = ImmutableMap.of("data", "existingData",
+                "caseDocuments", ImmutableList.of(CLAIM_DOCUMENT), "reviewOrDrawOrder", "LA_DRAW_ORDER");
+
+            callbackRequest = CallbackRequest
+                .builder()
+                .caseDetails(CaseDetails.builder().data(data).build())
+                .eventId(GENERATE_ORDER.getValue())
+                .build();
+
+            callbackParams = CallbackParams.builder()
+                .type(CallbackType.ABOUT_TO_SUBMIT)
+                .request(callbackRequest)
+                .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+                .build();
+            CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList()).toBuilder()
+                .draftOrderDoc(DOCUMENT).reviewOrDrawOrder(CCDReviewOrDrawOrder.LA_DRAW_ORDER)
+                .directionOrder(CCDDirectionOrder.builder()
+                    .hearingCourtName(SampleData.MANCHESTER_CIVIL_JUSTICE_CENTRE_CIVIL_AND_FAMILY_COURTS)
+                    .hearingCourtAddress(SampleData.getHearingCourtAddress())
+                    .build())
+                .caseDocuments(ImmutableList.of(existingDocument))
+                .build();
+            when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
+            when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+            when(clock.withZone(UTC_ZONE)).thenReturn(clock);
+
+            when(directionOrderService.getHearingCourt(any())).thenReturn(HearingCourt.builder().build());
+
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            when(documentManagementService.getDocumentMetaData(any(), any()))
+                .thenReturn(ResourceLoader.successfulDocumentManagementDownloadResponse());
+
+            when(caseDetailsConverter.convertToMap(any(CCDCase.class)))
+                .thenReturn(ImmutableMap.<String, Object>builder()
+                    .put("data", "existingData")
+                    .put("caseDocuments", ImmutableList.of(CLAIM_DOCUMENT, DOCUMENT))
+                    .build());
+
+            AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
+                generateOrderCallbackHandler.handle(callbackParams);
+
+            Map<String, Object> responseData = response.getData();
+            assertThat(responseData).contains(
+                entry("caseDocuments", ImmutableList.of(CLAIM_DOCUMENT, DOCUMENT)),
+                entry("data", "existingData")
+            );
         }
     }
 
