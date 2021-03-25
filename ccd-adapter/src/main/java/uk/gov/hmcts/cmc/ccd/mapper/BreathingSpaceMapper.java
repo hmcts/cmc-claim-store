@@ -12,7 +12,7 @@ public class BreathingSpaceMapper implements BuilderMapper<CCDCase, BreathingSpa
 
     @Override
     public void to(BreathingSpace breathingSpace, CCDCase.CCDCaseBuilder builder) {
-        if (breathingSpace == null) {
+        if (breathingSpace == null || breathingSpace.getBsType() == null) {
             return;
         }
 
