@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.utils;
 
+import static uk.gov.hmcts.cmc.claimstore.services.pilotcourt.Pilot.LA;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -7,6 +9,7 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.util.MapperUtil;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
+import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
@@ -29,13 +32,15 @@ public class CaseDetailsConverter {
     private final int intentionToProceedDeadline;
     private final WorkingDayIndicator workingDayIndicator;
     private final boolean ctscEnabled;
+    private PilotCourtService pilotCourtService;
 
     public CaseDetailsConverter(
         CaseMapper caseMapper,
         JsonMapper jsonMapper,
         WorkingDayIndicator workingDayIndicator,
         @Value("${intention.to.proceed.deadline:33}") int intentionToProceedDeadline,
-        @Value("${feature_toggles.ctsc_enabled}") boolean ctscEnabled
+        @Value("${feature_toggles.ctsc_enabled}") boolean ctscEnabled,
+        PilotCourtService pilotCourtService
     ) {
 
         this.caseMapper = caseMapper;
@@ -43,6 +48,7 @@ public class CaseDetailsConverter {
         this.intentionToProceedDeadline = intentionToProceedDeadline;
         this.workingDayIndicator = workingDayIndicator;
         this.ctscEnabled = ctscEnabled;
+        this.pilotCourtService = pilotCourtService;
     }
 
     public Claim extractClaim(CaseDetails caseDetails) {
@@ -52,7 +58,14 @@ public class CaseDetailsConverter {
         if (claim.getRespondedAt() == null) {
             return claim;
         }
+/*        Claim updatedClaim = null;
 
+        if (claim.getPreferredDQCourt().isPresent() && pilotCourtService.isPilotCourt(
+            claim.getPreferredDQCourt().orElse(null), LA, claim.getCreatedAt())) {
+            updatedClaim = claim.toBuilder().preferredDQPilotCourt(claim.getPreferredDQCourt().orElse(null)).build();
+        } else {
+            updatedClaim = claim;
+        }*/
         // Calculating the intention to proceed here rather than in the mapper as we have access
         // to the WorkingDayIndicator here
         LocalDate intendsToProceedDeadline = calculateIntentionToProceedDeadline(claim.getRespondedAt());

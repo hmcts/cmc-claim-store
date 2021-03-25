@@ -684,6 +684,7 @@ public final class SampleClaim {
             null,
             null,
             null,
+            null,
             transferContent,
             null,
             List.of(BulkPrintDetails.builder()
