@@ -47,6 +47,9 @@ public abstract class TheirDetails extends CollectionId implements NamedParty {
     private final Representative representative;
 
     @Valid
+    private final Address claimantProvidedAddress;
+
+    @Valid
     private final Address serviceAddress;
 
     @Size(max = 30, message = "may not be longer than {max} characters")
@@ -59,6 +62,7 @@ public abstract class TheirDetails extends CollectionId implements NamedParty {
         String email,
         Representative representative,
         Address serviceAddress,
+        Address claimantProvidedAddress,
         String phone
     ) {
         super(id);
@@ -67,6 +71,7 @@ public abstract class TheirDetails extends CollectionId implements NamedParty {
         this.email = email;
         this.representative = representative;
         this.serviceAddress = serviceAddress;
+        this.claimantProvidedAddress = claimantProvidedAddress;
         this.phone = phone;
     }
 
@@ -93,6 +98,10 @@ public abstract class TheirDetails extends CollectionId implements NamedParty {
 
     public Optional<String> getPhone() {
         return Optional.ofNullable(phone);
+    }
+
+    public Address getclaimantProvidedAddress() {
+        return claimantProvidedAddress;
     }
 
     @Override
