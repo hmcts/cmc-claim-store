@@ -24,6 +24,7 @@ public class BreathingSpace {
     private LocalDate bsEnteredDateByInsolvencyTeam;
     private LocalDate bsLiftedDateByInsolvencyTeam;
     private LocalDate bsExpectedEndDate;
+    private String bsLiftedFlag;
 
     public BreathingSpace(String bsReferenceNumber,
                           BreathingSpaceType bsType,
@@ -31,7 +32,8 @@ public class BreathingSpace {
                           LocalDate bsLiftedDate,
                           LocalDate bsEnteredDateByInsolvencyTeam,
                           LocalDate bsLiftedDateByInsolvencyTeam,
-                          LocalDate bsExpectedEndDate) {
+                          LocalDate bsExpectedEndDate,
+                          String bsLiftedFlag) {
         this.bsReferenceNumber = bsReferenceNumber;
         this.bsType = bsType;
         this.bsEnteredDate = bsEnteredDate;
@@ -39,6 +41,7 @@ public class BreathingSpace {
         this.bsEnteredDateByInsolvencyTeam = bsEnteredDateByInsolvencyTeam;
         this.bsLiftedDateByInsolvencyTeam = bsLiftedDateByInsolvencyTeam;
         this.bsExpectedEndDate = bsExpectedEndDate;
+        this.bsLiftedFlag = bsLiftedFlag;
     }
 
     @Override

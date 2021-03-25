@@ -54,7 +54,7 @@ public class BreathingSpaceEnteredOrchestrationTest {
     @Before
     public void setUp() {
         handler = new BreathingSpaceEntetedOrchestrationHandler(breathingSpaceLetterService,
-            breathingSpaceEmailService, appInsights);
+            breathingSpaceEmailService, documentOrchestrationService, rpaOperationService, appInsights);
         String documentUrl = DOCUMENT_URI.toString();
         CCDDocument document = new CCDDocument(documentUrl, documentUrl, GENERAL_LETTER_PDF);
         ccdCase = CCDCase.builder()

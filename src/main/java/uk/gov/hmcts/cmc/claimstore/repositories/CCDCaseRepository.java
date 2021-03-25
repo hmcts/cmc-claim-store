@@ -8,15 +8,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
-import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
-import uk.gov.hmcts.cmc.domain.models.ClaimState;
-import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
-import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.PaidInFull;
-import uk.gov.hmcts.cmc.domain.models.ReDetermination;
-import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.*;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
@@ -221,6 +213,11 @@ public class CCDCaseRepository implements CaseRepository {
     @Override
     public Claim saveReviewOrder(Long caseId, ReviewOrder reviewOrder, String authorisation) {
         return coreCaseDataService.saveReviewOrder(caseId, reviewOrder, authorisation);
+    }
+
+    @Override
+    public Claim saveBreathingSpaceDetails(Claim claim, BreathingSpace breathingSpace, String authorisation) {
+        return coreCaseDataService.saveBreathingSpaceDetails(claim, breathingSpace, authorisation);
     }
 
     @Override

@@ -16,10 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
-import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimData;
-import uk.gov.hmcts.cmc.domain.models.PaidInFull;
-import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.*;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantLinkStatus;
 
@@ -211,8 +208,20 @@ public class ClaimController {
     @GetMapping(value = "/pagination-metadata")
     @ApiOperation("Get the total claim number for an user")
     public Map<String, String> fetchPaginationInfo(
-        @RequestHeader (value = HttpHeaders.AUTHORIZATION) String authorisation,
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation,
         @RequestParam(value = "userType", required = false) String userType) {
         return claimService.getPaginationInfo(authorisation, userType);
+    }
+
+    @PostMapping(value = "/{submitterId}/{externalId}/breathingSpace", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Creates a new Help With Fees claim")
+    public Claim saveBreathingSpaceDetails(
+        @Valid @NotNull @RequestBody BreathingSpace breathingSpace,
+        @PathVariable("submitterId") String submitterId,
+        @PathVariable("externalId") String externalId,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
+        @RequestHeader(value = "Features", required = false) List<String> features
+    ) {
+        return claimService.saveBreathingSpaceDetails(submitterId, externalId, breathingSpace, authorisation, features);
     }
 }

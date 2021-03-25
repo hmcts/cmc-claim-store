@@ -18,18 +18,7 @@ import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.rules.PaidInFullRule;
 import uk.gov.hmcts.cmc.claimstore.rules.ReviewOrderRule;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
-import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimData;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
-import uk.gov.hmcts.cmc.domain.models.ClaimState;
-import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
-import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.PaidInFull;
-import uk.gov.hmcts.cmc.domain.models.Payment;
-import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
-import uk.gov.hmcts.cmc.domain.models.ReDetermination;
-import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.*;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -50,10 +39,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.UPDATE_HELP_WITH_FEE_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.CLAIM_EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.HWF_CLAIM_CREATED;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NUMBER_OF_RECONSIDERATION;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.*;
 import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_PAYMENT;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
@@ -507,5 +493,26 @@ public class ClaimService {
             authorisation
         );
 
+    }
+
+    @LogExecutionTime
+    public Claim saveBreathingSpaceDetails(
+        String submitterId,
+        String externalId,
+        BreathingSpace breathingSpace,
+        String authorisation,
+        List<String> features
+    ) {
+
+        Claim claim = getClaimByExternalId(externalId, authorisation);
+        claimAuthorisationRule.assertClaimCanBeAccessed(claim, authorisation);
+        Claim updatedClaim = caseRepository.saveBreathingSpaceDetails(claim, breathingSpace, authorisation);
+
+        if (breathingSpace.getBsLiftedFlag().equals("NO")) {
+            appInsights.trackEvent(BREATHING_SPACE_ENTERED, CLAIM_EXTERNAL_ID, externalId);
+        } else {
+            appInsights.trackEvent(BREATHING_SPACE_LIFTED, CLAIM_EXTERNAL_ID, externalId);
+        }
+        return null;
     }
 }

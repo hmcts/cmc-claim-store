@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CCDBreathingSpace;
+import uk.gov.hmcts.cmc.ccd.domain.CCDBreathingSpaceType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseEventMapper;
@@ -23,15 +25,7 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
-import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
-import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
-import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
-import uk.gov.hmcts.cmc.domain.models.PaidInFull;
-import uk.gov.hmcts.cmc.domain.models.ReDetermination;
-import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.*;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
@@ -1219,5 +1213,22 @@ public class CoreCaseDataService {
             isRepresented(userDetails)
         );
         return caseDetailsConverter.extractClaim(caseDetails);
+    }
+
+    public Claim saveBreathingSpaceDetails(Claim claim, BreathingSpace breathingSpace, String authorisation) {
+        CCDCase ccdCase = caseMapper.to(claim);
+        CCDBreathingSpace ccdBreathingSpace = new CCDBreathingSpace(
+            breathingSpace.getBsReferenceNumber(),
+            CCDBreathingSpaceType.valueOf(breathingSpace.getBsType().name()),
+            breathingSpace.getBsEnteredDate(),
+            breathingSpace.getBsLiftedDate(),
+            breathingSpace.getBsEnteredDateByInsolvencyTeam(),
+            breathingSpace.getBsLiftedDateByInsolvencyTeam(),
+            breathingSpace.getBsExpectedEndDate(),
+            breathingSpace.getBsLiftedFlag()
+        );
+
+        ccdCase.setBreathingSpace(ccdBreathingSpace);
+        return caseDetailsConverter.extractClaim(update(authorisation, ccdCase, CaseEvent.BREATHING_SPACE_ENTERED));
     }
 }

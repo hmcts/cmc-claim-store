@@ -32,11 +32,12 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
 
 @Service
 public class BreathingSpaceEnteredCallbackHandler extends CallbackHandler {
 
-    private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
+    private static final List<Role> ROLES = Arrays.asList(CASEWORKER, CITIZEN);
     private static final List<CaseEvent> EVENTS = Arrays.asList(CaseEvent.BREATHING_SPACE_ENTERED);
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final CaseDetailsConverter caseDetailsConverter;
@@ -48,9 +49,9 @@ public class BreathingSpaceEnteredCallbackHandler extends CallbackHandler {
 
     @Autowired
     public BreathingSpaceEnteredCallbackHandler(CaseDetailsConverter caseDetailsConverter,
-            NotificationsProperties notificationsProperties,
-            @Value("${doc_assembly.breathingSpaceEnteredTemplateID}") String breathingSpaceEnteredTemplateID,
-            EventProducer eventProducer) {
+                                                NotificationsProperties notificationsProperties,
+                                                @Value("${doc_assembly.breathingSpaceEnteredTemplateID}") String breathingSpaceEnteredTemplateID,
+                                                EventProducer eventProducer) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.notificationsProperties = notificationsProperties;
         this.breathingSpaceEnteredTemplateID = breathingSpaceEnteredTemplateID;

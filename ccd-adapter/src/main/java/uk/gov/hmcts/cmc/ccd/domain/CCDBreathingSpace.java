@@ -22,5 +22,6 @@ public class CCDBreathingSpace {
     private LocalDate bsEnteredDateByInsolvencyTeam;
     private LocalDate bsLiftedDateByInsolvencyTeam;
     private LocalDate bsExpectedEndDate;
+    private String bsLiftedFlag;
 
 }

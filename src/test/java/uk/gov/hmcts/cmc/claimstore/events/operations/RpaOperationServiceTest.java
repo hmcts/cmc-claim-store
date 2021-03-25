@@ -32,7 +32,7 @@ public class RpaOperationServiceTest {
 
     @Before
     public void before() {
-        rpaOperationService = new RpaOperationService(claimIssuedNotificationService, eventsStatusService);
+        rpaOperationService = new RpaOperationService(claimIssuedNotificationService, breathingSpaceNotificationService, eventsStatusService);
     }
 
     @Test

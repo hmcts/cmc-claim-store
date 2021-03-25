@@ -34,7 +34,7 @@ public class BreathingSpaceMapper implements BuilderMapper<CCDCase, BreathingSpa
 
     @Override
     public BreathingSpace from(CCDCase ccdCase) {
-        if (ccdCase.getBreathingSpace() == null
+        if (ccdCase.getBreathingSpace() == null || ccdCase.getBreathingSpace().getBsType() == null
         ) {
             return null;
         }
@@ -42,12 +42,14 @@ public class BreathingSpaceMapper implements BuilderMapper<CCDCase, BreathingSpa
 
         return new BreathingSpace(
             ccdBreathingSpace.getBsReferenceNumber(),
-            fromCCDBreathingSpaceType(ccdBreathingSpace.getBsType()),
+            fromCCDBreathingSpaceType(ccdBreathingSpace != null && ccdBreathingSpace.getBsType() != null
+                ? ccdBreathingSpace.getBsType() : null),
             ccdBreathingSpace.getBsEnteredDate(),
             ccdBreathingSpace.getBsLiftedDate(),
             ccdBreathingSpace.getBsEnteredDateByInsolvencyTeam(),
             ccdBreathingSpace.getBsLiftedDateByInsolvencyTeam(),
-            ccdBreathingSpace.getBsExpectedEndDate());
+            ccdBreathingSpace.getBsExpectedEndDate(),
+            ccdBreathingSpace.getBsLiftedFlag());
     }
 
     private CCDBreathingSpaceType toCCDBreathingSpaceType(BreathingSpaceType breathingSpaceType) {
