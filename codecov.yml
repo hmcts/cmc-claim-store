@@ -20,3 +20,5 @@ ignore:
   - "**/GeneratedDocuments.java"
   - "**/CCDCaseApi.java"
   - "**/DBCaseRepository.java"
+  - "**/PaymentsService.java"
+  - "**/PaperResponseReviewedHandler.java"
