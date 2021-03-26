@@ -9,7 +9,7 @@ The two main responsibilities of this application are:
  - executing business logic of the CMC service e.g. calculating response deadline.
 
 Internally state is persisted to a relational database.
-The service also delegates some responsibilities to other RESTful services e.g. idam-api or pdf-service.
+The service also delegates some responsibilities to other RESTful services e.g. idam-api or pdf-service. 
 
 ## Getting started
 
