@@ -47,8 +47,6 @@ public class MapperUtil {
         "N225",
         "N180");
 
-    private static final List<String> preferredPilotCourts = Arrays.asList("Central London County Court");
-
     public static final Function<Claim, String> toCaseName = claim ->
         fetchClaimantName(claim) + " Vs " + fetchDefendantName(claim);
 
@@ -117,9 +115,5 @@ public class MapperUtil {
             claimantNameBuilder.append(OTHERS);
         }
         return claimantNameBuilder.toString();
-    }
-
-    public static boolean isPilotCourt(String preferredCourt) {
-        return preferredPilotCourts.contains(preferredCourt) ? Boolean.TRUE : Boolean.FALSE;
     }
 }

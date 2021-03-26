@@ -82,9 +82,7 @@ public class CaseMapper {
 
         claim.getDateReferredForDirections().ifPresent(builder::dateReferredForDirections);
         claim.getPreferredDQCourt().ifPresent(builder::preferredDQCourt);
-        if (claim.getPreferredDQCourt().isPresent() && MapperUtil.isPilotCourt(claim.getPreferredDQCourt().get())) {
-            builder.preferredDQPilotCourt(claim.getPreferredDQCourt().get()).build();
-        }
+        claim.getPreferredDQPilotCourt().ifPresent(builder::preferredDQPilotCourt);
 
         claim.getProceedOfflineReason()
             .map(ProceedOfflineReasonType::name)
@@ -165,6 +163,10 @@ public class CaseMapper {
 
         if (ccdCase.getPreferredDQCourt() != null) {
             builder.preferredDQCourt(ccdCase.getPreferredDQCourt());
+        }
+
+        if (ccdCase.getPreferredDQPilotCourt() != null) {
+            builder.preferredDQCourt(ccdCase.getPreferredDQPilotCourt());
         }
 
         builder.bulkPrintDetails(asStream(ccdCase.getBulkPrintDetails())

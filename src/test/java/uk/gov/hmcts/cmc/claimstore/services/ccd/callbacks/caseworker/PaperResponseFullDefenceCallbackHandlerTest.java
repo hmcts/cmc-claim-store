@@ -246,7 +246,7 @@ class PaperResponseFullDefenceCallbackHandlerTest {
                     ))
                 .build());
 
-            String court = "Court";
+            String court = "Central London County Court";
             when(courtFinderApi.findMoneyClaimCourtByPostcode(eq(postcode)))
                 .thenReturn(List.of(Court.builder().name(court).build()));
 

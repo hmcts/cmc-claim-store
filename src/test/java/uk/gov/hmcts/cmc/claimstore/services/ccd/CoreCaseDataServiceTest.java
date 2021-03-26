@@ -19,6 +19,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
@@ -116,6 +117,8 @@ public class CoreCaseDataServiceTest {
     @Captor
     private ArgumentCaptor<Claim> claimArgumentCaptor;
 
+    @Mock
+    private PilotCourtService pilotCourtService;
     private CoreCaseDataService service;
 
     @Before
@@ -165,7 +168,8 @@ public class CoreCaseDataServiceTest {
             caseDetailsConverter,
             intentionToProceedDeadlineDays,
             workingDayIndicator,
-            directionsQuestionnaireService
+            directionsQuestionnaireService,
+            pilotCourtService
         );
     }
 
@@ -534,6 +538,24 @@ public class CoreCaseDataServiceTest {
         assertThat(claimArgumentCaptor.getValue().getClaimantResponse()).isPresent();
         verify(coreCaseDataApi, atLeastOnce()).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
             anyString(), anyString(), eq(CLAIMANT_RESPONSE_REJECTION.getValue()));
+    }
+
+    @Test
+    public void saveClaimantResponseShouldReturnPreferredDQCourtNullForNonPilotCourt() {
+        Response providedResponse = SampleResponse.validDefaults();
+        Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
+        ClaimantResponse claimantResponse = SampleClaimantResponse.validRejectionWithDirectionsQuestionnaire();
+
+        when(caseDetailsConverter.extractClaim(any((CaseDetails.class)))).thenReturn(getWithClaimantResponse());
+
+        Claim claim = service.saveClaimantResponse(providedClaim.getId(),
+            claimantResponse,
+            AUTHORISATION
+        );
+
+        assertThat(claim).isNotNull();
+        assertThat(claim.getClaimantResponse()).isPresent();
+        assertThat(claim.getPreferredDQPilotCourt()).isEmpty();
     }
 
     @Test
