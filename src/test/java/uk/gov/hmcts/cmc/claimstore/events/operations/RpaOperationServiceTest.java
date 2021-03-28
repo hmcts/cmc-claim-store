@@ -48,7 +48,7 @@ public class RpaOperationServiceTest {
         //verify
         verify(claimIssuedNotificationService).notifyRobotics(
             CLAIM,
-            eq(ImmutableList.of(pinLetterClaim, sealedClaim))
+            ImmutableList.of(pinLetterClaim, sealedClaim)
         );
     }
 
