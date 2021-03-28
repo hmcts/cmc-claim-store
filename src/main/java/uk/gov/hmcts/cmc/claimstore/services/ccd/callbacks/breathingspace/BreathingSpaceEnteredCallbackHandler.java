@@ -27,7 +27,6 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +49,8 @@ public class BreathingSpaceEnteredCallbackHandler extends CallbackHandler {
     @Autowired
     public BreathingSpaceEnteredCallbackHandler(CaseDetailsConverter caseDetailsConverter,
                                                 NotificationsProperties notificationsProperties,
-                                                @Value("${doc_assembly.breathingSpaceEnteredTemplateID}") String breathingSpaceEnteredTemplateID,
+                                                @Value("${doc_assembly.breathingSpaceEnteredTemplateID}")
+                                                    String breathingSpaceEnteredTemplateID,
                                                 EventProducer eventProducer) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.notificationsProperties = notificationsProperties;
@@ -133,8 +133,8 @@ public class BreathingSpaceEnteredCallbackHandler extends CallbackHandler {
                     || ccdCase.getState().equals(ClaimState.HWF_APPLICATION_PENDING.getValue())
                     || ccdCase.getState().equals(ClaimState.AWAITING_RESPONSE_HWF.getValue())
                     || ccdCase.getState().equals(ClaimState.CLOSED_HWF.getValue())) {
-                    validationMessage = "This Event cannot be triggered since the Claim is in "
-                        + ccdCase.getState() + " state(Claim is not in Online Journey)";
+                    validationMessage = "This Event cannot be triggered "
+                        + "since the claim is no longer part of the online civil money claims journey";
                 }
             }
         }

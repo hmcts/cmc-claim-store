@@ -14,7 +14,6 @@ import uk.gov.hmcts.cmc.claimstore.events.operations.RpaOperationService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
-
 @Async("threadPoolTaskExecutor")
 @Service
 public class BreathingSpaceEntetedOrchestrationHandler {
@@ -29,7 +28,8 @@ public class BreathingSpaceEntetedOrchestrationHandler {
     public BreathingSpaceEntetedOrchestrationHandler(
         BreathingSpaceLetterService breathingSpaceLetterService,
         BreathingSpaceEmailService breathingSpaceEmailService,
-        DocumentOrchestrationService documentOrchestrationService, RpaOperationService rpaOperationService, AppInsights appInsights
+        DocumentOrchestrationService documentOrchestrationService,
+        RpaOperationService rpaOperationService, AppInsights appInsights
     ) {
         this.breathingSpaceLetterService = breathingSpaceLetterService;
         this.breathingSpaceEmailService = breathingSpaceEmailService;

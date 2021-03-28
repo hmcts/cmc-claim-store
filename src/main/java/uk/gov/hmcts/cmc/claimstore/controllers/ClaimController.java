@@ -2,9 +2,12 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.http.HttpException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,7 +19,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
-import uk.gov.hmcts.cmc.domain.models.*;
+import uk.gov.hmcts.cmc.domain.models.BreathingSpace;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.PaidInFull;
+import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantLinkStatus;
 
@@ -215,13 +222,16 @@ public class ClaimController {
 
     @PostMapping(value = "/{submitterId}/{externalId}/breathingSpace", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Creates a new Help With Fees claim")
-    public Claim saveBreathingSpaceDetails(
+    public ResponseEntity<String> saveBreathingSpaceDetails(
         @Valid @NotNull @RequestBody BreathingSpace breathingSpace,
-        @PathVariable("submitterId") String submitterId,
         @PathVariable("externalId") String externalId,
-        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
-        @RequestHeader(value = "Features", required = false) List<String> features
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        return claimService.saveBreathingSpaceDetails(submitterId, externalId, breathingSpace, authorisation, features);
+        try {
+            claimService.saveBreathingSpaceDetails(externalId, breathingSpace, authorisation);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Breathing Space Details saved successfully");
+        } catch (HttpException e) {
+            return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(e.getMessage());
+        }
     }
 }

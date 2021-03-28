@@ -14,6 +14,8 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.BreathingSpaceEnteredEvent;
+import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentOrchestrationService;
+import uk.gov.hmcts.cmc.claimstore.events.operations.RpaOperationService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.breathingspace.BreathingSpaceEmailService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.breathingspace.BreathingSpaceEntetedOrchestrationHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.breathingspace.BreathingSpaceLetterService;
@@ -50,6 +52,11 @@ public class BreathingSpaceEnteredOrchestrationTest {
     private BreathingSpaceEmailService breathingSpaceEmailService;
     @Mock
     private AppInsights appInsights;
+
+    @Mock
+    private DocumentOrchestrationService documentOrchestrationService;
+    @Mock
+    private RpaOperationService rpaOperationService;
 
     @Before
     public void setUp() {

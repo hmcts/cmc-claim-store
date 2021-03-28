@@ -56,7 +56,7 @@ public class SampleClaimData {
         DamagesExpectation.MORE_THAN_THOUSAND_POUNDS,
         DamagesExpectation.MORE_THAN_THOUSAND_POUNDS
     );
-    private BreathingSpace breathingSpace;
+    private BreathingSpace breathingSpace = null;
 
     public SampleClaimData(List<Party> claimants, List<TheirDetails> defendants) {
         this.claimants = claimants;
@@ -236,6 +236,11 @@ public class SampleClaimData {
 
     public SampleClaimData withHwfDocumentsToBeSentBefore(LocalDate hwfDocumentsToBeSentBefore) {
         this.hwfDocumentsToBeSentBefore = hwfDocumentsToBeSentBefore;
+        return this;
+    }
+
+    public SampleClaimData withBreathingSpace(BreathingSpace breathingSpace) {
+        this.breathingSpace = breathingSpace;
         return this;
     }
 

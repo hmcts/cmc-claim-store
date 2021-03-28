@@ -9,7 +9,6 @@ import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimCreationEventsStatusService
 import uk.gov.hmcts.cmc.claimstore.rpa.BreathingSpaceNotificationService;
 import uk.gov.hmcts.cmc.claimstore.rpa.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
-import uk.gov.hmcts.cmc.domain.models.BreathingSpace;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.Arrays;
@@ -24,7 +23,8 @@ public class RpaOperationService {
     @Autowired
     public RpaOperationService(
         @Qualifier("rpa/claim-issued-notification-service") ClaimIssuedNotificationService notificationService,
-        @Qualifier("rpa/breathing-space-notification-service") BreathingSpaceNotificationService breathingSpaceNotificationService,
+        @Qualifier("rpa/breathing-space-notification-service")
+            BreathingSpaceNotificationService breathingSpaceNotificationService,
         ClaimCreationEventsStatusService eventsStatusService
     ) {
         this.notificationService = notificationService;
