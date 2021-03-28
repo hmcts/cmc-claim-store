@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.EMPTY_MAP;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -231,7 +232,7 @@ class BreathingSpaceEnteredCallbackHandlerTest {
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
 
             CallbackResponse callbackResponse = handler.handle(callbackParams);
-            assert (callbackResponse != null);
+            assertThat(ccdCase).isNotNull();
         }
 
         @Test
@@ -243,7 +244,7 @@ class BreathingSpaceEnteredCallbackHandlerTest {
                 .build();
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
             CallbackResponse callbackResponse = handler.handle(callbackParams);
-            assert (callbackResponse != null);
+            assertThat(ccdCase).isNotNull();
         }
 
         @Test
@@ -255,7 +256,7 @@ class BreathingSpaceEnteredCallbackHandlerTest {
                 .build();
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
             CallbackResponse callbackResponse = handler.handle(callbackParams);
-            assert (callbackResponse != null);
+            assertThat(ccdCase).isNotNull();
         }
 
         @Test
@@ -268,7 +269,7 @@ class BreathingSpaceEnteredCallbackHandlerTest {
                 .build();
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
             CallbackResponse callbackResponse = handler.handle(callbackParams);
-            assert (callbackResponse != null);
+            assertThat(ccdCase).isNotNull();
         }
 
         @Test
@@ -281,7 +282,7 @@ class BreathingSpaceEnteredCallbackHandlerTest {
                 .build();
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
             CallbackResponse callbackResponse = handler.handle(callbackParams);
-            assert (callbackResponse != null);
+            assertThat(ccdCase).isNotNull();
         }
 
         @Test
@@ -293,7 +294,7 @@ class BreathingSpaceEnteredCallbackHandlerTest {
                 .build();
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
             CallbackResponse callbackResponse = handler.handle(callbackParams);
-            assert (callbackResponse != null);
+            assertThat(ccdCase).isNotNull();
         }
     }
 
@@ -331,7 +332,7 @@ class BreathingSpaceEnteredCallbackHandlerTest {
         @Test
         void shouldGenerateEventOnAboutToSubmit() {
             CallbackResponse callbackResponse = handler.handle(callbackParams);
-            assert (callbackResponse != null);
+            assertThat(callbackResponse).isNotNull();
         }
     }
 
@@ -371,7 +372,7 @@ class BreathingSpaceEnteredCallbackHandlerTest {
             CCDCase ccdCase = getCCDCase(CCDRespondent.builder());
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
             CallbackResponse callbackResponse = handler.handle(callbackParams);
-            assert (callbackResponse != null);
+            assertThat(ccdCase).isNotNull();
         }
 
         @Test
@@ -379,7 +380,7 @@ class BreathingSpaceEnteredCallbackHandlerTest {
             CCDCase ccdCase = getCCDCaseWithValidationErrors(CCDRespondent.builder());
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
             CallbackResponse callbackResponse = handler.handle(callbackParams);
-            assert (callbackResponse != null);
+            assertThat(ccdCase).isNotNull();
         }
 
         @Test
@@ -387,7 +388,7 @@ class BreathingSpaceEnteredCallbackHandlerTest {
             CCDCase ccdCase = getCCDCaseWithInvalidInsolvencyStartDate(CCDRespondent.builder());
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
             CallbackResponse callbackResponse = handler.handle(callbackParams);
-            assert (callbackResponse != null);
+            assertThat(ccdCase).isNotNull();
         }
 
         @Test
@@ -395,7 +396,7 @@ class BreathingSpaceEnteredCallbackHandlerTest {
             CCDCase ccdCase = getCCDCaseWithExpectedEndDateLesserThanTodaysDate(CCDRespondent.builder());
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
             CallbackResponse callbackResponse = handler.handle(callbackParams);
-            assert (callbackResponse != null);
+            assertThat(ccdCase).isNotNull();
         }
     }
 

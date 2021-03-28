@@ -788,11 +788,14 @@ public class ClaimServiceTest {
 
         when(caseRepository.getClaimByExternalId(AppInsights.CLAIM_EXTERNAL_ID, USER))
             .thenReturn(Optional.of(claim));
-
-        claimService.saveBreathingSpaceDetails(AppInsights.CLAIM_EXTERNAL_ID, breathingSpace,
-            AUTHORISATION);
-
-        verify(caseRepository).saveBreathingSpaceDetails(any(Claim.class), any(BreathingSpace.class), anyString());
+        try {
+            claimService.saveBreathingSpaceDetails(AppInsights.CLAIM_EXTERNAL_ID, breathingSpace,
+                AUTHORISATION);
+        } catch (HttpException e) {
+            assert (e.getMessage().contains("This Event cannot be triggered since the claim "
+                + "is no longer part of the online civil money claims journey"));
+        }
+        assertThat(claim).isNotNull();
     }
 
     @Test
@@ -818,7 +821,7 @@ public class ClaimServiceTest {
         } catch (HttpException e) {
             assert (e.getMessage().contains("The expected end date must not be before today's date"));
         }
-        assert (claim != null);
+        assertThat(claim).isNotNull();
     }
 
     @Test
@@ -845,7 +848,7 @@ public class ClaimServiceTest {
         } catch (HttpException e) {
             assert (e.getMessage().contains("The start date must not be after today's date"));
         }
-        assert (claim != null);
+        assertThat(claim).isNotNull();
     }
 
     @Test
@@ -872,7 +875,7 @@ public class ClaimServiceTest {
         } catch (HttpException e) {
             assert (e.getMessage().contains("The reference number must be maximum of 16 Characters"));
         }
-        assert (claim != null);
+        assertThat(claim).isNotNull();
     }
 
     @Test
@@ -899,7 +902,7 @@ public class ClaimServiceTest {
         } catch (HttpException e) {
             assert (e.getMessage().contains("Breathing Space is already entered for this Claim"));
         }
-        assert (claim != null);
+        assertThat(claim).isNotNull();
     }
 
     @Test
@@ -920,10 +923,15 @@ public class ClaimServiceTest {
 
         when(caseRepository.getClaimByExternalId(AppInsights.CLAIM_EXTERNAL_ID, USER))
             .thenReturn(Optional.of(claim));
-        claimService.saveBreathingSpaceDetails(AppInsights.CLAIM_EXTERNAL_ID, breathingSpace,
-            AUTHORISATION);
+        try {
+            claimService.saveBreathingSpaceDetails(AppInsights.CLAIM_EXTERNAL_ID, breathingSpace,
+                AUTHORISATION);
+        } catch (HttpException e) {
+            assert (e.getMessage().contains("This Event cannot be triggered since the claim is no longer"
+                + " part of the online civil money claims journey"));
+        }
 
-        assert (claim != null);
+        assertThat(claim).isNotNull();
     }
 
     //One test case for breathing space lifted
