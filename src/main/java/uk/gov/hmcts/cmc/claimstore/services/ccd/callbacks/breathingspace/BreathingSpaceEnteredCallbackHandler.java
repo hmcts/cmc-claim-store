@@ -1,8 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.breathingspace;
 
 import com.google.common.collect.ImmutableMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -38,7 +36,6 @@ public class BreathingSpaceEnteredCallbackHandler extends CallbackHandler {
 
     private static final List<Role> ROLES = Arrays.asList(CASEWORKER, CITIZEN);
     private static final List<CaseEvent> EVENTS = Arrays.asList(CaseEvent.BREATHING_SPACE_ENTERED);
-    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final CaseDetailsConverter caseDetailsConverter;
     private final NotificationsProperties notificationsProperties;
     private final String breathingSpaceEnteredTemplateID;
@@ -111,33 +108,37 @@ public class BreathingSpaceEnteredCallbackHandler extends CallbackHandler {
 
     private void validateBreathingSpaceDetails(CCDCase ccdCase, CallbackType callbackType) {
         if (ccdCase.getBreathingSpace() != null) {
-            if (callbackType.equals(CallbackType.ABOUT_TO_START)) {
-                validationMessage = "Breathing Space is already entered for this Claim";
-            } else {
-                CCDBreathingSpace ccdBreathingSpace = ccdCase.getBreathingSpace();
-                if (ccdBreathingSpace.getBsReferenceNumber() != null
-                    && ccdBreathingSpace.getBsReferenceNumber().length() > 16) {
-                    validationMessage = "The reference number must be maximum of 16 Characters";
-                } else if (ccdBreathingSpace.getBsEnteredDateByInsolvencyTeam() != null
-                    && ccdBreathingSpace.getBsEnteredDateByInsolvencyTeam().isAfter(LocalDate.now())) {
-                    validationMessage = "The start date must not be after today's date";
-                } else if (ccdBreathingSpace.getBsExpectedEndDate() != null
-                    && ccdBreathingSpace.getBsExpectedEndDate().isBefore(LocalDate.now())) {
-                    validationMessage = "The expected end date must not be before today's date";
-                }
-            }
+            validationMessage = validateBreathingSpaceDetailsInCCDCase(ccdCase, callbackType);
         } else {
-            if (callbackType.equals(CallbackType.ABOUT_TO_START)) {
-                if (ccdCase.getState().equals(ClaimState.TRANSFERRED.getValue())
-                    || ccdCase.getState().equals(ClaimState.BUSINESS_QUEUE.getValue())
-                    || ccdCase.getState().equals(ClaimState.HWF_APPLICATION_PENDING.getValue())
-                    || ccdCase.getState().equals(ClaimState.AWAITING_RESPONSE_HWF.getValue())
-                    || ccdCase.getState().equals(ClaimState.CLOSED_HWF.getValue())) {
-                    validationMessage = "This Event cannot be triggered "
-                        + "since the claim is no longer part of the online civil money claims journey";
-                }
+            if (callbackType.equals(CallbackType.ABOUT_TO_START)
+                && (ccdCase.getState().equals(ClaimState.TRANSFERRED.getValue())
+                || ccdCase.getState().equals(ClaimState.BUSINESS_QUEUE.getValue())
+                || ccdCase.getState().equals(ClaimState.HWF_APPLICATION_PENDING.getValue())
+                || ccdCase.getState().equals(ClaimState.AWAITING_RESPONSE_HWF.getValue())
+                || ccdCase.getState().equals(ClaimState.CLOSED_HWF.getValue()))) {
+                validationMessage = "This Event cannot be triggered "
+                    + "since the claim is no longer part of the online civil money claims journey";
             }
         }
+    }
+
+    private String validateBreathingSpaceDetailsInCCDCase(CCDCase ccdCase, CallbackType callbackType) {
+        if (callbackType.equals(CallbackType.ABOUT_TO_START)) {
+            validationMessage = "Breathing Space is already entered for this Claim";
+        } else {
+            CCDBreathingSpace ccdBreathingSpace = ccdCase.getBreathingSpace();
+            if (ccdBreathingSpace.getBsReferenceNumber() != null
+                && ccdBreathingSpace.getBsReferenceNumber().length() > 16) {
+                validationMessage = "The reference number must be maximum of 16 Characters";
+            } else if (ccdBreathingSpace.getBsEnteredDateByInsolvencyTeam() != null
+                && ccdBreathingSpace.getBsEnteredDateByInsolvencyTeam().isAfter(LocalDate.now())) {
+                validationMessage = "The start date must not be after today's date";
+            } else if (ccdBreathingSpace.getBsExpectedEndDate() != null
+                && ccdBreathingSpace.getBsExpectedEndDate().isBefore(LocalDate.now())) {
+                validationMessage = "The expected end date must not be before today's date";
+            }
+        }
+        return validationMessage;
     }
 
     private CallbackResponse breathingSpaceEnteredAboutToSubmitCallBack(CallbackParams callbackParams) {

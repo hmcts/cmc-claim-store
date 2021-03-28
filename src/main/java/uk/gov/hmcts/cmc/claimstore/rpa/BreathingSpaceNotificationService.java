@@ -60,14 +60,14 @@ public class BreathingSpaceNotificationService {
             .findFirst()
             .orElseThrow(() -> new IllegalArgumentException("Event does not contain sealed claim PDF"));
 
-        return new EmailData(getSealedClaimRecipient(claim),
+        return new EmailData(getSealedClaimRecipient(),
             content.getSubject(),
             content.getBody(),
             Lists.newArrayList(sealedClaimPdfAttachment, createSealedClaimJsonAttachment(claim))
         );
     }
 
-    private String getSealedClaimRecipient(Claim claim) {
+    private String getSealedClaimRecipient() {
 
         return emailProperties.getSealedClaimRecipient();
     }

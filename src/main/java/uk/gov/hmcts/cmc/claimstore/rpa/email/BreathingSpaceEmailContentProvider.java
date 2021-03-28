@@ -26,8 +26,8 @@ public class BreathingSpaceEmailContentProvider implements EmailContentProvider<
     @Override
     public EmailContent createContent(Claim claim) {
         return new EmailContent(
-            evaluateTemplate(emailTemplates.getClaimIssuedEmailSubject(), wrapInMap(claim)),
-            emailTemplates.getClaimIssuedEmailBody()
+            evaluateTemplate(emailTemplates.getBreathingSpaceEmailSubject(), wrapInMap(claim)),
+            emailTemplates.getBreathingSpaceEmailBody()
         );
     }
 

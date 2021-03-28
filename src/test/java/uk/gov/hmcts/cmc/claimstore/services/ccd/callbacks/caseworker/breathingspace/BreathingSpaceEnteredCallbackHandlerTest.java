@@ -94,6 +94,87 @@ class BreathingSpaceEnteredCallbackHandlerTest {
             .build();
     }
 
+    private CCDCase getCCDCaseWithValidationErrors(CCDRespondent.CCDRespondentBuilder builder) {
+        CCDBreathingSpace breathingSpace = new CCDBreathingSpace();
+        breathingSpace.setBsReferenceNumber("REF12121212232323232323232");
+        breathingSpace.setBsType(CCDBreathingSpaceType.STANDARD_BS_ENTERED);
+        breathingSpace.setBsEnteredDate(LocalDate.now());
+        breathingSpace.setBsEnteredDateByInsolvencyTeam(LocalDate.now());
+        breathingSpace.setBsExpectedEndDate(LocalDate.now());
+        breathingSpace.setBsLiftedFlag("NO");
+
+        return CCDCase.builder()
+            .breathingSpace(breathingSpace)
+            .previousServiceCaseReference("CMC")
+            .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
+                .value(builder
+                    .claimantProvidedDetail(
+                        CCDParty.builder()
+                            .type(INDIVIDUAL)
+                            .build())
+                    .partyDetail(CCDParty.builder()
+                        .type(INDIVIDUAL)
+                        .emailAddress("claimant@email.test")
+                        .build())
+                    .build())
+                .build()))
+            .build();
+    }
+
+    private CCDCase getCCDCaseWithInvalidInsolvencyStartDate(CCDRespondent.CCDRespondentBuilder builder) {
+        CCDBreathingSpace breathingSpace = new CCDBreathingSpace();
+        breathingSpace.setBsReferenceNumber("REF12121");
+        breathingSpace.setBsType(CCDBreathingSpaceType.STANDARD_BS_ENTERED);
+        breathingSpace.setBsEnteredDate(LocalDate.now());
+        breathingSpace.setBsEnteredDateByInsolvencyTeam(LocalDate.now().plusDays(3));
+        breathingSpace.setBsExpectedEndDate(LocalDate.now());
+        breathingSpace.setBsLiftedFlag("NO");
+
+        return CCDCase.builder()
+            .breathingSpace(breathingSpace)
+            .previousServiceCaseReference("CMC")
+            .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
+                .value(builder
+                    .claimantProvidedDetail(
+                        CCDParty.builder()
+                            .type(INDIVIDUAL)
+                            .build())
+                    .partyDetail(CCDParty.builder()
+                        .type(INDIVIDUAL)
+                        .emailAddress("claimant@email.test")
+                        .build())
+                    .build())
+                .build()))
+            .build();
+    }
+
+    private CCDCase getCCDCaseWithExpectedEndDateLesserThanTodaysDate(CCDRespondent.CCDRespondentBuilder builder) {
+        CCDBreathingSpace breathingSpace = new CCDBreathingSpace();
+        breathingSpace.setBsReferenceNumber("REF1212121");
+        breathingSpace.setBsType(CCDBreathingSpaceType.STANDARD_BS_ENTERED);
+        breathingSpace.setBsEnteredDate(LocalDate.now());
+        breathingSpace.setBsEnteredDateByInsolvencyTeam(LocalDate.now());
+        breathingSpace.setBsExpectedEndDate(LocalDate.now().minusDays(3));
+        breathingSpace.setBsLiftedFlag("NO");
+
+        return CCDCase.builder()
+            .breathingSpace(breathingSpace)
+            .previousServiceCaseReference("CMC")
+            .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
+                .value(builder
+                    .claimantProvidedDetail(
+                        CCDParty.builder()
+                            .type(INDIVIDUAL)
+                            .build())
+                    .partyDetail(CCDParty.builder()
+                        .type(INDIVIDUAL)
+                        .emailAddress("claimant@email.test")
+                        .build())
+                    .build())
+                .build()))
+            .build();
+    }
+
     private CCDCase getCCDCaseWithoutBreathingSpace(CCDRespondent.CCDRespondentBuilder builder, ClaimState claimState) {
 
         return CCDCase.builder()
@@ -262,11 +343,11 @@ class BreathingSpaceEnteredCallbackHandlerTest {
                 notificationsProperties, breathingSpaceEnteredTemplateID, eventProducer);
             CallbackRequest callbackRequest = getCallBackRequest();
             callbackParams = getBuild(callbackRequest);
-            CCDCase ccdCase = getCCDCase(CCDRespondent.builder());
+
             Claim claim = Claim.builder()
                 .referenceNumber("XXXXX")
                 .build();
-            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+
         }
 
         private CallbackRequest getCallBackRequest() {
@@ -287,6 +368,32 @@ class BreathingSpaceEnteredCallbackHandlerTest {
 
         @Test
         void shouldGenerateEventOnMid() {
+            CCDCase ccdCase = getCCDCase(CCDRespondent.builder());
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            CallbackResponse callbackResponse = handler.handle(callbackParams);
+            assert (callbackResponse != null);
+        }
+
+        @Test
+        void shouldGenerateEventOnMidValidationError() {
+            CCDCase ccdCase = getCCDCaseWithValidationErrors(CCDRespondent.builder());
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            CallbackResponse callbackResponse = handler.handle(callbackParams);
+            assert (callbackResponse != null);
+        }
+
+        @Test
+        void shouldGenerateEventOnMidWithCCDCaseWithInvalidInsolvencyStartDate() {
+            CCDCase ccdCase = getCCDCaseWithInvalidInsolvencyStartDate(CCDRespondent.builder());
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            CallbackResponse callbackResponse = handler.handle(callbackParams);
+            assert (callbackResponse != null);
+        }
+
+        @Test
+        void shouldGenerateEventOnMidVWithCCDCaseWithExpectedEndDateLesserThanTodaysDate() {
+            CCDCase ccdCase = getCCDCaseWithExpectedEndDateLesserThanTodaysDate(CCDRespondent.builder());
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
             CallbackResponse callbackResponse = handler.handle(callbackParams);
             assert (callbackResponse != null);
         }

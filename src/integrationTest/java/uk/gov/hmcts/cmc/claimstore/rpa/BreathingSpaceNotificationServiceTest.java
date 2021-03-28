@@ -99,7 +99,8 @@ public class BreathingSpaceNotificationServiceTest extends BaseMockSpringTest {
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
-        assertThat(emailDataArgument.getValue().getSubject()).isEqualToIgnoringNewLines("J new claim 000MC001");
+        assertThat(emailDataArgument.getValue().getSubject())
+            .isEqualToIgnoringNewLines("J Breathing Space CCD Notification 000MC001");
         assertThat(emailDataArgument.getValue().getMessage()).isEqualToIgnoringNewLines("Please find attached claim.");
     }
 

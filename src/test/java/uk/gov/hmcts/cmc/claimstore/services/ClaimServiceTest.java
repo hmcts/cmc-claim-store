@@ -818,6 +818,7 @@ public class ClaimServiceTest {
         } catch (HttpException e) {
             assert (e.getMessage().contains("The expected end date must not be before today's date"));
         }
+        assert (claim != null);
     }
 
     @Test
@@ -844,7 +845,7 @@ public class ClaimServiceTest {
         } catch (HttpException e) {
             assert (e.getMessage().contains("The start date must not be after today's date"));
         }
-
+        assert (claim != null);
     }
 
     @Test
@@ -871,6 +872,7 @@ public class ClaimServiceTest {
         } catch (HttpException e) {
             assert (e.getMessage().contains("The reference number must be maximum of 16 Characters"));
         }
+        assert (claim != null);
     }
 
     @Test
@@ -897,7 +899,31 @@ public class ClaimServiceTest {
         } catch (HttpException e) {
             assert (e.getMessage().contains("Breathing Space is already entered for this Claim"));
         }
+        assert (claim != null);
+    }
 
+    @Test
+    public void testSaveBreathingSpaceDetailsWithClaimStateAsTransferred() throws HttpException {
+        BreathingSpace breathingSpace = new BreathingSpace("RFFFD434343",
+            BreathingSpaceType.STANDARD_BS_ENTERED, LocalDate.now(),
+            null, LocalDate.now(), null, LocalDate.now(), "NO");
+
+        ClaimData claimData = SampleClaimData.builder()
+            .withExternalId(UUID.fromString(EXTERNAL_ID))
+            // .withBreathingSpace(breathingSpace)
+            .build();
+        Claim claim = SampleClaim.builder()
+            .withExternalId(EXTERNAL_ID)
+            .withClaimData(claimData)
+            .withState(ClaimState.TRANSFERRED)
+            .build();
+
+        when(caseRepository.getClaimByExternalId(AppInsights.CLAIM_EXTERNAL_ID, USER))
+            .thenReturn(Optional.of(claim));
+        claimService.saveBreathingSpaceDetails(AppInsights.CLAIM_EXTERNAL_ID, breathingSpace,
+            AUTHORISATION);
+
+        assert (claim != null);
     }
 
     //One test case for breathing space lifted
