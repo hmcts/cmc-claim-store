@@ -28,6 +28,7 @@ public class ClaimMapper {
     private final DefendantMapper defendantMapper;
     private final AmountMapper amountMapper;
     private final PaymentMapper paymentMapper;
+    private final BreathingSpaceMapper breathingSpaceMapper;
     private final InterestMapper interestMapper;
     private final TimelineMapper timelineMapper;
     private final EvidenceMapper evidenceMapper;
@@ -45,7 +46,8 @@ public class ClaimMapper {
         InterestMapper interestMapper,
         TimelineMapper timelineMapper,
         EvidenceMapper evidenceMapper,
-        MoneyMapper moneyMapper
+        MoneyMapper moneyMapper,
+        BreathingSpaceMapper breathingSpaceMapper
     ) {
         this.personalInjuryMapper = personalInjuryMapper;
         this.housingDisrepairMapper = housingDisrepairMapper;
@@ -58,6 +60,7 @@ public class ClaimMapper {
         this.timelineMapper = timelineMapper;
         this.evidenceMapper = evidenceMapper;
         this.moneyMapper = moneyMapper;
+        this.breathingSpaceMapper = breathingSpaceMapper;
     }
 
     public void to(Claim claim, CCDCase.CCDCaseBuilder builder) {
@@ -129,6 +132,9 @@ public class ClaimMapper {
         builder.hwfDocumentsToBeSentBefore(claimData.getHwfDocumentsToBeSentBefore());
         builder.lastEventTriggeredForHwfCase(claim.getLastEventTriggeredForHwfCase());
 
+        //BreathingSpace Mapper
+        claimData.getBreathingSpace().ifPresent(breathingSpace -> breathingSpaceMapper.to(breathingSpace, builder));
+
         builder
             .reason(claimData.getReason());
     }
@@ -175,7 +181,8 @@ public class ClaimMapper {
                 ccdCase.getHwfFeeDetailsSummary(),
                 ccdCase.getHwfMandatoryDetails(),
                 ccdCase.getHwfMoreInfoNeededDocuments(),
-                ccdCase.getHwfDocumentsToBeSentBefore())
+                ccdCase.getHwfDocumentsToBeSentBefore(),
+                breathingSpaceMapper.from(ccdCase))
         )
             .lastEventTriggeredForHwfCase(ccdCase.getLastEventTriggeredForHwfCase());
     }

@@ -193,4 +193,9 @@ public class DocumentNameUtils {
         return format("%s-%s", caseRef, fileNameSuffix);
     }
 
+    public static String buildBreathingSpaceEnteredFileBaseName(String caseRef) {
+        requireNonBlank(caseRef);
+        return format("%s-breathing-space-entered", caseRef);
+    }
+
 }
