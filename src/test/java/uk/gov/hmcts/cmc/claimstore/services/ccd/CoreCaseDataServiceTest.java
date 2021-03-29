@@ -566,13 +566,17 @@ public class CoreCaseDataServiceTest {
 
     @Test
     public void saveClaimantResponseWithPilotCourt() {
+        String courtName = "Central London County Court";
         Response providedResponse = SampleResponse.validDefaults();
         Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
+        Claim clm = getWithClaimantResponse();
+        when(caseDetailsConverter.extractClaim(any((CaseDetails.class)))).thenReturn(clm);
+        when(pilotCourtService.isPilotCourt(anyString(), any(), any())).thenReturn(true);
         ClaimantResponse claimantResponse = SampleClaimantResponse.validRejectionWithDirectionsQuestionnaire();
         //when(directionsQuestionnaireService.getPreferredCourt(getWithClaimantResponse())).thenReturn("Central London County Court");
-        when(directionsQuestionnaireService.getPreferredCourt(providedClaim)).thenReturn("Central London County Court");
-        when(pilotCourtService.isPilotCourt(anyString(), any(), any())).thenReturn(true);
-        when(caseDetailsConverter.extractClaim(any((CaseDetails.class)))).thenReturn(getWithClaimantResponse());
+        when(directionsQuestionnaireService.getPreferredCourt(clm)).thenReturn(courtName);
+
+
 
         Claim claim = service.saveClaimantResponse(providedClaim.getId(),
             claimantResponse,
