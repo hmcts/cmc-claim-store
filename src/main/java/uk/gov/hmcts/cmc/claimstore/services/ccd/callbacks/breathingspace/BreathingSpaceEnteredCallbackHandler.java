@@ -114,6 +114,8 @@ public class BreathingSpaceEnteredCallbackHandler extends CallbackHandler {
                 && (ccdCase.getState().equals(ClaimState.TRANSFERRED.getValue())
                 || ccdCase.getState().equals(ClaimState.BUSINESS_QUEUE.getValue())
                 || ccdCase.getState().equals(ClaimState.HWF_APPLICATION_PENDING.getValue())
+                || ccdCase.getState().equals(ClaimState.SETTLED.getValue())
+                || ccdCase.getState().equals(ClaimState.CLOSED.getValue())
                 || ccdCase.getState().equals(ClaimState.AWAITING_RESPONSE_HWF.getValue())
                 || ccdCase.getState().equals(ClaimState.CLOSED_HWF.getValue()))) {
                 validationMessage = "This Event cannot be triggered "
