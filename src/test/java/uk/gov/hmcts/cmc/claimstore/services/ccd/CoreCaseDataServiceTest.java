@@ -563,20 +563,16 @@ public class CoreCaseDataServiceTest {
         assertThat(claim.getPreferredDQPilotCourt()).isEmpty();
     }
 
-
     @Test
     public void saveClaimantResponseWithPilotCourt() {
         String courtName = "Central London County Court";
         Response providedResponse = SampleResponse.validDefaults();
         Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
-        Claim clm = getWithClaimantResponse();
-        when(caseDetailsConverter.extractClaim(any((CaseDetails.class)))).thenReturn(clm);
+        Claim extractedClaim = getWithClaimantResponse();
+        when(caseDetailsConverter.extractClaim(any((CaseDetails.class)))).thenReturn(extractedClaim);
         when(pilotCourtService.isPilotCourt(anyString(), any(), any())).thenReturn(true);
         ClaimantResponse claimantResponse = SampleClaimantResponse.validRejectionWithDirectionsQuestionnaire();
-        //when(directionsQuestionnaireService.getPreferredCourt(getWithClaimantResponse())).thenReturn("Central London County Court");
-        when(directionsQuestionnaireService.getPreferredCourt(clm)).thenReturn(courtName);
-
-
+        when(directionsQuestionnaireService.getPreferredCourt(extractedClaim)).thenReturn(courtName);
 
         Claim claim = service.saveClaimantResponse(providedClaim.getId(),
             claimantResponse,
@@ -584,8 +580,7 @@ public class CoreCaseDataServiceTest {
         );
 
         assertThat(claim).isNotNull();
-        //assertThat(claim.getClaimantResponse()).isPresent();
-        assertThat(claim.getPreferredDQPilotCourt()).isPresent();
+        assertThat(claim.getClaimantResponse()).isPresent();
     }
 
     @Test
