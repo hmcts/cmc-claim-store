@@ -310,6 +310,28 @@ public class SampleClaimData {
             .withEvidence(SampleEvidence.validDefaults());
     }
 
+    public static SampleClaimData submittedByClaimantWithDefendantAddressNullBuilder() {
+        return builder()
+            .withExternalId(UUID.randomUUID())
+            .withFeeAccountNumber(null)
+            .withStatementOfTruth(null)
+            .withPersonalInjury(null)
+            .withHousingDisrepair(null)
+            .clearClaimants()
+            .addClaimant(SampleParty.builder()
+                .withRepresentative(null)
+                .individual())
+            .withDefendant(SampleTheirDetails.builder()
+                .withAddress(null)
+                .withRepresentative(null)
+                .withPhone("0776655443322")
+                .individualDetails())
+            .withTimeline(SampleTimeline.validDefaults())
+            .withHwfMandatoryDetails(null)
+            .withFeeRemitted(null)
+            .withEvidence(SampleEvidence.validDefaults());
+    }
+
     public static ClaimData submittedByLegalRepresentative() {
         return submittedByLegalRepresentativeBuilder().build();
     }

@@ -43,7 +43,11 @@ public class OrganisationDetailsMapper {
         organisation.getEmail().ifPresent(claimantProvidedPartyDetail::emailAddress);
         organisation.getPhone()
             .ifPresent(phoneNo -> claimantProvidedPartyDetail.telephoneNumber(telephoneMapper.to(phoneNo)));
-        claimantProvidedPartyDetail.primaryAddress(addressMapper.to(organisation.getAddress()));
+        if (organisation.getclaimantProvidedAddress() != null) {
+            claimantProvidedPartyDetail.primaryAddress(addressMapper.to(organisation.getclaimantProvidedAddress()));
+        } else {
+            claimantProvidedPartyDetail.primaryAddress(addressMapper.to(organisation.getAddress()));
+        }
         builder
             .claimantProvidedPartyName(organisation.getName())
             .claimantProvidedDetail(claimantProvidedPartyDetail.build());
@@ -58,6 +62,7 @@ public class OrganisationDetailsMapper {
             .id(ccdOrganisation.getId())
             .name(respondent.getClaimantProvidedPartyName())
             .address(getAddress(partyDetail, detailFromClaimant, CCDParty::getPrimaryAddress))
+            .claimantProvidedAddress(getAddressByClaimant(detailFromClaimant, CCDParty::getPrimaryAddress))
             .email(getDetail(partyDetail, detailFromClaimant, x -> x.getEmailAddress()))
             .phoneNumber(telephoneMapper.from(getDetail(partyDetail, detailFromClaimant, CCDParty::getTelephoneNumber)))
             .representative(representativeMapper.from(respondent))
@@ -74,6 +79,11 @@ public class OrganisationDetailsMapper {
 
     private CCDAddress getAddress(CCDParty partyDetail, Function<CCDParty, CCDAddress> extractAddress) {
         return Optional.ofNullable(partyDetail).map(extractAddress).orElse(null);
+    }
+
+    private Address getAddressByClaimant(CCDParty detail, Function<CCDParty, CCDAddress> getAddress) {
+        CCDAddress partyAddress = getAddress(detail, getAddress);
+        return addressMapper.from(partyAddress);
     }
 
     private <T> T getDetail(CCDParty detail, CCDParty detailByClaimant, Function<CCDParty, T> getDetail) {
