@@ -125,7 +125,6 @@ public class CoreCaseDataServiceTest {
     public void before() {
         when(authTokenGenerator.generate()).thenReturn(AUTH_TOKEN);
         when(userService.getUserDetails(AUTHORISATION)).thenReturn(USER_DETAILS);
-
         when(coreCaseDataApi.startEventForCitizen(
             eq(AUTHORISATION),
             eq(AUTH_TOKEN),
@@ -171,6 +170,12 @@ public class CoreCaseDataServiceTest {
             directionsQuestionnaireService,
             pilotCourtService
         );
+
+        /*this.pilotCourtService = new PilotCourtService(
+            anyString(),
+            courtFinderApi,
+            hearingCourtMapper,
+            appInsights);*/
     }
 
     @Test
@@ -556,6 +561,27 @@ public class CoreCaseDataServiceTest {
         assertThat(claim).isNotNull();
         assertThat(claim.getClaimantResponse()).isPresent();
         assertThat(claim.getPreferredDQPilotCourt()).isEmpty();
+    }
+
+
+    @Test
+    public void saveClaimantResponseWithPilotCourt() {
+        Response providedResponse = SampleResponse.validDefaults();
+        Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
+        ClaimantResponse claimantResponse = SampleClaimantResponse.validRejectionWithDirectionsQuestionnaire();
+        //when(directionsQuestionnaireService.getPreferredCourt(getWithClaimantResponse())).thenReturn("Central London County Court");
+        when(directionsQuestionnaireService.getPreferredCourt(providedClaim)).thenReturn("Central London County Court");
+        when(pilotCourtService.isPilotCourt(anyString(), any(), any())).thenReturn(true);
+        when(caseDetailsConverter.extractClaim(any((CaseDetails.class)))).thenReturn(getWithClaimantResponse());
+
+        Claim claim = service.saveClaimantResponse(providedClaim.getId(),
+            claimantResponse,
+            AUTHORISATION
+        );
+
+        assertThat(claim).isNotNull();
+        //assertThat(claim.getClaimantResponse()).isPresent();
+        assertThat(claim.getPreferredDQPilotCourt()).isPresent();
     }
 
     @Test

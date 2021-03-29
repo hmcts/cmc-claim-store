@@ -6,7 +6,7 @@ import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
 public class SampleHearingLocation {
 
     public static final HearingLocation defaultHearingLocation = HearingLocation.builder()
-        .courtName("A Court")
+        .courtName("Central London County Court")
         .hearingLocationSlug("a-court")
         .courtAddress(SampleAddress.builder().build())
         .locationOption(CourtLocationType.ALTERNATE_COURT)
