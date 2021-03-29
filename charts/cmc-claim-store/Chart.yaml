@@ -21,6 +21,6 @@ dependencies:
     condition: postgresql.enabled
 
   - name: ccd
-    version: 4.3.5
+    version: v5.0.1
     repository: '@hmctspublic'
     condition: ccd.enabled
