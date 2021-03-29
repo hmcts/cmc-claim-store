@@ -558,6 +558,17 @@ public class ClaimService {
         if (breathingSpaceInClaim != null && breathingSpaceInClaim.getBsType() != null) {
             validationMessage = "Breathing Space is already entered for this Claim";
         } else {
+            if (breathingSpace.getBsEnteredDateByInsolvencyTeam() != null
+                && breathingSpace.getBsEnteredDateByInsolvencyTeam().getYear() == 9999
+            ) {
+                breathingSpace.setBsEnteredDateByInsolvencyTeam(null);
+            }
+            if (breathingSpace.getBsExpectedEndDate() != null
+                && breathingSpace.getBsExpectedEndDate().getYear() == 9999
+            ) {
+                breathingSpace.setBsExpectedEndDate(null);
+            }
+
             if (breathingSpace.getBsReferenceNumber() != null
                 && breathingSpace.getBsReferenceNumber().length() > 16) {
                 validationMessage = "The reference number must be maximum of 16 Characters";
