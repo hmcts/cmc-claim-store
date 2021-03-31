@@ -60,11 +60,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISS
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.HWF_CLAIM_CREATED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NUMBER_OF_RECONSIDERATION;
 import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_PAYMENT;
-import static uk.gov.hmcts.cmc.domain.models.ClaimState.AWAITING_RESPONSE_HWF;
-import static uk.gov.hmcts.cmc.domain.models.ClaimState.BUSINESS_QUEUE;
-import static uk.gov.hmcts.cmc.domain.models.ClaimState.CLOSED_HWF;
-import static uk.gov.hmcts.cmc.domain.models.ClaimState.HWF_APPLICATION_PENDING;
-import static uk.gov.hmcts.cmc.domain.models.ClaimState.TRANSFERRED;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.*;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
 @Component
@@ -584,6 +580,8 @@ public class ClaimService {
             || claim.getState().equals(BUSINESS_QUEUE)
             || claim.getState().equals(HWF_APPLICATION_PENDING)
             || claim.getState().equals(AWAITING_RESPONSE_HWF)
+            || claim.getState().equals(PROCEEDS_IN_CASE_MAN)
+            || claim.getState().equals(SETTLED)
             || claim.getState().equals(CLOSED_HWF)) {
             validationMessage = "This Event cannot be triggered since "
                 + "the claim is no longer part of the online civil money claims journey";
