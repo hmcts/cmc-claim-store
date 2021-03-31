@@ -200,7 +200,7 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
                 .buildWithPaymentOptionBySpecifiedDate());
         String reference = claim.getReferenceNumber();
 
-        when(emailTemplates.getDefendantAdmissionResponseToClaimant())
+        when(emailTemplates.getDefendantContactDetailsChanged())
             .thenReturn(DEFENDANT_RESPOND_BY_ADMISSION);
 
         service.notifyClaimant(claim, reference);
@@ -218,5 +218,22 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
         service.notifyClaimant(claimWithNoResponse, reference);
 
         verifyNoInteractions(emailTemplates, notificationClient);
+    }
+
+    @Test
+    public void notifyClaimantWhenDefendantAddressChanged() throws Exception {
+        Claim claim = SampleClaim
+            .getWithResponse(SampleResponse
+                .PartAdmission.builder()
+                .buildWithPaymentOptionBySpecifiedDate());
+        String reference = claim.getReferenceNumber();
+
+        when(emailTemplates.getDefendantAdmissionResponseToClaimant())
+            .thenReturn(DEFENDANT_RESPOND_BY_ADMISSION);
+
+        service.notifyClaimant(claim, reference);
+
+        verify(notificationClient)
+            .sendEmail(eq(DEFENDANT_RESPOND_BY_ADMISSION), eq(claim.getSubmitterEmail()), anyMap(), eq(reference));
     }
 }

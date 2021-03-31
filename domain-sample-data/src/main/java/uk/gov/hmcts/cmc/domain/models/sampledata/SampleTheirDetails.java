@@ -20,7 +20,7 @@ public class SampleTheirDetails {
     private String firstName = "John";
     private String lastName = "Smith";
     private Address address = SampleAddress.builder().build();
-    private Address claimantProvidedAddress = SampleAddress.builder().build();
+    private Address claimantProvidedAddress = SampleAddress.builder().postcode("W1B 3AG").build();
     private String email = DEFENDANT_EMAIL;
     private String contactPerson = "Arnold Schwarzenegger";
     private String businessName = "Sole Trading & Sons";
