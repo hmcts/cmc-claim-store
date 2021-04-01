@@ -37,7 +37,7 @@ public class ClaimContentProviderTest {
     public void shouldReturnAddressByClaimantWhenAddressIsNull() {
         //when
         Map<String, Object> content = provider.createContent(claimWithDefendantAddressNull);
-        Address address = SampleAddress.builder().postcode("W1B 3AG").build();
+        Address address = SampleAddress.builder().build();
 
         assertThat(((PersonContent) content.get("defendant")).getAddress())
             .isEqualTo(address);
