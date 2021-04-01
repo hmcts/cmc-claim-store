@@ -41,7 +41,11 @@ public class CompanyDetailsMapper {
 
         company.getRepresentative()
             .ifPresent(representative -> representativeMapper.to(representative, builder));
-        claimantProvidedPartyDetail.primaryAddress(addressMapper.to(company.getAddress()));
+        if (company.getclaimantProvidedAddress() != null) {
+            claimantProvidedPartyDetail.primaryAddress(addressMapper.to(company.getclaimantProvidedAddress()));
+        } else {
+            claimantProvidedPartyDetail.primaryAddress(addressMapper.to(company.getAddress()));
+        }
 
         builder
             .claimantProvidedPartyName(company.getName())
@@ -58,6 +62,7 @@ public class CompanyDetailsMapper {
             .id(collectionElement.getId())
             .name(ccdRespondent.getClaimantProvidedPartyName())
             .address(getAddress(partyDetail, detailFromClaimant, CCDParty::getPrimaryAddress))
+            .claimantProvidedAddress(getAddressByClaimant(detailFromClaimant, CCDParty::getPrimaryAddress))
             .email(getDetail(partyDetail, detailFromClaimant, x -> x.getEmailAddress()))
             .phoneNumber(telephoneMapper.from(getDetail(partyDetail, detailFromClaimant, CCDParty::getTelephoneNumber)))
             .representative(representativeMapper.from(ccdRespondent))
@@ -73,6 +78,11 @@ public class CompanyDetailsMapper {
 
     private CCDAddress getAddress(CCDParty partyDetail, Function<CCDParty, CCDAddress> extractAddress) {
         return Optional.ofNullable(partyDetail).map(extractAddress).orElse(null);
+    }
+
+    private Address getAddressByClaimant(CCDParty detail, Function<CCDParty, CCDAddress> getAddress) {
+        CCDAddress partyAddress = getAddress(detail, getAddress);
+        return addressMapper.from(partyAddress);
     }
 
     private <T> T getDetail(CCDParty detail, CCDParty detailByClaimant, Function<CCDParty, T> getDetail) {
