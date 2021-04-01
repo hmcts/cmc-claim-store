@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.breathingspace;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 
 @Async("threadPoolTaskExecutor")
 @Service
+@ConditionalOnProperty("feature_toggles.breathing_space")
 public class BreathingSpaceEntetedOrchestrationHandler {
 
     private final BreathingSpaceLetterService breathingSpaceLetterService;

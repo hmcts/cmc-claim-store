@@ -254,6 +254,7 @@ feature_toggles:
   auto_cancel_payments: "${FEATURE_AUTO_CANCEL_PAYMENTS:false}"
   bulk_print_transfer_enabled: false
   staff_emails_enabled_for_legal_rep: true
+  breathing_space: true
 
 feign:
   httpclient:

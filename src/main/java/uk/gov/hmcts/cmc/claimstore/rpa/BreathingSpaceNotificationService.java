@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.rpa;
 
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.rpa.config.EmailProperties;
@@ -22,6 +23,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service("rpa/breathing-space-notification-service")
+@ConditionalOnProperty("feature_toggles.breathing_space")
 public class BreathingSpaceNotificationService {
 
     public static final String JSON_EXTENSION = ".json";
