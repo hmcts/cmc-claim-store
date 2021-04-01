@@ -127,9 +127,9 @@ data "azurerm_key_vault_secret" "send_grid_api_key" {
   name         = var.env != "prod" ? "hmcts-cmc-api-key" : "cmc-api-key"
 }
 
-resource "azurerm_key_vault_secret" "sendgrid_api_key" {
+resource "azurerm_key_vault_secret" "sendgrid_api_key-2" {
   key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
-  name         = "sendgrid-api-key"
+  name         = "sendgrid-api-key-2"
   value        = data.azurerm_key_vault_secret.send_grid_api_key.value
 }
 
