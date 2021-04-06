@@ -118,7 +118,7 @@ public class BreathingSpaceEnteredCallbackHandler extends CallbackHandler {
 
     private void validateBreathingSpaceDetails(CCDCase ccdCase, CallbackType callbackType) {
         if (ccdCase.getBreathingSpace() != null) {
-            //validationMessage = validateBreathingSpaceDetailsInCCDCase(ccdCase, callbackType);
+            validationMessage = validateBreathingSpaceDetailsInCCDCase(ccdCase, callbackType);
         } else {
             if (callbackType.equals(CallbackType.ABOUT_TO_START)
                 && (ccdCase.getState().equals(ClaimState.TRANSFERRED.getValue())

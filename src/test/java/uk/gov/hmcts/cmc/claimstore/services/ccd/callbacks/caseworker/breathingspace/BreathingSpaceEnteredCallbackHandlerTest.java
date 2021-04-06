@@ -19,12 +19,14 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplate
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.breathingspace.BreathingSpaceEmailService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.breathingspace.BreathingSpaceEnteredCallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.breathingspace.BreathingSpaceLetterService;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
@@ -41,6 +43,7 @@ import static java.util.Collections.EMPTY_MAP;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.INDIVIDUAL;
@@ -322,8 +325,16 @@ class BreathingSpaceEnteredCallbackHandlerTest {
             CCDCase ccdCase = getCCDCase(CCDRespondent.builder());
             Claim claim = Claim.builder()
                 .referenceNumber("XXXXX")
+                .defendantId("id")
                 .build();
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+            UserDetails userDetails = SampleUserDetails.builder()
+                .withForename("Forename")
+                .withSurname("Surname")
+                .withRoles("caseworker-cmc")
+                .build();
+            when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetails);
         }
 
         private CallbackRequest getCallBackRequest() {
@@ -344,6 +355,10 @@ class BreathingSpaceEnteredCallbackHandlerTest {
 
         @Test
         void shouldGenerateEventOnAboutToSubmit() {
+            when(notificationsProperties.getTemplates()).thenReturn(templates);
+            when(templates.getEmail()).thenReturn(emailTemplates);
+            when(emailTemplates.getBreathingSpaceEmailToClaimant()).thenReturn(EMAIL_TO_CLAIMANT);
+            when(emailTemplates.getBreathingSpaceEmailToDefendant()).thenReturn(EMAIL_TO_DEFENDANT);
             CallbackResponse callbackResponse = handler.handle(callbackParams);
             assertThat(callbackResponse).isNotNull();
         }
@@ -425,17 +440,7 @@ class BreathingSpaceEnteredCallbackHandlerTest {
                 breathingSpaceEmailService);
             CallbackRequest callbackRequest = getCallBackRequest();
             callbackParams = getBuild(callbackRequest);
-            CCDCase ccdCase = getCCDCase(CCDRespondent.builder());
-            Claim claim = Claim.builder()
-                .referenceNumber("XXXXX")
-                .build();
-            returnMap.put("BS", ccdCase);
-            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
-            when(notificationsProperties.getTemplates()).thenReturn(templates);
-            when(templates.getEmail()).thenReturn(emailTemplates);
-            when(emailTemplates.getBreathingSpaceEmailToClaimant()).thenReturn(EMAIL_TO_CLAIMANT);
-            when(emailTemplates.getBreathingSpaceEmailToDefendant()).thenReturn(EMAIL_TO_DEFENDANT);
+
         }
 
         private CallbackRequest getCallBackRequest() {
@@ -456,9 +461,43 @@ class BreathingSpaceEnteredCallbackHandlerTest {
 
         @Test
         void shouldGenerateEventOnSubmitted() {
+            CCDCase ccdCase = getCCDCase(CCDRespondent.builder());
+            Claim claim = Claim.builder()
+                .referenceNumber("XXXXX")
+                .build();
+            returnMap.put("BS", ccdCase);
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+            when(notificationsProperties.getTemplates()).thenReturn(templates);
+            when(templates.getEmail()).thenReturn(emailTemplates);
+            when(emailTemplates.getBreathingSpaceEmailToClaimant()).thenReturn(EMAIL_TO_CLAIMANT);
+            when(emailTemplates.getBreathingSpaceEmailToDefendant()).thenReturn(EMAIL_TO_DEFENDANT);
+            UserDetails userDetails = SampleUserDetails.builder()
+                .withForename("Forename")
+                .withSurname("Surname")
+                .withRoles("citizen")
+                .build();
+            when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetails);
             handler.handle(callbackParams);
 
-            verify(eventProducer).createBreathingSpaceEnteredEvent(
+            verify(eventProducer, times(1)).createBreathingSpaceEnteredEvent(
+                any(Claim.class), any(CCDCase.class),
+                anyString(), anyString(),
+                anyString(), anyString()
+            );
+        }
+
+        @Test
+        void shouldNotGenerateEventOnSubmitted() {
+            UserDetails userDetails = SampleUserDetails.builder()
+                .withForename("Forename")
+                .withSurname("Surname")
+                .withRoles("caseworker-cmc")
+                .build();
+            when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetails);
+            handler.handle(callbackParams);
+
+            verify(eventProducer, times(0)).createBreathingSpaceEnteredEvent(
                 any(Claim.class), any(CCDCase.class),
                 anyString(), anyString(),
                 anyString(), anyString()
