@@ -1,11 +1,13 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.breathingspace;
 
 import com.google.common.collect.ImmutableMap;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CCDBreathingSpace;
@@ -323,12 +325,7 @@ class BreathingSpaceEnteredCallbackHandlerTest {
             CallbackRequest callbackRequest = getCallBackRequest();
             callbackParams = getBuild(callbackRequest);
             CCDCase ccdCase = getCCDCase(CCDRespondent.builder());
-            Claim claim = Claim.builder()
-                .referenceNumber("XXXXX")
-                .defendantId("id")
-                .build();
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
             UserDetails userDetails = SampleUserDetails.builder()
                 .withForename("Forename")
                 .withSurname("Surname")
@@ -355,12 +352,86 @@ class BreathingSpaceEnteredCallbackHandlerTest {
 
         @Test
         void shouldGenerateEventOnAboutToSubmit() {
+            Claim claim = Claim.builder()
+                .referenceNumber("XXXXX")
+                .defendantId("id")
+                .build();
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
             when(notificationsProperties.getTemplates()).thenReturn(templates);
             when(templates.getEmail()).thenReturn(emailTemplates);
             when(emailTemplates.getBreathingSpaceEmailToClaimant()).thenReturn(EMAIL_TO_CLAIMANT);
             when(emailTemplates.getBreathingSpaceEmailToDefendant()).thenReturn(EMAIL_TO_DEFENDANT);
             CallbackResponse callbackResponse = handler.handle(callbackParams);
             assertThat(callbackResponse).isNotNull();
+        }
+
+        @Test
+        void notifyClaimant() {
+
+            Claim claim = Claim.builder()
+                .referenceNumber("XXXXX")
+                .build();
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+            when(notificationsProperties.getTemplates()).thenReturn(templates);
+            when(templates.getEmail()).thenReturn(emailTemplates);
+            when(emailTemplates.getBreathingSpaceEmailToClaimant()).thenReturn(EMAIL_TO_CLAIMANT);
+            handler.handle(callbackParams);
+
+            verify(breathingSpaceEmailService, times(1)).sendNotificationToClaimant(
+                any(Claim.class),
+                any(String.class)
+            );
+        }
+
+        @Test
+        void shouldNotifyDefendantByEmail() {
+
+            Claim claim = Claim.builder()
+                .referenceNumber("XXXXX")
+                .defendantId("id")
+                .build();
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+            when(notificationsProperties.getTemplates()).thenReturn(templates);
+            when(templates.getEmail()).thenReturn(emailTemplates);
+            when(emailTemplates.getBreathingSpaceEmailToDefendant()).thenReturn(EMAIL_TO_DEFENDANT);
+            handler.handle(callbackParams);
+
+            verify(breathingSpaceEmailService, times(1)).sendEmailNotificationToDefendant(
+                any(Claim.class),
+                any(String.class)
+            );
+        }
+
+        @Test
+        void shouldGenerateAndPublishDocument() {
+
+            Claim claim = Claim.builder()
+                .referenceNumber("XXXXX")
+                .build();
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+            when(notificationsProperties.getTemplates()).thenReturn(templates);
+            when(templates.getEmail()).thenReturn(emailTemplates);
+            when(emailTemplates.getBreathingSpaceEmailToClaimant()).thenReturn(EMAIL_TO_CLAIMANT);
+
+            ArgumentCaptor<CCDCase> ccdDataArgumentCaptor = ArgumentCaptor.forClass(CCDCase.class);
+            handler.handle(callbackParams);
+
+            verify(caseDetailsConverter).convertToMap(ccdDataArgumentCaptor.capture());
+
+            verify(breathingSpaceLetterService, times(1)).sendLetterToDefendantFomCCD(any(CCDCase.class),
+                any(Claim.class),
+                any(String.class), any(String.class));
+        }
+
+        @Test
+        void shouldThrowExceptionWhenGenerateAndUpdateCaseDocumentFails() {
+
+            Claim claim = Claim.builder()
+                .referenceNumber("XXXXX")
+                .build();
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+            Assertions.assertThrows(RuntimeException.class,
+                () -> handler.handle(callbackParams));
         }
     }
 
