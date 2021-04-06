@@ -33,6 +33,7 @@ java:
         - launchDarkly-sdk-key
         - sendgrid-api-key
         - staff-email-legal-rep
+        - courfinder-api-url
   environment:
     REFORM_TEAM: cmc
     REFORM_SERVICE_NAME: claim-store
