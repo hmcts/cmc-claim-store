@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.PrintableDocumentService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.breathingspace.BreathingSpaceLetterService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
@@ -81,6 +82,8 @@ class BreathingSpaceLetterServiceTest {
     private PrintService bulkPrintService;
     @Mock
     private ClaimService claimService;
+    @Mock
+    private GeneralLetterService generalLetterService;
     private BreathingSpaceLetterService breathingSpaceLetterService;
 
     @BeforeEach
@@ -88,7 +91,7 @@ class BreathingSpaceLetterServiceTest {
         breathingSpaceLetterService = new BreathingSpaceLetterService(
             docAssemblyService,
             docAssemblyTemplateBodyMapper, printableDocumentService, bulkPrintService, claimService,
-            documentManagementService);
+            documentManagementService, generalLetterService);
 
         String documentUrl = DOCUMENT_URI.toString();
         CCDDocument document = new CCDDocument(documentUrl, documentUrl, GENERAL_LETTER_PDF);

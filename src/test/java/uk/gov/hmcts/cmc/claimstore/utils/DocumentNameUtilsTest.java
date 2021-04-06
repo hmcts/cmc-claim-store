@@ -154,8 +154,14 @@ public class DocumentNameUtilsTest {
     }
 
     @Test
+    public void shouldBuildBreathingSpaceEnteredFileBaseNameFromCCD() {
+        assertThat(buildBreathingSpaceEnteredFileBaseName("000MC001", true))
+            .isEqualTo("000MC001-breathing-space-entered.pdf");
+    }
+
+    @Test
     public void shouldBuildBreathingSpaceEnteredFileBaseName() {
-        assertThat(buildBreathingSpaceEnteredFileBaseName("000MC001"))
+        assertThat(buildBreathingSpaceEnteredFileBaseName("000MC001", false))
             .isEqualTo("000MC001-breathing-space-entered");
     }
 

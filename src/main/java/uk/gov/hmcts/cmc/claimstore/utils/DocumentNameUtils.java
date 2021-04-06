@@ -193,9 +193,12 @@ public class DocumentNameUtils {
         return format("%s-%s", caseRef, fileNameSuffix);
     }
 
-    public static String buildBreathingSpaceEnteredFileBaseName(String caseRef) {
+    public static String buildBreathingSpaceEnteredFileBaseName(String caseRef, boolean createdFromCCD) {
         requireNonBlank(caseRef);
-        return format("%s-breathing-space-entered", caseRef);
+        if (createdFromCCD) {
+            return format("%s-breathing-space-entered.pdf", caseRef);
+        } else {
+            return format("%s-breathing-space-entered", caseRef);
+        }
     }
-
 }

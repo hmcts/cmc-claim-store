@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.PrintableDocumentService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -32,6 +33,7 @@ public class BreathingSpaceLetterService {
     private final PrintService bulkPrintService;
     private final ClaimService claimService;
     private final DocumentManagementService documentManagementService;
+    private final GeneralLetterService generalLetterService;
 
     public BreathingSpaceLetterService(
         DocAssemblyService docAssemblyService,
@@ -39,7 +41,8 @@ public class BreathingSpaceLetterService {
         PrintableDocumentService printableDocumentService,
         PrintService bulkPrintService,
         ClaimService claimService,
-        DocumentManagementService documentManagementService
+        DocumentManagementService documentManagementService,
+        GeneralLetterService generalLetterService
     ) {
         this.docAssemblyService = docAssemblyService;
         this.docAssemblyTemplateBodyMapper = docAssemblyTemplateBodyMapper;
@@ -47,12 +50,13 @@ public class BreathingSpaceLetterService {
         this.bulkPrintService = bulkPrintService;
         this.claimService = claimService;
         this.documentManagementService = documentManagementService;
+        this.generalLetterService = generalLetterService;
     }
 
     public void sendLetterToDefendant(CCDCase ccdCase, Claim claim, String authorisation, String letterTemplateId) {
         String letter = generateLetter(ccdCase, authorisation, letterTemplateId);
         CCDDocument letterDoc = CCDDocument.builder().documentUrl(letter)
-            .documentFileName(buildBreathingSpaceEnteredFileBaseName(ccdCase.getPreviousServiceCaseReference()))
+            .documentFileName(buildBreathingSpaceEnteredFileBaseName(ccdCase.getPreviousServiceCaseReference(), false))
             .build();
         publishLetter(claim, authorisation, letterDoc);
     }
@@ -103,5 +107,20 @@ public class BreathingSpaceLetterService {
             .orElse(new ClaimDocumentCollection());
         claimDocumentCollection.addClaimDocument(claimDocument);
         return claimDocumentCollection;
+    }
+
+    private CCDCase publishLetterFromCCD(CCDCase ccdCase, Claim claim, String authorisation, CCDDocument letterDoc) {
+        return generalLetterService.publishLetter(ccdCase.toBuilder().draftLetterDoc(letterDoc).build(),
+            claim, authorisation,
+            letterDoc.getDocumentFileName());
+    }
+
+    public CCDCase sendLetterToDefendantFomCCD(CCDCase ccdCase, Claim claim, String authorisation,
+                                               String letterTemplateId) {
+        String letter = generateLetter(ccdCase, authorisation, letterTemplateId);
+        CCDDocument letterDoc = CCDDocument.builder().documentUrl(letter)
+            .documentFileName(buildBreathingSpaceEnteredFileBaseName(ccdCase.getPreviousServiceCaseReference(), true))
+            .build();
+        return publishLetterFromCCD(ccdCase, claim, authorisation, letterDoc);
     }
 }

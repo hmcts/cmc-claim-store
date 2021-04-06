@@ -19,9 +19,12 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplate
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.breathingspace.BreathingSpaceEmailService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.breathingspace.BreathingSpaceEnteredCallbackHandler;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.breathingspace.BreathingSpaceLetterService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
@@ -65,6 +68,12 @@ class BreathingSpaceEnteredCallbackHandlerTest {
     private EmailTemplates emailTemplates;
     @Mock
     private EventProducer eventProducer;
+    @Mock
+    private BreathingSpaceLetterService breathingSpaceLetterService;
+    @Mock
+    private BreathingSpaceEmailService breathingSpaceEmailService;
+    @Mock
+    private UserService userService;
 
     private Map<String, Object> returnMap = new HashMap<String, Object>();
 
@@ -201,7 +210,9 @@ class BreathingSpaceEnteredCallbackHandlerTest {
         @BeforeEach
         void setUp() {
             handler = new BreathingSpaceEnteredCallbackHandler(caseDetailsConverter,
-                notificationsProperties, breathingSpaceEnteredTemplateID, eventProducer);
+                notificationsProperties, breathingSpaceEnteredTemplateID, eventProducer, userService,
+                breathingSpaceLetterService,
+                breathingSpaceEmailService);
             CallbackRequest callbackRequest = getCallBackRequest();
             callbackParams = getBuild(callbackRequest);
 
@@ -303,7 +314,9 @@ class BreathingSpaceEnteredCallbackHandlerTest {
         @BeforeEach
         void setUp() {
             handler = new BreathingSpaceEnteredCallbackHandler(caseDetailsConverter,
-                notificationsProperties, breathingSpaceEnteredTemplateID, eventProducer);
+                notificationsProperties, breathingSpaceEnteredTemplateID, eventProducer, userService,
+                breathingSpaceLetterService,
+                breathingSpaceEmailService);
             CallbackRequest callbackRequest = getCallBackRequest();
             callbackParams = getBuild(callbackRequest);
             CCDCase ccdCase = getCCDCase(CCDRespondent.builder());
@@ -341,7 +354,9 @@ class BreathingSpaceEnteredCallbackHandlerTest {
         @BeforeEach
         void setUp() {
             handler = new BreathingSpaceEnteredCallbackHandler(caseDetailsConverter,
-                notificationsProperties, breathingSpaceEnteredTemplateID, eventProducer);
+                notificationsProperties, breathingSpaceEnteredTemplateID, eventProducer, userService,
+                breathingSpaceLetterService,
+                breathingSpaceEmailService);
             CallbackRequest callbackRequest = getCallBackRequest();
             callbackParams = getBuild(callbackRequest);
 
@@ -405,7 +420,9 @@ class BreathingSpaceEnteredCallbackHandlerTest {
         @BeforeEach
         void setUp() {
             handler = new BreathingSpaceEnteredCallbackHandler(caseDetailsConverter,
-                notificationsProperties, breathingSpaceEnteredTemplateID, eventProducer);
+                notificationsProperties, breathingSpaceEnteredTemplateID, eventProducer, userService,
+                breathingSpaceLetterService,
+                breathingSpaceEmailService);
             CallbackRequest callbackRequest = getCallBackRequest();
             callbackParams = getBuild(callbackRequest);
             CCDCase ccdCase = getCCDCase(CCDRespondent.builder());

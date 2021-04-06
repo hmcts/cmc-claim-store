@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.breathingspace;
 
 import com.google.common.collect.ImmutableMap;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
@@ -40,19 +42,27 @@ public class BreathingSpaceEnteredCallbackHandler extends CallbackHandler {
     private final NotificationsProperties notificationsProperties;
     private final String breathingSpaceEnteredTemplateID;
     private final EventProducer eventProducer;
+    private final UserService userService;
+    private final BreathingSpaceLetterService breathingSpaceLetterService;
+    private final BreathingSpaceEmailService breathingSpaceEmailService;
 
     private String validationMessage;
 
     @Autowired
     public BreathingSpaceEnteredCallbackHandler(CaseDetailsConverter caseDetailsConverter,
-                                                NotificationsProperties notificationsProperties,
-                                                @Value("${doc_assembly.breathingSpaceEnteredTemplateID}")
-                                                    String breathingSpaceEnteredTemplateID,
-                                                EventProducer eventProducer) {
+        NotificationsProperties notificationsProperties,
+        @Value("${doc_assembly.breathingSpaceEnteredTemplateID}")
+            String breathingSpaceEnteredTemplateID,
+        EventProducer eventProducer, UserService userService,
+        BreathingSpaceLetterService breathingSpaceLetterService,
+        BreathingSpaceEmailService breathingSpaceEmailService) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.notificationsProperties = notificationsProperties;
         this.breathingSpaceEnteredTemplateID = breathingSpaceEnteredTemplateID;
         this.eventProducer = eventProducer;
+        this.userService = userService;
+        this.breathingSpaceLetterService = breathingSpaceLetterService;
+        this.breathingSpaceEmailService = breathingSpaceEmailService;
     }
 
     @Override
@@ -108,7 +118,7 @@ public class BreathingSpaceEnteredCallbackHandler extends CallbackHandler {
 
     private void validateBreathingSpaceDetails(CCDCase ccdCase, CallbackType callbackType) {
         if (ccdCase.getBreathingSpace() != null) {
-            validationMessage = validateBreathingSpaceDetailsInCCDCase(ccdCase, callbackType);
+            //validationMessage = validateBreathingSpaceDetailsInCCDCase(ccdCase, callbackType);
         } else {
             if (callbackType.equals(CallbackType.ABOUT_TO_START)
                 && (ccdCase.getState().equals(ClaimState.TRANSFERRED.getValue())
@@ -148,28 +158,49 @@ public class BreathingSpaceEnteredCallbackHandler extends CallbackHandler {
 
         final CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
+        String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
         if (ccdCase.getBreathingSpace() != null) {
             CCDBreathingSpace ccdBreathingSpace = ccdCase.getBreathingSpace();
             ccdBreathingSpace.setBsEnteredDate(LocalDate.now());
             ccdCase.setBreathingSpace(ccdBreathingSpace);
         }
+        CCDCase updatedCase = ccdCase;
+        if (userService.getUserDetails(authorisation).isCaseworker()) {
+            Claim claim = caseDetailsConverter.extractClaim(caseDetails);
+            breathingSpaceEmailService.sendNotificationToClaimant(claim,
+                notificationsProperties.getTemplates().getEmail().getBreathingSpaceEmailToClaimant());
+            if (isDefendentLinked(claim)) {
+                breathingSpaceEmailService.sendEmailNotificationToDefendant(claim,
+                    notificationsProperties.getTemplates().getEmail().getBreathingSpaceEmailToDefendant());
+            } else {
+                updatedCase = breathingSpaceLetterService.sendLetterToDefendantFomCCD(ccdCase, claim, authorisation,
+                    breathingSpaceEnteredTemplateID);
+            }
+        }
         var builder = AboutToStartOrSubmitCallbackResponse.builder();
-        return builder.data(caseDetailsConverter.convertToMap(ccdCase)).build();
+        return builder.data(caseDetailsConverter.convertToMap(updatedCase)).build();
     }
 
     private CallbackResponse breathingSpaceEnteredPostOperations(CallbackParams callbackParams) {
-        final CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
-        Claim claim = caseDetailsConverter.extractClaim(caseDetails);
-        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
-        eventProducer.createBreathingSpaceEnteredEvent(
-            claim,
-            ccdCase,
-            authorisation,
-            breathingSpaceEnteredTemplateID,
-            notificationsProperties.getTemplates().getEmail().getBreathingSpaceEmailToClaimant(),
-            notificationsProperties.getTemplates().getEmail().getBreathingSpaceEmailToDefendant()
-        );
+
+        if (!userService.getUserDetails(authorisation).isCaseworker()) {
+            final CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
+            Claim claim = caseDetailsConverter.extractClaim(caseDetails);
+            CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
+            eventProducer.createBreathingSpaceEnteredEvent(
+                claim,
+                ccdCase,
+                authorisation,
+                breathingSpaceEnteredTemplateID,
+                notificationsProperties.getTemplates().getEmail().getBreathingSpaceEmailToClaimant(),
+                notificationsProperties.getTemplates().getEmail().getBreathingSpaceEmailToDefendant()
+            );
+        }
         return SubmittedCallbackResponse.builder().build();
+    }
+
+    private boolean isDefendentLinked(Claim claim) {
+        return !StringUtils.isBlank(claim.getDefendantId());
     }
 }
