@@ -26,4 +26,3 @@ spring:
         launchDarkly-sdk-key: LAUNCH_DARKLY_SDK_KEY
         sendgrid-api-key: SENDGRID_API_KEY
         staff-email-legal-rep: staff-notifications.legalRecipient
-        courfinder-api-url: courtfinder.api.url
