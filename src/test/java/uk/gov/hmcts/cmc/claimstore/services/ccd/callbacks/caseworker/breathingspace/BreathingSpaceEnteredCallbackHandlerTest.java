@@ -351,6 +351,28 @@ class BreathingSpaceEnteredCallbackHandlerTest {
         }
 
         @Test
+        void shouldNotSendLetterAndEmailsOnAboutToSubmit() {
+            UserDetails userDetails = SampleUserDetails.builder()
+                .withForename("Forename")
+                .withSurname("Surname")
+                .withRoles("citizen")
+                .build();
+            when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetails);
+            handler.handle(callbackParams);
+            verify(breathingSpaceEmailService, times(0)).sendNotificationToClaimant(
+                any(Claim.class),
+                any(String.class)
+            );
+            verify(breathingSpaceEmailService, times(0)).sendEmailNotificationToDefendant(
+                any(Claim.class),
+                any(String.class)
+            );
+            verify(breathingSpaceLetterService, times(0)).sendLetterToDefendantFomCCD(any(CCDCase.class),
+                any(Claim.class),
+                any(String.class), any(String.class));
+        }
+
+        @Test
         void shouldGenerateEventOnAboutToSubmit() {
             Claim claim = Claim.builder()
                 .referenceNumber("XXXXX")
