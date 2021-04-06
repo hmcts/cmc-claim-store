@@ -192,6 +192,24 @@ public final class SampleClaim {
             .withClaimSubmissionOperationIndicators(operationIndicators)
             .build();
     }
+  
+    public static Claim getDefaultWithDefendantAddressNull() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimantWithDefendantAddressNullBuilder()
+                .withExternalId(RAND_UUID).build())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .ccjType(CountyCourtJudgmentType.ADMISSIONS)
+                    .paymentOption(IMMEDIATELY)
+                    .build()
+            ).withResponse(SampleResponse.FullDefence
+                .builder()
+                .withDefenceType(DefenceType.DISPUTE)
+                .withMediation(YES)
+                .build()
+            ).withState(ClaimState.OPEN)
+            .build();
+    }
 
     public static Claim getDefaultWithoutResponse() {
         return getDefaultWithoutResponse(DEFENDANT_EMAIL);

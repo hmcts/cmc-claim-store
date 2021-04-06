@@ -40,8 +40,11 @@ public class SoleTraderDetailsMapper {
         soleTrader.getEmail().ifPresent(claimantProvidedPartyDetail::emailAddress);
         soleTrader.getPhone()
             .ifPresent(phoneNo -> claimantProvidedPartyDetail.telephoneNumber(telephoneMapper.to(phoneNo)));
-
-        claimantProvidedPartyDetail.primaryAddress(addressMapper.to(soleTrader.getAddress()));
+        if (soleTrader.getclaimantProvidedAddress() != null) {
+            claimantProvidedPartyDetail.primaryAddress(addressMapper.to(soleTrader.getclaimantProvidedAddress()));
+        } else {
+            claimantProvidedPartyDetail.primaryAddress(addressMapper.to(soleTrader.getAddress()));
+        }
 
         builder
             .claimantProvidedPartyName(soleTrader.getName())
@@ -59,6 +62,7 @@ public class SoleTraderDetailsMapper {
             .email(getDetail(partyDetail, detailFromClaimant, x -> x.getEmailAddress()))
             .phoneNumber(telephoneMapper.from(getDetail(partyDetail, detailFromClaimant, CCDParty::getTelephoneNumber)))
             .address(getAddress(partyDetail, detailFromClaimant, CCDParty::getPrimaryAddress))
+            .claimantProvidedAddress(getAddressByClaimant(detailFromClaimant, CCDParty::getPrimaryAddress))
             .representative(representativeMapper.from(respondent))
             .title(detailFromClaimant.getTitle())
             .businessName(detailFromClaimant.getBusinessName())
@@ -73,6 +77,11 @@ public class SoleTraderDetailsMapper {
 
     private CCDAddress getAddress(CCDParty partyDetail, Function<CCDParty, CCDAddress> extractAddress) {
         return Optional.ofNullable(partyDetail).map(extractAddress).orElse(null);
+    }
+
+    private Address getAddressByClaimant(CCDParty detail, Function<CCDParty, CCDAddress> getAddress) {
+        CCDAddress partyAddress = getAddress(detail, getAddress);
+        return addressMapper.from(partyAddress);
     }
 
     private <T> T getDetail(CCDParty detail, CCDParty detailByClaimant, Function<CCDParty, T> getDetail) {
