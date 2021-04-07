@@ -111,8 +111,11 @@ public class BreathingSpaceLiftedCallbackHandler extends CallbackHandler {
             responseBuilder.errors(errors);
         } else {
             CCDBreathingSpace ccdBreathingSpace = ccdCase.getBreathingSpace();
-            ccdBreathingSpace.setBsLiftedDateByInsolvencyTeamTemp("\n");
-           // ccdBreathingSpace.setBsLiftedDateByInsolvencyTeam(LocalDate.of(0001,01,01));
+            if (ccdBreathingSpace.getBsLiftedDateByInsolvencyTeam() != null) {
+                ccdBreathingSpace.setBsLiftedDateByInsolvencyTeamTemp(null);
+            } else {
+                ccdBreathingSpace.setBsLiftedDateByInsolvencyTeamTemp(" ");
+            }
             responseBuilder.data(Map.of("breathingSpaceSummary", ccdBreathingSpace));
         }
         return responseBuilder.build();
@@ -190,14 +193,6 @@ public class BreathingSpaceLiftedCallbackHandler extends CallbackHandler {
             final CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
             Claim claim = caseDetailsConverter.extractClaim(caseDetails);
             CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
-            eventProducer.createBreathingSpaceEnteredEvent(
-                claim,
-                ccdCase,
-                authorisation,
-                breathingSpaceEnteredTemplateID,
-                notificationsProperties.getTemplates().getEmail().getBreathingSpaceEmailToClaimant(),
-                notificationsProperties.getTemplates().getEmail().getBreathingSpaceEmailToDefendant()
-            );
         }
         return SubmittedCallbackResponse.builder().build();
     }
