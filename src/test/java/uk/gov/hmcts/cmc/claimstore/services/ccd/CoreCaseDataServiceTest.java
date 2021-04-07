@@ -19,6 +19,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.BreathingSpace;
 import uk.gov.hmcts.cmc.domain.models.BreathingSpaceType;
@@ -119,13 +120,14 @@ public class CoreCaseDataServiceTest {
     @Captor
     private ArgumentCaptor<Claim> claimArgumentCaptor;
 
+    @Mock
+    private PilotCourtService pilotCourtService;
     private CoreCaseDataService service;
 
     @Before
     public void before() {
         when(authTokenGenerator.generate()).thenReturn(AUTH_TOKEN);
         when(userService.getUserDetails(AUTHORISATION)).thenReturn(USER_DETAILS);
-
         when(coreCaseDataApi.startEventForCitizen(
             eq(AUTHORISATION),
             eq(AUTH_TOKEN),
@@ -168,8 +170,15 @@ public class CoreCaseDataServiceTest {
             caseDetailsConverter,
             intentionToProceedDeadlineDays,
             workingDayIndicator,
-            directionsQuestionnaireService
+            directionsQuestionnaireService,
+            pilotCourtService
         );
+
+        /*this.pilotCourtService = new PilotCourtService(
+            anyString(),
+            courtFinderApi,
+            hearingCourtMapper,
+            appInsights);*/
     }
 
     @Test
@@ -537,6 +546,44 @@ public class CoreCaseDataServiceTest {
         assertThat(claimArgumentCaptor.getValue().getClaimantResponse()).isPresent();
         verify(coreCaseDataApi, atLeastOnce()).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
             anyString(), anyString(), eq(CLAIMANT_RESPONSE_REJECTION.getValue()));
+    }
+
+    @Test
+    public void saveClaimantResponseShouldReturnPreferredDQCourtNullForNonPilotCourt() {
+        Response providedResponse = SampleResponse.validDefaults();
+        Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
+        ClaimantResponse claimantResponse = SampleClaimantResponse.validRejectionWithDirectionsQuestionnaire();
+
+        when(caseDetailsConverter.extractClaim(any((CaseDetails.class)))).thenReturn(getWithClaimantResponse());
+
+        Claim claim = service.saveClaimantResponse(providedClaim.getId(),
+            claimantResponse,
+            AUTHORISATION
+        );
+
+        assertThat(claim).isNotNull();
+        assertThat(claim.getClaimantResponse()).isPresent();
+        assertThat(claim.getPreferredDQPilotCourt()).isEmpty();
+    }
+
+    @Test
+    public void saveClaimantResponseWithPilotCourt() {
+        String courtName = "Central London County Court";
+        Response providedResponse = SampleResponse.validDefaults();
+        Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
+        Claim extractedClaim = getWithClaimantResponse();
+        when(caseDetailsConverter.extractClaim(any((CaseDetails.class)))).thenReturn(extractedClaim);
+        when(pilotCourtService.isPilotCourt(anyString(), any(), any())).thenReturn(true);
+        ClaimantResponse claimantResponse = SampleClaimantResponse.validRejectionWithDirectionsQuestionnaire();
+        when(directionsQuestionnaireService.getPreferredCourt(extractedClaim)).thenReturn(courtName);
+
+        Claim claim = service.saveClaimantResponse(providedClaim.getId(),
+            claimantResponse,
+            AUTHORISATION
+        );
+
+        assertThat(claim).isNotNull();
+        assertThat(claim.getClaimantResponse()).isPresent();
     }
 
     @Test
