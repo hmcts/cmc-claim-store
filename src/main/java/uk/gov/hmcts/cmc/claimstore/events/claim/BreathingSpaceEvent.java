@@ -8,7 +8,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Getter
-public class BreathingSpaceEnteredEvent {
+public class BreathingSpaceEvent {
     protected final Claim claim;
     protected final CCDCase ccdCase;
     protected final String authorisation;
@@ -17,7 +17,7 @@ public class BreathingSpaceEnteredEvent {
     protected final String defendantEmailTemplateId;
     protected final boolean enteredByCitizen;
 
-    public BreathingSpaceEnteredEvent(
+    public BreathingSpaceEvent(
         Claim claim,
         CCDCase ccdCase,
         String authorisation,
