@@ -7,7 +7,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.context.ApplicationEventPublisher;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
-import uk.gov.hmcts.cmc.claimstore.events.claim.BreathingSpaceEnteredEvent;
+import uk.gov.hmcts.cmc.claimstore.events.claim.BreathingSpaceEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.HwfClaimUpdatedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferAcceptedEvent;
@@ -226,9 +226,18 @@ public class EventProducerTest {
     public void shouldCreateBreathingSpaceEnteredEvent() {
 
         eventProducer.createBreathingSpaceEnteredEvent(CLAIM, CCDCase.builder().build(), AUTHORISATION,
-            LETTER_TEMPLATEID, CLAIMANT_EMAIL_TEMPLATE, DEFENDANT_EMAIL_TEMPLATE);
+            LETTER_TEMPLATEID, CLAIMANT_EMAIL_TEMPLATE, DEFENDANT_EMAIL_TEMPLATE, true);
 
-        verify(publisher).publishEvent(any(BreathingSpaceEnteredEvent.class));
+        verify(publisher).publishEvent(any(BreathingSpaceEvent.class));
+    }
+
+    @Test
+    public void shouldCreateBreathingSpaceLiftedEvent() {
+
+        eventProducer.createBreathingSpaceLiftedEvent(CLAIM, CCDCase.builder().build(), AUTHORISATION,
+            LETTER_TEMPLATEID, CLAIMANT_EMAIL_TEMPLATE, DEFENDANT_EMAIL_TEMPLATE, true);
+
+        verify(publisher).publishEvent(any(BreathingSpaceEvent.class));
     }
 
 }

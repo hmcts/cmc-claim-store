@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
-import uk.gov.hmcts.cmc.claimstore.events.claim.BreathingSpaceEnteredEvent;
+import uk.gov.hmcts.cmc.claimstore.events.claim.BreathingSpaceEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentOrchestrationService;
 import uk.gov.hmcts.cmc.claimstore.events.operations.RpaOperationService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
@@ -42,18 +42,19 @@ public class BreathingSpaceEntetedOrchestrationHandler {
 
     @LogExecutionTime
     @EventListener
-    public void caseworkerBreathingSpaceEnteredEvent(BreathingSpaceEnteredEvent event) {
-
+    public void caseworkerBreathingSpaceEnteredEvent(BreathingSpaceEvent event) {
         Claim claim = event.getClaim();
-        breathingSpaceEmailService.sendNotificationToClaimant(claim,
-            event.getClaimantEmailTemplateId());
-        if (isDefendentLinked(claim)) {
-            breathingSpaceEmailService.sendEmailNotificationToDefendant(claim,
-                event.getDefendantEmailTemplateId());
-        } else {
-            breathingSpaceLetterService.sendLetterToDefendant(event.getCcdCase(), claim,
-                event.getAuthorisation(),
-                event.getLetterTemplateId());
+        if (event.isEnteredByCitizen()) {
+            breathingSpaceEmailService.sendNotificationToClaimant(claim,
+                event.getClaimantEmailTemplateId());
+            if (isDefendentLinked(claim)) {
+                breathingSpaceEmailService.sendEmailNotificationToDefendant(claim,
+                    event.getDefendantEmailTemplateId());
+            } else {
+                breathingSpaceLetterService.sendLetterToDefendant(event.getCcdCase(), claim,
+                    event.getAuthorisation(),
+                    event.getLetterTemplateId());
+            }
         }
         PDF sealedClaimPdf = documentOrchestrationService.getSealedClaimPdf(claim);
         rpaOperationService.notifyBreathingSpace(claim, event.getAuthorisation(), sealedClaimPdf);

@@ -7,7 +7,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.InterlocutoryJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.ReDeterminationEvent;
-import uk.gov.hmcts.cmc.claimstore.events.claim.BreathingSpaceEnteredEvent;
+import uk.gov.hmcts.cmc.claimstore.events.claim.BreathingSpaceEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CaseworkerHwfClaimIssueEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimCreatedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
@@ -157,8 +157,17 @@ public class EventProducer {
 
     public void createBreathingSpaceEnteredEvent(Claim claim, CCDCase ccdCase,
          String authorisation, String letterTemplateId,
-         String emailTemplateIDClaimant, String emailTemplateIDDefendant) {
-        publisher.publishEvent(new BreathingSpaceEnteredEvent(claim, ccdCase, authorisation, letterTemplateId,
-            emailTemplateIDClaimant, emailTemplateIDDefendant));
+         String emailTemplateIDClaimant, String emailTemplateIDDefendant,
+         boolean enteredByCitizen) {
+        publisher.publishEvent(new BreathingSpaceEvent(claim, ccdCase, authorisation, letterTemplateId,
+            emailTemplateIDClaimant, emailTemplateIDDefendant, enteredByCitizen));
+    }
+
+    public void createBreathingSpaceLiftedEvent(Claim claim, CCDCase ccdCase,
+         String authorisation, String letterTemplateId,
+         String emailTemplateIDClaimant, String emailTemplateIDDefendant,
+         boolean enteredByCitizen) {
+        publisher.publishEvent(new BreathingSpaceEvent(claim, ccdCase, authorisation, letterTemplateId,
+            emailTemplateIDClaimant, emailTemplateIDDefendant, enteredByCitizen));
     }
 }

@@ -8,21 +8,23 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Getter
-public class BreathingSpaceEnteredEvent {
+public class BreathingSpaceEvent {
     protected final Claim claim;
     protected final CCDCase ccdCase;
     protected final String authorisation;
     protected final String letterTemplateId;
     protected final String claimantEmailTemplateId;
     protected final String defendantEmailTemplateId;
+    protected final boolean enteredByCitizen;
 
-    public BreathingSpaceEnteredEvent(
+    public BreathingSpaceEvent(
         Claim claim,
         CCDCase ccdCase,
         String authorisation,
         String letterTemplateId,
         String claimantEmailTemplateId,
-        String defendantEmailTemplateId
+        String defendantEmailTemplateId,
+        boolean enteredByCitizen
     ) {
         this.claim = claim;
         this.ccdCase = ccdCase;
@@ -30,6 +32,7 @@ public class BreathingSpaceEnteredEvent {
         this.letterTemplateId = letterTemplateId;
         this.claimantEmailTemplateId = claimantEmailTemplateId;
         this.defendantEmailTemplateId = defendantEmailTemplateId;
+        this.enteredByCitizen = enteredByCitizen;
     }
 
     @Override
