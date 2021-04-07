@@ -43,17 +43,18 @@ public class BreathingSpaceEntetedOrchestrationHandler {
     @LogExecutionTime
     @EventListener
     public void caseworkerBreathingSpaceEnteredEvent(BreathingSpaceEnteredEvent event) {
-
         Claim claim = event.getClaim();
-        breathingSpaceEmailService.sendNotificationToClaimant(claim,
-            event.getClaimantEmailTemplateId());
-        if (isDefendentLinked(claim)) {
-            breathingSpaceEmailService.sendEmailNotificationToDefendant(claim,
-                event.getDefendantEmailTemplateId());
-        } else {
-            breathingSpaceLetterService.sendLetterToDefendant(event.getCcdCase(), claim,
-                event.getAuthorisation(),
-                event.getLetterTemplateId());
+        if (event.isEnteredByCitizen()) {
+            breathingSpaceEmailService.sendNotificationToClaimant(claim,
+                event.getClaimantEmailTemplateId());
+            if (isDefendentLinked(claim)) {
+                breathingSpaceEmailService.sendEmailNotificationToDefendant(claim,
+                    event.getDefendantEmailTemplateId());
+            } else {
+                breathingSpaceLetterService.sendLetterToDefendant(event.getCcdCase(), claim,
+                    event.getAuthorisation(),
+                    event.getLetterTemplateId());
+            }
         }
         PDF sealedClaimPdf = documentOrchestrationService.getSealedClaimPdf(claim);
         rpaOperationService.notifyBreathingSpace(claim, event.getAuthorisation(), sealedClaimPdf);

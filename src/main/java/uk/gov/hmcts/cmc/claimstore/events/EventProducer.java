@@ -156,9 +156,10 @@ public class EventProducer {
     }
 
     public void createBreathingSpaceEnteredEvent(Claim claim, CCDCase ccdCase,
-         String authorisation, String letterTemplateId,
-         String emailTemplateIDClaimant, String emailTemplateIDDefendant) {
+                                                 String authorisation, String letterTemplateId,
+                                                 String emailTemplateIDClaimant, String emailTemplateIDDefendant,
+                                                 boolean enteredByCitizen) {
         publisher.publishEvent(new BreathingSpaceEnteredEvent(claim, ccdCase, authorisation, letterTemplateId,
-            emailTemplateIDClaimant, emailTemplateIDDefendant));
+            emailTemplateIDClaimant, emailTemplateIDDefendant, enteredByCitizen));
     }
 }

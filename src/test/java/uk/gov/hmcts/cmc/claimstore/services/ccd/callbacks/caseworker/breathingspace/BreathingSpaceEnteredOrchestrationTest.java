@@ -26,6 +26,7 @@ import java.net.URI;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.GENERAL_LETTER_PDF;
 
@@ -80,7 +81,7 @@ public class BreathingSpaceEnteredOrchestrationTest {
     public void shouldSendEmailToClaimantUsingPredefinedTemplate() {
         Claim claim = SampleClaim.builder().withSubmitterEmail("claimant@mail.com").build();
         BreathingSpaceEnteredEvent event = new BreathingSpaceEnteredEvent(claim, ccdCase, AUTHORISATION,
-            BREATHING_SPACE_LETTER_TEMPLATE_ID, CLAIMANT_EMAIL_TEMPLATE, DEFENDANT_EMAIL_TEMPLATE);
+            BREATHING_SPACE_LETTER_TEMPLATE_ID, CLAIMANT_EMAIL_TEMPLATE, DEFENDANT_EMAIL_TEMPLATE, true);
         handler.caseworkerBreathingSpaceEnteredEvent(event);
 
         verify(breathingSpaceEmailService).sendNotificationToClaimant(
@@ -93,7 +94,7 @@ public class BreathingSpaceEnteredOrchestrationTest {
     public void shouldSendEmailToDefendantUsingPredefinedTemplate() {
         Claim claim = SampleClaim.builder().withDefendantEmail("defendant@mail.com").build();
         BreathingSpaceEnteredEvent event = new BreathingSpaceEnteredEvent(claim, ccdCase, AUTHORISATION,
-            BREATHING_SPACE_LETTER_TEMPLATE_ID, CLAIMANT_EMAIL_TEMPLATE, DEFENDANT_EMAIL_TEMPLATE);
+            BREATHING_SPACE_LETTER_TEMPLATE_ID, CLAIMANT_EMAIL_TEMPLATE, DEFENDANT_EMAIL_TEMPLATE, true);
         handler.caseworkerBreathingSpaceEnteredEvent(event);
 
         verify(breathingSpaceEmailService).sendEmailNotificationToDefendant(
@@ -107,7 +108,7 @@ public class BreathingSpaceEnteredOrchestrationTest {
             .referenceNumber("000MC001")
             .build();
         BreathingSpaceEnteredEvent event = new BreathingSpaceEnteredEvent(claim, ccdCase, AUTHORISATION,
-            BREATHING_SPACE_LETTER_TEMPLATE_ID, CLAIMANT_EMAIL_TEMPLATE, DEFENDANT_EMAIL_TEMPLATE);
+            BREATHING_SPACE_LETTER_TEMPLATE_ID, CLAIMANT_EMAIL_TEMPLATE, DEFENDANT_EMAIL_TEMPLATE, true);
 
         handler.caseworkerBreathingSpaceEnteredEvent(event);
 
@@ -119,12 +120,37 @@ public class BreathingSpaceEnteredOrchestrationTest {
     }
 
     @Test
+    public void shouldNotGenerateLetterAndSendEmail() {
+        Claim claim = Claim.builder()
+            .referenceNumber("000MC001")
+            .build();
+        BreathingSpaceEnteredEvent event = new BreathingSpaceEnteredEvent(claim, ccdCase, AUTHORISATION,
+            BREATHING_SPACE_LETTER_TEMPLATE_ID, CLAIMANT_EMAIL_TEMPLATE, DEFENDANT_EMAIL_TEMPLATE, false);
+
+        handler.caseworkerBreathingSpaceEnteredEvent(event);
+
+        verify(breathingSpaceEmailService, times(0)).sendEmailNotificationToDefendant(
+            any(Claim.class),
+            anyString());
+
+        verify(breathingSpaceLetterService, times(0)).sendLetterToDefendant(
+            any(CCDCase.class),
+            any(Claim.class),
+            anyString(),
+            anyString());
+
+        verify(breathingSpaceEmailService, times(0)).sendEmailNotificationToDefendant(
+            any(Claim.class),
+            anyString());
+    }
+
+    @Test
     public void shouldAddTracking() {
         Claim claim = Claim.builder()
             .referenceNumber("000MC001")
             .build();
         BreathingSpaceEnteredEvent event = new BreathingSpaceEnteredEvent(claim, ccdCase, AUTHORISATION,
-            BREATHING_SPACE_LETTER_TEMPLATE_ID, CLAIMANT_EMAIL_TEMPLATE, DEFENDANT_EMAIL_TEMPLATE);
+            BREATHING_SPACE_LETTER_TEMPLATE_ID, CLAIMANT_EMAIL_TEMPLATE, DEFENDANT_EMAIL_TEMPLATE, true);
 
         handler.caseworkerBreathingSpaceEnteredEvent(event);
 

@@ -226,7 +226,7 @@ public class EventProducerTest {
     public void shouldCreateBreathingSpaceEnteredEvent() {
 
         eventProducer.createBreathingSpaceEnteredEvent(CLAIM, CCDCase.builder().build(), AUTHORISATION,
-            LETTER_TEMPLATEID, CLAIMANT_EMAIL_TEMPLATE, DEFENDANT_EMAIL_TEMPLATE);
+            LETTER_TEMPLATEID, CLAIMANT_EMAIL_TEMPLATE, DEFENDANT_EMAIL_TEMPLATE, true);
 
         verify(publisher).publishEvent(any(BreathingSpaceEnteredEvent.class));
     }
