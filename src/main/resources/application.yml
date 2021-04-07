@@ -68,7 +68,7 @@ idam:
 
 courtfinder:
   api:
-    url: "https://courttribunalfinder.service.gov.uk"
+    url: "${COURT_FINDER_API_URL:https://www.find-court-tribunal.service.gov.uk}"
 
 fees:
   api:
