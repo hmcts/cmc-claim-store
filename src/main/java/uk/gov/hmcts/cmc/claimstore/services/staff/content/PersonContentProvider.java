@@ -21,7 +21,6 @@ public class PersonContentProvider {
         String dateOfBirth
     ) {
         requireNonNull(name);
-        requireNonNull(address);
 
         return PersonContent.builder()
             .partyType(partyType)
