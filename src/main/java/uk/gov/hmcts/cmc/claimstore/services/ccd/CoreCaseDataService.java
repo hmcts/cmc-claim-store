@@ -1234,7 +1234,11 @@ public class CoreCaseDataService {
             breathingSpace.getBsEnteredDateByInsolvencyTeam(),
             breathingSpace.getBsLiftedDateByInsolvencyTeam(),
             breathingSpace.getBsExpectedEndDate(),
-            breathingSpace.getBsLiftedFlag()
+            breathingSpace.getBsLiftedFlag(),
+            null,
+            null,
+            null,
+            null
         );
 
         ccdCase.setBreathingSpace(ccdBreathingSpace);
