@@ -218,4 +218,10 @@ public class EmailTemplates {
 
     @NotEmpty
     private String breathingSpaceEmailToDefendant;
+
+    @NotEmpty
+    private String breathingSpaceLiftedEmailToClaimant;
+
+    @NotEmpty
+    private String breathingSpaceLiftedEmailToDefendant;
 }

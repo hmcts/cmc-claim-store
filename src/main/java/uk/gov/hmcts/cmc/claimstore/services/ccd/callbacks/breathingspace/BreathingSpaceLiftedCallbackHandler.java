@@ -40,7 +40,7 @@ public class BreathingSpaceLiftedCallbackHandler extends CallbackHandler {
     private static final List<CaseEvent> EVENTS = Arrays.asList(CaseEvent.BREATHING_SPACE_LIFTED);
     private final CaseDetailsConverter caseDetailsConverter;
     private final NotificationsProperties notificationsProperties;
-    private final String breathingSpaceEnteredTemplateID;
+    private final String breathingSpaceLiftedTemplateID;
     private final EventProducer eventProducer;
     private final UserService userService;
     private final BreathingSpaceLetterService breathingSpaceLetterService;
@@ -51,14 +51,14 @@ public class BreathingSpaceLiftedCallbackHandler extends CallbackHandler {
     @Autowired
     public BreathingSpaceLiftedCallbackHandler(CaseDetailsConverter caseDetailsConverter,
                                                NotificationsProperties notificationsProperties,
-                                               @Value("${doc_assembly.breathingSpaceEnteredTemplateID}")
-                                                   String breathingSpaceEnteredTemplateID,
+                                               @Value("${doc_assembly.breathingSpaceLiftedTemplateID}")
+                                                   String breathingSpaceLiftedTemplateID,
                                                EventProducer eventProducer, UserService userService,
                                                BreathingSpaceLetterService breathingSpaceLetterService,
                                                BreathingSpaceEmailService breathingSpaceEmailService) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.notificationsProperties = notificationsProperties;
-        this.breathingSpaceEnteredTemplateID = breathingSpaceEnteredTemplateID;
+        this.breathingSpaceLiftedTemplateID = breathingSpaceLiftedTemplateID;
         this.eventProducer = eventProducer;
         this.userService = userService;
         this.breathingSpaceLetterService = breathingSpaceLetterService;
@@ -173,13 +173,13 @@ public class BreathingSpaceLiftedCallbackHandler extends CallbackHandler {
         if (userService.getUserDetails(authorisation).isCaseworker()) {
             Claim claim = caseDetailsConverter.extractClaim(caseDetails);
             breathingSpaceEmailService.sendNotificationToClaimant(claim,
-                notificationsProperties.getTemplates().getEmail().getBreathingSpaceEmailToClaimant());
+                notificationsProperties.getTemplates().getEmail().getBreathingSpaceLiftedEmailToClaimant());
             if (isDefendentLinked(claim)) {
                 breathingSpaceEmailService.sendEmailNotificationToDefendant(claim,
-                    notificationsProperties.getTemplates().getEmail().getBreathingSpaceEmailToDefendant());
+                    notificationsProperties.getTemplates().getEmail().getBreathingSpaceLiftedEmailToDefendant());
             } else {
                 updatedCase = breathingSpaceLetterService.sendLetterToDefendantFomCCD(ccdCase, claim, authorisation,
-                    breathingSpaceEnteredTemplateID);
+                    breathingSpaceLiftedTemplateID);
             }
         }
         var builder = AboutToStartOrSubmitCallbackResponse.builder();
@@ -188,12 +188,18 @@ public class BreathingSpaceLiftedCallbackHandler extends CallbackHandler {
 
     private CallbackResponse breathingSpaceLiftedPostOperations(CallbackParams callbackParams) {
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
-
-        if (!userService.getUserDetails(authorisation).isCaseworker()) {
-            final CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
-            Claim claim = caseDetailsConverter.extractClaim(caseDetails);
-            CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
-        }
+        final CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
+        Claim claim = caseDetailsConverter.extractClaim(caseDetails);
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
+        eventProducer.createBreathingSpaceLiftedEvent(
+            claim,
+            ccdCase,
+            authorisation,
+            breathingSpaceLiftedTemplateID,
+            notificationsProperties.getTemplates().getEmail().getBreathingSpaceEmailToClaimant(),
+            notificationsProperties.getTemplates().getEmail().getBreathingSpaceEmailToDefendant(),
+            !userService.getUserDetails(authorisation).isCaseworker()
+        );
         return SubmittedCallbackResponse.builder().build();
     }
 

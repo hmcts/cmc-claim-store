@@ -239,6 +239,8 @@ notifications:
       defendantAskedToRespondByPost: "18bfc30c-7ad1-44eb-b05c-eef63482e3be"
       breathingSpaceEmailToClaimant: "a6c8e29e-acd1-49d4-845c-f10b2e71c7a9"
       breathingSpaceEmailToDefendant: "4d9cf3ad-5f7a-4ca9-b3f3-21aac6fc8c21"
+      breathingSpaceLiftedEmailToClaimant: "2456ea8e-aa4b-4d38-98a9-aedc8d2fe508"
+      breathingSpaceLiftedEmailToDefendant: "13da58f4-a606-4bad-947f-3462b35593df"
 
 staff-notifications:
   sender:
