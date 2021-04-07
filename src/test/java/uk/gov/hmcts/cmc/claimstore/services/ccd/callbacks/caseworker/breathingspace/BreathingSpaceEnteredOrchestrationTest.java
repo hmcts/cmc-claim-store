@@ -81,7 +81,7 @@ public class BreathingSpaceEnteredOrchestrationTest {
     public void shouldSendEmailToClaimantUsingPredefinedTemplate() {
         Claim claim = SampleClaim.builder().withSubmitterEmail("claimant@mail.com").build();
         BreathingSpaceEvent event = new BreathingSpaceEvent(claim, ccdCase, AUTHORISATION,
-            BREATHING_SPACE_LETTER_TEMPLATE_ID, CLAIMANT_EMAIL_TEMPLATE, DEFENDANT_EMAIL_TEMPLATE, true);
+            BREATHING_SPACE_LETTER_TEMPLATE_ID, CLAIMANT_EMAIL_TEMPLATE, DEFENDANT_EMAIL_TEMPLATE, true, true);
         handler.caseworkerBreathingSpaceEnteredEvent(event);
 
         verify(breathingSpaceEmailService).sendNotificationToClaimant(
@@ -94,7 +94,7 @@ public class BreathingSpaceEnteredOrchestrationTest {
     public void shouldSendEmailToDefendantUsingPredefinedTemplate() {
         Claim claim = SampleClaim.builder().withDefendantEmail("defendant@mail.com").build();
         BreathingSpaceEvent event = new BreathingSpaceEvent(claim, ccdCase, AUTHORISATION,
-            BREATHING_SPACE_LETTER_TEMPLATE_ID, CLAIMANT_EMAIL_TEMPLATE, DEFENDANT_EMAIL_TEMPLATE, true);
+            BREATHING_SPACE_LETTER_TEMPLATE_ID, CLAIMANT_EMAIL_TEMPLATE, DEFENDANT_EMAIL_TEMPLATE, true, true);
         handler.caseworkerBreathingSpaceEnteredEvent(event);
 
         verify(breathingSpaceEmailService).sendEmailNotificationToDefendant(
@@ -108,13 +108,14 @@ public class BreathingSpaceEnteredOrchestrationTest {
             .referenceNumber("000MC001")
             .build();
         BreathingSpaceEvent event = new BreathingSpaceEvent(claim, ccdCase, AUTHORISATION,
-            BREATHING_SPACE_LETTER_TEMPLATE_ID, CLAIMANT_EMAIL_TEMPLATE, DEFENDANT_EMAIL_TEMPLATE, true);
+            BREATHING_SPACE_LETTER_TEMPLATE_ID, CLAIMANT_EMAIL_TEMPLATE, DEFENDANT_EMAIL_TEMPLATE, true, true);
 
         handler.caseworkerBreathingSpaceEnteredEvent(event);
 
         verify(breathingSpaceLetterService).sendLetterToDefendant(
             any(CCDCase.class),
             any(Claim.class),
+            anyString(),
             anyString(),
             anyString());
     }
@@ -125,7 +126,7 @@ public class BreathingSpaceEnteredOrchestrationTest {
             .referenceNumber("000MC001")
             .build();
         BreathingSpaceEvent event = new BreathingSpaceEvent(claim, ccdCase, AUTHORISATION,
-            BREATHING_SPACE_LETTER_TEMPLATE_ID, CLAIMANT_EMAIL_TEMPLATE, DEFENDANT_EMAIL_TEMPLATE, false);
+            BREATHING_SPACE_LETTER_TEMPLATE_ID, CLAIMANT_EMAIL_TEMPLATE, DEFENDANT_EMAIL_TEMPLATE, false, false);
 
         handler.caseworkerBreathingSpaceEnteredEvent(event);
 
@@ -136,6 +137,7 @@ public class BreathingSpaceEnteredOrchestrationTest {
         verify(breathingSpaceLetterService, times(0)).sendLetterToDefendant(
             any(CCDCase.class),
             any(Claim.class),
+            anyString(),
             anyString(),
             anyString());
 
@@ -150,7 +152,7 @@ public class BreathingSpaceEnteredOrchestrationTest {
             .referenceNumber("000MC001")
             .build();
         BreathingSpaceEvent event = new BreathingSpaceEvent(claim, ccdCase, AUTHORISATION,
-            BREATHING_SPACE_LETTER_TEMPLATE_ID, CLAIMANT_EMAIL_TEMPLATE, DEFENDANT_EMAIL_TEMPLATE, true);
+            BREATHING_SPACE_LETTER_TEMPLATE_ID, CLAIMANT_EMAIL_TEMPLATE, DEFENDANT_EMAIL_TEMPLATE, true, false);
 
         handler.caseworkerBreathingSpaceEnteredEvent(event);
 

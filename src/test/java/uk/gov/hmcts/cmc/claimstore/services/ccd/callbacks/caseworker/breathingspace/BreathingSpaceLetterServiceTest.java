@@ -50,6 +50,7 @@ class BreathingSpaceLetterServiceTest {
 
     public static final String BREATHING_SPACE_LETTER_TEMPLATE_ID = "breathingSpaceEnteredTemplateID";
     private static final String AUTHORISATION = "Bearer: aaaa";
+    private static final String FILE_NAME = "breathing-space-entered.pdf";
     private static final String DOC_URL = "http://success.test";
     private static final String DOC_URL_BINARY = "http://success.test/binary";
     private static final String DOC_NAME = "doc-name";
@@ -130,7 +131,7 @@ class BreathingSpaceLetterServiceTest {
             .thenReturn(claimWithBulkPrintDetails);
 
         breathingSpaceLetterService.sendLetterToDefendant(ccdCase, claim, BEARER_TOKEN.name(),
-            BREATHING_SPACE_LETTER_TEMPLATE_ID);
+            BREATHING_SPACE_LETTER_TEMPLATE_ID, FILE_NAME);
 
         verify(docAssemblyService, once()).renderTemplate(ccdCase, BEARER_TOKEN.name(),
             BREATHING_SPACE_LETTER_TEMPLATE_ID, docAssemblyTemplateBody);
@@ -159,7 +160,7 @@ class BreathingSpaceLetterServiceTest {
             .thenReturn(claimWithBulkPrintDetails);
 
         breathingSpaceLetterService.sendLetterToDefendant(ccdCase, claim, BEARER_TOKEN.name(),
-            BREATHING_SPACE_LETTER_TEMPLATE_ID);
+            BREATHING_SPACE_LETTER_TEMPLATE_ID, FILE_NAME);
 
         verify(bulkPrintService, once()).printPdf(any(Claim.class), any(),
             any(BulkPrintRequestType.class),
@@ -193,7 +194,7 @@ class BreathingSpaceLetterServiceTest {
             .thenReturn(claimWithBulkPrintDetails);
 
         breathingSpaceLetterService.sendLetterToDefendant(ccdCase, claim, BEARER_TOKEN.name(),
-            BREATHING_SPACE_LETTER_TEMPLATE_ID);
+            BREATHING_SPACE_LETTER_TEMPLATE_ID, FILE_NAME);
 
         verify(documentManagementService, once()).uploadDocument(any(String.class), any());
 
@@ -213,7 +214,7 @@ class BreathingSpaceLetterServiceTest {
 
         assertThrows(DocumentGenerationFailedException.class,
             () -> breathingSpaceLetterService.sendLetterToDefendant(ccdCase, claim, AUTHORISATION,
-                BREATHING_SPACE_LETTER_TEMPLATE_ID));
+                BREATHING_SPACE_LETTER_TEMPLATE_ID, FILE_NAME));
     }
 
     @Test
@@ -228,7 +229,7 @@ class BreathingSpaceLetterServiceTest {
         when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
 
         breathingSpaceLetterService.sendLetterToDefendantFomCCD(ccdCase, claim, BEARER_TOKEN.name(),
-            BREATHING_SPACE_LETTER_TEMPLATE_ID);
+            BREATHING_SPACE_LETTER_TEMPLATE_ID, FILE_NAME);
 
         verify(docAssemblyService, once()).renderTemplate(ccdCase, BEARER_TOKEN.name(),
             BREATHING_SPACE_LETTER_TEMPLATE_ID, docAssemblyTemplateBody);
@@ -246,7 +247,7 @@ class BreathingSpaceLetterServiceTest {
         when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
 
         breathingSpaceLetterService.sendLetterToDefendantFomCCD(ccdCase, claim, BEARER_TOKEN.name(),
-            BREATHING_SPACE_LETTER_TEMPLATE_ID);
+            BREATHING_SPACE_LETTER_TEMPLATE_ID, FILE_NAME);
 
         verify(generalLetterService)
             .publishLetter(any(CCDCase.class), any(Claim.class), anyString(), anyString());
@@ -265,7 +266,7 @@ class BreathingSpaceLetterServiceTest {
 
         assertThrows(DocumentGenerationFailedException.class,
             () -> breathingSpaceLetterService.sendLetterToDefendantFomCCD(ccdCase, claim, AUTHORISATION,
-                BREATHING_SPACE_LETTER_TEMPLATE_ID));
+                BREATHING_SPACE_LETTER_TEMPLATE_ID, FILE_NAME));
     }
 
 }

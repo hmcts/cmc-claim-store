@@ -226,7 +226,7 @@ public class EventProducerTest {
     public void shouldCreateBreathingSpaceEnteredEvent() {
 
         eventProducer.createBreathingSpaceEnteredEvent(CLAIM, CCDCase.builder().build(), AUTHORISATION,
-            LETTER_TEMPLATEID, CLAIMANT_EMAIL_TEMPLATE, DEFENDANT_EMAIL_TEMPLATE, true);
+            LETTER_TEMPLATEID, CLAIMANT_EMAIL_TEMPLATE, DEFENDANT_EMAIL_TEMPLATE, true, true);
 
         verify(publisher).publishEvent(any(BreathingSpaceEvent.class));
     }
@@ -235,7 +235,7 @@ public class EventProducerTest {
     public void shouldCreateBreathingSpaceLiftedEvent() {
 
         eventProducer.createBreathingSpaceLiftedEvent(CLAIM, CCDCase.builder().build(), AUTHORISATION,
-            LETTER_TEMPLATEID, CLAIMANT_EMAIL_TEMPLATE, DEFENDANT_EMAIL_TEMPLATE, true);
+            LETTER_TEMPLATEID, CLAIMANT_EMAIL_TEMPLATE, DEFENDANT_EMAIL_TEMPLATE, true, true);
 
         verify(publisher).publishEvent(any(BreathingSpaceEvent.class));
     }

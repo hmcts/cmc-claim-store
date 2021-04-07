@@ -32,6 +32,7 @@ import java.util.Map;
 
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildBreathingSpaceLiftedFileBaseName;
 
 @Service
 public class BreathingSpaceLiftedCallbackHandler extends CallbackHandler {
@@ -179,7 +180,8 @@ public class BreathingSpaceLiftedCallbackHandler extends CallbackHandler {
                     notificationsProperties.getTemplates().getEmail().getBreathingSpaceLiftedEmailToDefendant());
             } else {
                 updatedCase = breathingSpaceLetterService.sendLetterToDefendantFomCCD(ccdCase, claim, authorisation,
-                    breathingSpaceLiftedTemplateID);
+                    breathingSpaceLiftedTemplateID,
+                    buildBreathingSpaceLiftedFileBaseName(ccdCase.getPreviousServiceCaseReference(), true));
             }
         }
         var builder = AboutToStartOrSubmitCallbackResponse.builder();
@@ -196,9 +198,10 @@ public class BreathingSpaceLiftedCallbackHandler extends CallbackHandler {
             ccdCase,
             authorisation,
             breathingSpaceLiftedTemplateID,
-            notificationsProperties.getTemplates().getEmail().getBreathingSpaceEmailToClaimant(),
-            notificationsProperties.getTemplates().getEmail().getBreathingSpaceEmailToDefendant(),
-            !userService.getUserDetails(authorisation).isCaseworker()
+            notificationsProperties.getTemplates().getEmail().getBreathingSpaceLiftedEmailToClaimant(),
+            notificationsProperties.getTemplates().getEmail().getBreathingSpaceLiftedEmailToDefendant(),
+            !userService.getUserDetails(authorisation).isCaseworker(),
+            true
         );
         return SubmittedCallbackResponse.builder().build();
     }

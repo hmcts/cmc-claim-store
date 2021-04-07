@@ -21,7 +21,6 @@ import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ADD_BULK_PRINT_DETAILS;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildBreathingSpaceEnteredFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.GENERAL_LETTER;
 
@@ -53,10 +52,11 @@ public class BreathingSpaceLetterService {
         this.generalLetterService = generalLetterService;
     }
 
-    public void sendLetterToDefendant(CCDCase ccdCase, Claim claim, String authorisation, String letterTemplateId) {
+    public void sendLetterToDefendant(CCDCase ccdCase, Claim claim, String authorisation, String letterTemplateId,
+                                      String fileName) {
         String letter = generateLetter(ccdCase, authorisation, letterTemplateId);
         CCDDocument letterDoc = CCDDocument.builder().documentUrl(letter)
-            .documentFileName(buildBreathingSpaceEnteredFileBaseName(ccdCase.getPreviousServiceCaseReference(), false))
+            .documentFileName(fileName)
             .build();
         publishLetter(claim, authorisation, letterDoc);
     }
@@ -116,10 +116,10 @@ public class BreathingSpaceLetterService {
     }
 
     public CCDCase sendLetterToDefendantFomCCD(CCDCase ccdCase, Claim claim, String authorisation,
-                                               String letterTemplateId) {
+                                               String letterTemplateId, String fileName) {
         String letter = generateLetter(ccdCase, authorisation, letterTemplateId);
         CCDDocument letterDoc = CCDDocument.builder().documentUrl(letter)
-            .documentFileName(buildBreathingSpaceEnteredFileBaseName(ccdCase.getPreviousServiceCaseReference(), true))
+            .documentFileName(fileName)
             .build();
         return publishLetterFromCCD(ccdCase, claim, authorisation, letterDoc);
     }

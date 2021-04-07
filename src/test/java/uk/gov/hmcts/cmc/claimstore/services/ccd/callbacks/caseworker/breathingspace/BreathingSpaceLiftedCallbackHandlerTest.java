@@ -230,7 +230,7 @@ class BreathingSpaceLiftedCallbackHandlerTest {
             return CallbackRequest
                 .builder()
                 .caseDetails(CaseDetails.builder().data(EMPTY_MAP).build())
-                .eventId(CaseEvent.BREATHING_SPACE_ENTERED.getValue())
+                .eventId(CaseEvent.BREATHING_SPACE_LIFTED.getValue())
                 .build();
         }
 
@@ -338,7 +338,7 @@ class BreathingSpaceLiftedCallbackHandlerTest {
             return CallbackRequest
                 .builder()
                 .caseDetails(CaseDetails.builder().data(EMPTY_MAP).build())
-                .eventId(CaseEvent.BREATHING_SPACE_ENTERED.getValue())
+                .eventId(CaseEvent.BREATHING_SPACE_LIFTED.getValue())
                 .build();
         }
 
@@ -369,7 +369,7 @@ class BreathingSpaceLiftedCallbackHandlerTest {
             );
             verify(breathingSpaceLetterService, times(0)).sendLetterToDefendantFomCCD(any(CCDCase.class),
                 any(Claim.class),
-                any(String.class), any(String.class));
+                any(String.class), any(String.class), anyString());
         }
 
         @Test
@@ -442,7 +442,7 @@ class BreathingSpaceLiftedCallbackHandlerTest {
 
             verify(breathingSpaceLetterService, times(1)).sendLetterToDefendantFomCCD(any(CCDCase.class),
                 any(Claim.class),
-                any(String.class), any(String.class));
+                any(String.class), any(String.class), anyString());
         }
 
         @Test
@@ -478,7 +478,7 @@ class BreathingSpaceLiftedCallbackHandlerTest {
             return CallbackRequest
                 .builder()
                 .caseDetails(CaseDetails.builder().data(EMPTY_MAP).build())
-                .eventId(CaseEvent.BREATHING_SPACE_ENTERED.getValue())
+                .eventId(CaseEvent.BREATHING_SPACE_LIFTED.getValue())
                 .build();
         }
 
@@ -533,16 +533,17 @@ class BreathingSpaceLiftedCallbackHandlerTest {
                 breathingSpaceEmailService);
             CallbackRequest callbackRequest = getCallBackRequest();
             callbackParams = getBuild(callbackRequest);
-            UserDetails userDetails = SampleUserDetails.builder()
-                .withForename("Forename")
-                .withSurname("Surname")
-                .withRoles("citizen")
-                .build();
-            when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetails);
             when(notificationsProperties.getTemplates()).thenReturn(templates);
             when(templates.getEmail()).thenReturn(emailTemplates);
-            when(emailTemplates.getBreathingSpaceEmailToClaimant()).thenReturn(EMAIL_TO_CLAIMANT);
-            when(emailTemplates.getBreathingSpaceEmailToDefendant()).thenReturn(EMAIL_TO_DEFENDANT);
+            when(emailTemplates.getBreathingSpaceLiftedEmailToClaimant()).thenReturn(EMAIL_TO_CLAIMANT);
+            when(emailTemplates.getBreathingSpaceLiftedEmailToDefendant()).thenReturn(EMAIL_TO_DEFENDANT);
+            CCDCase ccdCase = getCCDCase(CCDRespondent.builder());
+            Claim claim = Claim.builder()
+                .referenceNumber("XXXXX")
+                .build();
+            returnMap.put("BS", ccdCase);
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
 
         }
 
@@ -550,7 +551,7 @@ class BreathingSpaceLiftedCallbackHandlerTest {
             return CallbackRequest
                 .builder()
                 .caseDetails(CaseDetails.builder().data(EMPTY_MAP).build())
-                .eventId(CaseEvent.BREATHING_SPACE_ENTERED.getValue())
+                .eventId(CaseEvent.BREATHING_SPACE_LIFTED.getValue())
                 .build();
         }
 
@@ -563,21 +564,34 @@ class BreathingSpaceLiftedCallbackHandlerTest {
         }
 
         @Test
-        void shouldGenerateEventOnSubmitted() {
-            CCDCase ccdCase = getCCDCase(CCDRespondent.builder());
-            Claim claim = Claim.builder()
-                .referenceNumber("XXXXX")
+        void shouldGenerateEventOnSubmittedForCitizen() {
+            UserDetails userDetails = SampleUserDetails.builder()
+                .withForename("Forename")
+                .withSurname("Surname")
+                .withRoles("citizen")
                 .build();
-            returnMap.put("BS", ccdCase);
-            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
-
+            when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetails);
             handler.handle(callbackParams);
-
             verify(eventProducer, times(1)).createBreathingSpaceLiftedEvent(
                 any(Claim.class), any(CCDCase.class),
                 anyString(), anyString(),
-                anyString(), anyString(), any(Boolean.class)
+                anyString(), anyString(), any(Boolean.class), any(Boolean.class)
+            );
+        }
+
+        @Test
+        void shouldGenerateEventOnSubmittedForCaseWorker() {
+            UserDetails userDetails = SampleUserDetails.builder()
+                .withForename("Forename")
+                .withSurname("Surname")
+                .withRoles("caseworker-cmc")
+                .build();
+            when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetails);
+            handler.handle(callbackParams);
+            verify(eventProducer, times(1)).createBreathingSpaceLiftedEvent(
+                any(Claim.class), any(CCDCase.class),
+                anyString(), anyString(),
+                anyString(), anyString(), any(Boolean.class), any(Boolean.class)
             );
         }
     }

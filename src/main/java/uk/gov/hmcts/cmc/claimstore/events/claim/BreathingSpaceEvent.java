@@ -16,6 +16,7 @@ public class BreathingSpaceEvent {
     protected final String claimantEmailTemplateId;
     protected final String defendantEmailTemplateId;
     protected final boolean enteredByCitizen;
+    protected final boolean bsLifted;
 
     public BreathingSpaceEvent(
         Claim claim,
@@ -24,7 +25,8 @@ public class BreathingSpaceEvent {
         String letterTemplateId,
         String claimantEmailTemplateId,
         String defendantEmailTemplateId,
-        boolean enteredByCitizen
+        boolean enteredByCitizen,
+        boolean bsLifted
     ) {
         this.claim = claim;
         this.ccdCase = ccdCase;
@@ -33,6 +35,7 @@ public class BreathingSpaceEvent {
         this.claimantEmailTemplateId = claimantEmailTemplateId;
         this.defendantEmailTemplateId = defendantEmailTemplateId;
         this.enteredByCitizen = enteredByCitizen;
+        this.bsLifted = bsLifted;
     }
 
     @Override

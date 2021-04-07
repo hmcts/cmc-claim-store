@@ -15,6 +15,9 @@ import uk.gov.hmcts.cmc.claimstore.events.operations.RpaOperationService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildBreathingSpaceEnteredFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildBreathingSpaceLiftedFileBaseName;
+
 @Async("threadPoolTaskExecutor")
 @Service
 @ConditionalOnProperty("feature_toggles.breathing_space")
@@ -51,9 +54,19 @@ public class BreathingSpaceEntetedOrchestrationHandler {
                 breathingSpaceEmailService.sendEmailNotificationToDefendant(claim,
                     event.getDefendantEmailTemplateId());
             } else {
+                String fileName;
+                if (event.isBsLifted()) {
+                    fileName =
+                        buildBreathingSpaceLiftedFileBaseName(event.getCcdCase().getPreviousServiceCaseReference(),
+                            false);
+                } else {
+                    fileName =
+                        buildBreathingSpaceEnteredFileBaseName(event.getCcdCase().getPreviousServiceCaseReference(),
+                            false);
+                }
                 breathingSpaceLetterService.sendLetterToDefendant(event.getCcdCase(), claim,
                     event.getAuthorisation(),
-                    event.getLetterTemplateId());
+                    event.getLetterTemplateId(), fileName);
             }
         }
         PDF sealedClaimPdf = documentOrchestrationService.getSealedClaimPdf(claim);

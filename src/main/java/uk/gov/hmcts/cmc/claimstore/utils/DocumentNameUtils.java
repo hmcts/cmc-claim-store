@@ -201,4 +201,13 @@ public class DocumentNameUtils {
             return format("%s-breathing-space-entered", caseRef);
         }
     }
+
+    public static String buildBreathingSpaceLiftedFileBaseName(String caseRef, boolean createdFromCCD) {
+        requireNonBlank(caseRef);
+        if (createdFromCCD) {
+            return format("%s-breathing-space-lifted.pdf", caseRef);
+        } else {
+            return format("%s-breathing-space-lifted", caseRef);
+        }
+    }
 }
