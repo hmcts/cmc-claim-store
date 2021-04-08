@@ -570,6 +570,11 @@ public class ClaimService {
             ) {
                 breathingSpace.setBsExpectedEndDate(null);
             }
+            if (breathingSpace.getBsLiftedDateByInsolvencyTeam() != null
+                && breathingSpace.getBsLiftedDateByInsolvencyTeam().getYear() == 9999
+            ) {
+                breathingSpace.setBsLiftedDateByInsolvencyTeam(null);
+            }
             if (breathingSpace.getBsReferenceNumber() != null
                 && breathingSpace.getBsReferenceNumber().length() > 16) {
                 validationMessage = "The reference number must be maximum of 16 Characters";
