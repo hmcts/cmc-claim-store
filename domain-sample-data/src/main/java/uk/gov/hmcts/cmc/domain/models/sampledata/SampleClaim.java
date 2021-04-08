@@ -214,7 +214,7 @@ public final class SampleClaim {
             .withClaimSubmissionOperationIndicators(operationIndicators)
             .build();
     }
-  
+
     public static Claim getDefaultWithDefendantAddressNull() {
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimantWithDefendantAddressNullBuilder()
@@ -376,6 +376,15 @@ public final class SampleClaim {
     public static Claim getWithResponse(Response response) {
         return builder()
             .withClaimData(SampleClaimData.validDefaults())
+            .withResponse(response)
+            .withRespondedAt(LocalDateTime.now())
+            .withDefendantEmail(DEFENDANT_EMAIL)
+            .build();
+    }
+
+    public static Claim getWithResponseAddressChanged(Response response) {
+        return builder()
+            .withClaimData(SampleClaimData.submittedWithChangedAddress())
             .withResponse(response)
             .withRespondedAt(LocalDateTime.now())
             .withDefendantEmail(DEFENDANT_EMAIL)
