@@ -558,7 +558,7 @@ public class ClaimService {
         }
 
         if (breathingSpaceInClaim != null && breathingSpaceInClaim.getBsType() != null
-            && breathingSpaceInClaim.getBsLiftedFlag().equals("No")) {
+            && breathingSpace.getBsLiftedFlag().equals("No")) {
             validationMessage = "Breathing Space is already entered for this Claim";
         } else {
             if (breathingSpace.getBsEnteredDateByInsolvencyTeam() != null
