@@ -281,6 +281,14 @@ public class SampleClaimData {
         return submittedByClaimantBuilder().build();
     }
 
+    public static ClaimData submittedWithChangedAddress() {
+        return submittedByClaimantBuilder()
+            .withDefendant(SampleTheirDetails.builder()
+                .withClaimantProvidedAddress(SampleAddress.builder().postcode("IG11 7YL").build())
+                .individualDetails())
+            .build();
+    }
+
     public static SampleClaimData submittedByClaimantBuilder() {
         return builder()
             .withExternalId(UUID.randomUUID())
@@ -293,6 +301,28 @@ public class SampleClaimData {
                 .withRepresentative(null)
                 .individual())
             .withDefendant(SampleTheirDetails.builder()
+                .withRepresentative(null)
+                .withPhone("0776655443322")
+                .individualDetails())
+            .withTimeline(SampleTimeline.validDefaults())
+            .withHwfMandatoryDetails(null)
+            .withFeeRemitted(null)
+            .withEvidence(SampleEvidence.validDefaults());
+    }
+
+    public static SampleClaimData submittedByClaimantWithDefendantAddressNullBuilder() {
+        return builder()
+            .withExternalId(UUID.randomUUID())
+            .withFeeAccountNumber(null)
+            .withStatementOfTruth(null)
+            .withPersonalInjury(null)
+            .withHousingDisrepair(null)
+            .clearClaimants()
+            .addClaimant(SampleParty.builder()
+                .withRepresentative(null)
+                .individual())
+            .withDefendant(SampleTheirDetails.builder()
+                .withAddress(null)
                 .withRepresentative(null)
                 .withPhone("0776655443322")
                 .individualDetails())

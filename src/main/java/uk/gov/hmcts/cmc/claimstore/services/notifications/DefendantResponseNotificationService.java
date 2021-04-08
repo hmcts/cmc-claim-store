@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static java.util.Map.entry;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper.admissionResponse;
@@ -92,7 +93,12 @@ public class DefendantResponseNotificationService {
         Map<String, String> parameters = aggregateParams(claim, response);
 
         String emailTemplate = getClaimantEmailTemplate(claim, response);
-
+        if (!claim.getClaimData().getDefendant().getAddress().equals(claim.getClaimData().getDefendant()
+            .getclaimantProvidedAddress())) {
+            String emailTemplateForChangedAddress = getEmailTemplates().getDefendantContactDetailsChanged();
+            notificationService.sendMail(claim.getSubmitterEmail(), emailTemplateForChangedAddress, parameters,
+                reference);
+        }
         notificationService.sendMail(claim.getSubmitterEmail(), emailTemplate, parameters, reference);
     }
 
@@ -147,6 +153,7 @@ public class DefendantResponseNotificationService {
             entry(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName()),
             entry(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl()),
             entry(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber()),
+            entry(EXTERNAL_ID, claim.getExternalId()),
             entry(MEDIATION_DECISION_DEADLINE, formatDate(decisionDeadline)),
             entry(FREE_MEDIATION_REQUESTED, isFreeMediationApplicable && isFreeMediationRequested ? "yes" : ""),
             entry(FREE_MEDIATION_NOT_REQUESTED, isFreeMediationApplicable && !isFreeMediationRequested ? "yes" : ""),

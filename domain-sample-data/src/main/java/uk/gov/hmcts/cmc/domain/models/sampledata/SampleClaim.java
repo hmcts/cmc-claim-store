@@ -192,6 +192,24 @@ public final class SampleClaim {
             .build();
     }
 
+    public static Claim getDefaultWithDefendantAddressNull() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimantWithDefendantAddressNullBuilder()
+                .withExternalId(RAND_UUID).build())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .ccjType(CountyCourtJudgmentType.ADMISSIONS)
+                    .paymentOption(IMMEDIATELY)
+                    .build()
+            ).withResponse(SampleResponse.FullDefence
+                .builder()
+                .withDefenceType(DefenceType.DISPUTE)
+                .withMediation(YES)
+                .build()
+            ).withState(ClaimState.OPEN)
+            .build();
+    }
+
     public static Claim getDefaultWithoutResponse() {
         return getDefaultWithoutResponse(DEFENDANT_EMAIL);
     }
@@ -335,6 +353,15 @@ public final class SampleClaim {
     public static Claim getWithResponse(Response response) {
         return builder()
             .withClaimData(SampleClaimData.validDefaults())
+            .withResponse(response)
+            .withRespondedAt(LocalDateTime.now())
+            .withDefendantEmail(DEFENDANT_EMAIL)
+            .build();
+    }
+
+    public static Claim getWithResponseAddressChanged(Response response) {
+        return builder()
+            .withClaimData(SampleClaimData.submittedWithChangedAddress())
             .withResponse(response)
             .withRespondedAt(LocalDateTime.now())
             .withDefendantEmail(DEFENDANT_EMAIL)
