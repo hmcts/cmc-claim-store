@@ -29,6 +29,7 @@ public class BreathingSpaceMapper implements BuilderMapper<CCDCase, BreathingSpa
             .bsEnteredDateByInsolvencyTeam(breathingSpace.getBsEnteredDateByInsolvencyTeam())
             .bsLiftedDateByInsolvencyTeam(breathingSpace.getBsLiftedDateByInsolvencyTeam())
             .bsExpectedEndDate(breathingSpace.getBsExpectedEndDate())
+            .bsLiftedFlag(breathingSpace.getBsLiftedFlag())
             .build();
     }
 

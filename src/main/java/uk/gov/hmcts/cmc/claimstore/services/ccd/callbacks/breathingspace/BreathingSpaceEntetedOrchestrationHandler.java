@@ -71,11 +71,19 @@ public class BreathingSpaceEntetedOrchestrationHandler {
         }
         PDF sealedClaimPdf = documentOrchestrationService.getSealedClaimPdf(claim);
         rpaOperationService.notifyBreathingSpace(claim, event.getAuthorisation(), sealedClaimPdf);
-        appInsights.trackEvent(
-            AppInsightsEvent.BREATHING_SPACE_ENTERED,
-            AppInsights.REFERENCE_NUMBER,
-            claim.getReferenceNumber()
-        );
+        if (event.isBsLifted()) {
+            appInsights.trackEvent(
+                AppInsightsEvent.BREATHING_SPACE_LIFTED,
+                AppInsights.REFERENCE_NUMBER,
+                claim.getReferenceNumber()
+            );
+        } else {
+            appInsights.trackEvent(
+                AppInsightsEvent.BREATHING_SPACE_ENTERED,
+                AppInsights.REFERENCE_NUMBER,
+                claim.getReferenceNumber()
+            );
+        }
     }
 
     private boolean isDefendentLinked(Claim claim) {

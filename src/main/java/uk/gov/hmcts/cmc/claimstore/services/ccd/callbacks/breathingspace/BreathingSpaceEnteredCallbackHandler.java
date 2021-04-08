@@ -163,7 +163,7 @@ public class BreathingSpaceEnteredCallbackHandler extends CallbackHandler {
         if (ccdCase.getBreathingSpace() != null) {
             CCDBreathingSpace ccdBreathingSpace = ccdCase.getBreathingSpace();
             ccdBreathingSpace.setBsEnteredDate(LocalDate.now());
-            ccdBreathingSpace.setBsLiftedFlag("NO");
+            ccdBreathingSpace.setBsLiftedFlag("No");
             ccdCase.setBreathingSpace(ccdBreathingSpace);
         }
         CCDCase updatedCase = ccdCase;

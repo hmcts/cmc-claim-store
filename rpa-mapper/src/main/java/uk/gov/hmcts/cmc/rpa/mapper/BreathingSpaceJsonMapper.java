@@ -31,7 +31,8 @@ public class BreathingSpaceJsonMapper {
                     ? DateFormatter.format(breathingSpace.getBsEnteredDateByInsolvencyTeam())
                     : DateFormatter.format(breathingSpace.getBsEnteredDate()))
                 .add("breathingSpaceLiftedDateByInsolvencyTeam", breathingSpace.getBsLiftedDateByInsolvencyTeam() != null
-                    ? DateFormatter.format(breathingSpace.getBsLiftedDateByInsolvencyTeam()) : null)
+                    ? DateFormatter.format(breathingSpace.getBsLiftedDateByInsolvencyTeam())
+                    : (breathingSpace.getBsLiftedFlag().equals("Yes") ? DateFormatter.format(breathingSpace.getBsLiftedDate()) : null))
                 .build();
         }
         return null;

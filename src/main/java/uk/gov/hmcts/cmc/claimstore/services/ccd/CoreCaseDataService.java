@@ -1235,9 +1235,6 @@ public class CoreCaseDataService {
             breathingSpace.getBsLiftedDateByInsolvencyTeam(),
             breathingSpace.getBsExpectedEndDate(),
             breathingSpace.getBsLiftedFlag(),
-            null,
-            null,
-            null,
             null
         );
 

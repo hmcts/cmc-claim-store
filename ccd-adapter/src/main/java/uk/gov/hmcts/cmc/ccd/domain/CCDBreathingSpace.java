@@ -18,19 +18,14 @@ public class CCDBreathingSpace {
     private String bsReferenceNumber;
     private CCDBreathingSpaceType bsType;
     private LocalDate bsEnteredDate;
-
-    private LocalDate bsLiftedDate;
     private LocalDate bsEnteredDateByInsolvencyTeam;
-
+    private LocalDate bsLiftedDate;
     private LocalDate bsLiftedDateByInsolvencyTeam;
-
     private LocalDate bsExpectedEndDate;
-
     private String bsLiftedFlag;
 
-    private String bsEnteredDateTemp;
-    private String bsEnteredDateByInsolvencyTeamTemp;
+    // Created this temp var for BS Lifted
     private String bsLiftedDateByInsolvencyTeamTemp;
-    private String bsExpectedEndDateTemp;
+
 
 }
