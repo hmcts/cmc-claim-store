@@ -289,6 +289,14 @@ public class SampleClaimData {
         return submittedByClaimantBuilder().build();
     }
 
+    public static ClaimData submittedWithChangedAddress() {
+        return submittedByClaimantBuilder()
+            .withDefendant(SampleTheirDetails.builder()
+                .withClaimantProvidedAddress(SampleAddress.builder().postcode("IG11 7YL").build())
+                .individualDetails())
+            .build();
+    }
+
     public static SampleClaimData submittedByClaimantBuilder() {
         return builder()
             .withExternalId(UUID.randomUUID())
