@@ -533,7 +533,7 @@ public class ClaimService {
         if (validatedBsDetails == null) {
             Claim updatedClaim = caseRepository.saveBreathingSpaceDetails(claim, breathingSpace, authorisation);
 
-            if (breathingSpace.getBsLiftedFlag().equals("NO")) {
+            if (breathingSpace.getBsLiftedFlag().equals("No")) {
                 appInsights.trackEvent(BREATHING_SPACE_ENTERED, CLAIM_EXTERNAL_ID, externalId);
             } else {
                 appInsights.trackEvent(BREATHING_SPACE_LIFTED, CLAIM_EXTERNAL_ID, externalId);

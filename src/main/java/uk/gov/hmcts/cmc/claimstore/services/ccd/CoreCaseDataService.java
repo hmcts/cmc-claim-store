@@ -1239,6 +1239,9 @@ public class CoreCaseDataService {
         );
 
         ccdCase.setBreathingSpace(ccdBreathingSpace);
-        return caseDetailsConverter.extractClaim(update(authorisation, ccdCase, CaseEvent.BREATHING_SPACE_ENTERED));
+        if (breathingSpace.getBsLiftedFlag().equals("No")) {
+            return caseDetailsConverter.extractClaim(update(authorisation, ccdCase, CaseEvent.BREATHING_SPACE_ENTERED));
+        }
+        return caseDetailsConverter.extractClaim(update(authorisation, ccdCase, CaseEvent.BREATHING_SPACE_LIFTED));
     }
 }
