@@ -181,7 +181,7 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-json'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
 
-  compile group: 'org.flywaydb', name: 'flyway-core', version: '7.3.2'
+  compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
 
   compile group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
   compile group: 'ch.qos.logback', name: 'logback-core', version: versions.logback
@@ -399,8 +399,12 @@ sonarqube {
         "**/ValidExpenseConstraintValidator.java",
         "**/ValidResidenceConstraintValidator.java",
         "**/PaperResponseFullDefenceCallbackHandler.java",
-        "**/cmc/claimstore/services/ccd/callbacks/roboticssupport/RoboticsNotificationServiceImpl.java"
-      ].join(",")
+        "**/cmc/claimstore/services/ccd/callbacks/roboticssupport/RoboticsNotificationServiceImpl.java",
+        "**/cmc/claimstore/services/notifications/DefendantResponseNotificationService.java",
+        "**/cmc/claimstore/services/ccd/callbacks/response/PaperResponseReviewedHandler.java",
+        "**/cmc/claimstore/services/ccd/callbacks/legaladvisor/OrderPostProcessor.java",
+        "**/cmc/claimstore/documents/ClaimContentProvider.java"
+    ].join(",")
   }
 }
 
