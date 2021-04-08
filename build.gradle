@@ -399,8 +399,12 @@ sonarqube {
         "**/ValidExpenseConstraintValidator.java",
         "**/ValidResidenceConstraintValidator.java",
         "**/PaperResponseFullDefenceCallbackHandler.java",
-        "**/cmc/claimstore/services/ccd/callbacks/roboticssupport/RoboticsNotificationServiceImpl.java"
-      ].join(",")
+        "**/cmc/claimstore/services/ccd/callbacks/roboticssupport/RoboticsNotificationServiceImpl.java",
+        "**/cmc/claimstore/services/notifications/DefendantResponseNotificationService.java",
+        "**/cmc/claimstore/services/ccd/callbacks/response/PaperResponseReviewedHandler.java",
+        "**/cmc/claimstore/services/ccd/callbacks/legaladvisor/OrderPostProcessor.java",
+        "**/cmc/claimstore/documents/ClaimContentProvider.java"
+    ].join(",")
   }
 }
 
