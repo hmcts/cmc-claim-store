@@ -1,9 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.pilotcourt;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import feign.FeignException;
-import feign.Request;
 import feign.Response;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,6 +41,9 @@ class PilotCourtServiceTest {
 
     @Mock
     private HearingCourtMapper hearingCourtMapper;
+
+    @Mock
+    private feign.Request request;
 
     private String csvPath = "/pilot-court/pilot-courts.csv";
     private String csvPathSingle = "/pilot-court/pilot-courts-single.csv";
@@ -137,7 +138,6 @@ class PilotCourtServiceTest {
 
         //Simulate courtfinder being down on init
         Court court = Court.builder().build();
-        Request request = Request.create(Request.HttpMethod.GET, "URL", ImmutableMap.of(), Request.Body.empty());
         when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString())).thenThrow(FeignException.errorStatus("",
             Response.builder().request(request).build()))
             .thenReturn(ImmutableList.of(court));
