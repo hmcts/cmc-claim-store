@@ -220,7 +220,7 @@ public class ClaimController {
         return claimService.getPaginationInfo(authorisation, userType);
     }
 
-    @PostMapping(value = "/{submitterId}/{externalId}/breathingSpace", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/{externalId}/breathingSpace", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Creates a new Help With Fees claim")
     public ResponseEntity<String> saveBreathingSpaceDetails(
         @Valid @NotNull @RequestBody BreathingSpace breathingSpace,
