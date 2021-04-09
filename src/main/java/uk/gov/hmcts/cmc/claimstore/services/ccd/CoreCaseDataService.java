@@ -1242,8 +1242,8 @@ public class CoreCaseDataService {
             breathingSpace.getBsReferenceNumber(),
             CCDBreathingSpaceType.valueOf(breathingSpace.getBsType().name()),
             breathingSpace.getBsEnteredDate(),
-            breathingSpace.getBsLiftedDate(),
             breathingSpace.getBsEnteredDateByInsolvencyTeam(),
+            breathingSpace.getBsLiftedDate(),
             breathingSpace.getBsLiftedDateByInsolvencyTeam(),
             breathingSpace.getBsExpectedEndDate(),
             breathingSpace.getBsLiftedFlag(),
@@ -1251,6 +1251,9 @@ public class CoreCaseDataService {
         );
 
         ccdCase.setBreathingSpace(ccdBreathingSpace);
-        return caseDetailsConverter.extractClaim(update(authorisation, ccdCase, CaseEvent.BREATHING_SPACE_ENTERED));
+        if (breathingSpace.getBsLiftedFlag().equals("No")) {
+            return caseDetailsConverter.extractClaim(update(authorisation, ccdCase, CaseEvent.BREATHING_SPACE_ENTERED));
+        }
+        return caseDetailsConverter.extractClaim(update(authorisation, ccdCase, CaseEvent.BREATHING_SPACE_LIFTED));
     }
 }

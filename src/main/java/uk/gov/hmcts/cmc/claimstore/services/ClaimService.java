@@ -533,7 +533,7 @@ public class ClaimService {
         if (validatedBsDetails == null) {
             Claim updatedClaim = caseRepository.saveBreathingSpaceDetails(claim, breathingSpace, authorisation);
 
-            if (breathingSpace.getBsLiftedFlag().equals("NO")) {
+            if (breathingSpace.getBsLiftedFlag().equals("No")) {
                 appInsights.trackEvent(BREATHING_SPACE_ENTERED, CLAIM_EXTERNAL_ID, externalId);
             } else {
                 appInsights.trackEvent(BREATHING_SPACE_LIFTED, CLAIM_EXTERNAL_ID, externalId);
@@ -557,7 +557,8 @@ public class ClaimService {
             breathingSpaceInClaim = breathingSpaceOptional.get();
         }
 
-        if (breathingSpaceInClaim != null && breathingSpaceInClaim.getBsType() != null) {
+        if (breathingSpaceInClaim != null && breathingSpaceInClaim.getBsType() != null
+            && breathingSpace.getBsLiftedFlag().equals("No")) {
             validationMessage = "Breathing Space is already entered for this Claim";
         } else {
             if (breathingSpace.getBsEnteredDateByInsolvencyTeam() != null
@@ -569,6 +570,11 @@ public class ClaimService {
                 && breathingSpace.getBsExpectedEndDate().getYear() == 9999
             ) {
                 breathingSpace.setBsExpectedEndDate(null);
+            }
+            if (breathingSpace.getBsLiftedDateByInsolvencyTeam() != null
+                && breathingSpace.getBsLiftedDateByInsolvencyTeam().getYear() == 9999
+            ) {
+                breathingSpace.setBsLiftedDateByInsolvencyTeam(null);
             }
             if (breathingSpace.getBsReferenceNumber() != null
                 && breathingSpace.getBsReferenceNumber().length() > 16) {
