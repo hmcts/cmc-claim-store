@@ -791,7 +791,7 @@ public class CoreCaseDataServiceTest {
     public void saveBreathingSpace() {
         BreathingSpace breathingSpace = new BreathingSpace("REF12121212",
             BreathingSpaceType.STANDARD_BS_ENTERED, LocalDate.now(),
-            null, LocalDate.now(), null, LocalDate.now(), "NO");
+            null, LocalDate.now(), null, LocalDate.now(), "No");
         Claim providedClaim = SampleClaim.getDefault();
 
         Response providedResponse = SampleResponse.validDefaults();
