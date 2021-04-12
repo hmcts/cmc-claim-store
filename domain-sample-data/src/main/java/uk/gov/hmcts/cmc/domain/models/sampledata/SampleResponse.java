@@ -25,6 +25,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
     public static final String USER_DEFENCE = "defence string";
     public static final String MEDIATION_PHONE_NUMBER = "07999999999";
     public static final String MEDIATION_CONTACT_PERSON = "Mediation Contact Person";
+    public static final String NO_MEDIATION_REASON = "Not interested";
     public static final String COLLECTION_ID = "acd82549-d279-4adc-b38c-d195dd0db0d6";
 
     protected YesNoOption freeMediationOption = YesNoOption.YES;
@@ -241,6 +242,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
         private DefendantEvidence evidence = SampleDefendantEvidence.validDefaults();
         private String mediationPhoneNumber = MEDIATION_PHONE_NUMBER;
         private String mediationContactPerson = MEDIATION_CONTACT_PERSON;
+        private String noMediationReason = NO_MEDIATION_REASON;
         private DirectionsQuestionnaire directionsQuestionnaire = SampleDirectionsQuestionnaire.builder().build();
         private LocalDate intentionToProceedDeadline = LocalDate.now().plusDays(10);
 
@@ -288,6 +290,11 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
             return this;
         }
 
+        public FullDefence withNoMediationReason(String noMediationReason) {
+            this.noMediationReason = noMediationReason;
+            return this;
+        }
+
         public FullDefence withDirectionsQuestionnaire(DirectionsQuestionnaire directionsQuestionnaire) {
             this.directionsQuestionnaire = directionsQuestionnaire;
             return this;
@@ -295,7 +302,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
 
         public FullDefenceResponse build() {
             return new FullDefenceResponse(
-                freeMediationOption, mediationPhoneNumber, mediationContactPerson,
+                freeMediationOption, mediationPhoneNumber, mediationContactPerson, noMediationReason,
                 moreTimeNeededOption, defendantDetails, statementOfTruth,
                 defenceType, defence, paymentDeclaration, timeline, evidence, directionsQuestionnaire,
                 ResponseMethod.DIGITAL
