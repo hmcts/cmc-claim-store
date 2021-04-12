@@ -76,3 +76,4 @@ java:
     CORE_CASE_DATA_API_URL: http://ccd-data-store-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     DOC_ASSEMBLY_URL: http://dg-docassembly-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     COURT_FINDER_API_URL: https://www.find-court-tribunal.service.gov.uk
+    SPRING_CLOUD_BOOTSTRAP_ENABLED: true
