@@ -129,7 +129,18 @@ public class BreathingSpaceLiftedCallbackHandler extends CallbackHandler {
 
     private void validateBreathingSpaceDetails(CCDCase ccdCase, CallbackType callbackType) {
         CCDBreathingSpace breathingSpace = ccdCase.getBreathingSpace();
-        if (breathingSpace != null) {
+        if (callbackType.equals(CallbackType.ABOUT_TO_START)
+            && (ccdCase.getState().equals(ClaimState.TRANSFERRED.getValue())
+            || ccdCase.getState().equals(ClaimState.BUSINESS_QUEUE.getValue())
+            || ccdCase.getState().equals(ClaimState.HWF_APPLICATION_PENDING.getValue())
+            || ccdCase.getState().equals(ClaimState.SETTLED.getValue())
+            || ccdCase.getState().equals(ClaimState.CLOSED.getValue())
+            || ccdCase.getState().equals(ClaimState.PROCEEDS_IN_CASE_MAN.getValue())
+            || ccdCase.getState().equals(ClaimState.AWAITING_RESPONSE_HWF.getValue())
+            || ccdCase.getState().equals(ClaimState.CLOSED_HWF.getValue()))) {
+            validationMessage = "This Event cannot be triggered "
+                + "since the claim is no longer part of the online civil money claims journey";
+        } else if (breathingSpace != null) {
             if (breathingSpace.getBsLiftedDateByInsolvencyTeam() != null) {
                 if (breathingSpace.getBsLiftedDateByInsolvencyTeam().isAfter(LocalDate.now())) {
                     validationMessage = "The end date must not be after today's date";
@@ -145,20 +156,7 @@ public class BreathingSpaceLiftedCallbackHandler extends CallbackHandler {
                 validationMessage = "Breathing Space is already lifted for this claim";
             }
         } else {
-            if (callbackType.equals(CallbackType.ABOUT_TO_START)
-                && (ccdCase.getState().equals(ClaimState.TRANSFERRED.getValue())
-                || ccdCase.getState().equals(ClaimState.BUSINESS_QUEUE.getValue())
-                || ccdCase.getState().equals(ClaimState.HWF_APPLICATION_PENDING.getValue())
-                || ccdCase.getState().equals(ClaimState.SETTLED.getValue())
-                || ccdCase.getState().equals(ClaimState.CLOSED.getValue())
-                || ccdCase.getState().equals(ClaimState.PROCEEDS_IN_CASE_MAN.getValue())
-                || ccdCase.getState().equals(ClaimState.AWAITING_RESPONSE_HWF.getValue())
-                || ccdCase.getState().equals(ClaimState.CLOSED_HWF.getValue()))) {
-                validationMessage = "This Event cannot be triggered "
-                    + "since the claim is no longer part of the online civil money claims journey";
-            } else {
-                validationMessage = "This claim is still not entered into Breathing space";
-            }
+            validationMessage = "This claim is still not entered into Breathing space";
         }
     }
 
