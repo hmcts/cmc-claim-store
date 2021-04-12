@@ -244,7 +244,7 @@ class BreathingSpaceLiftedCallbackHandlerTest {
 
         @Test
         void shouldGenerateEventOnAboutToStart() {
-            CCDCase ccdCase = getCCDCase(CCDRespondent.builder());
+            CCDCase ccdCase = getCCDCaseWithoutBreathingSpace(CCDRespondent.builder(), ClaimState.OPEN);
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
 
             CallbackResponse callbackResponse = handler.handle(callbackParams);
