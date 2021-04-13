@@ -17,12 +17,22 @@ public class BreathingSpaceJsonMapper {
         BreathingSpace breathingSpace = null;
         if (claim.getClaimData().getBreathingSpace().isPresent()) {
             breathingSpace = claim.getClaimData().getBreathingSpace().get();
+            String breathingSpaceCode = null;
+            if (breathingSpace.getBsLiftedFlag().equals("No")) {
+                breathingSpaceCode = BreathingSpaceType.valueOf(breathingSpace.getBsType().name()).getValue().toString();
+            } else if (breathingSpace.getBsLiftedFlag().equals("Yes")) {
+                if (BreathingSpaceType.STANDARD_BS_ENTERED.equals(breathingSpace.getBsType())) {
+                    breathingSpaceCode = BreathingSpaceType.STANDARD_BS_LIFTED.getValue().toString();
+                } else {
+                    breathingSpaceCode = BreathingSpaceType.MENTAL_BS_LIFTED.getValue().toString();
+                }
+            }
             return new NullAwareJsonObjectBuilder()
                 .add("caseNumber", claim.getReferenceNumber())
                 .add("uniqueReferenceNumber", breathingSpace.getBsReferenceNumber() != null
                     ? breathingSpace.getBsReferenceNumber() : null)
                 .add("breathingSpaceCode",
-                    BreathingSpaceType.valueOf(breathingSpace.getBsType().name()).getValue().toString())
+                    breathingSpaceCode)
                 .add("breathingSpaceEnteredDate", breathingSpace.getBsEnteredDate() != null
                     ? DateFormatter.format(breathingSpace.getBsEnteredDate()) : null)
                 .add("breathingSpaceLiftedDate", breathingSpace.getBsLiftedDate() != null
