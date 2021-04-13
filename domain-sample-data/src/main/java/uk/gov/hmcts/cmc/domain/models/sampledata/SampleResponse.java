@@ -90,6 +90,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .freeMediation(YesNoOption.YES)
                 .mediationPhoneNumber(MEDIATION_PHONE_NUMBER)
                 .mediationContactPerson(MEDIATION_CONTACT_PERSON)
+                .noMediationReason("Not interested")
                 .defendant(SampleParty.builder().individual())
                 .paymentIntention(SamplePaymentIntention.instalments())
                 .build();
@@ -196,6 +197,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .freeMediation(YesNoOption.YES)
                 .mediationPhoneNumber(MEDIATION_PHONE_NUMBER)
                 .mediationContactPerson(MEDIATION_CONTACT_PERSON)
+                .noMediationReason(NO_MEDIATION_REASON)
                 .moreTimeNeeded(YesNoOption.NO)
                 .amount(BigDecimal.valueOf(120.99))
                 .paymentIntention(SamplePaymentIntention.instalments())
@@ -225,6 +227,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .freeMediation(YesNoOption.NO)
                 .mediationPhoneNumber(MEDIATION_PHONE_NUMBER)
                 .mediationContactPerson(MEDIATION_CONTACT_PERSON)
+                .noMediationReason(NO_MEDIATION_REASON)
                 .moreTimeNeeded(YesNoOption.NO)
                 .amount(BigDecimal.valueOf(120))
                 .paymentIntention(SamplePaymentIntention.instalments())

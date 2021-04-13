@@ -30,6 +30,10 @@ public class ResponseRejectionAssert extends CustomAssert<ResponseRejectionAsser
             expected.getMediationContactPerson(),
             actual.getMediationContactPerson());
 
+        compare("noMediationReason",
+            expected.getNoMediationReason(),
+            actual.getNoMediationReason());
+
         compare("amountPaid",
             expected.getAmountPaid(),
             actual.getAmountPaid(),

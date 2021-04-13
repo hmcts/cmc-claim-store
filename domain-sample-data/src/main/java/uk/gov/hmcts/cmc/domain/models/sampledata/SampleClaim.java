@@ -436,6 +436,7 @@ public final class SampleClaim {
                 .freeMediation(YES)
                 .mediationPhoneNumber("07999999999")
                 .mediationContactPerson("Mediation Contact Person")
+                .noMediationReason("Not interested")
                 .reason("Some valid reason")
                 .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder()
                     .withHearingLocation(pilotHearingLocation).build())

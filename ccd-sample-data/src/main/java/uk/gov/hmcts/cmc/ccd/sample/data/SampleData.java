@@ -188,6 +188,7 @@ public class SampleData {
             .freeMediationOption(YES)
             .mediationPhoneNumber(CCDTelephone.builder().telephoneNumber("07999999999").build())
             .mediationContactPerson("Mediation Contact Person")
+            .noMediationReason("Not interested")
             .reason("Rejection Reason")
             .build();
     }
