@@ -2,14 +2,6 @@
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
     <suppress>
         <notes><![CDATA[
-         Specific to deserialisation of AtomicDoubleArray and CompoundOrdering classes: https://github.com/google/guava/wiki/CVE-2018-10237
-        ]]></notes>
-        <gav regex="true">^com\.google\.guava:guava:.*$</gav>
-        <cve>CVE-2018-10237</cve>
-        <cve>CVE-2020-8908</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
          We are not using STOMP: https://docs.spring.io/spring/docs/current/spring-framework-reference/web.html#websocket-stomp-enable
         ]]></notes>
         <gav regex="true">.*</gav>
@@ -200,14 +192,10 @@
         <cve>CVE-2020-13956</cve>
     </suppress>
     <suppress>
-        <cve>CVE-2007-1651</cve>
-        <cve>CVE-2007-1652</cve>
-    </suppress>
-    <suppress>
-        <cve>CVE-2020-29243</cve>
-        <cve>CVE-2020-29242</cve>
-        <cve>CVE-2020-29245</cve>
-        <cve>CVE-2020-29244</cve>
-        <cve>CVE-2021-22112</cve>
+        <notes><![CDATA[
+            Launch Darkly Related
+        ]]></notes>
+        <cve>CVE-2020-8908</cve>
+        <cve>CVE-2018-10237</cve>
     </suppress>
 </suppressions>

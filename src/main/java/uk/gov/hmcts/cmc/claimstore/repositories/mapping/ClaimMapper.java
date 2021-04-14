@@ -82,6 +82,9 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             null,
             null,
             null,
+            null,
+            null,
+            null,
             null
         );
     }

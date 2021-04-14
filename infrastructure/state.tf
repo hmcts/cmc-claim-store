@@ -11,3 +11,8 @@ terraform {
       }
     }
 }
+
+provider "azurerm" {
+  alias = "send-grid"
+  features {}
+}

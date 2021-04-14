@@ -636,6 +636,7 @@ public final class SampleHwfClaim {
             null,
             null,
             null,
+            null,
             transferContent,
             null,
             List.of(BulkPrintDetails.builder()
@@ -645,6 +646,8 @@ public final class SampleHwfClaim {
             directionOrderType,
             bespokeOrderDirection,
             LocalDateTime.now(),
+            null,
+            null,
             null
         );
     }
