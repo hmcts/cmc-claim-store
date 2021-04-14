@@ -40,7 +40,8 @@ public class DocumentPublishService {
         CCDCase ccdCase,
         Claim claim,
         String authorisation,
-        LocalDate extendedResponseDeadline
+        LocalDate extendedResponseDeadline,
+        boolean disableN9Form
     ) {
         CCDDocument coverLetter = paperResponseLetterService
             .createCoverLetter(ccdCase, authorisation, extendedResponseDeadline);
@@ -48,7 +49,7 @@ public class DocumentPublishService {
         Document coverDoc = printableDocumentService.process(coverLetter, authorisation);
 
         CCDDocument oconForm = paperResponseLetterService
-            .createOconForm(ccdCase, claim, authorisation, extendedResponseDeadline);
+            .createOconForm(ccdCase, claim, authorisation, extendedResponseDeadline, disableN9Form);
 
         Document formDoc = printableDocumentService.process(oconForm, authorisation);
 

@@ -58,6 +58,7 @@ class IssuePaperDefenceCallbackHandlerTest {
     private static final String CLAIMANT_ISSUED_CCJ =
         "OCON9x form cannot be sent out as CCJ already issued by claimant.";
     private static final String AUTHORISATION = "auth";
+    private static final boolean DISABLEN9FORM = false;
 
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
@@ -112,6 +113,7 @@ class IssuePaperDefenceCallbackHandlerTest {
     @Test
     void shouldHandleAboutToSubmitCallback() {
         ccdCase = CCDCase.builder()
+            .issuedOn(LocalDate.now())
             .previousServiceCaseReference("000MC001")
             .respondents(ImmutableList.of(
                 CCDCollectionElement.<CCDRespondent>builder()
@@ -145,7 +147,7 @@ class IssuePaperDefenceCallbackHandlerTest {
         issuePaperDefenceCallbackHandler.handle(callbackParams);
 
         verify(documentPublishService).publishDocuments(any(CCDCase.class), any(Claim.class), eq(AUTHORISATION),
-            eq(date));
+            eq(date), eq(DISABLEN9FORM));
         verify(issuePaperResponseNotificationService).notifyClaimant(any(Claim.class));
     }
 
@@ -189,7 +191,7 @@ class IssuePaperDefenceCallbackHandlerTest {
 
         issuePaperDefenceCallbackHandler.handle(callbackParams);
         verify(documentPublishService).publishDocuments(any(CCDCase.class), any(Claim.class), eq(AUTHORISATION),
-            eq(LocalDate.now()));
+            eq(LocalDate.now()), any(Boolean.class));
         verify(issuePaperResponseNotificationService, times(0)).notifyClaimant(any(Claim.class));
     }
 
@@ -222,7 +224,7 @@ class IssuePaperDefenceCallbackHandlerTest {
 
         issuePaperDefenceCallbackHandler.handle(callbackParams);
         verify(documentPublishService).publishDocuments(any(CCDCase.class), any(Claim.class), eq(AUTHORISATION),
-            eq(LocalDate.now()));
+            eq(LocalDate.now()), any(Boolean.class));
         verify(issuePaperResponseNotificationService).notifyClaimant(any(Claim.class));
     }
 
@@ -246,7 +248,8 @@ class IssuePaperDefenceCallbackHandlerTest {
             .thenReturn(date);
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
-        when(documentPublishService.publishDocuments(ccdCase, claim, AUTHORISATION, LocalDate.now()))
+        when(documentPublishService.publishDocuments(ccdCase, claim, AUTHORISATION, LocalDate.now(),
+            DISABLEN9FORM))
             .thenThrow(DocumentGenerationFailedException.class);
         AboutToStartOrSubmitCallbackResponse actualResponse =
             (AboutToStartOrSubmitCallbackResponse) issuePaperDefenceCallbackHandler.handle(callbackParams);

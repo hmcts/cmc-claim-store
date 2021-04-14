@@ -91,16 +91,18 @@ public class PaperResponseLetterService {
         CCDCase ccdCase,
         Claim claim,
         String authorisation,
-        LocalDate extendedResponseDeadline
+        LocalDate extendedResponseDeadline,
+        boolean disableN9Form
     ) {
-        var paperResponseLetter = formForCorrectDefendantType(ccdCase, claim, extendedResponseDeadline);
+        var paperResponseLetter = formForCorrectDefendantType(ccdCase, claim, extendedResponseDeadline, disableN9Form);
         return docAssemblyService.generateDocument(ccdCase,
             authorisation,
             paperResponseLetter.getPayload(),
             paperResponseLetter.getTemplateId());
     }
 
-    private PaperResponseLetter formForCorrectDefendantType(CCDCase ccdCase, Claim claim, LocalDate extendedDeadline) {
+    private PaperResponseLetter formForCorrectDefendantType(CCDCase ccdCase, Claim claim,
+                                                            LocalDate extendedDeadline, boolean disableN9Form) {
         PaperResponseLetter.PaperResponseLetterBuilder paperResponseLetter = PaperResponseLetter.builder();
         CCDPartyType partyType = ccdCase.getRespondents().get(0).getValue().getClaimantProvidedDetail().getType();
 
@@ -120,13 +122,13 @@ public class PaperResponseLetterService {
                     return paperResponseLetter
                         .templateId(oconFormIndividualWithDQs)
                         .payload(paperDefenceLetterBodyMapper
-                            .oconFormIndividualWithDQsMapper(ccdCase, extendedDeadline, courtName))
+                            .oconFormIndividualWithDQsMapper(ccdCase, extendedDeadline, courtName, disableN9Form))
                         .build();
                 } else {
                     return paperResponseLetter
                         .templateId(oconFormIndividualWithoutDQs)
                         .payload(paperDefenceLetterBodyMapper
-                            .oconFormIndividualWithoutDQsMapper(ccdCase, extendedDeadline))
+                            .oconFormIndividualWithoutDQsMapper(ccdCase, extendedDeadline, disableN9Form))
                         .build();
                 }
             case ORGANISATION:
@@ -135,13 +137,13 @@ public class PaperResponseLetterService {
                     return paperResponseLetter
                         .templateId(oconFormOrganisationWithDQs)
                         .payload(paperDefenceLetterBodyMapper
-                            .oconFormOrganisationWithDQsMapper(ccdCase, extendedDeadline, courtName))
+                            .oconFormOrganisationWithDQsMapper(ccdCase, extendedDeadline, courtName, disableN9Form))
                         .build();
                 } else {
                     return paperResponseLetter
                         .templateId(oconFormOrganisationWithoutDQs)
                         .payload(paperDefenceLetterBodyMapper
-                            .oconFormOrganisationWithoutDQsMapper(ccdCase, extendedDeadline))
+                            .oconFormOrganisationWithoutDQsMapper(ccdCase, extendedDeadline, disableN9Form))
                         .build();
                 }
             case SOLE_TRADER:
@@ -149,13 +151,13 @@ public class PaperResponseLetterService {
                     return paperResponseLetter
                         .templateId(oconFormSoleTraderWithDQs)
                         .payload(paperDefenceLetterBodyMapper
-                            .oconFormSoleTraderWithDQsMapper(ccdCase, extendedDeadline, courtName))
+                            .oconFormSoleTraderWithDQsMapper(ccdCase, extendedDeadline, courtName, disableN9Form))
                         .build();
                 } else {
                     return paperResponseLetter
                         .templateId(oconFormSoleTraderWithoutDQs)
                         .payload(paperDefenceLetterBodyMapper
-                            .oconFormSoleTraderWithoutDQsMapper(ccdCase, extendedDeadline))
+                            .oconFormSoleTraderWithoutDQsMapper(ccdCase, extendedDeadline, disableN9Form))
                         .build();
                 }
             default:
