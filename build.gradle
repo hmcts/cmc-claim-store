@@ -3,7 +3,7 @@ import java.util.stream.Collectors
 plugins {
   id 'checkstyle'
   id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-  id 'org.springframework.boot' version '2.4.3'
+  id 'org.springframework.boot' version '2.3.0.RELEASE'
   id 'org.owasp.dependencycheck' version '6.1.1'
   id 'org.sonarqube' version '2.8'
   id 'com.github.ben-manes.versions' version '0.36.0'
@@ -26,7 +26,7 @@ dependencyUpdates.resolutionStrategy = {
 }
 
 def springBootVersion = plugins.getPlugin('org.springframework.boot').class.package.implementationVersion
-def springCloudVersion = '2020.0.0'
+def springCloudVersion = 'Hoxton.SR2'
 
 def versions = [
   logback           : '1.2.3',
@@ -181,7 +181,7 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-json'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
 
-  compile group: 'org.flywaydb', name: 'flyway-core', version: '7.3.2'
+  compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
 
   compile group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
   compile group: 'ch.qos.logback', name: 'logback-core', version: versions.logback
@@ -236,17 +236,16 @@ dependencies {
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
   testCompile group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock'
 
-
-  testCompile group: 'org.junit.jupiter', name: 'junit-jupiter', version: versions.junit
+  testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit
+  testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit
+  testCompile group: 'org.junit.vintage', name: 'junit-vintage-engine', version: versions.junit
   testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: versions.junit
   testCompile group: 'org.junit.platform', name: 'junit-platform-commons', version: versions.junitPlatform
   testCompile group: 'org.junit.platform', name: 'junit-platform-engine', version: versions.junitPlatform
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.16.1'
-  testCompile group: 'org.mockito', name: 'mockito-core', version: '3.8.0'
-  testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.8.0'
-  testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.2'
+  testCompile group: 'org.mockito', name: 'mockito-core', version: '3.3.3'
+  testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.6.28'
   testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.14.3'
-
 
   testCompile group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
   testCompile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: '2.4.0'
@@ -400,7 +399,7 @@ sonarqube {
         "**/ValidResidenceConstraintValidator.java",
         "**/PaperResponseFullDefenceCallbackHandler.java",
         "**/cmc/claimstore/services/ccd/callbacks/roboticssupport/RoboticsNotificationServiceImpl.java"
-      ].join(",")
+    ].join(",")
   }
 }
 
