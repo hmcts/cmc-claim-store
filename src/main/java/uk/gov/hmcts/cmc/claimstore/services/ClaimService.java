@@ -340,6 +340,31 @@ public class ClaimService {
             .build();
 
         Claim savedClaim = caseRepository.saveRepresentedClaim(user, claim);
+
+        return savedClaim;
+    }
+
+    @LogExecutionTime
+    public Claim updateRepresentedClaim(
+        String submitterId,
+        ClaimData claimData,
+        String authorisation
+    ) {
+        String externalId = claimData.getExternalId().toString();
+        User user = userService.getUser(authorisation);
+
+        String submitterEmail = user.getUserDetails().getEmail();
+
+        Claim claim = Claim.builder()
+            .claimData(claimData)
+            .submitterId(submitterId)
+            .externalId(externalId)
+            .submitterEmail(submitterEmail)
+            .createdAt(LocalDateTimeFactory.nowInUTC())
+            .claimSubmissionOperationIndicators(ClaimSubmissionOperationIndicators.builder().build())
+            .build();
+
+        Claim savedClaim = caseRepository.saveRepresentedClaim(user, claim);
         createClaimEvent(authorisation, user, savedClaim);
         trackClaimIssued(savedClaim.getReferenceNumber(), savedClaim.getClaimData().isClaimantRepresented());
 

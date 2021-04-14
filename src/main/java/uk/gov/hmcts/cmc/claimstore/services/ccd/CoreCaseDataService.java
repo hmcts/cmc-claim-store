@@ -51,18 +51,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_REQUESTED;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CASE;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_HWF_CASE;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_LEGAL_REP_CLAIM;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INITIATE_CLAIM_PAYMENT_CITIZEN;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LINK_LETTER_HOLDER;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED_ONLINE;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ORDER_REVIEW_REQUESTED;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.*;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
@@ -163,6 +152,44 @@ public class CoreCaseDataService {
         CCDCase ccdCase = caseMapper.to(claim);
 
         return saveClaim(user, claim, ccdCase, CREATE_LEGAL_REP_CLAIM);
+    }
+
+    @LogExecutionTime
+    public Claim updateRepresentedClaim(User user, Claim claim) {
+        requireNonNull(user, USER_MUST_NOT_BE_NULL);
+
+        CaseEvent caseEvent = UPDATE_LEGAL_REP_CLAIM;
+
+        try {
+            UserDetails userDetails = userService.getUserDetails(user.getAuthorisation());
+
+            EventRequestData eventRequestData = eventRequest(caseEvent, userDetails.getId());
+
+            StartEventResponse startEventResponse = startUpdate(
+                user.getAuthorisation,
+                eventRequestData,
+                claim.getCcdCaseId(),
+                isRepresented(userDetails)
+            );
+
+            CaseDataContent caseDataContent = caseDataContent(startEventResponse, claim);
+
+            return caseDetailsConverter.extractClaim(submitUpdate(user.getAuthorisation(),
+                eventRequestData,
+                caseDataContent,
+                claim.getCcdCaseId(),
+                isRepresented(userDetails)
+                )
+            );
+        } catch (Exception exception) {
+            throw new CoreCaseDataStoreException(
+                String.format(
+                    CCD_UPDATE_FAILURE_MESSAGE,
+                    claim.getCcdCaseId(),
+                    caseEvent
+                ), exception
+            );
+        }
     }
 
     private Claim saveClaim(User user, Claim claim, CCDCase ccdCase, CaseEvent createClaimEvent) {
