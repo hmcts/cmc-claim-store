@@ -105,7 +105,9 @@ public enum CaseEvent {
     UPDATE_HWF_NUMBER("UpdateHWFNumber"),
     CLOSE_AWAITING_RESPONSE_HWF("CloseAwaitingResponseHWF"),
     HWF_FULL_REMISSION_GRANTED("HWFFullRemision"),
-    RECALCULATE_INTEREST("RecalculateInterest");
+    RECALCULATE_INTEREST("RecalculateInterest"),
+    BREATHING_SPACE_ENTERED("BreathingSpaceEntered"),
+    BREATHING_SPACE_LIFTED("BreathingSpaceLifted");
 
     private final String value;
 
