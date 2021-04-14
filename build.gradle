@@ -399,7 +399,7 @@ sonarqube {
         "**/ValidResidenceConstraintValidator.java",
         "**/PaperResponseFullDefenceCallbackHandler.java",
         "**/cmc/claimstore/services/ccd/callbacks/roboticssupport/RoboticsNotificationServiceImpl.java"
-      ].join(",")
+    ].join(",")
   }
 }
 

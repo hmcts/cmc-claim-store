@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CCDBreathingSpace;
+import uk.gov.hmcts.cmc.ccd.domain.CCDBreathingSpaceType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseEventMapper;
@@ -21,8 +23,10 @@ import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.StateTransitionCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
+import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
+import uk.gov.hmcts.cmc.domain.models.BreathingSpace;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
@@ -54,6 +58,8 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.*;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
+import static uk.gov.hmcts.cmc.claimstore.services.pilotcourt.Pilot.JDDO;
+import static uk.gov.hmcts.cmc.claimstore.services.pilotcourt.Pilot.LA;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
@@ -95,6 +101,7 @@ public class CoreCaseDataService {
     private final WorkingDayIndicator workingDayIndicator;
     private final int intentionToProceedDeadlineDays;
     private final DirectionsQuestionnaireService directionsQuestionnaireService;
+    private final PilotCourtService pilotCourtService;
 
     @SuppressWarnings("squid:S00107") // All parameters are required here
     @Autowired
@@ -109,7 +116,8 @@ public class CoreCaseDataService {
         @Value("#{new Integer('${dateCalculations.stayClaimDeadlineInDays}')}")
             Integer intentionToProceedDeadlineDays,
         WorkingDayIndicator workingDayIndicator,
-        DirectionsQuestionnaireService directionsQuestionnaireService
+        DirectionsQuestionnaireService directionsQuestionnaireService,
+        PilotCourtService pilotCourtService
     ) {
         this.caseMapper = caseMapper;
         this.userService = userService;
@@ -121,6 +129,7 @@ public class CoreCaseDataService {
         this.workingDayIndicator = workingDayIndicator;
         this.intentionToProceedDeadlineDays = intentionToProceedDeadlineDays;
         this.directionsQuestionnaireService = directionsQuestionnaireService;
+        this.pilotCourtService = pilotCourtService;
     }
 
     @LogExecutionTime
@@ -549,6 +558,12 @@ public class CoreCaseDataService {
 
             Claim existingClaim = toClaim(startEventResponse);
             Claim.ClaimBuilder claimBuilder = existingClaim.toBuilder();
+            if ((pilotCourtService.isPilotCourt(getPreferredCourt(claimBuilder.build()), LA,
+                existingClaim.getCreatedAt()) || pilotCourtService.isPilotCourt(getPreferredCourt(claimBuilder.build()),
+                JDDO, existingClaim.getCreatedAt()))
+            ) {
+                claimBuilder.preferredDQPilotCourt(getPreferredCourt(claimBuilder.build()));
+            }
 
             claimBuilder.claimantResponse(response)
                 .claimantRespondedAt(nowInUTC())
@@ -1236,7 +1251,6 @@ public class CoreCaseDataService {
         );
 
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(startEventResponse.getCaseDetails());
-
         CaseDataContent caseDataContent = caseDataContent(startEventResponse, ccdCase);
 
         CaseDetails caseDetails = submitUpdate(authorisation,
@@ -1246,5 +1260,27 @@ public class CoreCaseDataService {
             isRepresented(userDetails)
         );
         return caseDetailsConverter.extractClaim(caseDetails);
+    }
+
+    public Claim saveBreathingSpaceDetails(Claim claim, BreathingSpace breathingSpace, String authorisation) {
+
+        CCDCase ccdCase = caseMapper.to(claim);
+        CCDBreathingSpace ccdBreathingSpace = new CCDBreathingSpace(
+            breathingSpace.getBsReferenceNumber(),
+            CCDBreathingSpaceType.valueOf(breathingSpace.getBsType().name()),
+            breathingSpace.getBsEnteredDate(),
+            breathingSpace.getBsEnteredDateByInsolvencyTeam(),
+            breathingSpace.getBsLiftedDate(),
+            breathingSpace.getBsLiftedDateByInsolvencyTeam(),
+            breathingSpace.getBsExpectedEndDate(),
+            breathingSpace.getBsLiftedFlag(),
+            null
+        );
+
+        ccdCase.setBreathingSpace(ccdBreathingSpace);
+        if (breathingSpace.getBsLiftedFlag().equals("No")) {
+            return caseDetailsConverter.extractClaim(update(authorisation, ccdCase, CaseEvent.BREATHING_SPACE_ENTERED));
+        }
+        return caseDetailsConverter.extractClaim(update(authorisation, ccdCase, CaseEvent.BREATHING_SPACE_LIFTED));
     }
 }
