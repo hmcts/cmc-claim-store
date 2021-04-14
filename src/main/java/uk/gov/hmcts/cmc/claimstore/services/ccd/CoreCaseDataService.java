@@ -175,7 +175,7 @@ public class CoreCaseDataService {
             EventRequestData eventRequestData = eventRequest(caseEvent, userDetails.getId());
 
             StartEventResponse startEventResponse = startUpdate(
-                user.getAuthorisation,
+                user.getAuthorisation(),
                 eventRequestData,
                 claim.getCcdCaseId(),
                 isRepresented(userDetails)
