@@ -41,6 +41,7 @@ public class RespondToClaimTest extends BaseTest {
         Response fullDefenceDisputeResponse = SampleResponse.FullDefence
             .builder()
             .withDefenceType(DefenceType.DISPUTE)
+            .withNoMediationReason(null)
             .withMediation(NO)
             .withDefendantDetails(SampleParty.builder().withCollectionId(defendantCollectionId).individual())
             .build();
@@ -56,6 +57,7 @@ public class RespondToClaimTest extends BaseTest {
         Response fullDefenceDisputeResponse = SampleResponse.FullDefence
             .builder()
             .withDefenceType(DefenceType.DISPUTE)
+            .withNoMediationReason(null)
             .withMediation(YES)
             .withDefendantDetails(SampleParty.builder().withCollectionId(defendantCollectionId).individual())
             .build();
@@ -70,6 +72,7 @@ public class RespondToClaimTest extends BaseTest {
 
         Response fullDefenceAlreadyPaidResponse = SampleResponse.FullDefence.builder()
             .withDefenceType(DefenceType.ALREADY_PAID)
+            .withNoMediationReason(null)
             .withMediation(null)
             .withDefendantDetails(SampleParty.builder().withCollectionId(defendantCollectionId).individual())
             .build();

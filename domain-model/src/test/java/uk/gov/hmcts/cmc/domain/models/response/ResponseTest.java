@@ -117,4 +117,22 @@ public class ResponseTest {
                 "mediationContactPerson : Mediation contact person may not be longer than 30 characters"
             );
     }
+
+    @Test
+    public void shouldHaveValidationErrorWhenNoMediationReasonPersonExceedSizeLimit() {
+        //given
+        Response response = SampleResponse.FullDefence.builder()
+            .withNoMediationReason(RandomStringUtils.randomAlphabetic(516))
+            .build();
+
+        //when
+        Set<String> errors = validate(response);
+
+        //then
+        assertThat(errors)
+            .hasSize(1)
+            .contains(
+                "noMediationReason : No mediation reason may not be longer than 515 characters"
+            );
+    }
 }
