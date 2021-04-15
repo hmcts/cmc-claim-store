@@ -34,7 +34,6 @@ import uk.gov.hmcts.cmc.claimstore.services.CaseEventService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
-import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimFeatures;
@@ -98,9 +97,6 @@ class PaperResponseFullDefenceCallbackHandlerTest {
     @Mock
     private Claim mockClaim;
 
-    @Mock
-    PilotCourtService pilotCourtService;
-
     @Nested
     class AboutToStartTests {
 
@@ -116,6 +112,7 @@ class PaperResponseFullDefenceCallbackHandlerTest {
                 .params(Map.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
                 .request(request)
                 .build();
+
         }
 
         @Test
@@ -249,7 +246,7 @@ class PaperResponseFullDefenceCallbackHandlerTest {
                     ))
                 .build());
 
-            String court = "Central London County Court";
+            String court = "Court";
             when(courtFinderApi.findMoneyClaimCourtByPostcode(eq(postcode)))
                 .thenReturn(List.of(Court.builder().name(court).build()));
 
@@ -384,7 +381,6 @@ class PaperResponseFullDefenceCallbackHandlerTest {
             when(clock.getZone()).thenReturn(ZoneOffset.UTC);
 
             ccdCase = CCDCase.builder()
-                .preferredDQCourt("Central London County Court")
                 .respondents(List.of(
                     CCDCollectionElement.<CCDRespondent>builder()
                         .value(CCDRespondent.builder()
