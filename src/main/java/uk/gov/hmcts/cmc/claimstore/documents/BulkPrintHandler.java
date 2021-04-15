@@ -170,11 +170,11 @@ public class BulkPrintHandler {
                     coverLetter,
                     buildPaperDefenceCoverLetterFileBaseName(claim.getReferenceNumber())))
                 .add(new PrintablePdf(
-                    oconForm,
-                    buildOconFormFileBaseName(claim.getReferenceNumber())))
-                .add(new PrintablePdf(
                     ocon9Form,
                     buildOcon9FormFileBaseName(claim.getReferenceNumber())))
+                .add(new PrintablePdf(
+                    oconForm,
+                    buildOconFormFileBaseName(claim.getReferenceNumber())))
                 .build();
         }
         return documents;
