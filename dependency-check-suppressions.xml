@@ -198,4 +198,10 @@
         <cve>CVE-2020-8908</cve>
         <cve>CVE-2018-10237</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+            Spring security related
+        ]]></notes>
+        <cve>CVE-2021-22112</cve>
+    </suppress>
 </suppressions>

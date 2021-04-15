@@ -146,20 +146,12 @@ allprojects {
       ) {
         entry 'quartz'
       }
-      // solves CVE-2020-5407  CVE-2021-22112
+      // solves CVE-2020-5407
       dependencySet(
         group: 'org.springframework.security',
         version: '5.4.5'
       ) {
         entry 'spring-security-crypto'
-        entry 'spring-security-config'
-        entry 'spring-security-core'
-        entry 'spring-security-web'
-        entry 'spring-security-oauth'
-        entry 'spring-security-oauth2-resource-server'
-        entry 'spring-security-oauth2-jose'
-        entry 'spring-security-oauth2-core'
-        entry 'spring-security-oauth2-client'
       }
     }
   }
