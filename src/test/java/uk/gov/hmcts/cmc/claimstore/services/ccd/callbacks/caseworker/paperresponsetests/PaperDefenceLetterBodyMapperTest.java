@@ -30,7 +30,6 @@ public class PaperDefenceLetterBodyMapperTest {
     protected static final String AUTHORISATION_TOKEN = "Bearer token";
     private static final String CASEWORKER = "Caseworker name";
     private static final LocalDate EXTENDED_RESPONSE_DEADLINE = LocalDate.now();
-    private static final boolean disableN9form = false;
     private static final String HEARING_COURT = "Shoreditch";
 
     @Mock
@@ -203,7 +202,7 @@ public class PaperDefenceLetterBodyMapperTest {
         @Test
         void shouldMapCommonTemplateBody() {
             DocAssemblyTemplateBody requestBody = paperDefenceLetterBodyMapper
-                .oconFormCommonTemplateMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE, disableN9form);
+                .oconFormCommonTemplateMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE);
             DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
                 .referenceNumber(ccdCase.getPreviousServiceCaseReference())
                 .responseDeadline(respondent.getResponseDeadline())
@@ -224,7 +223,7 @@ public class PaperDefenceLetterBodyMapperTest {
             CCDCase updatedCCDCase = getCCDCase(ccdCase, null);
 
             DocAssemblyTemplateBody requestBody = paperDefenceLetterBodyMapper
-                .oconFormCommonTemplateMapper(updatedCCDCase, EXTENDED_RESPONSE_DEADLINE, disableN9form);
+                .oconFormCommonTemplateMapper(updatedCCDCase, EXTENDED_RESPONSE_DEADLINE);
             DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
                 .referenceNumber(ccdCase.getPreviousServiceCaseReference())
                 .responseDeadline(respondent.getResponseDeadline())
@@ -246,7 +245,7 @@ public class PaperDefenceLetterBodyMapperTest {
             CCDCase updatedCCDCase = getCCDCaseForClaimantProvidedDetails(ccdCase, null);
 
             DocAssemblyTemplateBody requestBody = paperDefenceLetterBodyMapper
-                .oconFormCommonTemplateMapper(updatedCCDCase, EXTENDED_RESPONSE_DEADLINE, disableN9form);
+                .oconFormCommonTemplateMapper(updatedCCDCase, EXTENDED_RESPONSE_DEADLINE);
             DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
                 .referenceNumber(ccdCase.getPreviousServiceCaseReference())
                 .responseDeadline(respondent.getResponseDeadline())
@@ -268,7 +267,7 @@ public class PaperDefenceLetterBodyMapperTest {
             CCDCase updatedCCDCase = getCCDCaseForClaimantProvidedPrimaryAddressDetails(ccdCase, null);
 
             DocAssemblyTemplateBody requestBody = paperDefenceLetterBodyMapper
-                .oconFormCommonTemplateMapper(updatedCCDCase, EXTENDED_RESPONSE_DEADLINE, disableN9form);
+                .oconFormCommonTemplateMapper(updatedCCDCase, EXTENDED_RESPONSE_DEADLINE);
             DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
                 .referenceNumber(ccdCase.getPreviousServiceCaseReference())
                 .responseDeadline(respondent.getResponseDeadline())
@@ -288,7 +287,7 @@ public class PaperDefenceLetterBodyMapperTest {
         void shouldMapTemplateBodyWhenIndividualWithDQs() {
             ccdCase.setPreferredDQCourt(HEARING_COURT);
             DocAssemblyTemplateBody requestBody = paperDefenceLetterBodyMapper
-                .oconFormIndividualWithDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE, HEARING_COURT, disableN9form);
+                .oconFormIndividualWithDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE, HEARING_COURT);
             DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
                 .referenceNumber(ccdCase.getPreviousServiceCaseReference())
                 .responseDeadline(respondent.getResponseDeadline())
@@ -310,7 +309,7 @@ public class PaperDefenceLetterBodyMapperTest {
         void shouldMapTemplateBodyWhenIndividualWithoutDQs() {
             ccdCase.setPreferredDQCourt(HEARING_COURT);
             DocAssemblyTemplateBody requestBody = paperDefenceLetterBodyMapper
-                .oconFormIndividualWithoutDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE, disableN9form);
+                .oconFormIndividualWithoutDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE);
             DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
                 .referenceNumber(ccdCase.getPreviousServiceCaseReference())
                 .responseDeadline(respondent.getResponseDeadline())
@@ -331,7 +330,7 @@ public class PaperDefenceLetterBodyMapperTest {
         void shouldMapTemplateBodyWhenCompanyWithDQs() {
             ccdCase.setPreferredDQCourt(HEARING_COURT);
             DocAssemblyTemplateBody requestBody = paperDefenceLetterBodyMapper
-                .oconFormOrganisationWithDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE, HEARING_COURT, disableN9form);
+                .oconFormOrganisationWithDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE, HEARING_COURT);
             DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
                 .referenceNumber(ccdCase.getPreviousServiceCaseReference())
                 .responseDeadline(respondent.getResponseDeadline())
@@ -353,7 +352,7 @@ public class PaperDefenceLetterBodyMapperTest {
         @Test
         void shouldMapTemplateBodyWhenCompanyWithoutDQs() {
             DocAssemblyTemplateBody requestBody = paperDefenceLetterBodyMapper
-                .oconFormOrganisationWithoutDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE, disableN9form);
+                .oconFormOrganisationWithoutDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE);
             DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
                 .referenceNumber(ccdCase.getPreviousServiceCaseReference())
                 .responseDeadline(respondent.getResponseDeadline())
@@ -375,7 +374,7 @@ public class PaperDefenceLetterBodyMapperTest {
         void shouldMapTemplateBodyWhenSoleTraderWithDQs() {
             ccdCase.setPreferredDQCourt(HEARING_COURT);
             DocAssemblyTemplateBody requestBody = paperDefenceLetterBodyMapper
-                .oconFormSoleTraderWithDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE, HEARING_COURT, disableN9form);
+                .oconFormSoleTraderWithDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE, HEARING_COURT);
             DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
                 .referenceNumber(ccdCase.getPreviousServiceCaseReference())
                 .responseDeadline(respondent.getResponseDeadline())
@@ -398,7 +397,7 @@ public class PaperDefenceLetterBodyMapperTest {
         @Test
         void shouldMapTemplateBodyWhenSoleTraderWithoutDQs() {
             DocAssemblyTemplateBody requestBody = paperDefenceLetterBodyMapper
-                .oconFormSoleTraderWithoutDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE, disableN9form);
+                .oconFormSoleTraderWithoutDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE);
             DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
                 .referenceNumber(ccdCase.getPreviousServiceCaseReference())
                 .responseDeadline(respondent.getResponseDeadline())

@@ -45,15 +45,21 @@ public class DocumentPublishService {
     ) {
         CCDDocument coverLetter = paperResponseLetterService
             .createCoverLetter(ccdCase, authorisation, extendedResponseDeadline);
-
+        Document ocon9Doc = null;
         Document coverDoc = printableDocumentService.process(coverLetter, authorisation);
+        if (!disableN9Form) {
+            CCDDocument ocon9Letter = paperResponseLetterService
+                .createOCON9From(ccdCase, authorisation, extendedResponseDeadline);
+            ocon9Doc = printableDocumentService.process(ocon9Letter, authorisation);
+        }
 
         CCDDocument oconForm = paperResponseLetterService
-            .createOconForm(ccdCase, claim, authorisation, extendedResponseDeadline, disableN9Form);
+            .createOconForm(ccdCase, claim, authorisation, extendedResponseDeadline);
 
         Document formDoc = printableDocumentService.process(oconForm, authorisation);
 
-        BulkPrintDetails bulkPrintDetails = bulkPrintHandler.printPaperDefence(claim, coverDoc, formDoc, authorisation);
+        BulkPrintDetails bulkPrintDetails = bulkPrintHandler.printPaperDefence(claim, coverDoc, formDoc, ocon9Doc,
+            authorisation, disableN9Form);
         CCDCase updated = addToBulkPrintDetails(ccdCase, bulkPrintDetails);
         return paperResponseLetterService
             .addCoverLetterToCaseWithDocuments(updated, claim, coverLetter, authorisation);

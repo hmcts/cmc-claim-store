@@ -26,6 +26,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildCoverShee
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDirectionsOrderFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildLetterFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildOcon9FormFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildOconFormFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildPaperDefenceCoverLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
@@ -137,23 +138,45 @@ public class BulkPrintHandler {
             BulkPrintRequestType.BULK_PRINT_TRANSFER_TYPE, authorisation);
     }
 
-    public BulkPrintDetails printPaperDefence(Claim claim, Document coverLetter, Document oconForm,
-                                              String authorisation) {
+    public BulkPrintDetails printPaperDefence(Claim claim, Document coverLetter, Document oconForm, Document ocon9Form,
+                                              String authorisation, boolean disableN9Form) {
         requireNonNull(claim);
         requireNonNull(coverLetter);
         requireNonNull(authorisation);
         requireNonNull(oconForm);
-
+        ImmutableList<Printable> documents;
+        documents = getPrintables(claim, coverLetter, oconForm, ocon9Form, disableN9Form);
         return bulkPrintService.printPdf(claim,
-            ImmutableList.<Printable>builder()
+            documents,
+            BulkPrintRequestType.GENERAL_LETTER_TYPE,
+            authorisation);
+    }
+
+    private ImmutableList<Printable> getPrintables(Claim claim, Document coverLetter, Document oconForm,
+                                                   Document ocon9Form, boolean disableN9Form) {
+        ImmutableList<Printable> documents;
+        if (disableN9Form) {
+            documents = ImmutableList.<Printable>builder()
                 .add(new PrintablePdf(
                     coverLetter,
                     buildPaperDefenceCoverLetterFileBaseName(claim.getReferenceNumber())))
                 .add(new PrintablePdf(
                     oconForm,
                     buildOconFormFileBaseName(claim.getReferenceNumber())))
-                .build(),
-            BulkPrintRequestType.GENERAL_LETTER_TYPE,
-            authorisation);
+                .build();
+        } else {
+            documents = ImmutableList.<Printable>builder()
+                .add(new PrintablePdf(
+                    coverLetter,
+                    buildPaperDefenceCoverLetterFileBaseName(claim.getReferenceNumber())))
+                .add(new PrintablePdf(
+                    oconForm,
+                    buildOconFormFileBaseName(claim.getReferenceNumber())))
+                .add(new PrintablePdf(
+                    ocon9Form,
+                    buildOcon9FormFileBaseName(claim.getReferenceNumber())))
+                .build();
+        }
+        return documents;
     }
 }

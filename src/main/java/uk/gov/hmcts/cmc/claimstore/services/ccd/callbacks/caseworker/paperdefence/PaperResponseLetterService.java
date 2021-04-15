@@ -36,6 +36,7 @@ public class PaperResponseLetterService {
     private final String oconFormSoleTraderWithoutDQs;
     private final String oconFormOrganisationWithoutDQs;
     private final String paperDefenceCoverLetterTemplateID;
+    private final String oconN9FormTemplateID;
     private final PaperDefenceLetterBodyMapper paperDefenceLetterBodyMapper;
     private final DocAssemblyService docAssemblyService;
     private final UserService userService;
@@ -51,6 +52,7 @@ public class PaperResponseLetterService {
         @Value("${doc_assembly.oconFormSoleTraderWithoutDQs}") String oconFormSoleTraderWithoutDQs,
         @Value("${doc_assembly.oconFormOrganisationWithoutDQs}") String oconFormOrganisationWithoutDQs,
         @Value("${doc_assembly.paperDefenceCoverLetterTemplateID}") String paperDefenceCoverLetterTemplateID,
+        @Value("${doc_assembly.oconN9FormTemplateID}") String oconN9FormTemplateID,
         PaperDefenceLetterBodyMapper paperDefenceLetterBodyMapper,
         DocAssemblyService docAssemblyService,
         UserService userService,
@@ -69,17 +71,33 @@ public class PaperResponseLetterService {
         this.userService = userService;
         this.generalLetterService = generalLetterService;
         this.courtFinderApi = courtFinderApi;
+        this.oconN9FormTemplateID = oconN9FormTemplateID;
     }
 
     public CCDDocument createCoverLetter(CCDCase ccdCase, String authorisation, LocalDate extendedResponseDeadline) {
-        DocAssemblyTemplateBody formPayloadForCoverLetter =
-            paperDefenceLetterBodyMapper.coverLetterTemplateMapper(
-                ccdCase, getCaseWorkerName(authorisation), extendedResponseDeadline);
+        DocAssemblyTemplateBody formPayloadForCoverLetter = getDocAssemblyTemplateBody(ccdCase, authorisation,
+            extendedResponseDeadline);
 
         return docAssemblyService.generateDocument(ccdCase,
             authorisation,
             formPayloadForCoverLetter,
             paperDefenceCoverLetterTemplateID);
+    }
+
+    private DocAssemblyTemplateBody getDocAssemblyTemplateBody(CCDCase ccdCase, String authorisation,
+                                                               LocalDate extendedResponseDeadline) {
+        return paperDefenceLetterBodyMapper.coverLetterTemplateMapper(
+            ccdCase, getCaseWorkerName(authorisation), extendedResponseDeadline);
+    }
+
+    public CCDDocument createOCON9From(CCDCase ccdCase, String authorisation, LocalDate extendedResponseDeadline) {
+        DocAssemblyTemplateBody formPayloadForCoverLetter = getDocAssemblyTemplateBody(ccdCase, authorisation,
+            extendedResponseDeadline);
+
+        return docAssemblyService.generateDocument(ccdCase,
+            authorisation,
+            formPayloadForCoverLetter,
+            oconN9FormTemplateID);
     }
 
     private String getCaseWorkerName(String authorisation) {
@@ -91,18 +109,16 @@ public class PaperResponseLetterService {
         CCDCase ccdCase,
         Claim claim,
         String authorisation,
-        LocalDate extendedResponseDeadline,
-        boolean disableN9Form
+        LocalDate extendedResponseDeadline
     ) {
-        var paperResponseLetter = formForCorrectDefendantType(ccdCase, claim, extendedResponseDeadline, disableN9Form);
+        var paperResponseLetter = formForCorrectDefendantType(ccdCase, claim, extendedResponseDeadline);
         return docAssemblyService.generateDocument(ccdCase,
             authorisation,
             paperResponseLetter.getPayload(),
             paperResponseLetter.getTemplateId());
     }
 
-    private PaperResponseLetter formForCorrectDefendantType(CCDCase ccdCase, Claim claim,
-                                                            LocalDate extendedDeadline, boolean disableN9Form) {
+    private PaperResponseLetter formForCorrectDefendantType(CCDCase ccdCase, Claim claim, LocalDate extendedDeadline) {
         PaperResponseLetter.PaperResponseLetterBuilder paperResponseLetter = PaperResponseLetter.builder();
         CCDPartyType partyType = ccdCase.getRespondents().get(0).getValue().getClaimantProvidedDetail().getType();
 
@@ -122,13 +138,13 @@ public class PaperResponseLetterService {
                     return paperResponseLetter
                         .templateId(oconFormIndividualWithDQs)
                         .payload(paperDefenceLetterBodyMapper
-                            .oconFormIndividualWithDQsMapper(ccdCase, extendedDeadline, courtName, disableN9Form))
+                            .oconFormIndividualWithDQsMapper(ccdCase, extendedDeadline, courtName))
                         .build();
                 } else {
                     return paperResponseLetter
                         .templateId(oconFormIndividualWithoutDQs)
                         .payload(paperDefenceLetterBodyMapper
-                            .oconFormIndividualWithoutDQsMapper(ccdCase, extendedDeadline, disableN9Form))
+                            .oconFormIndividualWithoutDQsMapper(ccdCase, extendedDeadline))
                         .build();
                 }
             case ORGANISATION:
@@ -137,13 +153,13 @@ public class PaperResponseLetterService {
                     return paperResponseLetter
                         .templateId(oconFormOrganisationWithDQs)
                         .payload(paperDefenceLetterBodyMapper
-                            .oconFormOrganisationWithDQsMapper(ccdCase, extendedDeadline, courtName, disableN9Form))
+                            .oconFormOrganisationWithDQsMapper(ccdCase, extendedDeadline, courtName))
                         .build();
                 } else {
                     return paperResponseLetter
                         .templateId(oconFormOrganisationWithoutDQs)
                         .payload(paperDefenceLetterBodyMapper
-                            .oconFormOrganisationWithoutDQsMapper(ccdCase, extendedDeadline, disableN9Form))
+                            .oconFormOrganisationWithoutDQsMapper(ccdCase, extendedDeadline))
                         .build();
                 }
             case SOLE_TRADER:
@@ -151,13 +167,13 @@ public class PaperResponseLetterService {
                     return paperResponseLetter
                         .templateId(oconFormSoleTraderWithDQs)
                         .payload(paperDefenceLetterBodyMapper
-                            .oconFormSoleTraderWithDQsMapper(ccdCase, extendedDeadline, courtName, disableN9Form))
+                            .oconFormSoleTraderWithDQsMapper(ccdCase, extendedDeadline, courtName))
                         .build();
                 } else {
                     return paperResponseLetter
                         .templateId(oconFormSoleTraderWithoutDQs)
                         .payload(paperDefenceLetterBodyMapper
-                            .oconFormSoleTraderWithoutDQsMapper(ccdCase, extendedDeadline, disableN9Form))
+                            .oconFormSoleTraderWithoutDQsMapper(ccdCase, extendedDeadline))
                         .build();
                 }
             default:

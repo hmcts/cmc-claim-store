@@ -38,7 +38,6 @@ import static org.mockito.Mockito.when;
     private static final String DOC_URL = "http://success.test";
     private static final String DOC_URL_BINARY = "http://success.test/binary";
     private static final String DOC_NAME = "doc-name";
-    private static final boolean DISABLEN9FORM = true;
     private static final CCDDocument COVER_LETTER = CCDDocument
         .builder()
         .documentUrl(DOC_URL)
@@ -112,7 +111,7 @@ import static org.mockito.Mockito.when;
             .createCoverLetter(eq(ccdCase), eq(AUTHORISATION), eq(DATE.toLocalDate())))
             .thenReturn(COVER_LETTER);
         when(paperResponseLetterService
-            .createOconForm(eq(ccdCase), eq(claim), eq(AUTHORISATION), eq(DATE.toLocalDate()), eq(DISABLEN9FORM)))
+            .createOconForm(eq(ccdCase), eq(claim), eq(AUTHORISATION), eq(DATE.toLocalDate())))
             .thenReturn(OCON_FORM);
         when(printableDocumentService.process(eq(COVER_LETTER), eq(AUTHORISATION))).thenReturn(COVER_DOCUMENT);
         when(printableDocumentService.process(eq(OCON_FORM), eq(AUTHORISATION))).thenReturn(OCON_DOCUMENT);

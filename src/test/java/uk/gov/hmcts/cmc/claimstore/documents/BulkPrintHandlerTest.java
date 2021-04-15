@@ -195,7 +195,7 @@ public class BulkPrintHandlerTest {
         Document letter = new Document("letter", new HashMap<>());
 
         //when
-        bulkPrintHandler.printPaperDefence(claim, letter, letter, AUTHORISATION);
+        bulkPrintHandler.printPaperDefence(claim, letter, letter, letter, AUTHORISATION, true);
 
         //verify
         verify(bulkPrintService).printPdf(
