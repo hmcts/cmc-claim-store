@@ -19,7 +19,6 @@ import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
-import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
@@ -98,8 +97,6 @@ public class CoreCaseDataServiceFailureTest {
     private feign.Request request;
     @Mock
     private DirectionsQuestionnaireService directionsQuestionnaireService;
-    @Mock
-    private PilotCourtService pilotCourtService;
 
     private CoreCaseDataService service;
 
@@ -145,8 +142,7 @@ public class CoreCaseDataServiceFailureTest {
             caseDetailsConverter,
             intentionToProceedDeadlineDays,
             workingDayIndicator,
-            directionsQuestionnaireService,
-            pilotCourtService
+            directionsQuestionnaireService
         );
     }
 
