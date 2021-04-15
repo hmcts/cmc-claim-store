@@ -212,16 +212,4 @@ public class EmailTemplates {
 
     @NotEmpty
     private String caseTransferToCcbcForDefendant;
-
-    @NotEmpty
-    private String breathingSpaceEmailToClaimant;
-
-    @NotEmpty
-    private String breathingSpaceEmailToDefendant;
-
-    @NotEmpty
-    private String breathingSpaceLiftedEmailToClaimant;
-
-    @NotEmpty
-    private String breathingSpaceLiftedEmailToDefendant;
 }
