@@ -14,12 +14,4 @@ public class EmailTemplates {
     public String getClaimIssuedEmailBody() {
         return readString("/rpa/templates/email/claimIssued/body.txt");
     }
-
-    public String getBreathingSpaceEmailSubject() {
-        return readString("/rpa/templates/email/breathingspace/subject.txt");
-    }
-
-    public String getBreathingSpaceEmailBody() {
-        return readString("/rpa/templates/email/breathingspace/body.txt");
-    }
 }
