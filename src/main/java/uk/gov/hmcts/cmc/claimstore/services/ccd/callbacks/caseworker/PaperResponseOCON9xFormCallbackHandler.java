@@ -18,12 +18,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -82,6 +77,8 @@ public class PaperResponseOCON9xFormCallbackHandler  extends CallbackHandler {
         CallbackRequest request = callbackParams.getRequest();
 
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(request.getCaseDetails());
+        ccdCase.setTempOcon9xFormSelectedValue(ccdCase.getOcon9xForm());
+        ccdCase.setOcon9xForm(null);
         List<CCDCollectionElement<CCDScannedDocument>> formsBefore = filterForms(ccdCase);
 
         List<String> errors = new ArrayList<>();
@@ -91,17 +88,19 @@ public class PaperResponseOCON9xFormCallbackHandler  extends CallbackHandler {
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .errors(errors)
+            .data(caseDetailsConverter.convertToMap(ccdCase))
             .build();
     }
 
     private AboutToStartOrSubmitCallbackResponse updateData(CallbackParams callbackParams) {
         CallbackRequest request = callbackParams.getRequest();
-
+        /*Map<String, Object> tempData = new HashMap<>(request.getCaseDetails().getData());
+        tempData.put(OCON9X," ");
+        request.getCaseDetails().setData(tempData);*/
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(request.getCaseDetails());
-
         CCDScannedDocument updatedDocument = ccdCase.getScannedDocuments()
             .stream()
-            .filter(e -> e.getId().equals(ccdCase.getOcon9xForm()))
+            .filter(e -> e.getId().equals(ccdCase.getTempOcon9xFormSelectedValue()))
             .map(CCDCollectionElement::getValue)
             .map(d -> d.toBuilder()
                 .fileName(String.format("%s-scanned-OCON9x-form.pdf", ccdCase.getPreviousServiceCaseReference()))
@@ -112,7 +111,7 @@ public class PaperResponseOCON9xFormCallbackHandler  extends CallbackHandler {
 
         List<CCDCollectionElement<CCDScannedDocument>> updatedScannedDocuments = ccdCase.getScannedDocuments()
             .stream()
-            .map(e -> e.getId().equals(ccdCase.getOcon9xForm()) ? e.toBuilder().value(updatedDocument).build() : e)
+            .map(e -> e.getId().equals(ccdCase.getTempOcon9xFormSelectedValue()) ? e.toBuilder().value(updatedDocument).build() : e)
             .collect(Collectors.toList());
 
         LocalDateTime mostRecentDeliveryDate = updatedScannedDocuments.stream()
