@@ -417,6 +417,7 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
                     .previousServiceCaseReference(reference)
                     .scannedDocuments(List.of(scannedDocuments))
                     .ocon9xForm(id)
+                    .tempOcon9xFormSelectedValue(id)
                     .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
                         .value(CCDRespondent.builder().build())
                         .build()))
@@ -468,6 +469,7 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
                     .scannedDocuments(List.of(scannedDocElement.toBuilder().value(scannedDoc).build()))
                     .temporaryScannedDocuments(Collections.emptyList())
                     .ocon9xForm(null)
+                    .tempOcon9xFormSelectedValue(null)
                     .evidenceHandled(CCDYesNoOption.YES)
                     .build();
 
