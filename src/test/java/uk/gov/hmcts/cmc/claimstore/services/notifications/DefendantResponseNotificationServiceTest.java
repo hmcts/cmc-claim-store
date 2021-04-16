@@ -219,4 +219,21 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
 
         verifyNoInteractions(emailTemplates, notificationClient);
     }
+
+    @Test
+    public void notifyClaimantWhenDefendantAddressChanged() throws Exception {
+        Claim claim = SampleClaim
+            .getWithResponseAddressChanged(SampleResponse
+                .PartAdmission.builder()
+                .buildWithPaymentOptionBySpecifiedDate());
+        String reference = claim.getReferenceNumber();
+
+        when(emailTemplates.getDefendantContactDetailsChanged())
+            .thenReturn(DEFENDANT_RESPOND_BY_ADMISSION);
+
+        service.notifyClaimant(claim, reference);
+
+        verify(notificationClient)
+            .sendEmail(eq(DEFENDANT_RESPOND_BY_ADMISSION), eq(claim.getSubmitterEmail()), anyMap(), eq(reference));
+    }
 }
