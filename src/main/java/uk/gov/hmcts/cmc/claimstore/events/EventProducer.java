@@ -3,11 +3,9 @@ package uk.gov.hmcts.cmc.claimstore.events;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.InterlocutoryJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.ReDeterminationEvent;
-import uk.gov.hmcts.cmc.claimstore.events.claim.BreathingSpaceEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CaseworkerHwfClaimIssueEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimCreatedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
@@ -153,21 +151,5 @@ public class EventProducer {
         String authorisation
     ) {
         publisher.publishEvent(new BulkPrintTransferEvent(claim, coverLetter, caseDocuments, authorisation));
-    }
-
-    public void createBreathingSpaceEnteredEvent(Claim claim, CCDCase ccdCase,
-                                                 String authorisation, String letterTemplateId,
-                                                 String emailTemplateIDClaimant, String emailTemplateIDDefendant,
-                                                 boolean enteredByCitizen, boolean bsLifted) {
-        publisher.publishEvent(new BreathingSpaceEvent(claim, ccdCase, authorisation, letterTemplateId,
-            emailTemplateIDClaimant, emailTemplateIDDefendant, enteredByCitizen, bsLifted));
-    }
-
-    public void createBreathingSpaceLiftedEvent(Claim claim, CCDCase ccdCase,
-                                                String authorisation, String letterTemplateId,
-                                                String emailTemplateIDClaimant, String emailTemplateIDDefendant,
-                                                boolean enteredByCitizen, boolean bsLifted) {
-        publisher.publishEvent(new BreathingSpaceEvent(claim, ccdCase, authorisation, letterTemplateId,
-            emailTemplateIDClaimant, emailTemplateIDDefendant, enteredByCitizen, bsLifted));
     }
 }

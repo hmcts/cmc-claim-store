@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import org.apache.http.HttpException;
-import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -20,7 +18,6 @@ import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.rules.PaidInFullRule;
 import uk.gov.hmcts.cmc.claimstore.rules.ReviewOrderRule;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
-import uk.gov.hmcts.cmc.domain.models.BreathingSpace;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
@@ -53,20 +50,11 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.UPDATE_HELP_WITH_FEE_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.CLAIM_EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BREATHING_SPACE_ENTERED;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BREATHING_SPACE_LIFTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.HWF_CLAIM_CREATED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NUMBER_OF_RECONSIDERATION;
 import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_PAYMENT;
-import static uk.gov.hmcts.cmc.domain.models.ClaimState.AWAITING_RESPONSE_HWF;
-import static uk.gov.hmcts.cmc.domain.models.ClaimState.BUSINESS_QUEUE;
-import static uk.gov.hmcts.cmc.domain.models.ClaimState.CLOSED_HWF;
-import static uk.gov.hmcts.cmc.domain.models.ClaimState.HWF_APPLICATION_PENDING;
-import static uk.gov.hmcts.cmc.domain.models.ClaimState.PROCEEDS_IN_CASE_MAN;
-import static uk.gov.hmcts.cmc.domain.models.ClaimState.SETTLED;
-import static uk.gov.hmcts.cmc.domain.models.ClaimState.TRANSFERRED;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
 @Component
@@ -544,86 +532,5 @@ public class ClaimService {
             authorisation
         );
 
-    }
-
-    @LogExecutionTime
-    public Claim saveBreathingSpaceDetails(
-        String externalId,
-        BreathingSpace breathingSpace,
-        String authorisation
-    ) throws HttpException {
-        Claim claim = getClaimByExternalId(externalId, authorisation);
-        claimAuthorisationRule.assertClaimCanBeAccessed(claim, authorisation);
-        String validatedBsDetails = validateBreathingSpaceDetails(breathingSpace, claim);
-        if (validatedBsDetails == null) {
-            Claim updatedClaim = caseRepository.saveBreathingSpaceDetails(claim, breathingSpace, authorisation);
-
-            if (breathingSpace.getBsLiftedFlag().equals("No")) {
-                appInsights.trackEvent(BREATHING_SPACE_ENTERED, CLAIM_EXTERNAL_ID, externalId);
-            } else {
-                appInsights.trackEvent(BREATHING_SPACE_LIFTED, CLAIM_EXTERNAL_ID, externalId);
-            }
-            return updatedClaim;
-        } else {
-            throw
-                new HttpException(String.format(
-                    validatedBsDetails,
-                    HttpStatus.SC_BAD_REQUEST
-                ));
-        }
-
-    }
-
-    private String validateBreathingSpaceDetails(BreathingSpace breathingSpace, Claim claim) {
-        String validationMessage = null;
-        BreathingSpace breathingSpaceInClaim = null;
-        Optional<BreathingSpace> breathingSpaceOptional = claim.getClaimData().getBreathingSpace();
-        if (breathingSpaceOptional.isPresent()) {
-            breathingSpaceInClaim = breathingSpaceOptional.get();
-        }
-
-        if (breathingSpaceInClaim != null && breathingSpaceInClaim.getBsType() != null
-            && breathingSpace.getBsLiftedFlag().equals("No")) {
-            validationMessage = "Breathing Space is already entered for this Claim";
-        } else {
-            if (breathingSpace.getBsEnteredDateByInsolvencyTeam() != null
-                && breathingSpace.getBsEnteredDateByInsolvencyTeam().getYear() == 9999
-            ) {
-                breathingSpace.setBsEnteredDateByInsolvencyTeam(null);
-            }
-            if (breathingSpace.getBsExpectedEndDate() != null
-                && breathingSpace.getBsExpectedEndDate().getYear() == 9999
-            ) {
-                breathingSpace.setBsExpectedEndDate(null);
-            }
-            if (breathingSpace.getBsLiftedDateByInsolvencyTeam() != null
-                && breathingSpace.getBsLiftedDateByInsolvencyTeam().getYear() == 9999
-            ) {
-                breathingSpace.setBsLiftedDateByInsolvencyTeam(null);
-            }
-            if (breathingSpace.getBsReferenceNumber() != null
-                && breathingSpace.getBsReferenceNumber().length() > 16) {
-                validationMessage = "The reference number must be maximum of 16 Characters";
-            } else if (breathingSpace.getBsEnteredDateByInsolvencyTeam() != null
-                && breathingSpace.getBsEnteredDateByInsolvencyTeam().isAfter(LocalDate.now())) {
-                validationMessage = "The start date must not be after today's date";
-            } else if (breathingSpace.getBsExpectedEndDate() != null
-                && breathingSpace.getBsExpectedEndDate().isBefore(LocalDate.now())) {
-                validationMessage = "The expected end date must not be before today's date";
-            }
-        }
-
-        if (claim.getState().equals(TRANSFERRED)
-            || claim.getState().equals(BUSINESS_QUEUE)
-            || claim.getState().equals(HWF_APPLICATION_PENDING)
-            || claim.getState().equals(AWAITING_RESPONSE_HWF)
-            || claim.getState().equals(PROCEEDS_IN_CASE_MAN)
-            || claim.getState().equals(SETTLED)
-            || claim.getState().equals(CLOSED_HWF)) {
-            validationMessage = "This Event cannot be triggered since "
-                + "the claim is no longer part of the online civil money claims journey";
-        }
-
-        return validationMessage;
     }
 }

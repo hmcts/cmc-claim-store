@@ -8,7 +8,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimCreationEventsStatusService;
-import uk.gov.hmcts.cmc.claimstore.rpa.BreathingSpaceNotificationService;
 import uk.gov.hmcts.cmc.claimstore.rpa.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -31,13 +30,9 @@ public class RpaOperationServiceTest {
     @Mock
     private ClaimCreationEventsStatusService eventsStatusService;
 
-    @Mock
-    private BreathingSpaceNotificationService breathingSpaceNotificationService;
-
     @Before
     public void before() {
-        rpaOperationService = new RpaOperationService(claimIssuedNotificationService,
-            breathingSpaceNotificationService, eventsStatusService);
+        rpaOperationService = new RpaOperationService(claimIssuedNotificationService, eventsStatusService);
     }
 
     @Test
@@ -47,18 +42,6 @@ public class RpaOperationServiceTest {
 
         //verify
         verify(claimIssuedNotificationService).notifyRobotics(
-            CLAIM,
-            ImmutableList.of(pinLetterClaim, sealedClaim)
-        );
-    }
-
-    @Test
-    public void shouldNotifyBreathingSpace() {
-        //when
-        rpaOperationService.notifyBreathingSpace(CLAIM, AUTHORISATION, pinLetterClaim, sealedClaim);
-
-        //verify
-        verify(breathingSpaceNotificationService).notifyRobotics(
             eq(CLAIM),
             eq(ImmutableList.of(pinLetterClaim, sealedClaim))
         );
