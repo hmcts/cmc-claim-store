@@ -637,7 +637,6 @@ public final class SampleClaimForHwF {
             null,
             null,
             null,
-            null,
             transferContent,
             null,
             List.of(BulkPrintDetails.builder()

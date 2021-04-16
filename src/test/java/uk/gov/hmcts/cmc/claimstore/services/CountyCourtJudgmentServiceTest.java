@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import com.launchdarkly.client.LDUser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,7 +33,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
-import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -60,32 +58,38 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
 public class CountyCourtJudgmentServiceTest {
 
     private static final String AUTHORISATION = "Bearer: aaa";
-    private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
-    private final ReDetermination reDetermination = ReDetermination.builder()
-        .explanation("I feel defendant can pay")
-        .partyType(MadeBy.CLAIMANT)
-        .build();
-    private final UserDetails userDetails = SampleUserDetails.builder().withUserId(USER_ID).build();
+
     private CountyCourtJudgmentService countyCourtJudgmentService;
+
     @Mock
     private ClaimService claimService;
     @Mock
     private UserService userService;
+
     @Mock
     private EventProducer eventProducer;
+
     @Mock
     private AppInsights appInsights;
-    @Mock
-    private LaunchDarklyClient launchDarklyClient;
+
     @Mock
     private CaseRepository caseRepository;
     @Mock
     private CCJByAdmissionOrDeterminationPdfService ccjByAdmissionOrDeterminationPdfService;
     @Mock
     private DocumentsService documentService;
+    private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
     private PDF pdf;
+
     @Mock
     private ClaimantResponseReceiptService claimantResponseReceiptService;
+
+    private final ReDetermination reDetermination = ReDetermination.builder()
+        .explanation("I feel defendant can pay")
+        .partyType(MadeBy.CLAIMANT)
+        .build();
+
+    private final UserDetails userDetails = SampleUserDetails.builder().withUserId(USER_ID).build();
 
     @Before
     public void setup() {
@@ -101,8 +105,7 @@ public class CountyCourtJudgmentServiceTest {
             ccjByAdmissionOrDeterminationPdfService,
             documentService,
             true,
-            claimantResponseReceiptService,
-            launchDarklyClient);
+            claimantResponseReceiptService);
 
         when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetails);
         pdf = new PDF(
@@ -113,7 +116,6 @@ public class CountyCourtJudgmentServiceTest {
         when(documentService.uploadToDocumentManagement(any(PDF.class),
             anyString(), any(Claim.class))).thenReturn(SampleClaim.builder().build());
         when(claimantResponseReceiptService.createPdf(any(Claim.class), any())).thenReturn(pdf);
-        when(launchDarklyClient.isFeatureEnabled(eq("breathing-space"), any(LDUser.class))).thenReturn(true);
     }
 
     @Test
@@ -430,8 +432,7 @@ public class CountyCourtJudgmentServiceTest {
             ccjByAdmissionOrDeterminationPdfService,
             documentService,
             false,
-            claimantResponseReceiptService,
-            launchDarklyClient);
+            claimantResponseReceiptService);
         Claim claim = SampleClaim
             .builder()
             .withResponseDeadline(LocalDate.now().minusMonths(2))
@@ -480,8 +481,7 @@ public class CountyCourtJudgmentServiceTest {
             ccjByAdmissionOrDeterminationPdfService,
             documentService,
             false,
-            claimantResponseReceiptService,
-            launchDarklyClient);
+            claimantResponseReceiptService);
 
         Claim claim = SampleClaim
             .builder()
