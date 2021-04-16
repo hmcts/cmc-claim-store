@@ -54,7 +54,7 @@ public class DocumentPublishService {
         }
 
         CCDDocument oconForm = paperResponseLetterService
-            .createOconForm(ccdCase, claim, authorisation, extendedResponseDeadline);
+            .createOconForm(ccdCase, claim, authorisation, extendedResponseDeadline, disableN9Form);
 
         Document formDoc = printableDocumentService.process(oconForm, authorisation);
 
