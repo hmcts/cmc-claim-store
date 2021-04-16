@@ -119,7 +119,6 @@ public class CCDCase {
     private String newRequestedCourt;
 
     private String preferredDQCourt;
-    private String preferredDQPilotCourt;
 
     private String preferredCourtObjectingParty;
     private String preferredCourtObjectingReason;
