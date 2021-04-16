@@ -40,7 +40,7 @@ public class PaperResponseOCON9xFormCallbackHandler  extends CallbackHandler {
     private static final String SCANNED_DOCUMENTS = "temporaryScannedDocuments";
     private static final String OCON9X = "ocon9xForm";
     public static final String OCON9X_SUBTYPE = "OCON9x";
-    public static final String SCANNED_DOCUMENTS_MODIFIED_ERROR = "You man not add or remove new documents";
+    public static final String SCANNED_DOCUMENTS_MODIFIED_ERROR = "You may not add or remove new documents";
 
     private static final List<Role> ROLES = List.of(CASEWORKER);
     private static final List<CaseEvent> EVENTS = List.of(PAPER_RESPONSE_OCON_9X_FORM);
@@ -94,9 +94,6 @@ public class PaperResponseOCON9xFormCallbackHandler  extends CallbackHandler {
 
     private AboutToStartOrSubmitCallbackResponse updateData(CallbackParams callbackParams) {
         CallbackRequest request = callbackParams.getRequest();
-        /*Map<String, Object> tempData = new HashMap<>(request.getCaseDetails().getData());
-        tempData.put(OCON9X," ");
-        request.getCaseDetails().setData(tempData);*/
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(request.getCaseDetails());
         CCDScannedDocument updatedDocument = ccdCase.getScannedDocuments()
             .stream()
@@ -131,6 +128,7 @@ public class PaperResponseOCON9xFormCallbackHandler  extends CallbackHandler {
             .scannedDocuments(updatedScannedDocuments)
             .temporaryScannedDocuments(Collections.emptyList())
             .ocon9xForm(null)
+            .tempOcon9xFormSelectedValue(null)
             .evidenceHandled(CCDYesNoOption.YES)
             .build();
 
