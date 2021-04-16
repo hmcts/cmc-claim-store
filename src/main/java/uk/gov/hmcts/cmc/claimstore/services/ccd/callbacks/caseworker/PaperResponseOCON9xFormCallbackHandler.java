@@ -113,7 +113,8 @@ public class PaperResponseOCON9xFormCallbackHandler  extends CallbackHandler {
 
         List<CCDCollectionElement<CCDScannedDocument>> updatedScannedDocuments = ccdCase.getScannedDocuments()
             .stream()
-            .map(e -> e.getId().equals(ccdCase.getTempOcon9xFormSelectedValue()) ? e.toBuilder().value(updatedDocument).build() : e)
+            .map(e -> e.getId()
+                .equals(ccdCase.getTempOcon9xFormSelectedValue()) ? e.toBuilder().value(updatedDocument).build() : e)
             .collect(Collectors.toList());
 
         LocalDateTime mostRecentDeliveryDate = updatedScannedDocuments.stream()
