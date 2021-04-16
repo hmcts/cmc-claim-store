@@ -145,7 +145,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
         Claim claim = SampleClaim.getDefaultForLegal();
         ClaimData claimData = claim.getClaimData();
 
-        when(caseRepository.saveRepresentedClaim(eq(LEGAL_REP), any(Claim.class)))
+        when(caseRepository.saveRepresentedClaim(eq(LEGAL_REP), any(Claim.class), ))
             .thenReturn(claim);
 
         Claim result = jsonMappingHelper.deserializeObjectFrom(

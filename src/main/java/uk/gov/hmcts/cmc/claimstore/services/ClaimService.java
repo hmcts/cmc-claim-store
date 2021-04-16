@@ -32,6 +32,7 @@ import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
+import uk.gov.hmcts.cmc.domain.models.legalrep.LegalRepUpdate;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
@@ -347,24 +348,26 @@ public class ClaimService {
     @LogExecutionTime
     public Claim updateRepresentedClaim(
         String submitterId,
-        ClaimData claimData,
+        LegalRepUpdate legalRepUpdate,
         String authorisation
     ) {
-        String externalId = claimData.getExternalId().toString();
+        Claim claim = getClaimByExternalId(legalRepUpdate.getExternalId(), authorisation);
+        String externalId = claim.getClaimData().getExternalId().toString();
         User user = userService.getUser(authorisation);
 
         String submitterEmail = user.getUserDetails().getEmail();
 
-        Claim claim = Claim.builder()
-            .claimData(claimData)
+       /* Claim updatedClaim = Claim.builder()
+            .claimData(claim.getClaimData())
+            .ccdCaseId(claim.getCcdCaseId())
             .submitterId(submitterId)
             .externalId(externalId)
             .submitterEmail(submitterEmail)
             .createdAt(LocalDateTimeFactory.nowInUTC())
             .claimSubmissionOperationIndicators(ClaimSubmissionOperationIndicators.builder().build())
-            .build();
+            .build();*/
 
-        Claim savedClaim = caseRepository.saveRepresentedClaim(user, claim);
+        Claim savedClaim = caseRepository.updateRepresentedClaim(user, claim, legalRepUpdate);
         createClaimEvent(authorisation, user, savedClaim);
         trackClaimIssued(savedClaim.getReferenceNumber(), savedClaim.getClaimData().isClaimantRepresented());
 
