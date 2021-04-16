@@ -12,6 +12,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildJudgeDire
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildLADirectionOrderFileName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildNoticeOfTransferToCcbcForDefendantFileName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildOcon9FormFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForInterlocutoryJudgmentFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForJudgmentByAdmissionOrDeterminationFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForReferToJudgeFileBaseName;
@@ -150,6 +151,12 @@ public class DocumentNameUtilsTest {
     public void shouldBuildLADirectionOrderFileName() {
         assertThat(buildLADirectionOrderFileName("000MC001"))
             .isEqualTo("000MC001-Legal-Adviser-Directions-Order");
+    }
+
+    @Test
+    public void shouldBuildOcon9FormFileBaseName() {
+        assertThat(buildOcon9FormFileBaseName("000MC001"))
+            .isEqualTo("000MC001-issue-OCON9-form");
     }
 
 }

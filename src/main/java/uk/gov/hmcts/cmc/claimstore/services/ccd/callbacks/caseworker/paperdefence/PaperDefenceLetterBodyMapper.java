@@ -44,8 +44,7 @@ public class PaperDefenceLetterBodyMapper {
             .caseworkerName(caseworkerName)
             .caseName(ccdCase.getCaseName())
             .soleTradingTraderName(ccdCase.getRespondents().get(0).getValue().getClaimantProvidedDetail()
-                .getBusinessName() != null ? ccdCase.getRespondents().get(0).getValue().getClaimantProvidedDetail()
-                .getBusinessName() : null)
+                .getBusinessName())
             .moreTimeRequested(respondent.getResponseMoreTimeNeededOption().toBoolean())
             .build();
     }

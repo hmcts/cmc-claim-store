@@ -137,6 +137,28 @@ class PaperResponseLetterServiceTest {
             eq(docAssemblyTemplateBody), anyString());
     }
 
+    @Test
+    void shouldOCON9Letter() {
+        DocAssemblyTemplateBody docAssemblyTemplateBody = DocAssemblyTemplateBody.builder().build();
+        CCDDocument ccdDocument = CCDDocument.builder().build();
+
+        when(paperDefenceLetterBodyMapper
+            .coverLetterTemplateMapper(any(CCDCase.class), anyString(), any(LocalDate.class)))
+            .thenReturn(docAssemblyTemplateBody);
+        when(docAssemblyService
+            .generateDocument(any(CCDCase.class), anyString(), any(DocAssemblyTemplateBody.class), anyString()))
+            .thenReturn(ccdDocument);
+
+        given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(CITIZEN_DETAILS);
+
+        paperResponseLetterService.createOCON9From(ccdCase, AUTHORISATION_TOKEN, LocalDate.now());
+
+        verify(paperDefenceLetterBodyMapper).coverLetterTemplateMapper(eq(ccdCase),
+            eq(CITIZEN_DETAILS.getFullName()), eq(LocalDate.now()));
+        verify(docAssemblyService).generateDocument(any(CCDCase.class), eq(AUTHORISATION_TOKEN),
+            eq(docAssemblyTemplateBody), anyString());
+    }
+
     @Nested
     @DisplayName("Tests whose claims have online DQs")
     class WithDQsTests {
