@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
@@ -23,7 +22,6 @@ import java.util.Map;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
 @Service
-@ConditionalOnProperty("feature_toggles.ctsc_enabled")
 public class ResetRpaCallbackHandler extends CallbackHandler {
     private static final String RPA_EVENT_TYPE = "RPAEventType";
     private static final String RPA_STATE_INVALID = "invalid";
@@ -76,7 +74,7 @@ public class ResetRpaCallbackHandler extends CallbackHandler {
     }
 
     private String handleRoboticsNotification(CallbackRequest callbackRequest, String referenceNumber) {
-        switch (RpaEventType.fromValue((String)(callbackRequest.getCaseDetails()
+        switch (RpaEventType.fromValue((String) (callbackRequest.getCaseDetails()
             .getData().get(RPA_EVENT_TYPE)))) {
             case CLAIM:
                 return roboticsNotificationService.rpaClaimNotification(referenceNumber);
@@ -88,6 +86,10 @@ public class ResetRpaCallbackHandler extends CallbackHandler {
                 return roboticsNotificationService.rpaResponseNotifications(referenceNumber);
             case PAID_IN_FULL:
                 return roboticsNotificationService.rpaPIFNotifications(referenceNumber);
+            case BREATHING_SPACE_ENTERED:
+                return roboticsNotificationService.rpaEnterBreathingSpaceNotifications(referenceNumber);
+            case BREATHING_SPACE_LIFTED:
+                return roboticsNotificationService.rpaLiftBreathingSpaceNotifications(referenceNumber);
             default:
                 throw new BadRequestException(RPA_STATE_INVALID);
         }
