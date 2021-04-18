@@ -5,8 +5,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-import java.util.Optional;
-
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Builder
@@ -18,7 +16,10 @@ public class PaymentReference {
     private final String errorCode;
     private final String errorMessage;
 
-    public PaymentReference(String reference, String status, String errorCode, String errorMessage) {
+    public PaymentReference(String reference,
+                            String status,
+                            String errorCode,
+                            String errorMessage) {
         this.reference = reference;
         this.status = status;
         this.errorCode = errorCode;
@@ -29,6 +30,4 @@ public class PaymentReference {
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ourStyle());
     }
-
-
 }

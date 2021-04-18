@@ -6,7 +6,6 @@ import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import java.math.BigInteger;
-import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
@@ -22,7 +21,12 @@ public class LegalRepUpdate {
     private final PaymentReference paymentReference;
     private final String feeAccount;
 
-    public LegalRepUpdate(String externalId, String ccdCaseId, BigInteger feeAmountInPennies, String feeCode, PaymentReference paymentReference, String feeAccount) {
+    public LegalRepUpdate(String externalId,
+                          String ccdCaseId,
+                          BigInteger feeAmountInPennies,
+                          String feeCode,
+                          PaymentReference paymentReference,
+                          String feeAccount) {
         this.externalId = externalId;
         this.ccdCaseId = ccdCaseId;
         this.feeAmountInPennies = feeAmountInPennies;

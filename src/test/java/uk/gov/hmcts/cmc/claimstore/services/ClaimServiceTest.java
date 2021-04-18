@@ -255,7 +255,8 @@ public class ClaimServiceTest {
     public void saveLegalRepClaimShouldFinishSuccessfully() {
         ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
 
-        when(caseRepository.saveRepresentedClaim(eq(USER), any(Claim.class), )).thenReturn(representedClaim);
+        when(caseRepository.saveRepresentedClaim(eq(USER), any(Claim.class)))
+            .thenReturn(representedClaim);
 
         Claim createdLegalRepClaim = claimService
             .saveRepresentedClaim(
@@ -264,9 +265,7 @@ public class ClaimServiceTest {
         assertThat(createdLegalRepClaim.getClaimData()).isEqualTo(representedClaim.getClaimData());
 
         verify(caseRepository, once()).saveRepresentedClaim(
-            eq(USER), claimArgumentCaptor.capture(), );
-        verify(eventProducer, once()).createClaimCreatedEvent(eq(createdLegalRepClaim),
-            anyString(), eq(AUTHORISATION));
+            eq(USER), claimArgumentCaptor.capture());
 
         Claim argumentCaptorValue = claimArgumentCaptor.getValue();
         assertThat(argumentCaptorValue.getClaimData()).isEqualTo(claimData);

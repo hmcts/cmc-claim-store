@@ -24,12 +24,12 @@ import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_LEGAL_REP_CLAIM;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.UPDATE_LEGAL_REP_CLAIM;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.SOLICITOR;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.getLegalDataWithReps;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CreateLegalRepClaimCallbackHandlerTest {
+public class UpdateLegalRepClaimCallbackHandlerTest {
 
     public static final String REFERENCE_NO = "000LR001";
     public static final LocalDate ISSUE_DATE = now();
@@ -48,13 +48,13 @@ public class CreateLegalRepClaimCallbackHandlerTest {
     private CaseMapper caseMapper;
 
     private CallbackRequest callbackRequest;
-    private CreateLegalRepClaimCallbackHandler createLegalRepClaimCallbackHandler;
+    private UpdateLegalRepClaimCallbackHandler updateLegalRepClaimCallbackHandler;
 
     private final CaseDetails caseDetails = CaseDetails.builder().id(3L).data(Collections.emptyMap()).build();
 
     @Before
     public void setUp() {
-        createLegalRepClaimCallbackHandler = new CreateLegalRepClaimCallbackHandler(
+        updateLegalRepClaimCallbackHandler = new UpdateLegalRepClaimCallbackHandler(
             caseDetailsConverter,
             issueDateCalculator,
             referenceNumberRepository,
@@ -64,10 +64,13 @@ public class CreateLegalRepClaimCallbackHandlerTest {
 
         callbackRequest = CallbackRequest
             .builder()
-            .eventId(CREATE_LEGAL_REP_CLAIM.getValue())
+            .eventId(UPDATE_LEGAL_REP_CLAIM.getValue())
             .caseDetails(caseDetails)
             .build();
 
+        when(issueDateCalculator.calculateIssueDay(any())).thenReturn(ISSUE_DATE);
+        when(responseDeadlineCalculator.calculateResponseDeadline(ISSUE_DATE)).thenReturn(RESPONSE_DEADLINE);
+        when(referenceNumberRepository.getReferenceNumberForLegal()).thenReturn(REFERENCE_NO);
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(getLegalDataWithReps());
     }
 
@@ -81,7 +84,7 @@ public class CreateLegalRepClaimCallbackHandlerTest {
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
-            createLegalRepClaimCallbackHandler.handle(callbackParams);
+            updateLegalRepClaimCallbackHandler.handle(callbackParams);
 
         assertThat(response.getErrors()).isNull();
         assertThat(response.getWarnings()).isNull();
@@ -89,7 +92,7 @@ public class CreateLegalRepClaimCallbackHandlerTest {
 
     @Test
     public void shouldHaveCorrectLegalRepSupportingRole() {
-        assertThat(createLegalRepClaimCallbackHandler.getSupportedRoles().size()).isEqualTo(1);
-        assertThat(createLegalRepClaimCallbackHandler.getSupportedRoles()).contains(SOLICITOR);
+        assertThat(updateLegalRepClaimCallbackHandler.getSupportedRoles().size()).isEqualTo(1);
+        assertThat(updateLegalRepClaimCallbackHandler.getSupportedRoles()).contains(SOLICITOR);
     }
 }

@@ -355,18 +355,6 @@ public class ClaimService {
         String externalId = claim.getClaimData().getExternalId().toString();
         User user = userService.getUser(authorisation);
 
-        String submitterEmail = user.getUserDetails().getEmail();
-
-       /* Claim updatedClaim = Claim.builder()
-            .claimData(claim.getClaimData())
-            .ccdCaseId(claim.getCcdCaseId())
-            .submitterId(submitterId)
-            .externalId(externalId)
-            .submitterEmail(submitterEmail)
-            .createdAt(LocalDateTimeFactory.nowInUTC())
-            .claimSubmissionOperationIndicators(ClaimSubmissionOperationIndicators.builder().build())
-            .build();*/
-
         Claim savedClaim = caseRepository.updateRepresentedClaim(user, claim, legalRepUpdate);
         createClaimEvent(authorisation, user, savedClaim);
         trackClaimIssued(savedClaim.getReferenceNumber(), savedClaim.getClaimData().isClaimantRepresented());
