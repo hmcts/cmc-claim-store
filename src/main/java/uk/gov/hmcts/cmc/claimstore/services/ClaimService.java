@@ -53,6 +53,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.CLAIM_EXTERNAL
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_LEGAL_CREATE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.HWF_CLAIM_CREATED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NUMBER_OF_RECONSIDERATION;
 import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_PAYMENT;
@@ -341,7 +342,8 @@ public class ClaimService {
             .build();
 
         Claim savedClaim = caseRepository.saveRepresentedClaim(user, claim);
-
+        AppInsightsEvent event = CLAIM_LEGAL_CREATE;
+        appInsights.trackEvent(event, REFERENCE_NUMBER, referenceNumber);
         return savedClaim;
     }
 
