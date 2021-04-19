@@ -358,7 +358,9 @@ public class ClaimService {
         User user = userService.getUser(authorisation);
 
         Claim savedClaim = caseRepository.updateRepresentedClaim(user, claim, legalRepUpdate);
-        createClaimEvent(authorisation, user, savedClaim);
+        if (PaymentStatus.fromValue(legalRepUpdate.getPaymentReference().getStatus()).equals(PaymentStatus.SUCCESS)) {
+            createClaimEvent(authorisation, user, savedClaim);
+        }
         trackClaimIssued(savedClaim.getReferenceNumber(), savedClaim.getClaimData().isClaimantRepresented());
 
         return savedClaim;

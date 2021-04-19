@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
@@ -18,8 +19,10 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -62,7 +65,7 @@ public class UpdateLegalRepClaimCallbackHandler extends CallbackHandler {
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
-        return ImmutableMap.of(CallbackType.ABOUT_TO_SUBMIT, this::createLegalRepClaim);
+        return ImmutableMap.of(CallbackType.ABOUT_TO_SUBMIT, this::updateLegalRepClaim);
     }
 
     @Override
@@ -76,27 +79,34 @@ public class UpdateLegalRepClaimCallbackHandler extends CallbackHandler {
     }
 
     @LogExecutionTime
-    private CallbackResponse createLegalRepClaim(CallbackParams callbackParams) {
+    private CallbackResponse updateLegalRepClaim(CallbackParams callbackParams) {
+        final CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
         logger.info("Updating legal rep case for callback of type {}, claim with external id {}",
             callbackParams.getType(),
             claim.getExternalId());
+        if (PaymentStatus.fromValue(ccdCase.getPaymentStatus()).equals(PaymentStatus.SUCCESS)) {
+            LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
+            LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
+            String referenceNumber = referenceNumberRepository.getReferenceNumberForLegal();
 
-        LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
-        LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
-        String referenceNumber = referenceNumberRepository.getReferenceNumberForLegal();
+            Claim updatedClaim = claim.toBuilder()
+                .referenceNumber(referenceNumber)
+                .issuedOn(issuedOn)
+                .serviceDate(issuedOn.plusDays(5))
+                .responseDeadline(responseDeadline)
+                .channel(LEGAL_REP)
+                .build();
 
-        Claim updatedClaim = claim.toBuilder()
-            .referenceNumber(referenceNumber)
-            .issuedOn(issuedOn)
-            .serviceDate(issuedOn.plusDays(5))
-            .responseDeadline(responseDeadline)
-            .channel(LEGAL_REP)
-            .build();
-
+            return AboutToStartOrSubmitCallbackResponse
+                .builder()
+                .data(caseDetailsConverter.convertToMap(caseMapper.to(updatedClaim)))
+                .build();
+        }
         return AboutToStartOrSubmitCallbackResponse
             .builder()
-            .data(caseDetailsConverter.convertToMap(caseMapper.to(updatedClaim)))
+            .data(caseDetailsConverter.convertToMap(caseMapper.to(claim)))
             .build();
     }
 }
