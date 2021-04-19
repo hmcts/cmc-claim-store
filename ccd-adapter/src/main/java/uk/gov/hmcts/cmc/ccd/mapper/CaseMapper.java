@@ -82,6 +82,7 @@ public class CaseMapper {
 
         claim.getDateReferredForDirections().ifPresent(builder::dateReferredForDirections);
         claim.getPreferredDQCourt().ifPresent(builder::preferredDQCourt);
+
         claim.getProceedOfflineReason()
             .map(ProceedOfflineReasonType::name)
             .map(CCDProceedOnPaperReasonType::valueOf)
