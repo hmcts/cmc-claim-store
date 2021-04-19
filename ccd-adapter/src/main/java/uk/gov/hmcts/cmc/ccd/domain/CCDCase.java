@@ -189,6 +189,9 @@ public class CCDCase {
     private LocalDate hwfDocumentsToBeSentBefore;
 
     private CCDReviewOrDrawOrder reviewOrDrawOrder;
-  
+
     private String lastEventTriggeredForHwfCase;
+
+    //This field is for Legal Rep Error code message
+    private String errorCodeMessage;
 }

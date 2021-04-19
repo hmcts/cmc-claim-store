@@ -197,6 +197,7 @@ public class CoreCaseDataService {
             ccdCase.setFeeCode(legalRepUpdate.getFeeCode());
             ccdCase.setPaymentReference(legalRepUpdate.getPaymentReference().getReference());
             ccdCase.setPaymentStatus(legalRepUpdate.getPaymentReference().getStatus());
+            ccdCase.setErrorCodeMessage(legalRepUpdate.getPaymentReference().getErrorCodeMessage());
             //CaseDataContent caseDataContent = caseDataContent(startEventResponse, claim);
             CaseDataContent caseDataContent = CaseDataContent.builder()
                 .eventToken(startEventResponse.getToken())
