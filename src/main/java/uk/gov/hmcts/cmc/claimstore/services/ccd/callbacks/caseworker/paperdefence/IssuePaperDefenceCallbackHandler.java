@@ -91,9 +91,9 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
     }
 
     private AboutToStartOrSubmitCallbackResponse issuePaperDefence(CallbackParams callbackParams) {
-        CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
-        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
-        CCDRespondent ccdRespondent = ccdCase.getRespondents().get(0).getValue();
+        var caseDetails = callbackParams.getRequest().getCaseDetails();
+        var ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
+        var ccdRespondent = ccdCase.getRespondents().get(0).getValue();
         LocalDate paperFormServedDate;
         LocalDate responseDeadline;
         LocalDate extendedResponseDeadline;
@@ -102,8 +102,8 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
             responseDeadlineCalculator.calculateResponseDeadline(ccdCase.getIssuedOn());
         boolean featureEnabled = launchDarklyClient.isFeatureEnabled("ocon-enhancement-2",
             LaunchDarklyClient.CLAIM_STORE_USER);
-        boolean isPastDeadline = false;
-        boolean disableN9Form = false;
+        var isPastDeadline = false;
+        var disableN9Form = false;
         if (featureEnabled) {
             isPastDeadline = claimDeadlineService.isPastDeadline(nowInLocalZone(), existingDeadline);
             disableN9Form = disableN9FormFromOCON9x(ccdRespondent, isPastDeadline);
@@ -132,7 +132,7 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
         }
         ccdCase = updateCaseDates(ccdCase, responseDeadline, paperFormServedDate, extendedResponseDeadline,
             paperFormIssueDate);
-        Claim claim = updateClaimDates(caseDetails, responseDeadline);
+        var claim = updateClaimDates(caseDetails, responseDeadline);
 
         var builder = AboutToStartOrSubmitCallbackResponse.builder();
         if (!launchDarklyClient.isFeatureEnabled("ocon-enhancements", LaunchDarklyClient.CLAIM_STORE_USER)
@@ -142,7 +142,7 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
             return builder.build();
         }
         try {
-            String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
+            var authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
             ccdCase = documentPublishService.publishDocuments(ccdCase, claim, authorisation, extendedResponseDeadline,
                 disableN9Form, featureEnabled);
             if (!ccdRespondent.isOconFormSent()) {
@@ -156,7 +156,7 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
     }
 
     private boolean disableN9FormFromOCON9x(CCDRespondent ccdRespondent, boolean isPastDeadline) {
-        boolean disableN9Form = false;
+        var disableN9Form = false;
         if (isPastDeadline || CCDYesNoOption.YES.equals(ccdRespondent.getResponseMoreTimeNeededOption())) {
             disableN9Form = true;
         }

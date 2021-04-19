@@ -48,7 +48,7 @@ public class DocumentPublishService {
             .createCoverLetter(ccdCase, authorisation, extendedResponseDeadline);
         Document ocon9Doc = null;
         BulkPrintDetails bulkPrintDetails = null;
-        Document coverDoc = printableDocumentService.process(coverLetter, authorisation);
+        var coverDoc = printableDocumentService.process(coverLetter, authorisation);
         if (!disableN9Form && featureFlag) {
             CCDDocument ocon9Letter = paperResponseLetterService
                 .createOCON9From(ccdCase, authorisation, extendedResponseDeadline);
@@ -58,7 +58,7 @@ public class DocumentPublishService {
         CCDDocument oconForm = paperResponseLetterService
             .createOconForm(ccdCase, claim, authorisation, extendedResponseDeadline, disableN9Form);
 
-        Document formDoc = printableDocumentService.process(oconForm, authorisation);
+        var formDoc = printableDocumentService.process(oconForm, authorisation);
         if (featureFlag) {
             bulkPrintDetails = bulkPrintHandler.printPaperDefence(claim, coverDoc, formDoc, ocon9Doc,
                 authorisation, disableN9Form);

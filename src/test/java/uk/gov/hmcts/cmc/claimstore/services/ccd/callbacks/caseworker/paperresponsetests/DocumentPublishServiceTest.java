@@ -93,7 +93,7 @@ class DocumentPublishServiceTest {
             .createCoverLetter(eq(ccdCase), eq(AUTHORISATION), eq(DATE.toLocalDate())))
             .thenReturn(COVER_LETTER);
         when(paperResponseLetterService
-            .createOconForm(eq(ccdCase), eq(claim), eq(AUTHORISATION), eq(DATE.toLocalDate()), eq(DISABLEN9FORM)))
+            .createOconForm(ccdCase, claim, AUTHORISATION, DATE.toLocalDate(), DISABLEN9FORM))
             .thenReturn(OCON_FORM);
         when(printableDocumentService.process(eq(COVER_LETTER), eq(AUTHORISATION))).thenReturn(COVER_DOCUMENT);
         when(printableDocumentService.process(eq(OCON_FORM), eq(AUTHORISATION))).thenReturn(OCON_DOCUMENT);
@@ -129,24 +129,24 @@ class DocumentPublishServiceTest {
         Claim claim = getClaim();
 
         when(paperResponseLetterService
-            .createCoverLetter(eq(ccdCase), eq(AUTHORISATION), eq(DATE.toLocalDate())))
+            .createCoverLetter(ccdCase, AUTHORISATION, DATE.toLocalDate()))
             .thenReturn(COVER_LETTER);
         when(paperResponseLetterService
-            .createOCON9From(eq(ccdCase), eq(AUTHORISATION), eq(DATE.toLocalDate())))
+            .createOCON9From(ccdCase, AUTHORISATION, DATE.toLocalDate()))
             .thenReturn(OCON9_LETTER);
         when(paperResponseLetterService
-            .createOconForm(eq(ccdCase), eq(claim), eq(AUTHORISATION), eq(DATE.toLocalDate()), eq(DISABLEN9FORMFALSE)))
+            .createOconForm(ccdCase, claim, AUTHORISATION, DATE.toLocalDate(), DISABLEN9FORMFALSE))
             .thenReturn(OCON_FORM);
-        when(printableDocumentService.process(eq(OCON_FORM), eq(AUTHORISATION))).thenReturn(OCON_DOCUMENT);
-        when(printableDocumentService.process(eq(OCON9_LETTER), eq(AUTHORISATION))).thenReturn(OCON9_DOCUMENT);
+        when(printableDocumentService.process(OCON_FORM, AUTHORISATION)).thenReturn(OCON_DOCUMENT);
+        when(printableDocumentService.process(OCON9_LETTER, AUTHORISATION)).thenReturn(OCON9_DOCUMENT);
 
         when(paperResponseLetterService
-            .addCoverLetterToCaseWithDocuments(eq(ccdCase), eq(claim), eq(COVER_LETTER), eq(AUTHORISATION)))
+            .addCoverLetterToCaseWithDocuments(ccdCase, claim, COVER_LETTER, AUTHORISATION))
             .thenReturn(ccdCase);
 
         documentPublishService.publishDocuments(ccdCase, claim, AUTHORISATION, DATE.toLocalDate(), false, true);
-        verify(paperResponseLetterService).createOCON9From(eq(ccdCase), eq(AUTHORISATION), eq(DATE.toLocalDate()));
-        verify(printableDocumentService, times(2)).process(eq(OCON9_LETTER), eq(AUTHORISATION));
+        verify(paperResponseLetterService).createOCON9From(ccdCase, AUTHORISATION, DATE.toLocalDate());
+        verify(printableDocumentService, times(2)).process(OCON9_LETTER, AUTHORISATION);
 
     }
 

@@ -75,7 +75,7 @@ public class PaperResponseLetterService {
     }
 
     public CCDDocument createCoverLetter(CCDCase ccdCase, String authorisation, LocalDate extendedResponseDeadline) {
-        DocAssemblyTemplateBody formPayloadForCoverLetter = getDocAssemblyTemplateBody(ccdCase, authorisation,
+        var formPayloadForCoverLetter = getDocAssemblyTemplateBody(ccdCase, authorisation,
             extendedResponseDeadline);
 
         return docAssemblyService.generateDocument(ccdCase,
@@ -91,7 +91,7 @@ public class PaperResponseLetterService {
     }
 
     public CCDDocument createOCON9From(CCDCase ccdCase, String authorisation, LocalDate extendedResponseDeadline) {
-        DocAssemblyTemplateBody formPayloadForCoverLetter = getDocAssemblyTemplateBody(ccdCase, authorisation,
+        var formPayloadForCoverLetter = getDocAssemblyTemplateBody(ccdCase, authorisation,
             extendedResponseDeadline);
 
         return docAssemblyService.generateDocument(ccdCase,
@@ -209,7 +209,7 @@ public class PaperResponseLetterService {
         CCDDocument coverLetter,
         String authorisation
     ) {
-        String documentName = String.format(LETTER_NAME, claim.getReferenceNumber());
+        var documentName = String.format(LETTER_NAME, claim.getReferenceNumber());
         return generalLetterService.attachGeneralLetterToCase(ccdCase, coverLetter, documentName, authorisation);
     }
 }

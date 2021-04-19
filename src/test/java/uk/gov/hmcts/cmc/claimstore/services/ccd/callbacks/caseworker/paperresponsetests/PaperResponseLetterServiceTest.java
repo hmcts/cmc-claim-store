@@ -153,8 +153,8 @@ class PaperResponseLetterServiceTest {
 
         paperResponseLetterService.createOCON9From(ccdCase, AUTHORISATION_TOKEN, LocalDate.now());
 
-        verify(paperDefenceLetterBodyMapper).coverLetterTemplateMapper(eq(ccdCase),
-            eq(CITIZEN_DETAILS.getFullName()), eq(LocalDate.now()));
+        verify(paperDefenceLetterBodyMapper).coverLetterTemplateMapper(ccdCase, CITIZEN_DETAILS.getFullName(),
+            LocalDate.now());
         verify(docAssemblyService).generateDocument(any(CCDCase.class), eq(AUTHORISATION_TOKEN),
             eq(docAssemblyTemplateBody), anyString());
     }
@@ -189,8 +189,7 @@ class PaperResponseLetterServiceTest {
             paperResponseLetterService.createOconForm(ccdCase, claim, AUTHORISATION_TOKEN,
                 EXTENDED_RESPONSE_DEADLINE, true);
             verify(paperDefenceLetterBodyMapper)
-                .oconFormIndividualWithDQsMapper(eq(ccdCase), eq(EXTENDED_RESPONSE_DEADLINE), eq(HEARING_COURT),
-                    eq(DISABLEN9FORM));
+                .oconFormIndividualWithDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE, HEARING_COURT, DISABLEN9FORM);
             verify(docAssemblyService).generateDocument(eq(ccdCase), eq(AUTHORISATION_TOKEN),
                 eq(docAssemblyTemplateBody), anyString());
         }
@@ -212,8 +211,7 @@ class PaperResponseLetterServiceTest {
             paperResponseLetterService.createOconForm(ccdCase, claim, AUTHORISATION_TOKEN,
                 EXTENDED_RESPONSE_DEADLINE, true);
             verify(paperDefenceLetterBodyMapper)
-                .oconFormSoleTraderWithDQsMapper(eq(ccdCase), eq(EXTENDED_RESPONSE_DEADLINE), eq(HEARING_COURT),
-                    eq(DISABLEN9FORM));
+                .oconFormSoleTraderWithDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE, HEARING_COURT, DISABLEN9FORM);
             verify(docAssemblyService).generateDocument(eq(ccdCase), eq(AUTHORISATION_TOKEN),
                 eq(docAssemblyTemplateBody), anyString());
         }
@@ -235,8 +233,7 @@ class PaperResponseLetterServiceTest {
             paperResponseLetterService.createOconForm(ccdCase, claim, AUTHORISATION_TOKEN,
                 EXTENDED_RESPONSE_DEADLINE, true);
             verify(paperDefenceLetterBodyMapper)
-                .oconFormOrganisationWithDQsMapper(eq(ccdCase), eq(EXTENDED_RESPONSE_DEADLINE), eq(HEARING_COURT),
-                    eq(DISABLEN9FORM));
+                .oconFormOrganisationWithDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE, HEARING_COURT, DISABLEN9FORM);
             verify(docAssemblyService).generateDocument(eq(ccdCase), eq(AUTHORISATION_TOKEN),
                 eq(docAssemblyTemplateBody), anyString());
         }
