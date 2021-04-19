@@ -84,7 +84,8 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
                                                    CaseEventService caseEventService,
                                                    LaunchDarklyClient launchDarklyClient,
                                                    DefenceResponseNotificationService
-                                                       defenceResponseNotificationService) {
+                                                       defenceResponseNotificationService
+    ) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.clock = clock;
         this.eventProducer = eventProducer;
@@ -144,7 +145,6 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
-
         List<CCDCollectionElement<CCDRespondent>> updatedRespondents = updateRespondents(caseDetails, ccdCase);
 
         List<CCDCollectionElement<CCDScannedDocument>> updatedScannedDocuments = updateScannedDocuments(ccdCase);
@@ -346,4 +346,5 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
     public List<Role> getSupportedRoles() {
         return ROLES;
     }
+
 }
