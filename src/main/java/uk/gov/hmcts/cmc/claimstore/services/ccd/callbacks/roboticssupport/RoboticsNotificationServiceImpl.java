@@ -85,18 +85,17 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
         User user = userService.authenticateAnonymousCaseWorker();
         String authorisation = user.getAuthorisation();
         return resendRPA(referenceNumber, user.getAuthorisation(), reference -> true, claim -> {
-                GeneratePinResponse pinResponse = userService
-                    .generatePin(claim.getClaimData().getDefendant().getName(), authorisation);
+            GeneratePinResponse pinResponse = userService
+                .generatePin(claim.getClaimData().getDefendant().getName(), authorisation);
 
-                String fullName = userService.getUserDetails(authorisation).getFullName();
-                CitizenClaimIssuedEvent event =
-                    new CitizenClaimIssuedEvent(claim, pinResponse.getPin(), fullName, authorisation);
-                PDF sealedClaim = sealedClaimPdfService.createPdf(event.getClaim());
-                DocumentGeneratedEvent documentGeneratedEvent =
-                    new DocumentGeneratedEvent(event.getClaim(), event.getAuthorisation(),
-                        sealedClaim);
-                rpaNotificationService.notifyRobotics(event.getClaim(), documentGeneratedEvent.getDocuments());
-            },
+            String fullName = userService.getUserDetails(authorisation).getFullName();
+            CitizenClaimIssuedEvent event =
+                new CitizenClaimIssuedEvent(claim, pinResponse.getPin(), fullName, authorisation);
+            PDF sealedClaim = sealedClaimPdfService.createPdf(event.getClaim());
+            DocumentGeneratedEvent documentGeneratedEvent =
+                new DocumentGeneratedEvent(event.getClaim(), event.getAuthorisation(),
+                    sealedClaim);
+            rpaNotificationService.notifyRobotics(event.getClaim(), documentGeneratedEvent.getDocuments()); },
             "Failed to send claim to RPA");
     }
 
