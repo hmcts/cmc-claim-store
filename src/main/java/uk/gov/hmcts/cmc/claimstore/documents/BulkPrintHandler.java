@@ -123,7 +123,7 @@ public class BulkPrintHandler {
         requireNonNull(authorisation);
         requireNonNull(caseDocuments);
 
-        PrintablePdf coverLetterPrint = new PrintablePdf(
+        var coverLetterPrint = new PrintablePdf(
             coverLetter,
             buildCoverSheetFileBaseName(claim.getReferenceNumber()));
 
