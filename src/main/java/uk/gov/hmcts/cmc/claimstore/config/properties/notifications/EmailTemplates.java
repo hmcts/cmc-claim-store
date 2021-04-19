@@ -212,4 +212,7 @@ public class EmailTemplates {
 
     @NotEmpty
     private String caseTransferToCcbcForDefendant;
+
+    @NotEmpty
+    private String claimantHwfClaimIssued;
 }
