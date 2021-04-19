@@ -138,6 +138,26 @@ public class BulkPrintHandler {
             BulkPrintRequestType.BULK_PRINT_TRANSFER_TYPE, authorisation);
     }
 
+    public BulkPrintDetails printPaperDefence(Claim claim, Document coverLetter, Document oconForm,
+                                              String authorisation) {
+        requireNonNull(claim);
+        requireNonNull(coverLetter);
+        requireNonNull(authorisation);
+        requireNonNull(oconForm);
+
+        return bulkPrintService.printPdf(claim,
+            ImmutableList.<Printable>builder()
+                .add(new PrintablePdf(
+                    coverLetter,
+                    buildPaperDefenceCoverLetterFileBaseName(claim.getReferenceNumber())))
+                .add(new PrintablePdf(
+                    oconForm,
+                    buildOconFormFileBaseName(claim.getReferenceNumber())))
+                .build(),
+            BulkPrintRequestType.GENERAL_LETTER_TYPE,
+            authorisation);
+    }
+
     public BulkPrintDetails printPaperDefence(Claim claim, Document coverLetter, Document oconForm, Document ocon9Form,
                                               String authorisation, boolean disableN9Form) {
         requireNonNull(claim);

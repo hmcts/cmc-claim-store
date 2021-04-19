@@ -40,10 +40,12 @@ import uk.gov.hmcts.reform.docassembly.exception.DocumentGenerationFailedExcepti
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -59,6 +61,8 @@ class IssuePaperDefenceCallbackHandlerTest {
         "OCON9x form cannot be sent out as CCJ already issued by claimant.";
     private static final String AUTHORISATION = "auth";
     private static final boolean DISABLEN9FORM = false;
+    private static final boolean OCON_FLAG = false;
+    private static final List<CaseEvent> EVENTS = Arrays.asList(CaseEvent.ISSUE_PAPER_DEFENSE_FORMS);
 
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
@@ -147,7 +151,7 @@ class IssuePaperDefenceCallbackHandlerTest {
         issuePaperDefenceCallbackHandler.handle(callbackParams);
 
         verify(documentPublishService).publishDocuments(any(CCDCase.class), any(Claim.class), eq(AUTHORISATION),
-            eq(date), eq(DISABLEN9FORM));
+            eq(date), eq(DISABLEN9FORM), eq(OCON_FLAG));
         verify(issuePaperResponseNotificationService).notifyClaimant(any(Claim.class));
     }
 
@@ -191,7 +195,7 @@ class IssuePaperDefenceCallbackHandlerTest {
 
         issuePaperDefenceCallbackHandler.handle(callbackParams);
         verify(documentPublishService).publishDocuments(any(CCDCase.class), any(Claim.class), eq(AUTHORISATION),
-            eq(LocalDate.now()), any(Boolean.class));
+            eq(LocalDate.now()), any(Boolean.class), any(Boolean.class));
         verify(issuePaperResponseNotificationService, times(0)).notifyClaimant(any(Claim.class));
     }
 
@@ -224,7 +228,7 @@ class IssuePaperDefenceCallbackHandlerTest {
 
         issuePaperDefenceCallbackHandler.handle(callbackParams);
         verify(documentPublishService).publishDocuments(any(CCDCase.class), any(Claim.class), eq(AUTHORISATION),
-            eq(LocalDate.now()), any(Boolean.class));
+            eq(LocalDate.now()), any(Boolean.class), any(Boolean.class));
         verify(issuePaperResponseNotificationService).notifyClaimant(any(Claim.class));
     }
 
@@ -249,7 +253,7 @@ class IssuePaperDefenceCallbackHandlerTest {
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
         when(documentPublishService.publishDocuments(ccdCase, claim, AUTHORISATION, LocalDate.now(),
-            DISABLEN9FORM))
+            DISABLEN9FORM, OCON_FLAG))
             .thenThrow(DocumentGenerationFailedException.class);
         AboutToStartOrSubmitCallbackResponse actualResponse =
             (AboutToStartOrSubmitCallbackResponse) issuePaperDefenceCallbackHandler.handle(callbackParams);
@@ -345,6 +349,12 @@ class IssuePaperDefenceCallbackHandlerTest {
     @Test
     void shouldHaveCorrectCaseworkerRole() {
         assertThat(issuePaperDefenceCallbackHandler.getSupportedRoles()).containsOnly(CASEWORKER);
+    }
+
+    @Test
+    void handledEvents() {
+        List<CaseEvent> caseEventList = issuePaperDefenceCallbackHandler.handledEvents();
+        assertEquals(EVENTS, caseEventList);
     }
 
     @Nested

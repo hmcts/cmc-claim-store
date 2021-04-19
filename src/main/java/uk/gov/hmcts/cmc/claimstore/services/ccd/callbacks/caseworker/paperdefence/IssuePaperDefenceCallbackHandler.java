@@ -100,13 +100,18 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
         LocalDate paperFormIssueDate;
         LocalDate existingDeadline =
             responseDeadlineCalculator.calculateResponseDeadline(ccdCase.getIssuedOn());
-        final boolean isPastDeadline = claimDeadlineService.isPastDeadline(nowInLocalZone(), existingDeadline);
-        boolean disableN9Form = disableN9FormFromOCON9x(ccdRespondent, isPastDeadline);
+        boolean featureEnabled = launchDarklyClient.isFeatureEnabled("ocon-enhancement-2",
+            LaunchDarklyClient.CLAIM_STORE_USER);
+        boolean isPastDeadline = false;
+        boolean disableN9Form = false;
+        if (featureEnabled) {
+            isPastDeadline = claimDeadlineService.isPastDeadline(nowInLocalZone(), existingDeadline);
+            disableN9Form = disableN9FormFromOCON9x(ccdRespondent, isPastDeadline);
+        }
         if (!ccdRespondent.isOconFormSent()) {
             paperFormIssueDate = issueDateCalculator.calculateIssueDay(LocalDateTime.now());
             paperFormServedDate = responseDeadlineCalculator.calculateServiceDate(paperFormIssueDate);
-            if (launchDarklyClient.isFeatureEnabled("ocon-enhancement-2", LaunchDarklyClient.CLAIM_STORE_USER)) {
-
+            if (featureEnabled) {
                 responseDeadline = getResponseDeadline(ccdRespondent, paperFormIssueDate, ccdCase, isPastDeadline);
                 extendedResponseDeadline = getExtendedResponseDeadline(ccdCase, paperFormIssueDate, isPastDeadline);
             } else {
@@ -139,7 +144,7 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
         try {
             String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
             ccdCase = documentPublishService.publishDocuments(ccdCase, claim, authorisation, extendedResponseDeadline,
-                disableN9Form);
+                disableN9Form, featureEnabled);
             if (!ccdRespondent.isOconFormSent()) {
                 issuePaperResponseNotificationService.notifyClaimant(claim);
             }

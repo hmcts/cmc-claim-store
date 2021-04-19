@@ -103,7 +103,7 @@ class DocumentPublishServiceTest {
             .thenReturn(ccdCase);
 
         documentPublishService.publishDocuments(ccdCase,
-            claim, AUTHORISATION, DATE.toLocalDate(), true);
+            claim, AUTHORISATION, DATE.toLocalDate(), true, false);
 
         verify(paperResponseLetterService).createCoverLetter(eq(ccdCase), eq(AUTHORISATION), eq(DATE.toLocalDate()));
         verify(printableDocumentService).process(eq(COVER_LETTER), eq(AUTHORISATION));
@@ -144,9 +144,7 @@ class DocumentPublishServiceTest {
             .addCoverLetterToCaseWithDocuments(eq(ccdCase), eq(claim), eq(COVER_LETTER), eq(AUTHORISATION)))
             .thenReturn(ccdCase);
 
-        documentPublishService.publishDocuments(ccdCase,
-            claim, AUTHORISATION, DATE.toLocalDate(), false);
-
+        documentPublishService.publishDocuments(ccdCase, claim, AUTHORISATION, DATE.toLocalDate(), false, true);
         verify(paperResponseLetterService).createOCON9From(eq(ccdCase), eq(AUTHORISATION), eq(DATE.toLocalDate()));
         verify(printableDocumentService, times(2)).process(eq(OCON9_LETTER), eq(AUTHORISATION));
 

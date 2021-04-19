@@ -215,6 +215,32 @@ public class BulkPrintHandlerTest {
     }
 
     @Test
+    public void notifyPaperDefenceLetterWithooutN9() {
+        //given
+        BulkPrintHandler bulkPrintHandler = new BulkPrintHandler(bulkPrintService, launchDarklyClient);
+        Claim claim = SampleClaim.getDefault();
+        Document letter = new Document("letter", new HashMap<>());
+
+        //when
+        bulkPrintHandler.printPaperDefence(claim, letter, letter, AUTHORISATION);
+
+        //verify
+        verify(bulkPrintService).printPdf(
+            claim,
+            ImmutableList.<Printable>builder()
+                .add(new PrintablePdf(
+                    letter,
+                    buildPaperDefenceCoverLetterFileBaseName(claim.getReferenceNumber())))
+                .add(new PrintablePdf(
+                    letter,
+                    buildOconFormFileBaseName(claim.getReferenceNumber())))
+                .build(),
+            GENERAL_LETTER_TYPE,
+            AUTHORISATION
+        );
+    }
+
+    @Test
     public void notifyPaperDefenceLetterWithOCON9() {
         //given
         BulkPrintHandler bulkPrintHandler = new BulkPrintHandler(bulkPrintService, launchDarklyClient);
