@@ -343,7 +343,7 @@ public class ClaimService {
 
         Claim savedClaim = caseRepository.saveRepresentedClaim(user, claim);
         AppInsightsEvent event = CLAIM_LEGAL_CREATE;
-        appInsights.trackEvent(event, REFERENCE_NUMBER, referenceNumber);
+        appInsights.trackEvent(event, REFERENCE_NUMBER, savedClaim.getReferenceNumber());
         return savedClaim;
     }
 
