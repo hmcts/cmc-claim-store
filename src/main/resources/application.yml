@@ -116,10 +116,11 @@ doc_assembly:
   oconFormIndividualWithoutDQs: "CV-CMC-GOR-ENG-0013.docx"
   oconFormSoleTraderWithoutDQs: "CV-CMC-GOR-ENG-0014.docx"
   oconFormOrganisationWithoutDQs: "CV-CMC-GOR-ENG-0015.docx"
-
   noticeOfTransferToCcbcSentToDefendantTemplateId: "CV-CMC-GOR-ENG-0016.docx"
   paperResponseAdmissionTemplateId: "CV-CMC-GOR-ENG-0016.docx"
   defendantPinLetterTemplateID: "CV-CMC-LET-ENG-00630.docx"
+  breathingSpaceEnteredTemplateID: "CV-CMC-LET-ENG-00635.docx"
+  breathingSpaceLiftedTemplateID: "CV-CMC-LET-ENG-00636.docx"
 
 nonworking-days:
   datafile: ${NONWORKINGDAYS_DATAFILE:/data/non-working_days.dat}
@@ -237,6 +238,10 @@ notifications:
       caseTransferred: "841843ef-2d49-4c6b-8179-6e42443e049d"
       defendantAskedToRespondByPost: "18bfc30c-7ad1-44eb-b05c-eef63482e3be"
       claimantHwfClaimIssued: "a30c986a-fc55-4cbb-868b-ffaa5e2ce106"
+      breathingSpaceEmailToClaimant: "a6c8e29e-acd1-49d4-845c-f10b2e71c7a9"
+      breathingSpaceEmailToDefendant: "4d9cf3ad-5f7a-4ca9-b3f3-21aac6fc8c21"
+      breathingSpaceLiftedEmailToClaimant: "2456ea8e-aa4b-4d38-98a9-aedc8d2fe508"
+      breathingSpaceLiftedEmailToDefendant: "13da58f4-a606-4bad-947f-3462b35593df"
 
 staff-notifications:
   sender:
@@ -252,6 +257,7 @@ feature_toggles:
   auto_cancel_payments: "${FEATURE_AUTO_CANCEL_PAYMENTS:false}"
   bulk_print_transfer_enabled: false
   staff_emails_enabled_for_legal_rep: true
+  breathing_space: true
 
 feign:
   httpclient:

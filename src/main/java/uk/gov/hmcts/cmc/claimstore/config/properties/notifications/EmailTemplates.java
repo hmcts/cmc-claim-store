@@ -215,4 +215,17 @@ public class EmailTemplates {
 
     @NotEmpty
     private String claimantHwfClaimIssued;
+
+    @NotEmpty  
+    private String breathingSpaceEmailToClaimant;
+
+    @NotEmpty
+    private String breathingSpaceEmailToDefendant;
+
+    @NotEmpty
+    private String breathingSpaceLiftedEmailToClaimant;
+
+    @NotEmpty
+    private String breathingSpaceLiftedEmailToDefendant;
+
 }
