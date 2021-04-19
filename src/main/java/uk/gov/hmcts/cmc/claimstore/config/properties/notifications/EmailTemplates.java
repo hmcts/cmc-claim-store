@@ -216,7 +216,7 @@ public class EmailTemplates {
     @NotEmpty
     private String claimantHwfClaimIssued;
 
-    @NotEmpty  
+    @NotEmpty
     private String breathingSpaceEmailToClaimant;
 
     @NotEmpty
