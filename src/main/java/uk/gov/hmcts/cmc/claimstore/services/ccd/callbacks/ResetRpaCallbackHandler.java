@@ -112,7 +112,8 @@ public class ResetRpaCallbackHandler extends CallbackHandler {
             if (!(claim.getClaimData().getBreathingSpace().isPresent())) {
                 return "This claim is still not entered into Breathing space";
             }
-        } else if (callbackRequest.getCaseDetails().getData().get(RPA_EVENT_TYPE).equals(BREATHING_SPACE_LIFTED.name())) {
+        } else if (callbackRequest.getCaseDetails().getData().get(RPA_EVENT_TYPE)
+            .equals(BREATHING_SPACE_LIFTED.name())) {
             if ((claim.getClaimData().getBreathingSpace().isPresent())) {
                 if (claim.getClaimData().getBreathingSpace().get().getBsLiftedFlag().equals("No")) {
                     return "This claim is still not lifted its Breathing space";
