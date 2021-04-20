@@ -57,6 +57,7 @@ public class SecurityConfiguration
             "/health",
             "/env",
             "/health/liveness",
+            "/health/readiness",
             "/status/health",
             "/",
             "/support/**",
