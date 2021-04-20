@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDOcon9xMain;
 import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
@@ -78,9 +79,16 @@ public class PaperResponseOCON9xFormCallbackHandler extends CallbackHandler {
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(Map.of(SCANNED_DOCUMENTS, forms,
-                OCON9X, buildFilesList(forms, ccdCase.getOcon9xForm()))
+                OCON9X, buildFilesList(forms, getSelectedDocumentCode(ccdCase.getOcon9xForm())))
             )
             .build();
+    }
+
+    private String getSelectedDocumentCode(CCDOcon9xMain ocon9xForm) {
+        if (null != ocon9xForm && null != ocon9xForm.getSelectedDocument()) {
+            return ocon9xForm.getSelectedDocument().getCode();
+        }
+        return null;
     }
 
     private AboutToStartOrSubmitCallbackResponse verifyNoDocumentsAddedOrRemoved(CallbackParams callbackParams) {
@@ -88,8 +96,7 @@ public class PaperResponseOCON9xFormCallbackHandler extends CallbackHandler {
         logger.info("on mid OCONFIX DETAILS {}", request.getCaseDetails().toString());
 
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(request.getCaseDetails());
-        ccdCase.setTempOcon9xFormSelectedValue(ccdCase.getOcon9xForm());
-        ccdCase.setOcon9xForm("");
+        ccdCase.setTempOcon9xFormSelectedValue(getSelectedDocumentCode(ccdCase.getOcon9xForm()));
         List<CCDCollectionElement<CCDScannedDocument>> formsBefore = filterForms(ccdCase);
         logger.info("before mid Ocon9xForm {}", ccdCase.getOcon9xForm());
         logger.info("before mid TempOcon9xFormSelectedValue {}", ccdCase.getTempOcon9xFormSelectedValue());
@@ -109,7 +116,7 @@ public class PaperResponseOCON9xFormCallbackHandler extends CallbackHandler {
         logger.info("on submit OCONFIX DETAILS {}", callbackParams.getRequest().getCaseDetails().toString());
         CallbackRequest request = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(request.getCaseDetails());
-        logger.info("before submit Ocon9xForm {}", ccdCase.getOcon9xForm());
+        logger.info("before submit Ocon9xForm {}", getSelectedDocumentCode(ccdCase.getOcon9xForm()));
         logger.info("before submit TempOcon9xFormSelectedValue {}", ccdCase.getTempOcon9xFormSelectedValue());
         CCDScannedDocument updatedDocument = ccdCase.getScannedDocuments()
             .stream()
@@ -125,7 +132,8 @@ public class PaperResponseOCON9xFormCallbackHandler extends CallbackHandler {
         List<CCDCollectionElement<CCDScannedDocument>> updatedScannedDocuments = ccdCase.getScannedDocuments()
             .stream()
             .map(e -> e.getId()
-                .equals(ccdCase.getTempOcon9xFormSelectedValue()) ? e.toBuilder().value(updatedDocument).build() : e)
+                .equals(getSelectedDocumentCode(ccdCase.getOcon9xForm())) ? e.toBuilder()
+                .value(updatedDocument).build() : e)
             .collect(Collectors.toList());
 
         LocalDateTime mostRecentDeliveryDate = updatedScannedDocuments.stream()

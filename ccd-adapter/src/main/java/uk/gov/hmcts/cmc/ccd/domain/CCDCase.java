@@ -86,7 +86,8 @@ public class CCDCase {
     private List<CCDCollectionElement<CCDClaimDocument>> caseDocuments = Collections.emptyList();
     @Builder.Default
     private List<CCDCollectionElement<CCDScannedDocument>> scannedDocuments = Collections.emptyList();
-    private String ocon9xForm;
+    private CCDOcon9xMain ocon9xForm;
+
     private String tempOcon9xFormSelectedValue;
     private List<CCDCollectionElement<CCDClaimDocument>> staffUploadedDocuments;
     private String caseName;
