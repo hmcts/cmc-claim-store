@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -71,7 +70,7 @@ public class PaperResponseOCON9xFormCallbackHandler extends CallbackHandler {
 
     private AboutToStartOrSubmitCallbackResponse filterScannedDocuments(CallbackParams callbackParams) {
         CallbackRequest request = callbackParams.getRequest();
-        logger.info("on start OCONFIX DETAILS" + request.getCaseDetails().toString());
+        logger.info("on start OCONFIX DETAILS  {}" , request.getCaseDetails().toString());
 
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(request.getCaseDetails());
 
@@ -86,8 +85,7 @@ public class PaperResponseOCON9xFormCallbackHandler extends CallbackHandler {
 
     private AboutToStartOrSubmitCallbackResponse verifyNoDocumentsAddedOrRemoved(CallbackParams callbackParams) {
         CallbackRequest request = callbackParams.getRequest();
-        ObjectMapper mapper = new ObjectMapper();
-        logger.info("on mid OCONFIX DETAILS" + request.getCaseDetails().toString());
+        logger.info("on mid OCONFIX DETAILS {}" , request.getCaseDetails().toString());
 
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(request.getCaseDetails());
         ccdCase.setTempOcon9xFormSelectedValue(ccdCase.getOcon9xForm());
@@ -108,7 +106,7 @@ public class PaperResponseOCON9xFormCallbackHandler extends CallbackHandler {
 
     private AboutToStartOrSubmitCallbackResponse updateData(CallbackParams callbackParams) {
 
-        logger.info("on submit OCONFIX DETAILS" + callbackParams.getRequest().getCaseDetails().toString());
+        logger.info("on submit OCONFIX DETAILS {}" , callbackParams.getRequest().getCaseDetails().toString());
         CallbackRequest request = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(request.getCaseDetails());
         logger.info("before submit Ocon9xForm {}", ccdCase.getOcon9xForm());
