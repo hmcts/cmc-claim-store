@@ -4,12 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocument;
-import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocumentType;
-import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
-import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.ccd.domain.*;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
@@ -21,21 +16,14 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.PAPER_RESPONSE_OCON_9X_FORM;
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseMethod.OCON_FORM;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
-import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType.ABOUT_TO_START;
-import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType.ABOUT_TO_SUBMIT;
-import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType.MID;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType.*;
 
 @Service
 public class PaperResponseOCON9xFormCallbackHandler extends CallbackHandler {
@@ -71,12 +59,8 @@ public class PaperResponseOCON9xFormCallbackHandler extends CallbackHandler {
 
     private AboutToStartOrSubmitCallbackResponse filterScannedDocuments(CallbackParams callbackParams) {
         CallbackRequest request = callbackParams.getRequest();
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            logger.info("on start OCONFIX DETAILS" + mapper.writeValueAsString(request.getCaseDetails()));
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        logger.info("on start OCONFIX DETAILS" + request.getCaseDetails().toString());
+
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(request.getCaseDetails());
 
         List<CCDCollectionElement<CCDScannedDocument>> forms = filterForms(ccdCase);
@@ -91,11 +75,8 @@ public class PaperResponseOCON9xFormCallbackHandler extends CallbackHandler {
     private AboutToStartOrSubmitCallbackResponse verifyNoDocumentsAddedOrRemoved(CallbackParams callbackParams) {
         CallbackRequest request = callbackParams.getRequest();
         ObjectMapper mapper = new ObjectMapper();
-        try {
-            logger.info("on mid OCONFIX DETAILS" + mapper.writeValueAsString(request.getCaseDetails()));
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        logger.info("on mid OCONFIX DETAILS" + request.getCaseDetails().toString());
+
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(request.getCaseDetails());
         ccdCase.setTempOcon9xFormSelectedValue(ccdCase.getOcon9xForm());
         ccdCase.setOcon9xForm("");
@@ -114,13 +95,8 @@ public class PaperResponseOCON9xFormCallbackHandler extends CallbackHandler {
     }
 
     private AboutToStartOrSubmitCallbackResponse updateData(CallbackParams callbackParams) {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            logger.info("on submit OCONFIX DETAILS" + mapper
-                .writeValueAsString(callbackParams.getRequest().getCaseDetails()));
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+
+        logger.info("on submit OCONFIX DETAILS" + callbackParams.getRequest().getCaseDetails().toString());
         CallbackRequest request = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(request.getCaseDetails());
         logger.info("before submit Ocon9xForm {}", ccdCase.getOcon9xForm());
