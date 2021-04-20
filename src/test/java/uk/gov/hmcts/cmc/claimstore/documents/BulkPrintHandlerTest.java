@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.documents;
 
 import com.google.common.collect.ImmutableList;
-import com.launchdarkly.client.LDUser;
+import com.launchdarkly.sdk.LDUser;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
