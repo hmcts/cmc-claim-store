@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.launchdarkly.internal;
 
-import com.launchdarkly.client.LDClient;
-import com.launchdarkly.client.LDClientInterface;
-import com.launchdarkly.client.LDConfig;
+import com.launchdarkly.sdk.server.LDClient;
+import com.launchdarkly.sdk.server.LDConfig;
+import com.launchdarkly.sdk.server.interfaces.LDClientInterface;
 import org.springframework.stereotype.Service;
 
 @Service
