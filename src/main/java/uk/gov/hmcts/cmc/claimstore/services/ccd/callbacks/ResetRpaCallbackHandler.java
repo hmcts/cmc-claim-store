@@ -15,12 +15,15 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.roboticssupport.RpaEventType.BREATHING_SPACE_ENTERED;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.roboticssupport.RpaEventType.BREATHING_SPACE_LIFTED;
 
 @Service
 @ConditionalOnProperty("feature_toggles.ctsc_enabled")
@@ -61,14 +64,20 @@ public class ResetRpaCallbackHandler extends CallbackHandler {
     }
 
     private AboutToStartOrSubmitCallbackResponse requestResetRpa(CallbackParams callbackParams) {
+        final var responseBuilder = AboutToStartOrSubmitCallbackResponse.builder();
         CallbackRequest callbackRequest = callbackParams.getRequest();
         Claim claim = convertCallbackToClaim(callbackRequest);
-        handleRoboticsNotification(callbackRequest, claim.getReferenceNumber());
-        Map<String, Object> map = new HashMap<>(caseDetailsConverter.convertToMap(caseMapper.to(claim)));
-        AboutToStartOrSubmitCallbackResponse response = AboutToStartOrSubmitCallbackResponse.builder()
-            .data(map)
-            .build();
-        return response;
+        String validationMessage = validateBreathingSpaceEvents(callbackRequest, claim);
+        if (validationMessage != null) {
+            List<String> errors = new ArrayList<>();
+            errors.add(validationMessage);
+            responseBuilder.errors(errors);
+        } else {
+            handleRoboticsNotification(callbackRequest, claim.getReferenceNumber());
+            Map<String, Object> map = new HashMap<>(caseDetailsConverter.convertToMap(caseMapper.to(claim)));
+            responseBuilder.data(map);
+        }
+        return responseBuilder.build();
     }
 
     private Claim convertCallbackToClaim(CallbackRequest callbackRequest) {
@@ -95,5 +104,23 @@ public class ResetRpaCallbackHandler extends CallbackHandler {
             default:
                 throw new BadRequestException(RPA_STATE_INVALID);
         }
+    }
+
+    private String validateBreathingSpaceEvents(CallbackRequest callbackRequest, Claim claim) {
+
+        if (callbackRequest.getCaseDetails().getData().get(RPA_EVENT_TYPE).equals(BREATHING_SPACE_ENTERED.name())) {
+            if (!(claim.getClaimData().getBreathingSpace().isPresent())) {
+                return "This claim is still not entered into Breathing space";
+            }
+        } else if (callbackRequest.getCaseDetails().getData().get(RPA_EVENT_TYPE).equals(BREATHING_SPACE_LIFTED.name())) {
+            if ((claim.getClaimData().getBreathingSpace().isPresent())) {
+                if (claim.getClaimData().getBreathingSpace().get().getBsLiftedFlag().equals("No")) {
+                    return "This claim is still not lifted its Breathing space";
+                }
+            } else {
+                return "This claim is still not entered into Breathing space";
+            }
+        }
+        return null;
     }
 }
