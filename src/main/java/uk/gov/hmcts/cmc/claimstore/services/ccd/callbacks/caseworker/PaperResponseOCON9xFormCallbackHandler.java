@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
@@ -49,6 +51,7 @@ public class PaperResponseOCON9xFormCallbackHandler  extends CallbackHandler {
 
     private static final List<Role> ROLES = List.of(CASEWORKER);
     private static final List<CaseEvent> EVENTS = List.of(PAPER_RESPONSE_OCON_9X_FORM);
+    private final Logger logger = LoggerFactory.getLogger(PaperResponseOCON9xFormCallbackHandler.class);
 
     private final CaseDetailsConverter caseDetailsConverter;
 
@@ -85,7 +88,8 @@ public class PaperResponseOCON9xFormCallbackHandler  extends CallbackHandler {
         ccdCase.setTempOcon9xFormSelectedValue(ccdCase.getOcon9xForm());
         ccdCase.setOcon9xForm("");
         List<CCDCollectionElement<CCDScannedDocument>> formsBefore = filterForms(ccdCase);
-
+        logger.info("before mid Ocon9xForm {}", ccdCase.getOcon9xForm());
+        logger.info("before mid TempOcon9xFormSelectedValue {}", ccdCase.getTempOcon9xFormSelectedValue());
         List<String> errors = new ArrayList<>();
         if (!formsBefore.equals(ccdCase.getTemporaryScannedDocuments())) {
             errors.add(SCANNED_DOCUMENTS_MODIFIED_ERROR);
@@ -100,6 +104,8 @@ public class PaperResponseOCON9xFormCallbackHandler  extends CallbackHandler {
     private AboutToStartOrSubmitCallbackResponse updateData(CallbackParams callbackParams) {
         CallbackRequest request = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(request.getCaseDetails());
+        logger.info("before submit Ocon9xForm {}", ccdCase.getOcon9xForm());
+        logger.info("before submit TempOcon9xFormSelectedValue {}", ccdCase.getTempOcon9xFormSelectedValue());
         CCDScannedDocument updatedDocument = ccdCase.getScannedDocuments()
             .stream()
             .filter(e -> e.getId().equals(ccdCase.getTempOcon9xFormSelectedValue()))
