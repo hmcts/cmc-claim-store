@@ -8,7 +8,9 @@ import org.mockito.Captor;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
+import uk.gov.hmcts.cmc.domain.models.BreathingSpace;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
@@ -157,5 +159,66 @@ public class CountyCourtJudgmentRuleTest {
                     .build()
             ).build();
         assertThat(countyCourtJudgmentRule.isCCJDueToSettlementBreach(claim)).isTrue();
+    }
+
+    @Test
+    public void shouldReturnFalseWhenCountyCourtJudgmentCannotBeRequested() {
+        Claim claim = SampleClaim.builder()
+            .withClaimId(12345678L)
+            .withClaimData(ClaimData.builder().build())
+            .build();
+
+        assertThatCode(() ->
+            countyCourtJudgmentRule.assertCountyCourtJudgmentCannotBeRequested(claim)
+        ).doesNotThrowAnyException();
+    }
+
+    @Test(expected = ForbiddenActionException.class)
+    public void shouldReturnTureWhenCountyCourtJudgmentCannotBeRequested() {
+        BreathingSpace breathingSpace = BreathingSpace.builder()
+            .bsEnteredDate(LocalDate.now())
+            .bsLiftedDate(null)
+            .build();
+        Claim claim = SampleClaim.builder()
+            .withClaimId(12345678L)
+            .withClaimData(ClaimData.builder()
+                .breathingSpace(breathingSpace)
+                .build())
+            .build();
+        countyCourtJudgmentRule.assertCountyCourtJudgmentCannotBeRequested(claim);
+    }
+
+    @Test
+    public void shouldReturnTureWhenBreathingSpaceLiftedNotNull() {
+        BreathingSpace breathingSpace = BreathingSpace.builder()
+            .bsEnteredDate(LocalDate.now())
+            .bsLiftedDate(LocalDate.now().plusDays(60))
+            .build();
+        Claim claim = SampleClaim.builder()
+            .withClaimId(12345678L)
+            .withClaimData(ClaimData.builder()
+                .breathingSpace(breathingSpace)
+                .build())
+            .build();
+        assertThatCode(() ->
+            countyCourtJudgmentRule.assertCountyCourtJudgmentCannotBeRequested(claim)
+        ).doesNotThrowAnyException();
+    }
+
+    @Test
+    public void shouldReturnTureWhenBreathingSpaceLiftedNull() {
+        BreathingSpace breathingSpace = BreathingSpace.builder()
+            .bsEnteredDate(null)
+            .bsLiftedDate(null)
+            .build();
+        Claim claim = SampleClaim.builder()
+            .withClaimId(12345678L)
+            .withClaimData(ClaimData.builder()
+                .breathingSpace(breathingSpace)
+                .build())
+            .build();
+        assertThatCode(() ->
+            countyCourtJudgmentRule.assertCountyCourtJudgmentCannotBeRequested(claim)
+        ).doesNotThrowAnyException();
     }
 }
