@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType.AB
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType.MID;
 
 @Service
-public class PaperResponseOCON9xFormCallbackHandler  extends CallbackHandler {
+public class PaperResponseOCON9xFormCallbackHandler extends CallbackHandler {
 
     private static final String DYNAMIC_LIST_CODE = "code";
     private static final String DYNAMIC_LIST_LABEL = "label";
@@ -70,20 +71,31 @@ public class PaperResponseOCON9xFormCallbackHandler  extends CallbackHandler {
 
     private AboutToStartOrSubmitCallbackResponse filterScannedDocuments(CallbackParams callbackParams) {
         CallbackRequest request = callbackParams.getRequest();
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            logger.info("on start OCONFIX DETAILS" + mapper.writeValueAsString(request.getCaseDetails()));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(request.getCaseDetails());
 
         List<CCDCollectionElement<CCDScannedDocument>> forms = filterForms(ccdCase);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(Map.of(SCANNED_DOCUMENTS, forms,
-                         OCON9X, buildFilesList(forms, ccdCase.getOcon9xForm()))
+                OCON9X, buildFilesList(forms, ccdCase.getOcon9xForm()))
             )
             .build();
     }
 
     private AboutToStartOrSubmitCallbackResponse verifyNoDocumentsAddedOrRemoved(CallbackParams callbackParams) {
         CallbackRequest request = callbackParams.getRequest();
-
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            logger.info("on mid OCONFIX DETAILS" + mapper.writeValueAsString(request.getCaseDetails()));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(request.getCaseDetails());
         ccdCase.setTempOcon9xFormSelectedValue(ccdCase.getOcon9xForm());
         ccdCase.setOcon9xForm("");
@@ -102,6 +114,13 @@ public class PaperResponseOCON9xFormCallbackHandler  extends CallbackHandler {
     }
 
     private AboutToStartOrSubmitCallbackResponse updateData(CallbackParams callbackParams) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            logger.info("on submit OCONFIX DETAILS" + mapper
+                .writeValueAsString(callbackParams.getRequest().getCaseDetails()));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         CallbackRequest request = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(request.getCaseDetails());
         logger.info("before submit Ocon9xForm {}", ccdCase.getOcon9xForm());
@@ -175,7 +194,7 @@ public class PaperResponseOCON9xFormCallbackHandler  extends CallbackHandler {
         List<Map<String, String>> listItems = forms.stream()
             .sorted(Comparator.comparing(y -> y.getValue().getUrl().getDocumentFileName(), String::compareToIgnoreCase))
             .map(f -> Map.of(DYNAMIC_LIST_CODE, f.getId(),
-                             DYNAMIC_LIST_LABEL, f.getValue().getUrl().getDocumentFileName())
+                DYNAMIC_LIST_LABEL, f.getValue().getUrl().getDocumentFileName())
             )
             .collect(Collectors.toList());
 
