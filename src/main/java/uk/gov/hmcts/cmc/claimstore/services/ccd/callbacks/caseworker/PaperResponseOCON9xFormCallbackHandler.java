@@ -83,7 +83,7 @@ public class PaperResponseOCON9xFormCallbackHandler  extends CallbackHandler {
 
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(request.getCaseDetails());
         ccdCase.setTempOcon9xFormSelectedValue(ccdCase.getOcon9xForm());
-        ccdCase.setOcon9xForm(null);
+        ccdCase.setOcon9xForm("");
         List<CCDCollectionElement<CCDScannedDocument>> formsBefore = filterForms(ccdCase);
 
         List<String> errors = new ArrayList<>();
