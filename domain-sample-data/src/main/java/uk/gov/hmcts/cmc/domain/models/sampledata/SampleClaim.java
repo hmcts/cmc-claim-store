@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
+import uk.gov.hmcts.cmc.domain.models.BreathingSpace;
+import uk.gov.hmcts.cmc.domain.models.BreathingSpaceType;
 import uk.gov.hmcts.cmc.domain.models.ChannelType;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -133,6 +135,27 @@ public final class SampleClaim {
     public static Claim getDefault() {
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimantBuilder().withExternalId(RAND_UUID).build())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .ccjType(CountyCourtJudgmentType.ADMISSIONS)
+                    .paymentOption(IMMEDIATELY)
+                    .build()
+            ).withResponse(SampleResponse.FullDefence
+                .builder()
+                .withDefenceType(DefenceType.DISPUTE)
+                .withMediation(YES)
+                .build()
+            ).withState(ClaimState.OPEN)
+            .build();
+    }
+
+    public static Claim getDefaultWithBreathingSpaceDetails() {
+        BreathingSpace breathingSpace = new BreathingSpace("REF12121212",
+            BreathingSpaceType.STANDARD_BS_ENTERED, LocalDate.now(),
+            null, LocalDate.now(), null, LocalDate.now(), "NO");
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimantBuilder().withExternalId(RAND_UUID)
+                .withBreathingSpace(breathingSpace).build())
             .withCountyCourtJudgment(
                 SampleCountyCourtJudgment.builder()
                     .ccjType(CountyCourtJudgmentType.ADMISSIONS)

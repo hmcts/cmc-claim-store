@@ -5,6 +5,8 @@ import org.junit.Test;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildBreathingSpaceEnteredFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildBreathingSpaceLiftedFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimantResponseFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDraftClaimFileBaseName;
@@ -150,6 +152,30 @@ public class DocumentNameUtilsTest {
     public void shouldBuildLADirectionOrderFileName() {
         assertThat(buildLADirectionOrderFileName("000MC001"))
             .isEqualTo("000MC001-Legal-Adviser-Directions-Order");
+    }
+
+    @Test
+    public void shouldBuildBreathingSpaceEnteredFileBaseNameFromCCD() {
+        assertThat(buildBreathingSpaceEnteredFileBaseName("000MC001", true))
+            .isEqualTo("000MC001-breathing-space-entered.pdf");
+    }
+
+    @Test
+    public void shouldBuildBreathingSpaceEnteredFileBaseName() {
+        assertThat(buildBreathingSpaceEnteredFileBaseName("000MC001", false))
+            .isEqualTo("000MC001-breathing-space-entered");
+    }
+
+    @Test
+    public void shouldBuildBreathingSpaceLiftedFileBaseNameFromCCD() {
+        assertThat(buildBreathingSpaceLiftedFileBaseName("000MC001", true))
+            .isEqualTo("000MC001-breathing-space-lifted.pdf");
+    }
+
+    @Test
+    public void shouldBuildBreathingSpaceLiftedFileBaseName() {
+        assertThat(buildBreathingSpaceLiftedFileBaseName("000MC001", false))
+            .isEqualTo("000MC001-breathing-space-lifted");
     }
 
 }

@@ -193,4 +193,8 @@ public class CCDCase {
     private CCDReviewOrDrawOrder reviewOrDrawOrder;
 
     private String lastEventTriggeredForHwfCase;
+
+    //Breathing space Fields
+    private CCDBreathingSpace breathingSpace;
+
 }

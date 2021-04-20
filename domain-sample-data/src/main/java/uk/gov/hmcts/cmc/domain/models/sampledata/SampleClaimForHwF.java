@@ -848,12 +848,12 @@ public final class SampleClaimForHwF {
 
     public SampleClaimForHwF withGeneralLetter(URI uri) {
         ClaimDocument claimDocument = ClaimDocument.builder()
-                .documentManagementUrl(uri)
-                .documentName("general-letter.pdf")
-                .documentType(GENERAL_LETTER)
-                .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
-                .createdBy(OCMC)
-                .build();
+            .documentManagementUrl(uri)
+            .documentName("general-letter.pdf")
+            .documentType(GENERAL_LETTER)
+            .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
+            .createdBy(OCMC)
+            .build();
         this.claimDocumentCollection.addClaimDocument(claimDocument);
         return this;
     }
