@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.roboticssupport.Roboti
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.roboticssupport.RpaEventType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
+import uk.gov.hmcts.cmc.domain.models.BreathingSpace;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
@@ -115,8 +116,9 @@ public class ResetRpaCallbackHandler extends CallbackHandler {
             }
         } else if (callbackRequest.getCaseDetails().getData().get(RPA_EVENT_TYPE)
             .equals(BREATHING_SPACE_LIFTED.name())) {
-            if ((claim.getClaimData().getBreathingSpace().isPresent())) {
-                if (claim.getClaimData().getBreathingSpace().get().getBsLiftedFlag().equals("No")) {
+            Optional<BreathingSpace> breathingSpaceOptional = claim.getClaimData().getBreathingSpace();
+            if ((breathingSpaceOptional.isPresent())) {
+                if (breathingSpaceOptional.get().getBsLiftedFlag().equals("No")) {
                     return "This claim is still not lifted its Breathing space";
                 }
             } else {

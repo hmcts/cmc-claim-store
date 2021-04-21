@@ -45,6 +45,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -152,7 +153,7 @@ public class ResetRpaCallbackHandlerTest {
         AboutToStartOrSubmitCallbackResponse response
             = (AboutToStartOrSubmitCallbackResponse) resetRpaCallbackHandler.handle(getCallbackParams(callbackRequest));
         MatcherAssert.assertThat(response.getData().get(REFERENCE_KEY), CoreMatchers.is(REFERENCE));
-        verify(roboticsNotificationService).rpaEnterBreathingSpaceNotifications(eq(REFERENCE));
+        verify(roboticsNotificationService).rpaEnterBreathingSpaceNotifications(REFERENCE);
     }
 
     @Test
@@ -163,7 +164,7 @@ public class ResetRpaCallbackHandlerTest {
         AboutToStartOrSubmitCallbackResponse response
             = (AboutToStartOrSubmitCallbackResponse) resetRpaCallbackHandler
             .handle(getCallbackParams(callbackRequest));
-        assert (response.getErrors().get(0).contains("This claim is still not entered into Breathing space"));
+        assertTrue(response.getErrors().get(0).contains("This claim is still not entered into Breathing space"));
     }
 
     @Test
@@ -175,7 +176,7 @@ public class ResetRpaCallbackHandlerTest {
         AboutToStartOrSubmitCallbackResponse response
             = (AboutToStartOrSubmitCallbackResponse) resetRpaCallbackHandler.handle(getCallbackParams(callbackRequest));
         MatcherAssert.assertThat(response.getData().get(REFERENCE_KEY), CoreMatchers.is(REFERENCE));
-        verify(roboticsNotificationService).rpaLiftBreathingSpaceNotifications(eq(REFERENCE));
+        verify(roboticsNotificationService).rpaLiftBreathingSpaceNotifications(REFERENCE);
     }
 
     @Test
@@ -185,7 +186,7 @@ public class ResetRpaCallbackHandlerTest {
         callbackRequest = getCallbackRequest(BREATHING_SPACE_LIFTED);
         AboutToStartOrSubmitCallbackResponse response
             = (AboutToStartOrSubmitCallbackResponse) resetRpaCallbackHandler.handle(getCallbackParams(callbackRequest));
-        assert (response.getErrors().get(0).contains("This claim is still not entered into Breathing space"));
+        assertTrue(response.getErrors().get(0).contains("This claim is still not entered into Breathing space"));
     }
 
     @Test
@@ -196,7 +197,7 @@ public class ResetRpaCallbackHandlerTest {
         callbackRequest = getCallbackRequest(BREATHING_SPACE_LIFTED);
         AboutToStartOrSubmitCallbackResponse response
             = (AboutToStartOrSubmitCallbackResponse) resetRpaCallbackHandler.handle(getCallbackParams(callbackRequest));
-        assert (response.getErrors().get(0).contains("This claim is still not lifted its Breathing space"));
+        assertTrue(response.getErrors().get(0).contains("This claim is still not lifted its Breathing space"));
     }
 
     @Test(expected = IllegalArgumentException.class)
