@@ -108,7 +108,8 @@ public class ResetRpaCallbackHandler extends CallbackHandler {
 
     private String validateBreathingSpaceEvents(CallbackRequest callbackRequest, Claim claim) {
 
-        if (callbackRequest.getCaseDetails().getData().get(RPA_EVENT_TYPE).equals(BREATHING_SPACE_ENTERED.name())) {
+        if (callbackRequest.getCaseDetails().getData().get(RPA_EVENT_TYPE)
+            .equals(BREATHING_SPACE_ENTERED.name())) {
             if (!(claim.getClaimData().getBreathingSpace().isPresent())) {
                 return "This claim is still not entered into Breathing space";
             }
