@@ -32,6 +32,9 @@ public class EmailProperties {
     @NotBlank
     private String paidInFullRecipient;
 
+    @NotBlank
+    private String breathingSpaceRecipient;
+
     public String getSender() {
         return sender;
     }
@@ -86,5 +89,13 @@ public class EmailProperties {
 
     public void setLegalSealedClaimRecipient(String legalSealedClaimRecipient) {
         this.legalSealedClaimRecipient = legalSealedClaimRecipient;
+    }
+
+    public String getBreathingSpaceRecipient() {
+        return breathingSpaceRecipient;
+    }
+
+    public void setBreathingSpaceRecipient(String breathingSpaceRecipient) {
+        this.breathingSpaceRecipient = breathingSpaceRecipient;
     }
 }

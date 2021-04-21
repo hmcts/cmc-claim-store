@@ -35,14 +35,16 @@ public class BreathingSpaceJsonMapper {
                     breathingSpaceCode)
                 .add("breathingSpaceEnteredDate", breathingSpace.getBsEnteredDate() != null
                     ? DateFormatter.format(breathingSpace.getBsEnteredDate()) : null)
-                .add("breathingSpaceLiftedDate", breathingSpace.getBsLiftedDate() != null
-                    ? DateFormatter.format(breathingSpace.getBsLiftedDate()) : null)
+                .add("breathingSpaceLiftedDate",
+                    (breathingSpace.getBsLiftedFlag().equals("Yes") && breathingSpace.getBsLiftedDate() != null)
+                        ? DateFormatter.format(breathingSpace.getBsLiftedDate()) : null)
                 .add("breathingSpaceEnteredDateByInsolvencyTeam", breathingSpace.getBsEnteredDateByInsolvencyTeam() != null
                     ? DateFormatter.format(breathingSpace.getBsEnteredDateByInsolvencyTeam())
                     : DateFormatter.format(breathingSpace.getBsEnteredDate()))
-                .add("breathingSpaceLiftedDateByInsolvencyTeam", breathingSpace.getBsLiftedDateByInsolvencyTeam() != null
-                    ? DateFormatter.format(breathingSpace.getBsLiftedDateByInsolvencyTeam())
-                    : (breathingSpace.getBsLiftedFlag().equals("Yes") ? DateFormatter.format(breathingSpace.getBsLiftedDate()) : null))
+                .add("breathingSpaceLiftedDateByInsolvencyTeam",
+                    (breathingSpace.getBsLiftedFlag().equals("Yes") && breathingSpace.getBsLiftedDateByInsolvencyTeam() != null)
+                        ? DateFormatter.format(breathingSpace.getBsLiftedDateByInsolvencyTeam())
+                        : (breathingSpace.getBsLiftedFlag().equals("Yes") ? DateFormatter.format(breathingSpace.getBsLiftedDate()) : null))
                 .build();
         }
         return null;

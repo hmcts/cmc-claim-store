@@ -51,6 +51,11 @@ data "azurerm_key_vault_secret" "rpa_email_sealed_claim" {
   key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
 }
 
+data "azurerm_key_vault_secret" "rpa-email-breathing-space" {
+  name = "rpa-email-breathing-space"
+  key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
+}
+
 data "azurerm_key_vault_secret" "rpa_email_more_time_requested" {
   name = "rpa-email-more-time-requested"
   key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
