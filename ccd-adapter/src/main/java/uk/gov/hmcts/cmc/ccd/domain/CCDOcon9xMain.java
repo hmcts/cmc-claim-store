@@ -9,7 +9,9 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @Builder
+@SuppressWarnings("MemberName")
 public class CCDOcon9xMain {
     private CCDLableCode value;
+    //Below field is not needed at the moment
     private List<CCDLableCode> list_items;
 }
