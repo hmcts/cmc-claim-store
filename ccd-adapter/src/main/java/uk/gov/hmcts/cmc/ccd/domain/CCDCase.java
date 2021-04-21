@@ -192,4 +192,6 @@ public class CCDCase {
 
     private String lastEventTriggeredForHwfCase;
 
+    private CCDBreathingSpace breathingSpace;
+
 }

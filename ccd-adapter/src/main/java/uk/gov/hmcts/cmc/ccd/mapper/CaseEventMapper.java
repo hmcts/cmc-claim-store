@@ -16,6 +16,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIMANT_DIRECTIONS_QUESTIONNAIRE;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.GENERAL_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.REVIEW_ORDER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
@@ -31,6 +32,7 @@ public class CaseEventMapper {
             .put(CLAIMANT_DIRECTIONS_QUESTIONNAIRE, CLAIMANT_DIRECTIONS_QUESTIONNAIRE_UPLOAD)
             .put(REVIEW_ORDER, REVIEW_ORDER_UPLOAD)
             .put(CCJ_REQUEST, CCJ_REQUEST_UPLOAD)
+            .put(GENERAL_LETTER, SEALED_CLAIM_UPLOAD)
             .build();
 
     private CaseEventMapper() {
