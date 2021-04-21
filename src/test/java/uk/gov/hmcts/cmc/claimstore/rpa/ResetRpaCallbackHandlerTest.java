@@ -74,6 +74,8 @@ public class ResetRpaCallbackHandlerTest {
     private static final String INVALID = "INVALID";
     public static final UUID RAND_UUID = UUID.randomUUID();
     private CallbackRequest callbackRequest;
+    private List<CaseEvent> eventsList = Collections.singletonList(CaseEvent.RESEND_RPA);
+    private List<Role> roleList = Collections.singletonList(CASEWORKER);
 
     @Mock
     private CaseMapper caseMapper;
@@ -143,7 +145,8 @@ public class ResetRpaCallbackHandlerTest {
 
     @Test
     public void shouldResetRpaWhenBreathingSpaceEnteredSuccessfully() {
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(getDefaultWithBreathingSpaceEnteredDetails());
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+            .thenReturn(getDefaultWithBreathingSpaceEnteredDetails());
 
         callbackRequest = getCallbackRequest(BREATHING_SPACE_ENTERED);
         AboutToStartOrSubmitCallbackResponse response
@@ -158,14 +161,15 @@ public class ResetRpaCallbackHandlerTest {
 
         callbackRequest = getCallbackRequest(BREATHING_SPACE_ENTERED);
         AboutToStartOrSubmitCallbackResponse response
-            = (AboutToStartOrSubmitCallbackResponse) resetRpaCallbackHandler.handle(getCallbackParams(callbackRequest));
-        assert(response.getErrors().get(0).contains("This claim is still not entered into Breathing space"));
-        //verify(roboticsNotificationService).rpaEnterBreathingSpaceNotifications(eq(REFERENCE));
+            = (AboutToStartOrSubmitCallbackResponse) resetRpaCallbackHandler
+            .handle(getCallbackParams(callbackRequest));
+        assert (response.getErrors().get(0).contains("This claim is still not entered into Breathing space"));
     }
 
     @Test
     public void shouldResetRpaWhenBreathingSpaceLiftedSuccessfully() {
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(getDefaultWithBreathingSpaceLiftedDetails());
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+            .thenReturn(getDefaultWithBreathingSpaceLiftedDetails());
 
         callbackRequest = getCallbackRequest(BREATHING_SPACE_LIFTED);
         AboutToStartOrSubmitCallbackResponse response
@@ -181,19 +185,18 @@ public class ResetRpaCallbackHandlerTest {
         callbackRequest = getCallbackRequest(BREATHING_SPACE_LIFTED);
         AboutToStartOrSubmitCallbackResponse response
             = (AboutToStartOrSubmitCallbackResponse) resetRpaCallbackHandler.handle(getCallbackParams(callbackRequest));
-        assert(response.getErrors().get(0).contains("This claim is still not entered into Breathing space"));
-       // verify(roboticsNotificationService).rpaLiftBreathingSpaceNotifications(eq(REFERENCE));
+        assert (response.getErrors().get(0).contains("This claim is still not entered into Breathing space"));
     }
 
     @Test
     public void shouldResetRpaInvokedWhenBreathingSpaceEnteredAndInvokedBreathingSpaceLifted() {
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(getDefaultWithBreathingSpaceEnteredDetails());
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+            .thenReturn(getDefaultWithBreathingSpaceEnteredDetails());
 
         callbackRequest = getCallbackRequest(BREATHING_SPACE_LIFTED);
         AboutToStartOrSubmitCallbackResponse response
             = (AboutToStartOrSubmitCallbackResponse) resetRpaCallbackHandler.handle(getCallbackParams(callbackRequest));
-        assert(response.getErrors().get(0).contains("This claim is still not lifted its Breathing space"));
-        // verify(roboticsNotificationService).rpaLiftBreathingSpaceNotifications(eq(REFERENCE));
+        assert (response.getErrors().get(0).contains("This claim is still not lifted its Breathing space"));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -204,16 +207,14 @@ public class ResetRpaCallbackHandlerTest {
 
     @Test
     public void getSupportedRoles() {
-        List<Role> ROLES = Collections.singletonList(CASEWORKER);
         List<Role> roleList = resetRpaCallbackHandler.getSupportedRoles();
-        assertEquals(ROLES, roleList);
+        assertEquals(this.roleList, roleList);
     }
 
     @Test
     public void handledEvents() {
-        List<CaseEvent> EVENTS = Collections.singletonList(CaseEvent.RESEND_RPA);
         List<CaseEvent> caseEventList = resetRpaCallbackHandler.handledEvents();
-        assertEquals(EVENTS, caseEventList);
+        assertEquals(eventsList, caseEventList);
     }
 
     private CCDCase getCcdCase() {
