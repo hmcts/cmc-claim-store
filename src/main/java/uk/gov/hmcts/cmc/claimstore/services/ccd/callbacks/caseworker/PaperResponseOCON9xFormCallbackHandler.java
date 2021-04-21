@@ -105,7 +105,7 @@ public class PaperResponseOCON9xFormCallbackHandler extends CallbackHandler {
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(request.getCaseDetails());
         CCDScannedDocument updatedDocument = ccdCase.getScannedDocuments()
             .stream()
-            .filter(e -> e.getId().equals(ccdCase.getOcon9xForm().getValue().getCode()))
+            .filter(e -> e.getId().equals(getSelectedDocumentCode(ccdCase.getOcon9xForm())))
             .map(CCDCollectionElement::getValue)
             .map(d -> d.toBuilder()
                 .fileName(String.format("%s-scanned-OCON9x-form.pdf", ccdCase.getPreviousServiceCaseReference()))
@@ -117,7 +117,7 @@ public class PaperResponseOCON9xFormCallbackHandler extends CallbackHandler {
         List<CCDCollectionElement<CCDScannedDocument>> updatedScannedDocuments = ccdCase.getScannedDocuments()
             .stream()
             .map(e -> e.getId()
-                .equals(ccdCase.getOcon9xForm().getValue().getCode())
+                .equals(getSelectedDocumentCode(ccdCase.getOcon9xForm()))
                 ? e.toBuilder().value(updatedDocument).build() : e)
             .collect(Collectors.toList());
 
