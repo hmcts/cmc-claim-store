@@ -19,6 +19,7 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LIFT_STAY;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED;
@@ -43,6 +44,7 @@ public class CountyCourtJudgmentService {
     private final DocumentsService documentService;
     private final boolean ctscEnabled;
     private final ClaimantResponseReceiptService claimantResponseReceiptService;
+    private final LaunchDarklyClient launchDarklyClient;
 
     @Autowired
     public CountyCourtJudgmentService(
@@ -56,7 +58,8 @@ public class CountyCourtJudgmentService {
         CCJByAdmissionOrDeterminationPdfService ccjByAdmissionOrDeterminationPdfService,
         DocumentsService documentService,
         @Value("${feature_toggles.ctsc_enabled}") boolean ctscEnabled,
-        ClaimantResponseReceiptService claimantResponseReceiptService
+        ClaimantResponseReceiptService claimantResponseReceiptService,
+        LaunchDarklyClient launchDarklyClient
 
     ) {
         this.claimService = claimService;
@@ -70,6 +73,7 @@ public class CountyCourtJudgmentService {
         this.documentService = documentService;
         this.ctscEnabled = ctscEnabled;
         this.claimantResponseReceiptService = claimantResponseReceiptService;
+        this.launchDarklyClient = launchDarklyClient;
 
     }
 
@@ -86,6 +90,10 @@ public class CountyCourtJudgmentService {
         authorisationService.assertIsSubmitterOnClaim(claim, userDetails.getId());
 
         countyCourtJudgmentRule.assertCountyCourtJudgmentCanBeRequested(claim, countyCourtJudgment.getCcjType());
+
+        if (launchDarklyClient.isFeatureEnabled("breathing-space", LaunchDarklyClient.CLAIM_STORE_USER)) {
+            countyCourtJudgmentRule.assertCountyCourtJudgmentCannotBeRequested(claim);
+        }
 
         if (ClaimState.STAYED.equals(claim.getState())
             && claim.getResponse().filter(ResponseUtils::isAdmissionResponse).isPresent()

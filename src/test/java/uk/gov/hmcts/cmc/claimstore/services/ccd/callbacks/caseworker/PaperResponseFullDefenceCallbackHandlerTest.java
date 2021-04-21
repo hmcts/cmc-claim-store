@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
-import com.launchdarkly.client.LDUser;
+import com.launchdarkly.sdk.LDUser;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
