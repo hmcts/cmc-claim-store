@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDOcon9xMain;
 import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
@@ -35,7 +36,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType.AB
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType.MID;
 
 @Service
-public class PaperResponseOCON9xFormCallbackHandler  extends CallbackHandler {
+public class PaperResponseOCON9xFormCallbackHandler extends CallbackHandler {
 
     private static final String DYNAMIC_LIST_CODE = "code";
     private static final String DYNAMIC_LIST_LABEL = "label";
@@ -68,24 +69,25 @@ public class PaperResponseOCON9xFormCallbackHandler  extends CallbackHandler {
     private AboutToStartOrSubmitCallbackResponse filterScannedDocuments(CallbackParams callbackParams) {
         CallbackRequest request = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(request.getCaseDetails());
-
         List<CCDCollectionElement<CCDScannedDocument>> forms = filterForms(ccdCase);
-
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(Map.of(SCANNED_DOCUMENTS, forms,
-                         OCON9X, buildFilesList(forms, ccdCase.getOcon9xForm()))
+                OCON9X, buildFilesList(forms, getSelectedDocumentCode(ccdCase.getOcon9xForm())))
             )
             .build();
     }
 
+    private String getSelectedDocumentCode(CCDOcon9xMain ocon9xForm) {
+        if (null != ocon9xForm && null != ocon9xForm.getValue()) {
+            return ocon9xForm.getValue().getCode();
+        }
+        return null;
+    }
+
     private AboutToStartOrSubmitCallbackResponse verifyNoDocumentsAddedOrRemoved(CallbackParams callbackParams) {
         CallbackRequest request = callbackParams.getRequest();
-
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(request.getCaseDetails());
-        ccdCase.setTempOcon9xFormSelectedValue(ccdCase.getOcon9xForm());
-        ccdCase.setOcon9xForm(null);
         List<CCDCollectionElement<CCDScannedDocument>> formsBefore = filterForms(ccdCase);
-
         List<String> errors = new ArrayList<>();
         if (!formsBefore.equals(ccdCase.getTemporaryScannedDocuments())) {
             errors.add(SCANNED_DOCUMENTS_MODIFIED_ERROR);
@@ -98,11 +100,12 @@ public class PaperResponseOCON9xFormCallbackHandler  extends CallbackHandler {
     }
 
     private AboutToStartOrSubmitCallbackResponse updateData(CallbackParams callbackParams) {
+
         CallbackRequest request = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(request.getCaseDetails());
         CCDScannedDocument updatedDocument = ccdCase.getScannedDocuments()
             .stream()
-            .filter(e -> e.getId().equals(ccdCase.getTempOcon9xFormSelectedValue()))
+            .filter(e -> e.getId().equals(ccdCase.getOcon9xForm().getValue().getCode()))
             .map(CCDCollectionElement::getValue)
             .map(d -> d.toBuilder()
                 .fileName(String.format("%s-scanned-OCON9x-form.pdf", ccdCase.getPreviousServiceCaseReference()))
@@ -114,7 +117,8 @@ public class PaperResponseOCON9xFormCallbackHandler  extends CallbackHandler {
         List<CCDCollectionElement<CCDScannedDocument>> updatedScannedDocuments = ccdCase.getScannedDocuments()
             .stream()
             .map(e -> e.getId()
-                .equals(ccdCase.getTempOcon9xFormSelectedValue()) ? e.toBuilder().value(updatedDocument).build() : e)
+                .equals(ccdCase.getOcon9xForm().getValue().getCode())
+                ? e.toBuilder().value(updatedDocument).build() : e)
             .collect(Collectors.toList());
 
         LocalDateTime mostRecentDeliveryDate = updatedScannedDocuments.stream()
@@ -134,7 +138,6 @@ public class PaperResponseOCON9xFormCallbackHandler  extends CallbackHandler {
             .scannedDocuments(updatedScannedDocuments)
             .temporaryScannedDocuments(Collections.emptyList())
             .ocon9xForm(null)
-            .tempOcon9xFormSelectedValue(null)
             .evidenceHandled(CCDYesNoOption.YES)
             .build();
 
@@ -169,7 +172,7 @@ public class PaperResponseOCON9xFormCallbackHandler  extends CallbackHandler {
         List<Map<String, String>> listItems = forms.stream()
             .sorted(Comparator.comparing(y -> y.getValue().getUrl().getDocumentFileName(), String::compareToIgnoreCase))
             .map(f -> Map.of(DYNAMIC_LIST_CODE, f.getId(),
-                             DYNAMIC_LIST_LABEL, f.getValue().getUrl().getDocumentFileName())
+                DYNAMIC_LIST_LABEL, f.getValue().getUrl().getDocumentFileName())
             )
             .collect(Collectors.toList());
 

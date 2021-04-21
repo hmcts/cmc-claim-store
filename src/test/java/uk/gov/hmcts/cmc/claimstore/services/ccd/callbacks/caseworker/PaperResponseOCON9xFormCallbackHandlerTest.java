@@ -13,6 +13,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CCDLableCode;
+import uk.gov.hmcts.cmc.ccd.domain.CCDOcon9xMain;
 import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
@@ -256,9 +258,9 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
                         .build();
                     CCDCollectionElement<CCDScannedDocument> element =
                         CCDCollectionElement.<CCDScannedDocument>builder()
-                        .value(document)
-                        .id("id " + i)
-                        .build();
+                            .value(document)
+                            .id("id " + i)
+                            .build();
                     scannedDocuments.add(element);
                 }
 
@@ -271,7 +273,7 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
                 AboutToStartOrSubmitCallbackResponse response =
                     (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
 
-                Map<String, Object> ocon9xForm = (Map<String, Object>)response.getData().get("ocon9xForm");
+                Map<String, Object> ocon9xForm = (Map<String, Object>) response.getData().get("ocon9xForm");
 
                 List<Map<String, String>> listItems = (List<Map<String, String>>) ocon9xForm.get("list_items");
 
@@ -416,8 +418,9 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
                 ccdCase = CCDCase.builder()
                     .previousServiceCaseReference(reference)
                     .scannedDocuments(List.of(scannedDocuments))
-                    .ocon9xForm(id)
-                    .tempOcon9xFormSelectedValue(id)
+                    .ocon9xForm(CCDOcon9xMain.builder()
+                        .value(CCDLableCode.builder()
+                            .code(id).build()).build())
                     .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
                         .value(CCDRespondent.builder().build())
                         .build()))
@@ -469,7 +472,6 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
                     .scannedDocuments(List.of(scannedDocElement.toBuilder().value(scannedDoc).build()))
                     .temporaryScannedDocuments(Collections.emptyList())
                     .ocon9xForm(null)
-                    .tempOcon9xFormSelectedValue(null)
                     .evidenceHandled(CCDYesNoOption.YES)
                     .build();
 
