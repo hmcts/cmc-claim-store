@@ -23,6 +23,7 @@ spring:
         rpa-email-response: rpa.notifications.responseRecipient
         rpa-email-ccj: rpa.notifications.countyCourtJudgementRecipient
         rpa-email-paid-in-full: rpa.notifications.paidInFullRecipient
+        rpa-email-breathing-space: rpa.notifications.breathingSpaceRecipient
         launchDarkly-sdk-key: LAUNCH_DARKLY_SDK_KEY
         sendgrid-api-key: SENDGRID_API_KEY
         staff-email-legal-rep: staff-notifications.legalRecipient
