@@ -192,6 +192,7 @@ public class CCDCase {
 
     private String lastEventTriggeredForHwfCase;
 
+    //Breathing space Fields
     private CCDBreathingSpace breathingSpace;
 
 }
