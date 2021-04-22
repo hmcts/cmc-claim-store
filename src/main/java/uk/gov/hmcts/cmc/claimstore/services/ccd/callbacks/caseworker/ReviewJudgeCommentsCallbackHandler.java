@@ -29,7 +29,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REVIEW_JUDGE_COMMENTS;
 public class ReviewJudgeCommentsCallbackHandler extends CallbackHandler {
 
     private static final List<CaseEvent> EVENTS = Collections.singletonList(REVIEW_JUDGE_COMMENTS);
-    private static final List<Role> ROLES = ImmutableList.of(Role.CASEWORKER);
+    private static final List<Role> ROLES = List.of(Role.CASEWORKER);
 
     private final CaseDetailsConverter caseDetailsConverter;
 
@@ -40,7 +40,7 @@ public class ReviewJudgeCommentsCallbackHandler extends CallbackHandler {
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
-        return ImmutableMap.of(CallbackType.ABOUT_TO_SUBMIT, this::unassign);
+        return Map.of(CallbackType.ABOUT_TO_SUBMIT, this::unassign);
     }
 
     private CallbackResponse unassign(CallbackParams callbackParams) {

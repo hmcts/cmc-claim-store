@@ -50,7 +50,7 @@ public class BulkPrintHandler {
         Claim claim = event.getClaim();
         BulkPrintDetails bulkPrintDetails;
         if (launchDarklyClient.isFeatureEnabled("new-defendant-pin-letter", LaunchDarklyClient.CLAIM_STORE_USER)) {
-            bulkPrintDetails = bulkPrintService.printPdf(claim, ImmutableList.of(
+            bulkPrintDetails = bulkPrintService.printPdf(claim, List.of(
                 new PrintableTemplate(
                     event.getDefendantLetterDocument(),
                     buildDefendantLetterFileBaseName(claim.getReferenceNumber())),
@@ -62,7 +62,7 @@ public class BulkPrintHandler {
                 event.getAuthorisation()
             );
         } else {
-            bulkPrintDetails = bulkPrintService.printHtmlLetter(claim, ImmutableList.of(
+            bulkPrintDetails = bulkPrintService.printHtmlLetter(claim, List.of(
                 new PrintableTemplate(
                     event.getDefendantLetterDocument(),
                     buildDefendantLetterFileBaseName(claim.getReferenceNumber())),
@@ -82,7 +82,7 @@ public class BulkPrintHandler {
         requireNonNull(authorisation);
         return bulkPrintService.printPdf(
             claim,
-            ImmutableList.of(
+            List.of(
                 new PrintableTemplate(
                     coverSheet,
                     buildCoverSheetFileBaseName(claim.getReferenceNumber())),
@@ -102,7 +102,7 @@ public class BulkPrintHandler {
 
         return bulkPrintService.printPdf(
             claim,
-            ImmutableList.of(
+            List.of(
                 new PrintablePdf(
                     generalLetterDocument,
                     buildLetterFileBaseName(claim.getReferenceNumber(),

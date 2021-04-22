@@ -62,7 +62,7 @@ public class InitiatePaymentCallbackHandler extends CallbackHandler {
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
-        return ImmutableMap.of(
+        return Map.of(
             CallbackType.ABOUT_TO_SUBMIT, this::createPayment
         );
     }

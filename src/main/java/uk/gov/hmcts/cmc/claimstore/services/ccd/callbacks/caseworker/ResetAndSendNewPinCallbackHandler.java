@@ -34,7 +34,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 public class ResetAndSendNewPinCallbackHandler extends CallbackHandler {
 
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
-    private static final List<CaseEvent> EVENTS = ImmutableList.of(CaseEvent.RESET_PIN);
+    private static final List<CaseEvent> EVENTS = List.of(CaseEvent.RESET_PIN);
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -69,7 +69,7 @@ public class ResetAndSendNewPinCallbackHandler extends CallbackHandler {
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
-        return ImmutableMap.of(
+        return Map.of(
             CallbackType.ABOUT_TO_SUBMIT, this::resendNewPin
         );
     }
@@ -93,7 +93,7 @@ public class ResetAndSendNewPinCallbackHandler extends CallbackHandler {
                 claim.getReferenceNumber());
 
             return AboutToStartOrSubmitCallbackResponse.builder()
-                .errors(ImmutableList.of("Claim has already been linked to defendant - cannot send notification"))
+                .errors(List.of("Claim has already been linked to defendant - cannot send notification"))
                 .build();
         }
 
@@ -102,7 +102,7 @@ public class ResetAndSendNewPinCallbackHandler extends CallbackHandler {
                 claim.getReferenceNumber());
 
             return AboutToStartOrSubmitCallbackResponse.builder()
-                .errors(ImmutableList.of("Claim doesn't have defendant email address - cannot send notification"))
+                .errors(List.of("Claim doesn't have defendant email address - cannot send notification"))
                 .build();
         }
 

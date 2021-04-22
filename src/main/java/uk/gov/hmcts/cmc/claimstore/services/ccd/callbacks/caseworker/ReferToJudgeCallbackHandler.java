@@ -30,7 +30,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 public class ReferToJudgeCallbackHandler extends CallbackHandler {
 
     private static final List<CaseEvent> EVENTS = Collections.singletonList(REFER_TO_JUDGE);
-    private static final List<Role> ROLES = ImmutableList.of(CASEWORKER);
+    private static final List<Role> ROLES = List.of(CASEWORKER);
 
     private final CaseDetailsConverter caseDetailsConverter;
 
@@ -43,7 +43,7 @@ public class ReferToJudgeCallbackHandler extends CallbackHandler {
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
-        return ImmutableMap.of(CallbackType.ABOUT_TO_SUBMIT, this::assignToJudge);
+        return Map.of(CallbackType.ABOUT_TO_SUBMIT, this::assignToJudge);
     }
 
     @Override

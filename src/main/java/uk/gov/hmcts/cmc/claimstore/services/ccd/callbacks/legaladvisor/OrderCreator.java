@@ -121,7 +121,7 @@ public class OrderCreator {
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
 
         Map<String, Object> data = new HashMap<>();
-        data.put(DIRECTION_LIST, chooseItem(ccdCase.getDirectionList(), ImmutableList.of(DOCUMENTS, EYEWITNESS)));
+        data.put(DIRECTION_LIST, chooseItem(ccdCase.getDirectionList(), List.of(DOCUMENTS, EYEWITNESS)));
         addCourtData(claim, ccdCase, data);
 
         LocalDate deadline = legalOrderGenerationDeadlinesCalculator.calculateOrderGenerationDeadlines();
@@ -161,7 +161,7 @@ public class OrderCreator {
 
         if (launchDarklyClient.isFeatureEnabled("bespoke-order", LaunchDarklyClient.CLAIM_STORE_USER)) {
             data.put(BESPOKE_DIRECTION_WARNING,
-                chooseItem(ccdCase.getDrawBespokeDirectionOrderWarning(), ImmutableList.of(WARNING)));
+                chooseItem(ccdCase.getDrawBespokeDirectionOrderWarning(), List.of(WARNING)));
             data.put(DIRECTION_ORDER_TYPE, ccdCase.getDirectionOrderType());
             data.put(BESPOKE_DIRECTION_LIST, ccdCase.getBespokeDirectionList());
         }
@@ -244,7 +244,7 @@ public class OrderCreator {
 
         return AboutToStartOrSubmitCallbackResponse
             .builder()
-            .data(ImmutableMap.of(
+            .data(Map.of(
                 DRAFT_ORDER_DOC,
                 CCDDocument.builder().documentUrl(docAssemblyResponse.getRenditionOutputLocation()).build()
             ))
@@ -321,11 +321,11 @@ public class OrderCreator {
             .sorted(Comparator.comparing(HearingCourt::getName))
             .map(hearingCourt -> {
                 String id = pilotCourtService.getPilotCourtId(hearingCourt);
-                return ImmutableMap.of(DYNAMIC_LIST_CODE, id, DYNAMIC_LIST_LABEL, hearingCourt.getName());
+                return Map.of(DYNAMIC_LIST_CODE, id, DYNAMIC_LIST_LABEL, hearingCourt.getName());
             })
             .collect(Collectors.toList());
 
-        ImmutableMap<String, String> otherCourtItem = ImmutableMap.of(DYNAMIC_LIST_CODE,
+        Map<String, String> otherCourtItem = Map.of(DYNAMIC_LIST_CODE,
             PilotCourtService.OTHER_COURT_ID, DYNAMIC_LIST_LABEL, "Other Court");
 
         if (pilot == Pilot.JDDO) {

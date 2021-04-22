@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -30,6 +29,7 @@ import java.net.URI;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.GENERAL_LETTER;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
@@ -74,7 +74,7 @@ public class GeneralLetterService {
         String caseworkerName = userDetails.getFullName();
         return AboutToStartOrSubmitCallbackResponse
             .builder()
-            .data(ImmutableMap.of("generalLetterContent",
+            .data(Map.of("generalLetterContent",
                 GeneralLetterContent.builder().caseworkerName(caseworkerName).build()
             ))
             .build();

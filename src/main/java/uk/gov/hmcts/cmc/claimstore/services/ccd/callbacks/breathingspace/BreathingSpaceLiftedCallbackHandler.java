@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.breathingspace;
 
-import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -69,7 +68,7 @@ public class BreathingSpaceLiftedCallbackHandler extends CallbackHandler {
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
-        return ImmutableMap.of(
+        return Map.of(
             CallbackType.ABOUT_TO_START, this::breathingSpaceLiftedAboutToStartCallBack,
             CallbackType.MID, this::breathingSpaceLiftedMidCallBack,
             CallbackType.ABOUT_TO_SUBMIT, this::breathingSpaceLiftedAboutToSubmitCallBack,

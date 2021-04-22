@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor;
 
-import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +36,7 @@ public class OrderDrawnNotificationService {
         EmailUtils.getDefendantEmail(claim).ifPresent(
             defendantEmail -> {
                 logger.info("Sending order drawn email to defendant");
-                Map<String, String> parameters = ImmutableMap.of(
+                Map<String, String> parameters = Map.of(
                     CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber(),
                     DEFENDANT_NAME, claim.getClaimData().getDefendant().getName(),
                     FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
@@ -55,7 +54,7 @@ public class OrderDrawnNotificationService {
     }
 
     public void notifyClaimant(Claim claim) {
-        Map<String, String> parameters = ImmutableMap.of(
+        Map<String, String> parameters = Map.of(
             CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber(),
             CLAIMANT_NAME, claim.getClaimData().getClaimant().getName(),
             FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl()
