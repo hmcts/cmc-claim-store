@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.legalrep.LegalRepUpdate;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
@@ -78,6 +79,8 @@ public interface CaseRepository {
     Claim updateHelpWithFeesClaim(User user, Claim claim, CaseEvent caseEvent);
 
     Claim saveRepresentedClaim(User user, Claim claim);
+
+    Claim updateRepresentedClaim(User user, Claim claim, LegalRepUpdate legalRepUpdate);
 
     void saveReDetermination(String authorisation, Claim claim, ReDetermination reDetermination);
 

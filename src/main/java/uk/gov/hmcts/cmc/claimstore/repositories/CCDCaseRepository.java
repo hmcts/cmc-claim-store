@@ -20,6 +20,7 @@ import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.legalrep.LegalRepUpdate;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -201,6 +202,12 @@ public class CCDCaseRepository implements CaseRepository {
     @LogExecutionTime
     public Claim saveRepresentedClaim(User user, Claim claim) {
         return coreCaseDataService.createRepresentedClaim(user, claim);
+    }
+
+    @Override
+    @LogExecutionTime
+    public Claim updateRepresentedClaim(User user, Claim claim, LegalRepUpdate legalRepUpdate) {
+        return coreCaseDataService.updateRepresentedClaim(user, claim, legalRepUpdate);
     }
 
     @Override
