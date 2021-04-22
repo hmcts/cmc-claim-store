@@ -32,11 +32,4 @@ class MiloJobTest {
 
         verify(mediationReportService, once()).automatedMediationReport();
     }
-
-    @Test
-    void executeShouldThrowJobExecutionExceptionWhenExceptionThrown() throws Exception {
-        doThrow(new Exception()).when(mediationReportService).automatedMediationReport();
-
-        assertThrows(JobExecutionException.class, () -> miloJob.execute(null));
-    }
 }
