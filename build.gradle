@@ -412,7 +412,7 @@ sonarqube {
         "**/ValidResidenceConstraintValidator.java",
         "**/PaperResponseFullDefenceCallbackHandler.java",
         "**/ClaimController.java",
-        "**//CoreCaseDataService.java",
+        "**/CoreCaseDataService.java",
         "**/ClaimService.java",
         "**/UserService.java",
         "**/UserService.java",
