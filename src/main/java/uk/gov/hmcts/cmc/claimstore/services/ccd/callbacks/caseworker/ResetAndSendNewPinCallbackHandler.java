@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
