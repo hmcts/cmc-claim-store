@@ -26,7 +26,7 @@ Some environment variables are mandatory.
 - Check the [Helm chart values](charts/cmc-claim-store/values.preview.template.yaml)
 - Check cmc-integration-tests repo for how the docker stack is setup: https://github.com/hmcts/cmc-integration-tests. We use this as the basis for our development environment.
 
-### Building
+#### Building
 
 The project uses [Gradle](https://gradle.org) as a build tool but you don't have install it locally since there is a
 `./gradlew` wrapper script.
