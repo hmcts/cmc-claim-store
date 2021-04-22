@@ -25,6 +25,7 @@ java:
         - staff-email
         - live-support-email
         - rpa-email-sealed-claim
+        - rpa-email-breathing-space
         - rpa-email-legal-sealed-claim
         - rpa-email-more-time-requested
         - rpa-email-response

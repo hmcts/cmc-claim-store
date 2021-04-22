@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.claimstore.rpa.BreathingSpaceNotificationService;
 import uk.gov.hmcts.cmc.claimstore.rpa.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.rpa.DefenceResponseNotificationService;
 import uk.gov.hmcts.cmc.claimstore.rpa.MoreTimeRequestedNotificationService;
@@ -23,8 +24,11 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
+import uk.gov.hmcts.cmc.domain.models.BreathingSpace;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimData;
 
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -43,6 +47,7 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
     private final ClaimIssuedNotificationService rpaNotificationService;
     private final SealedClaimPdfService sealedClaimPdfService;
+    private final BreathingSpaceNotificationService breathingSpaceNotificationService;
 
     private final AppInsightsExceptionLogger appInsightsExceptionLogger;
 
@@ -56,8 +61,8 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
         ResponseDeadlineCalculator responseDeadlineCalculator,
         AppInsightsExceptionLogger appInsightsExceptionLogger,
         ClaimIssuedNotificationService rpaNotificationService,
-        SealedClaimPdfService sealedClaimPdfService
-    ) {
+        SealedClaimPdfService sealedClaimPdfService,
+        BreathingSpaceNotificationService breathingSpaceNotificationService) {
         this.claimService = claimService;
         this.userService = userService;
         this.moreTimeRequestedNotificationService = moreTimeRequestedNotificationService;
@@ -69,6 +74,7 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
         this.rpaNotificationService = rpaNotificationService;
         this.sealedClaimPdfService = sealedClaimPdfService;
 
+        this.breathingSpaceNotificationService = breathingSpaceNotificationService;
     }
 
     @Override
@@ -80,7 +86,7 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
         String authorisation = user.getAuthorisation();
         return resendRPA(referenceNumber, user.getAuthorisation(), reference -> true, claim -> {
             GeneratePinResponse pinResponse = userService
-                    .generatePin(claim.getClaimData().getDefendant().getName(), authorisation);
+                .generatePin(claim.getClaimData().getDefendant().getName(), authorisation);
 
             String fullName = userService.getUserDetails(authorisation).getFullName();
             CitizenClaimIssuedEvent event =
@@ -89,8 +95,7 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
             DocumentGeneratedEvent documentGeneratedEvent =
                 new DocumentGeneratedEvent(event.getClaim(), event.getAuthorisation(),
                     sealedClaim);
-            rpaNotificationService.notifyRobotics(event.getClaim(), documentGeneratedEvent.getDocuments());
-        },
+            rpaNotificationService.notifyRobotics(event.getClaim(), documentGeneratedEvent.getDocuments()); },
             "Failed to send claim to RPA");
     }
 
@@ -146,6 +151,48 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
             claim -> claim.getMoneyReceivedOn().isPresent(),
             claim -> paidInFullNotificationService.notifyRobotics(new PaidInFullEvent(claim)),
             "Failed to send paid-in-full statement to RPA");
+    }
+
+    @Override
+    public String rpaEnterBreathingSpaceNotifications(String referenceNumber) {
+        if (StringUtils.isEmpty(referenceNumber)) {
+            throw new BadRequestException(REFERENCE_NUMBER_NOT_SUPPLIED);
+        }
+        User user = userService.authenticateAnonymousCaseWorker();
+        return resendRPA(referenceNumber, user.getAuthorisation(),
+            claim -> claim.getClaimData().getBreathingSpace().isPresent(),
+            claim -> {
+                PDF sealedClaim = sealedClaimPdfService.createPdf(claim);
+
+                ClaimData claimData = claim.getClaimData();
+                if (claimData.getBreathingSpace().isPresent()) {
+                    BreathingSpace breathingSpace = claimData.getBreathingSpace().get();
+                    breathingSpace.setBsLiftedFlag("No");
+                    ClaimData updatedClaimData = claimData.toBuilder()
+                        .breathingSpace(breathingSpace).build();
+                    Claim updatedClaim = claim.toBuilder()
+                        .claimData(updatedClaimData)
+                        .build();
+                    breathingSpaceNotificationService.notifyRobotics(updatedClaim, Arrays.asList(sealedClaim));
+                }
+            },
+            "Failed to send enter breathing space to RPA");
+    }
+
+    @Override
+    public String rpaLiftBreathingSpaceNotifications(String referenceNumber) {
+        if (StringUtils.isEmpty(referenceNumber)) {
+            throw new BadRequestException(REFERENCE_NUMBER_NOT_SUPPLIED);
+        }
+        User user = userService.authenticateAnonymousCaseWorker();
+        return resendRPA(referenceNumber, user.getAuthorisation(),
+            claim -> claim.getClaimData().getBreathingSpace().isPresent()
+                && claim.getClaimData().getBreathingSpace().get().getBsLiftedFlag().equals("Yes"),
+            claim -> {
+                PDF sealedClaim = sealedClaimPdfService.createPdf(claim);
+                breathingSpaceNotificationService.notifyRobotics(claim, Arrays.asList(sealedClaim));
+            },
+            "Failed to send lift breathing space to RPA");
     }
 
     private String resendRPA(
