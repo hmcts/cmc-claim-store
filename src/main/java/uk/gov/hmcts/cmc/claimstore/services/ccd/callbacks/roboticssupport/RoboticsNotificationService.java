@@ -11,4 +11,8 @@ public interface RoboticsNotificationService {
     String rpaCCJNotifications(String referenceNumber);
 
     String rpaPIFNotifications(String referenceNumber);
+
+    String rpaEnterBreathingSpaceNotifications(String referenceNumber);
+
+    String rpaLiftBreathingSpaceNotifications(String referenceNumber);
 }
