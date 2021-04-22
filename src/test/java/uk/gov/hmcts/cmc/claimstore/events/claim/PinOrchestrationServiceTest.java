@@ -176,7 +176,7 @@ public class PinOrchestrationServiceTest {
     @Test(expected = RuntimeException.class)
     public void updatePinOperationStatusWhenBulkPrintFailsForNewPinLetter() {
         //given
-        given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION), eq(true)))
+        given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION), true))
             .willReturn(generatedDocuments);
 
         doThrow(new RuntimeException("bulk print failed")).when(bulkPrintService).printPdf(
@@ -196,7 +196,7 @@ public class PinOrchestrationServiceTest {
     @Test(expected = RuntimeException.class)
     public void updatePinOperationStatusWhenClaimIssueNotificationFails() {
         //given
-        given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION), eq(true)))
+        given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION), true))
             .willReturn(generatedDocuments);
         doThrow(new RuntimeException("claim issue notification failed"))
             .when(claimIssuedStaffNotificationService).notifyStaffOfClaimIssue(any(), any());
@@ -217,7 +217,7 @@ public class PinOrchestrationServiceTest {
     @Test(expected = RuntimeException.class)
     public void updatePinOperationStatusWhenNotifyDefendantFails() {
         //given
-        given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION), eq(true)))
+        given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION), true))
             .willReturn(generatedDocuments);
         doThrow(new RuntimeException("claim issue notification failed"))
             .when(claimIssuedNotificationService).sendMail(any(), any(), any(), any(), any(), any());
@@ -278,7 +278,7 @@ public class PinOrchestrationServiceTest {
     @Test(expected = RuntimeException.class)
     public void updatePinOperationStatusWhenBulkPrintFails() {
         //given
-        given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION), eq(false)))
+        given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION), false))
             .willReturn(generatedDocuments);
         given(launchDarklyClient.isFeatureEnabled(eq("new-defendant-pin-letter"), any(LDUser.class))).willReturn(false);
 
