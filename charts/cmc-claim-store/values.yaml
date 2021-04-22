@@ -25,6 +25,7 @@ java:
         - staff-email
         - live-support-email
         - rpa-email-sealed-claim
+        - rpa-email-breathing-space
         - rpa-email-legal-sealed-claim
         - rpa-email-more-time-requested
         - rpa-email-response
@@ -53,6 +54,7 @@ java:
     FEATURE_TOGGLES_BULK_PRINT_TRANSFER_ENABLED: false
     FEATURE_TOGGLES_STAFF_EMAILS_ENABLED: true
     FEATURE_TOGGLES_STAFF_EMAILS_ENABLED_FOR_LEGAL_REP: true
+    FEATURE_TOGGLES_BREATHING_SPACE: false
     FEATURE_AUTO_CANCEL_PAYMENTS: false
     STAFF_NOTIFICATIONS_SENDER: noreply@reform.hmcts.net
     RPA_NOTIFICATIONS_SENDER: noreply@reform.hmcts.net

@@ -192,6 +192,10 @@ public class CCDCase {
 
     private String lastEventTriggeredForHwfCase;
 
+    //Breathing space Fields
+    private CCDBreathingSpace breathingSpace;
+
+
     //This field is for Legal Rep Error code message
     private String errorCodeMessage;
 }

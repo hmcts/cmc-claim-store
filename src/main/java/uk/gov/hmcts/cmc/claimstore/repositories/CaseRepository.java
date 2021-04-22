@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.repositories;
 
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.domain.models.BreathingSpace;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
@@ -107,6 +108,8 @@ public interface CaseRepository {
     Claim linkLetterHolder(Long claimId, String letterHolderId);
 
     Claim saveReviewOrder(Long caseId, ReviewOrder reviewOrder, String authorisation);
+
+    Claim saveBreathingSpaceDetails(Claim claim, BreathingSpace breathingSpace, String authorisation);
 
     Claim addBulkPrintDetailsToClaim(
         String authorisation,
