@@ -122,7 +122,7 @@ public class ResponseTest {
     public void shouldHaveValidationErrorWhenNoMediationReasonPersonExceedSizeLimit() {
         //given
         Response response = SampleResponse.FullDefence.builder()
-            .withNoMediationReason(RandomStringUtils.randomAlphabetic(516))
+            .withNoMediationReason(RandomStringUtils.randomAlphabetic(551))
             .build();
 
         //when
@@ -132,7 +132,7 @@ public class ResponseTest {
         assertThat(errors)
             .hasSize(1)
             .contains(
-                "noMediationReason : No mediation reason may not be longer than 515 characters"
+                "noMediationReason : No mediation reason may not be longer than 550 characters"
             );
     }
 }

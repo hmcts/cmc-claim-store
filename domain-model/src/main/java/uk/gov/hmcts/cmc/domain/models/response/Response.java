@@ -42,7 +42,7 @@ public abstract class Response {
     @Size(max = 30, message = "Mediation contact person may not be longer than {max} characters")
     protected final String mediationContactPerson;
 
-    @Size(max = 515, message = "No mediation reason may not be longer than {max} characters")
+    @Size(max = 550, message = "No mediation reason may not be longer than {max} characters")
     protected final String noMediationReason;
 
     @JsonUnwrapped
