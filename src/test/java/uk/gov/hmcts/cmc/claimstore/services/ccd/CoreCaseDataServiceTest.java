@@ -61,12 +61,12 @@ import java.util.UUID;
 import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
@@ -95,7 +95,7 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 public class CoreCaseDataServiceTest {
     private static final String AUTHORISATION = "Bearer: aaa";
     private static final UserDetails USER_DETAILS = SampleUserDetails.builder()
-        .withRoles("citizen", "caseworker-cmc").build();
+        .build();
     private static final User USER = new User(AUTHORISATION, USER_DETAILS);
     private static final String AUTH_TOKEN = "authorisation token";
     private static final LocalDate FUTURE_DATE = now().plusWeeks(4);
@@ -771,6 +771,10 @@ public class CoreCaseDataServiceTest {
 
     @Test
     public void saveUpdateRepresentedClaim() {
+        UserDetails userDetailsObj = SampleUserDetails.builder()
+            .withRoles("citizen", "caseworker-cmc").build();
+        User userObj = new User(AUTHORISATION, userDetailsObj);
+        when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetailsObj);
         when(coreCaseDataApi.startEventForCaseWorker(
             anyString(),
             anyString(),
@@ -800,11 +804,12 @@ public class CoreCaseDataServiceTest {
                 .id(SampleClaim.CLAIM_ID)
                 .data(new HashMap<>())
                 .build());
-        String EXTERNAL_ID = "test-external-id";
+        String externalId = "test-external-id";
         String pba = "PBA_NO";
         PaymentReference paymentReference = new PaymentReference("REF", "Success",
             200, null, "2021-01-01");
-        LegalRepUpdate legalRepUpdate = new LegalRepUpdate(EXTERNAL_ID, "1023467890123456L", new BigInteger(String.valueOf(2000)),
+        LegalRepUpdate legalRepUpdate = new LegalRepUpdate(externalId,
+            "1023467890123456L", new BigInteger(String.valueOf(2000)),
             "X0012", paymentReference, pba);
 
         Claim providedClaim = SampleClaim.getDefault();
@@ -813,7 +818,7 @@ public class CoreCaseDataServiceTest {
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
             .thenReturn(SampleClaim.getWithResponse(providedResponse));
 
-        Claim claim = service.updateRepresentedClaim("62", USER, providedClaim, legalRepUpdate
+        Claim claim = service.updateRepresentedClaim("62", userObj, providedClaim, legalRepUpdate
         );
 
         assertNotNull(claim);
@@ -821,7 +826,11 @@ public class CoreCaseDataServiceTest {
 
     @Test
     public void saveUpdateRepresentedClaimThrowsException() {
-        String CCD_UPDATE_FAILURE_MESSAGE
+        UserDetails userDetailsObj = SampleUserDetails.builder()
+            .withRoles("citizen", "caseworker-cmc").build();
+        User userObj = new User(AUTHORISATION, userDetailsObj);
+        when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetailsObj);
+        String ccdUpdateFailureMessage
             = "Failed updating claim in CCD store for case id %s on event %s";
 
         when(coreCaseDataApi.startEventForCaseWorker(
@@ -853,19 +862,20 @@ public class CoreCaseDataServiceTest {
                 .id(SampleClaim.CLAIM_ID)
                 .data(new HashMap<>())
                 .build());
-        String EXTERNAL_ID = "test-external-id";
+        String externalId = "test-external-id";
         String pba = "PBA_NO";
         PaymentReference paymentReference = new PaymentReference("REF", "Success",
             200, null, "2021-01-01");
-        LegalRepUpdate legalRepUpdate = new LegalRepUpdate(EXTERNAL_ID, "1023467890123456L", new BigInteger(String.valueOf(2000)),
+        LegalRepUpdate legalRepUpdate = new LegalRepUpdate(externalId,
+            "1023467890123456L", new BigInteger(String.valueOf(2000)),
             "X0012", paymentReference, pba);
 
         Claim providedClaim = SampleClaim.getDefault();
         when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().build());
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
-            .thenThrow(new RuntimeException(CCD_UPDATE_FAILURE_MESSAGE));
+            .thenThrow(new RuntimeException(ccdUpdateFailureMessage));
         try {
-            Claim claim = service.updateRepresentedClaim("62", USER, providedClaim, legalRepUpdate
+            Claim claim = service.updateRepresentedClaim("62", userObj, providedClaim, legalRepUpdate
             );
         } catch (Exception e) {
             assertThatExceptionOfType(CoreCaseDataStoreException.class);

@@ -254,14 +254,14 @@ public class ClaimControllerTest {
         assertThat(output.getStatusCode()).isEqualTo(HttpStatus.PRECONDITION_FAILED);
     }
 
-
     @Test
     public void shouldUpdateLegalRepresentedClaim() {
         String pba = "PBA_NO";
         PaymentReference paymentReference = new PaymentReference("REF", "Success",
             200, null, "2021-01-01");
 
-        LegalRepUpdate legalRepUpdate = new LegalRepUpdate(EXTERNAL_ID, "1023467890123456L", new BigInteger(String.valueOf(2000)),
+        LegalRepUpdate legalRepUpdate = new LegalRepUpdate(EXTERNAL_ID,
+            "1023467890123456L", new BigInteger(String.valueOf(2000)),
             "X0012", paymentReference, pba);
         ClaimData claimData = SampleClaimData.builder()
             .build();

@@ -84,7 +84,9 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.UPDATE_HELP_WITH_FEE_CLAIM;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.*;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.HWF_CLAIM_CREATED;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NUMBER_OF_RECONSIDERATION;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
@@ -966,25 +968,26 @@ public class ClaimServiceTest {
     //Update Legal rep claim
     @Test
     public void testUpdateRepresentedClaim() {
-        String REFERENCE_NUMBER = "referenceNumber";
-        String SUBMITTER_ID = "62";
-        String EXTERNAL_ID = "test-external-id";
+
+        String submitterId = "62";
+        String externalId = "test-external-id";
         String pba = "PBA_NO";
         PaymentReference paymentReference = new PaymentReference("REF", "Success",
             200, null, "2021-01-01");
-        LegalRepUpdate legalRepUpdate = new LegalRepUpdate(EXTERNAL_ID, "1023467890123456L", new BigInteger(String.valueOf(2000)),
+        LegalRepUpdate legalRepUpdate = new LegalRepUpdate(externalId,
+            "1023467890123456L", new BigInteger(String.valueOf(2000)),
             "X0012", paymentReference, pba);
         when(userService.getUser(AUTHORISATION)).thenReturn(USER);
         when(caseRepository.getClaimByExternalId(legalRepUpdate.getExternalId(), USER))
             .thenReturn(Optional.of(representedClaim));
         when(caseRepository
-            .updateRepresentedClaim(SUBMITTER_ID, USER, representedClaim, legalRepUpdate))
+            .updateRepresentedClaim(submitterId, USER, representedClaim, legalRepUpdate))
             .thenReturn(representedClaim);
 
-        claimService.updateRepresentedClaim(SUBMITTER_ID, legalRepUpdate, AUTHORISATION);
-
-        verify(caseRepository).updateRepresentedClaim(SUBMITTER_ID, USER, representedClaim, legalRepUpdate);
-        verify(appInsights).trackEvent(CLAIM_ISSUED_LEGAL, REFERENCE_NUMBER, representedClaim.getReferenceNumber());
+        claimService.updateRepresentedClaim(submitterId, legalRepUpdate, AUTHORISATION);
+        String referenceNumber = "referenceNumber";
+        verify(caseRepository).updateRepresentedClaim(submitterId, USER, representedClaim, legalRepUpdate);
+        verify(appInsights).trackEvent(CLAIM_ISSUED_LEGAL, referenceNumber, representedClaim.getReferenceNumber());
     }
 
     private static Claim createRepresentedClaimModel(ClaimData claimData) {
