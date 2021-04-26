@@ -206,8 +206,8 @@ public class CCDCaseRepository implements CaseRepository {
 
     @Override
     @LogExecutionTime
-    public Claim updateRepresentedClaim(User user, Claim claim, LegalRepUpdate legalRepUpdate) {
-        return coreCaseDataService.updateRepresentedClaim(user, claim, legalRepUpdate);
+    public Claim updateRepresentedClaim(String submitterId, User user, Claim claim, LegalRepUpdate legalRepUpdate) {
+        return coreCaseDataService.updateRepresentedClaim(submitterId, user, claim, legalRepUpdate);
     }
 
     @Override

@@ -42,6 +42,8 @@ import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
+import uk.gov.hmcts.cmc.domain.models.legalrep.LegalRepUpdate;
+import uk.gov.hmcts.cmc.domain.models.legalrep.PaymentReference;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountBreakdown;
@@ -53,6 +55,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
 import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -81,8 +84,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.UPDATE_HELP_WITH_FEE_CLAIM;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.HWF_CLAIM_CREATED;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NUMBER_OF_RECONSIDERATION;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.*;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
@@ -959,6 +961,30 @@ public class ClaimServiceTest {
             AUTHORISATION);
 
         verify(caseRepository).saveBreathingSpaceDetails(any(Claim.class), any(BreathingSpace.class), anyString());
+    }
+
+    //Update Legal rep claim
+    @Test
+    public void testUpdateRepresentedClaim() {
+        String REFERENCE_NUMBER = "referenceNumber";
+        String SUBMITTER_ID = "62";
+        String EXTERNAL_ID = "test-external-id";
+        String pba = "PBA_NO";
+        PaymentReference paymentReference = new PaymentReference("REF", "Success",
+            200, null, "2021-01-01");
+        LegalRepUpdate legalRepUpdate = new LegalRepUpdate(EXTERNAL_ID, "1023467890123456L", new BigInteger(String.valueOf(2000)),
+            "X0012", paymentReference, pba);
+        when(userService.getUser(AUTHORISATION)).thenReturn(USER);
+        when(caseRepository.getClaimByExternalId(legalRepUpdate.getExternalId(), USER))
+            .thenReturn(Optional.of(representedClaim));
+        when(caseRepository
+            .updateRepresentedClaim(SUBMITTER_ID, USER, representedClaim, legalRepUpdate))
+            .thenReturn(representedClaim);
+
+        claimService.updateRepresentedClaim(SUBMITTER_ID, legalRepUpdate, AUTHORISATION);
+
+        verify(caseRepository).updateRepresentedClaim(SUBMITTER_ID, USER, representedClaim, legalRepUpdate);
+        verify(appInsights).trackEvent(CLAIM_ISSUED_LEGAL, REFERENCE_NUMBER, representedClaim.getReferenceNumber());
     }
 
     private static Claim createRepresentedClaimModel(ClaimData claimData) {

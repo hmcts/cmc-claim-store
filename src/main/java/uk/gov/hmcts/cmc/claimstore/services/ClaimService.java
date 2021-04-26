@@ -366,10 +366,9 @@ public class ClaimService {
         String authorisation
     ) {
         Claim claim = getClaimByExternalId(legalRepUpdate.getExternalId(), authorisation);
-        String externalId = claim.getClaimData().getExternalId().toString();
         User user = userService.getUser(authorisation);
 
-        Claim savedClaim = caseRepository.updateRepresentedClaim(user, claim, legalRepUpdate);
+        Claim savedClaim = caseRepository.updateRepresentedClaim(submitterId, user, claim, legalRepUpdate);
         if (PaymentStatus.fromValue(legalRepUpdate.getPaymentReference().getStatus()).equals(PaymentStatus.SUCCESS)) {
             createClaimEvent(authorisation, user, savedClaim);
         }

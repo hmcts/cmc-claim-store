@@ -75,11 +75,33 @@ public class UpdateLegalRepClaimCallbackHandlerTest {
         when(responseDeadlineCalculator.calculateResponseDeadline(ISSUE_DATE)).thenReturn(RESPONSE_DEADLINE);
         when(referenceNumberRepository.getReferenceNumberForLegal()).thenReturn(REFERENCE_NO);
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(getLegalDataWithReps());
-        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+
     }
 
     @Test
     public void shouldSuccessfullyReturnCallBackResponse() {
+        CCDCase ccdCase = SampleData.getCCDLegalCase();
+        ccdCase.setPaymentStatus("Success");
+        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+
+        CallbackParams callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_SUBMIT)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
+            updateLegalRepClaimCallbackHandler.handle(callbackParams);
+
+        assertThat(response.getErrors()).isNull();
+        assertThat(response.getWarnings()).isNull();
+    }
+
+    @Test
+    public void shouldNotStoreResponseDeadlineWhenPaymentStatusIsNotSuccess() {
+        CCDCase ccdCase = SampleData.getCCDLegalCase();
+        ccdCase.setPaymentStatus("Failed");
+        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
 
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_SUBMIT)

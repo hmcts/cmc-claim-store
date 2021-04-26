@@ -17,10 +17,13 @@ import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
+import uk.gov.hmcts.cmc.domain.models.legalrep.LegalRepUpdate;
+import uk.gov.hmcts.cmc.domain.models.legalrep.PaymentReference;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
 
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -249,5 +252,26 @@ public class ClaimControllerTest {
             EXTERNAL_ID, AUTHORISATION);
 
         assertThat(output.getStatusCode()).isEqualTo(HttpStatus.PRECONDITION_FAILED);
+    }
+
+
+    @Test
+    public void shouldUpdateLegalRepresentedClaim() {
+        String pba = "PBA_NO";
+        PaymentReference paymentReference = new PaymentReference("REF", "Success",
+            200, null, "2021-01-01");
+
+        LegalRepUpdate legalRepUpdate = new LegalRepUpdate(EXTERNAL_ID, "1023467890123456L", new BigInteger(String.valueOf(2000)),
+            "X0012", paymentReference, pba);
+        ClaimData claimData = SampleClaimData.builder()
+            .build();
+        Claim expectedResponse = Claim.builder().claimData(claimData).build();
+        when(claimService.updateRepresentedClaim("62", legalRepUpdate, AUTHORISATION))
+            .thenReturn(expectedResponse);
+
+        Claim output = claimController.updateLegalRepresentedClaim(legalRepUpdate,
+            "62", AUTHORISATION);
+
+        assertThat(output).isEqualTo(expectedResponse);
     }
 }

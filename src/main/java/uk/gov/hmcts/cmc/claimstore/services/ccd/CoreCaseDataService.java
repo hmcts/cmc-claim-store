@@ -171,7 +171,7 @@ public class CoreCaseDataService {
     }
 
     @LogExecutionTime
-    public Claim updateRepresentedClaim(User user, Claim claim, LegalRepUpdate legalRepUpdate) {
+    public Claim updateRepresentedClaim(String submitterId, User user, Claim claim, LegalRepUpdate legalRepUpdate) {
         requireNonNull(user, USER_MUST_NOT_BE_NULL);
 
         CaseEvent caseEvent = UPDATE_LEGAL_REP_CLAIM;
@@ -179,7 +179,6 @@ public class CoreCaseDataService {
         try {
             UserDetails userDetails = userService.getUserDetails(user.getAuthorisation());
 
-            //EventRequestData eventRequestData = eventRequest(caseEvent, userDetails.getId());
             EventRequestData eventRequestData = EventRequestData.builder()
                 .userId(user.getUserDetails().getId())
                 .jurisdictionId(JURISDICTION_ID)
@@ -195,13 +194,13 @@ public class CoreCaseDataService {
                 isRepresented(userDetails)
             );
             CCDCase ccdCase = caseMapper.to(claim);
+            ccdCase.setSubmitterId(submitterId);
             ccdCase.setFeeAccountNumber(legalRepUpdate.getFeeAccount());
             ccdCase.setFeeAmountInPennies(legalRepUpdate.getFeeAmountInPennies().toString());
             ccdCase.setFeeCode(legalRepUpdate.getFeeCode());
             ccdCase.setPaymentReference(legalRepUpdate.getPaymentReference().getReference());
             ccdCase.setPaymentStatus(legalRepUpdate.getPaymentReference().getStatus());
             ccdCase.setErrorCodeMessage(legalRepUpdate.getPaymentReference().getErrorCodeMessage());
-            //CaseDataContent caseDataContent = caseDataContent(startEventResponse, claim);
             CaseDataContent caseDataContent = CaseDataContent.builder()
                 .eventToken(startEventResponse.getToken())
                 .event(Event.builder()
