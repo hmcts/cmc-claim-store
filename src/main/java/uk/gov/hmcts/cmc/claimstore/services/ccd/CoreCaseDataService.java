@@ -174,12 +174,12 @@ public class CoreCaseDataService {
     public Claim updateRepresentedClaim(String submitterId, User user, Claim claim, LegalRepUpdate legalRepUpdate) {
         requireNonNull(user, USER_MUST_NOT_BE_NULL);
 
-        CaseEvent caseEvent = UPDATE_LEGAL_REP_CLAIM;
+        var caseEvent = UPDATE_LEGAL_REP_CLAIM;
 
         try {
-            UserDetails userDetails = userService.getUserDetails(user.getAuthorisation());
+            var userDetails = userService.getUserDetails(user.getAuthorisation());
 
-            EventRequestData eventRequestData = EventRequestData.builder()
+            var eventRequestData = EventRequestData.builder()
                 .userId(user.getUserDetails().getId())
                 .jurisdictionId(JURISDICTION_ID)
                 .caseTypeId(CASE_TYPE_ID)
@@ -187,13 +187,13 @@ public class CoreCaseDataService {
                 .ignoreWarning(true)
                 .build();
 
-            StartEventResponse startEventResponse = startUpdate(
+            var startEventResponse = startUpdate(
                 user.getAuthorisation(),
                 eventRequestData,
                 claim.getCcdCaseId(),
                 isRepresented(userDetails)
             );
-            CCDCase ccdCase = caseMapper.to(claim);
+            var ccdCase = caseMapper.to(claim);
             ccdCase.setSubmitterId(submitterId);
             ccdCase.setFeeAccountNumber(legalRepUpdate.getFeeAccount());
             ccdCase.setFeeAmountInPennies(legalRepUpdate.getFeeAmountInPennies().toString());
@@ -201,7 +201,7 @@ public class CoreCaseDataService {
             ccdCase.setPaymentReference(legalRepUpdate.getPaymentReference().getReference());
             ccdCase.setPaymentStatus(legalRepUpdate.getPaymentReference().getStatus());
             ccdCase.setErrorCodeMessage(legalRepUpdate.getPaymentReference().getErrorCodeMessage());
-            CaseDataContent caseDataContent = CaseDataContent.builder()
+            var caseDataContent = CaseDataContent.builder()
                 .eventToken(startEventResponse.getToken())
                 .event(Event.builder()
                     .id(startEventResponse.getEventId())

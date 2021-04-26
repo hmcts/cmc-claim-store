@@ -365,10 +365,10 @@ public class ClaimService {
         LegalRepUpdate legalRepUpdate,
         String authorisation
     ) {
-        Claim claim = getClaimByExternalId(legalRepUpdate.getExternalId(), authorisation);
-        User user = userService.getUser(authorisation);
+        var claim = getClaimByExternalId(legalRepUpdate.getExternalId(), authorisation);
+        var user = userService.getUser(authorisation);
 
-        Claim savedClaim = caseRepository.updateRepresentedClaim(submitterId, user, claim, legalRepUpdate);
+        var savedClaim = caseRepository.updateRepresentedClaim(submitterId, user, claim, legalRepUpdate);
         if (PaymentStatus.fromValue(legalRepUpdate.getPaymentReference().getStatus()).equals(PaymentStatus.SUCCESS)) {
             createClaimEvent(authorisation, user, savedClaim);
         }
