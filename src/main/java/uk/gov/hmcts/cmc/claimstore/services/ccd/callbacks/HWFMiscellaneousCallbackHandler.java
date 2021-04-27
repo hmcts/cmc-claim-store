@@ -6,12 +6,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.domain.CCDInterestEndDateType;
-import uk.gov.hmcts.cmc.ccd.domain.CCDInterestType;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
-import uk.gov.hmcts.cmc.claimstore.services.HWFCaseWorkerRespondSlaCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -22,8 +19,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -34,34 +29,24 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 @Service
 public class HWFMiscellaneousCallbackHandler extends CallbackHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
-
     private static final List<CaseEvent> EVENTS = Arrays.asList(CaseEvent.UPDATE_HWF_NUMBER,
         CaseEvent.MORE_INFO_REQUIRED_FOR_HWF,
         CaseEvent.HWF_NO_REMISSION);
-
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final CaseDetailsConverter caseDetailsConverter;
-
-    private final HWFCaseWorkerRespondSlaCalculator hwfCaseWorkerRespondSlaCalculator;
 
     private final EventProducer eventProducer;
 
     private final UserService userService;
 
-    private static final String INTEREST_NEEDS_RECALCULATED_ERROR_MESSAGE = "Help with Fees interest "
-        + "needs to be recalculated. To proceed select 'Recalculate Interest/Claim Fee'";
-
     @Autowired
     public HWFMiscellaneousCallbackHandler(CaseDetailsConverter caseDetailsConverter,
                                            EventProducer eventProducer,
-                                           UserService userService,
-                                           HWFCaseWorkerRespondSlaCalculator hwfCaseWorkerRespondSlaCalculator) {
+                                           UserService userService) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.eventProducer = eventProducer;
         this.userService = userService;
-        this.hwfCaseWorkerRespondSlaCalculator = hwfCaseWorkerRespondSlaCalculator;
     }
 
     @Override
@@ -87,30 +72,12 @@ public class HWFMiscellaneousCallbackHandler extends CallbackHandler {
         final var responseBuilder = AboutToStartOrSubmitCallbackResponse.builder();
         final CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
-        LocalDate hwfCaseWorkerSlaDate = hwfCaseWorkerRespondSlaCalculator.calculate(ccdCase.getSubmittedOn());
-        if (!ccdCase.getInterestType().equals(CCDInterestType.NO_INTEREST)
-            && callbackParams.getRequest().getEventId().equals(CaseEvent.HWF_NO_REMISSION.getValue())
-            && !callbackParams.getRequest().getEventId().equals(CaseEvent.MORE_INFO_REQUIRED_FOR_HWF.getValue())
-            && LocalDateTime.now().toLocalDate().isAfter(hwfCaseWorkerSlaDate)
-            && ccdCase.getInterestEndDateType().equals(CCDInterestEndDateType.SETTLED_OR_JUDGMENT)
-            && (ccdCase.getLastInterestCalculationDate() == null
-            || (ccdCase.getLastInterestCalculationDate() != null
-            && !LocalDateTime.now().toLocalDate()
-            .isEqual(ccdCase.getLastInterestCalculationDate().toLocalDate())))) {
-            String validationMessage = INTEREST_NEEDS_RECALCULATED_ERROR_MESSAGE;
-            List<String> errors = new ArrayList<>();
-            errors.add(validationMessage);
-            responseBuilder.errors(errors);
-            return responseBuilder.build();
-        } else {
-            if (callbackParams.getRequest().getEventId().equals(CaseEvent.HWF_NO_REMISSION.getValue())) {
-                ccdCase.setFeeRemitted("0");
-            }
+        if (callbackParams.getRequest().getEventId().equals(CaseEvent.HWF_NO_REMISSION.getValue())) {
+            ccdCase.setFeeRemitted("0");
         }
         ccdCase.setLastEventTriggeredForHwfCase(callbackParams.getRequest().getEventId());
         responseBuilder.data(caseDetailsConverter.convertToMap(ccdCase));
         return responseBuilder.build();
-
     }
 
     private CallbackResponse startHwfClaimUpdatePostOperations(CallbackParams callbackParams) {
