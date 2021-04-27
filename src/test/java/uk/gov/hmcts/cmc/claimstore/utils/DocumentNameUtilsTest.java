@@ -159,6 +159,7 @@ public class DocumentNameUtilsTest {
     public void shouldBuildOcon9FormFileBaseName() {
         assertThat(buildOcon9FormFileBaseName("000MC001"))
             .isEqualTo("000MC001-issue-OCON9-form");
+    }
 
     @Test
     public void shouldBuildBreathingSpaceEnteredFileBaseNameFromCCD() {
@@ -183,5 +184,4 @@ public class DocumentNameUtilsTest {
         assertThat(buildBreathingSpaceLiftedFileBaseName("000MC001", false))
             .isEqualTo("000MC001-breathing-space-lifted");
     }
-
 }
