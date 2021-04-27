@@ -121,6 +121,7 @@ doc_assembly:
   defendantPinLetterTemplateID: "CV-CMC-LET-ENG-00630.docx"
   breathingSpaceEnteredTemplateID: "CV-CMC-LET-ENG-00635.docx"
   breathingSpaceLiftedTemplateID: "CV-CMC-LET-ENG-00636.docx"
+  oconN9FormTemplateID: "CV-CMC-LET-ENG-00637.docx"
 
 nonworking-days:
   datafile: ${NONWORKINGDAYS_DATAFILE:/data/non-working_days.dat}
