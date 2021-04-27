@@ -81,6 +81,7 @@ public class Claim {
     private final YesNoOption paperResponse;
     private final LocalDateTime dateReferredForDirections;
     private final String preferredDQCourt;
+    private final String preferredDQPilotCourt;
     private final ProceedOfflineReasonType proceedOfflineReason;
     private final String proceedOfflineOtherReasonDescription;
     private final TransferContent transferContent;
@@ -138,6 +139,7 @@ public class Claim {
         YesNoOption paperResponse,
         LocalDateTime dateReferredForDirections,
         String preferredDQCourt,
+        String preferredDQPilotCourt,
         ProceedOfflineReasonType proceedOfflineReason,
         String proceedOfflineOtherReasonDescription,
         TransferContent transferContent,
@@ -192,6 +194,7 @@ public class Claim {
         this.paperResponse = paperResponse;
         this.dateReferredForDirections = dateReferredForDirections;
         this.preferredDQCourt = preferredDQCourt;
+        this.preferredDQPilotCourt = preferredDQPilotCourt;
         this.proceedOfflineReason = proceedOfflineReason;
         this.proceedOfflineOtherReasonDescription = proceedOfflineOtherReasonDescription;
         this.transferContent = transferContent;
@@ -341,6 +344,10 @@ public class Claim {
 
     public Optional<String> getPreferredDQCourt() {
         return Optional.ofNullable(preferredDQCourt);
+    }
+
+    public Optional<String> getPreferredDQPilotCourt() {
+        return Optional.ofNullable(preferredDQPilotCourt);
     }
 
     public Optional<String> getDirectionOrderType() {

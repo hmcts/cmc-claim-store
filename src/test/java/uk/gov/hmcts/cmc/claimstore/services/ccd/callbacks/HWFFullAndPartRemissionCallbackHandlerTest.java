@@ -17,7 +17,6 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.services.HWFCaseWorkerRespondSlaCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -29,7 +28,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -54,24 +52,19 @@ class HWFFullAndPartRemissionCallbackHandlerTest {
             + "please cancel and select the next step as \"Full remission HWF-granted\"";
     private static final String PART_REMISSION_IS_MORE_ERROR_MESSAGE = "Remitted fee should be less than the total fee";
     private static final String AUTHORISATION = "Bearer: aaaa";
+    private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
+    private static final List<CaseEvent> EVENTS = Arrays.asList(
+        CaseEvent.HWF_PART_REMISSION_GRANTED, CaseEvent.HWF_FULL_REMISSION_GRANTED);
     private HWFFullAndPartRemissionCallbackHandler handler;
     private CallbackParams callbackParams;
     private CallbackParams callbackParamsFullRemission;
     private CallbackRequest callbackRequest;
     private CallbackRequest callbackRequestFullRemission;
-
-    private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
-    private static final List<CaseEvent> EVENTS = Arrays.asList(
-        CaseEvent.HWF_PART_REMISSION_GRANTED, CaseEvent.HWF_FULL_REMISSION_GRANTED);
-
     @Mock
     private CaseMapper caseMapper;
 
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
-
-    @Mock
-    private HWFCaseWorkerRespondSlaCalculator hwfCaseWorkerRespondSlaCalculator;
 
     @Mock
     private EventProducer eventProducer;
@@ -87,8 +80,7 @@ class HWFFullAndPartRemissionCallbackHandlerTest {
     @BeforeEach
     public void setUp() {
         ccdCase = getCCDCase();
-        handler = new HWFFullAndPartRemissionCallbackHandler(caseDetailsConverter,
-            eventProducer, userService, hwfCaseWorkerRespondSlaCalculator);
+        handler = new HWFFullAndPartRemissionCallbackHandler(caseDetailsConverter, eventProducer, userService);
 
         //Part Remission
         callbackRequest = CallbackRequest
@@ -133,7 +125,6 @@ class HWFFullAndPartRemissionCallbackHandlerTest {
         Claim claim = SampleClaim.getClaimWithFullAdmission();
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-        when(hwfCaseWorkerRespondSlaCalculator.calculate(ccdCase.getSubmittedOn())).thenReturn(LocalDate.now());
         Map<String, Object> mappedCaseData = new HashMap<>();
         mappedCaseData.put("feeRemitted", 4000);
         when(caseDetailsConverter.convertToMap(caseMapper.to(claim))).thenReturn(mappedCaseData);
@@ -158,7 +149,6 @@ class HWFFullAndPartRemissionCallbackHandlerTest {
         Claim claim = SampleClaim.getClaimWhenFeeRemittedIsMoreThanFee();
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-        when(hwfCaseWorkerRespondSlaCalculator.calculate(ccdCase.getSubmittedOn())).thenReturn(LocalDate.now());
         AboutToStartOrSubmitCallbackResponse response
             = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
         Assertions.assertNotNull(response.getErrors());
@@ -178,7 +168,6 @@ class HWFFullAndPartRemissionCallbackHandlerTest {
             .build();
         Claim claim = SampleClaim.getClaimWhenFeeRemittedIsEqualToFee();
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-        when(hwfCaseWorkerRespondSlaCalculator.calculate(ccdCase.getSubmittedOn())).thenReturn(LocalDate.now());
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
         AboutToStartOrSubmitCallbackResponse response
             = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
@@ -216,7 +205,6 @@ class HWFFullAndPartRemissionCallbackHandlerTest {
     void shouldUpdateFeeRemittedForFullRemission() {
 
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-        when(hwfCaseWorkerRespondSlaCalculator.calculate(ccdCase.getSubmittedOn())).thenReturn(LocalDate.now());
         Map<String, Object> mappedCaseData = new HashMap<>();
         mappedCaseData.put("feeRemitted", "4000");
         Claim claim = SampleClaim.getClaimWithFullAdmission();
