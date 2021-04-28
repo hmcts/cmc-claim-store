@@ -41,7 +41,8 @@ public class DirectionOrderMapper {
         Optional.ofNullable(ccdCase.getEstimatedHearingDuration()).ifPresent(estimatedDuration ->
             builder.estimatedHearingDuration(HearingDurationType.valueOf(estimatedDuration.name())));
 
-        Optional.ofNullable(ccdCase.getHearingCourt()).ifPresent(builder::hearingCourt);
+        Optional.ofNullable(ccdCase.getHearingCourt()).ifPresent(hearingCourt ->
+            builder.hearingCourt(String.valueOf(hearingCourt)));
 
         Optional.ofNullable(ccdCase.getPaperDetermination()).ifPresent(paperDetermination ->
             builder.paperDetermination(YesNoOption.valueOf(paperDetermination.name())));
