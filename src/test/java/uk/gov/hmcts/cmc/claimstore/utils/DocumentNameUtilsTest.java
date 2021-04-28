@@ -14,6 +14,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildJudgeDire
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildLADirectionOrderFileName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildNoticeOfTransferToCcbcForDefendantFileName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildOcon9FormFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForInterlocutoryJudgmentFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForJudgmentByAdmissionOrDeterminationFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForReferToJudgeFileBaseName;
@@ -155,6 +156,12 @@ public class DocumentNameUtilsTest {
     }
 
     @Test
+    public void shouldBuildOcon9FormFileBaseName() {
+        assertThat(buildOcon9FormFileBaseName("000MC001"))
+            .isEqualTo("000MC001-issue-OCON9-form");
+    }
+
+    @Test
     public void shouldBuildBreathingSpaceEnteredFileBaseNameFromCCD() {
         assertThat(buildBreathingSpaceEnteredFileBaseName("000MC001", true))
             .isEqualTo("000MC001-breathing-space-entered.pdf");
@@ -177,5 +184,4 @@ public class DocumentNameUtilsTest {
         assertThat(buildBreathingSpaceLiftedFileBaseName("000MC001", false))
             .isEqualTo("000MC001-breathing-space-lifted");
     }
-
 }
