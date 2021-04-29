@@ -176,6 +176,12 @@ public class DocumentNameUtils {
         return format("%s-issue-OCON9x-form", caseRef);
     }
 
+    public static String buildOcon9FormFileBaseName(String caseRef) {
+        requireNonBlank(caseRef);
+
+        return format("%s-issue-OCON9-form", caseRef);
+    }
+
     public static String buildNoticeOfTransferToCcbcForDefendantFileName(String caseRef) {
         return getFileName(caseRef, "defendant-case-handoff");
     }

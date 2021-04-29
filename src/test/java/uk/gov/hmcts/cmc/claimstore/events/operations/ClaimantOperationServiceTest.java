@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimCreationEventsStatusService
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.HwfClaimNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimForHwF;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleHwfClaim;
 import uk.gov.service.notify.NotificationClient;
@@ -21,6 +22,7 @@ import java.time.LocalDateTime;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -35,6 +37,7 @@ public class ClaimantOperationServiceTest {
     public static final String REPRESENTATIVE_EMAIL_TEMPLATE = "Representative Email Template";
     public static final Claim CLAIM_HWF_PENDING = SampleHwfClaim.getDefaultHwfPending();
     public static final Claim CLAIM_HWF_AWAITING_RESPONSE = SampleHwfClaim.getDefaultAwaitingResponseHwf();
+    public static final Claim CLAIM = SampleClaim.getDefaultWithClaimStateAsCreate();
     public static final String AUTHORISATION = "AUTHORISATION";
     public static final String SUBMITTER_NAME = "submitter-name";
     public static final String REPRESENTATIVE_EMAIL = "representative@Email.com";
@@ -147,6 +150,54 @@ public class ClaimantOperationServiceTest {
             eq(REPRESENTATIVE_EMAIL_TEMPLATE),
             eq("representative-issue-notification-" + CLAIM_HWF_PENDING.getReferenceNumber()),
             eq(SUBMITTER_NAME)
+        );
+    }
+
+    @Test
+    public void shouldNotifyClaimantForHwfClaimIssued() {
+        //given
+        given(emailTemplates.getClaimantHwfClaimIssued()).willReturn(CLAIMANT_EMAIL_TEMPLATE);
+        var updatedClaim = CLAIM.toBuilder()
+            .submitterEmail("claimant@Email.com")
+            .claimData(CLAIM.getClaimData().toBuilder()
+                .helpWithFeesNumber("HWF12345")
+                .build())
+            .build();
+        //when
+        claimantOperationService.notifyCitizen(updatedClaim, SUBMITTER_NAME, AUTHORISATION);
+
+        //verify
+        verify(claimIssuedNotificationService).sendMail(
+            any(Claim.class),
+            anyString(),
+            any(),
+            any(),
+            anyString(),
+            anyString()
+        );
+    }
+
+    @Test
+    public void shouldNotifyClaimantForClaimIssued() {
+        //given
+        given(emailTemplates.getClaimantClaimIssued()).willReturn(CLAIMANT_EMAIL_TEMPLATE);
+        var updatedClaim = CLAIM.toBuilder()
+            .submitterEmail("claimant@Email.com")
+            .claimData(CLAIM.getClaimData().toBuilder()
+                .helpWithFeesNumber(null)
+                .build())
+            .build();
+        //when
+        claimantOperationService.notifyCitizen(updatedClaim, SUBMITTER_NAME, AUTHORISATION);
+
+        //verify
+        verify(claimIssuedNotificationService).sendMail(
+            any(Claim.class),
+            anyString(),
+            any(),
+            any(),
+            anyString(),
+            anyString()
         );
     }
 }
