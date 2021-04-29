@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.services.DirectionOrderService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 
+import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.eq;
@@ -86,6 +87,50 @@ class DirectionOrderServiceTest {
             .hearingCourtName(courtName)
             .hearingCourtAddress(address)
             .build();
+        HearingCourt returnedCourt = directionOrderService.getHearingCourt(ccdCase);
+
+        Assertions.assertEquals(hearingCourt, returnedCourt);
+    }
+
+    @Test
+    void shouldSetHearingCourtWhenPilotCourtSelectedFromDynamicList() {
+        String pilotCourtName = "BIRMINGHAM";
+        LinkedHashMap<String, Object> hearingCourtMap = new LinkedHashMap<>();
+        hearingCourtMap.put("code", pilotCourtName);
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
+        data.put("value", hearingCourtMap);
+
+        CCDCase ccdCase = CCDCase.builder()
+            .hearingCourt(pilotCourtName)
+            .hearingCourt(data)
+            .build();
+
+        when(pilotCourtService.getPilotHearingCourt(eq(pilotCourtName)))
+            .thenReturn(Optional.of(HearingCourt.builder()
+                .name(courtName)
+                .address(address)
+                .build()));
+
+        HearingCourt returnedCourt = directionOrderService.getHearingCourt(ccdCase);
+
+        Assertions.assertEquals(hearingCourt, returnedCourt);
+    }
+
+    @Test
+    void shouldSetHearingCourtWhenOtherPilotCourtSelectedFromDynamicList() {
+
+        String otherCourtName = "OTHER";
+        LinkedHashMap<String, Object> hearingCourtMap = new LinkedHashMap<>();
+        hearingCourtMap.put("code", otherCourtName);
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
+        data.put("value", hearingCourtMap);
+
+        CCDCase ccdCase = CCDCase.builder()
+            .hearingCourt(data)
+            .hearingCourtName(courtName)
+            .hearingCourtAddress(address)
+            .build();
+
         HearingCourt returnedCourt = directionOrderService.getHearingCourt(ccdCase);
 
         Assertions.assertEquals(hearingCourt, returnedCourt);

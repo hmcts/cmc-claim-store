@@ -19,17 +19,17 @@ public class DirectionOrderService {
 
     public HearingCourt getHearingCourt(CCDCase ccdCase) {
         if (ccdCase.getHearingCourt() instanceof LinkedHashMap) {
-            LinkedHashMap<String, Object> hm = (LinkedHashMap) ccdCase.getHearingCourt();
-            LinkedHashMap<String, Object> hm1 = (LinkedHashMap) hm.get("value");
-            if (StringUtils.isBlank(String.valueOf(hm1.get("code")))
-                || (String.valueOf(hm1.get("code"))).equals(PilotCourtService.OTHER_COURT_ID)) {
+            LinkedHashMap<String, Object> hearingCourt = (LinkedHashMap) ccdCase.getHearingCourt();
+            LinkedHashMap<String, Object> tempHearingCourt = (LinkedHashMap) hearingCourt.get("value");
+            if (StringUtils.isBlank(String.valueOf(tempHearingCourt.get("code")))
+                || (String.valueOf(tempHearingCourt.get("code"))).equals(PilotCourtService.OTHER_COURT_ID)) {
 
                 return HearingCourt.builder()
                     .name(ccdCase.getHearingCourtName())
                     .address(ccdCase.getHearingCourtAddress())
                     .build();
             }
-            return pilotCourtService.getPilotHearingCourt(String.valueOf(hm1.get("code")))
+            return pilotCourtService.getPilotHearingCourt(String.valueOf(tempHearingCourt.get("code")))
                 .orElseThrow(() -> new IllegalArgumentException("Court is not a pilot court: "
                     + ccdCase.getHearingCourt()));
         } else {
