@@ -1,0 +1,69 @@
+version: 2
+updates:
+- package-ecosystem: gradle
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: org.owasp.dependencycheck
+    versions:
+    - ">= 5.0.a, < 5.1"
+  - dependency-name: org.springframework.boot
+    versions:
+    - 2.4.2
+    - 2.4.3
+    - 2.4.4
+  - dependency-name: org.apache.tomcat.embed:tomcat-embed-websocket
+    versions:
+    - 10.0.2
+    - 10.0.4
+  - dependency-name: org.apache.tomcat.embed:tomcat-embed-el
+    versions:
+    - 10.0.2
+    - 10.0.4
+  - dependency-name: org.apache.tomcat.embed:tomcat-embed-core
+    versions:
+    - 10.0.2
+    - 10.0.4
+  - dependency-name: org.flywaydb:flyway-core
+    versions:
+    - 7.6.0
+  - dependency-name: com.launchdarkly:launchdarkly-java-server-sdk
+    versions:
+    - 5.2.3
+  - dependency-name: com.fasterxml.jackson.core:jackson-databind
+    versions:
+    - 2.12.1
+    - 2.12.2
+  - dependency-name: org.elasticsearch:elasticsearch
+    versions:
+    - 7.10.2
+    - 7.11.0
+    - 7.11.1
+  - dependency-name: org.owasp.dependencycheck
+    versions:
+    - 6.1.0
+    - 6.1.1
+  - dependency-name: org.xmlunit:xmlunit-core
+    versions:
+    - 2.8.2
+  - dependency-name: uk.gov.hmcts.reform:service-auth-provider-client
+    versions:
+    - 3.1.4
+    - 4.0.0
+  - dependency-name: io.spring.dependency-management
+    versions:
+    - 1.0.11.RELEASE
+  - dependency-name: org.postgresql:postgresql
+    versions:
+    - 42.2.18
+  - dependency-name: org.projectlombok:lombok
+    versions:
+    - 1.18.18
+  - dependency-name: uk.gov.hmcts.reform:core-case-data-store-client
+    versions:
+    - 4.7.5
+  - dependency-name: org.testcontainers:postgresql
+    versions:
+    - 1.15.1
