@@ -176,6 +176,12 @@ public class DocumentNameUtils {
         return format("%s-issue-OCON9x-form", caseRef);
     }
 
+    public static String buildOcon9FormFileBaseName(String caseRef) {
+        requireNonBlank(caseRef);
+
+        return format("%s-issue-OCON9-form", caseRef);
+    }
+
     public static String buildNoticeOfTransferToCcbcForDefendantFileName(String caseRef) {
         return getFileName(caseRef, "defendant-case-handoff");
     }
@@ -193,4 +199,21 @@ public class DocumentNameUtils {
         return format("%s-%s", caseRef, fileNameSuffix);
     }
 
+    public static String buildBreathingSpaceEnteredFileBaseName(String caseRef, boolean createdFromCCD) {
+        requireNonBlank(caseRef);
+        if (createdFromCCD) {
+            return format("%s-breathing-space-entered.pdf", caseRef);
+        } else {
+            return format("%s-breathing-space-entered", caseRef);
+        }
+    }
+
+    public static String buildBreathingSpaceLiftedFileBaseName(String caseRef, boolean createdFromCCD) {
+        requireNonBlank(caseRef);
+        if (createdFromCCD) {
+            return format("%s-breathing-space-lifted.pdf", caseRef);
+        } else {
+            return format("%s-breathing-space-lifted", caseRef);
+        }
+    }
 }

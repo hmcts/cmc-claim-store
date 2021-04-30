@@ -9,7 +9,7 @@ The two main responsibilities of this application are:
  - executing business logic of the CMC service e.g. calculating response deadline.
 
 Internally state is persisted to a relational database.
-The service also delegates some responsibilities to other RESTful services e.g. idam-api or pdf-service.
+The service also delegates some responsibilities to other RESTful services e.g. idam-api or pdf-service. 
 
 ## Getting started
 
@@ -18,7 +18,7 @@ The service also delegates some responsibilities to other RESTful services e.g. 
 - [JDK 11](https://www.oracle.com/java)
 - [Docker](https://www.docker.com)
 
-#### Environment variables
+### Environment variables
 
 Some environment variables are mandatory.
 
@@ -37,7 +37,7 @@ To build project please execute the following command:
 $ ./gradlew build
 ```
 
-### Running
+#### Running
 
 Before you run an application you have to define `CLAIM_STORE_DB_USERNAME` and `CLAIM_STORE_DB_PASSWORD` environment variables.
 

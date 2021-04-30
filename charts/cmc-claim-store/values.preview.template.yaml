@@ -39,6 +39,7 @@ java:
         - staff-email
         - live-support-email
         - rpa-email-sealed-claim
+        - rpa-email-breathing-space
         - rpa-email-legal-sealed-claim
         - rpa-email-more-time-requested
         - rpa-email-response
@@ -127,7 +128,7 @@ ccd:
       - civilmoneyclaims+la@gmail.com|CMC|MoneyClaimCase|readyForDirections
 
   ccd-definition-importer:
-    image: hmctspublic.azurecr.io/cmc/ccd-definition-importer:1.9.7
+    image: hmctspublic.azurecr.io/cmc/ccd-definition-importer:1.10.4
     environment:
       CCD_DEF_CLAIM_STORE_BASE_URL: http://${SERVICE_NAME}-java
     definitionFilename: cmc-ccd.xlsx

@@ -26,7 +26,7 @@ public class RPAMapperHelper {
     }
 
     public static boolean isAddressAmended(Party ownParty, TheirDetails oppositeParty) {
-        return !ownParty.getAddress().equals(oppositeParty.getAddress());
+        return !ownParty.getAddress().equals(oppositeParty.getclaimantProvidedAddress());
     }
 
     public static LocalDate claimantPaidOnDate(Claim claim) {

@@ -120,6 +120,7 @@ public class CCDCase {
     private String newRequestedCourt;
 
     private String preferredDQCourt;
+    private String preferredDQPilotCourt;
 
     private String preferredCourtObjectingParty;
     private String preferredCourtObjectingReason;
@@ -190,6 +191,10 @@ public class CCDCase {
     private LocalDate hwfDocumentsToBeSentBefore;
 
     private CCDReviewOrDrawOrder reviewOrDrawOrder;
-  
+
     private String lastEventTriggeredForHwfCase;
+
+    //Breathing space Fields
+    private CCDBreathingSpace breathingSpace;
+
 }

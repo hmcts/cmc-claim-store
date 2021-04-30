@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
+import uk.gov.hmcts.cmc.domain.models.BreathingSpace;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.Payment;
@@ -55,6 +56,7 @@ public class SampleClaimData {
         DamagesExpectation.MORE_THAN_THOUSAND_POUNDS,
         DamagesExpectation.MORE_THAN_THOUSAND_POUNDS
     );
+    private BreathingSpace breathingSpace = null;
 
     public SampleClaimData(List<Party> claimants, List<TheirDetails> defendants) {
         this.claimants = claimants;
@@ -237,6 +239,11 @@ public class SampleClaimData {
         return this;
     }
 
+    public SampleClaimData withBreathingSpace(BreathingSpace breathingSpace) {
+        this.breathingSpace = breathingSpace;
+        return this;
+    }
+
     public ClaimData build() {
         return new ClaimData(
             externalId,
@@ -264,7 +271,8 @@ public class SampleClaimData {
             hwfFeeDetailsSummary,
             hwfMandatoryDetails,
             hwfMoreInfoNeededDocuments,
-            hwfDocumentsToBeSentBefore);
+            hwfDocumentsToBeSentBefore,
+            breathingSpace);
     }
 
     public static ClaimData validDefaults() {
@@ -281,6 +289,14 @@ public class SampleClaimData {
         return submittedByClaimantBuilder().build();
     }
 
+    public static ClaimData submittedWithChangedAddress() {
+        return submittedByClaimantBuilder()
+            .withDefendant(SampleTheirDetails.builder()
+                .withClaimantProvidedAddress(SampleAddress.builder().postcode("IG11 7YL").build())
+                .individualDetails())
+            .build();
+    }
+
     public static SampleClaimData submittedByClaimantBuilder() {
         return builder()
             .withExternalId(UUID.randomUUID())
@@ -293,6 +309,28 @@ public class SampleClaimData {
                 .withRepresentative(null)
                 .individual())
             .withDefendant(SampleTheirDetails.builder()
+                .withRepresentative(null)
+                .withPhone("0776655443322")
+                .individualDetails())
+            .withTimeline(SampleTimeline.validDefaults())
+            .withHwfMandatoryDetails(null)
+            .withFeeRemitted(null)
+            .withEvidence(SampleEvidence.validDefaults());
+    }
+
+    public static SampleClaimData submittedByClaimantWithDefendantAddressNullBuilder() {
+        return builder()
+            .withExternalId(UUID.randomUUID())
+            .withFeeAccountNumber(null)
+            .withStatementOfTruth(null)
+            .withPersonalInjury(null)
+            .withHousingDisrepair(null)
+            .clearClaimants()
+            .addClaimant(SampleParty.builder()
+                .withRepresentative(null)
+                .individual())
+            .withDefendant(SampleTheirDetails.builder()
+                .withAddress(null)
                 .withRepresentative(null)
                 .withPhone("0776655443322")
                 .individualDetails())
