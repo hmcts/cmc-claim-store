@@ -53,6 +53,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.ORDER_DIRECTIONS;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.DQ_FLAG;
 import static uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType.DEFAULT;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
 import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.CLAIMANT;
@@ -424,6 +425,7 @@ public final class SampleClaim {
             .withResponse(SampleResponse.FullAdmission.validDefaults())
             .withRespondedAt(LocalDateTime.now())
             .withDefendantEmail(DEFENDANT_EMAIL)
+            .withFeatures(Collections.singletonList(DQ_FLAG.getValue()))
             .withClaimantRespondedAt(LocalDateTime.now())
             .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
             .build();
@@ -731,6 +733,7 @@ public final class SampleClaim {
             null,
             null,
             offlineJourney,
+            null,
             null,
             null,
             null,
