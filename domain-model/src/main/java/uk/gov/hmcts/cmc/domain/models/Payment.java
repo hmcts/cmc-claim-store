@@ -28,7 +28,9 @@ public class Payment {
     private final String returnUrl;
     private final String transactionId;
     private final String feeId;
+    private final String serviceCallbackUrl;
 
+    @Builder(toBuilder = true)
     public Payment(
         String id,
         BigDecimal amount,
@@ -38,7 +40,8 @@ public class Payment {
         String nextUrl,
         String returnUrl,
         String transactionId,
-        String feeId
+        String feeId,
+        String serviceCallbackUrl
     ) {
         this.id = id;
         this.amount = amount;
@@ -49,6 +52,7 @@ public class Payment {
         this.returnUrl = returnUrl;
         this.transactionId = transactionId;
         this.feeId = feeId;
+        this.serviceCallbackUrl = serviceCallbackUrl;
     }
 
     @Override

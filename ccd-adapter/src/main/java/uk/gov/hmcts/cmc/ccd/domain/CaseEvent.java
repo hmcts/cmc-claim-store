@@ -70,6 +70,7 @@ public enum CaseEvent {
     INITIATE_CLAIM_PAYMENT_CITIZEN("InitiateClaimPaymentCitizen"),
     RESUME_CLAIM_PAYMENT_CITIZEN("ResumeClaimPaymentCitizen"),
     UPDATE_HELP_WITH_FEE_CLAIM("ResumeHelpWithFeeClaimSubmission"),
+    UPDATE_CLAIM_PAYMENT("UpdateClaimPayment"),
     CREATE_LEGAL_REP_CLAIM("CreateLegalRepClaim"),
     UPDATE_LEGAL_REP_CLAIM("UpdateLegalRepClaim"),
     STAY_CLAIM("StayClaim"),

@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -13,7 +14,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.reform.fees.client.FeesClient;
 import uk.gov.hmcts.reform.fees.client.model.FeeLookupResponseDto;
-import uk.gov.hmcts.reform.payments.client.CardPaymentRequest;
 import uk.gov.hmcts.reform.payments.client.PaymentsClient;
 import uk.gov.hmcts.reform.payments.client.models.FeeDto;
 import uk.gov.hmcts.reform.payments.client.models.LinkDto;
@@ -26,10 +26,6 @@ import java.time.OffsetDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SamplePayment.PAYMENT_REFERENCE;
 
@@ -75,13 +71,11 @@ public class PaymentsServiceTest {
             DESCRIPTION
         );
         claim = SampleClaim.getDefault();
-        when(feesClient.lookupFee(eq("online"), eq("issue"), any(BigDecimal.class)))
-            .thenReturn(feeOutcome);
     }
 
     @Test
     public void shouldRetrieveAnExistingPayment() {
-        when(paymentsClient.retrievePayment(
+        when(paymentsClient.retrieveCardPayment(
             BEARER_TOKEN,
             PAYMENT_REFERENCE
         )).thenReturn(paymentDto);
@@ -108,7 +102,7 @@ public class PaymentsServiceTest {
             .dateCreated(PAYMENT_DATE)
             .links(LinksDto.builder().nextUrl(null).build())
             .build();
-        when(paymentsClient.retrievePayment(
+        when(paymentsClient.retrieveCardPayment(
             BEARER_TOKEN,
             PAYMENT_REFERENCE
         )).thenReturn(retrievedPayment);
@@ -137,7 +131,7 @@ public class PaymentsServiceTest {
                 LinkDto.builder().href(URI.create(NEXT_URL)).build())
                 .build())
             .build();
-        when(paymentsClient.retrievePayment(
+        when(paymentsClient.retrieveCardPayment(
             BEARER_TOKEN,
             PAYMENT_REFERENCE
         )).thenReturn(retrievedPayment);
@@ -166,43 +160,6 @@ public class PaymentsServiceTest {
     }
 
     @Test
-    public void shouldMakePaymentAndSetThePaymentAmount() {
-        FeeDto[] fees = new FeeDto[]{
-            FeeDto.builder()
-                .ccdCaseNumber(String.valueOf(claim.getCcdCaseId()))
-                .calculatedAmount(feeOutcome.getFeeAmount())
-                .code(feeOutcome.getCode())
-                .version(String.valueOf(feeOutcome.getVersion()))
-                .build()
-        };
-
-        CardPaymentRequest expectedPaymentRequest =
-            CardPaymentRequest.builder()
-                .siteId(SITE_ID)
-                .description(DESCRIPTION)
-                .currency(CURRENCY)
-                .service(SERVICE)
-                .fees(fees)
-                .amount(feeOutcome.getFeeAmount())
-                .ccdCaseNumber(String.valueOf(claim.getCcdCaseId()))
-                .caseReference(claim.getExternalId())
-                .build();
-
-        when(paymentsClient.createPayment(
-            BEARER_TOKEN,
-            expectedPaymentRequest,
-            RETURN_URL
-        )).thenReturn(paymentDto);
-
-        paymentsService.createPayment(
-            BEARER_TOKEN,
-            claim
-        );
-
-        verify(paymentDto).setAmount(BigDecimal.TEN);
-    }
-
-    @Test
     public void shouldRetrieveAnExistingPaymentWithTransactionId() {
         String externalReference = "External Reference";
         PaymentDto retrievedPayment = PaymentDto.builder()
@@ -213,7 +170,7 @@ public class PaymentsServiceTest {
                 LinkDto.builder().href(URI.create(NEXT_URL)).build())
                 .build())
             .build();
-        when(paymentsClient.retrievePayment(
+        when(paymentsClient.retrieveCardPayment(
             BEARER_TOKEN,
             PAYMENT_REFERENCE
         )).thenReturn(retrievedPayment);
@@ -247,7 +204,7 @@ public class PaymentsServiceTest {
                 LinkDto.builder().href(URI.create(NEXT_URL)).build())
                 .build())
             .build();
-        when(paymentsClient.retrievePayment(
+        when(paymentsClient.retrieveCardPayment(
             BEARER_TOKEN,
             PAYMENT_REFERENCE
         )).thenReturn(retrievedPayment);
@@ -270,21 +227,8 @@ public class PaymentsServiceTest {
 
     @Test(expected = IllegalStateException.class)
     public void shouldBubbleUpExceptionIfFeeLookupFails() {
-        when(feesClient.lookupFee(eq("online"), eq("issue"), any(BigDecimal.class)))
-            .thenThrow(IllegalStateException.class);
-
-        paymentsService.createPayment(
-            BEARER_TOKEN,
-            claim
-        );
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void shouldBubbleUpExceptionIfPaymentCreationFails() {
-        when(paymentsClient.createPayment(
-            eq(BEARER_TOKEN),
-            any(CardPaymentRequest.class),
-            anyString()))
+        when(feesClient.lookupFee(ArgumentMatchers.eq("online"),
+            ArgumentMatchers.eq("issue"), ArgumentMatchers.any(BigDecimal.class)))
             .thenThrow(IllegalStateException.class);
 
         paymentsService.createPayment(

@@ -285,4 +285,10 @@ public class CCDCaseRepository implements CaseRepository {
             claim.getId()
         );
     }
+
+    @Override
+    public Claim updateCardPaymentForClaim(User user, Claim claim) {
+        return coreCaseDataService.updateCardPaymentForClaim(user,
+            claim);
+    }
 }
