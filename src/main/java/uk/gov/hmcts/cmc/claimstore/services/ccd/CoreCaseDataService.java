@@ -38,6 +38,7 @@ import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.legalrep.LegalRepUpdate;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -67,6 +68,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED_ONLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ORDER_REVIEW_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.UPDATE_LEGAL_REP_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.UPDATE_CLAIM_PAYMENT;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
@@ -178,6 +180,65 @@ public class CoreCaseDataService {
         CCDCase ccdCase = caseMapper.to(claim);
 
         return saveClaim(user, claim, ccdCase, CREATE_LEGAL_REP_CLAIM);
+    }
+
+    @LogExecutionTime
+    public Claim updateRepresentedClaim(String submitterId, User user, Claim claim, LegalRepUpdate legalRepUpdate) {
+        requireNonNull(user, USER_MUST_NOT_BE_NULL);
+
+        var caseEvent = UPDATE_LEGAL_REP_CLAIM;
+
+        try {
+            var userDetails = userService.getUserDetails(user.getAuthorisation());
+
+            var eventRequestData = EventRequestData.builder()
+                .userId(user.getUserDetails().getId())
+                .jurisdictionId(JURISDICTION_ID)
+                .caseTypeId(CASE_TYPE_ID)
+                .eventId(caseEvent.getValue())
+                .ignoreWarning(true)
+                .build();
+
+            var startEventResponse = startUpdate(
+                user.getAuthorisation(),
+                eventRequestData,
+                claim.getCcdCaseId(),
+                isRepresented(userDetails)
+            );
+            var ccdCase = caseMapper.to(claim);
+            ccdCase.setSubmitterId(submitterId);
+            ccdCase.setFeeAccountNumber(legalRepUpdate.getFeeAccount());
+            ccdCase.setFeeAmountInPennies(legalRepUpdate.getFeeAmountInPennies().toString());
+            ccdCase.setFeeCode(legalRepUpdate.getFeeCode());
+            ccdCase.setPaymentReference(legalRepUpdate.getPaymentReference().getReference());
+            ccdCase.setPaymentStatus(legalRepUpdate.getPaymentReference().getStatus());
+            ccdCase.setErrorCodeMessage(legalRepUpdate.getPaymentReference().getErrorCodeMessage());
+            var caseDataContent = CaseDataContent.builder()
+                .eventToken(startEventResponse.getToken())
+                .event(Event.builder()
+                    .id(startEventResponse.getEventId())
+                    .summary(CMC_CASE_CREATE_SUMMARY)
+                    .description(SUBMITTING_CMC_CASE_CREATE_DESCRIPTION)
+                    .build())
+                .data(ccdCase)
+                .build();
+
+            return caseDetailsConverter.extractClaim(submitUpdate(user.getAuthorisation(),
+                eventRequestData,
+                caseDataContent,
+                claim.getCcdCaseId(),
+                isRepresented(userDetails)
+                )
+            );
+        } catch (Exception exception) {
+            throw new CoreCaseDataStoreException(
+                String.format(
+                    CCD_UPDATE_FAILURE_MESSAGE,
+                    claim.getCcdCaseId(),
+                    caseEvent
+                ), exception
+            );
+        }
     }
 
     private Claim saveClaim(User user, Claim claim, CCDCase ccdCase, CaseEvent createClaimEvent) {
