@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,7 +47,7 @@ public class JobSchedulerService {
             return;
         }
 
-        Map<String, Object> notificationData = ImmutableMap.of("caseReference", claim.getReferenceNumber());
+        Map<String, Object> notificationData = Map.of("caseReference", claim.getReferenceNumber());
 
         jobService.scheduleJob(
             createReminderJobData(claim, notificationData, firstReminderDay),
@@ -75,7 +74,7 @@ public class JobSchedulerService {
             return;
         }
 
-        Map<String, Object> notificationData = ImmutableMap.of("caseReference", claim.getReferenceNumber());
+        Map<String, Object> notificationData = Map.of("caseReference", claim.getReferenceNumber());
 
         jobService.rescheduleJob(
             createReminderJobData(claim, notificationData, firstReminderDay),

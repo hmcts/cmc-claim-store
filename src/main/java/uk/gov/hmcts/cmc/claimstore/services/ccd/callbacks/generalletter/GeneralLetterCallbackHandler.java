@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +36,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildLetterFil
 public class GeneralLetterCallbackHandler extends CallbackHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
-    private static final List<CaseEvent> EVENTS = ImmutableList.of(ISSUE_GENERAL_LETTER);
+    private static final List<CaseEvent> EVENTS = List.of(ISSUE_GENERAL_LETTER);
     private final GeneralLetterService generalLetterService;
     private final CaseDetailsConverter caseDetailsConverter;
     private final String generalLetterTemplateId;
@@ -58,7 +56,7 @@ public class GeneralLetterCallbackHandler extends CallbackHandler {
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
-        return ImmutableMap.of(
+        return Map.of(
             CallbackType.ABOUT_TO_START, this::prepopulateData,
             CallbackType.MID, this::createAndPreview,
             CallbackType.ABOUT_TO_SUBMIT, this::printAndUpdateCaseDocuments
@@ -90,7 +88,7 @@ public class GeneralLetterCallbackHandler extends CallbackHandler {
 
             return AboutToStartOrSubmitCallbackResponse
                 .builder()
-                .data(ImmutableMap.of(DRAFT_LETTER_DOC, CCDDocument.builder().documentUrl(letterUrl).build()))
+                .data(Map.of(DRAFT_LETTER_DOC, CCDDocument.builder().documentUrl(letterUrl).build()))
                 .build();
         } catch (DocumentGenerationFailedException e) {
             logger.info("General Letter creating and preview failed", e);

@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legaladvisor;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +29,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.JUDGE;
 @ConditionalOnProperty("feature_toggles.ctsc_enabled")
 public class ProvideJudgeDirectionsCallbackHandler extends CallbackHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private static final List<Role> ROLES = ImmutableList.of(JUDGE);
+    private static final List<Role> ROLES = List.of(JUDGE);
     private static final List<CaseEvent> EVENTS = Collections.singletonList(PROVIDE_DIRECTIONS);
     private final CaseDetailsConverter caseDetailsConverter;
 
@@ -52,7 +50,7 @@ public class ProvideJudgeDirectionsCallbackHandler extends CallbackHandler {
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
-        return ImmutableMap.of(
+        return Map.of(
                 CallbackType.ABOUT_TO_SUBMIT, this::changeAssignment
         );
     }
