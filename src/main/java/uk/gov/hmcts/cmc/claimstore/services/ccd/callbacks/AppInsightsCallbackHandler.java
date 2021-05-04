@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
@@ -30,7 +28,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.LEGAL_ADVISOR;
 
 @Service
 public class AppInsightsCallbackHandler extends CallbackHandler {
-    private static final List<Role> ROLES = ImmutableList.of(LEGAL_ADVISOR, JUDGE, CITIZEN, CASEWORKER);
+    private static final List<Role> ROLES = List.of(LEGAL_ADVISOR, JUDGE, CITIZEN, CASEWORKER);
     private final AppInsights appInsights;
     private final CaseDetailsConverter caseDetailsConverter;
 
@@ -42,7 +40,7 @@ public class AppInsightsCallbackHandler extends CallbackHandler {
 
     @Override
     public List<CaseEvent> handledEvents() {
-        return ImmutableList.of(JUDGE_REVIEW_ORDER, COMPLEX_CASE, WAITING_TRANSFER, REVIEW_COMPLEX_CASE);
+        return List.of(JUDGE_REVIEW_ORDER, COMPLEX_CASE, WAITING_TRANSFER, REVIEW_COMPLEX_CASE);
     }
 
     @Override
@@ -52,7 +50,7 @@ public class AppInsightsCallbackHandler extends CallbackHandler {
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
-        return ImmutableMap.of(CallbackType.SUBMITTED, this::raiseAppInsightEvent);
+        return Map.of(CallbackType.SUBMITTED, this::raiseAppInsightEvent);
     }
 
     private CallbackResponse raiseAppInsightEvent(CallbackParams callbackParams) {

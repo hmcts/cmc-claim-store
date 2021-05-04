@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.events.settlement;
 
-import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -58,7 +57,7 @@ public class RejectSettlementAgreementActionsHandler {
     }
 
     private Map<String, String> aggregateParams(Claim claim) {
-        return ImmutableMap.of(
+        return Map.of(
             CLAIMANT_NAME, claim.getClaimData().getClaimant().getName(),
             DEFENDANT_NAME, claim.getClaimData().getDefendant().getName(),
             FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl(),

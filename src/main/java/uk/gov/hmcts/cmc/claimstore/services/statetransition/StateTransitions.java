@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.statetransition;
 
-import com.google.common.collect.ImmutableSet;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -29,9 +28,9 @@ public enum StateTransitions implements StateTransition {
                     .gte(calculateClaimSubmittedOnDate(responseDate, Constants.CLAIM_CREATED_BEFORE_DAYS_COUNT))
                     .lte(responseDate))
         ),
-        ImmutableSet.of(CaseEvent.DISPUTE, CaseEvent.ALREADY_PAID,  CaseEvent.FULL_ADMISSION,
+        Set.of(CaseEvent.DISPUTE, CaseEvent.ALREADY_PAID,  CaseEvent.FULL_ADMISSION,
             CaseEvent.PART_ADMISSION),
-        ImmutableSet.of(CaseEvent.LINK_LETTER_HOLDER, CaseEvent.DEFENDANT_RESPONSE_UPLOAD,
+        Set.of(CaseEvent.LINK_LETTER_HOLDER, CaseEvent.DEFENDANT_RESPONSE_UPLOAD,
             CaseEvent.SENDING_CLAIMANT_NOTIFICATION, CaseEvent.PIN_GENERATION_OPERATIONS, CaseEvent.SENDING_RPA,
             CaseEvent.SEALED_CLAIM_UPLOAD, CaseEvent.REVIEW_ORDER_UPLOAD, CaseEvent.CLAIM_ISSUE_RECEIPT_UPLOAD,
             CaseEvent.SUPPORT_UPDATE, CaseEvent.ATTACH_SCANNED_DOCS, CaseEvent.REVIEWED_PAPER_RESPONSE,

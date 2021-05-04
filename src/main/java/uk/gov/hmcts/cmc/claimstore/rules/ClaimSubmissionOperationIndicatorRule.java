@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.rules;
 
-import com.google.common.collect.ImmutableList;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -112,7 +111,7 @@ public class ClaimSubmissionOperationIndicatorRule {
     }
 
     private List<String> isFlagChangeValid(String fieldName, YesNoOption oldValue, YesNoOption newValue) {
-        return oldValue.equals(NO) && newValue.equals(YES) ? ImmutableList.of(fieldName) : Collections.emptyList();
+        return oldValue.equals(NO) && newValue.equals(YES) ? List.of(fieldName) : Collections.emptyList();
     }
 
     private List<String> isFlagChangeValidForDocumentUpload(
@@ -122,7 +121,7 @@ public class ClaimSubmissionOperationIndicatorRule {
         boolean isDocumentPresent
     ) {
         return newValue.equals(NO) && oldValue.equals(YES) && isDocumentPresent
-            ? ImmutableList.of(fieldName)
+            ? List.of(fieldName)
             : Collections.emptyList();
     }
 }

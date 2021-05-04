@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc;
 
-import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -24,7 +23,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
 @Service
 public class ResumeHelpWithFeeClaimSubmissionCallbackHandler extends CallbackHandler {
     private static final List<Role> ROLES = Collections.singletonList(CITIZEN);
-    private static final List<CaseEvent> EVENTS = ImmutableList.of(CaseEvent.UPDATE_HELP_WITH_FEE_CLAIM);
+    private static final List<CaseEvent> EVENTS = List.of(CaseEvent.UPDATE_HELP_WITH_FEE_CLAIM);
     private final Map<CallbackType, Callback> callbacks = Map.of(
         CallbackType.ABOUT_TO_SUBMIT, this::aboutToSubmit
     );
