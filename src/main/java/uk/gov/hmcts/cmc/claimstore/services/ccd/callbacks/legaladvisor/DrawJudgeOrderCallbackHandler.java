@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legaladvisor;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -21,7 +19,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.JUDGE;
 @Service
 @ConditionalOnProperty(prefix = "doc_assembly", name = "url")
 public class DrawJudgeOrderCallbackHandler extends CallbackHandler {
-    private static final List<Role> ROLES = ImmutableList.of(JUDGE);
+    private static final List<Role> ROLES = List.of(JUDGE);
     private static final List<CaseEvent> EVENTS = Collections.singletonList(DRAW_JUDGES_ORDER);
 
     private final OrderCreator orderCreator;
@@ -48,7 +46,7 @@ public class DrawJudgeOrderCallbackHandler extends CallbackHandler {
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
-        return ImmutableMap.of(
+        return Map.of(
             CallbackType.ABOUT_TO_START, orderCreator::prepopulateOrder,
             CallbackType.MID, orderCreator::generateOrPrepopulateOrder,
             CallbackType.ABOUT_TO_SUBMIT, orderPostProcessor::copyDraftToCaseDocument,
