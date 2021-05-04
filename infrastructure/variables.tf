@@ -34,6 +34,10 @@ variable "common_tags" {
   type = map(string)
 }
 
+variable "mail-host" {
+  default = "mta.reform.hmcts.net"
+}
+
 variable "ilbIp" {}
 
 variable "tenant_id" {
