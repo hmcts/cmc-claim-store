@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -40,10 +38,10 @@ public class ManageDocumentsCallbackHandler extends CallbackHandler {
     static final String NO_CHANGES_ERROR_MESSAGE = "You need to upload, edit or delete a document to continue.";
     static final String PAPER_RESPONSE_ERROR_MESSAGE = "Error as uploaded document type is paper response";
 
-    private static final List<Role> ROLES = ImmutableList.of(CASEWORKER);
+    private static final List<Role> ROLES = List.of(CASEWORKER);
     private static final List<CaseEvent> EVENTS = Collections.singletonList(MANAGE_DOCUMENTS);
     private static final List<CCDClaimDocumentType> paperResponseDocumentTypes
-        = ImmutableList.of(PAPER_RESPONSE_FULL_ADMIT, PAPER_RESPONSE_PART_ADMIT, PAPER_RESPONSE_STATES_PAID,
+        = List.of(PAPER_RESPONSE_FULL_ADMIT, PAPER_RESPONSE_PART_ADMIT, PAPER_RESPONSE_STATES_PAID,
         PAPER_RESPONSE_MORE_TIME, PAPER_RESPONSE_DISPUTES_ALL, PAPER_RESPONSE_COUNTER_CLAIM);
 
     private final CaseDetailsConverter caseDetailsConverter;
@@ -60,7 +58,7 @@ public class ManageDocumentsCallbackHandler extends CallbackHandler {
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
-        return ImmutableMap.of(
+        return Map.of(
             CallbackType.MID, this::checkList
         );
     }
