@@ -38,6 +38,11 @@ java:
     REFORM_TEAM: cmc
     REFORM_SERVICE_NAME: claim-store
     REFORM_ENVIRONMENT: preview
+    SPRING_MAIL_HOST: mta.reform.hmcts.net
+    SPRING_MAIL_PORT: 25
+    SPRING_MAIL_TEST_CONNECTION: false
+    SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: true
+    SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST: mta.reform.hmcts.net
     CLAIM_STORE_TEST_SUPPORT_ENABLED: true
     CMC_DB_USERNAME: 'cmc@cmc-{{ .Values.global.environment }}'
     CMC_DB_HOST: cmc-{{ .Values.global.environment }}.postgres.database.azure.com
