@@ -105,7 +105,7 @@ class DirectionOrderServiceTest {
             .hearingCourt(data)
             .build();
 
-        when(pilotCourtService.getPilotHearingCourt(eq(pilotCourtName)))
+        when(pilotCourtService.getPilotHearingCourt(pilotCourtName))
             .thenReturn(Optional.of(HearingCourt.builder()
                 .name(courtName)
                 .address(address)
