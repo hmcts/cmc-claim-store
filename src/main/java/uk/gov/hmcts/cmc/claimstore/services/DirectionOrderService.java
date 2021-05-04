@@ -18,7 +18,7 @@ public class DirectionOrderService {
     }
 
     public HearingCourt getHearingCourt(CCDCase ccdCase) {
-        if (null != ccdCase.getHearingCourt() && ccdCase.getHearingCourt() instanceof LinkedHashMap) {
+        if (ccdCase.getHearingCourt() instanceof LinkedHashMap) {
             LinkedHashMap<String, Object> hearingCourt = (LinkedHashMap) ccdCase.getHearingCourt();
             LinkedHashMap<String, Object> tempHearingCourt = (LinkedHashMap) hearingCourt.get("value");
             if (tempHearingCourt.containsKey("code")
