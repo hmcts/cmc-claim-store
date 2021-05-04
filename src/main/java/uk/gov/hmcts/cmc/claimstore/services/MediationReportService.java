@@ -78,7 +78,7 @@ public class MediationReportService {
         }
     }
 
-    public void automatedMediationReport() throws Exception {
+    public void automatedMediationReport() {
         logger.info("MILO: Triggering MILO report for {}", LocalDate.now(clock).minusDays(1));
         sendMediationReport(
             userService.authenticateAnonymousCaseWorker().getAuthorisation(),

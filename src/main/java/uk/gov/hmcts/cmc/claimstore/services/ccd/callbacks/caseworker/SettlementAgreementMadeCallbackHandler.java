@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
@@ -31,14 +29,14 @@ public class SettlementAgreementMadeCallbackHandler extends CallbackHandler {
         Arrays.asList(AGREEMENT_COUNTER_SIGNED_BY_DEFENDANT,
             OFFER_COUNTER_SIGNED_BY_DEFENDANT,
             AGREEMENT_SIGNED_BY_BOTH);
-    private static final List<Role> ROLES = ImmutableList.of(CASEWORKER, CITIZEN);
+    private static final List<Role> ROLES = List.of(CASEWORKER, CITIZEN);
 
     private final boolean ctscEnabled;
     private static final String STATE = "state";
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
-        return ImmutableMap.of(CallbackType.ABOUT_TO_SUBMIT, this::determineState);
+        return Map.of(CallbackType.ABOUT_TO_SUBMIT, this::determineState);
     }
 
     public SettlementAgreementMadeCallbackHandler(
