@@ -13,7 +13,7 @@ The service also delegates some responsibilities to other RESTful services e.g. 
 
 ## Getting started
 
-### Prerequisites
+#### Prerequisites
 
 - [JDK 11](https://www.oracle.com/java)
 - [Docker](https://www.docker.com)
