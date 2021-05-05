@@ -157,8 +157,6 @@ public class ClaimModificationTest extends BaseMockSpringTest {
         assertThat(result)
             .isNotNull();
 
-        verify(eventProducer)
-            .createClaimCreatedEvent(claim, LEGAL_REP_DETAILS.getFullName(), AUTHORISATION_TOKEN_LEGAL_REP);
     }
 
     @Test
