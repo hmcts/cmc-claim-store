@@ -925,7 +925,7 @@ public class GenerateOrderCallbackHandlerTest {
                     assertThat(hearingCourtMap).containsKeys("value");
 
                     Map<String, Object> selectedValue = (Map<String, Object>)hearingCourtMap.get("value");
-                    assertThat(selectedValue).containsExactly(entry("code", courtId),
+                    assertThat(selectedValue).contains(entry("code", courtId),
                         entry("label", hearingCourt.getName()));
                 }
             }
