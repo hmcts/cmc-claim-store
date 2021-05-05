@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.events.settlement;
 
-import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
@@ -91,7 +90,7 @@ public class CountersignSettlementAgreementActionsHandler {
     }
 
     private Map<String, Object> aggregateParameters(Claim claim) {
-        return ImmutableMap.of(
+        return Map.of(
             CLAIMANT_NAME, claim.getClaimData().getClaimant().getName(),
             DEFENDANT_NAME, claim.getClaimData().getDefendant().getName(),
             CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber()
@@ -99,7 +98,7 @@ public class CountersignSettlementAgreementActionsHandler {
     }
 
     private Map<String, String> aggregateParams(Claim claim) {
-        return ImmutableMap.of(
+        return Map.of(
             CLAIMANT_NAME, claim.getClaimData().getClaimant().getName(),
             DEFENDANT_NAME, claim.getClaimData().getDefendant().getName(),
             FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl(),

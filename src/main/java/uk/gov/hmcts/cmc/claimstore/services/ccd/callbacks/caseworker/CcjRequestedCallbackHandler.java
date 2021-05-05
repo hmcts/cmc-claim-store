@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
-import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
@@ -28,7 +27,7 @@ public class CcjRequestedCallbackHandler extends CallbackHandler {
     private static final String STATE = "state";
 
     private final boolean ctscEnabled;
-    private final ImmutableMap<CallbackType, Callback> callbacks = ImmutableMap.of(
+    private final Map<CallbackType, Callback> callbacks = Map.of(
         CallbackType.ABOUT_TO_SUBMIT, this::determineState
     );
 
