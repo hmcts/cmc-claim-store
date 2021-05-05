@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -48,7 +46,7 @@ public class HWFRecalculateInterestCallbackHandler extends CallbackHandler {
         + "only claimed to the date of claim submission";
 
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
-    private static final List<CaseEvent> EVENTS = ImmutableList.of(RECALCULATE_INTEREST);
+    private static final List<CaseEvent> EVENTS = List.of(RECALCULATE_INTEREST);
 
     private final FeesClient feesClient;
     private final CaseDetailsConverter caseDetailsConverter;
@@ -61,7 +59,7 @@ public class HWFRecalculateInterestCallbackHandler extends CallbackHandler {
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
-        return ImmutableMap.of(
+        return Map.of(
             ABOUT_TO_START, this::validateClaim,
             ABOUT_TO_SUBMIT, this::recalculateInterest
         );

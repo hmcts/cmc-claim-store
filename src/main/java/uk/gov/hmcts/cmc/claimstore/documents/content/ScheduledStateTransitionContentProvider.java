@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
-import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailTemplates;
@@ -45,7 +44,7 @@ public class ScheduledStateTransitionContentProvider implements EmailContentProv
     }
 
     private Map<String, Object> createParameters(Collection<Claim> failedClaims, CaseEvent caseEvent) {
-        return ImmutableMap.of(
+        return Map.of(
             "noOfClaims", failedClaims.size(),
             "caseEvent", caseEvent,
             "claimReferences", failedClaims.stream().map(Claim::getReferenceNumber).collect(joining("\n"))

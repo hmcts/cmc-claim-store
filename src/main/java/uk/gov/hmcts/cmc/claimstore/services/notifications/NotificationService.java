@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.notifications;
 
-import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +67,7 @@ public class NotificationService {
         logger.info(errorMessage, exception);
         appInsights.trackEvent(
             NOTIFICATION_FAILURE,
-            ImmutableMap.of(REFERENCE_NUMBER, parameters.get(CLAIM_REFERENCE_NUMBER), EMAIL_REFERENCE, reference)
+            Map.of(REFERENCE_NUMBER, parameters.get(CLAIM_REFERENCE_NUMBER), EMAIL_REFERENCE, reference)
         );
 
         throw exception;
