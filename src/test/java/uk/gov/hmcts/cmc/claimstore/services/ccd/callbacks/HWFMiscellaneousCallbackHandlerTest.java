@@ -16,7 +16,6 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.services.HWFCaseWorkerRespondSlaCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -27,7 +26,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
@@ -56,9 +54,6 @@ class HWFMiscellaneousCallbackHandlerTest {
     private CaseDetailsConverter caseDetailsConverter;
 
     @Mock
-    private HWFCaseWorkerRespondSlaCalculator hwfCaseWorkerRespondSlaCalculator;
-
-    @Mock
     private EventProducer eventProducer;
 
     @Mock
@@ -72,8 +67,7 @@ class HWFMiscellaneousCallbackHandlerTest {
     @BeforeEach
     public void setUp() {
         ccdCase = getCCDCase();
-        handler = new HWFMiscellaneousCallbackHandler(caseDetailsConverter,
-            eventProducer, userService, hwfCaseWorkerRespondSlaCalculator);
+        handler = new HWFMiscellaneousCallbackHandler(caseDetailsConverter, eventProducer, userService);
         callbackRequest = CallbackRequest
             .builder()
             .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
@@ -102,7 +96,6 @@ class HWFMiscellaneousCallbackHandlerTest {
         Claim claim = SampleClaim.getClaimWithFullAdmission();
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-        when(hwfCaseWorkerRespondSlaCalculator.calculate(ccdCase.getSubmittedOn())).thenReturn(LocalDate.now());
         Map<String, Object> mappedCaseData = new HashMap<>();
         mappedCaseData.put("helpWithFeesNumber", "1234");
         mappedCaseData.put("moreInfoDetails", "Details");

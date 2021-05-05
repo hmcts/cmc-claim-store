@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.domain.utils;
 
+import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -18,10 +20,9 @@ public class ResourceReader {
             URI url = resource.toURI();
             return new String(Files.readAllBytes(Paths.get(url)), UTF_8);
         } catch (NoSuchFileException e) {
-            throw new RuntimeException("no file found with the link '" + input + "'", e);
+            throw new BadRequestException("No file found with the link '" + input + "'", e);
         } catch (IOException | URISyntaxException e) {
-            throw new RuntimeException("failed to read from file '" + input + "'", e);
+            throw new BadRequestException("Failed to read from file '" + input + "'", e);
         }
     }
-
 }

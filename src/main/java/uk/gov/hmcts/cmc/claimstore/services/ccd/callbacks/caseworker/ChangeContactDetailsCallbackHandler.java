@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -23,7 +21,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 public class ChangeContactDetailsCallbackHandler extends CallbackHandler {
     private final ChangeContactDetailsPostProcessor changeContactDetailsPostProcessor;
 
-    private static final List<Role> ROLES = ImmutableList.of(CASEWORKER);
+    private static final List<Role> ROLES = List.of(CASEWORKER);
     private static final List<CaseEvent> EVENTS = Collections.singletonList(CHANGE_CONTACT_DETAILS);
 
     @Autowired
@@ -43,7 +41,7 @@ public class ChangeContactDetailsCallbackHandler extends CallbackHandler {
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
-        return ImmutableMap.of(
+        return Map.of(
                 CallbackType.MID, changeContactDetailsPostProcessor::showNewContactDetails,
                 CallbackType.ABOUT_TO_SUBMIT, changeContactDetailsPostProcessor::performPostProcesses
         );

@@ -121,6 +121,7 @@ doc_assembly:
   defendantPinLetterTemplateID: "CV-CMC-LET-ENG-00630.docx"
   breathingSpaceEnteredTemplateID: "CV-CMC-LET-ENG-00635.docx"
   breathingSpaceLiftedTemplateID: "CV-CMC-LET-ENG-00636.docx"
+  oconN9FormTemplateID: "CV-CMC-LET-ENG-00637.docx"
 
 nonworking-days:
   datafile: ${NONWORKINGDAYS_DATAFILE:/data/non-working_days.dat}
@@ -237,6 +238,7 @@ notifications:
       caseTransferToCcbcForDefendant: "92a1f6b1-d4bd-4a34-bb5d-7988054b5b16"
       caseTransferred: "841843ef-2d49-4c6b-8179-6e42443e049d"
       defendantAskedToRespondByPost: "18bfc30c-7ad1-44eb-b05c-eef63482e3be"
+      claimantHwfClaimIssued: "a30c986a-fc55-4cbb-868b-ffaa5e2ce106"
       breathingSpaceEmailToClaimant: "a6c8e29e-acd1-49d4-845c-f10b2e71c7a9"
       breathingSpaceEmailToDefendant: "4d9cf3ad-5f7a-4ca9-b3f3-21aac6fc8c21"
       breathingSpaceLiftedEmailToClaimant: "2456ea8e-aa4b-4d38-98a9-aedc8d2fe508"

@@ -8,8 +8,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
-import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
@@ -29,16 +27,25 @@ import java.util.List;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
- class DocumentPublishServiceTest {
+class DocumentPublishServiceTest {
     private static final LocalDateTime DATE = LocalDateTime.parse("2020-11-16T13:15:30");
     private static final String DOC_URL = "http://success.test";
     private static final String DOC_URL_BINARY = "http://success.test/binary";
     private static final String DOC_NAME = "doc-name";
+    private static final boolean DISABLEN9FORM = true;
+    private static final boolean DISABLEN9FORMFALSE = false;
     private static final CCDDocument COVER_LETTER = CCDDocument
+        .builder()
+        .documentUrl(DOC_URL)
+        .documentBinaryUrl(DOC_URL_BINARY)
+        .documentFileName(DOC_NAME)
+        .build();
+    private static final CCDDocument OCON9_LETTER = CCDDocument
         .builder()
         .documentUrl(DOC_URL)
         .documentBinaryUrl(DOC_URL_BINARY)
@@ -50,18 +57,12 @@ import static org.mockito.Mockito.when;
         .documentBinaryUrl(DOC_URL_BINARY)
         .documentFileName(DOC_NAME + "form")
         .build();
-    private static final CCDCollectionElement<CCDClaimDocument> CLAIM_DOCUMENT =
-        CCDCollectionElement.<CCDClaimDocument>builder()
-            .value(CCDClaimDocument.builder()
-                .documentLink(COVER_LETTER)
-                .createdDatetime(DATE)
-                .documentType(CCDClaimDocumentType.GENERAL_LETTER)
-                .build())
-            .build();
+
     private static final String AUTHORISATION = "auth";
     private static Map<String, Object> VALUES = Collections.emptyMap();
     private static final Document COVER_DOCUMENT = new Document(DOC_URL, VALUES);
     private static final Document OCON_DOCUMENT = new Document(DOC_URL, VALUES);
+    private static final Document OCON9_DOCUMENT = new Document(DOC_URL, VALUES);
     @Mock
     private PaperResponseLetterService paperResponseLetterService;
     @Mock
@@ -85,7 +86,72 @@ import static org.mockito.Mockito.when;
 
     @Test
     void shouldPublishDocuments() {
-        CCDCase ccdCase = CCDCase.builder()
+        CCDCase ccdCase = getCcdCase();
+        Claim claim = getClaim();
+
+        when(paperResponseLetterService
+            .createCoverLetter(eq(ccdCase), eq(AUTHORISATION), eq(DATE.toLocalDate())))
+            .thenReturn(COVER_LETTER);
+        when(paperResponseLetterService
+            .createOconForm(ccdCase, claim, AUTHORISATION, DATE.toLocalDate(), DISABLEN9FORM))
+            .thenReturn(OCON_FORM);
+        when(printableDocumentService.process(eq(COVER_LETTER), eq(AUTHORISATION))).thenReturn(COVER_DOCUMENT);
+        when(printableDocumentService.process(eq(OCON_FORM), eq(AUTHORISATION))).thenReturn(OCON_DOCUMENT);
+
+        when(paperResponseLetterService
+            .addCoverLetterToCaseWithDocuments(eq(ccdCase), eq(claim), eq(COVER_LETTER), eq(AUTHORISATION)))
+            .thenReturn(ccdCase);
+
+        documentPublishService.publishDocuments(ccdCase,
+            claim, AUTHORISATION, DATE.toLocalDate(), true, false);
+
+        verify(paperResponseLetterService).createCoverLetter(eq(ccdCase), eq(AUTHORISATION), eq(DATE.toLocalDate()));
+        verify(printableDocumentService).process(eq(COVER_LETTER), eq(AUTHORISATION));
+        verify(printableDocumentService).process(eq(OCON_FORM), eq(AUTHORISATION));
+        verify(paperResponseLetterService)
+            .addCoverLetterToCaseWithDocuments(eq(ccdCase), eq(claim), eq(COVER_LETTER), eq(AUTHORISATION));
+    }
+
+    private Claim getClaim() {
+        return Claim.builder()
+            .claimData(SampleClaimData.builder().build())
+            .defendantEmail("email@email.com")
+            .defendantId("id")
+            .submitterEmail("email@email.com")
+            .referenceNumber("ref. number")
+            .build();
+    }
+
+    @Test
+    void shouldPublishN9Documents() {
+        CCDCase ccdCase = getCcdCase();
+
+        Claim claim = getClaim();
+
+        when(paperResponseLetterService
+            .createCoverLetter(ccdCase, AUTHORISATION, DATE.toLocalDate()))
+            .thenReturn(COVER_LETTER);
+        when(paperResponseLetterService
+            .createOCON9From(ccdCase, AUTHORISATION, DATE.toLocalDate()))
+            .thenReturn(OCON9_LETTER);
+        when(paperResponseLetterService
+            .createOconForm(ccdCase, claim, AUTHORISATION, DATE.toLocalDate(), DISABLEN9FORMFALSE))
+            .thenReturn(OCON_FORM);
+        when(printableDocumentService.process(OCON_FORM, AUTHORISATION)).thenReturn(OCON_DOCUMENT);
+        when(printableDocumentService.process(OCON9_LETTER, AUTHORISATION)).thenReturn(OCON9_DOCUMENT);
+
+        when(paperResponseLetterService
+            .addCoverLetterToCaseWithDocuments(ccdCase, claim, COVER_LETTER, AUTHORISATION))
+            .thenReturn(ccdCase);
+
+        documentPublishService.publishDocuments(ccdCase, claim, AUTHORISATION, DATE.toLocalDate(), false, true);
+        verify(paperResponseLetterService).createOCON9From(ccdCase, AUTHORISATION, DATE.toLocalDate());
+        verify(printableDocumentService, times(2)).process(OCON9_LETTER, AUTHORISATION);
+
+    }
+
+    private CCDCase getCcdCase() {
+        return CCDCase.builder()
             .previousServiceCaseReference("000MC001")
             .respondents(ImmutableList.of(
                 CCDCollectionElement.<CCDRespondent>builder()
@@ -98,36 +164,6 @@ import static org.mockito.Mockito.when;
                     .build()
             ))
             .build();
-
-        Claim claim = Claim.builder()
-            .claimData(SampleClaimData.builder().build())
-            .defendantEmail("email@email.com")
-            .defendantId("id")
-            .submitterEmail("email@email.com")
-            .referenceNumber("ref. number")
-            .build();
-
-        when(paperResponseLetterService
-            .createCoverLetter(eq(ccdCase), eq(AUTHORISATION), eq(DATE.toLocalDate())))
-            .thenReturn(COVER_LETTER);
-        when(paperResponseLetterService
-            .createOconForm(eq(ccdCase), eq(claim), eq(AUTHORISATION), eq(DATE.toLocalDate())))
-            .thenReturn(OCON_FORM);
-        when(printableDocumentService.process(eq(COVER_LETTER), eq(AUTHORISATION))).thenReturn(COVER_DOCUMENT);
-        when(printableDocumentService.process(eq(OCON_FORM), eq(AUTHORISATION))).thenReturn(OCON_DOCUMENT);
-
-        when(paperResponseLetterService
-            .addCoverLetterToCaseWithDocuments(eq(ccdCase), eq(claim), eq(COVER_LETTER), eq(AUTHORISATION)))
-            .thenReturn(ccdCase);
-
-        documentPublishService.publishDocuments(ccdCase,
-            claim, AUTHORISATION, DATE.toLocalDate());
-
-        verify(paperResponseLetterService).createCoverLetter(eq(ccdCase), eq(AUTHORISATION), eq(DATE.toLocalDate()));
-        verify(printableDocumentService).process(eq(COVER_LETTER), eq(AUTHORISATION));
-        verify(printableDocumentService).process(eq(OCON_FORM), eq(AUTHORISATION));
-        verify(paperResponseLetterService)
-            .addCoverLetterToCaseWithDocuments(eq(ccdCase), eq(claim), eq(COVER_LETTER), eq(AUTHORISATION));
     }
 
 }

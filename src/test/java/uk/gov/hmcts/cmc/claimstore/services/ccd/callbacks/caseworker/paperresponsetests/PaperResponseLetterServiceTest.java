@@ -52,9 +52,11 @@ class PaperResponseLetterServiceTest {
     private static final String OCON_SOLE_TRADER_DQS = "oconSoleDqTemplateID";
     private static final String OCON_SOLE_TRADER = "oconSoleTemplateID";
     private static final String COVER_LETTER = "coverLetter";
+    private static final String OCON9_LETTER = "ocon9Letter";
     private static final LocalDate EXTENDED_RESPONSE_DEADLINE = LocalDate.now();
     private static final String HEARING_COURT = "Shoreditch";
     private static final String POST_CODE = "postcode";
+    private static final boolean DISABLEN9FORM = true;
     private static final UserDetails CITIZEN_DETAILS = SampleUserDetails.builder()
         .withRoles(Role.CITIZEN.getRole())
         .withUserId(SampleClaim.USER_ID).build();
@@ -94,6 +96,7 @@ class PaperResponseLetterServiceTest {
             OCON_COMPANY,
             OCON_SOLE_TRADER_DQS,
             OCON_SOLE_TRADER,
+            OCON9_LETTER,
             paperDefenceLetterBodyMapper,
             docAssemblyService,
             userService,
@@ -134,6 +137,28 @@ class PaperResponseLetterServiceTest {
             eq(docAssemblyTemplateBody), anyString());
     }
 
+    @Test
+    void shouldOCON9Letter() {
+        DocAssemblyTemplateBody docAssemblyTemplateBody = DocAssemblyTemplateBody.builder().build();
+        CCDDocument ccdDocument = CCDDocument.builder().build();
+
+        when(paperDefenceLetterBodyMapper
+            .coverLetterTemplateMapper(any(CCDCase.class), anyString(), any(LocalDate.class)))
+            .thenReturn(docAssemblyTemplateBody);
+        when(docAssemblyService
+            .generateDocument(any(CCDCase.class), anyString(), any(DocAssemblyTemplateBody.class), anyString()))
+            .thenReturn(ccdDocument);
+
+        given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(CITIZEN_DETAILS);
+
+        paperResponseLetterService.createOCON9From(ccdCase, AUTHORISATION_TOKEN, LocalDate.now());
+
+        verify(paperDefenceLetterBodyMapper).coverLetterTemplateMapper(ccdCase, CITIZEN_DETAILS.getFullName(),
+            LocalDate.now());
+        verify(docAssemblyService).generateDocument(any(CCDCase.class), eq(AUTHORISATION_TOKEN),
+            eq(docAssemblyTemplateBody), anyString());
+    }
+
     @Nested
     @DisplayName("Tests whose claims have online DQs")
     class WithDQsTests {
@@ -156,14 +181,15 @@ class PaperResponseLetterServiceTest {
                         .build()
                 ));
             when(paperDefenceLetterBodyMapper
-                .oconFormIndividualWithDQsMapper(any(CCDCase.class), any(LocalDate.class), any(String.class)))
+                .oconFormIndividualWithDQsMapper(any(CCDCase.class), any(LocalDate.class), any(String.class),
+                    any(Boolean.class)))
                 .thenReturn(docAssemblyTemplateBody);
             when(courtFinderApi.findMoneyClaimCourtByPostcode(eq(POST_CODE)))
                 .thenReturn(List.of(Court.builder().name(HEARING_COURT).build()));
             paperResponseLetterService.createOconForm(ccdCase, claim, AUTHORISATION_TOKEN,
-                EXTENDED_RESPONSE_DEADLINE);
+                EXTENDED_RESPONSE_DEADLINE, true);
             verify(paperDefenceLetterBodyMapper)
-                .oconFormIndividualWithDQsMapper(eq(ccdCase), eq(EXTENDED_RESPONSE_DEADLINE), eq(HEARING_COURT));
+                .oconFormIndividualWithDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE, HEARING_COURT, DISABLEN9FORM);
             verify(docAssemblyService).generateDocument(eq(ccdCase), eq(AUTHORISATION_TOKEN),
                 eq(docAssemblyTemplateBody), anyString());
         }
@@ -177,14 +203,15 @@ class PaperResponseLetterServiceTest {
                         .build()
                 ));
             when(paperDefenceLetterBodyMapper
-                .oconFormSoleTraderWithDQsMapper(any(CCDCase.class), any(LocalDate.class), any(String.class)))
+                .oconFormSoleTraderWithDQsMapper(any(CCDCase.class), any(LocalDate.class), any(String.class),
+                    any(Boolean.class)))
                 .thenReturn(docAssemblyTemplateBody);
             when(courtFinderApi.findMoneyClaimCourtByPostcode(eq(POST_CODE)))
                 .thenReturn(List.of(Court.builder().name(HEARING_COURT).build()));
             paperResponseLetterService.createOconForm(ccdCase, claim, AUTHORISATION_TOKEN,
-                EXTENDED_RESPONSE_DEADLINE);
+                EXTENDED_RESPONSE_DEADLINE, true);
             verify(paperDefenceLetterBodyMapper)
-                .oconFormSoleTraderWithDQsMapper(eq(ccdCase), eq(EXTENDED_RESPONSE_DEADLINE), eq(HEARING_COURT));
+                .oconFormSoleTraderWithDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE, HEARING_COURT, DISABLEN9FORM);
             verify(docAssemblyService).generateDocument(eq(ccdCase), eq(AUTHORISATION_TOKEN),
                 eq(docAssemblyTemplateBody), anyString());
         }
@@ -198,14 +225,15 @@ class PaperResponseLetterServiceTest {
                         .build()
                 ));
             when(paperDefenceLetterBodyMapper
-                .oconFormOrganisationWithDQsMapper(any(CCDCase.class), any(LocalDate.class), any(String.class)))
+                .oconFormOrganisationWithDQsMapper(any(CCDCase.class), any(LocalDate.class), any(String.class),
+                    any(Boolean.class)))
                 .thenReturn(docAssemblyTemplateBody);
             when(courtFinderApi.findMoneyClaimCourtByPostcode(eq(POST_CODE)))
                 .thenReturn(List.of(Court.builder().name(HEARING_COURT).build()));
             paperResponseLetterService.createOconForm(ccdCase, claim, AUTHORISATION_TOKEN,
-                EXTENDED_RESPONSE_DEADLINE);
+                EXTENDED_RESPONSE_DEADLINE, true);
             verify(paperDefenceLetterBodyMapper)
-                .oconFormOrganisationWithDQsMapper(eq(ccdCase), eq(EXTENDED_RESPONSE_DEADLINE), eq(HEARING_COURT));
+                .oconFormOrganisationWithDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE, HEARING_COURT, DISABLEN9FORM);
             verify(docAssemblyService).generateDocument(eq(ccdCase), eq(AUTHORISATION_TOKEN),
                 eq(docAssemblyTemplateBody), anyString());
         }
@@ -231,14 +259,14 @@ class PaperResponseLetterServiceTest {
                         .build()
                 ));
             when(paperDefenceLetterBodyMapper
-                .oconFormIndividualWithoutDQsMapper(any(CCDCase.class), any(LocalDate.class)))
+                .oconFormIndividualWithoutDQsMapper(any(CCDCase.class), any(LocalDate.class), any(Boolean.class)))
                 .thenReturn(docAssemblyTemplateBody);
             when(courtFinderApi.findMoneyClaimCourtByPostcode(eq(POST_CODE)))
                 .thenReturn(List.of(Court.builder().name(HEARING_COURT).build()));
             paperResponseLetterService.createOconForm(ccdCase, claim, AUTHORISATION_TOKEN,
-                EXTENDED_RESPONSE_DEADLINE);
+                EXTENDED_RESPONSE_DEADLINE, true);
             verify(paperDefenceLetterBodyMapper)
-                .oconFormIndividualWithoutDQsMapper(eq(ccdCase), eq(EXTENDED_RESPONSE_DEADLINE));
+                .oconFormIndividualWithoutDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE, DISABLEN9FORM);
             verify(docAssemblyService).generateDocument(eq(ccdCase), eq(AUTHORISATION_TOKEN),
                 eq(docAssemblyTemplateBody), anyString());
 
@@ -253,14 +281,14 @@ class PaperResponseLetterServiceTest {
                         .build()
                 ));
             when(paperDefenceLetterBodyMapper
-                .oconFormSoleTraderWithoutDQsMapper(any(CCDCase.class), any(LocalDate.class)))
+                .oconFormSoleTraderWithoutDQsMapper(any(CCDCase.class), any(LocalDate.class), any(Boolean.class)))
                 .thenReturn(docAssemblyTemplateBody);
             when(courtFinderApi.findMoneyClaimCourtByPostcode(eq(POST_CODE)))
                 .thenReturn(List.of(Court.builder().name(HEARING_COURT).build()));
             paperResponseLetterService.createOconForm(ccdCase, claim, AUTHORISATION_TOKEN,
-                EXTENDED_RESPONSE_DEADLINE);
+                EXTENDED_RESPONSE_DEADLINE, true);
             verify(paperDefenceLetterBodyMapper)
-                .oconFormSoleTraderWithoutDQsMapper(eq(ccdCase), eq(EXTENDED_RESPONSE_DEADLINE));
+                .oconFormSoleTraderWithoutDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE, DISABLEN9FORM);
             verify(docAssemblyService).generateDocument(eq(ccdCase), eq(AUTHORISATION_TOKEN),
                 eq(docAssemblyTemplateBody), anyString());
 
@@ -276,14 +304,14 @@ class PaperResponseLetterServiceTest {
                         .build()
                 ));
             when(paperDefenceLetterBodyMapper
-                .oconFormOrganisationWithoutDQsMapper(any(CCDCase.class), any(LocalDate.class)))
+                .oconFormOrganisationWithoutDQsMapper(any(CCDCase.class), any(LocalDate.class), any(Boolean.class)))
                 .thenReturn(docAssemblyTemplateBody);
             when(courtFinderApi.findMoneyClaimCourtByPostcode(eq(POST_CODE)))
                 .thenReturn(List.of(Court.builder().name(HEARING_COURT).build()));
             paperResponseLetterService.createOconForm(ccdCase, claim, AUTHORISATION_TOKEN,
-                EXTENDED_RESPONSE_DEADLINE);
+                EXTENDED_RESPONSE_DEADLINE, true);
             verify(paperDefenceLetterBodyMapper)
-                .oconFormOrganisationWithoutDQsMapper(eq(ccdCase), eq(EXTENDED_RESPONSE_DEADLINE));
+                .oconFormOrganisationWithoutDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE, DISABLEN9FORM);
             verify(docAssemblyService).generateDocument(eq(ccdCase), eq(AUTHORISATION_TOKEN),
                 eq(docAssemblyTemplateBody), anyString());
 

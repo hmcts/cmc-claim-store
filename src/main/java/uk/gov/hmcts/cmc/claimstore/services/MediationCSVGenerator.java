@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
@@ -56,7 +55,7 @@ public class MediationCSVGenerator {
         .build();
 
     private static final Map<Integer, Function<Claim, String>> CONTACT_PERSON_EXTRACTORS =
-        ImmutableMap.of(
+        Map.of(
             CLAIMANT_PARTY_TYPE,
             claim -> claim.getClaimantResponse()
                 .filter(ResponseRejection.class::isInstance)
@@ -73,7 +72,7 @@ public class MediationCSVGenerator {
         );
 
     private static final Map<Integer, Function<Claim, String>> CONTACT_NUMBER_EXTRACTORS =
-        ImmutableMap.of(
+        Map.of(
             CLAIMANT_PARTY_TYPE,
             claim -> claim.getClaimantResponse()
                 .filter(ResponseRejection.class::isInstance)
@@ -88,7 +87,7 @@ public class MediationCSVGenerator {
         );
 
     private static final Map<Integer, Function<Claim, String>> CONTACT_EMAIL_EXTRACTORS =
-        ImmutableMap.of(
+        Map.of(
             CLAIMANT_PARTY_TYPE,
             Claim::getSubmitterEmail,
             DEFENDANT_PARTY_TYPE,
@@ -102,7 +101,7 @@ public class MediationCSVGenerator {
             .orElse("No");
 
     private static final Map<Integer, Function<Claim, String>> PARTY_NAME_EXTRACTORS =
-        ImmutableMap.of(
+        Map.of(
             CLAIMANT_PARTY_TYPE,
             claim -> claim.getClaimData().getClaimant().getName(),
             DEFENDANT_PARTY_TYPE,

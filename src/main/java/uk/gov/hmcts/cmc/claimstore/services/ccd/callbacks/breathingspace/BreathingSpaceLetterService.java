@@ -20,6 +20,8 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
+import java.util.List;
+
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ADD_BULK_PRINT_DETAILS;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.GENERAL_LETTER;
@@ -75,7 +77,7 @@ public class BreathingSpaceLetterService {
         Document bsLetterDoc = printableDocumentService.process(letterDoc, authorisation);
         BulkPrintDetails bulkPrintDetails = bulkPrintService.printPdf(
             claim,
-            ImmutableList.of(
+            List.of(
                 new PrintableTemplate(
                     bsLetterDoc,
                     buildDefendantLetterFileBaseName(claim.getReferenceNumber()))),
