@@ -1,6 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.idam.IdamCaseworker;
 import uk.gov.hmcts.cmc.claimstore.config.properties.idam.IdamCaseworkerProperties;
@@ -19,11 +22,14 @@ import java.util.Base64;
 
 @Component
 public class UserService {
+    Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public static final String BEARER = "Bearer ";
     public static final String AUTHORIZATION_CODE = "authorization_code";
     public static final String CODE = "code";
     public static final String BASIC = "Basic ";
+    public static final String GRANT_TYPE_PASSWORD = "password";
+    public static final String DEFAULT_SCOPE = "openid profile roles";
 
     private final IdamApi idamApi;
     private final IdamCaseworkerProperties idamCaseworkerProperties;
@@ -42,7 +48,16 @@ public class UserService {
 
     @LogExecutionTime
     public UserDetails getUserDetails(String authorisation) {
-        return idamApi.retrieveUserDetails(authorisation);
+        logger.info("User info invoked");
+        UserInfo userInfo = getUserInfo(authorisation);
+
+        return UserDetails.builder()
+            .id(userInfo.getUid())
+            .email(userInfo.getSub())
+            .forename(userInfo.getGivenName())
+            .surname(userInfo.getFamilyName())
+            .roles(userInfo.getRoles())
+            .build();
     }
 
     @LogExecutionTime
@@ -52,7 +67,7 @@ public class UserService {
 
     public User authenticateUser(String username, String password) {
 
-        String authorisation = getIdamOauth2Token(username, password);
+        String authorisation = getAuthorisationToken(username, password);
         UserDetails userDetails = getUserDetails(authorisation);
         return new User(authorisation, userDetails);
     }
@@ -68,36 +83,51 @@ public class UserService {
         return idamApi.generatePin(new GeneratePinRequest(name), authorisation);
     }
 
-    public String getBasicAuthHeader(String username, String password) {
-        String authorisation = username + ":" + password;
-        return BASIC + Base64.getEncoder().encodeToString(authorisation.getBytes());
+    @LogExecutionTime
+    @Cacheable(value = "userOIDTokenCache")
+    public String getAuthorisationToken(String username, String password) {
+        logger.info("IDAM /o/token invoked.");
+        TokenExchangeResponse tokenExchangeResponse = idamApi.exchangeToken(
+            oauth2.getClientId(),
+            oauth2.getClientSecret(),
+            oauth2.getRedirectUrl(),
+            GRANT_TYPE_PASSWORD,
+            username,
+            password,
+            DEFAULT_SCOPE);
+        return BEARER + tokenExchangeResponse.getAccessToken();
     }
 
-    public String getIdamOauth2Token(String username, String password) {
+    @LogExecutionTime
+    @Cacheable(value = "userInfoCache")
+    public UserInfo getUserInfo(String bearerToken) {
+        logger.info("IDAM /o/userinfo invoked");
+        return idamApi.retrieveUserInfo(bearerToken);
+    }
+
+    public User authenticateUserForTests(String username, String password) {
+        String authorisation = getAuthorisationTokenForTests(username, password);
+        UserDetails userDetails = getUserDetails(authorisation);
+        return new User(authorisation, userDetails);
+    }
+
+    public String getAuthorisationTokenForTests(String username, String password) {
         String authorisation = username + ":" + password;
         String base64Authorisation = Base64.getEncoder().encodeToString(authorisation.getBytes());
-
         AuthenticateUserResponse authenticateUserResponse = idamApi.authenticateUser(
             BASIC + base64Authorisation,
             CODE,
             oauth2.getClientId(),
             oauth2.getRedirectUrl()
         );
-
-        TokenExchangeResponse tokenExchangeResponse = idamApi.exchangeCode(
+        logger.info("IDAM /o/token invoked.");
+        TokenExchangeResponse tokenExchangeResponse = idamApi.exchangeTokenForTests(
             authenticateUserResponse.getCode(),
             AUTHORIZATION_CODE,
             oauth2.getRedirectUrl(),
             oauth2.getClientId(),
             oauth2.getClientSecret()
         );
-
         return BEARER + tokenExchangeResponse.getAccessToken();
     }
-
-    @LogExecutionTime
-    public UserInfo getUserInfo(String bearerToken) {
-        return idamApi.retrieveUserInfo(bearerToken);
-    }
-
 }
