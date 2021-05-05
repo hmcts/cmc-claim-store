@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.mediation;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +40,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 public class MediationSuccessfulCallbackHandler extends CallbackHandler {
 
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
-    private static final List<CaseEvent> MEDIATION_SUCCESSFUL = ImmutableList.of(CaseEvent.MEDIATION_SUCCESSFUL);
+    private static final List<CaseEvent> MEDIATION_SUCCESSFUL = List.of(CaseEvent.MEDIATION_SUCCESSFUL);
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -66,7 +64,7 @@ public class MediationSuccessfulCallbackHandler extends CallbackHandler {
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
-        return ImmutableMap.of(
+        return Map.of(
             CallbackType.SUBMITTED, this::notifyParties
         );
     }

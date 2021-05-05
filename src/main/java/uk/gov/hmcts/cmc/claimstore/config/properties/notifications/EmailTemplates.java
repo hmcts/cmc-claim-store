@@ -214,6 +214,9 @@ public class EmailTemplates {
     private String caseTransferToCcbcForDefendant;
 
     @NotEmpty
+    private String claimantHwfClaimIssued;
+
+    @NotEmpty
     private String breathingSpaceEmailToClaimant;
 
     @NotEmpty
@@ -224,4 +227,5 @@ public class EmailTemplates {
 
     @NotEmpty
     private String breathingSpaceLiftedEmailToDefendant;
+
 }

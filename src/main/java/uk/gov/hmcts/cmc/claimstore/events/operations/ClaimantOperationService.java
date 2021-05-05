@@ -67,11 +67,14 @@ public class ClaimantOperationService {
             }
             return claim;
         } else {
+            String emailTemplateId = claim.getClaimData().getHelpWithFeesNumber().isPresent()
+                ? notificationsProperties.getTemplates().getEmail().getClaimantHwfClaimIssued() :
+                notificationsProperties.getTemplates().getEmail().getClaimantClaimIssued();
             claimIssuedNotificationService.sendMail(
                 claim,
                 claim.getSubmitterEmail(),
                 null,
-                notificationsProperties.getTemplates().getEmail().getClaimantClaimIssued(),
+                emailTemplateId,
                 "claimant-issue-notification-" + claim.getReferenceNumber(),
                 submitterName
             );
