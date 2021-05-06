@@ -72,7 +72,8 @@ public class IdamTestService {
         return Failsafe.with(retryPolicy)
             .get(() -> {
                 createUser(createSolicitorRequest(email, aatConfiguration.getSmokeTestSolicitor().getPassword()));
-                return userService.authenticateUser(email, aatConfiguration.getSmokeTestSolicitor().getPassword());
+                return userService.authenticateUserForTests(email,
+                    aatConfiguration.getSmokeTestSolicitor().getPassword());
             });
     }
 
@@ -80,8 +81,10 @@ public class IdamTestService {
         String email = testData.nextUserEmail();
         return Failsafe.with(retryPolicy)
             .get(() -> {
-                createUser(createCitizenRequest(email, aatConfiguration.getSmokeTestCitizen().getPassword()));
-                return userService.authenticateUser(email, aatConfiguration.getSmokeTestCitizen().getPassword());
+                createUser(createCitizenRequest(email,
+                    aatConfiguration.getSmokeTestCitizen().getPassword()));
+                return userService.authenticateUserForTests(email,
+                    aatConfiguration.getSmokeTestCitizen().getPassword());
             });
     }
 
@@ -94,7 +97,7 @@ public class IdamTestService {
 
                 AuthenticateUserResponse pinUserCode = authenticatePinUser(pin.getBody());
 
-                TokenExchangeResponse exchangeResponse = idamApi.exchangeCode(
+                TokenExchangeResponse exchangeResponse = idamApi.exchangeTokenForTests(
                     pinUserCode.getCode(),
                     AUTHORIZATION_CODE,
                     oauth2.getRedirectUrl(),
@@ -105,7 +108,7 @@ public class IdamTestService {
                 upliftUser(email, password, exchangeResponse);
 
                 // Re-authenticate to get new roles on the user
-                return userService.authenticateUser(email, password);
+                return userService.authenticateUserForTests(email, password);
             });
     }
 
@@ -124,7 +127,7 @@ public class IdamTestService {
 
         String code = getCodeFromRedirect(response);
 
-        idamApi.exchangeCode(
+        idamApi.exchangeTokenForTests(
             code,
             AUTHORIZATION_CODE,
             oauth2.getRedirectUrl(),
