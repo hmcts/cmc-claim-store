@@ -212,6 +212,16 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
   compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.1.0'
 
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
+  compile group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '2.7.0'
+
+  compile group: 'org.springframework.security', name: 'spring-security-web'
+  compile group: 'org.springframework.security', name: 'spring-security-config'
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client'
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
+  compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '7.9'
+  compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
+
   compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
   compile group: 'org.apache.commons', name: 'commons-csv', version: '1.8'
 
@@ -315,6 +325,7 @@ task functional(type: Test) {
   setTestClassesDirs(sourceSets.aat.output.classesDirs)
   setClasspath(sourceSets.aat.runtimeClasspath)
   include "uk/gov/hmcts/cmc/claimstore/tests/functional/**"
+  testLogging.showStandardStreams = true
 
   environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
@@ -324,6 +335,7 @@ task smoke(type: Test) {
   description = 'Executes non-destructive smoke tests against a running Claim Store instance'
   setTestClassesDirs(sourceSets.aat.output.classesDirs)
   setClasspath(sourceSets.aat.runtimeClasspath)
+  testLogging.showStandardStreams = true
   include "uk/gov/hmcts/cmc/claimstore/tests/smoke/**"
 
   environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
@@ -366,6 +378,7 @@ sonarqube {
         "**/cmc/ccd/sample/data/**",
         "**/cmc/ccd/mapper/**",
         "**/cmc/claimstore/idam/models/**",
+        "**/cmc/claimstore/idam/IdamApi.java",
         "**/ExceptionForClient.java",
         "**/config/**",
         "**/*Exception.java",
