@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -7,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserInfo;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
@@ -19,6 +21,7 @@ import uk.gov.hmcts.cmc.email.EmailService;
 
 import static java.time.LocalDateTime.now;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -50,7 +53,13 @@ public class DefendantResponseTest extends BaseMockSpringTest {
 
     @Before
     public void setup() {
-        given(userService.getUserDetails(AUTHORISATION_TOKEN))
+        given(userService.getUserInfo(anyString())).willReturn(UserInfo.builder()
+            .roles(ImmutableList.of(Role.CITIZEN.getRole()))
+            .uid(SampleClaim.USER_ID)
+            .sub(SampleClaim.SUBMITTER_EMAIL)
+            .build());
+
+        given(userService.getUserDetails(BEARER_TOKEN))
             .willReturn(SampleUserDetails.builder()
                 .withUserId(SampleClaim.DEFENDANT_ID)
                 .withMail(SampleClaim.DEFENDANT_EMAIL)
@@ -83,9 +92,9 @@ public class DefendantResponseTest extends BaseMockSpringTest {
             status().isOk()
         );
         verify(claimService)
-            .saveDefendantResponse(CLAIM_LINKED, SampleClaim.DEFENDANT_EMAIL, response, AUTHORISATION_TOKEN);
+            .saveDefendantResponse(CLAIM_LINKED, SampleClaim.DEFENDANT_EMAIL, response, BEARER_TOKEN);
         verify(eventProducer)
-            .createDefendantResponseEvent(CLAIM_LINKED, AUTHORISATION_TOKEN);
+            .createDefendantResponseEvent(CLAIM_LINKED, BEARER_TOKEN);
     }
 
     @Test
@@ -98,9 +107,9 @@ public class DefendantResponseTest extends BaseMockSpringTest {
             status().isOk()
         );
         verify(claimService)
-            .saveDefendantResponse(CLAIM_LINKED, SampleClaim.DEFENDANT_EMAIL, response, AUTHORISATION_TOKEN);
+            .saveDefendantResponse(CLAIM_LINKED, SampleClaim.DEFENDANT_EMAIL, response, BEARER_TOKEN);
         verify(eventProducer)
-            .createDefendantResponseEvent(CLAIM_LINKED, AUTHORISATION_TOKEN);
+            .createDefendantResponseEvent(CLAIM_LINKED, BEARER_TOKEN);
     }
 
     @Test
@@ -113,9 +122,9 @@ public class DefendantResponseTest extends BaseMockSpringTest {
             status().isOk()
         );
         verify(claimService)
-            .saveDefendantResponse(CLAIM_LINKED, SampleClaim.DEFENDANT_EMAIL, response, AUTHORISATION_TOKEN);
+            .saveDefendantResponse(CLAIM_LINKED, SampleClaim.DEFENDANT_EMAIL, response, BEARER_TOKEN);
         verify(eventProducer)
-            .createDefendantResponseEvent(CLAIM_LINKED, AUTHORISATION_TOKEN);
+            .createDefendantResponseEvent(CLAIM_LINKED, BEARER_TOKEN);
     }
 
     @Test
@@ -147,12 +156,12 @@ public class DefendantResponseTest extends BaseMockSpringTest {
     }
 
     private ResultActions submitResponse(Claim claim, Response response) throws Exception {
-        when(claimService.getClaimByExternalId(claim.getExternalId(), AUTHORISATION_TOKEN))
+        when(claimService.getClaimByExternalId(claim.getExternalId(), BEARER_TOKEN))
             .thenReturn(claim);
         return webClient.perform(
             post(RESPONSE_URL, SampleClaim.EXTERNAL_ID, SampleClaim.DEFENDANT_ID)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
+                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
                 .content(jsonMappingHelper.toJson(response)));
     }
 }
