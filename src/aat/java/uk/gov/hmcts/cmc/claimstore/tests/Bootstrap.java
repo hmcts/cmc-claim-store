@@ -6,6 +6,8 @@ import io.restassured.config.ObjectMapperConfig;
 import io.restassured.filter.log.ErrorLoggingFilter;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
@@ -17,6 +19,8 @@ import javax.annotation.PreDestroy;
 
 @Component
 public class Bootstrap {
+
+    private static final Logger logger = LoggerFactory.getLogger(Bootstrap.class);
 
     private final ObjectMapper objectMapper;
     private final UserService userService;
@@ -50,7 +54,12 @@ public class Bootstrap {
             );
         RestAssured.useRelaxedHTTPSValidation();
         RestAssured.filters(new RequestLoggingFilter(), new ResponseLoggingFilter(), new ErrorLoggingFilter());
-        smokeTestCitizen = userService.authenticateUser(
+
+        authenticateUser();
+    }
+
+    private void authenticateUser() {
+        smokeTestCitizen = userService.authenticateUserForTests(
             aatConfiguration.getSmokeTestCitizen().getUsername(),
             aatConfiguration.getSmokeTestCitizen().getPassword()
         );
@@ -58,14 +67,18 @@ public class Bootstrap {
 
     @PreDestroy
     public void after() {
-        if (claimant != null) {
-            idamTestService.deleteUser(claimant.getUserDetails().getEmail());
-        }
-        if (defendant != null) {
-            idamTestService.deleteUser(defendant.getUserDetails().getEmail());
-        }
-        if (solicitor != null) {
-            idamTestService.deleteUser(solicitor.getUserDetails().getEmail());
+        try {
+            if (claimant != null) {
+                idamTestService.deleteUser(claimant.getUserDetails().getEmail());
+            }
+            if (defendant != null) {
+                idamTestService.deleteUser(defendant.getUserDetails().getEmail());
+            }
+            if (solicitor != null) {
+                idamTestService.deleteUser(solicitor.getUserDetails().getEmail());
+            }
+        } catch (Exception ex) {
+            logger.warn("Ignoring exception while trying to delete the user");
         }
     }
 
