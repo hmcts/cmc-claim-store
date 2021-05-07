@@ -674,7 +674,8 @@ public class CoreCaseDataService {
                 .build();
 
             var caseDataContent = caseDataContent(startEventResponse, updatedClaim);
-            logger.info("Updating preferred DQ pilot court by support for claim {} ", updatedClaim.getReferenceNumber());
+            logger.info("Updating preferred DQ pilot court by support for claim {} ",
+                updatedClaim.getReferenceNumber());
             return  submitUpdate(
                 user.getAuthorisation(), eventRequestData, caseDataContent, caseId, isRepresented(userDetails));
         } catch (Exception e) {
