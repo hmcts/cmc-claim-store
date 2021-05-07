@@ -437,6 +437,22 @@ public class CoreCaseDataServiceTest {
     }
 
     @Test
+    public void shouldUpdatePreferredCourtByClaimReference() {
+        Claim providedClaim = SampleClaim.getDefault();
+        Response providedResponse = SampleResponse.validDefaults();
+
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+            .thenReturn(SampleClaim.getWithResponse(providedResponse));
+
+        CaseDetails caseDetails = service.updatePreferredCourtByClaimReference(USER,
+            providedClaim.getId(),
+            "Central London County Court"
+        );
+
+        assertNotNull(caseDetails);
+    }
+
+    @Test
     public void saveDefendantResponseWithFullAdmissionShouldReturnCaseDetails() {
         Claim providedClaim = SampleClaim.getDefault();
         Response providedResponse = SampleResponse.FullAdmission.builder().build();
