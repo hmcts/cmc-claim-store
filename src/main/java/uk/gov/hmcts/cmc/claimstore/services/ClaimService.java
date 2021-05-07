@@ -607,6 +607,8 @@ public class ClaimService {
         var claim = getClaimByReferenceAnonymous(claimNumber)
             .orElseThrow(() -> new NotFoundException("Claim not found for letter holder id " + claimNumber));
 
-        caseRepository.updatePreferredCourtByClaimReference(claim);
+        if (claim.getPreferredDQCourt().isPresent()) {
+            caseRepository.updatePreferredCourtByClaimReference(claim);
+        }
     }
 }

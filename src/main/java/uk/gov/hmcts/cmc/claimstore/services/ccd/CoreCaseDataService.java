@@ -659,22 +659,22 @@ public class CoreCaseDataService {
     public CaseDetails updatePreferredCourtByClaimReference(User user, Long caseId, String preferredCourt) {
 
         try {
-            UserDetails userDetails = user.getUserDetails();
-            EventRequestData eventRequestData = eventRequest(SUPPORT_UPDATE, userDetails.getId());
+            var userDetails = user.getUserDetails();
+            var eventRequestData = eventRequest(SUPPORT_UPDATE, userDetails.getId());
 
-            StartEventResponse startEventResponse = startUpdate(
+            var startEventResponse = startUpdate(
                 user.getAuthorisation(),
                 eventRequestData,
                 caseId,
                 isRepresented(userDetails)
             );
 
-            Claim updatedClaim = toClaimBuilder(startEventResponse)
+            var updatedClaim = toClaimBuilder(startEventResponse)
                 .preferredDQPilotCourt(preferredCourt)
                 .build();
 
-            CaseDataContent caseDataContent = caseDataContent(startEventResponse, updatedClaim);
-            logger.info("Updating preferred DQ pilot court by support for claim " + updatedClaim.getReferenceNumber());
+            var caseDataContent = caseDataContent(startEventResponse, updatedClaim);
+            logger.info("Updating preferred DQ pilot court by support for claim {} ", updatedClaim.getReferenceNumber());
             return  submitUpdate(
                 user.getAuthorisation(), eventRequestData, caseDataContent, caseId, isRepresented(userDetails));
         } catch (Exception e) {
