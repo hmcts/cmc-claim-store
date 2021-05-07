@@ -53,6 +53,8 @@ public interface CaseRepository {
 
     void linkDefendant(String authorisation, String letterholderId);
 
+    void updatePreferredCourtByClaimReference (Claim claim);
+
     List<Claim> getByDefendantId(String id, String authorisation, Integer pageNumber);
 
     List<Claim> getByClaimantEmail(String email, String authorisation);

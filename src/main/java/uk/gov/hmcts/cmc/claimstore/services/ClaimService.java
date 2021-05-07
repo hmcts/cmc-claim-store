@@ -601,4 +601,14 @@ public class ClaimService {
 
         return validationMessage;
     }
+
+    public void updatePreferredCourtByClaimReference(String claimNumber) {
+
+        Claim claim = getClaimByReferenceAnonymous(claimNumber)
+            .orElseThrow(() -> new NotFoundException("Claim not found for letter holder id " + claimNumber));
+
+        if ( claim.getPreferredDQCourt() != null) {
+            caseRepository.updatePreferredCourtByClaimReference(claim);
+        }
+    }
 }

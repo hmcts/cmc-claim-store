@@ -55,18 +55,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_REQUESTED;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CASE;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_HWF_CASE;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_LEGAL_REP_CLAIM;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INITIATE_CLAIM_PAYMENT_CITIZEN;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LINK_LETTER_HOLDER;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED_ONLINE;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ORDER_REVIEW_REQUESTED;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.*;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
 import static uk.gov.hmcts.cmc.claimstore.services.pilotcourt.Pilot.JDDO;
@@ -651,6 +640,37 @@ public class CoreCaseDataService {
                     caseId,
                     caseEvent
                 ), exception
+            );
+        }
+    }
+
+    public CaseDetails updatePreferredCourtByClaimReference(User user, Long caseId, String preferredCourt) {
+
+        try {
+            UserDetails userDetails = user.getUserDetails();
+            EventRequestData eventRequestData = eventRequest(SUPPORT_UPDATE, userDetails.getId());
+
+            StartEventResponse startEventResponse = startUpdate(
+                user.getAuthorisation(),
+                eventRequestData,
+                caseId,
+                isRepresented(userDetails)
+            );
+
+            Claim updatedClaim = toClaimBuilder(startEventResponse)
+                .preferredDQPilotCourt(preferredCourt)
+                .build();
+
+            CaseDataContent caseDataContent = caseDataContent(startEventResponse, updatedClaim);
+            return  submitUpdate(
+                user.getAuthorisation(), eventRequestData, caseDataContent, caseId, isRepresented(userDetails));
+        } catch (Exception e) {
+            throw new CoreCaseDataStoreException(
+                String.format(
+                    CCD_UPDATE_FAILURE_MESSAGE,
+                    caseId,
+                    SUPPORT_UPDATE
+                ), e
             );
         }
     }
