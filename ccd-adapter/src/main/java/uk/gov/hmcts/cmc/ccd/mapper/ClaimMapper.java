@@ -105,6 +105,9 @@ public class ClaimMapper {
         claimData.getFeeAmountInPennies()
             .map(BigInteger::toString)
             .ifPresent(builder::feeAmountInPennies);
+        claimData.getOutstandingFeeAmountInPennies()
+            .map(BigInteger::toString)
+            .ifPresent(builder::outstandingFeeAmountInPennies);
         claimData.getFeeRemitted()
             .map(BigInteger::toString)
             .ifPresent(builder::feeRemitted);
@@ -162,6 +165,7 @@ public class ClaimMapper {
                 paymentMapper.from(ccdCase),
                 amountMapper.from(ccdCase),
                 createBigInteger(ccdCase.getFeeAmountInPennies()),
+                createBigInteger(ccdCase.getOutstandingFeeAmountInPennies()),
                 createBigInteger(ccdCase.getFeeRemitted()),
                 createBigInteger(ccdCase.getFeeAmountAfterRemission()),
                 interestMapper.from(ccdCase),
