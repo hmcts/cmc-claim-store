@@ -964,6 +964,8 @@ public class ClaimServiceTest {
 
     @Test
     public void shouldupdatePreferredCourtByClaimReference() {
+
+        Claim claim = createClaimModel(VALID_APP, LETTER_HOLDER_ID);
         when(claimService.getClaimByReferenceAnonymous(
             claim.getReferenceNumber())).thenReturn(Optional.ofNullable(claim));
 
@@ -993,6 +995,7 @@ public class ClaimServiceTest {
         return createSampleClaim()
             .withClaimData(claimData)
             .withLetterHolderId(letterHolderId)
+            .withPreferredDQCourt("Central London County Court")
             .build();
     }
 

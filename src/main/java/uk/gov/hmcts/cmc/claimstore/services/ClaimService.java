@@ -605,7 +605,7 @@ public class ClaimService {
     public void updatePreferredCourtByClaimReference(String claimNumber) {
 
         var claim = getClaimByReferenceAnonymous(claimNumber)
-            .orElseThrow(() -> new NotFoundException("Claim not found for letter holder id " + claimNumber));
+            .orElseThrow(() -> new NotFoundException("Claim not found for " + claimNumber));
 
         if (claim.getPreferredDQCourt().isPresent()) {
             caseRepository.updatePreferredCourtByClaimReference(claim);
