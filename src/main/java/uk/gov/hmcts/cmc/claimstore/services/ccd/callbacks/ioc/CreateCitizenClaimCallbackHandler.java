@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +51,7 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
         CREATE_HWF_CASE, INVALID_HWF_REFERENCE, ISSUE_HWF_CASE);
     private static final List<Role> ROLES = Arrays.asList(CITIZEN, CASEWORKER);
 
-    private final ImmutableMap<CallbackType, Callback> callbacks = ImmutableMap.of(
+    private final Map<CallbackType, Callback> callbacks = Map.of(
         CallbackType.ABOUT_TO_SUBMIT, this::createCitizenClaim,
         CallbackType.SUBMITTED, this::startClaimIssuedPostOperations
     );
@@ -149,7 +147,7 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
                     logger.info("Payment not successful for claim with external id {}", claim.getExternalId());
 
                     return AboutToStartOrSubmitCallbackResponse.builder()
-                        .errors(ImmutableList.of("Payment not successful"))
+                        .errors(List.of("Payment not successful"))
                         .build();
                 }
 

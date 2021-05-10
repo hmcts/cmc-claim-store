@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legaladvisor;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -28,7 +26,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.LEGAL_ADVISOR;
 @Service
 @ConditionalOnProperty(prefix = "doc_assembly", name = "url")
 public class DrawOrderCallbackHandler extends CallbackHandler {
-    private static final List<Role> ROLES = ImmutableList.of(LEGAL_ADVISOR, JUDGE);
+    private static final List<Role> ROLES = List.of(LEGAL_ADVISOR, JUDGE);
     private static final List<CaseEvent> EVENTS = Collections.singletonList(CaseEvent.DRAW_ORDER);
     private static final String DRAFT_ORDER_DOC = "draftOrderDoc";
 
@@ -59,7 +57,7 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
-        return ImmutableMap.of(
+        return Map.of(
             CallbackType.ABOUT_TO_START, this::regenerateOrder,
             CallbackType.ABOUT_TO_SUBMIT, orderPostProcessor::copyDraftToCaseDocument,
             CallbackType.SUBMITTED, orderPostProcessor::notifyPartiesAndPrintOrder
@@ -75,7 +73,7 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
 
         return AboutToStartOrSubmitCallbackResponse
             .builder()
-            .data(ImmutableMap.of(
+            .data(Map.of(
                 DRAFT_ORDER_DOC,
                 CCDDocument.builder().documentUrl(docAssemblyResponse.getRenditionOutputLocation()).build()
             ))
