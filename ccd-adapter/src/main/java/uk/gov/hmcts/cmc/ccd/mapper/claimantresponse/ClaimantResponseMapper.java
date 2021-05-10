@@ -75,6 +75,7 @@ public class ClaimantResponseMapper {
         responseRejection.getMediationContactPerson().ifPresent(rejection::mediationContactPerson);
         responseRejection.getMediationPhoneNumber()
             .ifPresent(phoneNo -> rejection.mediationPhoneNumber(telephoneMapper.to(phoneNo)));
+        responseRejection.getNoMediationReason().ifPresent(rejection::noMediationReason);
 
         responseRejection.getAmountPaid().map(moneyMapper::to).ifPresent(rejection::amountPaid);
 
@@ -147,6 +148,7 @@ public class ClaimantResponseMapper {
             builder.freeMediation(YesNoOption.valueOf(ccdResponseRejection.getFreeMediationOption().name()));
             builder.mediationPhoneNumber(telephoneMapper.from(ccdResponseRejection.getMediationPhoneNumber()));
             builder.mediationContactPerson(ccdResponseRejection.getMediationContactPerson());
+            builder.noMediationReason(ccdResponseRejection.getNoMediationReason());
         }
 
         if (ccdResponseRejection.getPaymentReceived() != null) {
