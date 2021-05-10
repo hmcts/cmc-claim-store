@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.fees.client.FeesClient;
 import uk.gov.hmcts.reform.fees.client.model.FeeLookupResponseDto;
 import uk.gov.hmcts.reform.payments.client.CardPaymentRequest;
@@ -50,6 +51,9 @@ public class PaymentsServiceTest {
     private PaymentsClient paymentsClient;
     @Mock
     private FeesClient feesClient;
+    @Mock
+    private LaunchDarklyClient launchDarkly;
+
     @Spy
     private PaymentDto paymentDto = PaymentDto.builder()
         .status("Success")
@@ -72,7 +76,8 @@ public class PaymentsServiceTest {
             SERVICE,
             SITE_ID,
             CURRENCY,
-            DESCRIPTION
+            DESCRIPTION,
+            launchDarkly
         );
         claim = SampleClaim.getDefault();
         when(feesClient.lookupFee(eq("online"), eq("issue"), any(BigDecimal.class)))
