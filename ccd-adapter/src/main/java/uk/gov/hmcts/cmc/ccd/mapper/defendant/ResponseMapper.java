@@ -93,6 +93,7 @@ public class ResponseMapper {
         response.getMediationPhoneNumber().ifPresent(phoneNo ->
             builder.responseMediationPhoneNumber(telephoneMapper.to(phoneNo)));
         response.getMediationContactPerson().ifPresent(builder::responseMediationContactPerson);
+        response.getNoMediationReason().ifPresent(builder::responseNoMediationReason);
 
         if (response.getMoreTimeNeeded() != null) {
             builder.responseMoreTimeNeededOption(CCDYesNoOption.valueOf(response.getMoreTimeNeeded().name()));
@@ -233,6 +234,7 @@ public class ResponseMapper {
             .mediationPhoneNumber(telephoneMapper.from(
                 respondent.getResponseMediationPhoneNumber()))
             .mediationContactPerson(respondent.getResponseMediationContactPerson())
+            .noMediationReason(respondent.getResponseNoMediationReason())
             .defenceType(DefenceType.valueOf(respondent.getResponseDefenceType().name()))
             .defence(respondent.getResponseDefence())
             .evidence(extractDefendantEvidence(respondent))
@@ -300,6 +302,7 @@ public class ResponseMapper {
             .mediationPhoneNumber(telephoneMapper.from(
                 respondent.getResponseMediationPhoneNumber()))
             .mediationContactPerson(respondent.getResponseMediationContactPerson())
+            .noMediationReason(respondent.getResponseNoMediationReason())
             .paymentDeclaration(extractPaymentDeclaration(respondent))
             .paymentIntention(paymentIntentionMapper.from(respondent.getDefendantPaymentIntention()))
             .defence(respondent.getResponseDefence())
@@ -328,6 +331,7 @@ public class ResponseMapper {
             .mediationPhoneNumber(telephoneMapper.from(
                 respondent.getResponseMediationPhoneNumber()))
             .mediationContactPerson(respondent.getResponseMediationContactPerson())
+            .noMediationReason(respondent.getResponseNoMediationReason())
             .paymentIntention(paymentIntentionMapper.from(respondent.getDefendantPaymentIntention()))
             .statementOfMeans(statementOfMeansMapper.from(respondent.getStatementOfMeans()))
             .responseMethod(getResponseMethod(respondent))
