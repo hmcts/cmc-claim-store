@@ -109,7 +109,6 @@ public class HWFRecalculateInterestCallbackHandler extends CallbackHandler {
 
         String channel = ONLINE_FEE_CHANNEL;
         if (launchDarklyClient.isFeatureEnabled("new-claim-fees", LaunchDarklyClient.CLAIM_STORE_USER)) {
-            System.out.println("Feature is enabled");
             channel = DEFAULT_FEE_CHANNEL;
         }
 
