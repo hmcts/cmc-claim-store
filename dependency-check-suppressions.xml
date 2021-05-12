@@ -159,8 +159,8 @@
         <cve>CVE-2017-18640</cve>
     </suppress>
     <suppress>
-        <cve>CVE-2020-5407</cve>
-        <cve>CVE-2020-5408</cve>
+    <cve>CVE-2020-5407</cve>
+    <cve>CVE-2020-5408</cve>
         <cve>CVE-2020-7019</cve>
         <cve>CVE-2020-5421</cve>
         <cve>CVE-2020-7020</cve>
@@ -197,5 +197,11 @@
         ]]></notes>
         <cve>CVE-2020-8908</cve>
         <cve>CVE-2018-10237</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+            Spring issues
+        ]]></notes>
+        <cve>CVE-2021-22112</cve>
     </suppress>
 </suppressions>
