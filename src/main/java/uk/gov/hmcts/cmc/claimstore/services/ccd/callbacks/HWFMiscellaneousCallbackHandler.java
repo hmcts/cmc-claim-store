@@ -73,6 +73,7 @@ public class HWFMiscellaneousCallbackHandler extends CallbackHandler {
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         if (callbackParams.getRequest().getEventId().equals(CaseEvent.HWF_NO_REMISSION.getValue())) {
             ccdCase.setFeeRemitted("0");
+            ccdCase.setOutstandingFeeAmountInPennies(ccdCase.getFeeAmountInPennies());
         }
         ccdCase.setLastEventTriggeredForHwfCase(callbackParams.getRequest().getEventId());
         responseBuilder.data(caseDetailsConverter.convertToMap(ccdCase));
