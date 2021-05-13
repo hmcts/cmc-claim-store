@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc;
 
+import com.launchdarkly.sdk.LDUser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.fees.client.FeesClient;
 import uk.gov.hmcts.reform.fees.client.model.FeeLookupResponseDto;
 import uk.gov.hmcts.reform.payments.client.CardPaymentRequest;
@@ -50,6 +52,9 @@ public class PaymentsServiceTest {
     private PaymentsClient paymentsClient;
     @Mock
     private FeesClient feesClient;
+    @Mock
+    private LaunchDarklyClient launchDarkly;
+
     @Spy
     private PaymentDto paymentDto = PaymentDto.builder()
         .status("Success")
@@ -72,10 +77,12 @@ public class PaymentsServiceTest {
             SERVICE,
             SITE_ID,
             CURRENCY,
-            DESCRIPTION
+            DESCRIPTION,
+            launchDarkly
         );
         claim = SampleClaim.getDefault();
-        when(feesClient.lookupFee(eq("online"), eq("issue"), any(BigDecimal.class)))
+        when(launchDarkly.isFeatureEnabled(eq("new-claim-fees"), any(LDUser.class))).thenReturn(true);
+        when(feesClient.lookupFee(eq("default"), eq("issue"), any(BigDecimal.class)))
             .thenReturn(feeOutcome);
     }
 
@@ -270,7 +277,20 @@ public class PaymentsServiceTest {
 
     @Test(expected = IllegalStateException.class)
     public void shouldBubbleUpExceptionIfFeeLookupFails() {
+        when(launchDarkly.isFeatureEnabled(eq("new-claim-fees"), any(LDUser.class))).thenReturn(false);
         when(feesClient.lookupFee(eq("online"), eq("issue"), any(BigDecimal.class)))
+            .thenThrow(IllegalStateException.class);
+
+        paymentsService.createPayment(
+            BEARER_TOKEN,
+            claim
+        );
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldBubbleUpExceptionIfFeeLookupFailsWithNewClaimFees() {
+        when(launchDarkly.isFeatureEnabled(eq("new-claim-fees"), any(LDUser.class))).thenReturn(true);
+        when(feesClient.lookupFee(eq("default"), eq("issue"), any(BigDecimal.class)))
             .thenThrow(IllegalStateException.class);
 
         paymentsService.createPayment(
