@@ -64,6 +64,7 @@ public class CCDRespondent {
     private CCDYesNoOption responseFreeMediationOption;
     private CCDTelephone responseMediationPhoneNumber;
     private String responseMediationContactPerson;
+    private String responseNoMediationReason;
     private CCDYesNoOption responseMoreTimeNeededOption;
     private String responseDefendantSOTSignerName;
     private String responseDefendantSOTSignerRole;
