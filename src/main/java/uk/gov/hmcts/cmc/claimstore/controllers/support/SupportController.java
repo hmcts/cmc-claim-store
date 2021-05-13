@@ -63,6 +63,7 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
@@ -187,7 +188,7 @@ public class SupportController {
         @ApiResponse(code = 500, message = "Unable to upload document")
     })
     @SuppressWarnings("squid:S2201") // orElseThrow does not ignore the result
-    public ResponseEntity<?> uploadDocumentToDocumentManagement(
+    public ResponseEntity<String> uploadDocumentToDocumentManagement(
         @PathVariable("referenceNumber") String referenceNumber,
         @PathVariable("documentType") ClaimDocumentType documentType
     ) {
@@ -273,7 +274,27 @@ public class SupportController {
         @RequestBody MediationRequest mediationRequest
     ) {
         mediationReportService
-            .sendMediationReport(authorisation, mediationRequest.getReportDate());
+            .sendMediationReport(authorisation, mediationRequest.getReportDate(), mediationRequest.getRecipientEmail());
+
+    }
+
+    /*
+     * This method is added as to enable PET to regenerate
+     * MILO report(in case of failure) for specific date
+     * */
+    @PostMapping(value = "/reSendMediation", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Re-Generate and Send Mediation Report for Telephone Mediation Service")
+    public void reSendMediation(
+        @RequestBody MediationRequest mediationRequest
+    ) {
+        User user = userService.authenticateAnonymousCaseWorker();
+        String authorisation = user.getAuthorisation();
+        LocalDateTime now = LocalDateTime.now();
+        logger.info("Support controller started MILO report generation at {}", now);
+        mediationReportService
+            .sendMediationReport(authorisation, mediationRequest.getReportDate(), mediationRequest.getRecipientEmail());
+        logger.info("MILO report ended at {}, took {} seconds to generate",
+            LocalDateTime.now(), Duration.between(now, LocalDateTime.now()).getSeconds());
 
     }
 
@@ -287,8 +308,8 @@ public class SupportController {
         LocalDateTime runDateTime = localDateTime == null ? LocalDateTimeFactory.nowInLocalZone() : localDateTime;
 
         String format = runDateTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss"));
-        logger.info(format("transitionClaimState %s invoked by support controller for date: %s", stateTransition,
-            format));
+        logger.info("transitionClaimState {} invoked by support controller for date: {}", stateTransition,
+            format);
         scheduledStateTransitionService.stateChangeTriggered(runDateTime, stateTransition);
     }
 
@@ -314,7 +335,7 @@ public class SupportController {
                 .generatePin(claim.getClaimData().getDefendant().getName(), authorisation
                 );
 
-            claimService.linkLetterHolder(claim, pinResponse.getUserId(), authorisation);
+            claimService.linkLetterHolder(claim, pinResponse.getUserId());
             documentGenerator.generateForNonRepresentedClaim(
                 new CitizenClaimIssuedEvent(claim, pinResponse.getPin(), fullName, authorisation)
             );
@@ -349,7 +370,7 @@ public class SupportController {
     }
 
     private void resendStaffNotificationOnDefendantResponseSubmitted(Claim claim, String authorization) {
-        if (!claim.getResponse().isPresent()) {
+        if (claim.getResponse().isEmpty()) {
             throw new ConflictException(CLAIM + claim.getReferenceNumber() + " does not have associated response");
         }
         DefendantResponseEvent event = new DefendantResponseEvent(claim, authorization);

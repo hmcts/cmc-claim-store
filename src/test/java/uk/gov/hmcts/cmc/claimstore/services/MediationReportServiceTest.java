@@ -87,7 +87,7 @@ public class MediationReportServiceTest {
 
     @Test
     public void shouldPrepareCSVDataAndInvokeEmailService() throws IOException {
-        service.sendMediationReport(AUTHORISATION, LocalDate.now());
+        service.sendMediationReport(AUTHORISATION, LocalDate.now(), TO_ADDRESS);
 
         verify(caseSearchApi).getMediationClaims(AUTHORISATION, LocalDate.now());
         verifyEmailData();

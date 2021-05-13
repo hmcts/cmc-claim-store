@@ -16,6 +16,7 @@ public class WaitingTransferJob extends AbstractStateTransitionJob {
     private String cronExpression;
 
     public WaitingTransferJob() {
+        //zero argument constructor
     }
 
     //Cannot autowire via constructor as job framework needs a zero argument constructor

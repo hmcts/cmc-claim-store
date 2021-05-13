@@ -15,11 +15,11 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireService;
-import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
@@ -89,8 +89,6 @@ public class CoreCaseDataServiceFailureTest {
     @Mock
     private AuthTokenGenerator authTokenGenerator;
     @Mock
-    private JobSchedulerService jobSchedulerService;
-    @Mock
     private CaseDetailsConverter caseDetailsConverter;
     @Mock
     private WorkingDayIndicator workingDayIndicator;
@@ -100,6 +98,8 @@ public class CoreCaseDataServiceFailureTest {
     private feign.Request request;
     @Mock
     private DirectionsQuestionnaireService directionsQuestionnaireService;
+    @Mock
+    private PilotCourtService pilotCourtService;
 
     private CoreCaseDataService service;
 
@@ -141,12 +141,12 @@ public class CoreCaseDataServiceFailureTest {
             referenceNumberService,
             coreCaseDataApi,
             authTokenGenerator,
-            jobSchedulerService,
             ccdCreateCaseService,
             caseDetailsConverter,
             intentionToProceedDeadlineDays,
             workingDayIndicator,
-            directionsQuestionnaireService
+            directionsQuestionnaireService,
+            pilotCourtService
         );
     }
 

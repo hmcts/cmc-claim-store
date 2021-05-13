@@ -1,6 +1,11 @@
 package uk.gov.hmcts.cmc.domain.models.evidence;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Set;
 
@@ -11,12 +16,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 import static uk.gov.hmcts.cmc.domain.models.evidence.EvidenceType.EXPERT_WITNESS;
 
-public class DefendantEvidenceTest {
+@ExtendWith(MockitoExtension.class)
+class DefendantEvidenceTest {
 
-    @Test
-    public void shouldPassValidationForValidDefendantEvidence() {
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {"Comment"})
+    void shouldPassValidationForValidDefendantEvidence(String input) {
         DefendantEvidence defendantEvidence = new DefendantEvidence(
-            singletonList(EvidenceRow.builder().type(EXPERT_WITNESS).description("description").build()), "comments"
+            singletonList(EvidenceRow.builder().type(EXPERT_WITNESS).description("description").build()), input
         );
 
         Set<String> response = validate(defendantEvidence);
@@ -26,7 +34,7 @@ public class DefendantEvidenceTest {
     }
 
     @Test
-    public void shouldPassValidationForMaxAllowedRows() {
+    void shouldPassValidationForMaxAllowedRows() {
         DefendantEvidence defendantEvidence = new DefendantEvidence(asList(new EvidenceRow[20]), "comments");
 
         Set<String> response = validate(defendantEvidence);
@@ -36,7 +44,7 @@ public class DefendantEvidenceTest {
     }
 
     @Test
-    public void shouldFailValidationForRowsLimitExceeds() {
+    void shouldFailValidationForRowsLimitExceeds() {
         DefendantEvidence defendantEvidence = new DefendantEvidence(asList(new EvidenceRow[1001]), "comments");
 
         Set<String> response = validate(defendantEvidence);
@@ -47,31 +55,7 @@ public class DefendantEvidenceTest {
     }
 
     @Test
-    public void shouldPassValidationForNullComment() {
-        DefendantEvidence defendantEvidence = new DefendantEvidence(
-            singletonList(EvidenceRow.builder().type(EXPERT_WITNESS).description("description").build()), null
-        );
-
-        Set<String> response = validate(defendantEvidence);
-
-        assertThat(response)
-            .hasSize(0);
-    }
-
-    @Test
-    public void shouldPassValidationForEmptyComment() {
-        DefendantEvidence defendantEvidence = new DefendantEvidence(
-            singletonList(EvidenceRow.builder().type(EXPERT_WITNESS).description("description").build()), ""
-        );
-
-        Set<String> response = validate(defendantEvidence);
-
-        assertThat(response)
-            .hasSize(0);
-    }
-
-    @Test
-    public void shouldPFailValidationForTooLongComment() {
+    void shouldPFailValidationForTooLongComment() {
         DefendantEvidence defendantEvidence = new DefendantEvidence(
             singletonList(EvidenceRow.builder().type(EXPERT_WITNESS).description("description").build()),
             repeat("a", 99001)

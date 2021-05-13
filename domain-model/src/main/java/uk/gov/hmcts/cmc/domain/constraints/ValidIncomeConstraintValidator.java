@@ -11,9 +11,7 @@ import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.setVali
 
 public class ValidIncomeConstraintValidator implements ConstraintValidator<ValidIncome, Income> {
 
-    public static class Fields {
-        public static final String OTHER_DETAILS = "otherSource";
-    }
+    private static final String OTHER_DETAILS = "otherSource";
 
     @Override
     public boolean isValid(Income income, ConstraintValidatorContext context) {
@@ -26,14 +24,14 @@ public class ValidIncomeConstraintValidator implements ConstraintValidator<Valid
         if (type == Income.IncomeType.OTHER) {
             if (!income.getOtherSource().isPresent()) {
                 setValidationErrors(
-                    context, Fields.OTHER_DETAILS, mayNotBeNullError("type", type.getDescription())
+                    context, OTHER_DETAILS, mayNotBeNullError("type", type.getDescription())
                 );
                 return false;
             }
         } else {
             if (income.getOtherSource().isPresent()) {
                 setValidationErrors(
-                    context, Fields.OTHER_DETAILS, mayNotBeProvidedError("type", type.getDescription())
+                    context, OTHER_DETAILS, mayNotBeProvidedError("type", type.getDescription())
                 );
                 return false;
             }

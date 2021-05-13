@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
+import uk.gov.hmcts.cmc.domain.models.BreathingSpace;
+import uk.gov.hmcts.cmc.domain.models.BreathingSpaceType;
 import uk.gov.hmcts.cmc.domain.models.ChannelType;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -23,6 +25,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.orders.BespokeOrderDirection;
 import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -32,6 +35,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -49,6 +53,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.ORDER_DIRECTIONS;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.DQ_FLAG;
 import static uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType.DEFAULT;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
 import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.CLAIMANT;
@@ -91,6 +96,7 @@ public final class SampleClaim {
     private LocalDateTime createdAt = NOW_IN_LOCAL_ZONE;
     private LocalDateTime respondedAt = NOT_RESPONDED;
     private LocalDate issuedOn = ISSUE_DATE;
+    private LocalDate serviceDate = ISSUE_DATE;
     private CountyCourtJudgment countyCourtJudgment = null;
     private LocalDateTime countyCourtJudgmentRequestedAt = null;
     private ClaimData claimData = SampleClaimData.builder().withExternalId(RAND_UUID).build();
@@ -119,6 +125,9 @@ public final class SampleClaim {
     private MediationOutcome mediationOutcome;
     private TransferContent transferContent;
     private String bulkPrintLetterId = UUID.randomUUID().toString();
+    private String directionOrderType;
+    private BespokeOrderDirection bespokeOrderDirection;
+    private String lastEventTriggeredForHwfCase = null;
 
     private SampleClaim() {
     }
@@ -126,6 +135,91 @@ public final class SampleClaim {
     public static Claim getDefault() {
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimantBuilder().withExternalId(RAND_UUID).build())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .ccjType(CountyCourtJudgmentType.ADMISSIONS)
+                    .paymentOption(IMMEDIATELY)
+                    .build()
+            ).withResponse(SampleResponse.FullDefence
+                .builder()
+                .withDefenceType(DefenceType.DISPUTE)
+                .withMediation(YES)
+                .build()
+            ).withState(ClaimState.OPEN)
+            .build();
+    }
+
+    public static Claim getDefaultWithBreathingSpaceDetails() {
+        BreathingSpace breathingSpace = new BreathingSpace("REF12121212",
+            BreathingSpaceType.STANDARD_BS_ENTERED, LocalDate.now(),
+            null, LocalDate.now(), null, LocalDate.now(), "NO");
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimantBuilder().withExternalId(RAND_UUID)
+                .withBreathingSpace(breathingSpace).build())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .ccjType(CountyCourtJudgmentType.ADMISSIONS)
+                    .paymentOption(IMMEDIATELY)
+                    .build()
+            ).withResponse(SampleResponse.FullDefence
+                .builder()
+                .withDefenceType(DefenceType.DISPUTE)
+                .withMediation(YES)
+                .build()
+            ).withState(ClaimState.OPEN)
+            .build();
+    }
+
+    public static Claim getDefaultWithClaimStateAsCreate() {
+
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimantBuilder().withExternalId(RAND_UUID).build())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .ccjType(CountyCourtJudgmentType.ADMISSIONS)
+                    .paymentOption(IMMEDIATELY)
+                    .build()
+            ).withResponse(SampleResponse.FullDefence
+                .builder()
+                .withDefenceType(DefenceType.DISPUTE)
+                .withMediation(YES)
+                .build()
+            ).withState(ClaimState.CREATE)
+            .build();
+    }
+
+    public static Claim getDefaultWithClaimStateAsCreateWithoutOperators() {
+        ClaimSubmissionOperationIndicators operationIndicators = ClaimSubmissionOperationIndicators.builder()
+            .bulkPrint(YesNoOption.YES)
+            .staffNotification(YesNoOption.YES)
+            .defendantNotification(YesNoOption.YES)
+            .sealedClaimUpload(YesNoOption.YES)
+            .claimIssueReceiptUpload(YesNoOption.YES)
+            .rpa(YesNoOption.YES)
+            .claimantNotification(YesNoOption.YES)
+            .build();
+
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimantBuilder().withExternalId(RAND_UUID).build())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .ccjType(CountyCourtJudgmentType.ADMISSIONS)
+                    .paymentOption(IMMEDIATELY)
+                    .build()
+            ).withResponse(SampleResponse.FullDefence
+                .builder()
+                .withDefenceType(DefenceType.DISPUTE)
+                .withMediation(YES)
+                .build()
+            ).withState(ClaimState.CREATE)
+            .withClaimSubmissionOperationIndicators(operationIndicators)
+            .build();
+    }
+
+    public static Claim getDefaultWithDefendantAddressNull() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimantWithDefendantAddressNullBuilder()
+                .withExternalId(RAND_UUID).build())
             .withCountyCourtJudgment(
                 SampleCountyCourtJudgment.builder()
                     .ccjType(CountyCourtJudgmentType.ADMISSIONS)
@@ -289,6 +383,15 @@ public final class SampleClaim {
             .build();
     }
 
+    public static Claim getWithResponseAddressChanged(Response response) {
+        return builder()
+            .withClaimData(SampleClaimData.submittedWithChangedAddress())
+            .withResponse(response)
+            .withRespondedAt(LocalDateTime.now())
+            .withDefendantEmail(DEFENDANT_EMAIL)
+            .build();
+    }
+
     public static Claim getWithResponseDefendantEmailVerified(Response response) {
         return builder()
             .withClaimData(SampleClaimData.validDefaults())
@@ -322,6 +425,7 @@ public final class SampleClaim {
             .withResponse(SampleResponse.FullAdmission.validDefaults())
             .withRespondedAt(LocalDateTime.now())
             .withDefendantEmail(DEFENDANT_EMAIL)
+            .withFeatures(Collections.singletonList(DQ_FLAG.getValue()))
             .withClaimantRespondedAt(LocalDateTime.now())
             .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
             .build();
@@ -357,6 +461,7 @@ public final class SampleClaim {
                 .freeMediation(YES)
                 .mediationPhoneNumber("07999999999")
                 .mediationContactPerson("Mediation Contact Person")
+                .noMediationReason("Not interested")
                 .reason("Some valid reason")
                 .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder()
                     .withHearingLocation(pilotHearingLocation).build())
@@ -458,6 +563,22 @@ public final class SampleClaim {
                 SampleClaimData.builder()
                     .withDefendant(SampleTheirDetails.builder().withPhone(null).withEmail(null).individualDetails())
                     .build()
+            ).build();
+    }
+
+    public static Claim getClaimWhenFeeRemittedIsMoreThanFee() {
+        return SampleClaim.builder()
+            .withClaimData(
+                SampleClaimData.builder()
+                    .withFeeRemitted(BigInteger.valueOf(5000)).build()
+            ).build();
+    }
+
+    public static Claim getClaimWhenFeeRemittedIsEqualToFee() {
+        return SampleClaim.builder()
+            .withClaimData(
+                SampleClaimData.builder()
+                    .withFeeRemitted(BigInteger.valueOf(4000)).build()
             ).build();
     }
 
@@ -581,7 +702,7 @@ public final class SampleClaim {
             claimData,
             createdAt,
             issuedOn,
-            issuedOn.plusDays(5),
+            issuedOn == null ? null : issuedOn.plusDays(5),
             responseDeadline,
             isMoreTimeRequested,
             submitterEmail,
@@ -616,12 +737,19 @@ public final class SampleClaim {
             null,
             null,
             null,
+            null,
             transferContent,
             null,
             List.of(BulkPrintDetails.builder()
                 .printRequestType(PrintRequestType.PIN_LETTER_TO_DEFENDANT)
                 .printRequestedAt(LocalDate.now())
-                .printRequestId(bulkPrintLetterId).build())
+                .printRequestId(bulkPrintLetterId).build()),
+            directionOrderType,
+            bespokeOrderDirection,
+            LocalDateTime.now(),
+            lastEventTriggeredForHwfCase,
+            null,
+            null
         );
     }
 
@@ -682,6 +810,11 @@ public final class SampleClaim {
 
     public SampleClaim withIssuedOn(LocalDate issuedOn) {
         this.issuedOn = issuedOn;
+        return this;
+    }
+
+    public SampleClaim withServiceDate(LocalDate serviceDate) {
+        this.serviceDate = serviceDate;
         return this;
     }
 
@@ -815,12 +948,12 @@ public final class SampleClaim {
 
     public SampleClaim withGeneralLetter(URI uri) {
         ClaimDocument claimDocument = ClaimDocument.builder()
-                .documentManagementUrl(uri)
-                .documentName("general-letter.pdf")
-                .documentType(GENERAL_LETTER)
-                .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
-                .createdBy(OCMC)
-                .build();
+            .documentManagementUrl(uri)
+            .documentName("general-letter.pdf")
+            .documentType(GENERAL_LETTER)
+            .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
+            .createdBy(OCMC)
+            .build();
         this.claimDocumentCollection.addClaimDocument(claimDocument);
         return this;
     }

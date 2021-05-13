@@ -1,9 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.services.document;
 
+import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.springframework.core.io.ByteArrayResource;
@@ -28,6 +27,7 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import java.net.URI;
 import java.util.Collections;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -48,7 +48,7 @@ public class DocumentManagementServiceTest {
 
     private static final ImmutableList<String> USER_ROLES = ImmutableList.of("caseworker-cmc", "citizen");
     private static final String USER_ROLES_JOINED = "caseworker-cmc,citizen";
-
+    private final PDF document = new PDF("0000-claim", "test".getBytes(), SEALED_CLAIM);
     @Mock
     private DocumentMetadataDownloadClientApi documentMetadataDownloadClient;
     @Mock
@@ -61,14 +61,9 @@ public class DocumentManagementServiceTest {
     private UserService userService;
     @Mock
     private AppInsights appInsights;
-
     private DocumentManagementService documentManagementService;
-
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
     @Mock
     private ResponseEntity<Resource> responseEntity;
-    private final PDF document = new PDF("0000-claim", "test".getBytes(), SEALED_CLAIM);
 
     @Before
     public void setUp() {
@@ -105,9 +100,6 @@ public class DocumentManagementServiceTest {
 
     @Test
     public void uploadDocumentToDocumentManagementThrowsException() {
-        expectedException.expect(DocumentManagementException.class);
-        expectedException.expectMessage("Unable to upload document 0000-claim.pdf to document management");
-
         UserDetails userDetails = new UserDetails("id", "mail@mail.com",
             "userFirstName", "userLastName", Collections.singletonList("role"));
 
@@ -117,8 +109,12 @@ public class DocumentManagementServiceTest {
         when(documentUploadClient
             .upload(anyString(), anyString(), anyString(), eq(USER_ROLES), any(Classification.class), anyList()))
             .thenReturn(unsuccessfulDocumentManagementUploadResponse());
-
-        documentManagementService.uploadDocument(authorisation, document);
+        try {
+            documentManagementService.uploadDocument(authorisation, document);
+            Assert.fail("Expected a DocumentManagementException to be thrown");
+        } catch (DocumentManagementException expected) {
+            assertThat(expected).hasMessage("Unable to upload document 0000-claim.pdf to document management.");
+        }
     }
 
     @Test
@@ -178,10 +174,6 @@ public class DocumentManagementServiceTest {
     @Test
     public void downloadDocumentFromDocumentManagementThrowException() {
         URI docUri = mock(URI.class);
-        expectedException.expect(DocumentManagementException.class);
-        expectedException.expectMessage(
-            String.format("Unable to download document %s from document management", docUri));
-
         UserDetails userDetails = new UserDetails("id", "mail@mail.com",
             "userFirstName", "userLastName", Collections.singletonList("role"));
         when(userService.getUserDetails(anyString())).thenReturn(userDetails);
@@ -194,7 +186,13 @@ public class DocumentManagementServiceTest {
             .documentManagementUrl(docUri)
             .documentName("0000-claim")
             .build();
-        documentManagementService.downloadDocument("auth string", claimDocument);
+        try {
+            documentManagementService.downloadDocument("auth string", claimDocument);
+            Assert.fail("Expected a DocumentManagementException to be thrown");
+        } catch (DocumentManagementException expected) {
+            assertThat(expected).hasMessage(String.format("Unable to download document %s from document management.",
+                docUri));
+        }
     }
 
     @Test

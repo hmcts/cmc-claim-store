@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,6 +56,7 @@ public class DefenceResponseNotificationServiceTest extends BaseMockSpringTest {
         claim = SampleClaim
             .builder()
             .withResponse(SampleResponse.validDefaults())
+            .withIssuedOn(LocalDate.now())
             .withRespondedAt(LocalDateTime.of(2018, 4, 26, 1, 1))
             .build();
 
@@ -66,6 +68,14 @@ public class DefenceResponseNotificationServiceTest extends BaseMockSpringTest {
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaim() {
         service.notifyRobotics(null);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldThrowExceptionWhenIssuedOnDateIsMissing() {
+        claim = claim.toBuilder().issuedOn(null).build();
+        event = new DefendantResponseEvent(claim, "AUTH_CODE");
+
+        service.notifyRobotics(event);
     }
 
     @Test

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.mapper.defendant;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.offers.CCDMadeBy;
@@ -24,8 +23,7 @@ public class ReDeterminationMapper {
     }
 
     public void from(Claim.ClaimBuilder builder, CCDRespondent respondent) {
-        if (StringUtils.isBlank(respondent.getRedeterminationExplanation())
-            || respondent.getRedeterminationMadeBy() == null
+        if (respondent.getRedeterminationMadeBy() == null
             || respondent.getRedeterminationRequestedDate() == null
         ) {
             return;

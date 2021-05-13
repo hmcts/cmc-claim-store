@@ -1,0 +1,124 @@
+{
+  "externalId": "9f49d8df-b734-4e86-aeb6-e22f0c2ca78d",
+  "claimants": [
+    {
+      "id": "acd82549-d279-4adc-b38c-d195dd0db0d6",
+      "type": "individual",
+      "name": "John Rambo",
+      "address": {
+        "line1": "52",
+        "line2": "Down Street",
+        "line3": "Salford",
+        "city": "Manchester",
+        "postcode": "DF1 3LJ"
+      },
+      "correspondenceAddress": {
+        "line1": "52",
+        "line2": "Down Street",
+        "line3": "Salford",
+        "city": "Manchester",
+        "postcode": "DF1 3LJ"
+      },
+      "dateOfBirth": "1968-01-02",
+      "phone": "07873727165",
+      "representative": {
+        "organisationName": "Trading ltd",
+        "organisationContactDetails": {
+          "email": "representative@example.org",
+          "phone": "7873738547",
+          "dxAddress": "DX123456"
+        },
+        "organisationAddress": {
+          "line1": "52",
+          "line2": "Down Street",
+          "line3": "Salford",
+          "city": "Manchester",
+          "postcode": "DF1 3LJ"
+        }
+      }
+    }
+  ],
+  "amount": {
+    "type": "range",
+    "lowerValue": 123.56,
+    "higherValue": 123.56
+  },
+  "interest": {
+    "type": "standard",
+    "rate": 8,
+    "lastInterestCalculationDate": "2015-02-02T22:23:27.773037",
+    "interestDate": {
+      "type": "custom",
+      "date": "2015-02-02",
+      "reason": "I want to claim from this date because that's when that happened",
+      "endDateType": "settled_or_judgment"
+    }
+  },
+  "defendants": [
+    {
+      "id": "3d0bc933-0d46-4564-94bd-79e6e69b838b",
+      "type": "individual",
+      "title": "Dr.",
+      "firstName": "John",
+      "lastName": "Smith",
+      "address": {
+        "line1": "52",
+        "line2": "Down Street",
+        "line3": "Salford",
+        "city": "Manchester",
+        "postcode": "DF1 3LJ"
+      },
+      "email": "j.smith@example.com",
+      "representative": {
+        "organisationName": "Trading ltd",
+        "organisationContactDetails": {
+          "email": "representative@example.org",
+          "phone": "7873738547",
+          "dxAddress": "DX123456"
+        },
+        "organisationAddress": {
+          "line1": "52",
+          "line2": "Down Street",
+          "line3": "Salford",
+          "city": "Manchester",
+          "postcode": "DF1 3LJ"
+        }
+      },
+      "serviceAddress": {
+        "line1": "52",
+        "line2": "Down Street",
+        "line3": "Salford",
+        "city": "Manchester",
+        "postcode": "DF1 3LJ"
+      }
+    }
+  ],
+  "feeAmountInPennies": 4000,
+  "feeRemitted": 3000,
+  "feeAmountAfterRemission": 3000,
+  "feeAccountNumber": "PBA1234567",
+  "reason": "reason",
+  "statementOfTruth": {
+    "signerName": "John Rambo",
+    "signerRole": "Director"
+  },
+  "personalInjury": {
+    "generalDamages": "moreThanThousandPounds"
+  },
+  "housingDisrepair": {
+    "costOfRepairsDamages": "moreThanThousandPounds",
+    "otherDamages": "moreThanThousandPounds"
+  },
+  "externalReferenceNumber": "CLAIM234324",
+  "preferredCourt": "LONDON COUNTY COUNCIL",
+  "feeCode": "X0012",
+  "helpWithFeesNumber": "HWF012345",
+  "helpWithFeesType": "Claim Issue",
+  "hwfFeeDetailsSummary": "Summary",
+  "hwfMandatoryDetails": "Details",
+  "hwfMoreInfoNeededDocuments": [
+    "BANK_STATEMENTS",
+    "PRISONERS_INCOME"
+  ],
+  "hwfDocumentsToBeSentBefore": "2020-01-01"
+}

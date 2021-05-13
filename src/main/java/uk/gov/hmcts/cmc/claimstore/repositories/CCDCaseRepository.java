@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
+import uk.gov.hmcts.cmc.domain.models.BreathingSpace;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
@@ -25,6 +26,7 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFER_TO_JUDGE_BY_DEFENDANT;
@@ -49,8 +51,8 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
-        return ccdCaseApi.getBySubmitterId(submitterId, authorisation);
+    public List<Claim> getBySubmitterId(String submitterId, String authorisation, Integer pageNumber) {
+        return ccdCaseApi.getBySubmitterId(submitterId, authorisation, pageNumber);
     }
 
     @Override
@@ -70,13 +72,13 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void linkDefendant(String authorisation) {
-        ccdCaseApi.linkDefendant(authorisation);
+    public void linkDefendant(String authorisation, String letterholderId) {
+        ccdCaseApi.linkDefendantUsingLetterholderId(authorisation, letterholderId);
     }
 
     @Override
-    public List<Claim> getByDefendantId(String id, String authorisation) {
-        return ccdCaseApi.getByDefendantId(id, authorisation);
+    public List<Claim> getByDefendantId(String id, String authorisation, Integer pageNumber) {
+        return ccdCaseApi.getByDefendantId(id, authorisation, pageNumber);
     }
 
     @Override
@@ -111,6 +113,11 @@ public class CCDCaseRepository implements CaseRepository {
         CountyCourtJudgment countyCourtJudgment
     ) {
         coreCaseDataService.saveCountyCourtJudgment(authorisation, claim.getId(), countyCourtJudgment);
+    }
+
+    @Override
+    public Map<String, String> getPaginationInfo(String authorisation, String userType) {
+        return ccdCaseApi.getPaginationInfo(userService.getUser(authorisation), userType);
     }
 
     @Override
@@ -181,6 +188,16 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
+    public Claim saveHelpWithFeesClaim(User user, Claim claim) {
+        return coreCaseDataService.createNewHelpWithFeesCase(user, claim);
+    }
+
+    @Override
+    public Claim updateHelpWithFeesClaim(User user, Claim claim, CaseEvent caseEvent) {
+        return coreCaseDataService.saveCaseEventIOC(user, claim, caseEvent);
+    }
+
+    @Override
     @LogExecutionTime
     public Claim saveRepresentedClaim(User user, Claim claim) {
         return coreCaseDataService.createRepresentedClaim(user, claim);
@@ -205,6 +222,11 @@ public class CCDCaseRepository implements CaseRepository {
     @Override
     public Claim saveReviewOrder(Long caseId, ReviewOrder reviewOrder, String authorisation) {
         return coreCaseDataService.saveReviewOrder(caseId, reviewOrder, authorisation);
+    }
+
+    @Override
+    public Claim saveBreathingSpaceDetails(Claim claim, BreathingSpace breathingSpace, String authorisation) {
+        return coreCaseDataService.saveBreathingSpaceDetails(claim, breathingSpace, authorisation);
     }
 
     @Override

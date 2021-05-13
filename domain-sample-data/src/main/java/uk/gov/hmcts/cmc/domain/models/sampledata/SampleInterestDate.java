@@ -46,6 +46,15 @@ public class SampleInterestDate {
             .build();
     }
 
+    public static InterestDate customDateToSettledOrJudgement() {
+        return builder()
+            .withType(InterestDate.InterestDateType.CUSTOM)
+            .withEndDateType(InterestDate.InterestEndDateType.SETTLED_OR_JUDGMENT)
+            .withDate(LocalDate.now().minusDays(5))
+            .withReason(null)
+            .build();
+    }
+
     public SampleInterestDate withType(InterestDate.InterestDateType type) {
         this.type = type;
         return this;

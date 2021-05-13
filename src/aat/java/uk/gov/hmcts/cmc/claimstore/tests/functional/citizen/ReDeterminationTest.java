@@ -195,7 +195,7 @@ public class ReDeterminationTest extends BaseTest {
 
     private Claim createClaimWithResponse(Claim createdCase, User defendant) {
         commonOperations.linkDefendant(
-            defendant.getAuthorisation()
+            defendant.getAuthorisation(), createdCase.getLetterHolderId()
         );
 
         Response response = SampleResponse.PartAdmission.builder()

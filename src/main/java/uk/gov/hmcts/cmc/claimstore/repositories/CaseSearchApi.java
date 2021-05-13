@@ -16,4 +16,13 @@ public interface CaseSearchApi {
     List<Claim> getClaimsWithDefaultCCJ(User user, LocalDate ccjRequestedDate);
 
     List<Claim> getClaimsReadyForTransfer(User user);
+
+    Integer getClaimCountForClaimant(String submitterId, User user);
+
+    Integer getClaimCountForDefendant(String submitterId, User user);
+
+    List<Claim> getClaimsForDefendant(String submitterId, User user, int index);
+
+    List<Claim> getClaimsForClaimant(String submitterId, User user, int index);
+
 }

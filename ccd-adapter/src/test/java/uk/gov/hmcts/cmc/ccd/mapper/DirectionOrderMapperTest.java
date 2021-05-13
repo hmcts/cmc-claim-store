@@ -67,7 +67,7 @@ public class DirectionOrderMapperTest {
         Claim.ClaimBuilder claimBuilder = Claim.builder();
         CCDCase ccdCase = CCDCase.builder().build();
         mapper.from(ccdCase, claimBuilder);
-        assertThat(!claimBuilder.build().getDirectionOrder().isPresent());
+        assertThat(claimBuilder.build().getDirectionOrder()).isEmpty();
     }
 
     @Test
@@ -81,6 +81,6 @@ public class DirectionOrderMapperTest {
         Claim.ClaimBuilder claimBuilder = Claim.builder();
         CCDCase ccdCase = CCDCase.builder().directionOrder(ccdDirectionOrder).build();
         mapper.from(ccdCase, claimBuilder);
-        assertThat(claimBuilder.build().getDirectionOrder().isPresent());
+        assertThat(claimBuilder.build().getDirectionOrder()).isEmpty();
     }
 }

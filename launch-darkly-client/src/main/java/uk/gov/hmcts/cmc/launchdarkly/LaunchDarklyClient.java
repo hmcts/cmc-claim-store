@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.launchdarkly;
 
-import com.launchdarkly.client.LDClientInterface;
-import com.launchdarkly.client.LDUser;
+import com.launchdarkly.sdk.LDUser;
+import com.launchdarkly.sdk.server.interfaces.LDClientInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,6 +25,10 @@ public class LaunchDarklyClient {
     ) {
         this.internalClient = ldClientFactory.create(sdkKey, offlineMode);
         Runtime.getRuntime().addShutdownHook(new Thread(this::close));
+    }
+
+    public boolean isFeatureEnabled(String feature) {
+        return internalClient.boolVariation(feature, LaunchDarklyClient.CLAIM_STORE_USER, false);
     }
 
     public boolean isFeatureEnabled(String feature, LDUser user) {

@@ -1,0 +1,102 @@
+{
+  "id": 1516189555935242,
+  "jurisdiction": "CMC",
+  "state": "open",
+  "case_type_id": "MoneyClaimCase",
+  "created_date": "2018-01-17T11:45:55.944",
+  "last_modified": "2018-01-17T11:45:55.989",
+  "security_classification": "PUBLIC",
+  "case_data": {
+    "id": 1546441994877723,
+    "reason": "A strong sense of entitlement that would explain my reasons of the claim, that the Roof work and leaks that followed were done below standards set by the council inspector",
+    "features": "admissions",
+    "issuedOn": "2020-01-16",
+    "timeline": [
+      {
+        "id": "764a0b46-7fef-4f21-b6d4-939477517b00",
+        "value": {
+          "date": "01 October 2017",
+          "description": "The day the first bill was issued"
+        }
+      },
+      {
+        "id": "18f596e7-479a-49ae-94d2-3b2e5515bfa8",
+        "value": {
+          "date": "26 March 2018",
+          "description": "A historic day with enormous importance"
+        }
+      },
+      {
+        "id": "e70b6f55-089f-4fb6-a10d-560115bf6feb",
+        "value": {
+          "date": "14 June 2018",
+          "description": "line to explain what happened and when"
+        }
+      }
+    ],
+    "applicants": [
+      {
+        "id": "0da037e8-701c-405d-8d92-222b233d6026",
+        "value": {
+          "partyName": "Jan Clark",
+          "partyDetail": {
+            "type": "INDIVIDUAL",
+            "primaryAddress": {
+              "AddressLine1": "Street 1",
+              "AddressLine2": "Street 2",
+              "AddressLine3": "Street 3",
+              "PostCode": "SW1A 9AA",
+              "PostTown": "London"
+            },
+            "telephoneNumber":{
+              "telephoneNumber":"07873727165"
+            },
+            "dateOfBirth":"2000-01-01"
+          }
+        }
+      }
+    ],
+    "amountType": "BREAK_DOWN",
+    "respondents": [
+      {
+        "id": "440ebab7-f812-4f89-9be1-9f67b80f8179",
+        "value": {
+          "letterHolderId": "75",
+          "responseDeadline": "2020-02-06",
+          "claimantProvidedPartyName": "Mary Richards",
+          "claimantProvidedDetail": {
+            "type": "INDIVIDUAL",
+            "emailAddress": "j.smith@example.com",
+            "primaryAddress": {
+              "PostCode": "SW1A 9AA",
+              "PostTown": "London",
+              "AddressLine1": "Flat 3A",
+              "AddressLine2": "Street 1",
+              "AddressLine3": "Middle Road"
+            }
+          }
+        }
+      }
+    ],
+    "externalId": "b60baf23-e1f4-4c63-84fd-4d48d8a8f5ce",
+    "submittedOn": "2019-01-02T15:13:32.683686",
+    "submitterId": "62",
+    "interestType": "NO_INTEREST",
+    "paymentAmount": 25,
+    "paymentStatus": "Success",
+    "submitterEmail": "j.smith@example.com",
+    "amountBreakDown": [
+      {
+        "id": "ca15b20f-d38e-41bc-baa2-4549522790bd",
+        "value": {
+          "amount": 75,
+          "reason": "Roof Fix & repairs to leak"
+        }
+      }
+    ],
+    "previousServiceCaseReference": "000MC023",
+    "paymentReference": "RC-1546-4419-9390-7385",
+    "feeAmountInPennies": "2500",
+    "claimSubmissionOperationIndicators": {"rpa": "YES", "bulkPrint": "YES", "sealedClaimUpload": "YES", "staffNotification": "YES", "claimantNotification": "YES", "defendantNotification": "YES", "claimIssueReceiptUpload": "YES"}
+  }
+}

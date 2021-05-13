@@ -9,7 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.courtfinder.models.CourtDetails;
 
 import java.util.List;
 
-@FeignClient(name = "court-finder-api", url = "${courtfinder.api.url}")
+@FeignClient(name = "court-finder-api", primary = false, url = "${courtfinder.api.url}")
 public interface CourtFinderApi {
 
     String SEARCH_POSTCODE_URL = "/search/results.json?postcode={postcode}&spoe=nearest&aol=Money%20Claims";

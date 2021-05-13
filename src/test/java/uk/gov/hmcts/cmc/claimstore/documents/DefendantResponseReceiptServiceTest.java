@@ -1,9 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.documents;
 
+import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -14,11 +13,11 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @RunWith(MockitoJUnitRunner.class)
 public class DefendantResponseReceiptServiceTest {
 
-    @Rule
-    public final ExpectedException exceptionRule = ExpectedException.none();
     @Mock
     private DefendantResponseContentProvider contentProvider;
     @Mock
@@ -40,9 +39,12 @@ public class DefendantResponseReceiptServiceTest {
     @Test
     public void shouldThrowErrorWhenDefendantResponseDoesNotExist() {
         Claim claim = SampleClaim.builder().build();
-        exceptionRule.expect(NotFoundException.class);
-        exceptionRule.expectMessage("Defendant response does not exist for this claim");
-        defendantResponseReceiptService.createPdf(claim);
+        try {
+            defendantResponseReceiptService.createPdf(claim);
+            Assert.fail("Expected a NotFoundException to be thrown");
+        } catch (NotFoundException expected) {
+            assertThat(expected).hasMessage("Defendant response does not exist for this claim");
+        }
     }
 
 }

@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.repositories;
 
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.domain.models.BreathingSpace;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
@@ -18,10 +19,11 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface CaseRepository {
-    List<Claim> getBySubmitterId(String submitterId, String authorisation);
+    List<Claim> getBySubmitterId(String submitterId, String authorisation, Integer pageNumber);
 
     Optional<Claim> getClaimByExternalId(String externalId, User user);
 
@@ -32,6 +34,8 @@ public interface CaseRepository {
         Claim claim,
         CountyCourtJudgment countyCourtJudgment
     );
+
+    Map<String, String> getPaginationInfo(String authorisation, String userType);
 
     void saveDefendantResponse(
         Claim claim,
@@ -47,9 +51,9 @@ public interface CaseRepository {
 
     void updateDirectionsQuestionnaireDeadline(Claim claim, LocalDate dqDeadline, String authorization);
 
-    void linkDefendant(String authorisation);
+    void linkDefendant(String authorisation, String letterholderId);
 
-    List<Claim> getByDefendantId(String id, String authorisation);
+    List<Claim> getByDefendantId(String id, String authorisation, Integer pageNumber);
 
     List<Claim> getByClaimantEmail(String email, String authorisation);
 
@@ -68,6 +72,10 @@ public interface CaseRepository {
     void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, CaseEvent caseEvent);
 
     Claim saveClaim(User user, Claim claim);
+
+    Claim saveHelpWithFeesClaim(User user, Claim claim);
+
+    Claim updateHelpWithFeesClaim(User user, Claim claim, CaseEvent caseEvent);
 
     Claim saveRepresentedClaim(User user, Claim claim);
 
@@ -97,6 +105,8 @@ public interface CaseRepository {
     Claim linkLetterHolder(Long claimId, String letterHolderId);
 
     Claim saveReviewOrder(Long caseId, ReviewOrder reviewOrder, String authorisation);
+
+    Claim saveBreathingSpaceDetails(Claim claim, BreathingSpace breathingSpace, String authorisation);
 
     Claim addBulkPrintDetailsToClaim(
         String authorisation,

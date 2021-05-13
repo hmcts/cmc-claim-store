@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.launchdarkly.internal;
 
-import com.launchdarkly.client.LDClientInterface;
+import com.launchdarkly.sdk.server.interfaces.LDClientInterface;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

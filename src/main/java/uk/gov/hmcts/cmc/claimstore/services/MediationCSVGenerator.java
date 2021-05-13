@@ -1,11 +1,12 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MediationCSVGenerationException;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseSearchApi;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -27,6 +28,8 @@ import static uk.gov.hmcts.cmc.domain.models.MediationRow.MediationRowBuilder;
 
 @RequiredArgsConstructor
 public class MediationCSVGenerator {
+    Logger logger = LoggerFactory.getLogger(this.getClass());
+
     private static final String SITE_ID = "5";
     private static final String CASE_TYPE = "1";
     private static final String CHECK_LIST = "4";
@@ -52,7 +55,7 @@ public class MediationCSVGenerator {
         .build();
 
     private static final Map<Integer, Function<Claim, String>> CONTACT_PERSON_EXTRACTORS =
-        ImmutableMap.of(
+        Map.of(
             CLAIMANT_PARTY_TYPE,
             claim -> claim.getClaimantResponse()
                 .filter(ResponseRejection.class::isInstance)
@@ -69,7 +72,7 @@ public class MediationCSVGenerator {
         );
 
     private static final Map<Integer, Function<Claim, String>> CONTACT_NUMBER_EXTRACTORS =
-        ImmutableMap.of(
+        Map.of(
             CLAIMANT_PARTY_TYPE,
             claim -> claim.getClaimantResponse()
                 .filter(ResponseRejection.class::isInstance)
@@ -84,7 +87,7 @@ public class MediationCSVGenerator {
         );
 
     private static final Map<Integer, Function<Claim, String>> CONTACT_EMAIL_EXTRACTORS =
-        ImmutableMap.of(
+        Map.of(
             CLAIMANT_PARTY_TYPE,
             Claim::getSubmitterEmail,
             DEFENDANT_PARTY_TYPE,
@@ -98,7 +101,7 @@ public class MediationCSVGenerator {
             .orElse("No");
 
     private static final Map<Integer, Function<Claim, String>> PARTY_NAME_EXTRACTORS =
-        ImmutableMap.of(
+        Map.of(
             CLAIMANT_PARTY_TYPE,
             claim -> claim.getClaimData().getClaimant().getName(),
             DEFENDANT_PARTY_TYPE,
@@ -128,6 +131,7 @@ public class MediationCSVGenerator {
             csvPrinter.flush();
             csvData = stringBuilder.toString();
         } catch (Exception e) {
+            logger.error("MILO: Mediation csv generation failed,records details are {}", problematicRecords);
             throw new MediationCSVGenerationException("Error generating Mediation CSV", e);
         }
     }
@@ -139,6 +143,7 @@ public class MediationCSVGenerator {
             .flatMap(List::stream)
             .collect(Collectors.toList());
 
+        logger.info("MILO: total no of claims retrieved {}", result.size());
         if (result.isEmpty()) {
             result.add(MediationRow.builder().build());
         }
@@ -153,6 +158,8 @@ public class MediationCSVGenerator {
                 createMediationRow(claim, DEFENDANT_PARTY_TYPE)
             );
         } catch (MediationCSVGenerationException e) {
+            logger.error("MILO: Mediation csv generation failed for {} and error {}",
+                claim.getReferenceNumber(), e.getMessage());
             problematicRecords.put(claim.getReferenceNumber(), e.getMessage());
             return Collections.emptyList();
         }

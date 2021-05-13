@@ -49,7 +49,8 @@ public class ClaimPdfTest extends BasePdfTest {
     @Override
     protected void assertionsOnPdf(Claim createdCase, String pdfAsText) {
         assertThat(pdfAsText).contains("Claim number: " + createdCase.getReferenceNumber());
-        assertThat(pdfAsText).contains("Issued on: " + Formatting.formatDate(createdCase.getIssuedOn()));
+        assertThat(pdfAsText).contains("Issued on: "
+            + createdCase.getIssuedOn().map(Formatting::formatDate).orElseThrow());
         assertThat(pdfAsText).contains("Name: " + createdCase.getClaimData().getClaimant().getName());
         assertThat(pdfAsText).contains("Address: "
             + getFullAddressString(createdCase.getClaimData().getClaimant().getAddress()));

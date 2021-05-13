@@ -11,9 +11,7 @@ import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.setVali
 
 public class ValidExpenseConstraintValidator implements ConstraintValidator<ValidExpense, Expense> {
 
-    public static class Fields {
-        public static final String OTHER_EXPENSE_NAME = "otherName";
-    }
+    private static final String OTHER_EXPENSE_NAME = "otherName";
 
     @Override
     public boolean isValid(Expense expense, ConstraintValidatorContext context) {
@@ -26,14 +24,14 @@ public class ValidExpenseConstraintValidator implements ConstraintValidator<Vali
         if (type == Expense.ExpenseType.OTHER) {
             if (!expense.getOtherName().isPresent()) {
                 setValidationErrors(
-                    context, Fields.OTHER_EXPENSE_NAME, mayNotBeNullError("type", type.getDescription())
+                    context, OTHER_EXPENSE_NAME, mayNotBeNullError("type", type.getDescription())
                 );
                 return false;
             }
         } else {
             if (expense.getOtherName().isPresent()) {
                 setValidationErrors(
-                    context, Fields.OTHER_EXPENSE_NAME, mayNotBeProvidedError("type", type.getDescription())
+                    context, OTHER_EXPENSE_NAME, mayNotBeProvidedError("type", type.getDescription())
                 );
                 return false;
             }

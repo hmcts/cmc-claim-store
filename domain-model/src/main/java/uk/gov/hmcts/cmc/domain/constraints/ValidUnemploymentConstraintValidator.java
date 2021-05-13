@@ -10,10 +10,55 @@ import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.setVali
 
 public class ValidUnemploymentConstraintValidator implements ConstraintValidator<ValidEmployment, Unemployment> {
 
-    public static class Fields {
-        public static final String UNEMPLOYED = "unemployed";
-        public static final String IS_RETIRED = "isRetired";
-        public static final String OTHER = "other";
+    private static final String UNEMPLOYED = "unemployed";
+    private static final String IS_RETIRED = "isRetired";
+    private static final String OTHER = "other";
+    private static final String UNEMPLOYMENT = "unemployment";
+
+    private boolean retiredPopulated(Boolean otherPopulated, boolean unemployedPopulated,
+                                     ConstraintValidatorContext context) {
+        boolean valid = true;
+        if (Boolean.TRUE.equals(otherPopulated)) {
+            setValidationErrors(context, OTHER, mayNotBeProvidedError(UNEMPLOYMENT, IS_RETIRED));
+            valid = false;
+        }
+        if (Boolean.TRUE.equals(unemployedPopulated)) {
+            setValidationErrors(
+                context, UNEMPLOYED, mayNotBeProvidedError(UNEMPLOYMENT, IS_RETIRED));
+            valid = false;
+        }
+        return valid;
+    }
+
+    private boolean otherPopulated(boolean isRetiredPopulated, boolean unemployedPopulated,
+                                   ConstraintValidatorContext context) {
+        boolean valid = true;
+        if (Boolean.TRUE.equals(isRetiredPopulated)) {
+            setValidationErrors(context, IS_RETIRED, mayNotBeProvidedError(UNEMPLOYMENT, OTHER));
+            valid = false;
+        }
+        if (Boolean.TRUE.equals(unemployedPopulated)) {
+            setValidationErrors(context, UNEMPLOYED, mayNotBeProvidedError(UNEMPLOYMENT,
+                OTHER));
+            valid = false;
+        }
+        return  valid;
+    }
+
+    private boolean unemployedPopulated(boolean isRetiredPopulated, boolean otherPopulated,
+                                        ConstraintValidatorContext context) {
+        boolean valid = true;
+        if (Boolean.TRUE.equals(isRetiredPopulated)) {
+            setValidationErrors(context, IS_RETIRED, mayNotBeProvidedError(UNEMPLOYMENT,
+                UNEMPLOYED));
+            valid = false;
+        }
+        if (Boolean.TRUE.equals(otherPopulated)) {
+            setValidationErrors(context, OTHER, mayNotBeProvidedError(UNEMPLOYMENT,
+                UNEMPLOYED));
+            valid = false;
+        }
+        return valid;
     }
 
     @Override
@@ -28,45 +73,12 @@ public class ValidUnemploymentConstraintValidator implements ConstraintValidator
         boolean unemployedPopulated = unemployment.getUnemployed().isPresent();
 
         if (isRetiredPopulated) {
-            if (otherPopulated) {
-                setValidationErrors(context, Fields.OTHER, mayNotBeProvidedError("unemployment", Fields.IS_RETIRED));
-                valid = false;
-            }
-
-            if (unemployedPopulated) {
-                setValidationErrors(
-                    context, Fields.UNEMPLOYED, mayNotBeProvidedError("unemployment", Fields.IS_RETIRED)
-                );
-                valid = false;
-            }
+            valid = retiredPopulated(otherPopulated, unemployedPopulated, context);
+        } else if (otherPopulated) {
+            valid = otherPopulated(isRetiredPopulated, unemployedPopulated, context);
+        } else if (unemployedPopulated) {
+            valid = unemployedPopulated(isRetiredPopulated, otherPopulated, context);
         }
-
-        if (otherPopulated) {
-            if (isRetiredPopulated) {
-                setValidationErrors(context, Fields.IS_RETIRED, mayNotBeProvidedError("unemployment", Fields.OTHER));
-                valid = false;
-            }
-
-            if (unemployedPopulated) {
-                setValidationErrors(context, Fields.UNEMPLOYED, mayNotBeProvidedError("unemployment", Fields.OTHER));
-                valid = false;
-            }
-        }
-
-        if (unemployedPopulated) {
-            if (isRetiredPopulated) {
-                setValidationErrors(
-                    context, Fields.IS_RETIRED, mayNotBeProvidedError("unemployment", Fields.UNEMPLOYED)
-                );
-                valid = false;
-            }
-
-            if (otherPopulated) {
-                setValidationErrors(context, Fields.OTHER, mayNotBeProvidedError("unemployment", Fields.UNEMPLOYED));
-                valid = false;
-            }
-        }
-
         return valid;
     }
 }

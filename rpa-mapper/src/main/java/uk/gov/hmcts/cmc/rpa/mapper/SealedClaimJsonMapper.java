@@ -11,7 +11,6 @@ import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 import uk.gov.hmcts.cmc.rpa.DateFormatter;
 import uk.gov.hmcts.cmc.rpa.mapper.helper.RPAMapperHelper;
 import uk.gov.hmcts.cmc.rpa.mapper.json.NullAwareJsonObjectBuilder;
-
 import java.util.List;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -36,11 +35,13 @@ public class SealedClaimJsonMapper {
 
         return new NullAwareJsonObjectBuilder()
             .add("caseNumber", claim.getReferenceNumber())
-            .add("issueDate", DateFormatter.format(claim.getIssuedOn()))
+            .add("issueDate", DateFormatter.format(claim.getIssuedOn()
+                .orElseThrow(() -> new IllegalStateException("Missing issuedOn date"))))
             .add("serviceDate", DateFormatter.format(claim.getServiceDate()))
             .add("courtFee", claim.getClaimData().getFeesPaidInPounds().orElse(ZERO))
             .add("amountWithInterest", claim.getAmountWithInterestUntilIssueDate().orElse(null))
             .add("submitterEmail", claim.getSubmitterEmail())
+            .add("helpWithFeesNumber", claim.getClaimData().getHelpWithFeesNumber().orElse(null))
             .add("claimants", mapClaimants(claim.getClaimData().getClaimants()))
             .add("defendants", defendantMapper.map(claim.getClaimData().getDefendants()))
             .build();
@@ -54,9 +55,12 @@ public class SealedClaimJsonMapper {
                 .add("address", mapAddress(claimant.getAddress()))
                 .add("correspondenceAddress", claimant.getCorrespondenceAddress().map(this::mapAddress).orElse(null))
                 .add("phoneNumber", claimant.getPhone().orElse(null))
-                .add("dateOfBirth", extractFromSubclass(claimant, Individual.class, individual -> DateFormatter.format(individual.getDateOfBirth())))
-                .add("businessName", extractOptionalFromSubclass(claimant, SoleTrader.class, value -> value.getBusinessName().map(RPAMapperHelper::prependWithTradingAs)))
-                .add("contactPerson", extractOptionalFromSubclass(claimant, HasContactPerson.class, HasContactPerson::getContactPerson))
+                .add("dateOfBirth", extractFromSubclass(claimant, Individual.class,
+                    individual -> DateFormatter.format(individual.getDateOfBirth())))
+                .add("businessName", extractOptionalFromSubclass(claimant, SoleTrader.class,
+                    value -> value.getBusinessName().map(RPAMapperHelper::prependWithTradingAs)))
+                .add("contactPerson", extractOptionalFromSubclass(claimant, HasContactPerson.class,
+                    HasContactPerson::getContactPerson))
                 .build())
             .collect(JsonCollectors.toJsonArray());
     }

@@ -3,6 +3,7 @@
   "issueDate": "26-Apr-2018",
   "courtFee": 40.00,
   "amountWithInterest": 41.90,
+  "helpWithFeesNumber": "HWF12345",
   "submitterEmail": "claimant@mail.com",
   "claimants": [
     {

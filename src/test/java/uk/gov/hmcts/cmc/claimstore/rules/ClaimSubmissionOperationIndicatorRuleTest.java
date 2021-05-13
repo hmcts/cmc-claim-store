@@ -1,8 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.rules;
 
-import org.junit.Rule;
+import org.junit.Assert;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
@@ -10,12 +9,11 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import java.net.URI;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
 public class ClaimSubmissionOperationIndicatorRuleTest {
-    @Rule
-    public final ExpectedException exceptionRule = ExpectedException.none();
 
     @Test
     public void shouldAssertOperationIndicatorUpdateIsInvalid() {
@@ -30,13 +28,17 @@ public class ClaimSubmissionOperationIndicatorRuleTest {
             .defendantNotification(YES)
             .staffNotification(YES)
             .build();
+        ClaimSubmissionOperationIndicatorRule operationIndicatorRule = new ClaimSubmissionOperationIndicatorRule();
+        try {
+            operationIndicatorRule.assertOperationIndicatorUpdateIsValid(claim, input);
+            Assert.fail("Expected a BadRequestException to be thrown");
+        } catch (BadRequestException expected) {
+            assertThat(expected).hasMessage("Invalid input. The following indicator(s)[claimantNotification, "
+                + "defendantNotification, bulkPrint, rpa, staffNotification, sealedClaimUpload, "
+                + "claimIssueReceiptUpload] "
+                + "cannot be set to Yes");
+        }
 
-        exceptionRule.expect(BadRequestException.class);
-        exceptionRule.expectMessage("Invalid input. The following indicator(s)[claimantNotification, "
-            + "defendantNotification, bulkPrint, rpa, staffNotification, sealedClaimUpload, claimIssueReceiptUpload] "
-            + "cannot be set to Yes");
-
-        new ClaimSubmissionOperationIndicatorRule().assertOperationIndicatorUpdateIsValid(claim, input);
     }
 
     @Test
@@ -67,11 +69,13 @@ public class ClaimSubmissionOperationIndicatorRuleTest {
             .defendantNotification(YES)
             .staffNotification(YES)
             .build();
-
-        exceptionRule.expect(BadRequestException.class);
-        exceptionRule.expectMessage("Invalid input. The following indicator(s)[sealedClaimUpload,"
-            + " claimIssueReceiptUpload] cannot be set to NO");
-
-        new ClaimSubmissionOperationIndicatorRule().assertOperationIndicatorUpdateIsValid(claim, input);
+        ClaimSubmissionOperationIndicatorRule operationIndicatorRule = new ClaimSubmissionOperationIndicatorRule();
+        try {
+            operationIndicatorRule.assertOperationIndicatorUpdateIsValid(claim, input);
+            Assert.fail("Expected a BadRequestException to be thrown");
+        } catch (BadRequestException expected) {
+            assertThat(expected).hasMessage("Invalid input. The following indicator(s)[sealedClaimUpload,"
+                + " claimIssueReceiptUpload] cannot be set to NO");
+        }
     }
 }

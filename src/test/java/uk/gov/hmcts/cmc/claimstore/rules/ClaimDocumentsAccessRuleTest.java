@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class ClaimDocumentsAccessRuleTest {
 
     private static final User DEFENDANT = SampleUser.getDefaultDefendant();
+    private static final User DEFENDANT_ANONYMOUS = SampleUser.getDefaultDefendantWithLetterHolder();
     private static final User CASEWORKER = SampleUser.getDefaultCaseworker();
     private static final User CLAIMANT = SampleUser.getDefaultClaimant();
     private static final User SOLICITOR = SampleUser.getDefaultSolicitor();
@@ -41,7 +42,7 @@ class ClaimDocumentsAccessRuleTest {
     }
 
     @Test
-    void failsWhenDefendantAccessClaimReciept() {
+    void failsWhenDefendantAccessClaimReceipt() {
         Claim claimWithDefendant = CLAIM.toBuilder().submitterId(DEFENDANT.getUserDetails().getId()).build();
         assertThrows(ForbiddenActionException.class, () -> ClaimDocumentsAccessRule
             .assertDocumentCanBeAccessedByUser(claimWithDefendant, ClaimDocumentType.CLAIM_ISSUE_RECEIPT, DEFENDANT)
@@ -61,7 +62,7 @@ class ClaimDocumentsAccessRuleTest {
         value = ClaimDocumentType.class,
         names = {"SEALED_CLAIM"},
         mode = EnumSource.Mode.EXCLUDE)
-    void allowsAllClaimantAccessableDocuments(ClaimDocumentType documentType) {
+    void allowsAllClaimantAccessibleDocuments(ClaimDocumentType documentType) {
         Claim claimWithDefendant = CLAIM.toBuilder().submitterId(CLAIMANT.getUserDetails().getId()).build();
         ClaimDocumentsAccessRule.assertDocumentCanBeAccessedByUser(claimWithDefendant, documentType, CLAIMANT);
     }
@@ -71,7 +72,7 @@ class ClaimDocumentsAccessRuleTest {
         value = ClaimDocumentType.class,
         names = {"CLAIM_ISSUE_RECEIPT"},
         mode = EnumSource.Mode.EXCLUDE)
-    void allowsAllDefendantAccessableDocuments(ClaimDocumentType documentType) {
+    void allowsAllDefendantAccessibleDocuments(ClaimDocumentType documentType) {
         Claim claimWithDefendant = CLAIM.toBuilder().submitterId(DEFENDANT.getUserDetails().getId()).build();
         ClaimDocumentsAccessRule.assertDocumentCanBeAccessedByUser(claimWithDefendant, documentType, DEFENDANT);
     }
@@ -79,9 +80,20 @@ class ClaimDocumentsAccessRuleTest {
     @ParameterizedTest
     @EnumSource(
         value = ClaimDocumentType.class,
+        names = {"CLAIM_ISSUE_RECEIPT"},
+        mode = EnumSource.Mode.EXCLUDE)
+    void allowsAllDefendantAccessibleDocumentsWhenDefendantIDNull(ClaimDocumentType documentType) {
+        Claim claimWithDefendant = CLAIM.toBuilder().defendantId(null).build();
+        ClaimDocumentsAccessRule.assertDocumentCanBeAccessedByUser(claimWithDefendant,
+            documentType, DEFENDANT_ANONYMOUS);
+    }
+
+    @ParameterizedTest
+    @EnumSource(
+        value = ClaimDocumentType.class,
         names = {"SEALED_CLAIM"},
         mode = EnumSource.Mode.INCLUDE)
-    void allowsSealedClaimAccessableToSolicitor(ClaimDocumentType documentType) {
+    void allowsSealedClaimAccessibleToSolicitor(ClaimDocumentType documentType) {
         Claim claimWithDefendant = CLAIM.toBuilder().submitterId(SOLICITOR.getUserDetails().getId()).build();
         ClaimDocumentsAccessRule.assertDocumentCanBeAccessedByUser(claimWithDefendant, documentType, SOLICITOR);
     }

@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
+import uk.gov.hmcts.cmc.ccd.mapper.AddressMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.TheirDetailsMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.claimantresponse.ClaimantResponseMapper;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.cmc.ccd.mapper.offers.SettlementMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -28,6 +30,7 @@ public class DefendantMapper {
     private final ReDeterminationMapper reDeterminationMapper;
     private final CountyCourtJudgmentMapper countyCourtJudgmentMapper;
     private final SettlementMapper settlementMapper;
+    private final AddressMapper addressMapper;
 
     @Autowired
     public DefendantMapper(
@@ -36,7 +39,8 @@ public class DefendantMapper {
         CountyCourtJudgmentMapper countyCourtJudgmentMapper,
         ClaimantResponseMapper claimantResponseMapper,
         ReDeterminationMapper reDeterminationMapper,
-        SettlementMapper settlementMapper
+        SettlementMapper settlementMapper,
+        AddressMapper addressMapper
     ) {
         this.theirDetailsMapper = theirDetailsMapper;
         this.responseMapper = responseMapper;
@@ -44,6 +48,7 @@ public class DefendantMapper {
         this.claimantResponseMapper = claimantResponseMapper;
         this.settlementMapper = settlementMapper;
         this.reDeterminationMapper = reDeterminationMapper;
+        this.addressMapper = addressMapper;
     }
 
     public CCDCollectionElement<CCDRespondent> to(TheirDetails theirDetails, Claim claim) {
@@ -52,6 +57,8 @@ public class DefendantMapper {
 
         CCDRespondent.CCDRespondentBuilder respondentBuilder = CCDRespondent.builder();
         respondentBuilder.servedDate(claim.getServiceDate());
+        respondentBuilder.paperFormIssueDate(claim.getPaperFormIssueDate());
+        respondentBuilder.paperFormServedDate(claim.getPaperFormServedDate());
         respondentBuilder.responseDeadline(claim.getResponseDeadline());
         respondentBuilder.letterHolderId(claim.getLetterHolderId());
         respondentBuilder.defendantId(claim.getDefendantId());
@@ -73,7 +80,9 @@ public class DefendantMapper {
             )
         );
         respondentBuilder.settlementReachedAt(claim.getSettlementReachedAt());
-
+        if (claim.getResponse().isEmpty() && claim.getPaperResponse() == YesNoOption.YES) {
+            partyDetail.primaryAddress(addressMapper.to(claim.getClaimData().getDefendant().getAddress()));
+        }
         respondentBuilder.partyDetail(partyDetail.build());
         claim.getResponse().ifPresent(toResponse(respondentBuilder, partyDetail));
 
@@ -97,6 +106,8 @@ public class DefendantMapper {
 
         builder
             .serviceDate(ccdRespondent.getServedDate())
+            .paperFormIssueDate(ccdRespondent.getPaperFormIssueDate())
+            .paperFormServedDate(ccdRespondent.getPaperFormServedDate())
             .letterHolderId(ccdRespondent.getLetterHolderId())
             .responseDeadline(ccdRespondent.getResponseDeadline())
             .defendantEmail(Optional.ofNullable(partyDetail)

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
@@ -27,6 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.PAPER_RESPONSE_OCON_9X_FORM;
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseMethod.OCON_FORM;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
@@ -157,7 +157,7 @@ public class PaperResponseOCON9xFormCallbackHandler  extends CallbackHandler {
     private List<CCDCollectionElement<CCDScannedDocument>> filterForms(CCDCase ccdCase) {
         return ccdCase.getScannedDocuments().stream()
             .filter(e -> e.getValue().getType().equals(CCDScannedDocumentType.form))
-            .filter(e -> StringUtils.isBlank(e.getValue().getSubtype()))
+            .filter(e -> isBlank(e.getValue().getSubtype()) || OCON9X_SUBTYPE.equals(e.getValue().getSubtype()))
             .collect(Collectors.toList());
     }
 
@@ -170,7 +170,7 @@ public class PaperResponseOCON9xFormCallbackHandler  extends CallbackHandler {
             )
             .collect(Collectors.toList());
 
-        if (StringUtils.isBlank(ocon9xForm)) {
+        if (isBlank(ocon9xForm)) {
             return Map.of(DYNAMIC_LIST_ITEMS, listItems);
 
         } else {

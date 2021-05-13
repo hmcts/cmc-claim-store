@@ -49,4 +49,14 @@ public class LegalSealedClaimDataContentProviderTest {
         //then
         assertThat(contents).isNotEmpty().containsKey("watermarkPdf");
     }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldThrowExceptionWhenMissingIssuedDate() {
+        Claim claim = SampleClaim.getDefaultForLegal().toBuilder().issuedOn(null).build();
+
+        LegalSealedClaimContentProvider legalSealedClaimContentProvider
+            = new LegalSealedClaimContentProvider(statementOfValueProvider, false);
+
+        legalSealedClaimContentProvider.createContent(claim);
+    }
 }

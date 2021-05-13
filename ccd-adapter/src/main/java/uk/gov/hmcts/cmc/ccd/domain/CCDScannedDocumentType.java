@@ -4,5 +4,6 @@ public enum CCDScannedDocumentType {
     cherished,
     other,
     form,
-    coversheet
+    coversheet,
+    letter
 }

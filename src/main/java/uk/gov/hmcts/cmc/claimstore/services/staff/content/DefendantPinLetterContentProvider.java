@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -60,17 +61,14 @@ public class DefendantPinLetterContentProvider {
             .getInterest()
             .getType()
             .equals(Interest.InterestType.NO_INTEREST)) {
+            LocalDate issuedOn = claim.getIssuedOn()
+                .orElseThrow(() -> new IllegalStateException("Missing issuedOn date"));
             InterestContent interestContent = interestContentProvider.createContent(
-                claim.getClaimData()
-                    .getInterest(),
-                claim.getClaimData()
-                    .getInterest()
-                    .getInterestDate(),
-                ((AmountBreakDown) claim.getClaimData()
-                    .getAmount())
-                    .getTotalAmount(),
-                claim.getIssuedOn(),
-                claim.getIssuedOn()
+                claim.getClaimData().getInterest(),
+                claim.getClaimData().getInterest().getInterestDate(),
+                ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount(),
+                issuedOn,
+                issuedOn
             );
             totalAmountComponents.add(interestContent.getAmountRealValue());
         }

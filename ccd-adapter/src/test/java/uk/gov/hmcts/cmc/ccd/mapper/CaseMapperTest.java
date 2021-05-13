@@ -30,6 +30,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
@@ -251,6 +252,15 @@ public class CaseMapperTest {
     }
 
     @Test
+    public void shouldMapIssuedDateWhenMissing() {
+        Claim claim = SampleClaim.getDefault().toBuilder()
+            .issuedOn(null).build();
+        CCDCase ccdCase = ccdCaseMapper.to(claim);
+
+        assertNull(ccdCase.getIssuedOn());
+    }
+
+    @Test
     public void shouldMapPreferredDQCourtOnFromCCDCase() {
         //given
         CCDCase ccdCase = SampleData.getCCDCitizenCase(getAmountBreakDown()).toBuilder()
@@ -262,5 +272,19 @@ public class CaseMapperTest {
 
         //then
         MatcherAssert.assertThat(claim.getPreferredDQCourt().get(), is(PREFERRED_COURT));
+    }
+
+    @Test
+    public void shouldMapDirectionOrderTypeFromCCDCase() {
+        //given
+        CCDCase ccdCase = SampleData.getCCDCitizenCase(getAmountBreakDown()).toBuilder()
+            .directionOrderType("BESPOKE")
+            .build();
+
+        //when
+        Claim claim = ccdCaseMapper.from(ccdCase);
+
+        //then
+        MatcherAssert.assertThat(claim.getDirectionOrderType().get(), is("BESPOKE"));
     }
 }

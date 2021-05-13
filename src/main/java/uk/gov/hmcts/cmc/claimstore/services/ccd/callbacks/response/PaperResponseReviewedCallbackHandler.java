@@ -3,24 +3,19 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
-import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
-import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
-import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
-import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
@@ -38,26 +33,16 @@ public class PaperResponseReviewedCallbackHandler extends CallbackHandler {
 
     private final CaseDetailsConverter caseDetailsConverter;
 
-    private final Function<CallbackParams, PaperResponseReviewedHandler> handlerCreator;
+    private final PaperResponseReviewedHandler paperResponseReviewedHandler;
+
+    private LaunchDarklyClient launchDarklyClient;
 
     @Autowired
-    public PaperResponseReviewedCallbackHandler(
-        CaseDetailsConverter caseDetailsConverter,
-        CaseMapper caseMapper,
-        ResponseDeadlineCalculator responseDeadlineCalculator,
-        MoreTimeRequestRule moreTimeRequestRule,
-        NotificationService notificationService,
-        NotificationsProperties notificationsProperties
-    ) {
+    public PaperResponseReviewedCallbackHandler(CaseDetailsConverter caseDetailsConverter,
+                    LaunchDarklyClient launchDarklyClient, PaperResponseReviewedHandler paperResponseReviewedHandler) {
         this.caseDetailsConverter = caseDetailsConverter;
-        this.handlerCreator = callbackParams -> new PaperResponseReviewedHandler(
-            caseDetailsConverter,
-            caseMapper,
-            responseDeadlineCalculator,
-            moreTimeRequestRule,
-            notificationService,
-            notificationsProperties,
-            callbackParams);
+        this.launchDarklyClient = launchDarklyClient;
+        this.paperResponseReviewedHandler = paperResponseReviewedHandler;
     }
 
     @Override
@@ -76,14 +61,16 @@ public class PaperResponseReviewedCallbackHandler extends CallbackHandler {
     }
 
     private AboutToStartOrSubmitCallbackResponse updateResponseDeadline(CallbackParams callbackParams) {
-        return handlerCreator.apply(callbackParams).handle();
+        return paperResponseReviewedHandler.handle(callbackParams);
     }
 
     private AboutToStartOrSubmitCallbackResponse verifyResponsePossible(CallbackParams callbackParams) {
         Claim claim = toClaimAfterEvent(callbackParams.getRequest());
         var responseBuilder = AboutToStartOrSubmitCallbackResponse.builder();
 
-        if (claim.getResponse().isPresent() || claim.getRespondedAt() != null) {
+        boolean restrictPaperResponseReview = launchDarklyClient.isFeatureEnabled("restrict-review-paper-response");
+
+        if (restrictPaperResponseReview && (claim.getResponse().isPresent() || claim.getRespondedAt() != null)) {
             responseBuilder.errors(List.of(ALREADY_RESPONDED_ERROR));
         }
 

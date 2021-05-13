@@ -36,6 +36,7 @@ public class CaseMapper {
     private final ClaimDocumentCollectionMapper claimDocumentCollectionMapper;
     private final ReviewOrderMapper reviewOrderMapper;
     private final DirectionOrderMapper directionOrderMapper;
+    private final BespokeOrderDirectionMapper bespokeOrderDirectionMapper;
     private final TransferContentMapper transferContentMapper;
     private final BulkPrintDetailsMapper bulkPrintDetailsMapper;
 
@@ -45,6 +46,7 @@ public class CaseMapper {
         ClaimDocumentCollectionMapper claimDocumentCollectionMapper,
         ReviewOrderMapper reviewOrderMapper,
         DirectionOrderMapper directionOrderMapper,
+        BespokeOrderDirectionMapper bespokeOrderDirectionMapper,
         TransferContentMapper transferContentMapper,
         BulkPrintDetailsMapper bulkPrintDetailsMapper
     ) {
@@ -53,6 +55,7 @@ public class CaseMapper {
         this.claimDocumentCollectionMapper = claimDocumentCollectionMapper;
         this.reviewOrderMapper = reviewOrderMapper;
         this.directionOrderMapper = directionOrderMapper;
+        this.bespokeOrderDirectionMapper = bespokeOrderDirectionMapper;
         this.transferContentMapper = transferContentMapper;
         this.bulkPrintDetailsMapper = bulkPrintDetailsMapper;
     }
@@ -61,6 +64,9 @@ public class CaseMapper {
         final CCDCase.CCDCaseBuilder builder = CCDCase.builder();
 
         claimMapper.to(claim, builder);
+
+        claim.getIssuedOn()
+            .ifPresent(builder::issuedOn);
 
         claim.getClaimDocumentCollection()
             .ifPresent(claimDocumentCollection -> claimDocumentCollectionMapper.to(claimDocumentCollection, builder));
@@ -76,6 +82,8 @@ public class CaseMapper {
 
         claim.getDateReferredForDirections().ifPresent(builder::dateReferredForDirections);
         claim.getPreferredDQCourt().ifPresent(builder::preferredDQCourt);
+        claim.getPreferredDQPilotCourt().ifPresent(builder::preferredDQPilotCourt);
+
         claim.getProceedOfflineReason()
             .map(ProceedOfflineReasonType::name)
             .map(CCDProceedOnPaperReasonType::valueOf)
@@ -93,7 +101,6 @@ public class CaseMapper {
             .previousServiceCaseReference(claim.getReferenceNumber())
             .submitterId(claim.getSubmitterId())
             .submitterEmail(claim.getSubmitterEmail())
-            .issuedOn(claim.getIssuedOn())
             .currentInterestAmount(
                 claim.getTotalInterestTillDateOfIssue()
                     .map(interest -> String.valueOf(MonetaryConversions.poundsToPennies(interest)))
@@ -116,9 +123,11 @@ public class CaseMapper {
 
         claimDocumentCollectionMapper.from(ccdCase, builder);
         directionOrderMapper.from(ccdCase, builder);
+        bespokeOrderDirectionMapper.from(ccdCase, builder);
 
         builder
             .id(ccdCase.getId())
+            .lastModified(ccdCase.getLastModified())
             .state(EnumUtils.getEnumIgnoreCase(ClaimState.class, ccdCase.getState()))
             .ccdCaseId(ccdCase.getId())
             .submitterId(ccdCase.getSubmitterId())
@@ -156,11 +165,19 @@ public class CaseMapper {
             builder.preferredDQCourt(ccdCase.getPreferredDQCourt());
         }
 
+        if (ccdCase.getPreferredDQPilotCourt() != null) {
+            builder.preferredDQCourt(ccdCase.getPreferredDQPilotCourt());
+        }
+
         builder.bulkPrintDetails(asStream(ccdCase.getBulkPrintDetails())
             .map(bulkPrintDetailsMapper::from)
             .filter(Objects::nonNull)
             .collect(Collectors.toList())
         );
+
+        if (ccdCase.getDirectionOrderType() != null) {
+            builder.directionOrderType(ccdCase.getDirectionOrderType());
+        }
 
         return builder.build();
     }

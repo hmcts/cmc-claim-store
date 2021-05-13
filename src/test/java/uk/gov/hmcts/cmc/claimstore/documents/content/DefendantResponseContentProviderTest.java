@@ -67,7 +67,7 @@ public class DefendantResponseContentProviderTest {
         Map<String, Object> content = provider.createContent(claim);
 
         assertThat(((ClaimContent) content.get("claim")).getIssuedOn())
-            .isEqualTo(formatDate(claim.getIssuedOn()));
+            .isEqualTo(formatDate(claim.getIssuedOn().orElseThrow()));
     }
 
     @Test

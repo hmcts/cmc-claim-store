@@ -32,6 +32,7 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 @ExtendWith(MockitoExtension.class)
 class NoticeOfTransferLetterTemplateMapperTest {
 
+    public static final String LISTING = "Listing";
     private static final String TRANSFER_COURT_NAME = "Bristol";
     private static final String CASE_REFERENCE = "REF1";
     private static final String TRANSFER_REASON = "A reason";
@@ -143,6 +144,27 @@ class NoticeOfTransferLetterTemplateMapperTest {
     }
 
     @Test
+    void shouldMapNoticeOfTransferLetterBodyForListing() {
+
+        ccdCase = CCDCase.builder()
+            .previousServiceCaseReference(CASE_REFERENCE)
+            .transferContent(CCDTransferContent.builder()
+                .transferReason(CCDTransferReason.OTHER)
+                .transferCourtName(TRANSFER_COURT_NAME)
+                .transferCourtAddress(transferCourtAddress)
+                .transferReason(CCDTransferReason.LISTING)
+                .build())
+            .build();
+        DocAssemblyTemplateBody requestBody = noticeOfTransferLetterTemplateMapper
+            .noticeOfTransferLetterBodyForCourt(ccdCase, AUTHORISATION);
+
+        DocAssemblyTemplateBody expectedRequestBody = listingRequestBodyBuilder()
+            .build();
+
+        assertEquals(expectedRequestBody, requestBody);
+    }
+
+    @Test
     void shouldMapNoticeOfTransferLetterBodyForDefendant() {
 
         DocAssemblyTemplateBody requestBody = noticeOfTransferLetterTemplateMapper
@@ -151,6 +173,48 @@ class NoticeOfTransferLetterTemplateMapperTest {
         DocAssemblyTemplateBody expectedRequestBody = baseExpectedRequestBodyBuilder()
             .partyName(DEFENDANT_NAME)
             .partyAddress(defendantAddress)
+            .build();
+
+        assertEquals(expectedRequestBody, requestBody);
+    }
+
+    @Test
+    void shouldMapNoticeOfTransferLetterWhenDefendantNotLinkedButChangedContactDetailsViaCCD() {
+
+        ccdCase = CCDCase.builder()
+            .previousServiceCaseReference(CASE_REFERENCE)
+            .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
+                .value(CCDRespondent.builder()
+                    .partyName(DEFENDANT_NAME)
+                    .claimantProvidedPartyName(DEFENDANT_NAME)
+                    .partyDetail(CCDParty.builder()
+                        .primaryAddress(CCDAddress.builder().addressLine1("NEW ADDRESS1")
+                            .addressLine2("NEW ADDRESS2")
+                            .postCode("NEW POSTCODE").build())
+                        .build())
+                    .claimantProvidedDetail(CCDParty.builder()
+                        .primaryAddress(CCDAddress.builder().addressLine1("OLD ADDRESS1")
+                            .addressLine2("OLD ADDRESS2")
+                            .postCode("OLD POSTCODE").build())
+                        .build())
+                    .build())
+                .build()))
+            .transferContent(CCDTransferContent.builder()
+                .transferReason(CCDTransferReason.OTHER)
+                .transferCourtName(TRANSFER_COURT_NAME)
+                .transferCourtAddress(transferCourtAddress)
+                .transferReasonOther(TRANSFER_REASON)
+                .build())
+            .build();
+
+        DocAssemblyTemplateBody requestBody = noticeOfTransferLetterTemplateMapper
+            .noticeOfTransferLetterBodyForDefendant(ccdCase, AUTHORISATION);
+
+        DocAssemblyTemplateBody expectedRequestBody = baseExpectedRequestBodyBuilder()
+            .partyName(DEFENDANT_NAME)
+            .partyAddress(CCDAddress.builder().addressLine1("NEW ADDRESS1")
+                .addressLine2("NEW ADDRESS2")
+                .postCode("NEW POSTCODE").build())
             .build();
 
         assertEquals(expectedRequestBody, requestBody);
@@ -182,6 +246,20 @@ class NoticeOfTransferLetterTemplateMapperTest {
             .hearingCourtName(TRANSFER_COURT_NAME)
             .hearingCourtAddress(transferCourtAddress)
             .reasonForTransfer(TRANSFER_REASON)
+            .caseworkerName(CASE_WORKER_NAME);
+
+        return bodyBuilder;
+    }
+
+    private DocAssemblyTemplateBody.DocAssemblyTemplateBodyBuilder listingRequestBodyBuilder() {
+
+        DocAssemblyTemplateBody.DocAssemblyTemplateBodyBuilder bodyBuilder = DocAssemblyTemplateBody
+            .builder()
+            .referenceNumber(CASE_REFERENCE)
+            .currentDate(LocalDate.parse(TRANSFER_DATE))
+            .hearingCourtName(TRANSFER_COURT_NAME)
+            .hearingCourtAddress(transferCourtAddress)
+            .reasonForTransfer(LISTING)
             .caseworkerName(CASE_WORKER_NAME);
 
         return bodyBuilder;

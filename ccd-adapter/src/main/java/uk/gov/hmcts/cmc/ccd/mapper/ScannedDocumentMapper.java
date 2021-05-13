@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.domain.models.ScannedDocument;
 import uk.gov.hmcts.cmc.domain.models.ScannedDocumentType;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 
 @Component
 public class ScannedDocumentMapper {
@@ -23,6 +24,8 @@ public class ScannedDocumentMapper {
             .fileName(scannedDocument.getFileName())
             .scannedDate(scannedDocument.getScannedDate())
             .subtype(scannedDocument.getSubtype())
+            .formSubtype(scannedDocument.getFormSubtype())
+            .submittedBy(scannedDocument.getSubmittedBy())
             .url(CCDDocument
                 .builder()
                 .documentUrl(scannedDocument.getDocumentManagementUrl().toString())
@@ -45,15 +48,26 @@ public class ScannedDocumentMapper {
 
         CCDScannedDocument ccdScannedDocument = collectionElement.getValue();
 
+        LocalDateTime deliveryDate = ccdScannedDocument.getDeliveryDate();
+        deliveryDate = deliveryDate == null ? LocalDateTime.now() : deliveryDate;
+
+        String fileName = ccdScannedDocument.getFileName();
+        fileName = fileName == null ? ccdScannedDocument.getUrl().getDocumentFileName() : fileName;
+
+        String subType = ccdScannedDocument.getSubtype();
+        subType = subType == null ? ccdScannedDocument.getFormSubtype() : subType;
+
         return ScannedDocument.builder()
             .id(collectionElement.getId())
-            .fileName(ccdScannedDocument.getFileName())
+            .fileName(fileName)
             .documentManagementUrl(URI.create(ccdScannedDocument.getUrl().getDocumentUrl()))
             .documentManagementBinaryUrl(URI.create(ccdScannedDocument.getUrl().getDocumentBinaryUrl()))
             .documentType(ScannedDocumentType.valueOf(ccdScannedDocument.getType().name().toUpperCase()))
             .scannedDate(ccdScannedDocument.getScannedDate())
-            .deliveryDate(ccdScannedDocument.getDeliveryDate())
-            .subtype(ccdScannedDocument.getSubtype())
+            .deliveryDate(deliveryDate)
+            .subtype(subType)
+            .formSubtype(ccdScannedDocument.getFormSubtype())
+            .submittedBy(ccdScannedDocument.getSubmittedBy())
             .exceptionRecordReference(ccdScannedDocument.getExceptionRecordReference())
             .controlNumber(ccdScannedDocument.getControlNumber())
             .build();

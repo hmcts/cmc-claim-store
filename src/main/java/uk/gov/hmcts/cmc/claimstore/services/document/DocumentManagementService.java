@@ -115,7 +115,8 @@ public class DocumentManagementService {
         PDF pdf
     ) {
         String filename = pdf.getFilename();
-        logger.info(exception.getMessage() + " " + exception.getCause(), exception);
+        logger.warn(" Following exception has occurred {} and cause {} and"
+            + "other details are {}", exception.getMessage(), exception.getCause(), exception);
         appInsights.trackEvent(DOCUMENT_MANAGEMENT_UPLOAD_FAILURE, DOCUMENT_NAME, filename);
         throw exception;
     }
@@ -133,11 +134,11 @@ public class DocumentManagementService {
         byte[] bytesArray = null;
         try {
             UserDetails userDetails = userService.getUserDetails(authorisation);
-            String userRoles = String.join(",", this.userRoles);
+            String usrRoles = String.join(",", this.userRoles);
             Document documentMetadata = documentMetadataDownloadClient.getDocumentMetadata(
                 authorisation,
                 authTokenGenerator.generate(),
-                userRoles,
+                usrRoles,
                 userDetails.getId(),
                 documentManagementUrl.getPath()
             );
@@ -145,7 +146,7 @@ public class DocumentManagementService {
             ResponseEntity<Resource> responseEntity = documentDownloadClient.downloadBinary(
                 authorisation,
                 authTokenGenerator.generate(),
-                userRoles,
+                usrRoles,
                 userDetails.getId(),
                 URI.create(documentMetadata.links.binary.href).getPath()
             );
@@ -171,7 +172,8 @@ public class DocumentManagementService {
         ClaimDocument claimDocument
     ) {
         String filename = claimDocument.getDocumentName() + ".pdf";
-        logger.warn(exception.getMessage() + " " + exception.getCause(), exception);
+        logger.warn(" Following exception has occurred {} and cause {} and"
+            + "other details are {}", exception.getMessage(), exception.getCause(), exception);
         appInsights.trackEvent(DOCUMENT_MANAGEMENT_DOWNLOAD_FAILURE, DOCUMENT_NAME, filename);
         throw exception;
     }
@@ -179,11 +181,11 @@ public class DocumentManagementService {
     public Document getDocumentMetaData(String authorisation, String documentPath) {
         try {
             UserDetails userDetails = userService.getUserDetails(authorisation);
-            String userRoles = String.join(",", this.userRoles);
+            String usrRoles = String.join(",", this.userRoles);
             return documentMetadataDownloadClient.getDocumentMetadata(
                 authorisation,
                 authTokenGenerator.generate(),
-                userRoles,
+                usrRoles,
                 userDetails.getId(),
                 documentPath
             );

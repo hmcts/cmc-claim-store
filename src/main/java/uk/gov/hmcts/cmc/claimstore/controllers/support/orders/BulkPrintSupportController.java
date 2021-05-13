@@ -18,7 +18,6 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 
 import java.util.List;
@@ -70,12 +69,6 @@ public class BulkPrintSupportController {
         printDetails.addAll(claim.getBulkPrintDetails());
         printDetails.addAll(bulkPrintDetails);
         claimService.addBulkPrintDetails(authorisation, printDetails.build(), CaseEvent.ADD_BULK_PRINT_DETAILS, claim);
-    }
-
-    private CCDDocument to(ClaimDocument claimDocument) {
-        final String documentUrl = claimDocument.getDocumentManagementUrl().toString();
-        final String documentBinaryUrl = claimDocument.getDocumentManagementBinaryUrl().toString();
-        return new CCDDocument(documentUrl, documentBinaryUrl, claimDocument.getDocumentName());
     }
 
     private Supplier<NotFoundException> claimNotFoundException(String reference) {

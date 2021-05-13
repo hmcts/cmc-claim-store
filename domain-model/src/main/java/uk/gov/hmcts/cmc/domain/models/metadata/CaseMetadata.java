@@ -60,7 +60,7 @@ public class CaseMetadata {
             .externalId(claim.getExternalId())
             .referenceNumber(claim.getReferenceNumber())
             .createdAt(claim.getCreatedAt())
-            .issuedOn(claim.getIssuedOn())
+            .issuedOn(claim.getIssuedOn().orElse(null))
             .paymentReference(claim.getClaimData().getPayment()
                 .map(Payment::getReference)
                 .orElse(null))

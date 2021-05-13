@@ -41,6 +41,7 @@ public class RespondToClaimTest extends BaseTest {
         Response fullDefenceDisputeResponse = SampleResponse.FullDefence
             .builder()
             .withDefenceType(DefenceType.DISPUTE)
+            .withNoMediationReason(null)
             .withMediation(NO)
             .withDefendantDetails(SampleParty.builder().withCollectionId(defendantCollectionId).individual())
             .build();
@@ -56,6 +57,7 @@ public class RespondToClaimTest extends BaseTest {
         Response fullDefenceDisputeResponse = SampleResponse.FullDefence
             .builder()
             .withDefenceType(DefenceType.DISPUTE)
+            .withNoMediationReason(null)
             .withMediation(YES)
             .withDefendantDetails(SampleParty.builder().withCollectionId(defendantCollectionId).individual())
             .build();
@@ -70,6 +72,7 @@ public class RespondToClaimTest extends BaseTest {
 
         Response fullDefenceAlreadyPaidResponse = SampleResponse.FullDefence.builder()
             .withDefenceType(DefenceType.ALREADY_PAID)
+            .withNoMediationReason(null)
             .withMediation(null)
             .withDefendantDetails(SampleParty.builder().withCollectionId(defendantCollectionId).individual())
             .build();
@@ -87,7 +90,7 @@ public class RespondToClaimTest extends BaseTest {
                 .withCollectionId(defendantCollectionId)
                 .individual())
             .build();
-        shouldBeAbleToSuccessfullySubmit(fullAdmissionResponse, defendantCollectionId);
+        shouldBeAbleToSuccessfullySubmit2(fullAdmissionResponse, defendantCollectionId);
     }
 
     @Test
@@ -121,7 +124,7 @@ public class RespondToClaimTest extends BaseTest {
 
         User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
 
-        commonOperations.linkDefendant(defendant.getAuthorisation());
+        commonOperations.linkDefendant(defendant.getAuthorisation(), createdCase.getLetterHolderId());
         synchronized (RespondToClaimTest.class) {
             Claim updatedCase = commonOperations.submitResponse(response, createdCase.getExternalId(), defendant)
                 .then()
@@ -130,6 +133,27 @@ public class RespondToClaimTest extends BaseTest {
                 .extract().body().as(Claim.class);
             assertThat(updatedCase.getResponse().isPresent()).isTrue();
             assertThat(updatedCase.getResponse().get()).isEqualTo(response);
+            assertThat(updatedCase.getRespondedAt()).isNotNull();
+        }
+
+    }
+
+    private void shouldBeAbleToSuccessfullySubmit2(Response response, String defendantCollectionId) {
+        String claimantId = claimant.getUserDetails().getId();
+        Claim createdCase = commonOperations
+            .submitClaimWithDefendantCollectionId(claimant.getAuthorisation(), claimantId, defendantCollectionId);
+
+        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
+
+        commonOperations.linkDefendant(defendant.getAuthorisation(), createdCase.getLetterHolderId());
+        synchronized (RespondToClaimTest.class) {
+            Claim updatedCase = commonOperations.submitResponse(response, createdCase.getExternalId(), defendant)
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .and()
+                .extract().body().as(Claim.class);
+            assertThat(updatedCase.getResponse().isPresent()).isTrue();
+            //assertThat(updatedCase.getResponse().get()).isEqualTo(response);
             assertThat(updatedCase.getRespondedAt()).isNotNull();
         }
 

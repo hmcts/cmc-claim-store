@@ -25,6 +25,7 @@ java:
         - staff-email
         - live-support-email
         - rpa-email-sealed-claim
+        - rpa-email-breathing-space
         - rpa-email-legal-sealed-claim
         - rpa-email-more-time-requested
         - rpa-email-response
@@ -53,6 +54,7 @@ java:
     FEATURE_TOGGLES_BULK_PRINT_TRANSFER_ENABLED: false
     FEATURE_TOGGLES_STAFF_EMAILS_ENABLED: true
     FEATURE_TOGGLES_STAFF_EMAILS_ENABLED_FOR_LEGAL_REP: true
+    FEATURE_TOGGLES_BREATHING_SPACE: false
     FEATURE_AUTO_CANCEL_PAYMENTS: false
     STAFF_NOTIFICATIONS_SENDER: noreply@reform.hmcts.net
     RPA_NOTIFICATIONS_SENDER: noreply@reform.hmcts.net
@@ -66,6 +68,7 @@ java:
     ASYNC_MAX_THREADPOOL_SIZE: 50
     IDAM_S2S_AUTH_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     IDAM_API_URL: https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net
+    IDAM_WEB_URL: https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net
     PDF_SERVICE_URL: http://cmc-pdf-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     SEND_LETTER_URL: http://rpe-send-letter-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     DOCUMENT_MANAGEMENT_URL: http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
@@ -75,4 +78,6 @@ java:
     RESPOND_TO_CLAIM_URL: https://moneyclaims.{{ .Values.global.environment }}.platform.hmcts.net/first-contact/start
     CORE_CASE_DATA_API_URL: http://ccd-data-store-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     DOC_ASSEMBLY_URL: http://dg-docassembly-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
-
+    OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-{{ .Values.global.environment }}.internal:8443/openam/oauth2/realms/root/realms/hmcts
+    COURT_FINDER_API_URL: https://www.find-court-tribunal.service.gov.uk
+    MANAGEMENT_HEALTH_MAIL_ENABLED: false

@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.constraints.DateNotInTheFuture;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.orders.BespokeOrderDirection;
 import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
@@ -29,7 +30,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
     value = {"totalClaimAmount", "totalAmountTillToday", "totalAmountTillDateOfIssue",
         "amountWithInterestUntilIssueDate", "totalInterestTillDateOfIssue", "totalInterest",
         "serviceDate", "amountWithInterest", "directionsQuestionnaireDeadline", "claimSubmissionOperationIndicators",
-        "proceedOfflineOtherReasonDescription"},
+        "proceedOfflineOtherReasonDescription", "lastEventTriggeredForHwfCase", "lastModified"},
     allowGetters = true
 )
 @Getter
@@ -80,11 +81,18 @@ public class Claim {
     private final YesNoOption paperResponse;
     private final LocalDateTime dateReferredForDirections;
     private final String preferredDQCourt;
+    private final String preferredDQPilotCourt;
     private final ProceedOfflineReasonType proceedOfflineReason;
     private final String proceedOfflineOtherReasonDescription;
     private final TransferContent transferContent;
     private final YesNoOption evidenceHandled;
     private final List<BulkPrintDetails> bulkPrintDetails;
+    private String directionOrderType;
+    private BespokeOrderDirection bespokeOrderDirection;
+    private LocalDateTime lastModified;
+    private String lastEventTriggeredForHwfCase;
+    private LocalDate paperFormServedDate;
+    private LocalDate paperFormIssueDate;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -119,7 +127,7 @@ public class Claim {
         ClaimDocumentCollection claimDocumentCollection,
         LocalDate claimantResponseDeadline,
         ClaimState state,
-        ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators,
+         ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators,
         Long ccdCaseId,
         ReviewOrder reviewOrder,
         DirectionOrder directionOrder,
@@ -131,11 +139,18 @@ public class Claim {
         YesNoOption paperResponse,
         LocalDateTime dateReferredForDirections,
         String preferredDQCourt,
+        String preferredDQPilotCourt,
         ProceedOfflineReasonType proceedOfflineReason,
         String proceedOfflineOtherReasonDescription,
         TransferContent transferContent,
         YesNoOption evidenceHandled,
-        List<BulkPrintDetails> bulkPrintDetails
+        List<BulkPrintDetails> bulkPrintDetails,
+        String directionOrderType,
+        BespokeOrderDirection bespokeOrderDirection,
+        LocalDateTime lastModified,
+        String lastEventTriggeredForHwfCase,
+        LocalDate paperFormServedDate,
+        LocalDate paperFormIssueDate
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -179,11 +194,22 @@ public class Claim {
         this.paperResponse = paperResponse;
         this.dateReferredForDirections = dateReferredForDirections;
         this.preferredDQCourt = preferredDQCourt;
+        this.preferredDQPilotCourt = preferredDQPilotCourt;
         this.proceedOfflineReason = proceedOfflineReason;
         this.proceedOfflineOtherReasonDescription = proceedOfflineOtherReasonDescription;
         this.transferContent = transferContent;
         this.evidenceHandled = evidenceHandled;
         this.bulkPrintDetails = bulkPrintDetails;
+        this.directionOrderType = directionOrderType;
+        this.bespokeOrderDirection = bespokeOrderDirection;
+        this.lastModified = lastModified;
+        this.lastEventTriggeredForHwfCase = lastEventTriggeredForHwfCase;
+        this.paperFormServedDate = paperFormServedDate;
+        this.paperFormIssueDate = paperFormIssueDate;
+    }
+
+    public Optional<LocalDate> getIssuedOn() {
+        return Optional.ofNullable(issuedOn);
     }
 
     public Optional<Response> getResponse() {
@@ -211,6 +237,11 @@ public class Claim {
                                                         ScannedDocumentSubtype subtype) {
         return Optional.ofNullable(claimDocumentCollection)
             .flatMap(c -> c.getScannedDocument(scannedDocumentType, subtype));
+    }
+
+    @JsonIgnore
+    public List<ScannedDocument> getScannedDocuments() {
+        return claimDocumentCollection.getScannedDocuments();
     }
 
     public LocalDate getServiceDate() {
@@ -245,6 +276,9 @@ public class Claim {
     }
 
     public Optional<BigDecimal> getTotalInterestTillDateOfIssue() {
+        if (issuedOn == null) {
+            return Optional.empty();
+        }
         return TotalAmountCalculator.calculateInterestForClaim(this, issuedOn);
     }
 
@@ -284,6 +318,10 @@ public class Claim {
         return Optional.ofNullable(directionOrder);
     }
 
+    public Optional<BespokeOrderDirection> getBespokeOrderDirection() {
+        return Optional.ofNullable(bespokeOrderDirection);
+    }
+
     public Optional<ChannelType> getChannel() {
         return Optional.ofNullable(channel);
     }
@@ -306,6 +344,14 @@ public class Claim {
 
     public Optional<String> getPreferredDQCourt() {
         return Optional.ofNullable(preferredDQCourt);
+    }
+
+    public Optional<String> getPreferredDQPilotCourt() {
+        return Optional.ofNullable(preferredDQPilotCourt);
+    }
+
+    public Optional<String> getDirectionOrderType() {
+        return Optional.ofNullable(directionOrderType);
     }
 
     public Optional<ProceedOfflineReasonType> getProceedOfflineReason() {

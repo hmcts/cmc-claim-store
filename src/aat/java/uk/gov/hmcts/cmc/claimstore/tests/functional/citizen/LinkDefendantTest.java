@@ -39,6 +39,7 @@ public class LinkDefendantTest extends BaseTest {
         RestAssured
             .given()
             .header(HttpHeaders.AUTHORIZATION, defendant.getAuthorisation())
+            .header("LetterHolderID", createdCase.getLetterHolderId())
             .when()
             .put("/claims/defendant/link")
             .then()

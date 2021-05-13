@@ -18,7 +18,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ClaimantResponseUtils.isCompanyOrOrg
 @Component
 public class ResponseAcceptationContentProvider {
     public static final String ADMISSIONS_FORM_NO = "OCON9A";
-
+    private static final String AGREED_AMOUNT = "The agreed amount";
     static final LocalDate SYSTEM_MAX_DATE = LocalDate.of(9999, 12, 31);
     private final PaymentIntentionContentProvider paymentIntentionContentProvider;
 
@@ -43,7 +43,7 @@ public class ResponseAcceptationContentProvider {
                     courtDecision.getPaymentOption(),
                     courtDecision.getRepaymentPlan().orElse(null),
                     courtDecision.getPaymentDate().orElse(null),
-                    "The agreed amount",
+                    AGREED_AMOUNT,
                     "courtDecision"
                 ));
                 PaymentIntention courtPaymentIntention = courtDetermination.getCourtPaymentIntention();
@@ -59,7 +59,7 @@ public class ResponseAcceptationContentProvider {
                         courtPaymentIntention.getPaymentOption(),
                         courtPaymentIntention.getRepaymentPlan().orElse(null),
                         paymentDate.orElse(null),
-                        "The agreed amount",
+                        AGREED_AMOUNT,
                         "courtPaymentIntention"
                         )
                     );
@@ -77,7 +77,7 @@ public class ResponseAcceptationContentProvider {
                 paymentIntention.getPaymentOption(),
                 paymentIntention.getRepaymentPlan().orElse(null),
                 paymentIntention.getPaymentDate().orElse(null),
-                "The agreed amount",
+                AGREED_AMOUNT,
                 ""
             ));
         } else {

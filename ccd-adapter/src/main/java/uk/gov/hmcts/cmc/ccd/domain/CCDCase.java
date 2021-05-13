@@ -9,10 +9,13 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDBespokeOrderDirection;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDBespokeOrderWarning;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDReviewOrDrawOrder;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -32,12 +35,15 @@ public class CCDCase {
     private String submitterId;
     private String externalId;
     private LocalDateTime submittedOn;
+    private LocalDateTime lastInterestCalculationDate;
     private LocalDate issuedOn;
     private String submitterEmail;
     private String reason;
     private String feeCode;
     private String feeAccountNumber;
     private String feeAmountInPennies;
+    private String feeRemitted;
+    private String feeAmountAfterRemission;
     private String externalReferenceNumber;
     private AmountType amountType;
     private String amountLowerValue;
@@ -86,6 +92,9 @@ public class CCDCase {
     private CCDClaimSubmissionOperationIndicators claimSubmissionOperationIndicators;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String state;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private LocalDateTime lastModified;
+
     private CCDYesNoOption evidenceHandled;
 
     private LocalDate docUploadDeadline;
@@ -110,6 +119,7 @@ public class CCDCase {
     private String newRequestedCourt;
 
     private String preferredDQCourt;
+    private String preferredDQPilotCourt;
 
     private String preferredCourtObjectingParty;
     private String preferredCourtObjectingReason;
@@ -150,6 +160,11 @@ public class CCDCase {
     private CCDProceedOnPaperReasonType proceedOnPaperReason;
     private String proceedOnPaperOtherReason;
     private LocalDate calculatedResponseDeadline;
+    private String helpWithFeesNumber;
+    private String moreInfoDetails;
+    private String helpWithFeesType;
+    private String hwfFeeDetailsSummary;
+    private String hwfMandatoryDetails;
     private CCDResponseType paperAdmissionType;
     private CCDTransferContent transferContent;
     @Builder.Default
@@ -160,4 +175,25 @@ public class CCDCase {
     @Builder.Default
     private List<CCDCollectionElement<CCDScannedDocument>> temporaryScannedDocuments = Collections.emptyList();
     private LocalDate dateOfHandoff;
+    private String directionOrderType;
+
+    @Builder.Default
+    private List<CCDCollectionElement<CCDBespokeOrderDirection>> bespokeDirectionList = Collections.emptyList();
+
+    @Builder.Default
+    private List<CCDBespokeOrderWarning> drawBespokeDirectionOrderWarning = Collections.emptyList();
+    private LocalDate extendedResponseDeadline;
+
+    private List<String> hwfMoreInfoNeededDocuments;
+    private String hwfProvideDocumentName;
+
+    private LocalDate hwfDocumentsToBeSentBefore;
+
+    private CCDReviewOrDrawOrder reviewOrDrawOrder;
+
+    private String lastEventTriggeredForHwfCase;
+
+    //Breathing space Fields
+    private CCDBreathingSpace breathingSpace;
+
 }

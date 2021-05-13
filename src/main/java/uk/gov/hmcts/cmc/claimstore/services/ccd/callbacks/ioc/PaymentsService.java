@@ -102,7 +102,7 @@ public class PaymentsService {
             paymentRequest,
             claimPayment.getReturnUrl()
         );
-        logger.info("Created payment for claim with external id {}: {}", claim.getExternalId(), payment);
+        logger.info("Created payment for claim with external id {}", claim.getExternalId());
 
         payment.setAmount(feeOutcome.getFeeAmount());
         return from(payment, claimPayment);
@@ -114,7 +114,7 @@ public class PaymentsService {
     }
 
     private FeeDto[] buildFees(String ccdCaseId, FeeLookupResponseDto feeOutcome) {
-        return new FeeDto[] {
+        return new FeeDto[]{
             FeeDto.builder()
                 .ccdCaseNumber(ccdCaseId)
                 .calculatedAmount(feeOutcome.getFeeAmount())

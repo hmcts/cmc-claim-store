@@ -28,6 +28,7 @@ public class ClaimMapper {
     private final DefendantMapper defendantMapper;
     private final AmountMapper amountMapper;
     private final PaymentMapper paymentMapper;
+    private final BreathingSpaceMapper breathingSpaceMapper;
     private final InterestMapper interestMapper;
     private final TimelineMapper timelineMapper;
     private final EvidenceMapper evidenceMapper;
@@ -45,7 +46,8 @@ public class ClaimMapper {
         InterestMapper interestMapper,
         TimelineMapper timelineMapper,
         EvidenceMapper evidenceMapper,
-        MoneyMapper moneyMapper
+        MoneyMapper moneyMapper,
+        BreathingSpaceMapper breathingSpaceMapper
     ) {
         this.personalInjuryMapper = personalInjuryMapper;
         this.housingDisrepairMapper = housingDisrepairMapper;
@@ -58,6 +60,7 @@ public class ClaimMapper {
         this.timelineMapper = timelineMapper;
         this.evidenceMapper = evidenceMapper;
         this.moneyMapper = moneyMapper;
+        this.breathingSpaceMapper = breathingSpaceMapper;
     }
 
     public void to(Claim claim, CCDCase.CCDCaseBuilder builder) {
@@ -102,6 +105,35 @@ public class ClaimMapper {
         claimData.getFeeAmountInPennies()
             .map(BigInteger::toString)
             .ifPresent(builder::feeAmountInPennies);
+        claimData.getFeeRemitted()
+            .map(BigInteger::toString)
+            .ifPresent(builder::feeRemitted);
+
+        claimData.getFeeAmountAfterRemission()
+            .map(BigInteger::toString)
+            .ifPresent(builder::feeAmountAfterRemission);
+
+        claimData.getHelpWithFeesNumber()
+            .ifPresent(builder::helpWithFeesNumber);
+
+        claimData.getMoreInfoDetails()
+            .ifPresent(builder::moreInfoDetails);
+
+        claimData.gethelpWithFeesType()
+            .ifPresent(builder::helpWithFeesType);
+
+        claimData.getHwfFeeDetailsSummary()
+            .ifPresent(builder::hwfFeeDetailsSummary);
+
+        claimData.getHwfMandatoryDetails()
+            .ifPresent(builder::hwfMandatoryDetails);
+
+        builder.hwfMoreInfoNeededDocuments(claimData.getHwfMoreInfoNeededDocuments());
+        builder.hwfDocumentsToBeSentBefore(claimData.getHwfDocumentsToBeSentBefore());
+        builder.lastEventTriggeredForHwfCase(claim.getLastEventTriggeredForHwfCase());
+
+        //BreathingSpace Mapper
+        claimData.getBreathingSpace().ifPresent(breathingSpace -> breathingSpaceMapper.to(breathingSpace, builder));
 
         builder
             .reason(claimData.getReason());
@@ -117,6 +149,11 @@ public class ClaimMapper {
         List<Party> claimants = asStream(ccdCase.getApplicants())
             .map(claimantMapper::from)
             .collect(Collectors.toList());
+        if (ccdCase.getHwfProvideDocumentName() != null) {
+            ccdCase.getHwfMoreInfoNeededDocuments()
+                .add(ccdCase.getHwfProvideDocumentName());
+        }
+
         claimBuilder.claimData(
             new ClaimData(
                 UUID.fromString(ccdCase.getExternalId()),
@@ -125,6 +162,8 @@ public class ClaimMapper {
                 paymentMapper.from(ccdCase),
                 amountMapper.from(ccdCase),
                 createBigInteger(ccdCase.getFeeAmountInPennies()),
+                createBigInteger(ccdCase.getFeeRemitted()),
+                createBigInteger(ccdCase.getFeeAmountAfterRemission()),
                 interestMapper.from(ccdCase),
                 personalInjuryMapper.from(ccdCase),
                 housingDisrepairMapper.from(ccdCase),
@@ -135,9 +174,17 @@ public class ClaimMapper {
                 ccdCase.getPreferredCourt(),
                 ccdCase.getFeeCode(),
                 timelineMapper.from(ccdCase),
-                evidenceMapper.from(ccdCase)
-            )
-        );
+                evidenceMapper.from(ccdCase),
+                ccdCase.getHelpWithFeesNumber(),
+                ccdCase.getMoreInfoDetails(),
+                ccdCase.getHelpWithFeesType(),
+                ccdCase.getHwfFeeDetailsSummary(),
+                ccdCase.getHwfMandatoryDetails(),
+                ccdCase.getHwfMoreInfoNeededDocuments(),
+                ccdCase.getHwfDocumentsToBeSentBefore(),
+                breathingSpaceMapper.from(ccdCase))
+        )
+            .lastEventTriggeredForHwfCase(ccdCase.getLastEventTriggeredForHwfCase());
     }
 
     private List<TheirDetails> getDefendants(CCDCase ccdCase, Claim.ClaimBuilder claimBuilder) {

@@ -15,12 +15,14 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireService;
-import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
+import uk.gov.hmcts.cmc.domain.models.BreathingSpace;
+import uk.gov.hmcts.cmc.domain.models.BreathingSpaceType;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
@@ -67,6 +69,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ADD_BULK_PRINT_DETAILS;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.BREATHING_SPACE_ENTERED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CLAIMANT_RESPONSE_ACCEPTATION;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CLAIMANT_RESPONSE_REJECTION;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
@@ -78,6 +81,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.PIN_GENERATION_OPERATIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFER_TO_JUDGE_BY_CLAIMANT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.UPDATE_HELP_WITH_FEE_CLAIM;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.getWithClaimantResponse;
@@ -104,8 +108,6 @@ public class CoreCaseDataServiceTest {
     @Mock
     private CCDCreateCaseService ccdCreateCaseService;
     @Mock
-    private JobSchedulerService jobSchedulerService;
-    @Mock
     private CaseDetailsConverter caseDetailsConverter;
     @Mock
     private WorkingDayIndicator workingDayIndicator;
@@ -118,13 +120,14 @@ public class CoreCaseDataServiceTest {
     @Captor
     private ArgumentCaptor<Claim> claimArgumentCaptor;
 
+    @Mock
+    private PilotCourtService pilotCourtService;
     private CoreCaseDataService service;
 
     @Before
     public void before() {
         when(authTokenGenerator.generate()).thenReturn(AUTH_TOKEN);
         when(userService.getUserDetails(AUTHORISATION)).thenReturn(USER_DETAILS);
-
         when(coreCaseDataApi.startEventForCitizen(
             eq(AUTHORISATION),
             eq(AUTH_TOKEN),
@@ -163,13 +166,19 @@ public class CoreCaseDataServiceTest {
             referenceNumberService,
             coreCaseDataApi,
             authTokenGenerator,
-            jobSchedulerService,
             ccdCreateCaseService,
             caseDetailsConverter,
             intentionToProceedDeadlineDays,
             workingDayIndicator,
-            directionsQuestionnaireService
+            directionsQuestionnaireService,
+            pilotCourtService
         );
+
+        /*this.pilotCourtService = new PilotCourtService(
+            anyString(),
+            courtFinderApi,
+            hearingCourtMapper,
+            appInsights);*/
     }
 
     @Test
@@ -205,6 +214,43 @@ public class CoreCaseDataServiceTest {
         Claim returnedClaim = service.createNewCase(USER, providedClaim);
 
         assertEquals(expectedClaim, returnedClaim);
+    }
+
+    @Test
+    public void createNewHelpWithFeesCaseShouldReturnClaim() {
+        Claim providedClaim = SampleClaim.getDefault().toBuilder()
+            .issuedOn(null).build();
+        Claim expectedClaim = SampleClaim.claim(providedClaim.getClaimData(), null);
+
+        when(ccdCreateCaseService.startCreate(
+            eq(AUTHORISATION),
+            any(EventRequestData.class),
+            eq(false)
+        ))
+            .thenReturn(StartEventResponse.builder()
+                .caseDetails(CaseDetails.builder().build())
+                .eventId("eventId")
+                .token("token")
+                .build());
+
+        when(ccdCreateCaseService.submitCreate(
+            eq(AUTHORISATION),
+            any(EventRequestData.class),
+            any(CaseDataContent.class),
+            eq(false)
+        ))
+            .thenReturn(CaseDetails.builder()
+                .id(SampleClaim.CLAIM_ID)
+                .data(new HashMap<>())
+                .build());
+
+        when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(expectedClaim);
+
+        Claim returnedClaim = service.createNewHelpWithFeesCase(USER, providedClaim);
+
+        assertEquals(expectedClaim, returnedClaim);
+
     }
 
     @Test
@@ -338,7 +384,6 @@ public class CoreCaseDataServiceTest {
         verify(caseDetailsConverter, atLeast(1)).extractClaim(any(CaseDetails.class));
         assertEquals(SampleClaim.CLAIM_ID, returnedClaim.getId());
 
-        verify(jobSchedulerService).rescheduleEmailNotificationsForDefendantResponse(providedClaim, FUTURE_DATE);
     }
 
     @Test
@@ -501,6 +546,44 @@ public class CoreCaseDataServiceTest {
         assertThat(claimArgumentCaptor.getValue().getClaimantResponse()).isPresent();
         verify(coreCaseDataApi, atLeastOnce()).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
             anyString(), anyString(), eq(CLAIMANT_RESPONSE_REJECTION.getValue()));
+    }
+
+    @Test
+    public void saveClaimantResponseShouldReturnPreferredDQCourtNullForNonPilotCourt() {
+        Response providedResponse = SampleResponse.validDefaults();
+        Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
+        ClaimantResponse claimantResponse = SampleClaimantResponse.validRejectionWithDirectionsQuestionnaire();
+
+        when(caseDetailsConverter.extractClaim(any((CaseDetails.class)))).thenReturn(getWithClaimantResponse());
+
+        Claim claim = service.saveClaimantResponse(providedClaim.getId(),
+            claimantResponse,
+            AUTHORISATION
+        );
+
+        assertThat(claim).isNotNull();
+        assertThat(claim.getClaimantResponse()).isPresent();
+        assertThat(claim.getPreferredDQPilotCourt()).isEmpty();
+    }
+
+    @Test
+    public void saveClaimantResponseWithPilotCourt() {
+        String courtName = "Central London County Court";
+        Response providedResponse = SampleResponse.validDefaults();
+        Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
+        Claim extractedClaim = getWithClaimantResponse();
+        when(caseDetailsConverter.extractClaim(any((CaseDetails.class)))).thenReturn(extractedClaim);
+        when(pilotCourtService.isPilotCourt(anyString(), any(), any())).thenReturn(true);
+        ClaimantResponse claimantResponse = SampleClaimantResponse.validRejectionWithDirectionsQuestionnaire();
+        when(directionsQuestionnaireService.getPreferredCourt(extractedClaim)).thenReturn(courtName);
+
+        Claim claim = service.saveClaimantResponse(providedClaim.getId(),
+            claimantResponse,
+            AUTHORISATION
+        );
+
+        assertThat(claim).isNotNull();
+        assertThat(claim.getClaimantResponse()).isPresent();
     }
 
     @Test
@@ -698,7 +781,27 @@ public class CoreCaseDataServiceTest {
             .thenThrow(new FeignException.UnprocessableEntity("Status 422 from CCD", request, null));
 
         Claim returnedClaim = service.saveCaseEventIOC(USER, providedClaim, CREATE_CITIZEN_CLAIM);
+        Claim hwfClaim = service.saveCaseEventIOC(USER, providedClaim, UPDATE_HELP_WITH_FEE_CLAIM);
 
         assertEquals(providedClaim, returnedClaim);
+        assertEquals(providedClaim, hwfClaim);
+    }
+
+    @Test
+    public void saveBreathingSpace() {
+        BreathingSpace breathingSpace = new BreathingSpace("REF12121212",
+            BreathingSpaceType.STANDARD_BS_ENTERED, LocalDate.now(),
+            null, LocalDate.now(), null, LocalDate.now(), "No");
+        Claim providedClaim = SampleClaim.getDefault();
+
+        Response providedResponse = SampleResponse.validDefaults();
+
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+            .thenReturn(SampleClaim.getWithResponse(providedResponse));
+        when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
+        service.saveBreathingSpaceDetails(providedClaim, breathingSpace, AUTHORISATION);
+
+        verify(coreCaseDataApi, atLeastOnce()).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
+            anyString(), anyString(), eq(BREATHING_SPACE_ENTERED.getValue()));
     }
 }

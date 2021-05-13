@@ -36,4 +36,17 @@ public class PrintableDocumentService {
             throw new IllegalArgumentException(e);
         }
     }
+
+    public byte[] pdf(CCDDocument document, String authorisation) {
+        try {
+            return documentManagementService.downloadDocument(
+                authorisation,
+                ClaimDocument.builder()
+                    .documentName(document.getDocumentFileName())
+                    .documentManagementUrl(new URI(document.getDocumentUrl()))
+                    .build());
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
 }

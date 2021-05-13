@@ -6,6 +6,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.ValidInterest;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import javax.validation.constraints.NotNull;
 
@@ -38,13 +39,17 @@ public class Interest {
 
     private final InterestDate interestDate;
 
+    //This field will only be populated when Case-worker calls 'Recalculate Interest/Claim Fee' Event from CCD
+    private final LocalDateTime lastInterestCalculationDate;
+
     public Interest(
         InterestType type,
         InterestBreakdown interestBreakdown,
         BigDecimal rate,
         String reason,
         BigDecimal specificDailyAmount,
-        InterestDate interestDate
+        InterestDate interestDate,
+        LocalDateTime lastInterestCalculationDate
     ) {
         this.type = type;
         this.interestBreakdown = interestBreakdown;
@@ -52,6 +57,7 @@ public class Interest {
         this.reason = reason;
         this.specificDailyAmount = specificDailyAmount;
         this.interestDate = interestDate;
+        this.lastInterestCalculationDate = lastInterestCalculationDate;
     }
 
     public InterestType getType() {
@@ -76,6 +82,10 @@ public class Interest {
 
     public InterestDate getInterestDate() {
         return interestDate;
+    }
+
+    public LocalDateTime getLastInterestCalculationDate() {
+        return lastInterestCalculationDate;
     }
 
     @Override

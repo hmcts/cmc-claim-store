@@ -79,6 +79,8 @@ class SupportControllerTest {
     private static final String RESPONSE_SUBMITTED = "response";
     private static final UserDetails USER_DETAILS = SampleUserDetails.builder().build();
     private static final User USER = new User(AUTHORISATION, USER_DETAILS);
+    private static final String EMAIL_TO_ADDRESS = "";
+    private static final String EMAIl_ADDRESS = "Holly@cow.com";
 
     @Mock
     private ClaimService claimService;
@@ -170,7 +172,7 @@ class SupportControllerTest {
                 when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(sampleClaim));
                 when(userService.getUserDetails(AUTHORISATION)).thenReturn(USER_DETAILS);
 
-                when(claimService.linkLetterHolder(sampleClaim, letterHolderId, AUTHORISATION)).thenReturn(sampleClaim);
+                when(claimService.linkLetterHolder(sampleClaim, letterHolderId)).thenReturn(sampleClaim);
 
                 controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claim");
 
@@ -612,14 +614,28 @@ class SupportControllerTest {
     @DisplayName("App Insights Tests")
     class ApplicationInsightsTests {
         @Test
-        void shouldSendAppInsightIfMediationReportFails() {
+        void shouldSendMediationReportThroughSupportController() {
             LocalDate mediationSearchDate = LocalDate.of(2019, 7, 7);
-            doNothing().when(mediationReportService).sendMediationReport(eq(AUTHORISATION), any());
+            doNothing().when(mediationReportService)
+                .sendMediationReport(eq(AUTHORISATION), any(), eq(EMAIL_TO_ADDRESS));
             controller.sendMediation(
                 AUTHORISATION,
-                new MediationRequest(mediationSearchDate, "Holly@cow.com"));
+                new MediationRequest(mediationSearchDate, ""));
             verify(mediationReportService)
-                .sendMediationReport(eq(AUTHORISATION), eq(mediationSearchDate));
+                .sendMediationReport(eq(AUTHORISATION), eq(mediationSearchDate), eq(EMAIL_TO_ADDRESS));
+        }
+
+        @Test
+        void shouldRegenerateMiloReportForGivenDate() {
+            when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
+            LocalDate mediationSearchDate = LocalDate.of(2019, 7, 7);
+            doNothing().when(mediationReportService)
+                .sendMediationReport(eq(AUTHORISATION), any(), eq(EMAIl_ADDRESS));
+            controller.reSendMediation(
+                new MediationRequest(mediationSearchDate, EMAIl_ADDRESS));
+            verify(mediationReportService)
+                .sendMediationReport(eq(AUTHORISATION), eq(mediationSearchDate), eq(EMAIl_ADDRESS));
         }
     }
+
 }

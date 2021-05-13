@@ -60,6 +60,7 @@ public class ClaimantResponseHelperTest {
             .freeMediation(YES)
             .mediationPhoneNumber("07999999999")
             .mediationContactPerson("Mediation Contact Person")
+            .noMediationReason("Not interested")
             .reason("Some valid reason")
             .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder()
                 .withHearingLocation(pilotHearingLocation).build())
@@ -75,6 +76,7 @@ public class ClaimantResponseHelperTest {
             .freeMediation(NO)
             .mediationPhoneNumber("07999999999")
             .mediationContactPerson("Mediation Contact Person")
+            .noMediationReason("Not interested")
             .reason("Some valid reason")
             .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder().build())
             .build();
@@ -89,6 +91,7 @@ public class ClaimantResponseHelperTest {
             .freeMediation(null)
             .mediationPhoneNumber("07999999999")
             .mediationContactPerson("Mediation Contact Person")
+            .noMediationReason("Not interested")
             .reason("Some valid reason")
             .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder().build())
             .build();
@@ -103,6 +106,7 @@ public class ClaimantResponseHelperTest {
             .freeMediation(NO)
             .mediationPhoneNumber("07999999999")
             .mediationContactPerson("Mediation Contact Person")
+            .noMediationReason("Not interested")
             .reason("Some valid reason")
             .build();
 
@@ -123,6 +127,7 @@ public class ClaimantResponseHelperTest {
             .freeMediation(NO)
             .mediationPhoneNumber("07999999999")
             .mediationContactPerson("Mediation Contact Person")
+            .noMediationReason("Not interested")
             .reason("Some valid reason")
             .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder().build())
             .build();

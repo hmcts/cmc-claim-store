@@ -11,9 +11,7 @@ import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.setVali
 
 public class ValidResidenceConstraintValidator implements ConstraintValidator<ValidResidence, Residence> {
 
-    public static class Fields {
-        public static final String OTHER_DETAILS = "otherDetail";
-    }
+    private static final String OTHER_DETAILS = "otherDetail";
 
     @Override
     public boolean isValid(Residence residence, ConstraintValidatorContext context) {
@@ -26,14 +24,14 @@ public class ValidResidenceConstraintValidator implements ConstraintValidator<Va
         if (type == Residence.ResidenceType.OTHER) {
             if (!residence.getOtherDetail().isPresent()) {
                 setValidationErrors(
-                    context, Fields.OTHER_DETAILS, mayNotBeNullError("type", type.getDescription())
+                    context, OTHER_DETAILS, mayNotBeNullError("type", type.getDescription())
                 );
                 return false;
             }
         } else {
             if (residence.getOtherDetail().isPresent()) {
                 setValidationErrors(
-                    context, Fields.OTHER_DETAILS, mayNotBeProvidedError("type", type.getDescription())
+                    context, OTHER_DETAILS, mayNotBeProvidedError("type", type.getDescription())
                 );
                 return false;
             }

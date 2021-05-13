@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.email;
 
-import com.launchdarkly.client.LDUser;
+import com.launchdarkly.sdk.LDUser;
 import com.microsoft.applicationinsights.TelemetryClient;
 import org.junit.Before;
 import org.junit.Test;

@@ -56,21 +56,6 @@ public class PersonContentProviderTest {
         );
     }
 
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowNullPointerWhenGivenNullAddress() {
-        provider.createContent(
-            partyType,
-            name,
-            null,
-            correspondenceAddress,
-            emailAddress,
-            null,
-            null,
-            phoneNumber,
-            dateOfBirth
-        );
-    }
-
     @Test
     public void shouldProvideExpectedFullName() {
         PersonContent content = provider.createContent(

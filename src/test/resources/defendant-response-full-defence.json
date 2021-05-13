@@ -1,5 +1,6 @@
 {
   "responseType": "FULL_DEFENCE",
+  "responseMethod": "DIGITAL",
   "defenceType": "DISPUTE",
   "paymentDeclaration": {
     "paidDate": "2016-01-02",
@@ -10,6 +11,7 @@
   "freeMediation": "yes",
   "mediationPhoneNumber": "07999999999",
   "mediationContactPerson": "Mediation Contact Person",
+  "noMediationReason": "Not interested",
   "moreTimeNeeded": "yes",
   "defendant": {
     "id": "acd82549-d279-4adc-b38c-d195dd0db0d6",

@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
@@ -49,6 +50,7 @@ public class CCDCaseApi {
     private final CoreCaseDataService coreCaseDataService;
     private final CaseDetailsConverter ccdCaseDataToClaim;
     private final JobSchedulerService jobSchedulerService;
+    private final CaseSearchApi caseSearchApi;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CCDCaseApi.class);
     // CCD has a page size of 25 currently, it is configurable so assume it'll never be less than 10
@@ -68,7 +70,8 @@ public class CCDCaseApi {
         CaseAccessApi caseAccessApi,
         CoreCaseDataService coreCaseDataService,
         CaseDetailsConverter ccdCaseDataToClaim,
-        JobSchedulerService jobSchedulerService
+        JobSchedulerService jobSchedulerService,
+        CaseSearchApi caseSearchApi
     ) {
         this.coreCaseDataApi = coreCaseDataApi;
         this.authTokenGenerator = authTokenGenerator;
@@ -77,14 +80,19 @@ public class CCDCaseApi {
         this.coreCaseDataService = coreCaseDataService;
         this.ccdCaseDataToClaim = ccdCaseDataToClaim;
         this.jobSchedulerService = jobSchedulerService;
+        this.caseSearchApi = caseSearchApi;
     }
 
-    public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
+    public List<Claim> getBySubmitterId(String submitterId, String authorisation, Integer pageNumber) {
         User user = userService.getUser(authorisation);
-
-        return asStream(getAllCasesBy(user, ImmutableMap.of()))
-            .filter(claim -> submitterId.equals(claim.getSubmitterId()))
-            .collect(Collectors.toList());
+        if (Integer.valueOf(0).equals(pageNumber) || null == pageNumber) {
+            return asStream(getAllCasesBy(user, ImmutableMap.of()))
+                .filter(claim -> submitterId.equals(claim.getSubmitterId()))
+                .collect(Collectors.toList());
+        } else {
+            int index = 10 * (pageNumber - 1);
+            return caseSearchApi.getClaimsForClaimant(submitterId, user, index);
+        }
     }
 
     public Optional<Claim> getByReferenceNumber(String referenceNumber, String authorisation) {
@@ -99,12 +107,36 @@ public class CCDCaseApi {
         return getCaseBy(authorisation, ImmutableMap.of("case.externalId", externalId));
     }
 
-    public List<Claim> getByDefendantId(String id, String authorisation) {
+    public List<Claim> getByDefendantId(String id, String authorisation, Integer pageNumber) {
         User user = userService.getUser(authorisation);
+        if (Integer.valueOf(0).equals(pageNumber) || null == pageNumber) {
+            return asStream(getAllIssuedCasesBy(user, ImmutableMap.of()))
+                .filter(claim -> id.equals(claim.getDefendantId()))
+                .collect(Collectors.toList());
+        } else {
+            int index = 10 * (pageNumber - 1);
+            return caseSearchApi.getClaimsForDefendant(id, user, index);
+        }
+    }
 
-        return asStream(getAllIssuedCasesBy(user, ImmutableMap.of()))
-            .filter(claim -> id.equals(claim.getDefendantId()))
-            .collect(Collectors.toList());
+    public Map<String, String> getPaginationInfo(User user, String userType) {
+        UserDetails userDetails = user.getUserDetails();
+        Integer totalPageCount = 1;
+        Integer totalClaimCount = 0;
+        Map<String, String> paginationInfo = new HashMap<>();
+
+        if (userType.equalsIgnoreCase("claimant")) {
+            totalClaimCount = caseSearchApi.getClaimCountForClaimant(userDetails.getId(), user);
+        } else if (userType.equalsIgnoreCase("defendant")) {
+            totalClaimCount = caseSearchApi.getClaimCountForDefendant(userDetails.getId(), user);
+        }
+        if (totalClaimCount > 10) {
+            totalPageCount = ((int) Math.ceil((double) totalClaimCount / 10));
+        }
+        paginationInfo.put("totalClaims", totalClaimCount.toString());
+        paginationInfo.put("totalPages", totalPageCount.toString());
+
+        return paginationInfo;
     }
 
     public List<Claim> getBySubmitterEmail(String submitterEmail, String authorisation) {
@@ -131,8 +163,11 @@ public class CCDCaseApi {
 
     /**
      * LLD https://tools.hmcts.net/confluence/display/ROC/Defendant+linking+with+CCD
+     * Below logic is modified to link only one letter holder Id coming in the request
+     * instead of fetch all claim & link every time
      */
-    public void linkDefendant(String authorisation) {
+
+    public void linkDefendantUsingLetterholderId(String authorisation, String letterholderId) {
         User defendantUser = userService.getUser(authorisation);
         List<String> letterHolderIds = defendantUser.getUserDetails().getRoles()
             .stream()
@@ -143,18 +178,34 @@ public class CCDCaseApi {
         if (letterHolderIds.isEmpty()) {
             return;
         }
-
         User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
 
-        letterHolderIds
-            .forEach(letterHolderId -> caseAccessApi.findCaseIdsGivenUserIdHasAccessTo(
+        if (letterholderId != null && !letterholderId.isEmpty() && letterHolderIds.contains(letterholderId)) {
+            List<String> ccdCaseIds = caseAccessApi.findCaseIdsGivenUserIdHasAccessTo(
                 anonymousCaseWorker.getAuthorisation(),
                 authTokenGenerator.generate(),
                 anonymousCaseWorker.getUserDetails().getId(),
                 JURISDICTION_ID,
                 CASE_TYPE_ID,
-                letterHolderId
-            ).forEach(caseId -> linkToCase(defendantUser, anonymousCaseWorker, letterHolderId, caseId)));
+                letterholderId
+            );
+
+            ccdCaseIds.forEach(ccdCaseId -> {
+                linkToCase(defendantUser, anonymousCaseWorker, letterholderId, ccdCaseId);
+            });
+        } else {
+            letterHolderIds
+                .forEach(letterHolderId -> caseAccessApi.findCaseIdsGivenUserIdHasAccessTo(
+                    anonymousCaseWorker.getAuthorisation(),
+                    authTokenGenerator.generate(),
+                    anonymousCaseWorker.getUserDetails().getId(),
+                    JURISDICTION_ID,
+                    CASE_TYPE_ID,
+                    letterHolderId
+                ).forEach(caseId -> {
+                    linkToCase(defendantUser, anonymousCaseWorker, letterHolderId, caseId);
+                }));
+        }
     }
 
     public void linkDefendant(String caseId, String defendantId, String defendantEmail) {
@@ -206,7 +257,7 @@ public class CCDCaseApi {
 
     private void linkToCase(User defendantUser, User anonymousCaseWorker, String letterHolderId, String caseId) {
         String defendantId = defendantUser.getUserDetails().getId();
-
+        LOGGER.info("<--linkToCase-> Linking the case " + letterHolderId);
         LOGGER.debug("Granting access to case {} for defendant {} with letter {}", caseId, defendantId, letterHolderId);
         this.grantAccessToCase(anonymousCaseWorker, caseId, defendantId);
 
@@ -250,6 +301,7 @@ public class CCDCaseApi {
         String defendantId,
         String defendantEmail
     ) {
+        LOGGER.info("<----updateDefendantIdAndEmail---->", caseId, defendantId, caseId, defendantEmail);
         return coreCaseDataService.linkDefendant(
             defendantUser.getAuthorisation(),
             Long.valueOf(caseId),

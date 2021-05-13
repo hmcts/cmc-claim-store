@@ -16,6 +16,7 @@ import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
+import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.ISSUE_DATE;
 
 public class InterestContentProviderTest {
 
@@ -35,7 +36,7 @@ public class InterestContentProviderTest {
         interest = claim.getClaimData().getInterest();
         interestDate = claim.getClaimData().getInterest().getInterestDate();
         claimAmount = ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount();
-        issuedOn = claim.getIssuedOn();
+        issuedOn = ISSUE_DATE;
     }
 
     @Test(expected = NullPointerException.class)
@@ -142,7 +143,7 @@ public class InterestContentProviderTest {
     private InterestDate issuedOnDate() {
         return new InterestDate(
             InterestDate.InterestDateType.SUBMISSION,
-            claim.getIssuedOn(),
+            ISSUE_DATE,
             "testing",
             InterestDate.InterestEndDateType.SETTLED_OR_JUDGMENT
         );

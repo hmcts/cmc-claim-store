@@ -1,5 +1,5 @@
 provider "azurerm" {
-  version = "1.44.0"
+  features {}
 }
 
 locals {
@@ -48,6 +48,11 @@ data "azurerm_key_vault_secret" "milo_recipient" {
 
 data "azurerm_key_vault_secret" "rpa_email_sealed_claim" {
   name = "rpa-email-sealed-claim"
+  key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
+}
+
+data "azurerm_key_vault_secret" "rpa-email-breathing-space" {
+  name = "rpa-email-breathing-space"
   key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
 }
 
@@ -110,6 +115,27 @@ resource "azurerm_key_vault_secret" "cmc-db-password" {
   name      = "cmc-db-password"
   value     = "${module.database.postgresql_password}"
   key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
+}
+
+data "azurerm_key_vault" "send_grid" {
+  provider = azurerm.send-grid
+
+  name                = var.env != "prod" ? "sendgridnonprod" : "sendgridprod"
+  resource_group_name = var.env != "prod" ? "SendGrid-nonprod" : "SendGrid-prod"
+}
+
+data "azurerm_key_vault_secret" "send_grid_api_key" {
+  provider = azurerm.send-grid
+
+
+  key_vault_id = data.azurerm_key_vault.send_grid.id
+  name         = var.env != "prod" ? "hmcts-cmc-api-key" : "cmc-api-key"
+}
+
+resource "azurerm_key_vault_secret" "sendgrid_api_key-2" {
+  key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
+  name         = "sendgrid-api-key-2"
+  value        = data.azurerm_key_vault_secret.send_grid_api_key.value
 }
 
 module "database" {

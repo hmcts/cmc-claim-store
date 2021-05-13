@@ -1,9 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.services.notifications;
 
+import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
@@ -29,9 +28,6 @@ public class NotificationServiceTest extends BaseNotificationServiceTest {
     private static final Map<String, String> PARAMETERS = new HashMap<>();
 
     private NotificationService service;
-
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
 
     @Before
     public void beforeEachTest() {
@@ -59,17 +55,20 @@ public class NotificationServiceTest extends BaseNotificationServiceTest {
 
     @Test
     public void recoveryShouldNotLogPII() {
-        expectedException.expect(NotificationException.class);
-
-        service.logNotificationFailure(
-            new NotificationException("expected exception"),
-            null,
-            "hidden@email.com",
-            ImmutableMap.of(CLAIM_REFERENCE_NUMBER, "reference"),
-            "reference"
-        );
-
-        assertWasLogged("Failure: failed to send notification (reference) due to expected exception");
-        assertWasNotLogged("hidden@email.com");
+        NotificationException exception = new NotificationException("expected exception");
+        ImmutableMap<String, String> reference = ImmutableMap.of(CLAIM_REFERENCE_NUMBER, "reference");
+        try {
+            service.logNotificationFailure(
+                exception,
+                null,
+                "hidden@email.com",
+                reference,
+                "reference"
+            );
+            Assert.fail("Expected a NotificationException to be thrown");
+        } catch (NotificationException expected) {
+            assertWasLogged("Failure: failed to send notification (reference) due to expected exception");
+            assertWasNotLogged("hidden@email.com");
+        }
     }
 }

@@ -16,6 +16,7 @@ public class StayClaimJob extends AbstractStateTransitionJob {
     private String cronExpression;
 
     public StayClaimJob() {
+        //zero argument constructor
     }
 
     //Cannot autowire via constructor as job framework needs a zero argument constructor

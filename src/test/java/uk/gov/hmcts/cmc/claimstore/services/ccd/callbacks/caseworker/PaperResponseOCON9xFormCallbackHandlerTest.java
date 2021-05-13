@@ -38,8 +38,11 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.PaperResponseOCON9xFormCallbackHandler.OCON9X_SUBTYPE;
@@ -91,8 +94,51 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
                         .build())
                     .collect(Collectors.toList());
 
+                lenient().when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
+                    .thenReturn(CCDCase.builder().scannedDocuments(scannedDocuments).build());
+            }
+
+            @Test
+            void shouldReturnListOfOcon9xFormsReceivedViaBulkscanAndEmail() {
+
+                List<CCDCollectionElement<CCDScannedDocument>> scannedDocuments =
+                    Arrays.asList(getScannedDocument("OCON9xFromEmail", "OCON9x"),
+                        getScannedDocument("OCON9xFromBulkScan", null),
+                        getScannedDocument("N9aForm", "N9a"));
+
                 when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
                     .thenReturn(CCDCase.builder().scannedDocuments(scannedDocuments).build());
+
+                AboutToStartOrSubmitCallbackResponse response =
+                    (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
+
+                Set<String> scannedDocumentsAvailableForReview =
+                    ((List<CCDCollectionElement<CCDScannedDocument>>) response.getData()
+                        .get("temporaryScannedDocuments"))
+                        .stream()
+                        .map(CCDCollectionElement::getValue)
+                        .map(d -> d.getUrl().getDocumentFileName())
+                        .collect(Collectors.toSet());
+
+                assertThat(scannedDocumentsAvailableForReview.size()).isEqualTo(2);
+                assertTrue(scannedDocumentsAvailableForReview.contains("OCON9xFromEmail"));
+                assertTrue(scannedDocumentsAvailableForReview.contains("OCON9xFromBulkScan"));
+                assertFalse(scannedDocumentsAvailableForReview.contains("N9aForm"));
+            }
+
+            private CCDCollectionElement getScannedDocument(String fileName, String subtype) {
+
+                CCDScannedDocument scannedDocument = CCDScannedDocument.builder()
+                    .type(CCDScannedDocumentType.form)
+                    .subtype(subtype)
+                    .url(CCDDocument.builder().documentFileName(fileName).build())
+                    .build();
+
+                CCDCollectionElement ccdCollectionElement = CCDCollectionElement.<CCDScannedDocument>builder()
+                    .value(scannedDocument).id(UUID.randomUUID().toString())
+                    .build();
+
+                return ccdCollectionElement;
             }
 
             @Test

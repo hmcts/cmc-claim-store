@@ -7,7 +7,9 @@ public enum RpaEventType {
     MORE_TIME,
     CCJ,
     DEFENDANT_RESPONSE,
-    PAID_IN_FULL;
+    PAID_IN_FULL,
+    BREATHING_SPACE_ENTERED,
+    BREATHING_SPACE_LIFTED;
 
     public static RpaEventType fromValue(String value) {
         return Arrays.stream(values())

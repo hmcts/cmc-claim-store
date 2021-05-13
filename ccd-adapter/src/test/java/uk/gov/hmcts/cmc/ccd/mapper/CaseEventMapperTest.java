@@ -23,31 +23,31 @@ public class CaseEventMapperTest {
 
     @Test
     public void testSealedClaimCaseEvent() {
-        assertEquals(CaseEventMapper.map(SEALED_CLAIM), SEALED_CLAIM_UPLOAD);
+        assertEquals(SEALED_CLAIM_UPLOAD, CaseEventMapper.map(SEALED_CLAIM));
     }
 
     @Test
     public void testClaimIssueReceiptCaseEvent() {
-        assertEquals(CaseEventMapper.map(CLAIM_ISSUE_RECEIPT), CLAIM_ISSUE_RECEIPT_UPLOAD);
+        assertEquals(CLAIM_ISSUE_RECEIPT_UPLOAD, CaseEventMapper.map(CLAIM_ISSUE_RECEIPT));
     }
 
     @Test
     public void testReviewOrderUploadCaseEvent() {
-        assertEquals(CaseEventMapper.map(REVIEW_ORDER), REVIEW_ORDER_UPLOAD);
+        assertEquals(REVIEW_ORDER_UPLOAD, CaseEventMapper.map(REVIEW_ORDER));
     }
 
     @Test
     public void testDefendantResponseReceiptCaseEvent() {
-        assertEquals(CaseEventMapper.map(DEFENDANT_RESPONSE_RECEIPT), DEFENDANT_RESPONSE_UPLOAD);
+        assertEquals(DEFENDANT_RESPONSE_UPLOAD, CaseEventMapper.map(DEFENDANT_RESPONSE_RECEIPT));
     }
 
     @Test
     public void testSettlementAgreementCaseEvent() {
-        assertEquals(CaseEventMapper.map(SETTLEMENT_AGREEMENT), SETTLEMENT_AGREEMENT_UPLOAD);
+        assertEquals(SETTLEMENT_AGREEMENT_UPLOAD, CaseEventMapper.map(SETTLEMENT_AGREEMENT));
     }
 
     @Test
     public void testCCJUploadCaseEvent() {
-        assertEquals(CaseEventMapper.map(CCJ_REQUEST), CCJ_REQUEST_UPLOAD);
+        assertEquals(CCJ_REQUEST_UPLOAD, CaseEventMapper.map(CCJ_REQUEST));
     }
 }

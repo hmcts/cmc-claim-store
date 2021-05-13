@@ -6,9 +6,11 @@ import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
@@ -24,9 +26,12 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
+@RunWith(MockitoJUnitRunner.class)
 public abstract class BaseNotificationServiceTest {
 
     protected static final String CLAIMANT_CLAIM_ISSUED_TEMPLATE = "claimantClaimIssued";
+    protected static final String HWF_CLAIMANT_CLAIM_CREATED_TEMPLATE = "hwfClaimantClaimCreated";
+    protected static final String HWF_CLAIMANT_CLAIM_UPDATE_TEMPLATE = "hwfClaimantClaimUpdate";
 
     protected static final String CLAIMANT_SIGNED_SETTLEMENT_AGREEMENT_TO_CLAIMANT_TEMPLATE
         = "claimantSignedSettlementAgreementToClaimant";
@@ -48,7 +53,7 @@ public abstract class BaseNotificationServiceTest {
     protected static final String USER_EMAIL = "user@example.com";
     protected static final String USER_FULLNAME = "Steven Patrick";
 
-    protected final Claim claim = SampleClaim.getDefault().toBuilder().respondedAt(LocalDateTime.now()).build();
+    protected Claim claim = SampleClaim.getDefault().toBuilder().respondedAt(LocalDateTime.now()).build();
 
     protected final Logger log = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 

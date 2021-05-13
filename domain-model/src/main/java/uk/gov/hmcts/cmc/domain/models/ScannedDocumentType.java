@@ -7,6 +7,7 @@ public enum ScannedDocumentType {
     CHERISHED,
     OTHER,
     FORM,
+    LETTER,
     COVERSHEET;
 
     private final List<String> values;

@@ -42,7 +42,7 @@ public class TotalAmountCalculator {
     }
 
     public static Optional<BigDecimal> amountWithInterestUntilIssueDate(Claim claim) {
-        return Optional.ofNullable(calculateTotalAmount(claim, claim.getIssuedOn(), false));
+        return claim.getIssuedOn().map(issuedOn -> calculateTotalAmount(claim, issuedOn, false));
     }
 
     public static Optional<BigDecimal> totalTillToday(Claim claim) {
@@ -53,7 +53,7 @@ public class TotalAmountCalculator {
     }
 
     public static Optional<BigDecimal> totalTillDateOfIssue(Claim claim) {
-        return Optional.ofNullable(calculateTotalAmount(claim, claim.getIssuedOn(), true));
+        return claim.getIssuedOn().map(issuedOn -> calculateTotalAmount(claim, issuedOn, true));
     }
 
     public static Optional<BigDecimal> calculateInterestForClaim(Claim claim, LocalDate localDate) {
@@ -61,7 +61,7 @@ public class TotalAmountCalculator {
     }
 
     public static Optional<BigDecimal> calculateInterestForClaim(Claim claim) {
-        return calculateInterestForClaim(claim, getToDate(claim));
+        return getToDate(claim).flatMap(toDate -> calculateInterestForClaim(claim, toDate));
     }
 
     public static BigDecimal calculateInterest(
@@ -81,7 +81,7 @@ public class TotalAmountCalculator {
         );
     }
 
-    private static Optional<BigDecimal> calculateInterest(Claim claim, LocalDate toDate) {
+    public static Optional<BigDecimal> calculateInterest(Claim claim, LocalDate toDate) {
         ClaimData data = claim.getClaimData();
         Interest interest = data.getInterest();
 
@@ -92,7 +92,7 @@ public class TotalAmountCalculator {
         if (interest.getType() == Interest.InterestType.BREAKDOWN) {
             return Optional.ofNullable(calculateBreakdownInterest(claim, toDate));
         } else if (interest.getType() != Interest.InterestType.NO_INTEREST) {
-            return Optional.ofNullable(calculateFixedRateInterest(claim, toDate));
+            return calculateFixedRateInterest(claim, toDate);
         }
 
         return Optional.of(ZERO);
@@ -116,7 +116,9 @@ public class TotalAmountCalculator {
         Amount amount = claim.getClaimData().getAmount();
         if (amount instanceof AmountBreakDown) {
             BigDecimal claimAmount = ((AmountBreakDown) amount).getTotalAmount();
-            return calculateBreakdownInterest(interest, interestDate, claimAmount, claim.getIssuedOn(), toDate);
+            return claim.getIssuedOn()
+                .map(issuedOn -> calculateBreakdownInterest(interest, interestDate, claimAmount, issuedOn, toDate))
+                .orElseThrow(() -> new IllegalStateException("Unable to calculate breakdown interest"));
         }
 
         return ZERO;
@@ -169,37 +171,36 @@ public class TotalAmountCalculator {
         return null;
     }
 
-    private static BigDecimal calculateFixedRateInterest(Claim claim, LocalDate toDate) {
+    private static Optional<BigDecimal> calculateFixedRateInterest(Claim claim, LocalDate toDate) {
         ClaimData data = claim.getClaimData();
         Amount amount = data.getAmount();
 
         if (amount instanceof AmountBreakDown) {
             BigDecimal claimAmount = ((AmountBreakDown) amount).getTotalAmount();
             BigDecimal rate = data.getInterest().getRate();
-            LocalDate fromDate = getFromDate(claim);
-            return calculateInterest(claimAmount, rate, fromDate, toDate);
+            Optional<LocalDate> fromDateOpt = getFromDate(claim);
+            return fromDateOpt.map(fromDate -> calculateInterest(claimAmount, rate, fromDate, toDate));
         }
 
-        return ZERO;
+        return Optional.of(ZERO);
     }
 
-    private static LocalDate getFromDate(Claim claim) {
+    private static Optional<LocalDate> getFromDate(Claim claim) {
         return claim.getClaimData().getInterest().getInterestDate().isCustom()
-            ? claim.getClaimData().getInterest().getInterestDate().getDate()
+            ? Optional.ofNullable(claim.getClaimData().getInterest().getInterestDate().getDate())
             : claim.getIssuedOn();
     }
 
-    private static LocalDate getToDate(Claim claim) {
+    private static Optional<LocalDate> getToDate(Claim claim) {
         if (claim.getCountyCourtJudgmentRequestedAt() != null) {
-            return claim.getCountyCourtJudgmentRequestedAt().toLocalDate();
-        } else {
-            return LocalDate.now().isAfter(claim.getIssuedOn()) ? LocalDate.now() : claim.getIssuedOn();
+            return Optional.of(claim.getCountyCourtJudgmentRequestedAt().toLocalDate());
         }
+        return claim.getIssuedOn()
+            .map(issuedOn -> LocalDate.now().isAfter(issuedOn) ? LocalDate.now() : issuedOn);
     }
 
     private static BigDecimal daysBetween(LocalDate startDate, LocalDate endDate) {
-        // This should be enabled back and fixed properly
-        // requireValidOrderOfDates(startDate, endDate);
+
         Duration duration = Duration.between(startDate.atStartOfDay(), endDate.atStartOfDay());
 
         return duration.isNegative() ? ZERO : valueOf(duration.toDays());

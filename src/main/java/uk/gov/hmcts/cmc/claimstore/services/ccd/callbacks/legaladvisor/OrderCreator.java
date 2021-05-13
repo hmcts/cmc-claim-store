@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legaladvisor;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,14 +24,17 @@ import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.Pilot;
 import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -42,6 +43,7 @@ import java.util.stream.Stream;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDBespokeOrderWarning.WARNING;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.BOTH;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.DOCUMENTS;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EYEWITNESS;
@@ -60,6 +62,7 @@ public class OrderCreator {
     private static final String PREFERRED_COURT_OBJECTING_PARTY = "preferredCourtObjectingParty";
     private static final String PREFERRED_COURT_OBJECTING_REASON = "preferredCourtObjectingReason";
     private static final String DIRECTION_LIST = "directionList";
+    private static final String BESPOKE_DIRECTION_WARNING = "drawBespokeDirectionOrderWarning";
     private static final String PREFERRED_DQ_COURT = "preferredDQCourt";
     private static final String EXPERT_PERMISSION_BY_CLAIMANT = "expertReportPermissionPartyAskedByClaimant";
     private static final String EXPERT_PERMISSION_BY_DEFENDANT = "expertReportPermissionPartyAskedByDefendant";
@@ -73,12 +76,20 @@ public class OrderCreator {
     private static final String OTHER_DIRECTIONS = "otherDirections";
     private static final String ESTIMATED_HEARING_DURATION = "estimatedHearingDuration";
 
+    public static final String DIRECTION_TYPE_BESPOKE = "BESPOKE";
+    public static final String DIRECTION_TYPE_STANDARD = "STANDARD";
+    public static final String DIRECTION_ORDER_TYPE = "directionOrderType";
+    public static final String BESPOKE_DIRECTION_LIST = "bespokeDirectionList";
+
+    private static final String COURT_NOT_OBJECTED = "Court not objected";
+
     private final LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator;
     private final CaseDetailsConverter caseDetailsConverter;
     private final GenerateOrderRule generateOrderRule;
     private final DirectionsQuestionnaireService directionsQuestionnaireService;
     private final PilotCourtService pilotCourtService;
     private final OrderRenderer orderRenderer;
+    private final LaunchDarklyClient launchDarklyClient;
 
     public OrderCreator(
         LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator,
@@ -86,7 +97,8 @@ public class OrderCreator {
         GenerateOrderRule generateOrderRule,
         DirectionsQuestionnaireService directionsQuestionnaireService,
         PilotCourtService pilotCourtService,
-        OrderRenderer orderRenderer
+        OrderRenderer orderRenderer,
+        LaunchDarklyClient launchDarklyClient
     ) {
         this.legalOrderGenerationDeadlinesCalculator = legalOrderGenerationDeadlinesCalculator;
         this.caseDetailsConverter = caseDetailsConverter;
@@ -94,18 +106,20 @@ public class OrderCreator {
         this.directionsQuestionnaireService = directionsQuestionnaireService;
         this.pilotCourtService = pilotCourtService;
         this.orderRenderer = orderRenderer;
+        this.launchDarklyClient = launchDarklyClient;
     }
 
     public CallbackResponse prepopulateOrder(CallbackParams callbackParams) {
         logger.info("Order creator: pre populating order fields");
         CallbackRequest callbackRequest = callbackParams.getRequest();
-
+        if (callbackRequest.getCaseDetails().getData().containsKey(HEARING_COURT)) {
+            callbackRequest.getCaseDetails().getData().remove(HEARING_COURT);
+        }
         Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
 
         Map<String, Object> data = new HashMap<>();
-        data.put(DIRECTION_LIST, chooseItem(ccdCase.getDirectionList(), ImmutableList.of(DOCUMENTS, EYEWITNESS)));
-
+        data.put(DIRECTION_LIST, chooseItem(ccdCase.getDirectionList(), List.of(DOCUMENTS, EYEWITNESS)));
         addCourtData(claim, ccdCase, data);
 
         LocalDate deadline = legalOrderGenerationDeadlinesCalculator.calculateOrderGenerationDeadlines();
@@ -143,6 +157,12 @@ public class OrderCreator {
             }
         }
 
+        if (launchDarklyClient.isFeatureEnabled("bespoke-order", LaunchDarklyClient.CLAIM_STORE_USER)) {
+            data.put(BESPOKE_DIRECTION_WARNING,
+                chooseItem(ccdCase.getDrawBespokeDirectionOrderWarning(), List.of(WARNING)));
+            data.put(DIRECTION_ORDER_TYPE, ccdCase.getDirectionOrderType());
+            data.put(BESPOKE_DIRECTION_LIST, ccdCase.getBespokeDirectionList());
+        }
         return AboutToStartOrSubmitCallbackResponse
             .builder()
             .data(data)
@@ -169,15 +189,49 @@ public class OrderCreator {
             .collect(Collectors.joining(", "));
     }
 
+    public CallbackResponse generateOrPrepopulateOrder(CallbackParams callbackParams) {
+        logger.info("Order creator: mid event to handle generate or prepopulate the claim for direction type");
+        CallbackRequest callbackRequest = callbackParams.getRequest();
+        Map<String, Object> tempData = new HashMap<>(callbackRequest.getCaseDetails().getData());
+        boolean populateOrder = true;
+        if (!launchDarklyClient.isFeatureEnabled("bespoke-order", LaunchDarklyClient.CLAIM_STORE_USER)) {
+            return generateOrder(callbackParams);
+        } else if (!tempData.containsKey(DIRECTION_ORDER_TYPE)) {
+            populateOrder = false;
+        } else if (DIRECTION_TYPE_BESPOKE.equals(tempData.get(DIRECTION_ORDER_TYPE))
+            && tempData.containsKey(BESPOKE_DIRECTION_LIST)) {
+            ArrayList<Map<String, Object>> tempBespokeDirectionOrderList
+                = (ArrayList) (tempData.get(BESPOKE_DIRECTION_LIST));
+            if (!tempBespokeDirectionOrderList.isEmpty()) {
+                populateOrder = false;
+            }
+        } else if (DIRECTION_TYPE_STANDARD.equals(tempData.get(DIRECTION_ORDER_TYPE))
+            && tempData.containsKey(HEARING_COURT)
+            && !(tempData.get(HEARING_COURT) instanceof LinkedHashMap)) {
+            populateOrder = false;
+        }
+
+        if (populateOrder) {
+            return prepopulateOrder(callbackParams);
+        } else {
+            return generateOrder(callbackParams);
+        }
+    }
+
     public CallbackResponse generateOrder(CallbackParams callbackParams) {
         logger.info("Order creator: creating order document");
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
 
-        List<String> validations = generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase,
-            hasExpertsAtCaseLevel(callbackParams));
-        if (!validations.isEmpty()) {
-            return AboutToStartOrSubmitCallbackResponse.builder().errors(validations).build();
+        if (!DIRECTION_TYPE_BESPOKE.equalsIgnoreCase(ccdCase.getDirectionOrderType())) {
+            List<String> validations = new ArrayList<>();
+            generateOrderRule.validateDate(ccdCase, validations);
+
+            generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase,
+                hasExpertsAtCaseLevel(callbackParams), validations);
+            if (!validations.isEmpty()) {
+                return AboutToStartOrSubmitCallbackResponse.builder().errors(validations).build();
+            }
         }
 
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
@@ -188,7 +242,7 @@ public class OrderCreator {
 
         return AboutToStartOrSubmitCallbackResponse
             .builder()
-            .data(ImmutableMap.of(
+            .data(Map.of(
                 DRAFT_ORDER_DOC,
                 CCDDocument.builder().documentUrl(docAssemblyResponse.getRenditionOutputLocation()).build()
             ))
@@ -218,6 +272,12 @@ public class OrderCreator {
             newRequestedCourt = defendantDQ.getHearingLocation();
             preferredCourtObjectingParty = CCDResponseSubjectType.RES_DEFENDANT.getValue();
             preferredCourtObjectingReason = defendantDQ.getExceptionalCircumstancesReason();
+        }
+
+        if (StringUtils.isBlank(preferredCourtObjectingReason)) {
+            newRequestedCourt = COURT_NOT_OBJECTED;
+            preferredCourtObjectingParty = CCDResponseSubjectType.NONE.getValue();
+            preferredCourtObjectingReason = COURT_NOT_OBJECTED;
         }
 
         data.put(NEW_REQUESTED_COURT, newRequestedCourt);
@@ -259,11 +319,11 @@ public class OrderCreator {
             .sorted(Comparator.comparing(HearingCourt::getName))
             .map(hearingCourt -> {
                 String id = pilotCourtService.getPilotCourtId(hearingCourt);
-                return ImmutableMap.of(DYNAMIC_LIST_CODE, id, DYNAMIC_LIST_LABEL, hearingCourt.getName());
+                return Map.of(DYNAMIC_LIST_CODE, id, DYNAMIC_LIST_LABEL, hearingCourt.getName());
             })
             .collect(Collectors.toList());
 
-        ImmutableMap<String, String> otherCourtItem = ImmutableMap.of(DYNAMIC_LIST_CODE,
+        Map<String, String> otherCourtItem = Map.of(DYNAMIC_LIST_CODE,
             PilotCourtService.OTHER_COURT_ID, DYNAMIC_LIST_LABEL, "Other Court");
 
         if (pilot == Pilot.JDDO) {
@@ -309,4 +369,5 @@ public class OrderCreator {
     private boolean hasDynamicCourts(CallbackParams callbackParams) {
         return getPilot(callbackParams) != Pilot.LA || callbackParams.getVersion() == CallbackVersion.V_2;
     }
+
 }

@@ -1,0 +1,107 @@
+{
+  "externalId": "9f49d8df-b734-4e86-aeb6-e22f0c2ca78d",
+  "claimants": [
+    {
+      "type": "individual",
+      "id": "acd82549-d279-4adc-b38c-d195dd0db0d6",
+      "name": "John Rambo",
+      "address": {
+        "line1": "52",
+        "line2": "Down Street",
+        "line3": "Salford",
+        "city": "Manchester",
+        "postcode": "DF1 3LJ"
+      },
+      "correspondenceAddress": {
+        "line1": "52",
+        "line2": "Down Street",
+        "line3": "Salford",
+        "city": "Manchester",
+        "postcode": "DF1 3LJ"
+      },
+      "phone": "07873727165",
+      "dateOfBirth": "1968-01-02"
+    }
+  ],
+  "defendants": [
+    {
+      "type": "individual",
+      "id": "3d0bc933-0d46-4564-94bd-79e6e69b838b",
+      "name": "Dr. John Smith",
+      "title": "Dr.",
+      "firstName": "John",
+      "lastName": "Smith",
+      "address": {
+        "line1": "52",
+        "line2": "Down Street",
+        "line3": "Salford",
+        "city": "Manchester",
+        "postcode": "DF1 3LJ"
+      },
+      "email": "j.smith@example.com"
+    }
+  ],
+  "payment": {
+    "id": "PaymentId",
+    "amount": 40.99,
+    "reference": "RC-1524-6488-1670-7520",
+    "status": "SUCCESS",
+    "date_created": "2019-01-01",
+    "transaction_id": "transactionId",
+    "fee_id": "feeId",
+    "return_url": "http://returnUrl.test"
+  },
+  "amount": {
+    "type": "breakdown",
+    "rows": [
+      {
+        "id": "359fda9d-e5fd-4d6e-9525-238642d0157d",
+        "reason": "reason",
+        "amount": 40.99
+      }
+    ]
+  },
+  "feeAmountInPennies": 4000,
+  "feeRemitted": 3000,
+  "feeAmountAfterRemission": 3000,
+  "feeCode": "X0012",
+  "interest": {
+    "type": "standard",
+    "rate": 8,
+    "lastInterestCalculationDate": "2015-02-02T22:23:27.773037",
+    "interestDate": {
+      "type": "custom",
+      "date": "2015-02-02",
+      "reason": "I want to claim from this date because that's when that happened",
+      "endDateType": "settled_or_judgment"
+    }
+  },
+  "timeline": {
+    "rows": [
+      {
+        "id": "359fda9d-e5fd-4d6e-9525-238642d0157d",
+        "date": "Last Year",
+        "description": "signed a contract"
+      }
+    ]
+  },
+  "evidence": {
+    "rows": [
+      {
+        "id": "d839f2f0-025f-4ee9-9a98-16bbe6ab3b35",
+        "type": "CORRESPONDENCE",
+        "description": "description"
+      }
+    ]
+  },
+  "reason": "reason",
+  "helpWithFeesNumber": "HWF012345",
+  "helpWithFeesType": "Claim Issue",
+  "hwfFeeDetailsSummary": "Summary",
+  "hwfMandatoryDetails": "Details",
+  "hwfMoreInfoNeededDocuments": [
+    "BANK_STATEMENTS",
+    "PRISONERS_INCOME"
+  ],
+  "hwfDocumentsToBeSentBefore": "2020-01-01"
+}

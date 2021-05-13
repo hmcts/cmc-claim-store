@@ -2,11 +2,11 @@ import java.util.stream.Collectors
 
 plugins {
   id 'checkstyle'
-  id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+  id 'io.spring.dependency-management' version '1.0.11.RELEASE'
   id 'org.springframework.boot' version '2.3.0.RELEASE'
-  id 'org.owasp.dependencycheck' version '5.3.1'
+  id 'org.owasp.dependencycheck' version '6.1.1'
   id 'org.sonarqube' version '2.8'
-  id 'com.github.ben-manes.versions' version '0.28.0'
+  id 'com.github.ben-manes.versions' version '0.36.0'
   id 'jacoco'
   id 'net.ltgt.apt' version '0.21'
   id 'idea'
@@ -25,7 +25,7 @@ dependencyUpdates.resolutionStrategy = {
   }
 }
 
-def springBootVersion = '2.2.6.RELEASE'
+def springBootVersion = plugins.getPlugin('org.springframework.boot').class.package.implementationVersion
 def springCloudVersion = 'Hoxton.SR2'
 
 def versions = [
@@ -34,7 +34,7 @@ def versions = [
   springfoxSwagger  : '2.9.2',
   reformJavaLogging : '5.1.1',
   restAssuredVersion: '4.2.0',
-  jackson           : '2.10.0',
+  jackson           : '2.11.0',
   junit             : '5.5.2',
   junitPlatform     : '1.5.2',
 ]
@@ -102,14 +102,14 @@ allprojects {
     }
     dependencies {
       // CVE-2020-13935
-      dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.37') {
+      dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.44') {
         entry 'tomcat-embed-core'
         entry 'tomcat-embed-el'
         entry 'tomcat-embed-websocket'
       }
       // checkstyle needs a certain version and so does spring fox swagger, so can't use latest
       // fun times...
-      dependencySet(group: 'com.google.guava', version: '20.0') {
+      dependencySet(group: 'com.google.guava', version: '30.1-jre') {
         entry 'guava'
       }
       // solves CVE-2019-12086
@@ -149,7 +149,7 @@ allprojects {
       // solves CVE-2020-5407
       dependencySet(
         group: 'org.springframework.security',
-        version: '5.3.2.RELEASE'
+        version: '5.4.5'
       ) {
         entry 'spring-security-crypto'
       }
@@ -193,23 +193,34 @@ dependencies {
   compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
 
-  compile group: 'org.elasticsearch', name: 'elasticsearch', version: '7.9.0'
+  compile group: 'org.elasticsearch', name: 'elasticsearch', version: '7.11.1'
   compile group: 'org.postgresql', name: 'postgresql', version: '42.2.14'
 
-  compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.15.1-RELEASE'
+  compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.0-RELEASE'
 
   compile group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformJavaLogging
   compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformJavaLogging
   compile group: 'uk.gov.hmcts.reform', name: 'pdf-service-client', version: '7.0.0'
-  compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '6.0.0'
-  compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.0'
-  compile group: 'uk.gov.hmcts.reform', name: 'doc-assembly-client', version: '1.0.4'
+  compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
+
+  compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.6'
+  compile group: 'uk.gov.hmcts.reform', name: 'doc-assembly-client', version: '1.07'
   compile group: 'uk.gov.hmcts.reform', name: 'fees-java-client', version: '0.0.6'
   compile group: 'uk.gov.hmcts.reform', name: 'payments-client', version: '0.0.6'
-  compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.1'
-  compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.3.0'
-  compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.5'
-  compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.0.4'
+  compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '4.0.0'
+  compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '3.0.2'
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
+  compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.1.0'
+
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
+  compile group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '2.7.0'
+
+  compile group: 'org.springframework.security', name: 'spring-security-web'
+  compile group: 'org.springframework.security', name: 'spring-security-config'
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client'
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
+  compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '7.9'
+  compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
 
   compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
   compile group: 'org.apache.commons', name: 'commons-csv', version: '1.8'
@@ -222,8 +233,8 @@ dependencies {
 
   compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '11.0'
 
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
-  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.18'
+  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.18'
 
   testCompile project(':domain-sample-data')
   testCompile project(path: ":ccd-adapter", configuration: 'testArtifacts')
@@ -243,14 +254,14 @@ dependencies {
   testCompile group: 'org.junit.platform', name: 'junit-platform-engine', version: versions.junitPlatform
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.16.1'
   testCompile group: 'org.mockito', name: 'mockito-core', version: '3.3.3'
-  testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.3.3'
-  testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.13.0'
+  testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.6.28'
+  testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.14.3'
 
   testCompile group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
   testCompile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: '2.4.0'
   testCompile group: 'net.jodah', name: 'failsafe', version: '2.4.0'
-  testCompile group: 'org.xmlunit', name: 'xmlunit-core', version: '2.7.0'
-  testCompile group: 'org.xmlunit', name: 'xmlunit-matchers', version: '2.6.3'
+  testCompile group: 'org.xmlunit', name: 'xmlunit-core', version: '2.8.2'
+  testCompile group: 'org.xmlunit', name: 'xmlunit-matchers', version: '2.8.2'
 }
 
 sourceSets {
@@ -298,7 +309,7 @@ task migrateClaims() {
 
   doLast {
     javaexec {
-      main = "-jar";
+      main = "-jar"
       args = [
         "ccd-claim-migration/build/libs/ccd-claim-migration-1.1.0.jar"
       ]
@@ -314,6 +325,7 @@ task functional(type: Test) {
   setTestClassesDirs(sourceSets.aat.output.classesDirs)
   setClasspath(sourceSets.aat.runtimeClasspath)
   include "uk/gov/hmcts/cmc/claimstore/tests/functional/**"
+  testLogging.showStandardStreams = true
 
   environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
@@ -323,6 +335,7 @@ task smoke(type: Test) {
   description = 'Executes non-destructive smoke tests against a running Claim Store instance'
   setTestClassesDirs(sourceSets.aat.output.classesDirs)
   setClasspath(sourceSets.aat.runtimeClasspath)
+  testLogging.showStandardStreams = true
   include "uk/gov/hmcts/cmc/claimstore/tests/smoke/**"
 
   environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
@@ -361,9 +374,11 @@ sonarqube {
     property "sonar.exclusions", [
         "**/ccd/domain/**",
         "**/cmc/domain/models/**",
+        "**/cmc/domain/amount/**",
         "**/cmc/ccd/sample/data/**",
         "**/cmc/ccd/mapper/**",
         "**/cmc/claimstore/idam/models/**",
+        "**/cmc/claimstore/idam/IdamApi.java",
         "**/ExceptionForClient.java",
         "**/config/**",
         "**/*Exception.java",
@@ -387,8 +402,17 @@ sonarqube {
         "launch-darkly-client/**",
         "email-client/**",
         "rpa-mapper/**",
-        "**/UserRoleConstraintValidator.java"
-      ].join(",")
+        "**/UserRoleConstraintValidator.java",
+        "**/ValidEmploymentConstraintValidator.java",
+        "**/ValidInterestConstraintValidator.java",
+        "**/ValidInterestDateConstraintValidator.java",
+        "**/ValidUnemploymentConstraintValidator.java",
+        "**/ValidIncomeConstraintValidator.java",
+        "**/ValidExpenseConstraintValidator.java",
+        "**/ValidResidenceConstraintValidator.java",
+        "**/PaperResponseFullDefenceCallbackHandler.java",
+        "**/cmc/claimstore/services/ccd/callbacks/roboticssupport/RoboticsNotificationServiceImpl.java"
+    ].join(",")
   }
 }
 

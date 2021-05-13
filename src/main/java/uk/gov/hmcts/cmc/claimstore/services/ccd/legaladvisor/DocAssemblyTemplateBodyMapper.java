@@ -11,6 +11,8 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDContactChangeContent;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.GeneralLetterContent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseMethod;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDBespokeOrderWarning;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionOrderService;
@@ -19,7 +21,6 @@ import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 
 import java.time.Clock;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
@@ -28,13 +29,12 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 @Component
 public class DocAssemblyTemplateBodyMapper {
 
-    @Value("${directionDeadline.numberOfDays}")
-    private long directionDeadLineNumberOfDays;
+    @Value("${directionDeadline.onlineNumberOfDays}")
+    private long reconsiderationDaysForOnlineResponse;
 
-    @Value("${directionDeadline.changeDate}")
-    private String directionDeadlineChangeDate;
+    @Value("${directionDeadline.oconNumberOfDays}")
+    private long reconsiderationDaysForOconResponse;
 
-    public long directionDeadlineDaysBefore = 19L;
     public static final long CHANGE_ORDER_DEADLINE_NO_OF_DAYS = 12L;
     private final Clock clock;
     private final DirectionOrderService directionOrderService;
@@ -59,10 +59,6 @@ public class DocAssemblyTemplateBodyMapper {
         HearingCourt hearingCourt = directionOrderService.getHearingCourt(ccdCase);
 
         LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
-        if (directionDeadlineChangeDate != null
-            && LocalDateTime.now().isAfter(LocalDateTime.parse(directionDeadlineChangeDate))) {
-            directionDeadlineDaysBefore = directionDeadLineNumberOfDays;
-        }
 
         return DocAssemblyTemplateBody.builder()
             .claimant(Party.builder()
@@ -109,7 +105,11 @@ public class DocAssemblyTemplateBodyMapper {
                     .build())
                 .collect(Collectors.toList()))
             .directionDeadline(workingDayIndicator.getNextWorkingDay(
-                currentDate.plusDays(directionDeadlineDaysBefore)))
+                currentDate.plusDays(reconsiderationDaysForOnlineResponse)))
+            .oconReconsiderationDeadline(workingDayIndicator.getNextWorkingDay(
+                currentDate.plusDays(reconsiderationDaysForOconResponse)))
+            .oconResponse(ccdCase.getRespondents().get(0).getValue()
+                .getResponseMethod() == CCDResponseMethod.OCON_FORM)
             .changeOrderDeadline(workingDayIndicator.getNextWorkingDay(
                 currentDate.plusDays(CHANGE_ORDER_DEADLINE_NO_OF_DAYS)))
             .expertReportInstruction(ccdCase.getExpertReportInstruction())
@@ -226,6 +226,60 @@ public class DocAssemblyTemplateBodyMapper {
             .referenceNumber(ccdCase.getPreviousServiceCaseReference())
             .caseworkerName(caseworkerName)
             .caseName(ccdCase.getCaseName())
+            .partyName(partyName)
+            .partyAddress(partyAddress)
+            .build();
+    }
+
+    public DocAssemblyTemplateBody mapBespokeDirectionOrder(CCDCase ccdCase, UserDetails userDetails) {
+        LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
+
+        return DocAssemblyTemplateBody.builder()
+            .claimant(Party.builder()
+            .partyName(ccdCase.getApplicants()
+                .get(0)
+                .getValue()
+                .getPartyName())
+            .build())
+            .defendant(Party.builder()
+                .partyName(ccdCase.getRespondents()
+                    .get(0)
+                    .getValue()
+                    .getPartyName())
+                .build())
+            .judicial(Judicial.builder()
+                .firstName(userDetails.getForename())
+                .lastName(userDetails.getSurname().orElse(""))
+                .build())
+            .currentDate(currentDate)
+            .referenceNumber(ccdCase.getPreviousServiceCaseReference())
+            .bespokeDirectionList(ccdCase.getBespokeDirectionList()
+                .stream()
+                .filter(direction -> direction != null && direction.getValue() != null)
+                .map(CCDCollectionElement::getValue)
+                .map(ccdBespokeOrderDirection -> BespokeDirection.builder()
+                    .directionComment(ccdBespokeOrderDirection.getBeSpokeDirectionExplain())
+                    .sendBy(ccdBespokeOrderDirection.getBeSpokeDirectionDatetime())
+                    .forParty(ccdBespokeOrderDirection.getBeSpokeDirectionFor())
+                    .build())
+                .collect(Collectors.toList()))
+            .changeOrderDeadline(workingDayIndicator.getNextWorkingDay(
+                currentDate.plusDays(CHANGE_ORDER_DEADLINE_NO_OF_DAYS)))
+            .bespokeOrderWarning(ccdCase.getDrawBespokeDirectionOrderWarning().contains(CCDBespokeOrderWarning.WARNING))
+            .build();
+    }
+
+    public DocAssemblyTemplateBody breathingSpaceLetter(CCDCase ccdCase) {
+        CCDRespondent defendant = ccdCase.getRespondents().get(0).getValue();
+        String partyName = defendant.getPartyName() != null
+            ? defendant.getPartyName()
+            : defendant.getClaimantProvidedPartyName();
+        CCDAddress partyAddress = getDefendantAddress(ccdCase.getRespondents().get(0).getValue());
+        CCDApplicant claimant = ccdCase.getApplicants().get(0).getValue();
+
+        return DocAssemblyTemplateBody.builder()
+            .referenceNumber(ccdCase.getPreviousServiceCaseReference())
+            .claimantName(claimant.getPartyName())
             .partyName(partyName)
             .partyAddress(partyAddress)
             .build();

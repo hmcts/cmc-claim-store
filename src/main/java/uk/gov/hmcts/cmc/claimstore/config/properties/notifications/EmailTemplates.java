@@ -17,6 +17,15 @@ public class EmailTemplates {
     private String claimantClaimIssued;
 
     @NotEmpty
+    private String claimantClaimIssuedWithHwfVerficationPending;
+
+    @NotEmpty
+    private String claimantHwfUpdate;
+
+    @NotEmpty
+    private String claimantHwfMoreInfoRequired;
+
+    @NotEmpty
     private String defendantClaimIssued;
 
     @NotEmpty
@@ -143,13 +152,13 @@ public class EmailTemplates {
     private String claimantIntentionToProceedForOnlineDq;
 
     @NotEmpty
-    private  String claimantSettledAfterFullDefence;
+    private String claimantSettledAfterFullDefence;
 
     @NotEmpty
-    private  String claimantMediationSuccess;
+    private String claimantMediationSuccess;
 
     @NotEmpty
-    private  String defendantMediationSuccess;
+    private String defendantMediationSuccess;
 
     @NotEmpty
     private String claimantReadyForTransfer;
@@ -164,7 +173,25 @@ public class EmailTemplates {
     private String defendantMediationFailureOfflineDQ;
 
     @NotEmpty
-    private String claimantPaperResponseReceived;
+    private String paperResponseFormReceived;
+
+    @NotEmpty
+    private String paperResponseReceivedAndCaseTransferredToCCBC;
+
+    @NotEmpty
+    private String paperResponseFromClaimantCaseHandoverToCCBC;
+
+    @NotEmpty
+    private String paperResponseFromDefendantCaseHandoverToCCBC;
+
+    @NotEmpty
+    private String paperResponseFromClaimantGeneralLetter;
+
+    @NotEmpty
+    private String paperResponseFromDefendantGeneralLetter;
+
+    @NotEmpty
+    private String paperResponseFormReceivedForCcjRequest;
 
     @NotEmpty
     private String claimantContactDetailsChanged;
@@ -173,6 +200,11 @@ public class EmailTemplates {
     private String defendantContactDetailsChanged;
 
     @NotEmpty
+    private String caseTransferred;
+
+    @NotEmpty
+    private String defendantAskedToRespondByPost;
+
     private String caseTransferToCourt;
 
     @NotEmpty
@@ -180,4 +212,20 @@ public class EmailTemplates {
 
     @NotEmpty
     private String caseTransferToCcbcForDefendant;
+
+    @NotEmpty
+    private String claimantHwfClaimIssued;
+
+    @NotEmpty
+    private String breathingSpaceEmailToClaimant;
+
+    @NotEmpty
+    private String breathingSpaceEmailToDefendant;
+
+    @NotEmpty
+    private String breathingSpaceLiftedEmailToClaimant;
+
+    @NotEmpty
+    private String breathingSpaceLiftedEmailToDefendant;
+
 }

@@ -35,7 +35,8 @@ public class LegalSealedClaimContentProvider {
         Map<String, Object> content = new HashMap<>();
         content.put("claimReferenceNumber", claim.getReferenceNumber());
         content.put("claimSubmittedOn", formatDate(claim.getCreatedAt()));
-        content.put("claimIssuedOn", formatDate(claim.getIssuedOn()));
+        content.put("claimIssuedOn", formatDate(claim.getIssuedOn()
+            .orElseThrow(() -> new IllegalStateException("Missing issuedOn date"))));
         claim.getClaimData().getFeeAccountNumber().ifPresent(f -> content.put("feeAccountNumber", f));
         content.put("claimants", claim.getClaimData().getClaimants());
         content.put("claimantsCount", claim.getClaimData().getClaimants().size());
