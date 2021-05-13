@@ -43,6 +43,8 @@ env.FRONTEND_BASE_URL = 'https://moneyclaims.aat.platform.hmcts.net'
 env.IDAM_API_URL = 'https://idam-api.aat.platform.hmcts.net'
 env.S2S_URL = 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
 env.PDF_SERVICE_URL = 'http://cmc-pdf-service-aat.service.core-compute-aat.internal'
+env.OIDC_ISSUER= 'https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/hmcts'
+env.IDAM_WEB_URL= 'https://idam-web-public.aat.platform.hmcts.net'
 
 withNightlyPipeline(type, product, component) {
     env.TEST_URL = params.URL_TO_TEST
