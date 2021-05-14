@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.email;
 
-import com.launchdarkly.sdk.LDUser;
 import com.microsoft.applicationinsights.TelemetryClient;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,17 +8,14 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.cmc.email.sendgrid.SendGridClient;
-import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 
 import java.io.IOException;
 
 import static java.util.Collections.singletonMap;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.email.EmailService.EMAIL_SUBJECT;
 import static uk.gov.hmcts.cmc.email.EmailService.NOTIFICATION_FAILURE;
 

@@ -39,7 +39,7 @@ public class EmailService {
 
     @Retryable(value = EmailSendFailedException.class, backoff = @Backoff(delay = 100, maxDelay = 500))
     public void sendEmail(String from, EmailData emailData) {
-            sendEmailSendGrid(from, emailData);
+        sendEmailSendGrid(from, emailData);
     }
 
     private void sendEmailSendGrid(String from, EmailData emailData) {
