@@ -22,7 +22,7 @@ public class ExpertReportTest {
         Set<String> response = validate(expertReport);
 
         assertThat(response)
-            .hasSize(0);
+            .isEmpty();
     }
 
     @Test
