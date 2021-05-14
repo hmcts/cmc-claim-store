@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.fees.client.FeesClient;
 import uk.gov.hmcts.reform.fees.client.model.FeeLookupResponseDto;
 import uk.gov.hmcts.reform.payments.client.CardPaymentRequest;
@@ -24,7 +25,8 @@ import java.util.stream.Collectors;
 @Service
 @Conditional(FeesAndPaymentsConfiguration.class)
 public class PaymentsService {
-    private static final String FEE_CHANNEL = "online";
+    private static final String ONLINE_FEE_CHANNEL = "online";
+    private static final String DEFAULT_FEE_CHANNEL = "default";
     private static final String FEE_EVENT = "issue";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -34,6 +36,7 @@ public class PaymentsService {
     private final String siteId;
     private final String currency;
     private final String description;
+    private final LaunchDarklyClient launchDarklyClient;
 
     public PaymentsService(
         PaymentsClient paymentsClient,
@@ -41,14 +44,15 @@ public class PaymentsService {
         @Value("${payments.api.service}") String service,
         @Value("${payments.api.siteId}") String siteId,
         @Value("${payments.api.currency}") String currency,
-        @Value("${payments.api.description}") String description
-    ) {
+        @Value("${payments.api.description}") String description,
+        LaunchDarklyClient launchDarklyClient) {
         this.paymentsClient = paymentsClient;
         this.feesClient = feesClient;
         this.service = service;
         this.siteId = siteId;
         this.currency = currency;
         this.description = description;
+        this.launchDarklyClient = launchDarklyClient;
     }
 
     public Optional<Payment> retrievePayment(
@@ -84,9 +88,13 @@ public class PaymentsService {
         logger.info("Retrieving fee for claim with external id {}",
             claim.getExternalId());
 
-        FeeLookupResponseDto feeOutcome = feesClient.lookupFee(
-            FEE_CHANNEL, FEE_EVENT, amountPlusInterest
-        );
+        String channel = ONLINE_FEE_CHANNEL;
+        if (launchDarklyClient.isFeatureEnabled("new-claim-fees", LaunchDarklyClient.CLAIM_STORE_USER)) {
+            channel = DEFAULT_FEE_CHANNEL;
+        }
+
+        FeeLookupResponseDto feeOutcome
+            = feesClient.lookupFee(channel, FEE_EVENT, amountPlusInterest);
 
         CardPaymentRequest paymentRequest = buildPaymentRequest(
             claim,
