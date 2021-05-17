@@ -36,7 +36,7 @@ public class PartyStatementSerializationTest {
         //then
         assertThat(other.getType()).isEqualTo(StatementType.ACCEPTATION);
         assertThat(other.getMadeBy()).isEqualTo(MadeBy.CLAIMANT);
-        assertThat(other.getOffer().isPresent()).isFalse();
+        assertThat(other.getOffer().isPresent()).isEqualTo(false);
     }
 
     @Test
@@ -47,7 +47,7 @@ public class PartyStatementSerializationTest {
         //then
         assertThat(other.getType()).isEqualTo(StatementType.REJECTION);
         assertThat(other.getMadeBy()).isEqualTo(MadeBy.DEFENDANT);
-        assertThat(other.getOffer().isPresent()).isFalse();
+        assertThat(other.getOffer().isPresent()).isEqualTo(false);
     }
 
     private static PartyStatement jsonToModel(String path) throws IOException {
