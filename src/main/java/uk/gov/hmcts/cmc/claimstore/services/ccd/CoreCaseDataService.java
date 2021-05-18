@@ -66,6 +66,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LINK_LETTER_HOLDER;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED_ONLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ORDER_REVIEW_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUPPORT_UPDATE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
@@ -652,6 +653,39 @@ public class CoreCaseDataService {
                     caseId,
                     caseEvent
                 ), exception
+            );
+        }
+    }
+
+    public CaseDetails updatePreferredCourtByClaimReference(User user, Long caseId, String preferredCourt) {
+
+        try {
+            var userDetails = user.getUserDetails();
+            var eventRequestData = eventRequest(SUPPORT_UPDATE, userDetails.getId());
+
+            var startEventResponse = startUpdate(
+                user.getAuthorisation(),
+                eventRequestData,
+                caseId,
+                isRepresented(userDetails)
+            );
+
+            var updatedClaim = toClaimBuilder(startEventResponse)
+                .preferredDQPilotCourt(preferredCourt)
+                .build();
+
+            var caseDataContent = caseDataContent(startEventResponse, updatedClaim);
+            logger.info("Updating preferred DQ pilot court by support for claim {} ",
+                updatedClaim.getReferenceNumber());
+            return  submitUpdate(
+                user.getAuthorisation(), eventRequestData, caseDataContent, caseId, isRepresented(userDetails));
+        } catch (Exception e) {
+            throw new CoreCaseDataStoreException(
+                String.format(
+                    CCD_UPDATE_FAILURE_MESSAGE,
+                    caseId,
+                    SUPPORT_UPDATE
+                ), e
             );
         }
     }

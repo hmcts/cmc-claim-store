@@ -601,4 +601,14 @@ public class ClaimService {
 
         return validationMessage;
     }
+
+    public void updatePreferredCourtByClaimReference(String claimNumber) {
+
+        var claim = getClaimByReferenceAnonymous(claimNumber)
+            .orElseThrow(() -> new NotFoundException("Claim not found for " + claimNumber));
+
+        if (claim.getPreferredDQCourt().isPresent()) {
+            caseRepository.updatePreferredCourtByClaimReference(claim);
+        }
+    }
 }
