@@ -128,13 +128,13 @@ public class ResetAndSendNewPinCallbackHandler extends CallbackHandler {
         );
 
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackParams.getRequest().getCaseDetails());
-        ccdCase = addLatestLetterHolderId(ccdCase, letterHolderId);
+        ccdCase = updateLetterHolderId(ccdCase, letterHolderId);
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetailsConverter.convertToMap(ccdCase))
             .build();
     }
 
-    private CCDCase addLatestLetterHolderId(CCDCase ccdCase, String letterHolderId) {
+    private CCDCase updateLetterHolderId(CCDCase ccdCase, String letterHolderId) {
         CCDCollectionElement<CCDRespondent> collectionElement = ccdCase.getRespondents().get(0);
         CCDRespondent respondent = collectionElement.getValue().toBuilder()
             .letterHolderId(letterHolderId).build();
