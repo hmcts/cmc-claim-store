@@ -78,6 +78,11 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
+    public void updatePreferredCourtByClaimReference(Claim claim) {
+        ccdCaseApi.updatePreferredCourtByClaimReference(claim);
+    }
+
+    @Override
     public List<Claim> getByDefendantId(String id, String authorisation, Integer pageNumber) {
         return ccdCaseApi.getByDefendantId(id, authorisation, pageNumber);
     }
