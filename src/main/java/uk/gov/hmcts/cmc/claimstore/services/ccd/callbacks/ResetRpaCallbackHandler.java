@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
@@ -15,10 +14,10 @@ import uk.gov.hmcts.cmc.domain.models.BreathingSpace;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -76,9 +75,8 @@ public class ResetRpaCallbackHandler extends CallbackHandler {
             responseBuilder.errors(errors);
         } else {
             handleRoboticsNotification(callbackRequest, claim.getReferenceNumber());
-            CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
-            CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
-            responseBuilder.data(caseDetailsConverter.convertToMap(ccdCase));
+            Map<String, Object> map = new HashMap<>(caseDetailsConverter.convertToMap(caseMapper.to(claim)));
+            responseBuilder.data(map);
         }
         return responseBuilder.build();
     }

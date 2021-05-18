@@ -93,9 +93,9 @@ public class ResetRpaCallbackHandlerTest {
     public void setup() {
         resetRpaCallbackHandler = new ResetRpaCallbackHandler(caseDetailsConverter,
             caseMapper, roboticsNotificationService);
+        when(caseMapper.to(any(Claim.class))).thenReturn(getCcdCase());
         when(caseDetailsConverter.convertToMap(any(CCDCase.class))).thenReturn(getCcdCaseMap());
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(getClaim());
-        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(getCcdCase());
     }
 
     @Test
