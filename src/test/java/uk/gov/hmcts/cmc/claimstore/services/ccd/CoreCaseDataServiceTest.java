@@ -603,9 +603,7 @@ public class CoreCaseDataServiceTest {
         Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
         Claim extractedClaim = getWithClaimantResponse();
         when(caseDetailsConverter.extractClaim(any((CaseDetails.class)))).thenReturn(extractedClaim);
-        when(pilotCourtService.isPilotCourt(anyString(), any(), any())).thenReturn(true);
         ClaimantResponse claimantResponse = SampleClaimantResponse.validRejectionWithDirectionsQuestionnaire();
-        when(directionsQuestionnaireService.getPreferredCourt(extractedClaim)).thenReturn(courtName);
 
         Claim claim = service.saveClaimantResponse(providedClaim.getId(),
             claimantResponse,
