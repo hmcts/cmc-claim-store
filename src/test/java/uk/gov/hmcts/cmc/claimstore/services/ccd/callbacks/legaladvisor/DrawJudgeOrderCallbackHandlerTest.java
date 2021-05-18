@@ -434,7 +434,6 @@ class DrawJudgeOrderCallbackHandlerTest {
             Map<String, Object> data = new HashMap<>();
             data.put("data", "existingData");
             data.put("directionOrderType", "STANDARD");
-            data.put("hearingCourt", hearingCourtMap);
 
             callbackRequest = CallbackRequest
                 .builder()
