@@ -6,7 +6,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
@@ -26,6 +31,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.util.Collections;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -65,6 +71,11 @@ public class ResetAndSendNewPinCallbackHandlerTest {
     private static final String AUTHORISATION = "Bearer: aaaa";
     private static final String DEFENDANT_EMAIL_TEMPLATE = "Defendant Email PrintableTemplate";
     private static final String PIN = "PIN";
+    private static final String EXTERNAL_ID = "external id";
+    private static final String CASE_NAME = "case name";
+    private static final String REFERENCE = "reference";
+    private static final String DEFENDANT_NAME = "Sue";
+    private static final Long ID = 1L;
 
     private CallbackRequest callbackRequest;
 
@@ -130,6 +141,7 @@ public class ResetAndSendNewPinCallbackHandlerTest {
         String letterHolderId = "333";
         GeneratePinResponse pinResponse = new GeneratePinResponse(PIN, letterHolderId);
         when(userService.generatePin(anyString(), eq(AUTHORISATION))).thenReturn(pinResponse);
+        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(getCcdCase());
 
         resetAndSendNewPinCallbackHandler.handle(callbackParams);
 
@@ -141,5 +153,30 @@ public class ResetAndSendNewPinCallbackHandlerTest {
             eq("defendant-issue-notification-" + sampleClaimWithDefendantEmail.getReferenceNumber()),
             eq(sampleClaimWithDefendantEmail.getClaimData().getDefendant().getName())
         );
+    }
+
+    private CCDCase getCcdCase() {
+        return CCDCase.builder()
+            .externalId(EXTERNAL_ID)
+            .previousServiceCaseReference(REFERENCE)
+            .caseName(CASE_NAME)
+            .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
+            .value(CCDRespondent.builder()
+                .partyName(DEFENDANT_NAME)
+                .claimantProvidedPartyName(DEFENDANT_NAME)
+                .partyDetail(CCDParty.builder()
+                    .primaryAddress(CCDAddress.builder().addressLine1("NEW ADDRESS1")
+                        .addressLine2("NEW ADDRESS2")
+                        .postCode("NEW POSTCODE").build())
+                    .build())
+                .claimantProvidedDetail(CCDParty.builder()
+                    .primaryAddress(CCDAddress.builder().addressLine1("OLD ADDRESS1")
+                        .addressLine2("OLD ADDRESS2")
+                        .postCode("OLD POSTCODE").build())
+                    .build())
+                .build())
+            .build()))
+            .id(ID)
+            .build();
     }
 }

@@ -4,7 +4,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
@@ -124,12 +127,22 @@ public class ResetAndSendNewPinCallbackHandler extends CallbackHandler {
                 ccdCreateCaseService.removeAccessToCase(claim.getId().toString(), previousLetterHolderId)
         );
 
-        Claim updatedClaim = claim.toBuilder()
-            .letterHolderId(letterHolderId)
-            .build();
-
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackParams.getRequest().getCaseDetails());
+        ccdCase = addLatestLetterHolderId(ccdCase, letterHolderId);
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetailsConverter.convertToMap(caseMapper.to(updatedClaim)))
+            .data(caseDetailsConverter.convertToMap(ccdCase))
+            .build();
+    }
+
+    private CCDCase addLatestLetterHolderId(CCDCase ccdCase, String letterHolderId) {
+        CCDCollectionElement<CCDRespondent> collectionElement = ccdCase.getRespondents().get(0);
+        CCDRespondent respondent = collectionElement.getValue().toBuilder()
+            .letterHolderId(letterHolderId).build();
+        return ccdCase.toBuilder()
+            .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
+                .value(respondent)
+                .id(collectionElement.getId())
+                .build()))
             .build();
     }
 }
