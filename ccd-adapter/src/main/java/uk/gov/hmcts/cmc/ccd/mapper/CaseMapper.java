@@ -166,7 +166,7 @@ public class CaseMapper {
         }
 
         if (ccdCase.getPreferredDQPilotCourt() != null) {
-            builder.preferredDQCourt(ccdCase.getPreferredDQPilotCourt());
+            builder.preferredDQPilotCourt(ccdCase.getPreferredDQPilotCourt());
         }
 
         builder.bulkPrintDetails(asStream(ccdCase.getBulkPrintDetails())
