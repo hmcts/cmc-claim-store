@@ -10,7 +10,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
@@ -79,9 +78,6 @@ public class ResetRpaCallbackHandlerTest {
     private List<Role> roleList = Collections.singletonList(CASEWORKER);
 
     @Mock
-    private CaseMapper caseMapper;
-
-    @Mock
     private CaseDetailsConverter caseDetailsConverter;
 
     @Mock
@@ -91,8 +87,7 @@ public class ResetRpaCallbackHandlerTest {
 
     @Before
     public void setup() {
-        resetRpaCallbackHandler = new ResetRpaCallbackHandler(caseDetailsConverter,
-            caseMapper, roboticsNotificationService);
+        resetRpaCallbackHandler = new ResetRpaCallbackHandler(caseDetailsConverter, roboticsNotificationService);
         when(caseDetailsConverter.convertToMap(any(CCDCase.class))).thenReturn(getCcdCaseMap());
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(getClaim());
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(getCcdCase());

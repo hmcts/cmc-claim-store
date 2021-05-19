@@ -12,7 +12,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
-import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
@@ -47,9 +46,6 @@ public class ResetAndSendNewPinCallbackHandlerTest {
 
     @Mock
     private UserService userService;
-
-    @Mock
-    private CaseMapper caseMapper;
 
     @Mock
     private ClaimIssuedNotificationService claimIssuedNotificationService;
@@ -89,7 +85,6 @@ public class ResetAndSendNewPinCallbackHandlerTest {
         resetAndSendNewPinCallbackHandler = new ResetAndSendNewPinCallbackHandler(
             caseDetailsConverter,
             userService,
-            caseMapper,
             claimIssuedNotificationService,
             notificationsProperties,
             ccdCreateCaseService

@@ -3,9 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.roboticssupport.RoboticsNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.roboticssupport.RpaEventType;
@@ -15,7 +13,6 @@ import uk.gov.hmcts.cmc.domain.models.BreathingSpace;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,15 +33,12 @@ public class ResetRpaCallbackHandler extends CallbackHandler {
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
 
     private CaseDetailsConverter caseDetailsConverter;
-    private CaseMapper caseMapper;
     private RoboticsNotificationService roboticsNotificationService;
 
     @Autowired
     public ResetRpaCallbackHandler(
-        CaseDetailsConverter caseDetailsConverter,
-        CaseMapper caseMapper, RoboticsNotificationService roboticsNotificationService) {
+        CaseDetailsConverter caseDetailsConverter, RoboticsNotificationService roboticsNotificationService) {
         this.caseDetailsConverter = caseDetailsConverter;
-        this.caseMapper = caseMapper;
         this.roboticsNotificationService = roboticsNotificationService;
     }
 
@@ -76,8 +70,8 @@ public class ResetRpaCallbackHandler extends CallbackHandler {
             responseBuilder.errors(errors);
         } else {
             handleRoboticsNotification(callbackRequest, claim.getReferenceNumber());
-            CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
-            CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
+            var caseDetails = callbackParams.getRequest().getCaseDetails();
+            var ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
             responseBuilder.data(caseDetailsConverter.convertToMap(ccdCase));
         }
         return responseBuilder.build();
