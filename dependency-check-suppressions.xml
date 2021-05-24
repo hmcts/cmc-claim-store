@@ -204,4 +204,11 @@
         ]]></notes>
         <cve>CVE-2021-22112</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+            Hibernate validator - 6.1.5 is used
+        ]]></notes>
+        <cve>CVE-2017-7536</cve>
+        <cve>CVE-2020-10693</cve>
+    </suppress>
 </suppressions>

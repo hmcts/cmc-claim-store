@@ -128,6 +128,7 @@ public final class SampleClaim {
     private String directionOrderType;
     private BespokeOrderDirection bespokeOrderDirection;
     private String lastEventTriggeredForHwfCase = null;
+    private String preferredDQCourt;
 
     private SampleClaim() {
     }
@@ -461,6 +462,7 @@ public final class SampleClaim {
                 .freeMediation(YES)
                 .mediationPhoneNumber("07999999999")
                 .mediationContactPerson("Mediation Contact Person")
+                .noMediationReason("Not interested")
                 .reason("Some valid reason")
                 .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder()
                     .withHearingLocation(pilotHearingLocation).build())
@@ -733,7 +735,7 @@ public final class SampleClaim {
             null,
             offlineJourney,
             null,
-            null,
+            preferredDQCourt,
             null,
             null,
             null,
@@ -829,6 +831,11 @@ public final class SampleClaim {
 
     public SampleClaim withClaimData(ClaimData claimData) {
         this.claimData = claimData;
+        return this;
+    }
+
+    public SampleClaim withPreferredDQCourt(String preferredDQCourt) {
+        this.preferredDQCourt = preferredDQCourt;
         return this;
     }
 
