@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 
+import com.launchdarkly.sdk.LDUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountBreakdown;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimDataForHwF;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimForHwF;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -36,6 +38,7 @@ import static java.math.BigDecimal.TEN;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType.ABOUT_TO_START;
@@ -61,6 +64,9 @@ class HWFRecalculateInterestCallbackHandlerTest {
 
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
+
+    @Mock
+    private LaunchDarklyClient launchDarklyClient;
 
     @Captor
     ArgumentCaptor<CCDCase> ccdCaseCaptor;
@@ -128,12 +134,28 @@ class HWFRecalculateInterestCallbackHandlerTest {
 
     @Test
     void shouldCalculateInterestAndFeesAndUpdateTheTotalAmountClaimedForCustomFromDate() {
+        when(launchDarklyClient.isFeatureEnabled(eq("new-claim-fees"), any(LDUser.class))).thenReturn(false);
         Interest interest = standardInterestBuilder().withInterestDate(customDateToSettledOrJudgement()).build();
         calculateAndValidate(interest, "4", "1000", "5103");
     }
 
     @Test
     void shouldCalculateInterestAndFeesAndUpdateTheTotalAmountClaimedForSubmissionDateAsFromDate() {
+        when(launchDarklyClient.isFeatureEnabled(eq("new-claim-fees"), any(LDUser.class))).thenReturn(false);
+        Interest interest = standardInterestBuilder().withInterestDate(submissionToSettledOrJudgement()).build();
+        calculateAndValidate(interest, "0", "1000", "5099");
+    }
+
+    @Test
+    void shouldCalculateInterestAndFeesAndUpdateTheTotalAmountClaimedForCustomFromDateWithNewClaimFee() {
+        when(launchDarklyClient.isFeatureEnabled(eq("new-claim-fees"), any(LDUser.class))).thenReturn(true);
+        Interest interest = standardInterestBuilder().withInterestDate(customDateToSettledOrJudgement()).build();
+        calculateAndValidate(interest, "4", "1000", "5103");
+    }
+
+    @Test
+    void shouldCalculateInterestAndFeesAndUpdateTheTotalAmountClaimedForSubmissionDateAsFromDateWithNewClaimFee() {
+        when(launchDarklyClient.isFeatureEnabled(eq("new-claim-fees"), any(LDUser.class))).thenReturn(true);
         Interest interest = standardInterestBuilder().withInterestDate(submissionToSettledOrJudgement()).build();
         calculateAndValidate(interest, "0", "1000", "5099");
     }
@@ -160,6 +182,7 @@ class HWFRecalculateInterestCallbackHandlerTest {
 
     @Test
     void shouldCalculateBreakdownInterestAndFeesAndUpdateTheTotalAmountClaimedWithFixedRate() {
+        when(launchDarklyClient.isFeatureEnabled(eq("new-claim-fees"), any(LDUser.class))).thenReturn(false);
         claim = claim.toBuilder().issuedOn(LocalDate.now().minusDays(1)).build();
         Interest interest = breakdownInterestBuilder().withRate(TEN).build();
         calculateAndValidate(interest, "4001", "1000", "9100");
@@ -167,6 +190,7 @@ class HWFRecalculateInterestCallbackHandlerTest {
 
     @Test
     void shouldCalculateBreakdownInterestAndFeesAndUpdateTheTotalAmountClaimedCustomWithSpecificDailyRate() {
+        when(launchDarklyClient.isFeatureEnabled(eq("new-claim-fees"), any(LDUser.class))).thenReturn(false);
         claim = claim.toBuilder().issuedOn(LocalDate.now().minusDays(1)).build();
         Interest interest = breakdownInterestBuilder().withSpecificDailyAmount(BigDecimal.ONE).build();
         calculateAndValidate(interest, "4100", "1000", "9199");

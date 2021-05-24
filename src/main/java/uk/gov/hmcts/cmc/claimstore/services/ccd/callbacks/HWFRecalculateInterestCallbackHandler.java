@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -38,7 +39,8 @@ import static uk.gov.hmcts.cmc.domain.utils.MonetaryConversions.poundsToPennies;
 public class HWFRecalculateInterestCallbackHandler extends CallbackHandler {
 
     private static final String FEE_EVENT = "issue";
-    private static final String FEE_CHANNEL = "online";
+    private static final String ONLINE_FEE_CHANNEL = "online";
+    private static final String DEFAULT_FEE_CHANNEL = "default";
 
     private static final String INTEREST_NOT_CLAIMED = "Recalculation is not required as interest is not claimed";
     private static final String NOT_HWF_CLAIM = "Recalculation is not required for non HwF Claims";
@@ -51,10 +53,14 @@ public class HWFRecalculateInterestCallbackHandler extends CallbackHandler {
     private final FeesClient feesClient;
     private final CaseDetailsConverter caseDetailsConverter;
 
+    private final LaunchDarklyClient launchDarklyClient;
+
     @Autowired
-    public HWFRecalculateInterestCallbackHandler(CaseDetailsConverter caseDetailsConverter, FeesClient feesClient) {
+    public HWFRecalculateInterestCallbackHandler(CaseDetailsConverter caseDetailsConverter, FeesClient feesClient,
+                                                 LaunchDarklyClient launchDarklyClient) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.feesClient = feesClient;
+        this.launchDarklyClient = launchDarklyClient;
     }
 
     @Override
@@ -101,7 +107,12 @@ public class HWFRecalculateInterestCallbackHandler extends CallbackHandler {
         final BigDecimal claimAmount = ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount();
         final BigDecimal claimAmountPlusInterest = claimAmount.add(calculatedInterest);
 
-        final FeeLookupResponseDto feeOutcome = feesClient.lookupFee(FEE_CHANNEL, FEE_EVENT, claimAmountPlusInterest);
+        String channel = ONLINE_FEE_CHANNEL;
+        if (launchDarklyClient.isFeatureEnabled("new-claim-fees", LaunchDarklyClient.CLAIM_STORE_USER)) {
+            channel = DEFAULT_FEE_CHANNEL;
+        }
+
+        final FeeLookupResponseDto feeOutcome = feesClient.lookupFee(channel, FEE_EVENT, claimAmountPlusInterest);
         ccdCase.setFeeAmountInPennies(valueOf(poundsToPennies(feeOutcome.getFeeAmount())));
 
         final BigDecimal totalAmountIncludingFee = claimAmountPlusInterest.add(feeOutcome.getFeeAmount());
