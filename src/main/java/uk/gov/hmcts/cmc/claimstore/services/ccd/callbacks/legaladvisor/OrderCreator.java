@@ -34,7 +34,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -206,8 +205,7 @@ public class OrderCreator {
                 populateOrder = false;
             }
         } else if (DIRECTION_TYPE_STANDARD.equals(tempData.get(DIRECTION_ORDER_TYPE))
-            && tempData.containsKey(HEARING_COURT)
-            && !(tempData.get(HEARING_COURT) instanceof LinkedHashMap)) {
+            && tempData.containsKey(HEARING_COURT)) {
             populateOrder = false;
         }
 
