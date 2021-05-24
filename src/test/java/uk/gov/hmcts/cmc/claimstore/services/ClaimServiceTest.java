@@ -1000,6 +1000,29 @@ public class ClaimServiceTest {
         verify(caseRepository).saveBreathingSpaceDetails(any(Claim.class), any(BreathingSpace.class), anyString());
     }
 
+    @Test
+    public void shouldupdatePreferredCourtByClaimReference() {
+
+        Claim claim = createClaimModel(VALID_APP, LETTER_HOLDER_ID);
+        when(claimService.getClaimByReferenceAnonymous(
+            claim.getReferenceNumber())).thenReturn(Optional.ofNullable(claim));
+
+        claimService.updatePreferredCourtByClaimReference(claim.getReferenceNumber());
+
+        verify(caseRepository).updatePreferredCourtByClaimReference(claim);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void shouldThrowExceptionWhenNoClaimRefFoundForupdatePreferredCourtByClaimReference() {
+
+        Optional<Claim> result = empty();
+        String claimNumber = "0";
+        when(claimService.getClaimByReferenceAnonymous(
+            claim.getReferenceNumber())).thenReturn(result);
+
+        claimService.updatePreferredCourtByClaimReference(claimNumber);
+    }
+
     private static Claim createRepresentedClaimModel(ClaimData claimData) {
         return createSampleClaim()
             .withClaimData(claimData)
@@ -1010,6 +1033,7 @@ public class ClaimServiceTest {
         return createSampleClaim()
             .withClaimData(claimData)
             .withLetterHolderId(letterHolderId)
+            .withPreferredDQCourt("Central London County Court")
             .build();
     }
 

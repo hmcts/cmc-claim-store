@@ -17,6 +17,8 @@ import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 
+import java.util.List;
+
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ADD_BULK_PRINT_DETAILS;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
@@ -73,7 +75,7 @@ public class PinOrchestrationService {
             if (newPinLetterEnabled) {
                 bulkPrintDetails = bulkPrintService.printPdf(
                     updatedClaim,
-                    ImmutableList.of(
+                    List.of(
                         new PrintableTemplate(
                             documents.getDefendantPinLetterDoc(),
                             buildDefendantLetterFileBaseName(claim.getReferenceNumber())),
@@ -86,7 +88,7 @@ public class PinOrchestrationService {
             } else {
                 bulkPrintDetails = bulkPrintService.printHtmlLetter(
                     updatedClaim,
-                    ImmutableList.of(
+                    List.of(
                         new PrintableTemplate(
                             documents.getDefendantPinLetterDoc(),
                             buildDefendantLetterFileBaseName(claim.getReferenceNumber())),
@@ -111,7 +113,7 @@ public class PinOrchestrationService {
 
             claimIssuedStaffNotificationService.notifyStaffOfClaimIssue(
                 updatedClaim,
-                ImmutableList.of(documents.getSealedClaim(), documents.getDefendantPinLetter())
+                List.of(documents.getSealedClaim(), documents.getDefendantPinLetter())
             );
             updatedOperationIndicator.staffNotification(YesNoOption.YES);
 

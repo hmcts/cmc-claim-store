@@ -12,6 +12,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireService;
@@ -467,6 +468,35 @@ public class CoreCaseDataServiceTest {
     }
 
     @Test
+    public void shouldUpdatePreferredCourtByClaimReference() {
+        Claim providedClaim = SampleClaim.getDefault();
+        Response providedResponse = SampleResponse.validDefaults();
+
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+            .thenReturn(SampleClaim.getWithResponse(providedResponse));
+
+        CaseDetails caseDetails = service.updatePreferredCourtByClaimReference(USER,
+            providedClaim.getId(),
+            "Central London County Court"
+        );
+
+        assertNotNull(caseDetails);
+    }
+
+    @Test(expected = CoreCaseDataStoreException.class)
+    public void shouldThrowExceptionForUpdatePreferredCourtByClaimReference() {
+        Claim providedClaim = SampleClaim.getDefault();
+
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+            .thenThrow(new FeignException.UnprocessableEntity("Status 422 from CCD", request, null));
+
+        CaseDetails caseDetails = service.updatePreferredCourtByClaimReference(USER,
+            providedClaim.getId(),
+            "Central London County Court"
+        );
+    }
+
+    @Test
     public void saveDefendantResponseWithFullAdmissionShouldReturnCaseDetails() {
         Claim providedClaim = SampleClaim.getDefault();
         Response providedResponse = SampleResponse.FullAdmission.builder().build();
@@ -603,9 +633,7 @@ public class CoreCaseDataServiceTest {
         Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
         Claim extractedClaim = getWithClaimantResponse();
         when(caseDetailsConverter.extractClaim(any((CaseDetails.class)))).thenReturn(extractedClaim);
-        when(pilotCourtService.isPilotCourt(anyString(), any(), any())).thenReturn(true);
         ClaimantResponse claimantResponse = SampleClaimantResponse.validRejectionWithDirectionsQuestionnaire();
-        when(directionsQuestionnaireService.getPreferredCourt(extractedClaim)).thenReturn(courtName);
 
         Claim claim = service.saveClaimantResponse(providedClaim.getId(),
             claimantResponse,

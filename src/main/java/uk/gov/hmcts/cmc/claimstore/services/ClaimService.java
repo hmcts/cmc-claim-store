@@ -61,7 +61,6 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISS
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.HWF_CLAIM_CREATED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NUMBER_OF_RECONSIDERATION;
 import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_PAYMENT;
-import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.AWAITING_RESPONSE_HWF;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.BUSINESS_QUEUE;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.CLOSED_HWF;
@@ -69,6 +68,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimState.HWF_APPLICATION_PENDING;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.PROCEEDS_IN_CASE_MAN;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.SETTLED;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.TRANSFERRED;
+import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
 @Component
@@ -602,6 +602,16 @@ public class ClaimService {
         }
 
         return validationMessage;
+    }
+
+    public void updatePreferredCourtByClaimReference(String claimNumber) {
+
+        var claim = getClaimByReferenceAnonymous(claimNumber)
+            .orElseThrow(() -> new NotFoundException("Claim not found for " + claimNumber));
+
+        if (claim.getPreferredDQCourt().isPresent()) {
+            caseRepository.updatePreferredCourtByClaimReference(claim);
+        }
     }
 
     @LogExecutionTime

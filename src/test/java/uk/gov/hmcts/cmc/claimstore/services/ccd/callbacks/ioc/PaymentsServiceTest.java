@@ -1,9 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc;
 
+import com.launchdarkly.sdk.LDUser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.fees.client.FeesClient;
 import uk.gov.hmcts.reform.fees.client.model.FeeLookupResponseDto;
 import uk.gov.hmcts.reform.payments.client.PaymentsClient;
@@ -19,6 +20,7 @@ import uk.gov.hmcts.reform.payments.client.models.FeeDto;
 import uk.gov.hmcts.reform.payments.client.models.LinkDto;
 import uk.gov.hmcts.reform.payments.client.models.LinksDto;
 import uk.gov.hmcts.reform.payments.client.models.PaymentDto;
+import uk.gov.hmcts.reform.payments.client.request.CardPaymentRequest;
 
 import java.math.BigDecimal;
 import java.net.URI;
@@ -26,6 +28,10 @@ import java.time.OffsetDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SamplePayment.PAYMENT_REFERENCE;
 
@@ -46,6 +52,9 @@ public class PaymentsServiceTest {
     private PaymentsClient paymentsClient;
     @Mock
     private FeesClient feesClient;
+    @Mock
+    private LaunchDarklyClient launchDarkly;
+
     @Spy
     private PaymentDto paymentDto = PaymentDto.builder()
         .status("Success")
@@ -68,9 +77,13 @@ public class PaymentsServiceTest {
             SERVICE,
             SITE_ID,
             CURRENCY,
-            DESCRIPTION
+            DESCRIPTION,
+            launchDarkly
         );
         claim = SampleClaim.getDefault();
+        when(launchDarkly.isFeatureEnabled(eq("new-claim-fees"), any(LDUser.class))).thenReturn(true);
+        when(feesClient.lookupFee(eq("default"), eq("issue"), any(BigDecimal.class)))
+            .thenReturn(feeOutcome);
     }
 
     @Test
@@ -160,6 +173,46 @@ public class PaymentsServiceTest {
     }
 
     @Test
+    public void shouldMakePaymentAndSetThePaymentAmount() {
+        FeeDto[] fees = new FeeDto[]{
+            FeeDto.builder()
+                .ccdCaseNumber(String.valueOf(claim.getCcdCaseId()))
+                .calculatedAmount(feeOutcome.getFeeAmount())
+                .code(feeOutcome.getCode())
+                .version(String.valueOf(feeOutcome.getVersion()))
+                .build()
+        };
+
+        CardPaymentRequest expectedPaymentRequest =
+            CardPaymentRequest.builder()
+                .siteId(SITE_ID)
+                .description(DESCRIPTION)
+                .currency(CURRENCY)
+                .service(SERVICE)
+                .fees(fees)
+                .amount(feeOutcome.getFeeAmount())
+                .ccdCaseNumber(String.valueOf(claim.getCcdCaseId()))
+                .caseReference(claim.getExternalId())
+                .build();
+        when(feesClient.lookupFee(anyString(), anyString(), any(BigDecimal.class)))
+            .thenReturn(feeOutcome);
+
+        when(paymentsClient.createCardPayment(
+            eq(BEARER_TOKEN),
+            any(CardPaymentRequest.class),
+            anyString(),
+            anyString()))
+            .thenReturn(paymentDto);
+
+        paymentsService.createPayment(
+            BEARER_TOKEN,
+            claim
+        );
+
+        verify(paymentDto).setAmount(BigDecimal.TEN);
+    }
+
+    @Test
     public void shouldRetrieveAnExistingPaymentWithTransactionId() {
         String externalReference = "External Reference";
         PaymentDto retrievedPayment = PaymentDto.builder()
@@ -227,8 +280,35 @@ public class PaymentsServiceTest {
 
     @Test(expected = IllegalStateException.class)
     public void shouldBubbleUpExceptionIfFeeLookupFails() {
-        when(feesClient.lookupFee(ArgumentMatchers.eq("online"),
-            ArgumentMatchers.eq("issue"), ArgumentMatchers.any(BigDecimal.class)))
+        when(launchDarkly.isFeatureEnabled(eq("new-claim-fees"), any(LDUser.class))).thenReturn(false);
+        when(feesClient.lookupFee(eq("online"), eq("issue"), any(BigDecimal.class)))
+            .thenThrow(IllegalStateException.class);
+
+        paymentsService.createPayment(
+            BEARER_TOKEN,
+            claim
+        );
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldBubbleUpExceptionIfFeeLookupFailsWithNewClaimFees() {
+        when(launchDarkly.isFeatureEnabled(eq("new-claim-fees"), any(LDUser.class))).thenReturn(true);
+        when(feesClient.lookupFee(eq("default"), eq("issue"), any(BigDecimal.class)))
+            .thenThrow(IllegalStateException.class);
+
+        paymentsService.createPayment(
+            BEARER_TOKEN,
+            claim
+        );
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldBubbleUpExceptionIfPaymentCreationFails() {
+        when(paymentsClient.createCardPayment(
+            eq(BEARER_TOKEN),
+            any(CardPaymentRequest.class),
+            anyString(),
+            anyString()))
             .thenThrow(IllegalStateException.class);
 
         paymentsService.createPayment(

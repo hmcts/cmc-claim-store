@@ -125,7 +125,7 @@ public class CCDCase {
     private String preferredCourtObjectingParty;
     private String preferredCourtObjectingReason;
 
-    private String hearingCourt;
+    private Object hearingCourt;
 
     private String hearingCourtName;
 
