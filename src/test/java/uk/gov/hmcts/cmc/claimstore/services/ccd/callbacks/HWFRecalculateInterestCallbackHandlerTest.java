@@ -73,7 +73,7 @@ class HWFRecalculateInterestCallbackHandlerTest {
     private static final String FEE_CHANNEL = "online";
 
     private static final String INTEREST_NOT_CLAIMED = "Recalculation is not required as interest is not claimed";
-    private static final String NOT_HWF_CLAIM = "Recalculation is not required for non HWF Claims";
+    private static final String NOT_HWF_CLAIM = "Recalculation is not required for non HwF Claims";
     private static final String INTEREST_NOT_TILL_JUDGEMENT = "Recalculation is not required as interest is only "
         + "claimed to the date of claim submission";
 
