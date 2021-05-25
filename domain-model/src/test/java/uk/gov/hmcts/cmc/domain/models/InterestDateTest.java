@@ -140,7 +140,7 @@ public class InterestDateTest {
                 .build();
 
         //then
-        assertThat(interestDate.isCustom()).isEqualTo(true);
+        assertThat(interestDate.isCustom()).isTrue();
     }
 
     @Test
@@ -152,7 +152,7 @@ public class InterestDateTest {
                 .build();
 
         //then
-        assertThat(interestDate.isEndDateOnSubmission()).isEqualTo(false);
+        assertThat(interestDate.isEndDateOnSubmission()).isFalse();
     }
 
     @Test
@@ -163,7 +163,7 @@ public class InterestDateTest {
                 .build();
 
         //then
-        assertThat(interestDate.isCustom()).isEqualTo(false);
+        assertThat(interestDate.isCustom()).isFalse();
     }
 
     @Test
@@ -175,8 +175,8 @@ public class InterestDateTest {
                 .build();
 
         //then
-        assertThat(interestDate.isEndDateOnClaimComplete()).isEqualTo(true);
-        assertThat(interestDate.isEndDateOnSubmission()).isEqualTo(false);
+        assertThat(interestDate.isEndDateOnClaimComplete()).isTrue();
+        assertThat(interestDate.isEndDateOnSubmission()).isFalse();
     }
 
     @Test
@@ -188,8 +188,8 @@ public class InterestDateTest {
                 .build();
 
         //then
-        assertThat(interestDate.isEndDateOnSubmission()).isEqualTo(true);
-        assertThat(interestDate.isEndDateOnClaimComplete()).isEqualTo(false);
+        assertThat(interestDate.isEndDateOnSubmission()).isTrue();
+        assertThat(interestDate.isEndDateOnClaimComplete()).isFalse();
     }
 
     @Test
@@ -201,7 +201,7 @@ public class InterestDateTest {
                 .build();
 
         //then
-        assertThat(interestDate.isEndDateOnSubmission()).isEqualTo(false);
-        assertThat(interestDate.isEndDateOnClaimComplete()).isEqualTo(true);
+        assertThat(interestDate.isEndDateOnSubmission()).isFalse();
+        assertThat(interestDate.isEndDateOnClaimComplete()).isTrue();
     }
 }
