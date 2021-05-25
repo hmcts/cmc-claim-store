@@ -638,4 +638,9 @@ class SupportControllerTest {
         }
     }
 
+    @Test
+    void shouldsetPreferredDQPilotCourt() {
+        controller.setPreferredDQPilotCourt(sampleClaim.getReferenceNumber());
+        verify(claimService).updatePreferredCourtByClaimReference(CLAIM_REFERENCE);
+    }
 }

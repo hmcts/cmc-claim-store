@@ -208,6 +208,17 @@ public class CCDCaseApi {
         }
     }
 
+    public void updatePreferredCourtByClaimReference(Claim claim) {
+        User user = userService.authenticateAnonymousCaseWorker();
+        String preferredDQCourt = claim.getPreferredDQCourt().orElse(null);
+
+        coreCaseDataService.updatePreferredCourtByClaimReference(
+            user,
+            claim.getCcdCaseId(),
+            preferredDQCourt
+        );
+    }
+
     public void linkDefendant(String caseId, String defendantId, String defendantEmail) {
         User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
         this.linkToCaseWithoutRevoking(defendantId, defendantEmail, anonymousCaseWorker, caseId);

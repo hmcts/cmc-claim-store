@@ -20,7 +20,7 @@ public class NameTest {
         Set<String> response = validate(claimData);
         //then
         assertThat(response)
-            .hasSize(0);
+            .isEmpty();
     }
 
     @Test

@@ -21,7 +21,7 @@ public class WitnessTest {
         Set<String> response = validate(witness);
 
         assertThat(response)
-            .hasSize(0);
+            .isEmpty();
     }
 
     @Test
