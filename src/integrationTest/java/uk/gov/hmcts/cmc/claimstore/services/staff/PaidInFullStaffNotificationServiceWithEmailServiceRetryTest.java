@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -26,6 +27,8 @@ import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+//As no more java mail sender in place and sendgrid covers this.
+@Ignore
 public class PaidInFullStaffNotificationServiceWithEmailServiceRetryTest extends BaseMockSpringTest {
 
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
