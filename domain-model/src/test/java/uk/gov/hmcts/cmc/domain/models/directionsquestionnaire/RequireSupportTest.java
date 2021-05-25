@@ -22,7 +22,7 @@ public class RequireSupportTest {
         Set<String> response = validate(requireSupport);
 
         assertThat(response)
-            .hasSize(0);
+            .isEmpty();
     }
 
     @Test
