@@ -36,7 +36,7 @@ public class CourtDeterminationTest {
 
         Set<String> response = validate(courtDetermination);
 
-        assertThat(response).hasSize(0);
+        assertThat(response).isEmpty();
     }
 
     @Test
@@ -60,7 +60,7 @@ public class CourtDeterminationTest {
 
         Set<String> response = validate(courtDetermination);
 
-        assertThat(response).hasSize(0);
+        assertThat(response).isEmpty();
     }
 
     @Test
@@ -125,7 +125,7 @@ public class CourtDeterminationTest {
 
         Set<String> response = validate(courtDetermination);
 
-        assertThat(response).hasSize(0);
+        assertThat(response).isEmpty();
     }
 
     @Test
@@ -139,7 +139,7 @@ public class CourtDeterminationTest {
 
         Set<String> response = validate(courtDetermination);
 
-        assertThat(response).hasSize(0);
+        assertThat(response).isEmpty();
     }
 
     @Test
@@ -155,7 +155,7 @@ public class CourtDeterminationTest {
             .build();
         Set<String> response = validate(courtDetermination);
 
-        assertThat(response).hasSize(0);
+        assertThat(response).isEmpty();
     }
 
     @Test
@@ -171,6 +171,6 @@ public class CourtDeterminationTest {
             .build();
         Set<String> response = validate(courtDetermination);
 
-        assertThat(response).hasSize(0);
+        assertThat(response).isEmpty();
     }
 }

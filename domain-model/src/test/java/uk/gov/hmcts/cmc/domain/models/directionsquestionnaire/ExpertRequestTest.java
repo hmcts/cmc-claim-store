@@ -21,7 +21,7 @@ public class ExpertRequestTest {
         Set<String> response = validate(expertRequest);
 
         assertThat(response)
-            .hasSize(0);
+            .isEmpty();
     }
 
     @Test
