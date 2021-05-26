@@ -18,7 +18,7 @@ public class ResponseRejectionTest {
 
         Set<String> response = validate(claimantResponse);
 
-        assertThat(response).hasSize(0);
+        assertThat(response).isEmpty();
     }
 
     @Test
@@ -27,7 +27,7 @@ public class ResponseRejectionTest {
 
         Set<String> response = validate(claimantResponse);
 
-        assertThat(response).hasSize(0);
+        assertThat(response).isEmpty();
     }
 
     @Test
@@ -36,7 +36,7 @@ public class ResponseRejectionTest {
 
         Set<String> response = validate(claimantResponse);
 
-        assertThat(response).hasSize(0);
+        assertThat(response).isEmpty();
     }
 
     @Test
