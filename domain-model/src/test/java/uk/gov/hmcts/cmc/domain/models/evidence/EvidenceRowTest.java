@@ -21,7 +21,7 @@ public class EvidenceRowTest {
 
         Set<String> response = validate(evidenceRow);
 
-        assertThat(response).hasSize(0);
+        assertThat(response).isEmpty();
     }
 
     @Test
@@ -30,7 +30,7 @@ public class EvidenceRowTest {
 
         Set<String> response = validate(evidenceRow);
 
-        assertThat(response).hasSize(0);
+        assertThat(response).isEmpty();
     }
 
     @Test
@@ -39,7 +39,7 @@ public class EvidenceRowTest {
 
         Set<String> response = validate(evidenceRow);
 
-        assertThat(response).hasSize(0);
+        assertThat(response).isEmpty();
     }
 
     @Test
