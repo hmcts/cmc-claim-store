@@ -32,7 +32,7 @@ class DefendantTimelineTest {
         Set<String> response = validate(timeline);
 
         assertThat(response)
-            .hasSize(0);
+            .isEmpty();
     }
 
     @Test
@@ -42,7 +42,7 @@ class DefendantTimelineTest {
         Set<String> response = validate(timeline);
 
         assertThat(response)
-            .hasSize(0);
+            .isEmpty();
     }
 
     @Test
@@ -63,7 +63,7 @@ class DefendantTimelineTest {
         Set<String> response = validate(timeline);
 
         assertThat(response)
-            .hasSize(0);
+            .isEmpty();
     }
 
     @Test
