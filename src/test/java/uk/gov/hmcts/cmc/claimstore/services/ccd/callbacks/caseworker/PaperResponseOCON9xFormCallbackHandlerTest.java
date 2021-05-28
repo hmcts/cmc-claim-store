@@ -13,6 +13,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CCDLableCode;
+import uk.gov.hmcts.cmc.ccd.domain.CCDOcon9xMain;
 import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
@@ -38,6 +40,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -256,9 +259,9 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
                         .build();
                     CCDCollectionElement<CCDScannedDocument> element =
                         CCDCollectionElement.<CCDScannedDocument>builder()
-                        .value(document)
-                        .id("id " + i)
-                        .build();
+                            .value(document)
+                            .id("id " + i)
+                            .build();
                     scannedDocuments.add(element);
                 }
 
@@ -271,7 +274,7 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
                 AboutToStartOrSubmitCallbackResponse response =
                     (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
 
-                Map<String, Object> ocon9xForm = (Map<String, Object>)response.getData().get("ocon9xForm");
+                Map<String, Object> ocon9xForm = (Map<String, Object>) response.getData().get("ocon9xForm");
 
                 List<Map<String, String>> listItems = (List<Map<String, String>>) ocon9xForm.get("list_items");
 
@@ -416,7 +419,7 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
                 ccdCase = CCDCase.builder()
                     .previousServiceCaseReference(reference)
                     .scannedDocuments(List.of(scannedDocuments))
-                    .ocon9xForm(id)
+                    .ocon9xForm(null)
                     .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
                         .value(CCDRespondent.builder().build())
                         .build()))
@@ -440,8 +443,10 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
 
             @Test
             void shouldUpdateCaseDataCorrectly() {
+                ccdCase.setOcon9xForm(CCDOcon9xMain.builder()
+                    .value(CCDLableCode.builder()
+                        .code(ccdCase.getScannedDocuments().get(0).getId()).build()).build());
                 handler.handle(callbackParams);
-
                 CCDCollectionElement<CCDRespondent> respondentElement = ccdCase.getRespondents().get(0);
 
                 CCDRespondent respondent = respondentElement
@@ -473,6 +478,12 @@ public class PaperResponseOCON9xFormCallbackHandlerTest {
 
                 verify(caseDetailsConverter).convertToMap(expectedCCDCase);
 
+            }
+
+            @Test
+            public void shouldThrowExceptionWhenOcon9xFieldIsNull() {
+                assertThrows(IllegalArgumentException.class,
+                    () -> handler.handle(callbackParams));
             }
         }
     }
