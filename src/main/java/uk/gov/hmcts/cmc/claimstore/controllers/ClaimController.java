@@ -25,6 +25,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
+import uk.gov.hmcts.cmc.domain.models.legalrep.LegalRepUpdate;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantLinkStatus;
 
 import java.util.List;
@@ -141,6 +142,17 @@ public class ClaimController {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
         return claimService.saveRepresentedClaim(submitterId, claimData, authorisation);
+    }
+
+    @PostMapping(value = "/{submitterId}/update-legal-rep-claim", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Updates legal rep claim")
+    public Claim updateLegalRepresentedClaim(
+        @Valid @NotNull @RequestBody LegalRepUpdate legalRepUpdate,
+        @PathVariable("submitterId") String submitterId,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
+    ) {
+        System.out.println("print object - " + legalRepUpdate.toString());
+        return claimService.updateRepresentedClaim(submitterId, legalRepUpdate, authorisation);
     }
 
     @PostMapping(value = "/initiate-citizen-payment", consumes = MediaType.APPLICATION_JSON_VALUE)
