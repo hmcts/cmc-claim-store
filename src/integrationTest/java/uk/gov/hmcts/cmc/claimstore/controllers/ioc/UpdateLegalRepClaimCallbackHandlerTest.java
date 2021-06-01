@@ -20,10 +20,12 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_LEGAL_REP_CLAIM;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDChannelType.LEGAL_REP;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.UPDATE_LEGAL_REP_CLAIM;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponse;
 
 @TestPropertySource(
@@ -31,7 +33,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
         "core_case_data.api.url=http://core-case-data-api"
     }
 )
-public class CreateLegalRepClaimCallbackHandlerTest extends BaseMockSpringTest {
+public class UpdateLegalRepClaimCallbackHandlerTest extends BaseMockSpringTest {
 
     private static final String AUTHORISATION_TOKEN = "Bearer let me in";
     public static final String REFERENCE_NO = "000LR001";
@@ -62,14 +64,21 @@ public class CreateLegalRepClaimCallbackHandlerTest extends BaseMockSpringTest {
         List<Map<String, Object>> respondents = (List<Map<String, Object>>) responseData.get("respondents");
         Map<String, Object> defendant = (Map<String, Object>) respondents.get(0).get("value");
 
-        assertThat(defendant != null);
+        assertThat(defendant)
+            .containsEntry("responseDeadline", defendant.get("responseDeadline"))
+            .containsEntry("servedDate", defendant.get("servedDate"));
+
+        assertThat(responseData)
+            .contains(entry("channel", LEGAL_REP.name()))
+            .contains(entry("previousServiceCaseReference", REFERENCE_NO))
+            .containsKey("issuedOn");
     }
 
     private ResultActions makeRequest(String callbackType) throws Exception {
         CaseDetails caseDetails = successfulCoreCaseDataStoreSubmitResponse();
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
-            .eventId(CREATE_LEGAL_REP_CLAIM.getValue())
+            .eventId(UPDATE_LEGAL_REP_CLAIM.getValue())
             .caseDetails(caseDetails)
             .build();
 
