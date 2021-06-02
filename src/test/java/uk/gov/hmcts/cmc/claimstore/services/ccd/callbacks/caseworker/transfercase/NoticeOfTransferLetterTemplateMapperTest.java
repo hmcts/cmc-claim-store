@@ -179,6 +179,48 @@ class NoticeOfTransferLetterTemplateMapperTest {
     }
 
     @Test
+    void shouldMapNoticeOfTransferLetterWhenDefendantNotLinkedButChangedContactDetailsViaCCD() {
+
+        ccdCase = CCDCase.builder()
+            .previousServiceCaseReference(CASE_REFERENCE)
+            .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
+                .value(CCDRespondent.builder()
+                    .partyName(DEFENDANT_NAME)
+                    .claimantProvidedPartyName(DEFENDANT_NAME)
+                    .partyDetail(CCDParty.builder()
+                        .primaryAddress(CCDAddress.builder().addressLine1("NEW ADDRESS1")
+                            .addressLine2("NEW ADDRESS2")
+                            .postCode("NEW POSTCODE").build())
+                        .build())
+                    .claimantProvidedDetail(CCDParty.builder()
+                        .primaryAddress(CCDAddress.builder().addressLine1("OLD ADDRESS1")
+                            .addressLine2("OLD ADDRESS2")
+                            .postCode("OLD POSTCODE").build())
+                        .build())
+                    .build())
+                .build()))
+            .transferContent(CCDTransferContent.builder()
+                .transferReason(CCDTransferReason.OTHER)
+                .transferCourtName(TRANSFER_COURT_NAME)
+                .transferCourtAddress(transferCourtAddress)
+                .transferReasonOther(TRANSFER_REASON)
+                .build())
+            .build();
+
+        DocAssemblyTemplateBody requestBody = noticeOfTransferLetterTemplateMapper
+            .noticeOfTransferLetterBodyForDefendant(ccdCase, AUTHORISATION);
+
+        DocAssemblyTemplateBody expectedRequestBody = baseExpectedRequestBodyBuilder()
+            .partyName(DEFENDANT_NAME)
+            .partyAddress(CCDAddress.builder().addressLine1("NEW ADDRESS1")
+                .addressLine2("NEW ADDRESS2")
+                .postCode("NEW POSTCODE").build())
+            .build();
+
+        assertEquals(expectedRequestBody, requestBody);
+    }
+
+    @Test
     void shouldMapNoticeOfTransferToCcbcLetterBodyForDefendant() {
 
         DocAssemblyTemplateBody requestBody = noticeOfTransferLetterTemplateMapper

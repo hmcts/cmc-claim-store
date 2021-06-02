@@ -1,21 +1,30 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
+import org.apache.http.HttpException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
+import uk.gov.hmcts.cmc.domain.models.BreathingSpace;
+import uk.gov.hmcts.cmc.domain.models.BreathingSpaceType;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
+import uk.gov.hmcts.cmc.domain.models.legalrep.LegalRepUpdate;
+import uk.gov.hmcts.cmc.domain.models.legalrep.PaymentReference;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
 
+import java.math.BigInteger;
+import java.time.LocalDate;
 import java.util.List;
 
 import static java.util.Collections.singletonList;
@@ -25,7 +34,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
-import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.LETTER_HOLDER_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
 
@@ -33,6 +41,7 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
 public class ClaimControllerTest {
 
     private static final String AUTHORISATION = "Bearer: aaa";
+    private static final String EXTERNAL_ID = "test-external-id";
     private static final List<String> FEATURES = singletonList(ADMISSIONS.getValue());
 
     private ClaimController claimController;
@@ -204,6 +213,64 @@ public class ClaimControllerTest {
             .thenReturn(expectedResponse);
 
         Claim output = claimController.updateHelpWithFeesClaim(claimData, AUTHORISATION, FEATURES);
+
+        assertThat(output).isEqualTo(expectedResponse);
+    }
+
+    @Test
+    public void shouldSaveBreathingSpaceDetails() throws HttpException {
+        BreathingSpace breathingSpace = new BreathingSpace("REF12121212",
+            BreathingSpaceType.STANDARD_BS_ENTERED, LocalDate.now(),
+            null, LocalDate.now(), null, LocalDate.now(), "NO");
+        ClaimData claimData = SampleClaimData.builder()
+            .withBreathingSpace(breathingSpace)
+            .build();
+        Claim expectedResponse = Claim.builder().claimData(claimData).build();
+        when(claimService.saveBreathingSpaceDetails(EXTERNAL_ID, breathingSpace, AUTHORISATION))
+            .thenReturn(expectedResponse);
+
+        ResponseEntity<String> output = claimController.saveBreathingSpaceDetails(breathingSpace,
+            EXTERNAL_ID, AUTHORISATION);
+
+        assertThat(output.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+    }
+
+    @Test
+    public void shouldSaveBreathingSpaceDetailsThrowingHttpException() throws HttpException {
+        BreathingSpace breathingSpace = new BreathingSpace("REF12121212",
+            BreathingSpaceType.STANDARD_BS_ENTERED, LocalDate.now(),
+            null, LocalDate.now(), null, LocalDate.now(), "NO");
+        ClaimData claimData = SampleClaimData.builder()
+            .withBreathingSpace(breathingSpace)
+            .build();
+        Claim expectedResponse = Claim.builder().claimData(claimData).build();
+        when(claimService.saveBreathingSpaceDetails(EXTERNAL_ID,
+            breathingSpace, AUTHORISATION))
+            .thenThrow(HttpException.class);
+
+        ResponseEntity<String> output = claimController.saveBreathingSpaceDetails(breathingSpace,
+            EXTERNAL_ID, AUTHORISATION);
+
+        assertThat(output.getStatusCode()).isEqualTo(HttpStatus.PRECONDITION_FAILED);
+    }
+
+    @Test
+    public void shouldUpdateLegalRepresentedClaim() {
+        String pba = "PBA_NO";
+        PaymentReference paymentReference = new PaymentReference("REF", "Success",
+            200, null, "2021-01-01");
+
+        LegalRepUpdate legalRepUpdate = new LegalRepUpdate(EXTERNAL_ID,
+            "1023467890123456L", new BigInteger(String.valueOf(2000)),
+            "X0012", paymentReference, pba);
+        ClaimData claimData = SampleClaimData.builder()
+            .build();
+        Claim expectedResponse = Claim.builder().claimData(claimData).build();
+        when(claimService.updateRepresentedClaim("62", legalRepUpdate, AUTHORISATION))
+            .thenReturn(expectedResponse);
+
+        Claim output = claimController.updateLegalRepresentedClaim(legalRepUpdate,
+            "62", AUTHORISATION);
 
         assertThat(output).isEqualTo(expectedResponse);
     }

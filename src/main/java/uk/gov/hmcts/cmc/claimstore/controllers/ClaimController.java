@@ -2,9 +2,12 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.http.HttpException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,11 +19,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
+import uk.gov.hmcts.cmc.domain.models.BreathingSpace;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
+import uk.gov.hmcts.cmc.domain.models.legalrep.LegalRepUpdate;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantLinkStatus;
 
 import java.util.List;
@@ -34,10 +39,11 @@ import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
 @Api
 @RestController
 @RequestMapping(
-    path = "/claims",
+    path = ClaimController.CLAIMS,
     produces = MediaType.APPLICATION_JSON_VALUE)
 public class ClaimController {
 
+    public static final String CLAIMS = "/claims";
     private final ClaimService claimService;
 
     @Autowired
@@ -138,6 +144,17 @@ public class ClaimController {
         return claimService.saveRepresentedClaim(submitterId, claimData, authorisation);
     }
 
+    @PostMapping(value = "/{submitterId}/update-legal-rep-claim", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Updates legal rep claim")
+    public Claim updateLegalRepresentedClaim(
+        @Valid @NotNull @RequestBody LegalRepUpdate legalRepUpdate,
+        @PathVariable("submitterId") String submitterId,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
+    ) {
+        System.out.println("print object - " + legalRepUpdate.toString());
+        return claimService.updateRepresentedClaim(submitterId, legalRepUpdate, authorisation);
+    }
+
     @PostMapping(value = "/initiate-citizen-payment", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Initiates a citizen payment")
     public CreatePaymentResponse initiatePayment(
@@ -211,8 +228,23 @@ public class ClaimController {
     @GetMapping(value = "/pagination-metadata")
     @ApiOperation("Get the total claim number for an user")
     public Map<String, String> fetchPaginationInfo(
-        @RequestHeader (value = HttpHeaders.AUTHORIZATION) String authorisation,
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation,
         @RequestParam(value = "userType", required = false) String userType) {
         return claimService.getPaginationInfo(authorisation, userType);
+    }
+
+    @PostMapping(value = "/{externalId}/breathingSpace", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Creates a new Help With Fees claim")
+    public ResponseEntity<String> saveBreathingSpaceDetails(
+        @Valid @NotNull @RequestBody BreathingSpace breathingSpace,
+        @PathVariable("externalId") String externalId,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
+    ) {
+        try {
+            claimService.saveBreathingSpaceDetails(externalId, breathingSpace, authorisation);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Breathing Space Details saved successfully");
+        } catch (HttpException e) {
+            return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(e.getMessage());
+        }
     }
 }

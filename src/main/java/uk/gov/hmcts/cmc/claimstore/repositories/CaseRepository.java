@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.repositories;
 
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.domain.models.BreathingSpace;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.legalrep.LegalRepUpdate;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
@@ -52,6 +54,8 @@ public interface CaseRepository {
 
     void linkDefendant(String authorisation, String letterholderId);
 
+    void updatePreferredCourtByClaimReference(Claim claim);
+
     List<Claim> getByDefendantId(String id, String authorisation, Integer pageNumber);
 
     List<Claim> getByClaimantEmail(String email, String authorisation);
@@ -77,6 +81,8 @@ public interface CaseRepository {
     Claim updateHelpWithFeesClaim(User user, Claim claim, CaseEvent caseEvent);
 
     Claim saveRepresentedClaim(User user, Claim claim);
+
+    Claim updateRepresentedClaim(String submitterId, User user, Claim claim, LegalRepUpdate legalRepUpdate);
 
     void saveReDetermination(String authorisation, Claim claim, ReDetermination reDetermination);
 
@@ -104,6 +110,8 @@ public interface CaseRepository {
     Claim linkLetterHolder(Long claimId, String letterHolderId);
 
     Claim saveReviewOrder(Long caseId, ReviewOrder reviewOrder, String authorisation);
+
+    Claim saveBreathingSpaceDetails(Claim claim, BreathingSpace breathingSpace, String authorisation);
 
     Claim addBulkPrintDetailsToClaim(
         String authorisation,

@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.events.claim;
 
-import com.launchdarkly.client.LDUser;
+import com.launchdarkly.sdk.LDUser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

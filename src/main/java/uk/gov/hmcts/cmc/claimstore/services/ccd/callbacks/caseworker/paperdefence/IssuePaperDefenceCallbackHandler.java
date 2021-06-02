@@ -91,20 +91,27 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
     }
 
     private AboutToStartOrSubmitCallbackResponse issuePaperDefence(CallbackParams callbackParams) {
-        CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
-        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
-        CCDRespondent ccdRespondent = ccdCase.getRespondents().get(0).getValue();
+        var caseDetails = callbackParams.getRequest().getCaseDetails();
+        var ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
+        var ccdRespondent = ccdCase.getRespondents().get(0).getValue();
         LocalDate paperFormServedDate;
         LocalDate responseDeadline;
         LocalDate extendedResponseDeadline;
         LocalDate paperFormIssueDate;
+        LocalDate existingDeadline =
+            responseDeadlineCalculator.calculateResponseDeadline(ccdCase.getIssuedOn());
+        boolean featureEnabled = launchDarklyClient.isFeatureEnabled("ocon-enhancement-2",
+            LaunchDarklyClient.CLAIM_STORE_USER);
+        var isPastDeadline = false;
+        var disableN9Form = false;
+        if (featureEnabled) {
+            isPastDeadline = claimDeadlineService.isPastDeadline(nowInLocalZone(), existingDeadline);
+            disableN9Form = disableN9FormFromOCON9x(ccdRespondent, isPastDeadline);
+        }
         if (!ccdRespondent.isOconFormSent()) {
             paperFormIssueDate = issueDateCalculator.calculateIssueDay(LocalDateTime.now());
             paperFormServedDate = responseDeadlineCalculator.calculateServiceDate(paperFormIssueDate);
-            if (launchDarklyClient.isFeatureEnabled("ocon-enhancement-2", LaunchDarklyClient.CLAIM_STORE_USER)) {
-                LocalDate existingDeadline =
-                    responseDeadlineCalculator.calculateResponseDeadline(ccdCase.getIssuedOn());
-                final boolean isPastDeadline = claimDeadlineService.isPastDeadline(nowInLocalZone(), existingDeadline);
+            if (featureEnabled) {
                 responseDeadline = getResponseDeadline(ccdRespondent, paperFormIssueDate, ccdCase, isPastDeadline);
                 extendedResponseDeadline = getExtendedResponseDeadline(ccdCase, paperFormIssueDate, isPastDeadline);
             } else {
@@ -125,7 +132,7 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
         }
         ccdCase = updateCaseDates(ccdCase, responseDeadline, paperFormServedDate, extendedResponseDeadline,
             paperFormIssueDate);
-        Claim claim = updateClaimDates(caseDetails, responseDeadline);
+        var claim = updateClaimDates(caseDetails, responseDeadline);
 
         var builder = AboutToStartOrSubmitCallbackResponse.builder();
         if (!launchDarklyClient.isFeatureEnabled("ocon-enhancements", LaunchDarklyClient.CLAIM_STORE_USER)
@@ -135,8 +142,9 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
             return builder.build();
         }
         try {
-            String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
-            ccdCase = documentPublishService.publishDocuments(ccdCase, claim, authorisation, extendedResponseDeadline);
+            var authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
+            ccdCase = documentPublishService.publishDocuments(ccdCase, claim, authorisation, extendedResponseDeadline,
+                disableN9Form, featureEnabled);
             if (!ccdRespondent.isOconFormSent()) {
                 issuePaperResponseNotificationService.notifyClaimant(claim);
             }
@@ -145,6 +153,14 @@ public class IssuePaperDefenceCallbackHandler extends CallbackHandler {
             logger.error("Error notifying citizens", e);
             return builder.errors(Collections.singletonList(ERROR_MESSAGE)).build();
         }
+    }
+
+    private boolean disableN9FormFromOCON9x(CCDRespondent ccdRespondent, boolean isPastDeadline) {
+        var disableN9Form = false;
+        if (isPastDeadline || CCDYesNoOption.YES.equals(ccdRespondent.getResponseMoreTimeNeededOption())) {
+            disableN9Form = true;
+        }
+        return disableN9Form;
     }
 
     private LocalDate getExtendedResponseDeadline(CCDCase ccdCase, LocalDate paperFormIssueDate,

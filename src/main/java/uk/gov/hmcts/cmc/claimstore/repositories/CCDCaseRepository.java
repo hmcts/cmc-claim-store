@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
+import uk.gov.hmcts.cmc.domain.models.BreathingSpace;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
@@ -19,6 +20,7 @@ import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.legalrep.LegalRepUpdate;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -73,6 +75,11 @@ public class CCDCaseRepository implements CaseRepository {
     @Override
     public void linkDefendant(String authorisation, String letterholderId) {
         ccdCaseApi.linkDefendantUsingLetterholderId(authorisation, letterholderId);
+    }
+
+    @Override
+    public void updatePreferredCourtByClaimReference(Claim claim) {
+        ccdCaseApi.updatePreferredCourtByClaimReference(claim);
     }
 
     @Override
@@ -203,6 +210,12 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
+    @LogExecutionTime
+    public Claim updateRepresentedClaim(String submitterId, User user, Claim claim, LegalRepUpdate legalRepUpdate) {
+        return coreCaseDataService.updateRepresentedClaim(submitterId, user, claim, legalRepUpdate);
+    }
+
+    @Override
     public Claim saveClaimDocuments(
         String authorisation,
         Long claimId,
@@ -221,6 +234,11 @@ public class CCDCaseRepository implements CaseRepository {
     @Override
     public Claim saveReviewOrder(Long caseId, ReviewOrder reviewOrder, String authorisation) {
         return coreCaseDataService.saveReviewOrder(caseId, reviewOrder, authorisation);
+    }
+
+    @Override
+    public Claim saveBreathingSpaceDetails(Claim claim, BreathingSpace breathingSpace, String authorisation) {
+        return coreCaseDataService.saveBreathingSpaceDetails(claim, breathingSpace, authorisation);
     }
 
     @Override

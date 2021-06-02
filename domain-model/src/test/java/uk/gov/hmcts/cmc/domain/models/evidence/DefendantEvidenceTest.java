@@ -30,7 +30,7 @@ class DefendantEvidenceTest {
         Set<String> response = validate(defendantEvidence);
 
         assertThat(response)
-            .hasSize(0);
+            .isEmpty();
     }
 
     @Test
@@ -40,7 +40,7 @@ class DefendantEvidenceTest {
         Set<String> response = validate(defendantEvidence);
 
         assertThat(response)
-            .hasSize(0);
+            .isEmpty();
     }
 
     @Test

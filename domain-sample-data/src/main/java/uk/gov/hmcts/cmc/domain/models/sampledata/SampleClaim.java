@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
+import uk.gov.hmcts.cmc.domain.models.BreathingSpace;
+import uk.gov.hmcts.cmc.domain.models.BreathingSpaceType;
 import uk.gov.hmcts.cmc.domain.models.ChannelType;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -51,6 +53,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.ORDER_DIRECTIONS;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.DQ_FLAG;
 import static uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType.DEFAULT;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
 import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.CLAIMANT;
@@ -125,6 +128,7 @@ public final class SampleClaim {
     private String directionOrderType;
     private BespokeOrderDirection bespokeOrderDirection;
     private String lastEventTriggeredForHwfCase = null;
+    private String preferredDQCourt;
 
     private SampleClaim() {
     }
@@ -132,6 +136,27 @@ public final class SampleClaim {
     public static Claim getDefault() {
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimantBuilder().withExternalId(RAND_UUID).build())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .ccjType(CountyCourtJudgmentType.ADMISSIONS)
+                    .paymentOption(IMMEDIATELY)
+                    .build()
+            ).withResponse(SampleResponse.FullDefence
+                .builder()
+                .withDefenceType(DefenceType.DISPUTE)
+                .withMediation(YES)
+                .build()
+            ).withState(ClaimState.OPEN)
+            .build();
+    }
+
+    public static Claim getDefaultWithBreathingSpaceDetails() {
+        BreathingSpace breathingSpace = new BreathingSpace("REF12121212",
+            BreathingSpaceType.STANDARD_BS_ENTERED, LocalDate.now(),
+            null, LocalDate.now(), null, LocalDate.now(), "NO");
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimantBuilder().withExternalId(RAND_UUID)
+                .withBreathingSpace(breathingSpace).build())
             .withCountyCourtJudgment(
                 SampleCountyCourtJudgment.builder()
                     .ccjType(CountyCourtJudgmentType.ADMISSIONS)
@@ -401,6 +426,7 @@ public final class SampleClaim {
             .withResponse(SampleResponse.FullAdmission.validDefaults())
             .withRespondedAt(LocalDateTime.now())
             .withDefendantEmail(DEFENDANT_EMAIL)
+            .withFeatures(Collections.singletonList(DQ_FLAG.getValue()))
             .withClaimantRespondedAt(LocalDateTime.now())
             .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
             .build();
@@ -436,6 +462,7 @@ public final class SampleClaim {
                 .freeMediation(YES)
                 .mediationPhoneNumber("07999999999")
                 .mediationContactPerson("Mediation Contact Person")
+                .noMediationReason("Not interested")
                 .reason("Some valid reason")
                 .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder()
                     .withHearingLocation(pilotHearingLocation).build())
@@ -708,6 +735,7 @@ public final class SampleClaim {
             null,
             offlineJourney,
             null,
+            preferredDQCourt,
             null,
             null,
             null,
@@ -803,6 +831,11 @@ public final class SampleClaim {
 
     public SampleClaim withClaimData(ClaimData claimData) {
         this.claimData = claimData;
+        return this;
+    }
+
+    public SampleClaim withPreferredDQCourt(String preferredDQCourt) {
+        this.preferredDQCourt = preferredDQCourt;
         return this;
     }
 

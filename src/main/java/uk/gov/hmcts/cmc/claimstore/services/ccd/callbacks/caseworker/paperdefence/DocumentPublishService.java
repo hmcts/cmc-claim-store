@@ -40,19 +40,32 @@ public class DocumentPublishService {
         CCDCase ccdCase,
         Claim claim,
         String authorisation,
-        LocalDate extendedResponseDeadline
+        LocalDate extendedResponseDeadline,
+        boolean disableN9Form,
+        boolean featureFlag
     ) {
         CCDDocument coverLetter = paperResponseLetterService
             .createCoverLetter(ccdCase, authorisation, extendedResponseDeadline);
-
-        Document coverDoc = printableDocumentService.process(coverLetter, authorisation);
+        Document ocon9Doc = null;
+        BulkPrintDetails bulkPrintDetails = null;
+        var coverDoc = printableDocumentService.process(coverLetter, authorisation);
+        if (!disableN9Form && featureFlag) {
+            CCDDocument ocon9Letter = paperResponseLetterService
+                .createOCON9From(ccdCase, authorisation, extendedResponseDeadline);
+            ocon9Doc = printableDocumentService.process(ocon9Letter, authorisation);
+        }
 
         CCDDocument oconForm = paperResponseLetterService
-            .createOconForm(ccdCase, claim, authorisation, extendedResponseDeadline);
+            .createOconForm(ccdCase, claim, authorisation, extendedResponseDeadline, disableN9Form);
 
-        Document formDoc = printableDocumentService.process(oconForm, authorisation);
-
-        BulkPrintDetails bulkPrintDetails = bulkPrintHandler.printPaperDefence(claim, coverDoc, formDoc, authorisation);
+        var formDoc = printableDocumentService.process(oconForm, authorisation);
+        if (featureFlag) {
+            bulkPrintDetails = bulkPrintHandler.printPaperDefence(claim, coverDoc, formDoc, ocon9Doc,
+                authorisation, disableN9Form);
+        } else {
+            bulkPrintDetails = bulkPrintHandler.printPaperDefence(claim, coverDoc, formDoc,
+                authorisation);
+        }
         CCDCase updated = addToBulkPrintDetails(ccdCase, bulkPrintDetails);
         return paperResponseLetterService
             .addCoverLetterToCaseWithDocuments(updated, claim, coverLetter, authorisation);

@@ -268,4 +268,20 @@ public class DocAssemblyTemplateBodyMapper {
             .bespokeOrderWarning(ccdCase.getDrawBespokeDirectionOrderWarning().contains(CCDBespokeOrderWarning.WARNING))
             .build();
     }
+
+    public DocAssemblyTemplateBody breathingSpaceLetter(CCDCase ccdCase) {
+        CCDRespondent defendant = ccdCase.getRespondents().get(0).getValue();
+        String partyName = defendant.getPartyName() != null
+            ? defendant.getPartyName()
+            : defendant.getClaimantProvidedPartyName();
+        CCDAddress partyAddress = getDefendantAddress(ccdCase.getRespondents().get(0).getValue());
+        CCDApplicant claimant = ccdCase.getApplicants().get(0).getValue();
+
+        return DocAssemblyTemplateBody.builder()
+            .referenceNumber(ccdCase.getPreviousServiceCaseReference())
+            .claimantName(claimant.getPartyName())
+            .partyName(partyName)
+            .partyAddress(partyAddress)
+            .build();
+    }
 }

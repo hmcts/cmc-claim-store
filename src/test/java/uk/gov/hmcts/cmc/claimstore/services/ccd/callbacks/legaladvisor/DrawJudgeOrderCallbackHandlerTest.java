@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legaladvisor;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.launchdarkly.client.LDUser;
+import com.launchdarkly.sdk.LDUser;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -434,7 +434,6 @@ class DrawJudgeOrderCallbackHandlerTest {
             Map<String, Object> data = new HashMap<>();
             data.put("data", "existingData");
             data.put("directionOrderType", "STANDARD");
-            data.put("hearingCourt", hearingCourtMap);
 
             callbackRequest = CallbackRequest
                 .builder()

@@ -109,7 +109,7 @@ allprojects {
       }
       // checkstyle needs a certain version and so does spring fox swagger, so can't use latest
       // fun times...
-      dependencySet(group: 'com.google.guava', version: '30.1-jre') {
+      dependencySet(group: 'com.google.guava', version: '30.1.1-jre') {
         entry 'guava'
       }
       // solves CVE-2019-12086
@@ -193,7 +193,7 @@ dependencies {
   compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
 
-  compile group: 'org.elasticsearch', name: 'elasticsearch', version: '7.11.1'
+  compile group: 'org.elasticsearch', name: 'elasticsearch', version: '7.12.1'
   compile group: 'org.postgresql', name: 'postgresql', version: '42.2.14'
 
   compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.0-RELEASE'
@@ -208,9 +208,19 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'fees-java-client', version: '0.0.6'
   compile group: 'uk.gov.hmcts.reform', name: 'payments-client', version: '0.0.6'
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '4.0.0'
-  compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '3.0.2'
+  compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '3.0.3'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
   compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.1.0'
+
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
+  compile group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '2.7.0'
+
+  compile group: 'org.springframework.security', name: 'spring-security-web'
+  compile group: 'org.springframework.security', name: 'spring-security-config'
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client'
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
+  compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '7.9'
+  compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
 
   compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
   compile group: 'org.apache.commons', name: 'commons-csv', version: '1.8'
@@ -248,7 +258,7 @@ dependencies {
   testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.14.3'
 
   testCompile group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
-  testCompile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: '2.4.0'
+  testCompile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: '2.5.0'
   testCompile group: 'net.jodah', name: 'failsafe', version: '2.4.0'
   testCompile group: 'org.xmlunit', name: 'xmlunit-core', version: '2.8.2'
   testCompile group: 'org.xmlunit', name: 'xmlunit-matchers', version: '2.8.2'
@@ -315,6 +325,7 @@ task functional(type: Test) {
   setTestClassesDirs(sourceSets.aat.output.classesDirs)
   setClasspath(sourceSets.aat.runtimeClasspath)
   include "uk/gov/hmcts/cmc/claimstore/tests/functional/**"
+  testLogging.showStandardStreams = true
 
   environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
@@ -324,6 +335,7 @@ task smoke(type: Test) {
   description = 'Executes non-destructive smoke tests against a running Claim Store instance'
   setTestClassesDirs(sourceSets.aat.output.classesDirs)
   setClasspath(sourceSets.aat.runtimeClasspath)
+  testLogging.showStandardStreams = true
   include "uk/gov/hmcts/cmc/claimstore/tests/smoke/**"
 
   environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
@@ -366,6 +378,7 @@ sonarqube {
         "**/cmc/ccd/sample/data/**",
         "**/cmc/ccd/mapper/**",
         "**/cmc/claimstore/idam/models/**",
+        "**/cmc/claimstore/idam/IdamApi.java",
         "**/ExceptionForClient.java",
         "**/config/**",
         "**/*Exception.java",

@@ -75,6 +75,8 @@ public class RoboticsNotificationServiceTest {
     private SealedClaimPdfService sealedClaimPdfService;
     @Mock
     private PaidInFullNotificationService paidInFullNotificationService;
+    @Mock
+    private BreathingSpaceNotificationService breathingSpaceNotificationService;
 
     @Before
     public void setup() {
@@ -82,7 +84,7 @@ public class RoboticsNotificationServiceTest {
             userService, moreTimeRequestedNotificationService, defenceResponseNotificationService,
             ccjNotificationService, paidInFullNotificationService,
             responseDeadlineCalculator, appInsightsExceptionLogger, rpaNotificationService,
-            sealedClaimPdfService);
+            sealedClaimPdfService, breathingSpaceNotificationService);
 
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(SampleUser.getDefault());
         doNothing().when(rpaNotificationService).notifyRobotics(any(Claim.class), anyList());

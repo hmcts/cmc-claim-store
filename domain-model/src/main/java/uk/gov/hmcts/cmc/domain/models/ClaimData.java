@@ -111,6 +111,8 @@ public class ClaimData {
 
     private final LocalDate hwfDocumentsToBeSentBefore;
 
+    private final BreathingSpace breathingSpace;
+
     @Builder(toBuilder = true)
     @SuppressWarnings("squid:S00107") // Number of method parameters
     public ClaimData(
@@ -138,7 +140,9 @@ public class ClaimData {
         String helpWithFeesType,
         String hwfFeeDetailsSummary,
         String hwfMandatoryDetails,
-        List<String> hwfMoreInfoNeededDocuments, LocalDate hwfDocumentsToBeSentBefore) {
+        List<String> hwfMoreInfoNeededDocuments,
+        LocalDate hwfDocumentsToBeSentBefore,
+        BreathingSpace breathingSpace) {
         this.externalId = externalId != null ? externalId : UUID.randomUUID();
         this.claimants = claimants;
         this.defendants = defendants;
@@ -165,6 +169,7 @@ public class ClaimData {
         this.hwfMandatoryDetails = hwfMandatoryDetails;
         this.hwfMoreInfoNeededDocuments = hwfMoreInfoNeededDocuments;
         this.hwfDocumentsToBeSentBefore = hwfDocumentsToBeSentBefore;
+        this.breathingSpace = breathingSpace;
     }
 
     public List<Party> getClaimants() {
@@ -318,5 +323,9 @@ public class ClaimData {
 
     public LocalDate getHwfDocumentsToBeSentBefore() {
         return hwfDocumentsToBeSentBefore;
+    }
+
+    public Optional<BreathingSpace> getBreathingSpace() {
+        return Optional.ofNullable(breathingSpace);
     }
 }

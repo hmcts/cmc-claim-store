@@ -86,7 +86,7 @@ public class CCDCase {
     private List<CCDCollectionElement<CCDClaimDocument>> caseDocuments = Collections.emptyList();
     @Builder.Default
     private List<CCDCollectionElement<CCDScannedDocument>> scannedDocuments = Collections.emptyList();
-    private String ocon9xForm;
+    private CCDOcon9xMain ocon9xForm;
     private List<CCDCollectionElement<CCDClaimDocument>> staffUploadedDocuments;
     private String caseName;
     private CCDClaimSubmissionOperationIndicators claimSubmissionOperationIndicators;
@@ -119,11 +119,12 @@ public class CCDCase {
     private String newRequestedCourt;
 
     private String preferredDQCourt;
+    private String preferredDQPilotCourt;
 
     private String preferredCourtObjectingParty;
     private String preferredCourtObjectingReason;
 
-    private String hearingCourt;
+    private Object hearingCourt;
 
     private String hearingCourtName;
 
@@ -189,6 +190,12 @@ public class CCDCase {
     private LocalDate hwfDocumentsToBeSentBefore;
 
     private CCDReviewOrDrawOrder reviewOrDrawOrder;
-  
+
     private String lastEventTriggeredForHwfCase;
+
+    //Breathing space Fields
+    private CCDBreathingSpace breathingSpace;
+
+    //This field is for Legal Rep Error code message
+    private String errorCodeMessage;
 }

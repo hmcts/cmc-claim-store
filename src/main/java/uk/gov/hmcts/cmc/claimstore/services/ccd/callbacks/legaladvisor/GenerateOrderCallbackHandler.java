@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legaladvisor;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -24,7 +22,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.LEGAL_ADVISOR;
 @ConditionalOnProperty(prefix = "doc_assembly", name = "url")
 public class GenerateOrderCallbackHandler extends CallbackHandler {
     private static final List<Role> ROLES = Collections.singletonList(LEGAL_ADVISOR);
-    private static final List<CaseEvent> EVENTS = ImmutableList.of(GENERATE_ORDER, ACTION_REVIEW_COMMENTS);
+    private static final List<CaseEvent> EVENTS = List.of(GENERATE_ORDER, ACTION_REVIEW_COMMENTS);
 
     private final OrderCreator orderCreator;
     private final OrderPostProcessor orderPostProcessor;
@@ -43,7 +41,7 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
-        return ImmutableMap.of(
+        return Map.of(
             CallbackType.ABOUT_TO_START, orderCreator::prepopulateOrder,
             CallbackType.MID, orderCreator::generateOrder,
             CallbackType.ABOUT_TO_SUBMIT, orderPostProcessor::persistHearingCourtAndMigrateExpertReport,

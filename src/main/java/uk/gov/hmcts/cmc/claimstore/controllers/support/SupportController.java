@@ -313,6 +313,12 @@ public class SupportController {
         scheduledStateTransitionService.stateChangeTriggered(runDateTime, stateTransition);
     }
 
+    @PutMapping(value = "/claim/{claimNumber}/preferredDQCourt")
+    @ApiOperation("Set preferred DQ pilot court for a claim")
+    public void setPreferredDQPilotCourt(@PathVariable("claimNumber") String claimNumber) {
+        claimService.updatePreferredCourtByClaimReference(claimNumber);
+    }
+
     private void resendStaffNotificationCCJRequestSubmitted(Claim claim, String authorisation) {
         this.ccjStaffNotificationHandler.onDefaultJudgmentRequestSubmitted(
             new CountyCourtJudgmentEvent(claim, authorisation)

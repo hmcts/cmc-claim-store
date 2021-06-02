@@ -18,7 +18,7 @@ public class ResponseRejectionTest {
 
         Set<String> response = validate(claimantResponse);
 
-        assertThat(response).hasSize(0);
+        assertThat(response).isEmpty();
     }
 
     @Test
@@ -27,7 +27,7 @@ public class ResponseRejectionTest {
 
         Set<String> response = validate(claimantResponse);
 
-        assertThat(response).hasSize(0);
+        assertThat(response).isEmpty();
     }
 
     @Test
@@ -36,7 +36,7 @@ public class ResponseRejectionTest {
 
         Set<String> response = validate(claimantResponse);
 
-        assertThat(response).hasSize(0);
+        assertThat(response).isEmpty();
     }
 
     @Test
@@ -55,6 +55,18 @@ public class ResponseRejectionTest {
         ClaimantResponse claimantResponse = ResponseRejection
             .builder()
             .mediationContactPerson(randomAlphabetic(31))
+            .build();
+
+        Set<String> response = validate(claimantResponse);
+
+        assertThat(response).hasSize(1);
+    }
+
+    @Test
+    public void shouldBeInvalidWhenNoMediationReasonIsTooLong() {
+        ClaimantResponse claimantResponse = ResponseRejection
+            .builder()
+            .noMediationReason(randomAlphabetic(501))
             .build();
 
         Set<String> response = validate(claimantResponse);

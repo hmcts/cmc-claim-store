@@ -71,6 +71,7 @@ public enum CaseEvent {
     RESUME_CLAIM_PAYMENT_CITIZEN("ResumeClaimPaymentCitizen"),
     UPDATE_HELP_WITH_FEE_CLAIM("ResumeHelpWithFeeClaimSubmission"),
     CREATE_LEGAL_REP_CLAIM("CreateLegalRepClaim"),
+    UPDATE_LEGAL_REP_CLAIM("UpdateLegalRepClaim"),
     STAY_CLAIM("StayClaim"),
     CREATE_CITIZEN_CLAIM("CreateCitizenClaim"),
     REVIEWED_PAPER_RESPONSE("ReviewedPaperResponse"),
@@ -105,7 +106,9 @@ public enum CaseEvent {
     UPDATE_HWF_NUMBER("UpdateHWFNumber"),
     CLOSE_AWAITING_RESPONSE_HWF("CloseAwaitingResponseHWF"),
     HWF_FULL_REMISSION_GRANTED("HWFFullRemision"),
-    RECALCULATE_INTEREST("RecalculateInterest");
+    RECALCULATE_INTEREST("RecalculateInterest"),
+    BREATHING_SPACE_ENTERED("BreathingSpaceEntered"),
+    BREATHING_SPACE_LIFTED("BreathingSpaceLifted");
 
     private final String value;
 

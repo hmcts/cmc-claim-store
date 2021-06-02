@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
-import com.launchdarkly.client.LDUser;
+import com.launchdarkly.sdk.LDUser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;

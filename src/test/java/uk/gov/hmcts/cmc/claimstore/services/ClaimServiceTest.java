@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
+import org.apache.http.HttpException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,6 +25,8 @@ import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.rules.PaidInFullRule;
 import uk.gov.hmcts.cmc.claimstore.rules.ReviewOrderRule;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.hmcts.cmc.domain.models.BreathingSpace;
+import uk.gov.hmcts.cmc.domain.models.BreathingSpaceType;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
@@ -39,6 +42,8 @@ import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
+import uk.gov.hmcts.cmc.domain.models.legalrep.LegalRepUpdate;
+import uk.gov.hmcts.cmc.domain.models.legalrep.PaymentReference;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountBreakdown;
@@ -50,6 +55,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
 import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -78,6 +84,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.UPDATE_HELP_WITH_FEE_CLAIM;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.HWF_CLAIM_CREATED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NUMBER_OF_RECONSIDERATION;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
@@ -255,7 +262,8 @@ public class ClaimServiceTest {
     public void saveLegalRepClaimShouldFinishSuccessfully() {
         ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
 
-        when(caseRepository.saveRepresentedClaim(eq(USER), any(Claim.class))).thenReturn(representedClaim);
+        when(caseRepository.saveRepresentedClaim(eq(USER), any(Claim.class)))
+            .thenReturn(representedClaim);
 
         Claim createdLegalRepClaim = claimService
             .saveRepresentedClaim(
@@ -265,8 +273,6 @@ public class ClaimServiceTest {
 
         verify(caseRepository, once()).saveRepresentedClaim(
             eq(USER), claimArgumentCaptor.capture());
-        verify(eventProducer, once()).createClaimCreatedEvent(eq(createdLegalRepClaim),
-            anyString(), eq(AUTHORISATION));
 
         Claim argumentCaptorValue = claimArgumentCaptor.getValue();
         assertThat(argumentCaptorValue.getClaimData()).isEqualTo(claimData);
@@ -740,6 +746,273 @@ public class ClaimServiceTest {
         verifyNoInteractions(appInsights);
     }
 
+    @Test
+    public void testSaveBreathingSpaceDetails() throws HttpException {
+        BreathingSpace breathingSpace = new BreathingSpace("REF12121212",
+            BreathingSpaceType.STANDARD_BS_ENTERED, LocalDate.now(),
+            null, LocalDate.now(), null, LocalDate.now(), "NO");
+
+        ClaimData claimData = SampleClaimData.builder()
+            .withExternalId(UUID.fromString(EXTERNAL_ID))
+            // .withBreathingSpace(breathingSpace)
+            .build();
+        Claim claim = SampleClaim.builder()
+            .withExternalId(EXTERNAL_ID)
+            .withClaimData(claimData)
+            .build();
+
+        when(caseRepository.getClaimByExternalId(AppInsights.CLAIM_EXTERNAL_ID, USER))
+            .thenReturn(Optional.of(claim));
+        when(caseRepository
+            .saveBreathingSpaceDetails(any(Claim.class), any(BreathingSpace.class), anyString()))
+            .thenReturn(claim);
+
+        claimService.saveBreathingSpaceDetails(AppInsights.CLAIM_EXTERNAL_ID, breathingSpace,
+            AUTHORISATION);
+
+        verify(caseRepository).saveBreathingSpaceDetails(any(Claim.class), any(BreathingSpace.class), anyString());
+    }
+
+    @Test
+    public void testSaveBreathingSpaceDetailsWithClaimStateTransferred() throws HttpException {
+        BreathingSpace breathingSpace = new BreathingSpace("REF12121212",
+            BreathingSpaceType.STANDARD_BS_ENTERED, LocalDate.now(),
+            null, LocalDate.now(), null, LocalDate.now(), "NO");
+
+        ClaimData claimData = SampleClaimData.builder()
+            .withExternalId(UUID.fromString(EXTERNAL_ID))
+            // .withBreathingSpace(breathingSpace)
+            .build();
+        Claim claim = SampleClaim.builder()
+            .withExternalId(EXTERNAL_ID)
+            .withClaimData(claimData)
+            .withState(ClaimState.TRANSFERRED)
+            .build();
+
+        when(caseRepository.getClaimByExternalId(AppInsights.CLAIM_EXTERNAL_ID, USER))
+            .thenReturn(Optional.of(claim));
+        try {
+            claimService.saveBreathingSpaceDetails(AppInsights.CLAIM_EXTERNAL_ID, breathingSpace,
+                AUTHORISATION);
+        } catch (HttpException e) {
+            assert (e.getMessage().contains("This Event cannot be triggered since the claim "
+                + "is no longer part of the online civil money claims journey"));
+        }
+        assertThat(claim).isNotNull();
+    }
+
+    @Test
+    public void testSaveBreathingSpaceDetailsExpectedEndDateLesserThanTodaysDate() throws HttpException {
+        BreathingSpace breathingSpace = new BreathingSpace("REF12121212",
+            BreathingSpaceType.STANDARD_BS_ENTERED, LocalDate.now(),
+            null, LocalDate.now(), null, LocalDate.now().minusDays(3), "NO");
+
+        ClaimData claimData = SampleClaimData.builder()
+            .withExternalId(UUID.fromString(EXTERNAL_ID))
+            // .withBreathingSpace(breathingSpace)
+            .build();
+        Claim claim = SampleClaim.builder()
+            .withExternalId(EXTERNAL_ID)
+            .withClaimData(claimData)
+            .build();
+
+        when(caseRepository.getClaimByExternalId(AppInsights.CLAIM_EXTERNAL_ID, USER))
+            .thenReturn(Optional.of(claim));
+        try {
+            claimService.saveBreathingSpaceDetails(AppInsights.CLAIM_EXTERNAL_ID, breathingSpace,
+                AUTHORISATION);
+        } catch (HttpException e) {
+            assert (e.getMessage().contains("The expected end date must not be before today's date"));
+        }
+        assertThat(claim).isNotNull();
+    }
+
+    @Test
+    public void testSaveBreathingSpaceDetailsWithBsEnteredInsolvencyDateIsMoreThanCurrentDate() throws HttpException {
+        BreathingSpace breathingSpace = new BreathingSpace("REF12121212",
+            BreathingSpaceType.STANDARD_BS_ENTERED, LocalDate.now(),
+            null, LocalDate.now().plusDays(3), null, LocalDate.now(), "NO");
+
+        ClaimData claimData = SampleClaimData.builder()
+            .withExternalId(UUID.fromString(EXTERNAL_ID))
+            // .withBreathingSpace(breathingSpace)
+            .build();
+        Claim claim = SampleClaim.builder()
+            .withExternalId(EXTERNAL_ID)
+            .withClaimData(claimData)
+            .build();
+
+        when(caseRepository.getClaimByExternalId(AppInsights.CLAIM_EXTERNAL_ID, USER))
+            .thenReturn(Optional.of(claim));
+
+        try {
+            claimService.saveBreathingSpaceDetails(AppInsights.CLAIM_EXTERNAL_ID, breathingSpace,
+                AUTHORISATION);
+        } catch (HttpException e) {
+            assert (e.getMessage().contains("The start date must not be after today's date"));
+        }
+        assertThat(claim).isNotNull();
+    }
+
+    @Test
+    public void testSaveBreathingSpaceDetailsWithBsReferenceNumberInvalidLength() throws HttpException {
+        BreathingSpace breathingSpace = new BreathingSpace("REF12121212424323232323232",
+            BreathingSpaceType.STANDARD_BS_ENTERED, LocalDate.now(),
+            null, LocalDate.now(), null, LocalDate.now(), "NO");
+
+        ClaimData claimData = SampleClaimData.builder()
+            .withExternalId(UUID.fromString(EXTERNAL_ID))
+            // .withBreathingSpace(breathingSpace)
+            .build();
+        Claim claim = SampleClaim.builder()
+            .withExternalId(EXTERNAL_ID)
+            .withClaimData(claimData)
+            .build();
+
+        when(caseRepository.getClaimByExternalId(AppInsights.CLAIM_EXTERNAL_ID, USER))
+            .thenReturn(Optional.of(claim));
+
+        try {
+            claimService.saveBreathingSpaceDetails(AppInsights.CLAIM_EXTERNAL_ID, breathingSpace,
+                AUTHORISATION);
+        } catch (HttpException e) {
+            assert (e.getMessage().contains("The reference number must be maximum of 16 Characters"));
+        }
+        assertThat(claim).isNotNull();
+    }
+
+    @Test
+    public void testSaveBreathingSpaceDetailsForBreathingSpaceAlreadyPresent() throws HttpException {
+        BreathingSpace breathingSpace = new BreathingSpace("REF12121212",
+            BreathingSpaceType.STANDARD_BS_ENTERED, LocalDate.now(),
+            null, LocalDate.now(), null, LocalDate.now(), "NO");
+
+        ClaimData claimData = SampleClaimData.builder()
+            .withExternalId(UUID.fromString(EXTERNAL_ID))
+            .withBreathingSpace(breathingSpace)
+            .build();
+        Claim claim = SampleClaim.builder()
+            .withExternalId(EXTERNAL_ID)
+            .withClaimData(claimData)
+            .build();
+
+        when(caseRepository.getClaimByExternalId(AppInsights.CLAIM_EXTERNAL_ID, USER))
+            .thenReturn(Optional.of(claim));
+
+        try {
+            claimService.saveBreathingSpaceDetails(AppInsights.CLAIM_EXTERNAL_ID, breathingSpace,
+                AUTHORISATION);
+        } catch (HttpException e) {
+            assert (e.getMessage().contains("Breathing Space is already entered for this Claim"));
+        }
+        assertThat(claim).isNotNull();
+    }
+
+    @Test
+    public void testSaveBreathingSpaceDetailsWithClaimStateAsTransferred() throws HttpException {
+        BreathingSpace breathingSpace = new BreathingSpace("RFFFD434343",
+            BreathingSpaceType.STANDARD_BS_ENTERED, LocalDate.now(),
+            null, LocalDate.now(), null, LocalDate.now(), "NO");
+
+        ClaimData claimData = SampleClaimData.builder()
+            .withExternalId(UUID.fromString(EXTERNAL_ID))
+            // .withBreathingSpace(breathingSpace)
+            .build();
+        Claim claim = SampleClaim.builder()
+            .withExternalId(EXTERNAL_ID)
+            .withClaimData(claimData)
+            .withState(ClaimState.TRANSFERRED)
+            .build();
+
+        when(caseRepository.getClaimByExternalId(AppInsights.CLAIM_EXTERNAL_ID, USER))
+            .thenReturn(Optional.of(claim));
+        try {
+            claimService.saveBreathingSpaceDetails(AppInsights.CLAIM_EXTERNAL_ID, breathingSpace,
+                AUTHORISATION);
+        } catch (HttpException e) {
+            assert (e.getMessage().contains("This Event cannot be triggered since the claim is no longer"
+                + " part of the online civil money claims journey"));
+        }
+
+        assertThat(claim).isNotNull();
+    }
+
+    //One test case for breathing space lifted
+    @Test
+    public void testSaveBreathingSpaceDetailsBreathingSpaceLifted() throws HttpException {
+        BreathingSpace breathingSpace = new BreathingSpace("REF12121212",
+            BreathingSpaceType.STANDARD_BS_ENTERED, LocalDate.now(),
+            null, LocalDate.now(), null, LocalDate.now(), "YES");
+
+        ClaimData claimData = SampleClaimData.builder()
+            .withExternalId(UUID.fromString(EXTERNAL_ID))
+            // .withBreathingSpace(breathingSpace)
+            .build();
+        Claim claim = SampleClaim.builder()
+            .withExternalId(EXTERNAL_ID)
+            .withClaimData(claimData)
+            .build();
+
+        when(caseRepository.getClaimByExternalId(AppInsights.CLAIM_EXTERNAL_ID, USER))
+            .thenReturn(Optional.of(claim));
+        when(caseRepository
+            .saveBreathingSpaceDetails(any(Claim.class), any(BreathingSpace.class), anyString()))
+            .thenReturn(claim);
+
+        claimService.saveBreathingSpaceDetails(AppInsights.CLAIM_EXTERNAL_ID, breathingSpace,
+            AUTHORISATION);
+
+        verify(caseRepository).saveBreathingSpaceDetails(any(Claim.class), any(BreathingSpace.class), anyString());
+    }
+
+    @Test
+    public void shouldupdatePreferredCourtByClaimReference() {
+
+        Claim claim = createClaimModel(VALID_APP, LETTER_HOLDER_ID);
+        when(claimService.getClaimByReferenceAnonymous(
+            claim.getReferenceNumber())).thenReturn(Optional.ofNullable(claim));
+
+        claimService.updatePreferredCourtByClaimReference(claim.getReferenceNumber());
+
+        verify(caseRepository).updatePreferredCourtByClaimReference(claim);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void shouldThrowExceptionWhenNoClaimRefFoundForupdatePreferredCourtByClaimReference() {
+
+        Optional<Claim> result = empty();
+        String claimNumber = "0";
+        when(claimService.getClaimByReferenceAnonymous(
+            claim.getReferenceNumber())).thenReturn(result);
+
+        claimService.updatePreferredCourtByClaimReference(claimNumber);
+    }
+
+    //Update Legal rep claim
+    @Test
+    public void testUpdateRepresentedClaim() {
+
+        String submitterId = "62";
+        String externalId = "test-external-id";
+        String pba = "PBA_NO";
+        PaymentReference paymentReference = new PaymentReference("REF", "Success",
+            200, null, "2021-01-01");
+        LegalRepUpdate legalRepUpdate = new LegalRepUpdate(externalId,
+            "1023467890123456L", new BigInteger(String.valueOf(2000)),
+            "X0012", paymentReference, pba);
+        when(userService.getUser(AUTHORISATION)).thenReturn(USER);
+        when(caseRepository.getClaimByExternalId(legalRepUpdate.getExternalId(), USER))
+            .thenReturn(Optional.of(representedClaim));
+        when(caseRepository
+            .updateRepresentedClaim(submitterId, USER, representedClaim, legalRepUpdate))
+            .thenReturn(representedClaim);
+
+        claimService.updateRepresentedClaim(submitterId, legalRepUpdate, AUTHORISATION);
+        String referenceNumber = "referenceNumber";
+        verify(caseRepository).updateRepresentedClaim(submitterId, USER, representedClaim, legalRepUpdate);
+        verify(appInsights).trackEvent(CLAIM_ISSUED_LEGAL, referenceNumber, representedClaim.getReferenceNumber());
+    }
+
     private static Claim createRepresentedClaimModel(ClaimData claimData) {
         return createSampleClaim()
             .withClaimData(claimData)
@@ -750,6 +1023,7 @@ public class ClaimServiceTest {
         return createSampleClaim()
             .withClaimData(claimData)
             .withLetterHolderId(letterHolderId)
+            .withPreferredDQCourt("Central London County Court")
             .build();
     }
 

@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.appinsights;
 
 public enum AppInsightsEvent {
     CLAIM_ISSUED_LEGAL("Claim issued - Legal"),
+    CLAIM_LEGAL_CREATE("Claim created - Legal"),
     CLAIM_ISSUED_CITIZEN("Claim issued - Citizen"),
     HWF_CLAIM_ISSUED_CITIZEN("Help with Fees Claim issued - Caseworker"),
     HWF_CLAIM_CREATED("Help With Fees claim created"),
@@ -68,7 +69,9 @@ public enum AppInsightsEvent {
     DRAW_JUDGES_ORDER("Directions drawn - Judge"),
     LA_GENERATE_DRAW_ORDER("LA generates and draws order"),
     JDDO_PILOT_ELIGIBLE("Ready for directions - Judge"),
-    COURT_FINDER_API_FAILURE("Failed to get address from Court Finder API");
+    COURT_FINDER_API_FAILURE("Failed to get address from Court Finder API"),
+    BREATHING_SPACE_ENTERED("Breathing Space Entered"),
+    BREATHING_SPACE_LIFTED("Breathing Space Lifted");
 
     private final String displayName;
 
