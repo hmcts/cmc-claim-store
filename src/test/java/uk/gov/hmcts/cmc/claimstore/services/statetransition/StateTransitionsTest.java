@@ -32,7 +32,7 @@ public class StateTransitionsTest {
     @Test
     public void stayClaimCheckTriggerEvents() {
         Assert.assertEquals(ImmutableSet.of(CaseEvent.DISPUTE, CaseEvent.ALREADY_PAID,  CaseEvent.FULL_ADMISSION,
-            CaseEvent.PART_ADMISSION), StateTransitions.STAY_CLAIM.getTriggerEvents());
+            CaseEvent.PART_ADMISSION, CaseEvent.PAPER_RESPONSE_FULL_DEFENCE), StateTransitions.STAY_CLAIM.getTriggerEvents());
     }
 
     @Test
