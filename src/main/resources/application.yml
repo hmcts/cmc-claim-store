@@ -268,6 +268,10 @@ staff-notifications:
   recipient:
   legalRecipient:
 
+authorisation-token:
+  citizen: "${AUTHORISATION_TOKEN_CITIZEN:}"
+  legal-rep: "${AUTHORISATION_TOKEN_LEGAL_REP:}"
+
 feature_toggles:
   watermark_pdf: false
   reminderEmails: false

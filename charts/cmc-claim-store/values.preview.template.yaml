@@ -48,6 +48,8 @@ java:
         - launchDarkly-sdk-key
         - sendgrid-api-key
         - staff-email-legal-rep
+        - authorisation-token-citizen
+        - authorisation-token-legal-rep
   environment:
     LOG_LEVEL: DEBUG
     CMC_DB_HOST: ${SERVICE_NAME}-postgresql

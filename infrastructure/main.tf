@@ -36,6 +36,16 @@ data "azurerm_key_vault_secret" "staff_email_legal_rep" {
   key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
 }
 
+data "azurerm_key_vault_secret" "authorisation_token_citizen" {
+  name = "authorisation-token-citizen"
+  key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
+}
+
+data "azurerm_key_vault_secret" "authorisation_token_legal_rep" {
+  name = "authorisation-token-legal-rep"
+  key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
+}
+
 data "azurerm_key_vault_secret" "live_support_email" {
   name = "live-support-email"
   key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
