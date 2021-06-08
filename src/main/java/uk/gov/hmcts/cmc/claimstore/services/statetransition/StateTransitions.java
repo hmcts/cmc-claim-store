@@ -29,7 +29,7 @@ public enum StateTransitions implements StateTransition {
                     .lte(responseDate))
         ),
         Set.of(CaseEvent.DISPUTE, CaseEvent.ALREADY_PAID,  CaseEvent.FULL_ADMISSION,
-            CaseEvent.PART_ADMISSION),
+            CaseEvent.PART_ADMISSION, CaseEvent.PAPER_RESPONSE_FULL_DEFENCE),
         Set.of(CaseEvent.LINK_LETTER_HOLDER, CaseEvent.DEFENDANT_RESPONSE_UPLOAD,
             CaseEvent.SENDING_CLAIMANT_NOTIFICATION, CaseEvent.PIN_GENERATION_OPERATIONS, CaseEvent.SENDING_RPA,
             CaseEvent.SEALED_CLAIM_UPLOAD, CaseEvent.REVIEW_ORDER_UPLOAD, CaseEvent.CLAIM_ISSUE_RECEIPT_UPLOAD,
