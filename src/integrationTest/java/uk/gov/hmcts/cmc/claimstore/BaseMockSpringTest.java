@@ -246,8 +246,8 @@ public abstract class BaseMockSpringTest {
     }
 
     protected <T> ResultActions doPost(String auth, T content, String urlTemplate, Object... uriVars) throws Exception {
-        log.debug("Processing the authorisation token");
-        log.debug("authorisationTokenCitizen retrieved:: " + auth);
+        log.trace("Processing the authorisation token");
+        log.trace("authorisationTokenCitizen retrieved:: " + auth);
 
         return webClient.perform(
             post(urlTemplate, uriVars)

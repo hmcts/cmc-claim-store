@@ -81,9 +81,9 @@ public class ClaimModificationTest extends BaseMockSpringTest {
 
     @Before
     public void setup() {
-        log.debug("Processing the authorisation token");
-        log.debug("authorisationTokenCitizen retrieved:: " + authorisationTokenCitizen);
-        log.debug("authorisationTokenLegalRep retrieved:: " + authorisationTokenLegalRep);
+        log.trace("Processing the authorisation token");
+        log.trace("authorisationTokenCitizen retrieved:: " + authorisationTokenCitizen);
+        log.trace("authorisationTokenLegalRep retrieved:: " + authorisationTokenLegalRep);
         given(userService.getUserInfo(anyString())).willReturn(UserInfo.builder()
             .roles(ImmutableList.of(Role.CITIZEN.getRole()))
             .uid(SampleClaim.USER_ID)
