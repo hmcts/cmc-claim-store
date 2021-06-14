@@ -3,7 +3,9 @@ package uk.gov.hmcts.cmc.rpa.mapper;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.amount.Amount;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
+import uk.gov.hmcts.cmc.domain.models.amount.NotKnown;
 import uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 import uk.gov.hmcts.cmc.domain.models.otherparty.IndividualDetails;
@@ -30,7 +32,13 @@ import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractOptionalFromSu
 public class LegalSealedClaimJsonMapper {
 
     public JsonObject map(Claim claim) {
-        AmountRange amountRange = (AmountRange) claim.getClaimData().getAmount();
+        AmountRange amountRange = null;
+        Amount claimValue = claim.getClaimData().getAmount();
+        if (claimValue instanceof NotKnown) {
+            amountRange = new AmountRange(null, null);
+        } else {
+            amountRange = (AmountRange) claim.getClaimData().getAmount();
+        }
         return new NullAwareJsonObjectBuilder()
             .add("claimNumber", claim.getReferenceNumber())
             .add("claimIssueDate", DateFormatter.format(claim.getIssuedOn().get()))
@@ -79,7 +87,7 @@ public class LegalSealedClaimJsonMapper {
             .add("type", claimant.getClass().getSimpleName().toUpperCase())
             .add("primaryAddress", mapAddress(claimant.getAddress()))
             .add("emailAddress", submitterEmail)
-            .add("telephoneNumber",  claimant.getPhone().orElse(null))
+            .add("telephoneNumber", claimant.getPhone().orElse(null))
             .add("dateOfBirth", getDateOfBirth(claimant))
             .build();
     }
