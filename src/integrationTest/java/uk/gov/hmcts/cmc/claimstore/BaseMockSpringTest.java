@@ -8,6 +8,8 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.quartz.Scheduler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,6 +33,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.PlatformTransactionManager;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.controllers.ClaimModificationTest;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.helper.JsonMappingHelper;
@@ -83,6 +86,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureMockMvc
 @TestPropertySource("/environment.properties")
 public abstract class BaseMockSpringTest {
+
+    private static final Logger log = LoggerFactory.getLogger(BaseMockSpringTest.class);
 
     protected static final String SUBMITTER_ID = "123";
     protected static final String BEARER_TOKEN = "Bearer eyJ0eXAiOiJKV1QiLCJ6aXAiOiJOT05FIiwia2lkIjoiYi9"
@@ -241,6 +246,9 @@ public abstract class BaseMockSpringTest {
     }
 
     protected <T> ResultActions doPost(String auth, T content, String urlTemplate, Object... uriVars) throws Exception {
+        log.debug("Processing the authorisation token");
+        log.debug("authorisationTokenCitizen retrieved:: " + auth);
+
         return webClient.perform(
             post(urlTemplate, uriVars)
                 .header(HttpHeaders.AUTHORIZATION, auth)
