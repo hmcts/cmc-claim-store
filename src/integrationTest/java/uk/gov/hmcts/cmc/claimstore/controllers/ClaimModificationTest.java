@@ -52,7 +52,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
     private static final String ROOT_PATH = "/claims";
 
     @Value("${authorisation-token.citizen}")
-    private String AuthorisationTokenCitizen;
+    private String authorisationTokenCitizen;
 
     private static final UserDetails CITIZEN_DETAILS = SampleUserDetails.builder()
         .withRoles(Role.CITIZEN.getRole())
@@ -60,7 +60,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
     private static final User CITIZEN = new User(BEARER_TOKEN, CITIZEN_DETAILS);
 
     @Value("${authorisation-token.legal-rep}")
-    private String AuthorisationTokenLegalRep;
+    private String authorisationTokenLegalRep;
 
     private static final UserDetails LEGAL_REP_DETAILS = SampleUserDetails.builder()
         .withRoles(Role.LEGAL_ADVISOR.getRole())
@@ -85,11 +85,11 @@ public class ClaimModificationTest extends BaseMockSpringTest {
             .uid(SampleClaim.USER_ID)
             .sub(SampleClaim.SUBMITTER_EMAIL)
             .build());
-        given(userService.getUser(AuthorisationTokenCitizen)).willReturn(CITIZEN);
-        given(userService.getUserDetails(AuthorisationTokenCitizen)).willReturn(CITIZEN_DETAILS);
+        given(userService.getUser(authorisationTokenCitizen)).willReturn(CITIZEN);
+        given(userService.getUserDetails(authorisationTokenCitizen)).willReturn(CITIZEN_DETAILS);
 
-        given(userService.getUser(AuthorisationTokenLegalRep)).willReturn(LEGAL_REP);
-        given(userService.getUserDetails(AuthorisationTokenLegalRep)).willReturn(LEGAL_REP_DETAILS);
+        given(userService.getUser(authorisationTokenLegalRep)).willReturn(LEGAL_REP);
+        given(userService.getUserDetails(authorisationTokenLegalRep)).willReturn(LEGAL_REP_DETAILS);
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
     }
@@ -103,7 +103,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
         when(caseRepository.saveClaim(eq(CITIZEN), any(Claim.class)))
             .thenReturn(claim);
         Claim result = jsonMappingHelper.deserializeObjectFrom(
-            doPost(AuthorisationTokenCitizen, claimData, ROOT_PATH + "/{submitterId}", SampleClaim.USER_ID)
+            doPost(authorisationTokenCitizen, claimData, ROOT_PATH + "/{submitterId}", SampleClaim.USER_ID)
                 .andExpect(status().isOk())
                 .andReturn(),
             Claim.class);
@@ -113,7 +113,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
             .isEqualTo(claimData);
 
         verify(eventProducer)
-            .createClaimCreatedEvent(claim, CITIZEN_DETAILS.getFullName(), AuthorisationTokenCitizen);
+            .createClaimCreatedEvent(claim, CITIZEN_DETAILS.getFullName(), authorisationTokenCitizen);
     }
 
     @Test
@@ -122,7 +122,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
         ClaimData claimData = claim.getClaimData();
         when(caseRepository.getClaimByExternalId(SampleClaim.EXTERNAL_ID, CITIZEN))
             .thenReturn(Optional.of(claim));
-        doPost(AuthorisationTokenCitizen, claimData, ROOT_PATH + "/{submitterId}", SampleClaim.USER_ID)
+        doPost(authorisationTokenCitizen, claimData, ROOT_PATH + "/{submitterId}", SampleClaim.USER_ID)
             .andExpect(status().isConflict());
     }
 
@@ -139,7 +139,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
 
         webClient.perform(
             post(ROOT_PATH + "/{submitterId}", SampleClaim.USER_ID)
-                .header(HttpHeaders.AUTHORIZATION, AuthorisationTokenCitizen)
+                .header(HttpHeaders.AUTHORIZATION, authorisationTokenCitizen)
                 .header("Features", String.join(",", features))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonMappingHelper.toJson(claimData)))
@@ -162,7 +162,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
             .thenReturn(claim);
 
         Claim result = jsonMappingHelper.deserializeObjectFrom(
-            doPost(AuthorisationTokenLegalRep, claimData,
+            doPost(authorisationTokenLegalRep, claimData,
                 ROOT_PATH + "/{submitterId}/create-legal-rep-claim", SampleClaim.USER_ID)
                 .andExpect(status().isOk())
                 .andReturn(),
@@ -188,7 +188,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
             .thenReturn(claimWithPaymentDetails);
 
         CreatePaymentResponse result = jsonMappingHelper.deserializeObjectFrom(
-            doPost(AuthorisationTokenCitizen, claimData, ROOT_PATH + "/initiate-citizen-payment")
+            doPost(authorisationTokenCitizen, claimData, ROOT_PATH + "/initiate-citizen-payment")
                 .andExpect(status().isOk())
                 .andReturn(),
             CreatePaymentResponse.class);
@@ -216,7 +216,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
         when(caseRepository.initiatePayment(eq(CITIZEN), any(Claim.class)))
             .thenReturn(claimWithoutPayment);
 
-        doPost(AuthorisationTokenCitizen, claimDataWithoutPayment, ROOT_PATH + "/initiate-citizen-payment")
+        doPost(authorisationTokenCitizen, claimDataWithoutPayment, ROOT_PATH + "/initiate-citizen-payment")
             .andExpect(status().isInternalServerError());
     }
 
@@ -254,7 +254,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
             .thenReturn(claim);
 
         CreatePaymentResponse response = jsonMappingHelper.deserializeObjectFrom(
-            doPut(AuthorisationTokenCitizen, postedClaimData, ROOT_PATH + "/resume-citizen-payment")
+            doPut(authorisationTokenCitizen, postedClaimData, ROOT_PATH + "/resume-citizen-payment")
                 .andExpect(status().isOk())
                 .andReturn(),
             CreatePaymentResponse.class);
@@ -305,7 +305,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
             .thenReturn(claim);
 
         CreatePaymentResponse response = jsonMappingHelper.deserializeObjectFrom(
-            doPut(AuthorisationTokenCitizen, postedClaimData, ROOT_PATH + "/resume-citizen-payment")
+            doPut(authorisationTokenCitizen, postedClaimData, ROOT_PATH + "/resume-citizen-payment")
                 .andExpect(status().isOk())
                 .andReturn(),
             CreatePaymentResponse.class);
@@ -330,7 +330,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
         when(caseRepository.getClaimByExternalId(anyString(), any(User.class)))
             .thenReturn(Optional.empty());
 
-        doPut(AuthorisationTokenCitizen, claimData, ROOT_PATH + "/resume-citizen-payment")
+        doPut(authorisationTokenCitizen, claimData, ROOT_PATH + "/resume-citizen-payment")
             .andExpect(status().isNotFound());
     }
 
@@ -346,7 +346,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
         when(caseRepository.saveCaseEventIOC(CITIZEN, claimWithoutPayment, RESUME_CLAIM_PAYMENT_CITIZEN))
             .thenReturn(claimWithoutPayment);
 
-        doPut(AuthorisationTokenCitizen, claimDataWithoutPayment, ROOT_PATH + "/resume-citizen-payment")
+        doPut(authorisationTokenCitizen, claimDataWithoutPayment, ROOT_PATH + "/resume-citizen-payment")
             .andExpect(status().isInternalServerError());
     }
 
@@ -361,7 +361,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
             .thenReturn(claim);
 
         Claim result = jsonMappingHelper.deserializeObjectFrom(
-            doPut(AuthorisationTokenCitizen, claimData, ROOT_PATH + "/create-citizen-claim")
+            doPut(authorisationTokenCitizen, claimData, ROOT_PATH + "/create-citizen-claim")
                 .andExpect(status().isOk())
                 .andReturn(),
             Claim.class);
@@ -377,7 +377,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
         when(caseRepository.getClaimByExternalId(SampleClaim.EXTERNAL_ID, CITIZEN))
             .thenReturn(Optional.empty());
 
-        doPut(AuthorisationTokenCitizen, claimData, ROOT_PATH + "/create-citizen-claim")
+        doPut(authorisationTokenCitizen, claimData, ROOT_PATH + "/create-citizen-claim")
             .andExpect(status().isNotFound());
     }
 
@@ -394,7 +394,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
 
         webClient.perform(
             put(ROOT_PATH + "/create-citizen-claim")
-                .header(HttpHeaders.AUTHORIZATION, AuthorisationTokenCitizen)
+                .header(HttpHeaders.AUTHORIZATION, authorisationTokenCitizen)
                 .header("Features", String.join(",", features))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonMappingHelper.toJson(claimData)))
@@ -425,14 +425,14 @@ public class ClaimModificationTest extends BaseMockSpringTest {
             .thenReturn(Optional.of(claim));
 
         Claim result = jsonMappingHelper.deserializeObjectFrom(
-            doPost(AuthorisationTokenCitizen, null,
+            doPost(authorisationTokenCitizen, null,
                 ROOT_PATH + "/{externalId}/request-more-time", SampleClaim.EXTERNAL_ID)
                 .andExpect(status().isOk())
                 .andReturn(),
             Claim.class);
 
         verify(caseRepository)
-            .requestMoreTimeForResponse(eq(AuthorisationTokenCitizen), eq(claim), any(LocalDate.class));
+            .requestMoreTimeForResponse(eq(authorisationTokenCitizen), eq(claim), any(LocalDate.class));
 
         assertThat(result)
             .isNotNull();
@@ -443,7 +443,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
         when(caseRepository.getClaimByExternalId(SampleClaim.EXTERNAL_ID, CITIZEN))
             .thenReturn(Optional.empty());
 
-        doPost(AuthorisationTokenCitizen, null,
+        doPost(authorisationTokenCitizen, null,
             ROOT_PATH + "/{externalId}/request-more-time", SampleClaim.EXTERNAL_ID)
             .andExpect(status().isNotFound());
     }
@@ -457,7 +457,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
         when(caseRepository.getClaimByExternalId(SampleClaim.EXTERNAL_ID, CITIZEN))
             .thenReturn(Optional.of(claim));
 
-        doPost(AuthorisationTokenCitizen, null,
+        doPost(authorisationTokenCitizen, null,
             ROOT_PATH + "/{externalId}/request-more-time", SampleClaim.EXTERNAL_ID)
             .andExpect(status().isConflict());
     }
@@ -471,13 +471,13 @@ public class ClaimModificationTest extends BaseMockSpringTest {
             .thenReturn(Optional.of(claim));
 
         Claim result = jsonMappingHelper.deserializeObjectFrom(
-            doPut(AuthorisationTokenCitizen, paidInFull,
+            doPut(authorisationTokenCitizen, paidInFull,
                 ROOT_PATH + "/{externalId}/paid-in-full", SampleClaim.EXTERNAL_ID)
                 .andExpect(status().isOk())
                 .andReturn(),
             Claim.class);
 
-        verify(caseRepository).paidInFull(claim, paidInFull, AuthorisationTokenCitizen);
+        verify(caseRepository).paidInFull(claim, paidInFull, authorisationTokenCitizen);
         verify(eventProducer).createPaidInFullEvent(claim);
 
         assertThat(result)
@@ -491,7 +491,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
         when(caseRepository.getClaimByExternalId(anyString(), any(User.class)))
             .thenReturn(Optional.empty());
 
-        doPut(AuthorisationTokenCitizen, paidInFull,
+        doPut(authorisationTokenCitizen, paidInFull,
             ROOT_PATH + "/{externalId}/paid-in-full", SampleClaim.EXTERNAL_ID)
             .andExpect(status().isNotFound());
     }
@@ -505,7 +505,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
         when(caseRepository.getClaimByExternalId(anyString(), any(User.class)))
             .thenReturn(Optional.of(claim));
 
-        doPut(AuthorisationTokenCitizen, paidInFull,
+        doPut(authorisationTokenCitizen, paidInFull,
             ROOT_PATH + "/{externalId}/paid-in-full", SampleClaim.EXTERNAL_ID)
             .andExpect(status().isConflict());
     }
@@ -520,20 +520,20 @@ public class ClaimModificationTest extends BaseMockSpringTest {
 
         when(caseRepository.getClaimByExternalId(SampleClaim.EXTERNAL_ID, CITIZEN))
             .thenReturn(Optional.of(claim));
-        when(caseRepository.saveReviewOrder(claim.getId(), reviewOrder, AuthorisationTokenCitizen))
+        when(caseRepository.saveReviewOrder(claim.getId(), reviewOrder, authorisationTokenCitizen))
             .thenReturn(claim);
 
         Claim result = jsonMappingHelper.deserializeObjectFrom(
-            doPut(AuthorisationTokenCitizen, reviewOrder,
+            doPut(authorisationTokenCitizen, reviewOrder,
                 ROOT_PATH + "/{externalId}/review-order", SampleClaim.EXTERNAL_ID)
                 .andExpect(status().isOk())
                 .andReturn(),
             Claim.class);
 
         verify(caseRepository)
-            .saveReviewOrder(claim.getId(), reviewOrder, AuthorisationTokenCitizen);
+            .saveReviewOrder(claim.getId(), reviewOrder, authorisationTokenCitizen);
         verify(eventProducer)
-            .createReviewOrderEvent(AuthorisationTokenCitizen, claim);
+            .createReviewOrderEvent(authorisationTokenCitizen, claim);
 
         assertThat(result)
             .isNotNull();
@@ -548,7 +548,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
         when(caseRepository.getClaimByExternalId(anyString(), any(User.class)))
             .thenReturn(Optional.empty());
 
-        doPut(AuthorisationTokenCitizen, reviewOrder,
+        doPut(authorisationTokenCitizen, reviewOrder,
             ROOT_PATH + "/{externalId}/review-order", SampleClaim.EXTERNAL_ID)
             .andExpect(status().isNotFound());
     }
@@ -565,7 +565,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
         when(caseRepository.getClaimByExternalId(SampleClaim.EXTERNAL_ID, CITIZEN))
             .thenReturn(Optional.of(claim));
 
-        doPut(AuthorisationTokenCitizen, reviewOrder,
+        doPut(authorisationTokenCitizen, reviewOrder,
             ROOT_PATH + "/{externalId}/review-order", SampleClaim.EXTERNAL_ID)
             .andExpect(status().isConflict());
     }
