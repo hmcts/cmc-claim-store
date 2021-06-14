@@ -52,7 +52,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
     private static final String ROOT_PATH = "/claims";
 
     @Value("${authorisation-token.citizen}")
-    private static String AUTHORISATION_TOKEN_CITIZEN;
+    private String AUTHORISATION_TOKEN_CITIZEN;
 
     private static final UserDetails CITIZEN_DETAILS = SampleUserDetails.builder()
         .withRoles(Role.CITIZEN.getRole())
@@ -60,7 +60,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
     private static final User CITIZEN = new User(BEARER_TOKEN, CITIZEN_DETAILS);
 
     @Value("${authorisation-token.legal-rep}")
-    private static String AUTHORISATION_TOKEN_LEGAL_REP;
+    private String AUTHORISATION_TOKEN_LEGAL_REP;
 
     private static final UserDetails LEGAL_REP_DETAILS = SampleUserDetails.builder()
         .withRoles(Role.LEGAL_ADVISOR.getRole())
