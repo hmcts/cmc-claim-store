@@ -5,6 +5,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
@@ -49,6 +51,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
 
 public class ClaimModificationTest extends BaseMockSpringTest {
+    private static final Logger log = LoggerFactory.getLogger(ClaimModificationTest.class);
     private static final String ROOT_PATH = "/claims";
 
     @Value("${authorisation-token.citizen}") String authorisationTokenCitizen;
@@ -78,6 +81,9 @@ public class ClaimModificationTest extends BaseMockSpringTest {
 
     @Before
     public void setup() {
+        log.debug("Processing the authorisation token");
+        log.debug("authorisationTokenCitizen retrieved:: " + authorisationTokenCitizen);
+        log.debug("authorisationTokenLegalRep retrieved:: " + authorisationTokenLegalRep);
         given(userService.getUserInfo(anyString())).willReturn(UserInfo.builder()
             .roles(ImmutableList.of(Role.CITIZEN.getRole()))
             .uid(SampleClaim.USER_ID)
