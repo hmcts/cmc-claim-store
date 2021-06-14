@@ -51,16 +51,14 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN
 public class ClaimModificationTest extends BaseMockSpringTest {
     private static final String ROOT_PATH = "/claims";
 
-    @Value("${authorisation-token.citizen}")
-    private String authorisationTokenCitizen;
+    @Value("${authorisation-token.citizen}") String authorisationTokenCitizen;
 
     private static final UserDetails CITIZEN_DETAILS = SampleUserDetails.builder()
         .withRoles(Role.CITIZEN.getRole())
         .withUserId(SampleClaim.USER_ID).build();
     private static final User CITIZEN = new User(BEARER_TOKEN, CITIZEN_DETAILS);
 
-    @Value("${authorisation-token.legal-rep}")
-    private String authorisationTokenLegalRep;
+    @Value("${authorisation-token.legal-rep}") String authorisationTokenLegalRep;
 
     private static final UserDetails LEGAL_REP_DETAILS = SampleUserDetails.builder()
         .withRoles(Role.LEGAL_ADVISOR.getRole())
