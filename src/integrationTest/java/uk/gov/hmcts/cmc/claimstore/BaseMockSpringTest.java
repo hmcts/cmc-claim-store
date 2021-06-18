@@ -85,17 +85,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 public abstract class BaseMockSpringTest {
 
     protected static final String SUBMITTER_ID = "123";
-    protected static final String BEARER_TOKEN = "Bearer eyJ0eXAiOiJKV1QiLCJ6aXAiOiJOT05FIiwia2lkIjoiYi9"
-        + "PNk92VnYxK3krV2dySDVVaTlXVGlvTHQwPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJjaXZpbG1vbmV5Y2xhaW1zK2xlZ2FsQGdtYWlsLmN"
-        + "vbSIsImF1dGhfbGV2ZWwiOjAsImF1ZGl0VHJhY2tpbmdJZCI6ImU3NWI4N2MzLTQzODYtNDI4Zi04ZTk3LWNkYmVkYmI4MzAzOSIsImlzcyI"
-        + "6Imh0dHA6Ly9mci1hbTo4MDgwL29wZW5hbS9vYXV0aDIvaG1jdHMiLCJ0b2tlbk5hbWUiOiJhY2Nlc3NfdG9rZW4iLCJ0b2tlbl90eXBlIjo"
-        + "iQmVhcmVyIiwiYXV0aEdyYW50SWQiOiJhM2Q4NmVjZi0zY2Y1LTQ2ZWItYTBjZC03Yzk5NjY0MzdlOWIiLCJhdWQiOiJjbWNfbGVnYWwiLCJ"
-        + "uYmYiOjE1ODU3MzQ0MTYsImdyYW50X3R5cGUiOiJhdXRob3JpemF0aW9uX2NvZGUiLCJzY29wZSI6WyJvcGVuaWQiLCJwcm9maWxlIiwicm9"
-        + "sZXMiXSwiYXV0aF90aW1lIjoxNTg1NzM0NDE2MDAwLCJyZWFsbSI6Ii9obWN0cyIsImV4cCI6MTU4NTc2MzIxNiwiaWF0IjoxNTg1NzM0NDE"
-        + "2LCJleHBpcmVzX2luIjoyODgwMCwianRpIjoiYTYyYmVhNDMtMTIwNy00OGU4LWJmNGUtMjU4ZWU4MDIxNmE1In0.fia1wyFalkktZZ_Uf6Y"
-        + "x2Jw76pxEdPm3OXog0M9dOvANXn86AGJxF2EPWaj9BOLSHRP1L7CXs3m8lry-_TlfXRvpZ_hwYOaBRMO0YvI_CfP9j9oaJzZ_QnPVqziYP-F"
-        + "2cd-x-jUEe94IuqwVhkwB25J5DHYt-xbTxiqOHpcOMzmmmsSSjFB2B7akYshEMwd646VUSzvjSjbcXXE5zIhgRoOg0iiQFq5qezc0Hj5_KTI"
-        + "EHLs1-hiQxjbGCKD2bFkv7YcuxWQGSyOAyoQIExvuBWLFz_zk36ZiegeAONuB0MTwA9b3TX4ENAhFWl4lBR4zcBsAhnISDiOj3hV-Va7MRw";
+    protected static final String BEARER_TOKEN = "Bearer letmein";
 
     protected static final String SERVICE_TOKEN = "S2S token";
     protected static final String AUTHORISATION_TOKEN = "Bearer token";
