@@ -7,7 +7,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -17,6 +16,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserInfo;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUser;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -54,14 +54,14 @@ public class ClaimModificationTest extends BaseMockSpringTest {
     private static final Logger log = LoggerFactory.getLogger(ClaimModificationTest.class);
     private static final String ROOT_PATH = "/claims";
 
-    @Value("${authorisation-token.citizen}") String authorisationTokenCitizen;
+    String authorisationTokenCitizen = "Bearer letmein";
 
     private static final UserDetails CITIZEN_DETAILS = SampleUserDetails.builder()
         .withRoles(Role.CITIZEN.getRole())
         .withUserId(SampleClaim.USER_ID).build();
-    private static final User CITIZEN = new User(BEARER_TOKEN, CITIZEN_DETAILS);
+    private static final User CITIZEN = SampleUser.builder().withUserDetails(CITIZEN_DETAILS).build();
 
-    @Value("${authorisation-token.legal-rep}") String authorisationTokenLegalRep;
+    String authorisationTokenLegalRep = "Bearer letmein";
 
     private static final UserDetails LEGAL_REP_DETAILS = SampleUserDetails.builder()
         .withRoles(Role.LEGAL_ADVISOR.getRole())
