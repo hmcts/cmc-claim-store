@@ -254,6 +254,7 @@ public class SampleClaimData {
             feeAmount,
             feeRemitted,
             feeAmountAfterRemission,
+            null,
             interest,
             personalInjury,
             housingDisrepair,
