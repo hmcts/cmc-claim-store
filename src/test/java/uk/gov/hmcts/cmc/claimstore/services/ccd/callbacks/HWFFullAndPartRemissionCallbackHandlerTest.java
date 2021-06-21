@@ -49,7 +49,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 class HWFFullAndPartRemissionCallbackHandlerTest {
     private static final String PART_REMISSION_EQUAL_ERROR_MESSAGE =
         "Remitted fee is same as the total fee. For full remission, "
-            + "please cancel and select the next step as \"Full remission HWF-granted\"";
+            + "please cancel and select the next step as \"Full remission HwF-granted\"";
     private static final String PART_REMISSION_IS_MORE_ERROR_MESSAGE = "Remitted fee should be less than the total fee";
     private static final String AUTHORISATION = "Bearer: aaaa";
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);

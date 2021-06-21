@@ -59,6 +59,9 @@ public class ClaimData {
     @Min(0)
     private final BigInteger feeAmountInPennies;
 
+    @Min(0)
+    private final BigInteger outstandingFeeAmountInPennies;
+
     private final BigInteger feeRemitted;
 
     private final BigInteger feeAmountAfterRemission;
@@ -122,6 +125,7 @@ public class ClaimData {
         Payment payment,
         Amount amount,
         BigInteger feeAmountInPennies,
+        BigInteger outstandingFeeAmountInPennies,
         BigInteger feeRemitted,
         BigInteger feeAmountAfterRemission,
         Interest interest,
@@ -149,6 +153,7 @@ public class ClaimData {
         this.payment = payment;
         this.amount = amount;
         this.feeAmountInPennies = feeAmountInPennies;
+        this.outstandingFeeAmountInPennies = outstandingFeeAmountInPennies;
         this.feeRemitted = feeRemitted;
         this.feeAmountAfterRemission = feeAmountAfterRemission;
         this.interest = interest;
@@ -182,6 +187,10 @@ public class ClaimData {
 
     public Optional<BigInteger> getFeeAmountInPennies() {
         return Optional.ofNullable(feeAmountInPennies);
+    }
+
+    public Optional<BigInteger> getOutstandingFeeAmountInPennies() {
+        return Optional.ofNullable(outstandingFeeAmountInPennies);
     }
 
     public Optional<BigInteger> getFeeRemitted() {
