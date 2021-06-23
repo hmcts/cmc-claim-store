@@ -233,6 +233,8 @@ dependencies {
 
   compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '11.0'
 
+  compile group: 'org.springframework.cloud',name : 'spring-cloud-starter-bootstrap'
+
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.18'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.18'
 
