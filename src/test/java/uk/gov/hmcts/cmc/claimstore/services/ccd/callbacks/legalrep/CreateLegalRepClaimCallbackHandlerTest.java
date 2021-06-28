@@ -7,9 +7,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
-import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
-import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
-import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -39,12 +36,6 @@ public class CreateLegalRepClaimCallbackHandlerTest {
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
     @Mock
-    private IssueDateCalculator issueDateCalculator;
-    @Mock
-    private ReferenceNumberRepository referenceNumberRepository;
-    @Mock
-    private ResponseDeadlineCalculator responseDeadlineCalculator;
-    @Mock
     private CaseMapper caseMapper;
 
     private CallbackRequest callbackRequest;
@@ -56,9 +47,6 @@ public class CreateLegalRepClaimCallbackHandlerTest {
     public void setUp() {
         createLegalRepClaimCallbackHandler = new CreateLegalRepClaimCallbackHandler(
             caseDetailsConverter,
-            issueDateCalculator,
-            referenceNumberRepository,
-            responseDeadlineCalculator,
             caseMapper
         );
 
@@ -68,9 +56,6 @@ public class CreateLegalRepClaimCallbackHandlerTest {
             .caseDetails(caseDetails)
             .build();
 
-        when(issueDateCalculator.calculateIssueDay(any())).thenReturn(ISSUE_DATE);
-        when(responseDeadlineCalculator.calculateResponseDeadline(ISSUE_DATE)).thenReturn(RESPONSE_DEADLINE);
-        when(referenceNumberRepository.getReferenceNumberForLegal()).thenReturn(REFERENCE_NO);
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(getLegalDataWithReps());
     }
 

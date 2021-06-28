@@ -72,6 +72,7 @@ public enum CaseEvent {
     UPDATE_HELP_WITH_FEE_CLAIM("ResumeHelpWithFeeClaimSubmission"),
     UPDATE_CLAIM_PAYMENT("UpdateClaimPayment"),
     CREATE_LEGAL_REP_CLAIM("CreateLegalRepClaim"),
+    UPDATE_LEGAL_REP_CLAIM("UpdateLegalRepClaim"),
     STAY_CLAIM("StayClaim"),
     CREATE_CITIZEN_CLAIM("CreateCitizenClaim"),
     REVIEWED_PAPER_RESPONSE("ReviewedPaperResponse"),
