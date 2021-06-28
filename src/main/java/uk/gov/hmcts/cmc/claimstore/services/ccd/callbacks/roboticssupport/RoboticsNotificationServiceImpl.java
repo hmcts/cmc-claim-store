@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.roboticssupport;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsExceptionLogger;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
@@ -79,7 +79,7 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
 
     @Override
     public String rpaClaimNotification(String referenceNumber) {
-        if (StringUtils.isEmpty(referenceNumber)) {
+        if (ObjectUtils.isEmpty(referenceNumber)) {
             throw new BadRequestException(REFERENCE_NUMBER_NOT_SUPPLIED);
         }
         User user = userService.authenticateAnonymousCaseWorker();
@@ -101,7 +101,7 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
 
     @Override
     public String rpaMoreTimeNotifications(String referenceNumber) {
-        if (StringUtils.isEmpty(referenceNumber)) {
+        if (ObjectUtils.isEmpty(referenceNumber)) {
             throw new BadRequestException(REFERENCE_NUMBER_NOT_SUPPLIED);
         }
         User user = userService.authenticateAnonymousCaseWorker();
@@ -116,7 +116,7 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
 
     @Override
     public String rpaResponseNotifications(String referenceNumber) {
-        if (StringUtils.isEmpty(referenceNumber)) {
+        if (ObjectUtils.isEmpty(referenceNumber)) {
             throw new BadRequestException(REFERENCE_NUMBER_NOT_SUPPLIED);
         }
         User user = userService.authenticateAnonymousCaseWorker();
@@ -130,7 +130,7 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
 
     @Override
     public String rpaCCJNotifications(String referenceNumber) {
-        if (StringUtils.isEmpty(referenceNumber)) {
+        if (ObjectUtils.isEmpty(referenceNumber)) {
             throw new BadRequestException(REFERENCE_NUMBER_NOT_SUPPLIED);
         }
         User user = userService.authenticateAnonymousCaseWorker();
@@ -143,7 +143,7 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
 
     @Override
     public String rpaPIFNotifications(String referenceNumber) {
-        if (StringUtils.isEmpty(referenceNumber)) {
+        if (ObjectUtils.isEmpty(referenceNumber)) {
             throw new BadRequestException(REFERENCE_NUMBER_NOT_SUPPLIED);
         }
         User user = userService.authenticateAnonymousCaseWorker();
@@ -155,7 +155,7 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
 
     @Override
     public String rpaEnterBreathingSpaceNotifications(String referenceNumber) {
-        if (StringUtils.isEmpty(referenceNumber)) {
+        if (ObjectUtils.isEmpty(referenceNumber)) {
             throw new BadRequestException(REFERENCE_NUMBER_NOT_SUPPLIED);
         }
         User user = userService.authenticateAnonymousCaseWorker();
@@ -181,7 +181,7 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
 
     @Override
     public String rpaLiftBreathingSpaceNotifications(String referenceNumber) {
-        if (StringUtils.isEmpty(referenceNumber)) {
+        if (ObjectUtils.isEmpty(referenceNumber)) {
             throw new BadRequestException(REFERENCE_NUMBER_NOT_SUPPLIED);
         }
         User user = userService.authenticateAnonymousCaseWorker();
