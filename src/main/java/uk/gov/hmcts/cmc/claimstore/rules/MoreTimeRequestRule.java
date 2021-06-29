@@ -17,7 +17,7 @@ public class MoreTimeRequestRule {
 
     public static final String ALREADY_REQUESTED_MORE_TIME_ERROR = "The defendant already asked for more time "
             + "and their request was processed";
-    public static final String PAST_DEADLINE_ERROR = "The defendant has missed the deadline for requesting more time";
+    public static final String PAST_DEADLINE_ERROR = "A request for more time must be made within 19 days from claim issue";
     public static final String ALREADY_RESPONDED_ERROR = "You can’t process this paper request for more time "
             + "because the defendant already responded to the claim digitally.";
 
