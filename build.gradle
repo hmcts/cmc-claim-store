@@ -185,7 +185,7 @@ dependencies {
 
   compile group: 'com.mitchellbosecke', name: 'pebble', version: '2.4.0'
 
-  compile group: 'commons-io', name: 'commons-io', version: '2.7'
+  compile group: 'commons-io', name: 'commons-io', version: '2.10.0'
 
   compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
