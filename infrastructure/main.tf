@@ -153,4 +153,27 @@ module "database" {
   subscription = "${var.subscription}"
 }
 
+// DB version 11
+module "database-v11" {
+  source = "git@github.com:hmcts/cnp-module-postgres?ref=master"
+  product = "${var.product}-db-v11"
+  name  = "cmc-db-v11"
+  location = "${var.location}"
+  env = "${var.env}"
+  postgresql_user = "cmc"
+  database_name = "${var.database-name}"
+  postgresql_version = "11"
+  sku_name = "${var.database_sku_name}"
+  sku_tier = "GeneralPurpose"
+  storage_mb = "${var.database_storage_mb}"
+  common_tags = "${var.common_tags}"
+  subscription = "${var.subscription}"
+}
+
+resource "azurerm_key_vault_secret" "cmc-db-password-v11" {
+  name      = "cmc-db-password-v11"
+  value     = "${module.database.postgresql_password}"
+  key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
+}
+
 
