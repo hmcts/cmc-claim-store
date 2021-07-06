@@ -4,6 +4,8 @@
 
 def product = "cmc"
 def component = "claim-store"
+def branchesToSync = ['demo', 'perftest']
+
 
 def secrets = [
   // these are required for our integration tests container (initialised in Jenkins)
@@ -45,4 +47,5 @@ withPipeline("java", product, component) {
   enableSlackNotifications(notificationsChannel)
   enableAksStagingDeployment()
   disableLegacyDeployment()
+  syncBranchesWithMaster(branchesToSync)
 }
