@@ -102,7 +102,6 @@
    Unauthorized Access with Spring Security Method Security
    ]]></notes>
         <gav regex="true">.*</gav>
-        <cve>CVE-2018-1258</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[
@@ -162,7 +161,6 @@
     <cve>CVE-2020-5407</cve>
     <cve>CVE-2020-5408</cve>
         <cve>CVE-2020-7019</cve>
-        <cve>CVE-2020-5421</cve>
         <cve>CVE-2020-7020</cve>
         <cve>CVE-2020-28052</cve>
         <cve>CVE-2020-7021</cve>
@@ -184,12 +182,6 @@
         <cve>CVE-2021-24122</cve>
         <cve>CVE-2021-25122</cve>
         <cve>CVE-2021-25329</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-            httpclient
-        ]]></notes>
-        <cve>CVE-2020-13956</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[
