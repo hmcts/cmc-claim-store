@@ -4,7 +4,7 @@
 
 def product = "cmc"
 def component = "claim-store"
-def branchesToSync = ['demo', 'perftest']
+def branchesToSync = ['demo', 'perftest', 'ithc']
 
 
 def secrets = [
@@ -47,5 +47,5 @@ withPipeline("java", product, component) {
   enableSlackNotifications(notificationsChannel)
   enableAksStagingDeployment()
   disableLegacyDeployment()
-  syncBranchesWithMaster(branchesToSync)
+  // syncBranchesWithMaster(branchesToSync)
 }
