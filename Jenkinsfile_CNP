@@ -20,7 +20,10 @@ def secrets = [
   'ccd-${env}': [
     secret('ccd-data-s2s-secret', 'DATA_STORE_S2S_KEY'),
     secret('ccd-definition-s2s-secret', 'DEFINITION_STORE_S2S_KEY'),
-    secret('ccd-admin-web-oauth2-client-secret', 'ADMIN_WEB_IDAM_SECRET')
+    secret('ccd-admin-web-oauth2-client-secret', 'ADMIN_WEB_IDAM_SECRET'),
+    secret('ccd-api-gateway-oauth2-client-secret', 'CCD_API_GATEWAY_OAUTH2_CLIENT_SECRET'),
+    secret('definition-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
+    secret('definition-importer-password', 'DEFINITION_IMPORTER_PASSWORD')
   ]
 ]
 
@@ -39,6 +42,7 @@ env.IDAM_API_URL = 'https://idam-api.aat.platform.hmcts.net'
 env.IDAM_WEB_URL = 'https://idam-web-public.aat.platform.hmcts.net'
 env.S2S_URL = 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
 env.PDF_SERVICE_URL = 'http://cmc-pdf-service-aat.service.core-compute-aat.internal'
+env.CCD_API_GATEWAY_OAUTH2_CLIENT_ID = "ccd_gateway"
 
 String notificationsChannel = '#cmc-tech-notification'
 
@@ -47,5 +51,6 @@ withPipeline("java", product, component) {
   enableSlackNotifications(notificationsChannel)
   enableAksStagingDeployment()
   disableLegacyDeployment()
+  enableHighLevelDataSetup()
   // syncBranchesWithMaster(branchesToSync)
 }

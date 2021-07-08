@@ -159,6 +159,7 @@ configurations {
   aatRuntime.extendsFrom(testRuntime)
   integrationTestCompile.extendsFrom(testCompile)
   integrationTestRuntime.extendsFrom(testRuntime)
+  cucumberRuntime.extendsFrom(functionalRuntime)
 }
 
 dependencies {
@@ -262,6 +263,9 @@ dependencies {
   testCompile group: 'net.jodah', name: 'failsafe', version: '2.4.0'
   testCompile group: 'org.xmlunit', name: 'xmlunit-core', version: '2.8.2'
   testCompile group: 'org.xmlunit', name: 'xmlunit-matchers', version: '2.8.2'
+
+  compile group: 'com.github.hmcts', name: 'ccd-test-definitions', version: '7.0.0'
+  compile group: 'com.github.hmcts', name: 'befta-fw', version: '8.0.6'
 }
 
 sourceSets {
@@ -339,6 +343,14 @@ task smoke(type: Test) {
   include "uk/gov/hmcts/cmc/claimstore/tests/smoke/**"
 
   environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
+}
+
+task highLevelDataSetup(type: JavaExec) {
+  dependsOn aatClasses
+
+  main = "uk.gov.hmcts.cmc.claimstore.befta.HighLevelDataSetupApp"
+  classpath += configurations.cucumberRuntime + sourceSets.aat.runtimeClasspath
+  jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
 }
 
 compileIntegrationTestJava {
