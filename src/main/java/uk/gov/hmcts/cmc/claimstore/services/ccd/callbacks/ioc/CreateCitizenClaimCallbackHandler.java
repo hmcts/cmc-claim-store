@@ -143,7 +143,6 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
                 updatedClaim = claim.toBuilder()
                     .channel(ChannelType.CITIZEN)
                     .claimData(claim.getClaimData().toBuilder()
-                        .payment(payment)
                         .build())
                     .referenceNumber(referenceNumberRepository.getReferenceNumberForCitizen())
                     .createdAt(LocalDateTimeFactory.nowInUTC())
