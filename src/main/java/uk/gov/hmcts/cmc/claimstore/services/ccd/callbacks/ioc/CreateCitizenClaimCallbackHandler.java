@@ -138,20 +138,6 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
                     .responseDeadline(responseDeadlineCalculator.calculateResponseDeadline(issuedOn))
                     .build();
             } else {
-                Payment payment = paymentsService.retrievePayment(authorisation, claim.getClaimData())
-                    .orElseThrow(() -> new IllegalStateException(format(
-                        "Claim with external id %s has no payment record",
-                        claim.getExternalId()))
-                    );
-
-                if (payment.getStatus() != PaymentStatus.SUCCESS) {
-                    logger.info("Payment not successful for claim with external id {}", claim.getExternalId());
-
-                    return AboutToStartOrSubmitCallbackResponse.builder()
-                        .errors(List.of("Payment not successful"))
-                        .build();
-                }
-
                 LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
 
                 updatedClaim = claim.toBuilder()
