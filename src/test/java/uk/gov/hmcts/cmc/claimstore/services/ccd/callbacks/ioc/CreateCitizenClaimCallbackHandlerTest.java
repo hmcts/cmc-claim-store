@@ -20,8 +20,6 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimData;
-import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleHwfClaim;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
@@ -29,9 +27,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.time.LocalDate;
 import java.util.Collections;
-import java.util.Optional;
 
-import static java.math.BigDecimal.TEN;
 import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -47,7 +43,6 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.AWAITING_RESPONSE_HWF;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
-import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.withFullClaimData;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -92,15 +87,8 @@ public class CreateCitizenClaimCallbackHandlerTest {
 
     private final CaseDetails caseDetails = CaseDetails.builder().id(3L).data(Collections.emptyMap()).build();
 
-    private Payment.PaymentBuilder paymentBuilder;
-
     @Before
     public void setUp() {
-        paymentBuilder = Payment.builder()
-            .amount(TEN)
-            .reference("reference2")
-            .dateCreated("2017-12-03")
-            .nextUrl(NEXT_URL);
 
         createCitizenClaimCallbackHandler = new CreateCitizenClaimCallbackHandler(
             caseDetailsConverter,
@@ -125,8 +113,6 @@ public class CreateCitizenClaimCallbackHandlerTest {
 
     @Test
     public void shouldSuccessfullyReturnCallBackResponseWhenSuccessfulPayment() {
-        when(paymentsService.retrievePayment(eq(BEARER_TOKEN), any(ClaimData.class)))
-            .thenReturn(Optional.of(paymentBuilder.status(SUCCESS).build()));
 
         Claim claim = SampleClaim.getDefault().toBuilder()
             .referenceNumber(referenceNumberRepository.getReferenceNumberForCitizen())
