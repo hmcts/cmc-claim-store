@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -24,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.String.format;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.UPDATE_CLAIM_PAYMENT;
 
 @Service
@@ -35,14 +37,16 @@ public class UpdatePaymentCallbackHandler extends CallbackHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final CaseDetailsConverter caseDetailsConverter;
     private final CaseMapper caseMapper;
+    private final PaymentsService paymentsService;
 
     @Autowired
     public UpdatePaymentCallbackHandler(
         CaseDetailsConverter caseDetailsConverter,
-        CaseMapper caseMapper
-    ) {
+        CaseMapper caseMapper,
+        PaymentsService paymentsService) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.caseMapper = caseMapper;
+        this.paymentsService = paymentsService;
     }
 
     @Override
@@ -65,9 +69,14 @@ public class UpdatePaymentCallbackHandler extends CallbackHandler {
     private CallbackResponse updateCardPayment(CallbackParams callbackParams) {
 
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
-
+        String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
         logger.info("Initiating the Update Payment on the claim {}", claim.getExternalId());
+        paymentsService.retrievePayment(authorisation, claim.getClaimData())
+            .orElseThrow(() -> new IllegalStateException(format(
+                "Claim with external id %s has no payment record",
+                claim.getExternalId()))
+            );
         return AboutToStartOrSubmitCallbackResponse
             .builder()
             .data(caseDetailsConverter.convertToMap(caseMapper.to(claim)))

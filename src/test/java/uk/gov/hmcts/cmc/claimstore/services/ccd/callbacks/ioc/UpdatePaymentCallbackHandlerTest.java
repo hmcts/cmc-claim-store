@@ -47,8 +47,8 @@ public class UpdatePaymentCallbackHandlerTest {
     public void setUp() {
         handler = new UpdatePaymentCallbackHandler(
             caseDetailsConverter,
-            caseMapper
-        );
+            caseMapper,
+                paymentsService);
         callbackRequest = CallbackRequest
             .builder()
             .eventId(UPDATE_CLAIM_PAYMENT.getValue())
