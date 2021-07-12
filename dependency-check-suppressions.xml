@@ -212,4 +212,10 @@
         <cve>CVE-2017-7536</cve>
         <cve>CVE-2020-10693</cve>
     </suppress>
+        <suppress>
+        <notes><![CDATA[
+            Related json_smart_project
+        ]]></notes>
+        <cve>CVE-2021-27568</cve>
+    </suppress>
 </suppressions>
