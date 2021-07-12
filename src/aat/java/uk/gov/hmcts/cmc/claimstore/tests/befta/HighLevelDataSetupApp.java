@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.befta;
+package uk.gov.hmcts.cmc.claimstore.tests.befta;
 
 import uk.gov.hmcts.befta.dse.ccd.CcdEnvironment;
 import uk.gov.hmcts.befta.dse.ccd.DataLoaderToDefinitionStore;
