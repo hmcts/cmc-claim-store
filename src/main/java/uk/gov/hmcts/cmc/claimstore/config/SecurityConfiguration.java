@@ -61,6 +61,7 @@ public class SecurityConfiguration
             "/status/health",
             "/",
             "/support/**",
+            "/payment/**",
             "/calendar/**",
             "/deadline/**",
             "/interest/**",
