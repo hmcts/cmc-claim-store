@@ -88,7 +88,7 @@ public class SecurityConfiguration
             .anyRequest()
             .authenticated()
             .antMatchers("/payment/**")
-            .not().authenticated()
+            .anonymous()
             .and()
             .oauth2ResourceServer()
             .jwt()
