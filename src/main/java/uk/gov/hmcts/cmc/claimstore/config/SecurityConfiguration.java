@@ -83,7 +83,7 @@ public class SecurityConfiguration
             .formLogin().disable()
             .logout().disable()
             .authorizeRequests()
-            .antMatchers("/claims/**", "/responses/**", "/documents/**")
+            .antMatchers("/claims/**", "/responses/**", "/documents/**", "/payment/**")
             .hasAnyAuthority(AUTHORITIES)
             .anyRequest()
             .authenticated()
