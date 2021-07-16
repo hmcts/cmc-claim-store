@@ -415,7 +415,6 @@ sonarqube {
       "**/PaperResponseFullDefenceCallbackHandler.java",
       "**/UpdatePaymentCallbackHandler.java",
       "**/PaymentsService.java",
-      "**/ClaimService.java",
       "**/cmc/claimstore/services/ccd/callbacks/roboticssupport/RoboticsNotificationServiceImpl.java"
     ].join(",")
   }
