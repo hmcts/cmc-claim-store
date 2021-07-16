@@ -36,6 +36,8 @@ public class UpdatePaymentCallbackHandlerTest {
     private CaseDetailsConverter caseDetailsConverter;
     @Mock
     private CaseMapper caseMapper;
+    @Mock
+    private PaymentsService paymentsService;
     @Captor
     private ArgumentCaptor<Claim> claimArgumentCaptor;
 
