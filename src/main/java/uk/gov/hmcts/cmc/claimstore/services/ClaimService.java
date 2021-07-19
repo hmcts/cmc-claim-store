@@ -31,6 +31,7 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
+import uk.gov.hmcts.cmc.domain.models.PaymentUpdate;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
@@ -69,6 +70,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimState.HWF_APPLICATION_PENDING;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.PROCEEDS_IN_CASE_MAN;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.SETTLED;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.TRANSFERRED;
+import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
 @Component
@@ -629,5 +631,53 @@ public class ClaimService {
         if (claim.getPreferredDQCourt().isPresent()) {
             caseRepository.updatePreferredCourtByClaimReference(claim);
         }
+    }
+
+    @LogExecutionTime
+    public Claim updateCardPayment(PaymentUpdate paymentUpdate) {
+        final Claim[] returnClaim = {null};
+        try {
+            User user = userService.authenticateAnonymousCaseWorker();
+            String authorisation = user.getAuthorisation();
+            if (paymentUpdate.getStatus().equalsIgnoreCase(SUCCESS.name())) {
+                List<Claim> claimRetreived = caseRepository.getByPaymentReference(
+                    paymentUpdate.getReference(), authorisation);
+                claimRetreived.forEach(claim -> {
+                        Optional<Payment> paymentRetreived = claim.getClaimData().getPayment();
+                        paymentRetreived.ifPresent(payment -> {
+                            if (payment.getStatus() == null || !payment.getStatus().equals(SUCCESS)
+                                || payment.getStatus().equals(SUCCESS)) {
+                                Payment paymentBuild = payment.toBuilder()
+                                    .amount(paymentUpdate.getAmount())
+                                    .reference(paymentUpdate.getReference())
+                                    .status(SUCCESS)
+                                    .feeId("" + paymentUpdate.getFees().get(0).getId())
+                                    .build();
+
+                                ClaimData claimData = claim.getClaimData().toBuilder()
+                                    .payment(paymentBuild)
+                                    .build();
+
+                                Claim updatedClaim = claim.toBuilder()
+                                    .claimData(claimData)
+                                    .build();
+                                returnClaim[0] = caseRepository.updateCardPaymentForClaim(user, updatedClaim);
+                                if (updatedClaim.getState() == ClaimState.CREATE) {
+                                    updateClaimState(authorisation, updatedClaim, ClaimState.OPEN);
+                                    appInsights.trackEvent(
+                                        AppInsightsEvent.CLAIM_ISSUED_CITIZEN,
+                                        AppInsights.REFERENCE_NUMBER,
+                                        updatedClaim.getReferenceNumber()
+                                    );
+                                }
+                            }
+                        });
+                    }
+                );
+            }
+        } catch (Exception e) {
+            throw e;
+        }
+        return returnClaim[0];
     }
 }

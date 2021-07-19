@@ -61,6 +61,7 @@ public class SecurityConfiguration
             "/status/health",
             "/",
             "/support/**",
+            "/payment/**",
             "/calendar/**",
             "/deadline/**",
             "/interest/**",
@@ -84,8 +85,11 @@ public class SecurityConfiguration
             .authorizeRequests()
             .antMatchers("/claims/**", "/responses/**", "/documents/**")
             .hasAnyAuthority(AUTHORITIES)
+            .antMatchers("/payment/**").permitAll()
             .anyRequest()
             .authenticated()
+            .and()
+            .authorizeRequests()
             .and()
             .oauth2ResourceServer()
             .jwt()
@@ -93,6 +97,10 @@ public class SecurityConfiguration
             .and()
             .and()
             .oauth2Client();
+
+        /*http.authorizeRequests()
+            .antMatchers("/payment/**").permitAll()
+            .anyRequest().authenticated();*/
     }
 
     @Bean

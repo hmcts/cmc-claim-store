@@ -120,25 +120,6 @@ public class CreateCitizenClaimCallbackHandlerTest extends BaseMockSpringTest {
     }
 
     @Test
-    public void shouldAddFieldsOnCaseWhenCallbackIsSuccessfulButWithErrors() throws Exception {
-        payment = paymentBuilder.status(FAILED).build();
-
-        given(paymentsService.retrievePayment(eq(AUTHORISATION_TOKEN), any(ClaimData.class)))
-            .willReturn(Optional.of(payment));
-
-        MvcResult mvcResult = makeRequestAndRespondWithError(CallbackType.ABOUT_TO_SUBMIT.getValue())
-            .andExpect(status().isOk())
-            .andReturn();
-
-        List<String> responseData = jsonMappingHelper.deserializeObjectFrom(
-            mvcResult,
-            AboutToStartOrSubmitCallbackResponse.class
-        ).getErrors();
-
-        assertThat(responseData).contains("Payment not successful");
-    }
-
-    @Test
     public void shouldCallClaimIssuePostOperationsWhenSubmittedCallbackIsSuccessful() throws Exception {
         given(userService.getUser(anyString())).willReturn(new User(BEARER_TOKEN, SampleUserDetails.builder().build()));
 
