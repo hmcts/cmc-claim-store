@@ -26,7 +26,7 @@ dependencyUpdates.resolutionStrategy = {
 }
 
 def springBootVersion = plugins.getPlugin('org.springframework.boot').class.package.implementationVersion
-def springCloudVersion = '2020.0.0'
+def springCloudVersion = '2020.0.3'
 
 def versions = [
   logback           : '1.2.3',
@@ -185,7 +185,7 @@ dependencies {
 
   compile group: 'com.mitchellbosecke', name: 'pebble', version: '2.4.0'
 
-  compile group: 'commons-io', name: 'commons-io', version: '2.7'
+  compile group: 'commons-io', name: 'commons-io', version: '2.11.0'
 
   compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
@@ -252,7 +252,7 @@ dependencies {
   testCompile group: 'org.junit.platform', name: 'junit-platform-commons', version: versions.junitPlatform
   testCompile group: 'org.junit.platform', name: 'junit-platform-engine', version: versions.junitPlatform
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.20.2'
-  testCompile group: 'org.mockito', name: 'mockito-core', version: '3.8.0'
+  testCompile group: 'org.mockito', name: 'mockito-core', version: '3.11.2'
   testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.8.0'
   testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.2'
   testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.14.3'
