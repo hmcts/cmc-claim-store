@@ -42,6 +42,7 @@ public class CCDCase {
     private String feeCode;
     private String feeAccountNumber;
     private String feeAmountInPennies;
+    private String outstandingFeeAmountInPennies;
     private String feeRemitted;
     private String feeAmountAfterRemission;
     private String externalReferenceNumber;
@@ -86,7 +87,7 @@ public class CCDCase {
     private List<CCDCollectionElement<CCDClaimDocument>> caseDocuments = Collections.emptyList();
     @Builder.Default
     private List<CCDCollectionElement<CCDScannedDocument>> scannedDocuments = Collections.emptyList();
-    private String ocon9xForm;
+    private CCDOcon9xMain ocon9xForm;
     private List<CCDCollectionElement<CCDClaimDocument>> staffUploadedDocuments;
     private String caseName;
     private CCDClaimSubmissionOperationIndicators claimSubmissionOperationIndicators;
@@ -196,4 +197,6 @@ public class CCDCase {
     //Breathing space Fields
     private CCDBreathingSpace breathingSpace;
 
+    //This field is for Legal Rep Error code message
+    private String errorCodeMessage;
 }

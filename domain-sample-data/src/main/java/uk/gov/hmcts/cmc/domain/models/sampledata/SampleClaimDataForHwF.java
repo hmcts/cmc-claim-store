@@ -36,6 +36,7 @@ public class SampleClaimDataForHwF {
     private Interest interest = SampleInterest.standard();
     private String reason = "reason";
     private BigInteger feeAmount = BigInteger.valueOf(4000);
+    private BigInteger outstandingFeeAmountInPennies = BigInteger.valueOf(4000);
     private String moreInfoDetails = "Info";
     private BigInteger feeRemitted = BigInteger.valueOf(3000);
     private BigInteger feeAmountAfterRemission = BigInteger.valueOf(3000);
@@ -248,6 +249,7 @@ public class SampleClaimDataForHwF {
             payment,
             amount,
             feeAmount,
+            outstandingFeeAmountInPennies,
             feeRemitted,
             feeAmountAfterRemission,
             interest,
