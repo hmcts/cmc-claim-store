@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.roboticssupport.RoboticsNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.roboticssupport.RpaEventType;
@@ -17,7 +16,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -35,15 +33,12 @@ public class ResetRpaCallbackHandler extends CallbackHandler {
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
 
     private CaseDetailsConverter caseDetailsConverter;
-    private CaseMapper caseMapper;
     private RoboticsNotificationService roboticsNotificationService;
 
     @Autowired
     public ResetRpaCallbackHandler(
-        CaseDetailsConverter caseDetailsConverter,
-        CaseMapper caseMapper, RoboticsNotificationService roboticsNotificationService) {
+        CaseDetailsConverter caseDetailsConverter, RoboticsNotificationService roboticsNotificationService) {
         this.caseDetailsConverter = caseDetailsConverter;
-        this.caseMapper = caseMapper;
         this.roboticsNotificationService = roboticsNotificationService;
     }
 
@@ -75,8 +70,9 @@ public class ResetRpaCallbackHandler extends CallbackHandler {
             responseBuilder.errors(errors);
         } else {
             handleRoboticsNotification(callbackRequest, claim.getReferenceNumber());
-            Map<String, Object> map = new HashMap<>(caseDetailsConverter.convertToMap(caseMapper.to(claim)));
-            responseBuilder.data(map);
+            var caseDetails = callbackParams.getRequest().getCaseDetails();
+            var ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
+            responseBuilder.data(caseDetailsConverter.convertToMap(ccdCase));
         }
         return responseBuilder.build();
     }
