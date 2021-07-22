@@ -169,6 +169,7 @@
         <cve>CVE-2021-22132</cve>
         <cve>CVE-2021-33037</cve>
         <cve>CVE-2021-30639</cve>
+        <cve>CVE-2021-30640</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[
