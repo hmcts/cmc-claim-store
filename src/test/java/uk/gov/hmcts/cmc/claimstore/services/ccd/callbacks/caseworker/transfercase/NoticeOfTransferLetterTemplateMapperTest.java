@@ -145,7 +145,7 @@ class NoticeOfTransferLetterTemplateMapperTest {
     }
 
     @Test
-    void shouldMapNoticeOfTransferLetterBodyForInterlocutoryJudgement() {
+    void shouldMapNoticeOfTransferLetterBodyForListing() {
 
         ccdCase = CCDCase.builder()
             .previousServiceCaseReference(CASE_REFERENCE)
@@ -166,7 +166,7 @@ class NoticeOfTransferLetterTemplateMapperTest {
     }
 
     @Test
-    void shouldMapNoticeOfTransferLetterBodyForListing() {
+    void shouldMapNoticeOfTransferLetterBodyForInterlocutoryJudgement() {
 
         ccdCase = CCDCase.builder()
             .previousServiceCaseReference(CASE_REFERENCE)
