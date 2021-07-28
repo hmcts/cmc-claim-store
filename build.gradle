@@ -26,7 +26,7 @@ dependencyUpdates.resolutionStrategy = {
 }
 
 def springBootVersion = plugins.getPlugin('org.springframework.boot').class.package.implementationVersion
-def springCloudVersion = '2020.0.0'
+def springCloudVersion = '2020.0.3'
 
 def versions = [
   logback           : '1.2.3',
@@ -146,7 +146,7 @@ allprojects {
       // solves CVE-2020-5407
       dependencySet(
         group: 'org.springframework.security',
-        version: '5.4.5'
+        version: '5.5.1'
       ) {
         entry 'spring-security-crypto'
       }
@@ -185,7 +185,7 @@ dependencies {
 
   compile group: 'com.mitchellbosecke', name: 'pebble', version: '2.4.0'
 
-  compile group: 'commons-io', name: 'commons-io', version: '2.7'
+  compile group: 'commons-io', name: 'commons-io', version: '2.11.0'
 
   compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
@@ -193,7 +193,7 @@ dependencies {
   compile group: 'org.elasticsearch', name: 'elasticsearch', version: '7.12.1'
   compile group: 'org.postgresql', name: 'postgresql', version: '42.2.14'
 
-  compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.0-RELEASE'
+  compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.2-RELEASE'
 
   compile group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformJavaLogging
   compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformJavaLogging
@@ -228,7 +228,7 @@ dependencies {
   compile group: 'org.springframework.retry', name: 'spring-retry'
   compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign'
 
-  compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '11.0'
+  compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '11.2'
 
   compile group: 'org.springframework.cloud',name : 'spring-cloud-starter-bootstrap'
 
@@ -251,8 +251,8 @@ dependencies {
   testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: versions.junit
   testCompile group: 'org.junit.platform', name: 'junit-platform-commons', version: versions.junitPlatform
   testCompile group: 'org.junit.platform', name: 'junit-platform-engine', version: versions.junitPlatform
-  testCompile group: 'org.assertj', name: 'assertj-core', version: '3.16.1'
-  testCompile group: 'org.mockito', name: 'mockito-core', version: '3.8.0'
+  testCompile group: 'org.assertj', name: 'assertj-core', version: '3.20.2'
+  testCompile group: 'org.mockito', name: 'mockito-core', version: '3.11.2'
   testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.8.0'
   testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.2'
   testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.14.3'
