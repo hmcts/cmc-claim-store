@@ -12,7 +12,7 @@ maintainers:
     email: cmc-developers@HMCTS.NET
 dependencies:
   - name: java
-    version: 3.4.5
+    version: 3.4.9
     repository: '@hmctspublic'
 
   - name: postgresql
@@ -21,6 +21,6 @@ dependencies:
     condition: postgresql.enabled
 
   - name: ccd
-    version: v5.0.2
+    version: 5.0.4
     repository: '@hmctspublic'
     condition: ccd.enabled
