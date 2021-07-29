@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.rpa;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.rpa.config.EmailProperties;
@@ -76,14 +77,17 @@ public class MoreTimeRequestedNotificationService {
 
     private LocalDateTime getMoreTimeRequested(Claim claim) {
         User user = userService.authenticateAnonymousCaseWorker();
+
         List<CaseEventDetail> caseEventDetails = caseEventsApi.findEventDetailsForCase(user.getAuthorisation(),
             authTokenGenerator.generate(), user.getUserDetails().getId(),
             JURISDICTION_ID,
             CASE_TYPE_ID, claim.getCcdCaseId().toString());
+
         return
             caseEventDetails.stream().anyMatch(caseEventDetail -> caseEventDetail.getEventName()
-                .equals("ResponseMoreTime")) ? caseEventDetails.stream().filter(
-                    caseEventDetail -> caseEventDetail.getEventName().equals("More time requested online"))
+                .equals(CaseEvent.RESPONSE_MORE_TIME)) ? caseEventDetails.stream().filter(
+                    caseEventDetail -> caseEventDetail.getEventName().equals(CaseEvent.MORE_TIME_REQUESTED_ONLINE))
                 .findAny().get().getCreatedDate() : LocalDateTime.now();
+        //TODO what about more time requested via CCD?
     }
 }
