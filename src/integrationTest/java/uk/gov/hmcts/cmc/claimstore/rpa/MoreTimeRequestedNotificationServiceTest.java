@@ -4,22 +4,32 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.rpa.config.EmailProperties;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUser;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
+import uk.gov.hmcts.reform.ccd.client.CaseEventsApi;
+import uk.gov.hmcts.reform.ccd.client.model.CaseEventDetail;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.rpa.ClaimIssuedNotificationService.JSON_EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildJsonMoreTimeRequestedFileBaseName;
 
@@ -39,9 +49,18 @@ public class MoreTimeRequestedNotificationServiceTest extends BaseMockSpringTest
     @MockBean
     protected EmailService emailService;
 
+    @Mock
+    private CaseEventsApi caseEventsApi;
+
     private Claim claim;
 
     private MoreTimeRequestedEvent event;
+
+    private static final String SERVICE_AUTHORISATION = "122FSDFSFDSFDSFdsafdsfadsfasdfaaa2323232";
+
+    private List<CaseEventDetail> caseEventDetailList = new ArrayList<>();
+
+    private final User user = new User("", new UserDetails(null, null, null, null, null));
 
     @Before
     public void setUp() {
@@ -51,6 +70,12 @@ public class MoreTimeRequestedNotificationServiceTest extends BaseMockSpringTest
             .build();
 
         event = new MoreTimeRequestedEvent(claim, LocalDateTime.now().toLocalDate(), "<any-email>");
+        when(userService.authenticateAnonymousCaseWorker()).thenReturn(SampleUser.getDefault());
+        when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTHORISATION);
+        when(caseEventsApi.findEventDetailsForCase(user.getAuthorisation(), SERVICE_AUTHORISATION,
+            user.getUserDetails().getId(),
+            JURISDICTION_ID, CASE_TYPE_ID, "1"))
+            .thenReturn(caseEventDetailList);
     }
 
     @Test(expected = NullPointerException.class)
