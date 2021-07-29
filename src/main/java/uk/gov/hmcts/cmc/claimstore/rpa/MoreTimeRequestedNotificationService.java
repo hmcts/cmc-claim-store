@@ -75,16 +75,15 @@ public class MoreTimeRequestedNotificationService {
     }
 
     private LocalDateTime getMoreTimeRequested(Claim claim) {
-        if (claim.isMoreTimeRequested()) {
-            User user = userService.authenticateAnonymousCaseWorker();
-            List<CaseEventDetail> caseEventDetails = caseEventsApi.findEventDetailsForCase(user.getAuthorisation(),
-                authTokenGenerator.generate(), user.getUserDetails().getId(),
-                JURISDICTION_ID,
-                CASE_TYPE_ID, claim.getCcdCaseId().toString());
-            //add filter logic and return event date
-            return LocalDateTime.now();
-        } else {
-            return LocalDateTime.now();
-        }
+        User user = userService.authenticateAnonymousCaseWorker();
+        List<CaseEventDetail> caseEventDetails = caseEventsApi.findEventDetailsForCase(user.getAuthorisation(),
+            authTokenGenerator.generate(), user.getUserDetails().getId(),
+            JURISDICTION_ID,
+            CASE_TYPE_ID, claim.getCcdCaseId().toString());
+        return
+            caseEventDetails.stream().anyMatch(caseEventDetail -> caseEventDetail.getEventName()
+                .equals("ResponseMoreTime")) ? caseEventDetails.stream().filter(
+                    caseEventDetail -> caseEventDetail.getEventName().equals("More time requested online"))
+                .findAny().get().getCreatedDate() : LocalDateTime.now();
     }
 }
