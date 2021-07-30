@@ -85,8 +85,10 @@ public class MoreTimeRequestedNotificationService {
 
         return
             caseEventDetails.stream().anyMatch(caseEventDetail -> caseEventDetail.getEventName()
-                .equals(CaseEvent.RESPONSE_MORE_TIME)) ? caseEventDetails.stream().filter(
-                    caseEventDetail -> caseEventDetail.getEventName().equals(CaseEvent.MORE_TIME_REQUESTED_ONLINE))
+                .equals(CaseEvent.RESPONSE_MORE_TIME) || caseEventDetail.getEventName()
+                .equals(CaseEvent.MORE_TIME_REQUESTED_ONLINE)) ? caseEventDetails.stream()
+                .filter(caseEventDetail -> caseEventDetail.getEventName().equals(CaseEvent.MORE_TIME_REQUESTED_ONLINE)
+                    || caseEventDetail.getEventName().equals(CaseEvent.MORE_TIME_REQUESTED_ONLINE))
                 .findAny().get().getCreatedDate() : LocalDateTime.now();
         //TODO what about more time requested via CCD?
     }
