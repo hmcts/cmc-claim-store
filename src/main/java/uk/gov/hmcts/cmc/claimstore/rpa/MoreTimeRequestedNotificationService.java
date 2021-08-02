@@ -85,8 +85,8 @@ public class MoreTimeRequestedNotificationService {
             CASE_TYPE_ID, claim.getCcdCaseId().toString());
 
         for (CaseEventDetail event : caseEventDetails) {
-            if (CaseEvent.MORE_TIME_REQUESTED_ONLINE.getValue().equalsIgnoreCase(event.getEventName())
-                || CaseEvent.RESPONSE_MORE_TIME.getValue().equalsIgnoreCase(event.getEventName())) {
+            if (CaseEvent.MORE_TIME_REQUESTED_ONLINE.getValue().equalsIgnoreCase(event.getId())
+                || CaseEvent.RESPONSE_MORE_TIME.getValue().equalsIgnoreCase(event.getId())) {
                 moreTimeRequestedOnDateTime = event.getCreatedDate();
                 break;
             }
