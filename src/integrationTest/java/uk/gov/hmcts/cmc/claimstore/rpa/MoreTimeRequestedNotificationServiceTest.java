@@ -57,7 +57,7 @@ public class MoreTimeRequestedNotificationServiceTest extends BaseMockSpringTest
 
     private MoreTimeRequestedEvent event;
 
-    private static final String SERVICE_AUTHORISATION = "122FSDFSFDSFDSFdsafdsfadsfasdfaaa2323232";
+    private static final String SERVICE_AUTHORISATION = "service auth";
 
     private List<CaseEventDetail> caseEventDetailList = new ArrayList<>();
 
@@ -133,6 +133,24 @@ public class MoreTimeRequestedNotificationServiceTest extends BaseMockSpringTest
     public void shouldSendRPAEmailWithPreviousMoreTimeRequestedViaCCDDateTime() {
         caseEventDetailList.add(CaseEventDetail.builder().id(CaseEvent.RESPONSE_MORE_TIME.getValue())
             .eventName(CaseEvent.RESPONSE_MORE_TIME.name())
+            .createdDate(LocalDateTime.now().minusDays(5)).build());
+        when(caseEventsApi.findEventDetailsForCase(any(), any(), any(), any(), any(), any()))
+            .thenReturn(caseEventDetailList);
+
+        service.notifyRobotics(event);
+
+        verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
+
+        assertThat(senderArgument.getValue()).isEqualTo(emailProperties.getSender());
+        assertThat(emailDataArgument.getValue().getTo()).isEqualTo(emailProperties.getResponseRecipient());
+        assertThat(emailDataArgument.getValue().getSubject()).isEqualToIgnoringNewLines("J additional time 000MC001");
+        assertThat(emailDataArgument.getValue().getMessage()).isEmpty();
+    }
+
+    @Test
+    public void shouldSendRPAEmailWithNoPreviousMoreTimeRequested() {
+        caseEventDetailList.add(CaseEventDetail.builder().id(CaseEvent.CLAIM_ISSUE_RECEIPT_UPLOAD.getValue())
+            .eventName(CaseEvent.CLAIM_ISSUE_RECEIPT_UPLOAD.name())
             .createdDate(LocalDateTime.now().minusDays(5)).build());
         when(caseEventsApi.findEventDetailsForCase(any(), any(), any(), any(), any(), any()))
             .thenReturn(caseEventDetailList);
