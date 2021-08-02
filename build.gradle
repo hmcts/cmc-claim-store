@@ -192,7 +192,7 @@ dependencies {
   compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
 
   compile group: 'org.elasticsearch', name: 'elasticsearch', version: '7.13.4'
-  compile group: 'org.postgresql', name: 'postgresql', version: '42.2.14'
+  compile group: 'org.postgresql', name: 'postgresql', version: '42.2.23'
 
   compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.2-RELEASE'
 
