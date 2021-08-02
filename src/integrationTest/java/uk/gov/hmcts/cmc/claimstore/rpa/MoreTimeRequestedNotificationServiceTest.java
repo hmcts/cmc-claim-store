@@ -7,6 +7,7 @@ import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
@@ -83,6 +84,7 @@ public class MoreTimeRequestedNotificationServiceTest extends BaseMockSpringTest
     public void shouldSendEmailWithConfiguredValues() {
         when(caseEventsApi.findEventDetailsForCase(any(), any(), any(), any(), any(), any()))
             .thenReturn(caseEventDetailList);
+
         service.notifyRobotics(event);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
@@ -107,5 +109,41 @@ public class MoreTimeRequestedNotificationServiceTest extends BaseMockSpringTest
 
         assertThat(moreTimeReqJsonAttachment.getContentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
         assertThat(moreTimeReqJsonAttachment.getFilename()).isEqualTo(expectedJson);
+    }
+
+    @Test
+    public void shouldSendRPAEmailWithPreviousMoreTimeRequestedOnlineDateTime() {
+        caseEventDetailList.add(CaseEventDetail.builder().id(CaseEvent.MORE_TIME_REQUESTED_ONLINE.getValue())
+            .eventName(CaseEvent.MORE_TIME_REQUESTED_PAPER.name())
+            .createdDate(LocalDateTime.now().minusDays(5)).build());
+        when(caseEventsApi.findEventDetailsForCase(any(), any(), any(), any(), any(), any()))
+            .thenReturn(caseEventDetailList);
+
+        service.notifyRobotics(event);
+
+        verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
+
+        assertThat(senderArgument.getValue()).isEqualTo(emailProperties.getSender());
+        assertThat(emailDataArgument.getValue().getTo()).isEqualTo(emailProperties.getResponseRecipient());
+        assertThat(emailDataArgument.getValue().getSubject()).isEqualToIgnoringNewLines("J additional time 000MC001");
+        assertThat(emailDataArgument.getValue().getMessage()).isEmpty();
+    }
+
+    @Test
+    public void shouldSendRPAEmailWithPreviousMoreTimeRequestedViaCCDDateTime() {
+        caseEventDetailList.add(CaseEventDetail.builder().id(CaseEvent.RESPONSE_MORE_TIME.getValue())
+            .eventName(CaseEvent.RESPONSE_MORE_TIME.name())
+            .createdDate(LocalDateTime.now().minusDays(5)).build());
+        when(caseEventsApi.findEventDetailsForCase(any(), any(), any(), any(), any(), any()))
+            .thenReturn(caseEventDetailList);
+
+        service.notifyRobotics(event);
+
+        verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
+
+        assertThat(senderArgument.getValue()).isEqualTo(emailProperties.getSender());
+        assertThat(emailDataArgument.getValue().getTo()).isEqualTo(emailProperties.getResponseRecipient());
+        assertThat(emailDataArgument.getValue().getSubject()).isEqualToIgnoringNewLines("J additional time 000MC001");
+        assertThat(emailDataArgument.getValue().getMessage()).isEmpty();
     }
 }

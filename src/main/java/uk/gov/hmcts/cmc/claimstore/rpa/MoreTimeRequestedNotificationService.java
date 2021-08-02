@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseEventDetail;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.services.CaseEventService.CASE_TYPE_ID;
@@ -76,6 +77,7 @@ public class MoreTimeRequestedNotificationService {
     }
 
     private LocalDateTime getMoreTimeRequested(Claim claim) {
+        LocalDateTime moreTimeRequestedOnDateTime = LocalDateTime.now();
         User user = userService.authenticateAnonymousCaseWorker();
 
         List<CaseEventDetail> caseEventDetails = caseEventsApi.findEventDetailsForCase(user.getAuthorisation(),
@@ -83,13 +85,16 @@ public class MoreTimeRequestedNotificationService {
             JURISDICTION_ID,
             CASE_TYPE_ID, claim.getCcdCaseId().toString());
 
-        return
-            caseEventDetails.stream().anyMatch(caseEventDetail -> caseEventDetail.getEventName()
-                .equals(CaseEvent.RESPONSE_MORE_TIME) || caseEventDetail.getEventName()
-                .equals(CaseEvent.MORE_TIME_REQUESTED_ONLINE)) ? caseEventDetails.stream()
-                .filter(caseEventDetail -> caseEventDetail.getEventName().equals(CaseEvent.MORE_TIME_REQUESTED_ONLINE)
-                    || caseEventDetail.getEventName().equals(CaseEvent.MORE_TIME_REQUESTED_ONLINE))
-                .findAny().get().getCreatedDate() : LocalDateTime.now();
-        //TODO what about more time requested via CCD?
+        List<CaseEventDetail> refinedCaseEventDetailsList =
+            caseEventDetails.stream()
+                .filter(event -> CaseEvent.MORE_TIME_REQUESTED_ONLINE.getValue().equalsIgnoreCase(event.getEventName())
+                    || CaseEvent.MORE_TIME_REQUESTED_ONLINE.getValue().equalsIgnoreCase(event.getEventName()))
+                .collect(Collectors.toList());
+
+        if (!refinedCaseEventDetailsList.isEmpty()) {
+            moreTimeRequestedOnDateTime = refinedCaseEventDetailsList.get(0).getCreatedDate();
+        }
+
+        return moreTimeRequestedOnDateTime;
     }
 }
