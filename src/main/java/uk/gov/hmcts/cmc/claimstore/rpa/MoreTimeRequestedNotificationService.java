@@ -86,7 +86,7 @@ public class MoreTimeRequestedNotificationService {
 
         for (CaseEventDetail event : caseEventDetails) {
             if (CaseEvent.MORE_TIME_REQUESTED_ONLINE.getValue().equalsIgnoreCase(event.getEventName())
-                || CaseEvent.MORE_TIME_REQUESTED_ONLINE.getValue().equalsIgnoreCase(event.getEventName())) {
+                || CaseEvent.RESPONSE_MORE_TIME.getValue().equalsIgnoreCase(event.getEventName())) {
                 moreTimeRequestedOnDateTime = event.getCreatedDate();
                 break;
             }
