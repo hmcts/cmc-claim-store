@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseEventDetail;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.services.CaseEventService.CASE_TYPE_ID;
@@ -85,8 +84,8 @@ public class MoreTimeRequestedNotificationService {
             JURISDICTION_ID,
             CASE_TYPE_ID, claim.getCcdCaseId().toString());
 
-        for (CaseEventDetail event: caseEventDetails) {
-            if(CaseEvent.MORE_TIME_REQUESTED_ONLINE.getValue().equalsIgnoreCase(event.getEventName())
+        for (CaseEventDetail event : caseEventDetails) {
+            if (CaseEvent.MORE_TIME_REQUESTED_ONLINE.getValue().equalsIgnoreCase(event.getEventName())
                 || CaseEvent.MORE_TIME_REQUESTED_ONLINE.getValue().equalsIgnoreCase(event.getEventName())) {
                 moreTimeRequestedOnDateTime = event.getCreatedDate();
                 break;
