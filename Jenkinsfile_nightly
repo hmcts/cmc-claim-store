@@ -52,6 +52,11 @@ withNightlyPipeline(type, product, component) {
     env.Rules = params.SecurityRules
     loadVaultSecrets(secrets)
     enableSlackNotifications(channel)
+    enableFortifyScan()
     enableSecurityScan()
     enableFullFunctionalTest(200)
+    after('fortify-scan') {
+      steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
+    }
+
 }
