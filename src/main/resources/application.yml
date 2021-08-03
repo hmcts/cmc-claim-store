@@ -158,7 +158,7 @@ milo:
 
 schedule:
   transfer-claims: ""
-  issue-created-claims: "0 0 7 * * ?"
+  issue-created-claims: "*/5 * * * *"
   close-hwf-claims-in-awaiting-state: "${SCHEDULE_CLOSE_HWF_CLAIMS_IN_AWAITING_STATE:}"
   state-transition:
     waiting-transfer: ""
