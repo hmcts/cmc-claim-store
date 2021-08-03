@@ -41,12 +41,9 @@ public class ClaimIssueService {
         User user = userService.authenticateAnonymousCaseWorker();
         String authorisation = user.getAuthorisation();
         List<Claim> createdClaims = claimService.getClaimsByState(ClaimState.CREATE, user);
-        logger.info("Automated Claim Issue - Total Citizen claims in Create state: {}",
-            createdClaims.stream()
-                .filter(claim -> (claim.getReferenceNumber() != null && claim.getReferenceNumber().contains("MC")))
-                .count());
-        createdClaims.stream()
-            .filter(claim -> (claim.getReferenceNumber() != null && claim.getReferenceNumber().contains("MC")))
+        logger.info("Automated Claim Issue - Total claims in Create state: {}",
+            createdClaims.stream().filter(claim -> (claim.getReferenceNumber() != null)).count());
+        createdClaims.stream().filter(claim -> (claim.getReferenceNumber() != null))
             .forEach(claim -> issueClaimsPendingInCreatedState(claim, authorisation));
     }
 

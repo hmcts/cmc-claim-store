@@ -7,8 +7,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.quartz.JobExecutionException;
 import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimIssueService;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClaimIssueJobTest {
@@ -19,8 +22,18 @@ public class ClaimIssueJobTest {
     @Mock
     ClaimIssueService claimIssueService;
 
+    @Mock
+    LaunchDarklyClient launchDarklyClient;
+
     @Test
-    public void shouldIssueCreatedClaim() throws JobExecutionException {
+    public void shouldNotIssueCreatedClaimIfFeatureNotEnabled() throws JobExecutionException {
+        claimIssueJob.execute(null);
+        verify(claimIssueService, times(0)).issueCreatedClaims();
+    }
+
+    @Test
+    public void shouldIssueCreatedClaimIfFeatureEnabled() throws JobExecutionException {
+        when(launchDarklyClient.isFeatureEnabled("automated-claim-issue")).thenReturn(true);
         claimIssueJob.execute(null);
         verify(claimIssueService).issueCreatedClaims();
     }
