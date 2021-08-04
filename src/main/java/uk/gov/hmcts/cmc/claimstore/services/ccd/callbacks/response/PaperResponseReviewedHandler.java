@@ -56,7 +56,7 @@ class PaperResponseReviewedHandler {
     private static final String OCON9X = "OCON9x";
     private static final List<String> responseForms = of("N9a", "N9b", "N11");
     private static final List<String> courtForms = of("N180", "EX160", "N244", "N245", "Non_prescribed_documents");
-    private static final List<String> SCANNED_DOCUMENT_TYPES = of("N9a", "N9b", "N11", "OCON9x");
+    private static final List<String> SCANNED_DOCUMENT_TYPES = of("N9a", "N9b", "N11", OCON9x);
 
     private static final List<ClaimDocumentType> STAFF_UPLOADED_DOCS = of(
         ClaimDocumentType.PAPER_RESPONSE_FULL_ADMIT,
