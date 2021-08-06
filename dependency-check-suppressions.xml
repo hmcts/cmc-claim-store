@@ -217,6 +217,7 @@
         ]]></notes>
         <cve>CVE-2017-7536</cve>
         <cve>CVE-2020-10693</cve>
+        <cve>CVE-2019-10219</cve>
     </suppress>
         <suppress>
         <notes><![CDATA[
