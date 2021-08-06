@@ -13,7 +13,8 @@ import java.util.List;
 public class Court {
     private String name;
     private String slug;
-    private Address address;
+    @JsonProperty("addresses")
+    private List<Address> addresses;
     @JsonProperty("areas_of_law")
     private List<AreaOfLaw> areasOfLaw;
 }
