@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.domain;
 
 public enum HwFMoreInfoRequiredDocuments {
-    BANK_STATEMENTS("•\t Bank Statement  - A bank statement from the last 3 months \n"),
+    BANK_STATEMENTS("•\t Bank Statement  - A bank statement from the last month \n"),
     WAGE_SLIPS("•\t Wage Slips - If you’re employed, a payslip dated in the last 6 weeks,"
         + " or, if you’re self-employed, your most recent self-assessment tax return and SA302 tax calculation"
         + " which you can get from www.gov.uk/sa302-tax-calculation \n"),
