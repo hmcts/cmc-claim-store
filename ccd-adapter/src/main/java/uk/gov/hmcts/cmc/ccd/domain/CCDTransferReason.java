@@ -7,6 +7,7 @@ public enum CCDTransferReason {
     ENFORCEMENT("Enforcement"),
     DIRECTIONS("For directions"),
     HEARING("For a hearing"),
+    INTERLOCUTORY_JUDGEMENT("Interlocutory Judgement"),
     JUDGES_ORDER("Judge's order"),
     LA_ORDER("Legal Advisor's order"),
     LISTING("Listing"),
