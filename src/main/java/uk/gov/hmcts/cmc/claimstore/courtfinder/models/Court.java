@@ -15,6 +15,7 @@ public class Court {
     private String slug;
     @JsonProperty("addresses")
     private List<Address> addresses;
+    private Address address;
     @JsonProperty("areas_of_law")
     private List<AreaOfLaw> areasOfLaw;
 }

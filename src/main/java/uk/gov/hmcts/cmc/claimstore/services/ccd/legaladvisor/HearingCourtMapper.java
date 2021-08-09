@@ -14,7 +14,8 @@ public class HearingCourtMapper {
     public HearingCourt from(Court court) {
         return HearingCourt.builder()
             .name(court.getName())
-            .address(mapHearingAddress(fetchAddress(court.getAddresses())))
+            .address(mapHearingAddress(court.getAddress() != null
+                ? court.getAddress() : fetchAddress(court.getAddresses())))
             .build();
     }
 
