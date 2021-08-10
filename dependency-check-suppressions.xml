@@ -184,6 +184,9 @@
         <cve>CVE-2021-24122</cve>
         <cve>CVE-2021-25122</cve>
         <cve>CVE-2021-25329</cve>
+        <cve>CVE-2021-30639</cve>
+        <cve>CVE-2021-33037</cve>
+        <cve>CVE-2021-30640</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[
@@ -211,6 +214,13 @@
         ]]></notes>
         <cve>CVE-2017-7536</cve>
         <cve>CVE-2020-10693</cve>
+        <cve>CVE-2019-10219</cve>
+    </suppress>
+        <suppress>
+        <notes><![CDATA[
+            Related json_smart_project
+        ]]></notes>
+        <cve>CVE-2021-27568</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[
