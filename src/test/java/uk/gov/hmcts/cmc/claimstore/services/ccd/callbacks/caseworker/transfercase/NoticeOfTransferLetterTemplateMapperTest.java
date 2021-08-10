@@ -33,6 +33,7 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 class NoticeOfTransferLetterTemplateMapperTest {
 
     public static final String LISTING = "Listing";
+    public static final String INTERLOCUTORY_JUDGEMENT = "Interlocutory Judgement";
     private static final String TRANSFER_COURT_NAME = "Bristol";
     private static final String CASE_REFERENCE = "REF1";
     private static final String TRANSFER_REASON = "A reason";
@@ -165,6 +166,27 @@ class NoticeOfTransferLetterTemplateMapperTest {
     }
 
     @Test
+    void shouldMapNoticeOfTransferLetterBodyForInterlocutoryJudgement() {
+
+        ccdCase = CCDCase.builder()
+            .previousServiceCaseReference(CASE_REFERENCE)
+            .transferContent(CCDTransferContent.builder()
+                .transferReason(CCDTransferReason.OTHER)
+                .transferCourtName(TRANSFER_COURT_NAME)
+                .transferCourtAddress(transferCourtAddress)
+                .transferReason(CCDTransferReason.INTERLOCUTORY_JUDGEMENT)
+                .build())
+            .build();
+        DocAssemblyTemplateBody requestBody = noticeOfTransferLetterTemplateMapper
+            .noticeOfTransferLetterBodyForCourt(ccdCase, AUTHORISATION);
+
+        DocAssemblyTemplateBody expectedRequestBody = interlocutoryTransferRequestBodyBuilder()
+            .build();
+
+        assertEquals(expectedRequestBody, requestBody);
+    }
+
+    @Test
     void shouldMapNoticeOfTransferLetterBodyForDefendant() {
 
         DocAssemblyTemplateBody requestBody = noticeOfTransferLetterTemplateMapper
@@ -260,6 +282,20 @@ class NoticeOfTransferLetterTemplateMapperTest {
             .hearingCourtName(TRANSFER_COURT_NAME)
             .hearingCourtAddress(transferCourtAddress)
             .reasonForTransfer(LISTING)
+            .caseworkerName(CASE_WORKER_NAME);
+
+        return bodyBuilder;
+    }
+
+    private DocAssemblyTemplateBody.DocAssemblyTemplateBodyBuilder interlocutoryTransferRequestBodyBuilder() {
+
+        DocAssemblyTemplateBody.DocAssemblyTemplateBodyBuilder bodyBuilder = DocAssemblyTemplateBody
+            .builder()
+            .referenceNumber(CASE_REFERENCE)
+            .currentDate(LocalDate.parse(TRANSFER_DATE))
+            .hearingCourtName(TRANSFER_COURT_NAME)
+            .hearingCourtAddress(transferCourtAddress)
+            .reasonForTransfer(INTERLOCUTORY_JUDGEMENT)
             .caseworkerName(CASE_WORKER_NAME);
 
         return bodyBuilder;
