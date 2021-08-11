@@ -11,10 +11,10 @@ import javax.json.JsonObject;
 @Component
 public class MoreTimeRequestedJsonMapper {
 
-    public JsonObject map(Claim claim) {
+    public JsonObject map(Claim claim, LocalDateTime moreTimeRequestOn) {
         return new NullAwareJsonObjectBuilder()
             .add("caseNumber", claim.getReferenceNumber())
-            .add("moreTimeRequestedOn", DateFormatter.format(LocalDateTime.now()))
+            .add("moreTimeRequestedOn", DateFormatter.format(moreTimeRequestOn))
             .add("responseDeadline", DateFormatter.format(claim.getResponseDeadline()))
             .build();
     }

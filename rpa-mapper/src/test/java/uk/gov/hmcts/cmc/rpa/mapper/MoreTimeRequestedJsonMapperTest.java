@@ -35,8 +35,8 @@ public class MoreTimeRequestedJsonMapperTest {
             .withReferenceNumber(REFERENCE_NUMBER)
             .withResponseDeadline(LocalDate.of(2018, 5, 27))
             .build();
-
-        assertEquals(getExpectedJson(), mapper.map(claim).toString(), STRICT);
+        LocalDateTime responseDeadline = LocalDateTime.now();
+        assertEquals(getExpectedJson(), mapper.map(claim, responseDeadline).toString(), STRICT);
     }
 
     private String getExpectedJson() {
