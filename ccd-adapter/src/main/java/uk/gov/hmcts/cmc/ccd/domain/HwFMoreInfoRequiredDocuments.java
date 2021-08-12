@@ -1,7 +1,10 @@
 package uk.gov.hmcts.cmc.ccd.domain;
 
 public enum HwFMoreInfoRequiredDocuments {
-    BANK_STATEMENTS("•\t Bank Statement  - A bank statement from the last month \n"),
+    BANK_STATEMENTS("•\t Bank statement - Last month’s statements for all of the applicant's current accounts,"
+        + " and if part of a couple, their partner’s bank statements. Bank statement should be for full month prior to "
+        + "the date the fee is to be paid, for example, if the fee is to be paid on 26 July 2021 the bank statement "
+        + "should be for June 2021. \n"),
     WAGE_SLIPS("•\t Wage Slips - If you’re employed, a payslip dated in the last 6 weeks,"
         + " or, if you’re self-employed, your most recent self-assessment tax return and SA302 tax calculation"
         + " which you can get from www.gov.uk/sa302-tax-calculation \n"),
