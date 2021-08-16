@@ -166,6 +166,7 @@ module "database-v11" {
   storage_mb = "${var.database_storage_mb}"
   common_tags = "${var.common_tags}"
   subscription = "${var.subscription}"
+  key_vault_name = "infra-vault-qa"
 }
 
 resource "azurerm_key_vault_secret" "cmc-db-password-v11" {
