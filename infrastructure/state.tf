@@ -13,6 +13,14 @@ terraform {
 }
 
 provider "azurerm" {
-  alias = "send-grid"
+  alias           = "send-grid-nonprod"
+  subscription_id = "1c4f0704-a29e-403d-b719-b90c34ef14c9"
   features {}
 }
+
+//provider "azurerm" {
+//  alias = "send-grid-prod"
+//  features {}
+//  subscription_id = "8999dec3-0104-4a27-94ee-6588559729d1"
+//
+//}
