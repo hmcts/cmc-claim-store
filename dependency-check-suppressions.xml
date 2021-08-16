@@ -225,4 +225,10 @@
         ]]></notes>
         <cve>CVE-2021-27568</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+            jakarta error
+        ]]></notes>
+        <cve>CVE-2021-28170</cve>
+    </suppress>
 </suppressions>
