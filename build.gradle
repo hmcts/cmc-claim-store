@@ -233,6 +233,8 @@ dependencies {
 
   compile group: 'org.springframework.cloud',name : 'spring-cloud-starter-bootstrap'
 
+  compile group: 'com.github.hmcts', name: 'befta-fw', version: '8.2.0'
+
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.18'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.18'
 
@@ -263,9 +265,6 @@ dependencies {
   testCompile group: 'net.jodah', name: 'failsafe', version: '2.4.0'
   testCompile group: 'org.xmlunit', name: 'xmlunit-core', version: '2.8.2'
   testCompile group: 'org.xmlunit', name: 'xmlunit-matchers', version: '2.8.2'
-
-  testCompile group: 'com.github.hmcts', name: 'ccd-test-definitions', version: '7.0.0'
-  testCompile group: 'com.github.hmcts', name: 'befta-fw', version: '8.2.0'
 }
 
 sourceSets {
@@ -346,10 +345,8 @@ task smoke(type: Test) {
 }
 
 task highLevelDataSetup(type: JavaExec) {
-  dependsOn aatClasses
-
-  main = "uk.gov.hmcts.cmc.claimstore.tests.befta.HighLevelDataSetupApp"
-  classpath += configurations.cucumberRuntime + sourceSets.aat.runtimeClasspath
+  main = "uk.gov.hmcts.cmc.claimstore.befta.HighLevelDataSetupApp"
+  classpath += sourceSets.main.runtimeClasspath
   jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
 }
 
@@ -404,6 +401,7 @@ sonarqube {
         "**/cmc/claimstore/services/ccd/callbacks/HWFMiscellaneousCallbackHandler.java",
         "**/cmc/claimstore/services/ccd/callbacks/HWFFullAndPartRemissionCallbackHandler.java",
         "**/cmc/claimstore/courtfinder/models/**",
+        "**/HighLevelDataSetupApp.java",
         "**/ccd/migration/**",
         "**/EmailData.java",
         "**/CCDCaseHandler.java",
