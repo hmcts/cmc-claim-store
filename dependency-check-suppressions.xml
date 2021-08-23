@@ -207,6 +207,7 @@
         ]]></notes>
         <cve>CVE-2021-22112</cve>
         <cve>CVE-2021-22118</cve>
+        <cve>CVE-2021-22119</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[
@@ -227,5 +228,12 @@
             Related json_smart_project
         ]]></notes>
         <cve>CVE-2021-27568</cve>
+        <cve>CVE-2021-28170</cve>
+    </suppress>
+    <suppress>
+      <notes><![CDATA[
+            Related Nim-lang
+        ]]></notes>
+      <cve>CVE-2020-23171</cve>
     </suppress>
 </suppressions>
