@@ -114,6 +114,9 @@ document_management:
   url: "${DOCUMENT_MANAGEMENT_URL:}"
   userRoles: ${DOCUMENT_MANAGEMENT_USERROLES}
 
+case_document_am:
+  url: "http://localhost:4455"
+
 core_case_data:
   api:
     url: "http://localhost:4452"
@@ -303,5 +306,9 @@ smoke-test-citizen:
   password: "${SMOKE_TEST_USER_PASSWORD:}"
 smoke-test-solicitor:
   password: "${SMOKE_TEST_USER_PASSWORD:}"
+
+logging:
+  level:
+    ROOT: DEBUG
 
 

@@ -18,10 +18,9 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ScannedDocument;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
 import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.reform.document.DocumentMetadataDownloadClientApi;
-import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
-import uk.gov.hmcts.reform.document.domain.Classification;
 import uk.gov.hmcts.reform.document.domain.Document;
 
 import java.net.URI;
@@ -31,16 +30,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementDownloadResponse;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementUploadResponse;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.unsuccessfulDocumentManagementUploadResponse;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -54,7 +49,7 @@ public class DocumentManagementServiceTest {
     @Mock
     private DocumentDownloadClientApi documentDownloadClient;
     @Mock
-    private DocumentUploadClientApi documentUploadClient;
+    CaseDocumentClient caseDocumentClient;
     @Mock
     private AuthTokenGenerator authTokenGenerator;
     @Mock
@@ -69,52 +64,14 @@ public class DocumentManagementServiceTest {
     public void setUp() {
         when(authTokenGenerator.generate()).thenReturn("authString");
         documentManagementService = new DocumentManagementService(
+            caseDocumentClient,
             documentMetadataDownloadClient,
             documentDownloadClient,
-            documentUploadClient,
             authTokenGenerator,
             userService,
             appInsights,
             USER_ROLES
         );
-    }
-
-    @Test
-    public void shouldUploadToDocumentManagement() {
-        UserDetails userDetails = new UserDetails("id", "mail@mail.com",
-            "userFirstName", "userLastName", Collections.singletonList("role"));
-        when(userService.getUserDetails(anyString())).thenReturn(userDetails);
-
-        when(documentUploadClient
-            .upload(anyString(), anyString(), anyString(), eq(USER_ROLES), any(Classification.class), anyList())
-        ).thenReturn(successfulDocumentManagementUploadResponse());
-
-        URI documentSelfPath = documentManagementService
-            .uploadDocument("authString", document).getDocumentManagementUrl();
-        assertNotNull(documentSelfPath);
-        assertEquals("/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4", documentSelfPath.getPath());
-
-        verify(documentUploadClient)
-            .upload(anyString(), anyString(), anyString(), eq(USER_ROLES), any(Classification.class), anyList());
-    }
-
-    @Test
-    public void uploadDocumentToDocumentManagementThrowsException() {
-        UserDetails userDetails = new UserDetails("id", "mail@mail.com",
-            "userFirstName", "userLastName", Collections.singletonList("role"));
-
-        String authorisation = "authString";
-        when(userService.getUserDetails(eq(authorisation))).thenReturn(userDetails);
-
-        when(documentUploadClient
-            .upload(anyString(), anyString(), anyString(), eq(USER_ROLES), any(Classification.class), anyList()))
-            .thenReturn(unsuccessfulDocumentManagementUploadResponse());
-        try {
-            documentManagementService.uploadDocument(authorisation, document);
-            Assert.fail("Expected a DocumentManagementException to be thrown");
-        } catch (DocumentManagementException expected) {
-            assertThat(expected).hasMessage("Unable to upload document 0000-claim.pdf to document management.");
-        }
     }
 
     @Test

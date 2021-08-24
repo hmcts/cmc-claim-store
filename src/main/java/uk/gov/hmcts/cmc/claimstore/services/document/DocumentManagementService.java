@@ -21,12 +21,11 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ScannedDocument;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
+import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
 import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.reform.document.DocumentMetadataDownloadClientApi;
-import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
-import uk.gov.hmcts.reform.document.domain.Classification;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.document.domain.UploadResponse;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 
 import java.net.URI;
@@ -46,17 +45,18 @@ public class DocumentManagementService {
 
     private final DocumentMetadataDownloadClientApi documentMetadataDownloadClient;
     private final DocumentDownloadClientApi documentDownloadClient;
-    private final DocumentUploadClientApi documentUploadClient;
     private final AuthTokenGenerator authTokenGenerator;
     private final UserService userService;
     private final AppInsights appInsights;
     private final List<String> userRoles;
 
+    private final CaseDocumentClient caseDocumentClient;
+
     @Autowired
     public DocumentManagementService(
+        CaseDocumentClient caseDocumentClient,
         DocumentMetadataDownloadClientApi documentMetadataDownloadApi,
         DocumentDownloadClientApi documentDownloadClientApi,
-        DocumentUploadClientApi documentUploadClientApi,
         AuthTokenGenerator authTokenGenerator,
         UserService userService,
         AppInsights appInsights,
@@ -64,7 +64,7 @@ public class DocumentManagementService {
     ) {
         this.documentMetadataDownloadClient = documentMetadataDownloadApi;
         this.documentDownloadClient = documentDownloadClientApi;
-        this.documentUploadClient = documentUploadClientApi;
+        this.caseDocumentClient = caseDocumentClient;
         this.authTokenGenerator = authTokenGenerator;
         this.userService = userService;
         this.appInsights = appInsights;
@@ -79,16 +79,14 @@ public class DocumentManagementService {
                 = new InMemoryMultipartFile(FILES_NAME, originalFileName, PDF.CONTENT_TYPE, pdf.getBytes());
 
             UserDetails userDetails = userService.getUserDetails(authorisation);
-            UploadResponse response = documentUploadClient.upload(
-                authorisation,
-                authTokenGenerator.generate(),
-                userDetails.getId(),
-                userRoles,
-                Classification.RESTRICTED,
-                singletonList(file)
-            );
 
-            Document document = response.getEmbedded().getDocuments().stream()
+            UploadResponse response = caseDocumentClient.uploadDocuments(authorisation,
+                authTokenGenerator.generate(),
+                    "MoneyClaimCase",
+                    "CMC",
+                    singletonList(file));
+
+            uk.gov.hmcts.reform.ccd.document.am.model.Document document = response.getDocuments().stream()
                 .findFirst()
                 .orElseThrow(() ->
                     new DocumentManagementException("Document management failed uploading file" + originalFileName));
