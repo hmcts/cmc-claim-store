@@ -21,6 +21,8 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.ChannelType;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.Payment;
+import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
@@ -31,6 +33,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.String.format;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_HWF_CASE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INVALID_HWF_REFERENCE;
@@ -135,11 +138,26 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
                     .responseDeadline(responseDeadlineCalculator.calculateResponseDeadline(issuedOn))
                     .build();
             } else {
+                Payment payment = paymentsService.retrievePayment(authorisation, claim.getClaimData())
+                    .orElseThrow(() -> new IllegalStateException(format(
+                        "Claim with external id %s has no payment record",
+                        claim.getExternalId()))
+                    );
+
+                if (payment.getStatus() != PaymentStatus.SUCCESS) {
+                    logger.info("Payment not successful for claim with external id {}", claim.getExternalId());
+
+                    return AboutToStartOrSubmitCallbackResponse.builder()
+                        .errors(List.of("Payment not successful"))
+                        .build();
+                }
+
                 LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
 
                 updatedClaim = claim.toBuilder()
                     .channel(ChannelType.CITIZEN)
                     .claimData(claim.getClaimData().toBuilder()
+                        .payment(payment)
                         .build())
                     .referenceNumber(referenceNumberRepository.getReferenceNumberForCitizen())
                     .createdAt(LocalDateTimeFactory.nowInUTC())
