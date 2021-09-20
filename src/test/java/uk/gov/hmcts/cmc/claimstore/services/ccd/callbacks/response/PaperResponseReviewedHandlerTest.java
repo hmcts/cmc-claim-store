@@ -239,7 +239,7 @@ class PaperResponseReviewedHandlerTest {
         verifyMailWithCorrectTemplateIsSent(OTHER, "abc", "Template5", CLAIMANT_EMAIL, true, 1);
         verifyMailWithCorrectTemplateIsSent(ScannedDocumentType.LETTER, "xyz", "Template5", CLAIMANT_EMAIL, true, 2);
 
-        verifyMailWithCorrectTemplateIsSent(ScannedDocumentType.COVERSHEET, "", "Template1", SUBMITTER_EMAIL, false, 1);
+        verifyMailWithCorrectTemplateIsSent(ScannedDocumentType.COVERSHEET, "", "Template1", SUBMITTER_EMAIL, false, 0);
     }
 
     private AboutToStartOrSubmitCallbackResponse verifyMailWithCorrectTemplateIsSent(ScannedDocumentType docType,
