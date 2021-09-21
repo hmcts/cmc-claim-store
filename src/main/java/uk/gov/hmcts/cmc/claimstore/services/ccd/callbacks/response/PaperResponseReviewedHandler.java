@@ -43,6 +43,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.PAPER_RESPONSE_MORE_TIME;
 import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentType.CHERISHED;
+import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentType.COVERSHEET;
 import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentType.LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentType.OTHER;
 
@@ -196,6 +197,8 @@ class PaperResponseReviewedHandler {
         } else if (CCJ_REQUEST.equals(subType)) {
             templateId = mailTemplates.getPaperResponseFormReceivedForCcjRequest();
         } else if (OCON9X.equals(subType)) {
+            templateId = NA;
+        } else if (COVERSHEET.equals(scannedDocument.getDocumentType())) {
             templateId = NA;
         } else if (otherDocumentTypes.contains(scannedDocument.getDocumentType())) {
             mailToParty = submittedByClaimant ? CLAIMANT : DEFENDANT;
