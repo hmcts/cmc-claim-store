@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.services.document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -15,21 +14,16 @@ import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
-import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ScannedDocument;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
-import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
-import uk.gov.hmcts.reform.document.DocumentMetadataDownloadClientApi;
-import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 
 import java.net.URI;
-import java.util.List;
 
 import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.DOCUMENT_NAME;
@@ -43,32 +37,20 @@ public class DocumentManagementService {
     private static final String FILES_NAME = "files";
     private static final String OCMC = "OCMC";
 
-    private final DocumentMetadataDownloadClientApi documentMetadataDownloadClient;
-    private final DocumentDownloadClientApi documentDownloadClient;
     private final AuthTokenGenerator authTokenGenerator;
-    private final UserService userService;
     private final AppInsights appInsights;
-    private final List<String> userRoles;
 
     private final CaseDocumentClient caseDocumentClient;
 
     @Autowired
     public DocumentManagementService(
         CaseDocumentClient caseDocumentClient,
-        DocumentMetadataDownloadClientApi documentMetadataDownloadApi,
-        DocumentDownloadClientApi documentDownloadClientApi,
         AuthTokenGenerator authTokenGenerator,
-        UserService userService,
-        AppInsights appInsights,
-        @Value("${document_management.userRoles}") List<String> userRoles
+        AppInsights appInsights
     ) {
-        this.documentMetadataDownloadClient = documentMetadataDownloadApi;
-        this.documentDownloadClient = documentDownloadClientApi;
         this.caseDocumentClient = caseDocumentClient;
         this.authTokenGenerator = authTokenGenerator;
-        this.userService = userService;
         this.appInsights = appInsights;
-        this.userRoles = userRoles;
     }
 
     @Retryable(value = {DocumentManagementException.class}, backoff = @Backoff(delay = 200))
@@ -78,13 +60,11 @@ public class DocumentManagementService {
             MultipartFile file
                 = new InMemoryMultipartFile(FILES_NAME, originalFileName, PDF.CONTENT_TYPE, pdf.getBytes());
 
-            UserDetails userDetails = userService.getUserDetails(authorisation);
-
             UploadResponse response = caseDocumentClient.uploadDocuments(authorisation,
                 authTokenGenerator.generate(),
-                    "MoneyClaimCase",
-                    "CMC",
-                    singletonList(file));
+                "MoneyClaimCase",
+                "CMC",
+                singletonList(file));
 
             uk.gov.hmcts.reform.ccd.document.am.model.Document document = response.getDocuments().stream()
                 .findFirst()
@@ -95,6 +75,7 @@ public class DocumentManagementService {
                 .documentManagementUrl(URI.create(document.links.self.href))
                 .documentManagementBinaryUrl(URI.create(document.links.binary.href))
                 .documentName(originalFileName)
+                .documentHash(document.hashToken)
                 .documentType(pdf.getClaimDocumentType())
                 .createdDatetime(LocalDateTimeFactory.nowInUTC())
                 .size(document.size)
@@ -131,23 +112,16 @@ public class DocumentManagementService {
     private byte[] downloadDocumentByUrl(String authorisation, URI documentManagementUrl) {
         byte[] bytesArray = null;
         try {
-            UserDetails userDetails = userService.getUserDetails(authorisation);
-            String usrRoles = String.join(",", this.userRoles);
-            Document documentMetadata = documentMetadataDownloadClient.getDocumentMetadata(
-                authorisation,
+            Document documentMetadata
+                = caseDocumentClient.getMetadataForDocument(authorisation,
                 authTokenGenerator.generate(),
-                usrRoles,
-                userDetails.getId(),
-                documentManagementUrl.getPath()
-            );
+                documentManagementUrl.getPath());
 
-            ResponseEntity<Resource> responseEntity = documentDownloadClient.downloadBinary(
-                authorisation,
-                authTokenGenerator.generate(),
-                usrRoles,
-                userDetails.getId(),
-                URI.create(documentMetadata.links.binary.href).getPath()
-            );
+            String documentHref = URI.create(documentMetadata.links.binary.href).getPath().replaceFirst("/", "");
+
+            ResponseEntity<Resource> responseEntity
+                = caseDocumentClient.getDocumentBinary(authorisation,
+                authTokenGenerator.generate(), documentHref);
 
             ByteArrayResource resource = (ByteArrayResource) responseEntity.getBody();
             //noinspection ConstantConditions let the NPE be thrown
@@ -178,15 +152,9 @@ public class DocumentManagementService {
 
     public Document getDocumentMetaData(String authorisation, String documentPath) {
         try {
-            UserDetails userDetails = userService.getUserDetails(authorisation);
-            String usrRoles = String.join(",", this.userRoles);
-            return documentMetadataDownloadClient.getDocumentMetadata(
-                authorisation,
+            return caseDocumentClient.getMetadataForDocument(authorisation,
                 authTokenGenerator.generate(),
-                usrRoles,
-                userDetails.getId(),
-                documentPath
-            );
+                documentPath);
         } catch (Exception ex) {
             throw new DocumentManagementException(
                 "Unable to download document from document management.", ex);

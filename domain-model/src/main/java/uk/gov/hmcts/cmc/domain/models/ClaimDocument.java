@@ -13,6 +13,7 @@ public class ClaimDocument extends CollectionId {
     private final URI documentManagementUrl;
     private final URI documentManagementBinaryUrl;
     private final String documentName;
+    private final String documentHash;
     private final ClaimDocumentType documentType;
     private final LocalDateTime authoredDatetime;
     private final LocalDateTime createdDatetime;
@@ -26,6 +27,7 @@ public class ClaimDocument extends CollectionId {
         URI documentManagementUrl,
         URI documentManagementBinaryUrl,
         String documentName,
+        String documentHash,
         ClaimDocumentType documentType,
         LocalDateTime authoredDatetime,
         LocalDateTime createdDatetime,
@@ -37,6 +39,7 @@ public class ClaimDocument extends CollectionId {
         this.documentManagementUrl = documentManagementUrl;
         this.documentManagementBinaryUrl = documentManagementBinaryUrl;
         this.documentName = documentName;
+        this.documentHash = documentHash;
         this.documentType = documentType;
         this.authoredDatetime = authoredDatetime;
         this.createdDatetime = createdDatetime;

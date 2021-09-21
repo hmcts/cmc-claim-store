@@ -13,15 +13,11 @@ import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
-import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ScannedDocument;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
-import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
-import uk.gov.hmcts.reform.document.DocumentMetadataDownloadClientApi;
-import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 
 import java.net.URI;
 import java.util.Collections;
@@ -45,15 +41,9 @@ public class DocumentManagementServiceTest {
     private static final String USER_ROLES_JOINED = "caseworker-cmc,citizen";
     private final PDF document = new PDF("0000-claim", "test".getBytes(), SEALED_CLAIM);
     @Mock
-    private DocumentMetadataDownloadClientApi documentMetadataDownloadClient;
-    @Mock
-    private DocumentDownloadClientApi documentDownloadClient;
-    @Mock
     CaseDocumentClient caseDocumentClient;
     @Mock
     private AuthTokenGenerator authTokenGenerator;
-    @Mock
-    private UserService userService;
     @Mock
     private AppInsights appInsights;
     private DocumentManagementService documentManagementService;
@@ -65,12 +55,8 @@ public class DocumentManagementServiceTest {
         when(authTokenGenerator.generate()).thenReturn("authString");
         documentManagementService = new DocumentManagementService(
             caseDocumentClient,
-            documentMetadataDownloadClient,
-            documentDownloadClient,
             authTokenGenerator,
-            userService,
-            appInsights,
-            USER_ROLES
+            appInsights
         );
     }
 
@@ -106,24 +92,21 @@ public class DocumentManagementServiceTest {
         assertNotNull(pdf);
         assertArrayEquals("test".getBytes(), pdf);
 
-        verify(documentMetadataDownloadClient)
-            .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString());
-        verify(documentDownloadClient)
-            .downloadBinary(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString());
+        verify(caseDocumentClient)
+            .getMetadataForDocument(anyString(), anyString(), anyString());
+        verify(caseDocumentClient)
+            .getDocumentBinary(anyString(), anyString(), anyString());
     }
 
     private URI setupDocumentDownloadClient() {
-        when(documentMetadataDownloadClient
-            .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString())
+        when(caseDocumentClient
+            .getMetadataForDocument(anyString(), anyString(), anyString())
         ).thenReturn(successfulDocumentManagementDownloadResponse());
 
-        UserDetails userDetails = new UserDetails("id", "mail@mail.com",
-            "userFirstName", "userLastName", Collections.singletonList("role"));
-        when(userService.getUserDetails(anyString())).thenReturn(userDetails);
         when(responseEntity.getBody()).thenReturn(new ByteArrayResource("test".getBytes()));
 
-        when(documentDownloadClient
-            .downloadBinary(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString())
+        when(caseDocumentClient
+            .getDocumentBinary(anyString(), anyString(), anyString())
         ).thenReturn(responseEntity);
         return URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4");
     }
@@ -131,12 +114,9 @@ public class DocumentManagementServiceTest {
     @Test
     public void downloadDocumentFromDocumentManagementThrowException() {
         URI docUri = mock(URI.class);
-        UserDetails userDetails = new UserDetails("id", "mail@mail.com",
-            "userFirstName", "userLastName", Collections.singletonList("role"));
-        when(userService.getUserDetails(anyString())).thenReturn(userDetails);
 
-        when(documentMetadataDownloadClient
-            .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString())
+        when(caseDocumentClient
+            .getMetadataForDocument(anyString(), anyString(), anyString())
         ).thenReturn(null);
 
         ClaimDocument claimDocument = ClaimDocument.builder()
@@ -156,21 +136,18 @@ public class DocumentManagementServiceTest {
     public void getDocumentMetaData() {
         URI docUri = URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4");
 
-        when(documentMetadataDownloadClient
-            .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString())
+        when(caseDocumentClient
+            .getMetadataForDocument(anyString(), anyString(), anyString())
         ).thenReturn(successfulDocumentManagementDownloadResponse());
 
-        UserDetails userDetails = new UserDetails("id", "mail@mail.com",
-            "userFirstName", "userLastName", Collections.singletonList("role"));
-        when(userService.getUserDetails(anyString())).thenReturn(userDetails);
         when(responseEntity.getBody()).thenReturn(new ByteArrayResource("test".getBytes()));
 
-        Document documentMetaData = documentManagementService.getDocumentMetaData("auth string", docUri.getPath());
+        Document documentMetaData = caseDocumentClient.getMetadataForDocument("auth string", "service auth", docUri.getPath());
 
         assertEquals(72552L, documentMetaData.size);
         assertEquals("000LR002.pdf", documentMetaData.originalDocumentName);
 
-        verify(documentMetadataDownloadClient)
-            .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString());
+        verify(caseDocumentClient)
+            .getMetadataForDocument(anyString(), anyString(), anyString());
     }
 }

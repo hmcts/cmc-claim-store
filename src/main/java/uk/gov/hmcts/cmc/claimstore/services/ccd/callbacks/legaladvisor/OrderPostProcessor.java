@@ -19,18 +19,19 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionOrderService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
-import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 
 import java.net.URI;
 import java.time.Clock;
@@ -53,8 +54,9 @@ public class OrderPostProcessor {
     private final CaseDetailsConverter caseDetailsConverter;
     private final LegalOrderService legalOrderService;
     private final DirectionOrderService directionOrderService;
-    private final DocumentManagementService documentManagementService;
+    private final CaseDocumentClient caseDocumentClient;
     private final ClaimService claimService;
+    private final AuthTokenGenerator authTokenGenerator;
     private AppInsights appInsights;
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final String REVIEW_OR_DRAW_ORDER = "reviewOrDrawOrder";
@@ -65,9 +67,10 @@ public class OrderPostProcessor {
         OrderDrawnNotificationService orderDrawnNotificationService,
         CaseDetailsConverter caseDetailsConverter,
         LegalOrderService legalOrderService,
+        AuthTokenGenerator authTokenGenerator,
         AppInsights appInsights,
         DirectionOrderService directionOrderService,
-        DocumentManagementService documentManagementService,
+        CaseDocumentClient caseDocumentClient,
         ClaimService claimService
     ) {
         this.clock = clock;
@@ -75,8 +78,9 @@ public class OrderPostProcessor {
         this.caseDetailsConverter = caseDetailsConverter;
         this.legalOrderService = legalOrderService;
         this.directionOrderService = directionOrderService;
+        this.authTokenGenerator = authTokenGenerator;
         this.appInsights = appInsights;
-        this.documentManagementService = documentManagementService;
+        this.caseDocumentClient = caseDocumentClient;
         this.claimService = claimService;
     }
 
@@ -91,10 +95,9 @@ public class OrderPostProcessor {
 
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
 
-        Document documentMetadata = documentManagementService.getDocumentMetaData(
-            authorisation,
-            URI.create(draftOrderDoc.getDocumentUrl()).getPath()
-        );
+        Document documentMetadata = caseDocumentClient.getMetadataForDocument(authorisation,
+            authTokenGenerator.generate(),
+            URI.create(draftOrderDoc.getDocumentUrl()).getPath());
 
         CCDCase updatedCase = ccdCase.toBuilder()
             .expertReportPermissionPartyGivenToClaimant(null)

@@ -115,7 +115,7 @@ document_management:
   userRoles: ${DOCUMENT_MANAGEMENT_USERROLES}
 
 case_document_am:
-  url: "http://localhost:4455"
+  url: "http://ccd-case-document-am-api:4455"
 
 core_case_data:
   api:
