@@ -19,6 +19,7 @@ public class Address {
     private List<String> addressLines;
     private String postcode;
     private String town;
+    private String type;
 
     @Override
     public String toString() {
