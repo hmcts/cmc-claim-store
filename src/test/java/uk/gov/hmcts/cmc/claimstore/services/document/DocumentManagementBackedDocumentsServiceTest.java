@@ -326,7 +326,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
     public void shouldGetOrderDocumentsForMediationAgreement() {
         final ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
         final ClaimDocumentType documentType = MEDIATION_AGREEMENT;
-        final ClaimDocument claimDocument = new ClaimDocument("", null, null, "", documentType, null, null,
+        final ClaimDocument claimDocument = new ClaimDocument("", null, null, "", "", documentType, null, null,
             null, "", 1L);
         claimDocumentCollection.addClaimDocument(claimDocument);
         Claim claim = Claim.builder()
@@ -349,7 +349,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
     public void shouldGetOrderDocumentsForOrderSanctions() {
         final ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
         final ClaimDocumentType documentType = ORDER_SANCTIONS;
-        final ClaimDocument claimDocument = new ClaimDocument("", null, null, "", documentType, null, null,
+        final ClaimDocument claimDocument = new ClaimDocument("", null, null, "", "", documentType, null, null,
             null, "", 1L);
         claimDocumentCollection.addClaimDocument(claimDocument);
         Claim claim = Claim.builder()
@@ -372,7 +372,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
     public void shouldGetOrderDocumentsForOrderDirections() {
         final ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
         final ClaimDocumentType documentType = ORDER_DIRECTIONS;
-        final ClaimDocument claimDocument = new ClaimDocument("", null, null, "", documentType, null, null,
+        final ClaimDocument claimDocument = new ClaimDocument("", null, null, "", "", documentType, null, null,
             null, "", 1L);
         claimDocumentCollection.addClaimDocument(claimDocument);
         Claim claim = Claim.builder()
