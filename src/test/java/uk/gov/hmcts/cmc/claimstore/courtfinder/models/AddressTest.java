@@ -14,6 +14,7 @@ class AddressTest {
             .addressLines(Arrays.asList("aaa\r", "bbb\r"))
             .postcode("EC2Y3DD")
             .town("London")
+            .type("Visit or contact us")
             .build();
         assertThat(address.toString()).isEqualTo("aaa\nbbb\nEC2Y3DD\nLondon");
     }
