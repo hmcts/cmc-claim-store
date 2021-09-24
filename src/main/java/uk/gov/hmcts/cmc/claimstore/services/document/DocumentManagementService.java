@@ -38,10 +38,12 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.DOCUMENT_
 
 @Service
 public class DocumentManagementService {
-
     private final Logger logger = LoggerFactory.getLogger(DocumentManagementService.class);
+
     private static final String FILES_NAME = "files";
     private static final String OCMC = "OCMC";
+    public static final String MONEY_CLAIM_CASE_TYPE_ID = "MoneyClaimCase";
+    public static final String JURISDICTION_ID = "CMC";
 
     private final DocumentMetadataDownloadClientApi documentMetadataDownloadClient;
     private final DocumentDownloadClientApi documentDownloadClient;
@@ -80,8 +82,8 @@ public class DocumentManagementService {
 
             UploadResponse response = caseDocumentClient.uploadDocuments(authorisation,
                 authTokenGenerator.generate(),
-                "MoneyClaimCase",
-                "CMC",
+                MONEY_CLAIM_CASE_TYPE_ID,
+                JURISDICTION_ID,
                 singletonList(file));
 
             uk.gov.hmcts.reform.ccd.document.am.model.Document document = response.getDocuments().stream()

@@ -19,6 +19,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ScannedDocument;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
+import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
 import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.reform.document.DocumentMetadataDownloadClientApi;
 import uk.gov.hmcts.reform.document.domain.Document;
@@ -37,7 +38,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementDownloadResponse;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementUploadResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.unsuccessfulDocumentManagementUploadResponse;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
@@ -46,7 +46,12 @@ public class DocumentManagementServiceTest {
 
     private static final ImmutableList<String> USER_ROLES = ImmutableList.of("caseworker-cmc", "citizen");
     private static final String USER_ROLES_JOINED = "caseworker-cmc,citizen";
+    public static final String EXPECTED_HREF = "/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4";
     private final PDF document = new PDF("0000-claim", "test".getBytes(), SEALED_CLAIM);
+    private final String authorisation = "authString";
+    private final String selfHref = "http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4";
+    private final String binaryHref = "http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4";
+
     @Mock
     CaseDocumentClient caseDocumentClient;
     @Mock
@@ -65,7 +70,7 @@ public class DocumentManagementServiceTest {
 
     @Before
     public void setUp() {
-        when(authTokenGenerator.generate()).thenReturn("authString");
+        when(authTokenGenerator.generate()).thenReturn(authorisation);
         documentManagementService = new DocumentManagementService(
             caseDocumentClient,
             documentMetadataDownloadClient,
@@ -79,18 +84,16 @@ public class DocumentManagementServiceTest {
 
     @Test
     public void shouldUploadToDocumentManagement() {
-        UserDetails userDetails = new UserDetails("id", "mail@mail.com",
-            "userFirstName", "userLastName", Collections.singletonList("role"));
-        when(userService.getUserDetails(anyString())).thenReturn(userDetails);
+        UploadResponse uploadResponse = createUploadResponseSecureDocStore();
 
         when(caseDocumentClient
             .uploadDocuments(anyString(), anyString(), anyString(), anyString(), anyList())
-        ).thenReturn(successfulDocumentManagementUploadResponse());
+        ).thenReturn(uploadResponse);
 
         URI documentSelfPath = documentManagementService
-            .uploadDocument("authString", document).getDocumentManagementUrl();
+            .uploadDocument(authorisation, document).getDocumentManagementUrl();
         assertNotNull(documentSelfPath);
-        assertEquals("/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4", documentSelfPath.getPath());
+        assertEquals(EXPECTED_HREF, documentSelfPath.getPath());
 
         verify(caseDocumentClient)
             .uploadDocuments(anyString(), anyString(), anyString(), anyString(), anyList());
@@ -98,12 +101,6 @@ public class DocumentManagementServiceTest {
 
     @Test
     public void uploadDocumentToDocumentManagementThrowsException() {
-        UserDetails userDetails = new UserDetails("id", "mail@mail.com",
-            "userFirstName", "userLastName", Collections.singletonList("role"));
-
-        String authorisation = "authString";
-        when(userService.getUserDetails(eq(authorisation))).thenReturn(userDetails);
-
         when(caseDocumentClient
             .uploadDocuments(anyString(), anyString(), anyString(), anyString(), anyList()))
             .thenReturn(unsuccessfulDocumentManagementUploadResponse());
@@ -213,5 +210,30 @@ public class DocumentManagementServiceTest {
 
         verify(documentMetadataDownloadClient)
             .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString());
+    }
+
+    private uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse createUploadResponseSecureDocStore() {
+        uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse response
+            = mock(uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse.class);
+        uk.gov.hmcts.reform.ccd.document.am.model.Document document
+            = createDocumentSecureDocStore();
+        when(response.getDocuments()).thenReturn(Collections.singletonList(document));
+        return response;
+    }
+
+    private uk.gov.hmcts.reform.ccd.document.am.model.Document createDocumentSecureDocStore() {
+        uk.gov.hmcts.reform.ccd.document.am.model.Document.Links links
+            = new uk.gov.hmcts.reform.ccd.document.am.model.Document.Links();
+        uk.gov.hmcts.reform.ccd.document.am.model.Document.Link selfLink
+            = new uk.gov.hmcts.reform.ccd.document.am.model.Document.Link();
+        uk.gov.hmcts.reform.ccd.document.am.model.Document.Link binaryLink
+            = new uk.gov.hmcts.reform.ccd.document.am.model.Document.Link();
+
+        selfLink.href = selfHref;
+        links.self = selfLink;
+        binaryLink.href = binaryHref;
+        links.binary = binaryLink;
+
+        return uk.gov.hmcts.reform.ccd.document.am.model.Document.builder().links(links).build();
     }
 }
