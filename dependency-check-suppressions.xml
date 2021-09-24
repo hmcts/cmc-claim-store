@@ -184,6 +184,9 @@
         <cve>CVE-2021-24122</cve>
         <cve>CVE-2021-25122</cve>
         <cve>CVE-2021-25329</cve>
+        <cve>CVE-2021-30639</cve>
+        <cve>CVE-2021-33037</cve>
+        <cve>CVE-2021-30640</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[
@@ -204,6 +207,9 @@
         ]]></notes>
         <cve>CVE-2021-22112</cve>
         <cve>CVE-2021-22118</cve>
+        <cve>CVE-2021-22119</cve>
+        <cve>CVE-2019-14900</cve>
+        <cve>CVE-2020-25638</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[
@@ -211,5 +217,24 @@
         ]]></notes>
         <cve>CVE-2017-7536</cve>
         <cve>CVE-2020-10693</cve>
+        <cve>CVE-2019-10219</cve>
+    </suppress>
+        <suppress>
+        <notes><![CDATA[
+            Related json_smart_project
+        ]]></notes>
+        <cve>CVE-2021-27568</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+            jakarta error
+        ]]></notes>
+        <cve>CVE-2021-28170</cve>
+    </suppress>
+    <suppress>
+    <notes><![CDATA[
+            Related Nim-lang
+        ]]></notes>
+    <cve>CVE-2020-23171</cve>
     </suppress>
 </suppressions>

@@ -123,6 +123,7 @@ public class CaseMetadataController {
     public List<CaseMetadata> getCreatedCases() {
         return claimService.getClaimsByState(CREATE, userService.authenticateAnonymousCaseWorker())
             .stream()
+            .filter(claim -> claim.getReferenceNumber() != null)
             .map(CaseMetadata::fromClaim)
             .collect(Collectors.toList());
     }
