@@ -111,12 +111,6 @@ data "azurerm_key_vault_secret" "sendgrid_api_key" {
   key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
 }
 
-resource "azurerm_key_vault_secret" "cmc-db-password" {
-  name      = "cmc-db-password"
-  value     = "${module.database.postgresql_password}"
-  key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
-}
-
 data "azurerm_key_vault" "send_grid" {
   provider = azurerm.send-grid
 
@@ -138,20 +132,6 @@ resource "azurerm_key_vault_secret" "sendgrid_api_key-2" {
   value        = data.azurerm_key_vault_secret.send_grid_api_key.value
 }
 
-module "database" {
-  source = "git@github.com:hmcts/cnp-module-postgres?ref=master"
-  product = "${var.product}"
-  location = "${var.location}"
-  env = "${var.env}"
-  postgresql_user = "cmc"
-  database_name = "${var.database-name}"
-  postgresql_version = "${var.postgresql_version}"
-  sku_name = "${var.database_sku_name}"
-  sku_tier = "GeneralPurpose"
-  storage_mb = "${var.database_storage_mb}"
-  common_tags = "${var.common_tags}"
-  subscription = "${var.subscription}"
-}
 // DB version 11
 module "database-v11" {
   source = "git@github.com:hmcts/cnp-module-postgres?ref=master"
@@ -171,9 +151,6 @@ module "database-v11" {
 
 resource "azurerm_key_vault_secret" "cmc-db-password-v11" {
   name      = "cmc-db-password-v11"
-  value     = "${module.database.postgresql_password}"
+  value     = "${module.database-v11.postgresql_password}"
   key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
 }
-
-
-
