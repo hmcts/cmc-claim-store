@@ -232,8 +232,7 @@ dependencies {
   compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '11.2'
 
   compile group: 'org.springframework.cloud',name : 'spring-cloud-starter-bootstrap'
-
-  implementation("com.github.hmcts:ccd-case-document-am-client:1.7.2")
+  compile group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.7.2'
 
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.18'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.18'

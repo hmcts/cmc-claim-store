@@ -64,9 +64,12 @@ public class DocumentManagementServiceTest {
     private UserService userService;
     @Mock
     private AppInsights appInsights;
-    private DocumentManagementService documentManagementService;
     @Mock
     private ResponseEntity<Resource> responseEntity;
+    @Mock
+    private UploadResponse uploadResponse;
+
+    private DocumentManagementService documentManagementService;
 
     @Before
     public void setUp() {
@@ -212,13 +215,11 @@ public class DocumentManagementServiceTest {
             .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString());
     }
 
-    private uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse createUploadResponseSecureDocStore() {
-        uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse response
-            = mock(uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse.class);
+    private UploadResponse createUploadResponseSecureDocStore() {
         uk.gov.hmcts.reform.ccd.document.am.model.Document document
             = createDocumentSecureDocStore();
-        when(response.getDocuments()).thenReturn(Collections.singletonList(document));
-        return response;
+        when(uploadResponse.getDocuments()).thenReturn(Collections.singletonList(document));
+        return uploadResponse;
     }
 
     private uk.gov.hmcts.reform.ccd.document.am.model.Document createDocumentSecureDocStore() {
