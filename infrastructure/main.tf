@@ -153,4 +153,3 @@ resource "azurerm_key_vault_secret" "cmc-db-password-v11" {
   value     = "${module.database-v11.postgresql_password}"
   key_vault_id = "${data.azurerm_key_vault.cmc_key_vault.id}"
 }
-
