@@ -237,4 +237,10 @@
         ]]></notes>
     <cve>CVE-2020-23171</cve>
     </suppress>
+    <suppress>
+    <notes><![CDATA[
+            Related elasticsearch
+        ]]></notes>
+    <cve>CVE-2021-22147</cve>
+    </suppress>
 </suppressions>
