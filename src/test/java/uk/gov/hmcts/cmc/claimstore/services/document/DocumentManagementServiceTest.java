@@ -9,7 +9,6 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
@@ -19,10 +18,8 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ScannedDocument;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
-import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
-import uk.gov.hmcts.reform.document.DocumentMetadataDownloadClientApi;
-import uk.gov.hmcts.reform.document.domain.Document;
 
 import java.net.URI;
 import java.util.Collections;
@@ -33,7 +30,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -44,8 +40,6 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class DocumentManagementServiceTest {
 
-    private static final ImmutableList<String> USER_ROLES = ImmutableList.of("caseworker-cmc", "citizen");
-    private static final String USER_ROLES_JOINED = "caseworker-cmc,citizen";
     public static final String EXPECTED_HREF = "/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4";
     private final PDF document = new PDF("0000-claim", "test".getBytes(), SEALED_CLAIM);
     private final String authorisation = "authString";
@@ -54,10 +48,6 @@ public class DocumentManagementServiceTest {
 
     @Mock
     CaseDocumentClient caseDocumentClient;
-    @Mock
-    private DocumentMetadataDownloadClientApi documentMetadataDownloadClient;
-    @Mock
-    private DocumentDownloadClientApi documentDownloadClient;
     @Mock
     private AuthTokenGenerator authTokenGenerator;
     @Mock
@@ -76,12 +66,8 @@ public class DocumentManagementServiceTest {
         when(authTokenGenerator.generate()).thenReturn(authorisation);
         documentManagementService = new DocumentManagementService(
             caseDocumentClient,
-            documentMetadataDownloadClient,
-            documentDownloadClient,
             authTokenGenerator,
-            userService,
-            appInsights,
-            USER_ROLES
+            appInsights
         );
     }
 
@@ -146,25 +132,16 @@ public class DocumentManagementServiceTest {
     private void assertDocumentDownloadSuccessful(byte[] pdf) {
         assertNotNull(pdf);
         assertArrayEquals("test".getBytes(), pdf);
-
-        verify(documentMetadataDownloadClient)
-            .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString());
-        verify(documentDownloadClient)
-            .downloadBinary(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString());
+        verify(caseDocumentClient)
+            .getDocumentBinary(anyString(), anyString(), anyString());
     }
 
     private URI setupDocumentDownloadClient() {
-        when(documentMetadataDownloadClient
-            .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString())
-        ).thenReturn(successfulDocumentManagementDownloadResponse());
-
         UserDetails userDetails = new UserDetails("id", "mail@mail.com",
             "userFirstName", "userLastName", Collections.singletonList("role"));
         when(userService.getUserDetails(anyString())).thenReturn(userDetails);
         when(responseEntity.getBody()).thenReturn(new ByteArrayResource("test".getBytes()));
-
-        when(documentDownloadClient
-            .downloadBinary(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString())
+        when(caseDocumentClient.getDocumentBinary(anyString(), anyString(), anyString())
         ).thenReturn(responseEntity);
         return URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4");
     }
@@ -175,10 +152,6 @@ public class DocumentManagementServiceTest {
         UserDetails userDetails = new UserDetails("id", "mail@mail.com",
             "userFirstName", "userLastName", Collections.singletonList("role"));
         when(userService.getUserDetails(anyString())).thenReturn(userDetails);
-
-        when(documentMetadataDownloadClient
-            .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString())
-        ).thenReturn(null);
 
         ClaimDocument claimDocument = ClaimDocument.builder()
             .documentManagementUrl(docUri)
@@ -197,8 +170,7 @@ public class DocumentManagementServiceTest {
     public void getDocumentMetaData() {
         URI docUri = URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4");
 
-        when(documentMetadataDownloadClient
-            .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString())
+        when(caseDocumentClient.getMetadataForDocument(anyString(), anyString(), anyString())
         ).thenReturn(successfulDocumentManagementDownloadResponse());
 
         UserDetails userDetails = new UserDetails("id", "mail@mail.com",
@@ -211,8 +183,8 @@ public class DocumentManagementServiceTest {
         assertEquals(72552L, documentMetaData.size);
         assertEquals("000LR002.pdf", documentMetaData.originalDocumentName);
 
-        verify(documentMetadataDownloadClient)
-            .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString());
+        verify(caseDocumentClient)
+            .getMetadataForDocument(anyString(), anyString(), anyString());
     }
 
     private UploadResponse createUploadResponseSecureDocStore() {

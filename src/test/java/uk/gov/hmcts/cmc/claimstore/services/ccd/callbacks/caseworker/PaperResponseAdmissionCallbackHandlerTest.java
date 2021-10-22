@@ -42,8 +42,8 @@ import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
-import uk.gov.hmcts.reform.document.domain.Document;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -268,7 +268,7 @@ class PaperResponseAdmissionCallbackHandlerTest {
 
     @NotNull
     private Document getLinks() {
-        Document document = new Document();
+        Document document = Document.builder().build();
         Document.Links links = new Document.Links();
         links.binary = new Document.Link();
         links.binary.href = DOC_URL_BINARY;
