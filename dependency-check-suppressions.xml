@@ -244,4 +244,10 @@
         ]]></notes>
     <cve>CVE-2021-22147</cve>
     </suppress>
+    <suppress>
+    <notes><![CDATA[
+            Related tomcat
+        ]]></notes>
+    <cve>CVE-2021-42340</cve>
+    </suppress>
 </suppressions>
