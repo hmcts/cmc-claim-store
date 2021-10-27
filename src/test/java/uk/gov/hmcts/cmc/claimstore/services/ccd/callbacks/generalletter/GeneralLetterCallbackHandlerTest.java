@@ -61,11 +61,10 @@ class GeneralLetterCallbackHandlerTest {
     private static final String DRAFT_LETTER_DOC_KEY = "draftLetterDoc";
     private static final String GENERAL_LETTER_TEMPLATE_ID = "generalLetterTemplateId";
     private static final String DOC_URL = "http://success.test";
-    private static final String DOC_URL_BINARY = "http://success.test/binary";
     private static final String DOC_NAME = "doc-name";
     private static final CCDDocument DRAFT_LETTER_DOC = CCDDocument.builder()
         .documentFileName(DOC_NAME)
-        .documentBinaryUrl(DOC_URL_BINARY)
+        .documentBinaryUrl(DOC_URL)
         .documentUrl(DOC_URL).build();
     private static final URI DOCUMENT_URI = URI.create("http://localhost/doc.pdf");
     private static final Claim claim = SampleClaim
@@ -75,7 +74,7 @@ class GeneralLetterCallbackHandlerTest {
     private static final CCDDocument DOCUMENT = CCDDocument
         .builder()
         .documentUrl(DOC_URL)
-        .documentBinaryUrl(DOC_URL_BINARY)
+        .documentBinaryUrl(DOC_URL)
         .documentFileName(GENERAL_DOCUMENT_NAME)
         .build();
     private static final LocalDateTime DATE = LocalDateTime.parse("2020-11-16T13:15:30");

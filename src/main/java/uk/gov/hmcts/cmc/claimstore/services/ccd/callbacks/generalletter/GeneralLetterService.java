@@ -17,7 +17,6 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.PrintableDocumentService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
-import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -25,7 +24,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.docassembly.exception.DocumentGenerationFailedException;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
-import java.net.URI;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -46,7 +44,6 @@ public class GeneralLetterService {
     private final Clock clock;
     private final UserService userService;
     private final DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
-    private final DocumentManagementService documentManagementService;
     private final BulkPrintDetailsMapper bulkPrintDetailsMapper;
 
     public GeneralLetterService(
@@ -56,7 +53,6 @@ public class GeneralLetterService {
         Clock clock,
         UserService userService,
         DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper,
-        DocumentManagementService documentManagementService,
         BulkPrintDetailsMapper bulkPrintDetailsMapper
     ) {
         this.docAssemblyService = docAssemblyService;
@@ -65,7 +61,6 @@ public class GeneralLetterService {
         this.clock = clock;
         this.userService = userService;
         this.docAssemblyTemplateBodyMapper = docAssemblyTemplateBodyMapper;
-        this.documentManagementService = documentManagementService;
         this.bulkPrintDetailsMapper = bulkPrintDetailsMapper;
     }
 
@@ -134,21 +129,15 @@ public class GeneralLetterService {
         String documentName,
         String authorisation) {
 
-        var documentMetadata = documentManagementService.getDocumentMetaData(
-            authorisation,
-            URI.create(ccdDocument.getDocumentUrl()).getPath()
-        );
-
         CCDCollectionElement<CCDClaimDocument> claimDocument = CCDCollectionElement.<CCDClaimDocument>builder()
             .value(CCDClaimDocument.builder()
                 .documentLink(CCDDocument.builder()
                     .documentFileName(documentName)
                     .documentUrl(ccdDocument.getDocumentUrl())
-                    .documentBinaryUrl(documentMetadata.links.binary.href)
+                    .documentBinaryUrl(ccdDocument.getDocumentUrl())
                     .build())
                 .documentName(documentName)
                 .createdDatetime(LocalDateTime.now(clock.withZone(UTC_ZONE)))
-                .size(documentMetadata.size)
                 .documentType(GENERAL_LETTER)
                 .build())
             .build();

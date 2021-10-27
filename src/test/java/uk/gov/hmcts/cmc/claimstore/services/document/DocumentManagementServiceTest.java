@@ -18,7 +18,6 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ScannedDocument;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
-import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
 
 import java.net.URI;
@@ -33,7 +32,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementDownloadResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.unsuccessfulDocumentManagementUploadResponse;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
@@ -164,27 +162,6 @@ public class DocumentManagementServiceTest {
             assertThat(expected).hasMessage(String.format("Unable to download document %s from document management.",
                 docUri));
         }
-    }
-
-    @Test
-    public void getDocumentMetaData() {
-        URI docUri = URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4");
-
-        when(caseDocumentClient.getMetadataForDocument(anyString(), anyString(), anyString())
-        ).thenReturn(successfulDocumentManagementDownloadResponse());
-
-        UserDetails userDetails = new UserDetails("id", "mail@mail.com",
-            "userFirstName", "userLastName", Collections.singletonList("role"));
-        when(userService.getUserDetails(anyString())).thenReturn(userDetails);
-        when(responseEntity.getBody()).thenReturn(new ByteArrayResource("test".getBytes()));
-
-        Document documentMetaData = documentManagementService.getDocumentMetaData("auth string", docUri.getPath());
-
-        assertEquals(72552L, documentMetaData.size);
-        assertEquals("000LR002.pdf", documentMetaData.originalDocumentName);
-
-        verify(caseDocumentClient)
-            .getMetadataForDocument(anyString(), anyString(), anyString());
     }
 
     private UploadResponse createUploadResponseSecureDocStore() {

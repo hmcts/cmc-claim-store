@@ -28,7 +28,6 @@ import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
-import uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -111,8 +110,7 @@ public class DrawOrderCallbackHandlerTest {
     @Before
     public void setUp() {
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
-            caseDetailsConverter, legalOrderService, appInsights, directionOrderService,
-            documentManagementService, claimService);
+            caseDetailsConverter, legalOrderService, appInsights, directionOrderService, claimService);
 
         drawOrderCallbackHandler = new DrawOrderCallbackHandler(orderPostProcessor, caseDetailsConverter,
             orderRenderer);
@@ -195,8 +193,6 @@ public class DrawOrderCallbackHandlerTest {
         when(directionOrderService.getHearingCourt(any())).thenReturn(HearingCourt.builder().build());
 
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-        when(documentManagementService.getDocumentMetaData(any(), any()))
-            .thenReturn(ResourceLoader.successfulDocumentManagementDownloadResponse());
 
         when(caseDetailsConverter.convertToMap(any(CCDCase.class)))
             .thenReturn(ImmutableMap.<String, Object>builder()
