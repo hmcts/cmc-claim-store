@@ -31,6 +31,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
+import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.DefendantResponseNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -93,6 +94,8 @@ class PaperResponseAdmissionCallbackHandlerTest {
     @Mock
     private DocAssemblyResponse docAssemblyResponse;
     @Mock
+    private DocumentManagementService documentManagementService;
+    @Mock
     private Clock clock;
     @Mock
     private UserService userService;
@@ -111,7 +114,7 @@ class PaperResponseAdmissionCallbackHandlerTest {
         String paperResponseAdmissionTemplateId = "CV-CMC-GOR-ENG-0016.docx";
         handler = new PaperResponseAdmissionCallbackHandler(caseDetailsConverter,
             defendantResponseNotificationService, caseMapper, docAssemblyService, docAssemblyTemplateBodyMapper,
-            paperResponseAdmissionTemplateId, userService, clock, generalLetterService,
+            paperResponseAdmissionTemplateId, userService, documentManagementService, clock, generalLetterService,
             caseEventService, launchDarklyClient);
         CallbackRequest callbackRequest = getCallBackRequest();
         callbackParams = getBuild(callbackRequest, CallbackType.ABOUT_TO_SUBMIT);
@@ -208,6 +211,7 @@ class PaperResponseAdmissionCallbackHandlerTest {
         when(docAssemblyTemplateBodyMapper.paperResponseAdmissionLetter(any(CCDCase.class), any(String.class)))
             .thenReturn(DocAssemblyTemplateBody.builder().build());
         when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
+        when(documentManagementService.getDocumentMetaData(anyString(), anyString())).thenReturn(getLinks());
         when(clock.instant()).thenReturn(LocalDate.parse("2020-06-22").atStartOfDay().toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
         when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);
@@ -217,6 +221,9 @@ class PaperResponseAdmissionCallbackHandlerTest {
         ArgumentCaptor<CCDCase> ccdDataArgumentCaptor = ArgumentCaptor.forClass(CCDCase.class);
         handler.handle(callbackParams);
         verify(caseDetailsConverter).convertToMap(ccdDataArgumentCaptor.capture());
+
+        verify(documentManagementService, times(1))
+            .getDocumentMetaData(anyString(), anyString());
 
         verify(docAssemblyTemplateBodyMapper, times(1)).paperResponseAdmissionLetter(any(CCDCase.class),
             any(String.class));
@@ -313,6 +320,7 @@ class PaperResponseAdmissionCallbackHandlerTest {
             when(docAssemblyTemplateBodyMapper.paperResponseAdmissionLetter(any(CCDCase.class), any(String.class)))
                 .thenReturn(DocAssemblyTemplateBody.builder().build());
             when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
+            when(documentManagementService.getDocumentMetaData(anyString(), anyString())).thenReturn(getLinks());
             when(clock.instant()).thenReturn(LocalDate.parse("2020-06-22").atStartOfDay().toInstant(ZoneOffset.UTC));
             when(clock.getZone()).thenReturn(ZoneOffset.UTC);
             when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);

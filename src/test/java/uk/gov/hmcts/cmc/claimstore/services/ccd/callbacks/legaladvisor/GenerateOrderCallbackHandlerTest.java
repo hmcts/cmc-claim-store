@@ -44,10 +44,12 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackVersion;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.rules.GenerateOrderRule;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
+import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
+import uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
@@ -117,6 +119,8 @@ public class GenerateOrderCallbackHandlerTest {
     @Mock
     private OrderRenderer orderRenderer;
     @Mock
+    private DocumentManagementService documentManagementService;
+    @Mock
     private ClaimService claimService;
     @Mock
     private LaunchDarklyClient launchDarklyClient;
@@ -151,7 +155,8 @@ public class GenerateOrderCallbackHandlerTest {
             orderRenderer, launchDarklyClient);
 
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
-            caseDetailsConverter, legalOrderService, appInsights, directionOrderService, claimService);
+            caseDetailsConverter, legalOrderService, appInsights, directionOrderService,
+            documentManagementService, claimService);
 
         generateOrderCallbackHandler = new GenerateOrderCallbackHandler(orderCreator, orderPostProcessor
         );
@@ -415,6 +420,8 @@ public class GenerateOrderCallbackHandlerTest {
             when(directionOrderService.getHearingCourt(any())).thenReturn(HearingCourt.builder().build());
 
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+            when(documentManagementService.getDocumentMetaData(any(), any()))
+                .thenReturn(ResourceLoader.successfulDocumentManagementDownloadResponse());
 
             when(caseDetailsConverter.convertToMap(any(CCDCase.class)))
                 .thenReturn(ImmutableMap.<String, Object>builder()

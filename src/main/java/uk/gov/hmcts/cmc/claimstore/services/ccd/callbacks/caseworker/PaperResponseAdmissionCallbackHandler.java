@@ -23,6 +23,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
+import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.DefendantResponseNotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -64,6 +65,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
     private final DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
     private final String paperResponseAdmissionTemplateId;
     private final UserService userService;
+    private final DocumentManagementService documentManagementService;
     private final Clock clock;
     private final GeneralLetterService generalLetterService;
     private final CaseEventService caseEventService;
@@ -83,6 +85,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
              @Value("${doc_assembly.paperResponseAdmissionTemplateId}")
                  String paperResponseAdmissionTemplateId,
              UserService userService,
+             DocumentManagementService documentManagementService,
              Clock clock,
              GeneralLetterService generalLetterService,
              CaseEventService caseEventService,
@@ -94,6 +97,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
         this.docAssemblyTemplateBodyMapper = docAssemblyTemplateBodyMapper;
         this.paperResponseAdmissionTemplateId = paperResponseAdmissionTemplateId;
         this.userService = userService;
+        this.documentManagementService = documentManagementService;
         this.clock = clock;
         this.generalLetterService = generalLetterService;
         this.caseEventService = caseEventService;
@@ -186,12 +190,17 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
             docAssemblyTemplateBodyMapper.paperResponseAdmissionLetter(updatedCCDCase,
                 userService.getUserDetails(authorisation).getFullName()));
 
+        var documentMetadata = documentManagementService.getDocumentMetaData(
+            authorisation,
+            URI.create(docAssemblyResponse.getRenditionOutputLocation()).getPath()
+        );
+
         String documentName = String.format("%s-defendant-case-handoff.pdf",
             updatedCCDCase.getPreviousServiceCaseReference());
 
         CCDDocument ccdDocument = CCDDocument.builder()
             .documentFileName(documentName)
-            .documentBinaryUrl(URI.create(docAssemblyResponse.getRenditionOutputLocation()).getPath())
+            .documentBinaryUrl(documentMetadata.links.binary.href)
             .documentUrl(docAssemblyResponse.getRenditionOutputLocation())
             .build();
 
@@ -202,6 +211,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
                 .documentLink(ccdDocument)
                 .documentName(documentName)
                 .createdDatetime(LocalDateTime.now(clock.withZone(UTC_ZONE)))
+                .size(documentMetadata.size)
                 .documentType(GENERAL_LETTER)
                 .build())
             .build();

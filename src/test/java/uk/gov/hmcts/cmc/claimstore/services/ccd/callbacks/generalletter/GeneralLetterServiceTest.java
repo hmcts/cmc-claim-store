@@ -55,10 +55,11 @@ class GeneralLetterServiceTest {
     public static final String GENERAL_LETTER_TEMPLATE_ID = "generalLetterTemplateId";
     public static final String GENERAL_DOCUMENT_NAME = "document-name";
     private static final String DOC_URL = "http://success.test";
+    private static final String DOC_URL_BINARY = "http://success.test/binary";
     private static final String DOC_NAME = "doc-name";
     private static final CCDDocument DRAFT_LETTER_DOC = CCDDocument.builder()
         .documentFileName(DOC_NAME)
-        .documentBinaryUrl(DOC_URL)
+        .documentBinaryUrl(DOC_URL_BINARY)
         .documentUrl(DOC_URL).build();
     private static final URI DOCUMENT_URI = URI.create("http://localhost/doc.pdf");
     private static final Claim claim = SampleClaim
@@ -69,7 +70,7 @@ class GeneralLetterServiceTest {
     private static final CCDDocument DOCUMENT = CCDDocument
         .builder()
         .documentUrl(DOC_URL)
-        .documentBinaryUrl(DOC_URL)
+        .documentBinaryUrl(DOC_URL_BINARY)
         .documentFileName(GENERAL_DOCUMENT_NAME)
         .build();
     private static final CCDCollectionElement<CCDClaimDocument> CLAIM_DOCUMENT =
@@ -111,6 +112,7 @@ class GeneralLetterServiceTest {
             clock,
             userService,
             docAssemblyTemplateBodyMapper,
+            documentManagementService,
             bulkPrintDetailsMapper);
 
         String documentUrl = DOCUMENT_URI.toString();
@@ -199,6 +201,9 @@ class GeneralLetterServiceTest {
         when(documentManagementService.downloadDocument(anyString(), any(ClaimDocument.class)))
             .thenReturn(PDF_BYTES);
 
+        when(documentManagementService.getDocumentMetaData(anyString(), anyString()))
+            .thenReturn(getLinks());
+
         CCDCase updatedCase = generalLetterService
             .publishLetter(ccdCase, claim, BEARER_TOKEN.name(), GENERAL_DOCUMENT_NAME);
 
@@ -211,7 +216,7 @@ class GeneralLetterServiceTest {
         Document document = Document.builder().build();
         Document.Links links = new Document.Links();
         links.binary = new Document.Link();
-        links.binary.href = DOC_URL;
+        links.binary.href = DOC_URL_BINARY;
         document.links = links;
         return document;
     }
@@ -228,5 +233,16 @@ class GeneralLetterServiceTest {
         assertThrows(RuntimeException.class,
             () -> generalLetterService.generateLetter(ccdCase, BEARER_TOKEN.name(),
                 GENERAL_LETTER_TEMPLATE_ID));
+    }
+
+    @Test
+    void shouldAttachDocument() {
+        when(documentManagementService.getDocumentMetaData(anyString(), anyString()))
+            .thenReturn(getLinks());
+        when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);
+        generalLetterService.attachGeneralLetterToCase(ccdCase, DOCUMENT, anyString(), anyString());
+        verify(documentManagementService, once()).getDocumentMetaData(anyString(), anyString());
     }
 }

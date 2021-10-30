@@ -19,6 +19,7 @@ import uk.gov.hmcts.cmc.domain.models.ScannedDocument;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 
@@ -141,5 +142,16 @@ public class DocumentManagementService {
             + "other details are {}", exception.getMessage(), exception.getCause(), exception);
         appInsights.trackEvent(DOCUMENT_MANAGEMENT_DOWNLOAD_FAILURE, DOCUMENT_NAME, filename);
         throw exception;
+    }
+
+    public Document getDocumentMetaData(String authorisation, String documentPath) {
+        try {
+            return caseDocumentClient.getMetadataForDocument(authorisation,
+                authTokenGenerator.generate(),
+                documentPath);
+        } catch (Exception ex) {
+            throw new DocumentManagementException(
+                "Unable to download document from document management.", ex);
+        }
     }
 }
