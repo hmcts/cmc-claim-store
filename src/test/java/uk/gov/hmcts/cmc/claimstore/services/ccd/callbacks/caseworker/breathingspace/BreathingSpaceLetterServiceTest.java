@@ -118,8 +118,9 @@ class BreathingSpaceLetterServiceTest {
         when(docAssemblyTemplateBodyMapper.breathingSpaceLetter(any(CCDCase.class)))
             .thenReturn(docAssemblyTemplateBody);
         when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
-        when(printableDocumentService.pdf(any(CCDDocument.class), anyString())).thenReturn(PDF_BYTES);
-        when(printableDocumentService.process(any(CCDDocument.class), anyString()))
+        when(printableDocumentService.pdf(any(CCDDocument.class), anyString(), any(boolean.class)))
+            .thenReturn(PDF_BYTES);
+        when(printableDocumentService.process(any(CCDDocument.class), anyString(), any(boolean.class)))
             .thenReturn(BREATHING_SPACE_DOCUMENT);
         when(bulkPrintService
             .printPdf(any(Claim.class), any(),
@@ -147,8 +148,9 @@ class BreathingSpaceLetterServiceTest {
         when(docAssemblyTemplateBodyMapper.breathingSpaceLetter(any(CCDCase.class)))
             .thenReturn(docAssemblyTemplateBody);
         when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
-        when(printableDocumentService.pdf(any(CCDDocument.class), anyString())).thenReturn(PDF_BYTES);
-        when(printableDocumentService.process(any(CCDDocument.class), anyString()))
+        when(printableDocumentService.pdf(any(CCDDocument.class), anyString(), any(boolean.class)))
+            .thenReturn(PDF_BYTES);
+        when(printableDocumentService.process(any(CCDDocument.class), anyString(), any(boolean.class)))
             .thenReturn(BREATHING_SPACE_DOCUMENT);
         when(bulkPrintService
             .printPdf(any(Claim.class), any(),
@@ -181,8 +183,9 @@ class BreathingSpaceLetterServiceTest {
         when(docAssemblyTemplateBodyMapper.breathingSpaceLetter(any(CCDCase.class)))
             .thenReturn(docAssemblyTemplateBody);
         when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
-        when(printableDocumentService.pdf(any(CCDDocument.class), anyString())).thenReturn(PDF_BYTES);
-        when(printableDocumentService.process(any(CCDDocument.class), anyString()))
+        when(printableDocumentService.pdf(any(CCDDocument.class), anyString(), any(boolean.class)))
+            .thenReturn(PDF_BYTES);
+        when(printableDocumentService.process(any(CCDDocument.class), anyString(), any(boolean.class)))
             .thenReturn(BREATHING_SPACE_DOCUMENT);
         when(bulkPrintService
             .printPdf(any(Claim.class), any(),

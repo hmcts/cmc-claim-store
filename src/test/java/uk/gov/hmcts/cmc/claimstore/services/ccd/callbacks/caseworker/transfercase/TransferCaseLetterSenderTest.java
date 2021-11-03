@@ -13,7 +13,6 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.PrintableDocumentServi
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.sendletter.api.Document;
-
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.eq;
@@ -61,15 +60,18 @@ class TransferCaseLetterSenderTest {
 
     @Test
     void shouldSendAllCaseDocumentsToCourt() {
-
-        CCDDocument noticeForCourt = mock(CCDDocument.class);
-        Document coverLetterDoc = mock(Document.class);
         final List<BulkPrintTransferEvent.PrintableDocument> caseDocuments = List.of();
+
+        Document coverLetterDoc = mock(Document.class);
 
         when(ccdCase.getCaseDocuments()).thenReturn(List.of());
         when(ccdCase.getScannedDocuments()).thenReturn(List.of());
         when(ccdCase.getStaffUploadedDocuments()).thenReturn(List.of());
-        when(printableDocumentService.process(eq(noticeForCourt), eq(AUTHORISATION))).thenReturn(coverLetterDoc);
+
+        CCDDocument noticeForCourt = mock(CCDDocument.class);
+
+        when(printableDocumentService.process(eq(noticeForCourt), eq(AUTHORISATION), eq(true)))
+            .thenReturn(coverLetterDoc);
 
         transferCaseLetterSender.sendAllCaseDocumentsToCourt(AUTHORISATION, ccdCase, claim, noticeForCourt);
 

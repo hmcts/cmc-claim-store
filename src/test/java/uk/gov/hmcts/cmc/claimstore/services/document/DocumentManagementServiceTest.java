@@ -9,6 +9,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
@@ -20,6 +21,8 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
+import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
+import uk.gov.hmcts.reform.document.DocumentMetadataDownloadClientApi;
 
 import java.net.URI;
 import java.util.Collections;
@@ -41,13 +44,19 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 public class DocumentManagementServiceTest {
 
     public static final String EXPECTED_HREF = "/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4";
+    private static final ImmutableList<String> USER_ROLES = ImmutableList.of("caseworker-cmc", "citizen");
     private final PDF document = new PDF("0000-claim", "test".getBytes(), SEALED_CLAIM);
     private final String authorisation = "authString";
     private final String selfHref = "http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4";
     private final String binaryHref = "http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4";
 
     @Mock
+    private DocumentMetadataDownloadClientApi documentMetadataDownloadClient;
+    @Mock
+    private DocumentDownloadClientApi documentDownloadClient;
+    @Mock
     CaseDocumentClient caseDocumentClient;
+
     @Mock
     private AuthTokenGenerator authTokenGenerator;
     @Mock
@@ -65,9 +74,13 @@ public class DocumentManagementServiceTest {
     public void setUp() {
         when(authTokenGenerator.generate()).thenReturn(authorisation);
         documentManagementService = new DocumentManagementService(
+            documentMetadataDownloadClient,
+            documentDownloadClient,
+            userService,
             caseDocumentClient,
             authTokenGenerator,
-            appInsights
+            appInsights,
+            USER_ROLES
         );
     }
 
@@ -110,6 +123,9 @@ public class DocumentManagementServiceTest {
             .documentManagementUrl(docUri)
             .build();
 
+        when(caseDocumentClient.getMetadataForDocument(anyString(), anyString(), anyString())
+        ).thenReturn(successfulDocumentManagementDownloadResponse());
+
         byte[] pdf = documentManagementService.downloadScannedDocument("auth string", claimDocument);
 
         assertDocumentDownloadSuccessful(pdf);
@@ -124,7 +140,11 @@ public class DocumentManagementServiceTest {
             .documentManagementUrl(docUri)
             .documentName("0000-claim")
             .build();
-        byte[] pdf = documentManagementService.downloadDocument("auth string", claimDocument);
+
+        when(caseDocumentClient.getMetadataForDocument(anyString(), anyString(), anyString())
+        ).thenReturn(successfulDocumentManagementDownloadResponse());
+
+        byte[] pdf = documentManagementService.downloadDocument("auth string", claimDocument, true);
 
         assertDocumentDownloadSuccessful(pdf);
     }
@@ -158,7 +178,7 @@ public class DocumentManagementServiceTest {
             .documentName("0000-claim")
             .build();
         try {
-            documentManagementService.downloadDocument("auth string", claimDocument);
+            documentManagementService.downloadDocument("auth string", claimDocument, true);
             Assert.fail("Expected a DocumentManagementException to be thrown");
         } catch (DocumentManagementException expected) {
             assertThat(expected).hasMessage(String.format("Unable to download document %s from document management.",

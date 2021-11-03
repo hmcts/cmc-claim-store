@@ -133,14 +133,14 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     private byte[] getGeneralLetters(Claim claim, String authorisation, String claimDocumentId) {
         Optional<ClaimDocument> claimDocument = claim.getClaimDocument(claimDocumentId);
         return claimDocument
-            .map(document -> documentManagementService.downloadDocument(authorisation, document))
+            .map(document -> documentManagementService.downloadDocument(authorisation, document, true))
             .orElseThrow(() -> new IllegalArgumentException(DOCUMENT_IS_NOT_AVAILABLE_FOR_DOWNLOAD));
     }
 
     private byte[] getOrderDocuments(Claim claim, String authorisation, ClaimDocumentType claimDocumentType) {
         Optional<ClaimDocument> claimDocument = claim.getClaimDocument(claimDocumentType);
         return claimDocument
-            .map(document -> documentManagementService.downloadDocument(authorisation, document))
+            .map(document -> documentManagementService.downloadDocument(authorisation, document, true))
             .orElseThrow(() -> new IllegalArgumentException(DOCUMENT_IS_NOT_AVAILABLE_FOR_DOWNLOAD));
     }
 
@@ -149,7 +149,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
             Optional<ClaimDocument> claimDocument = claim.getClaimDocument(claimDocumentType);
             if (claimDocument.isPresent()) {
                 return claimDocument
-                    .map(document -> documentManagementService.downloadDocument(authorisation, document))
+                    .map(document -> documentManagementService.downloadDocument(authorisation, document, true))
                     .orElseGet(() -> generateNewDocument(claim, authorisation, claimDocumentType));
             }
 

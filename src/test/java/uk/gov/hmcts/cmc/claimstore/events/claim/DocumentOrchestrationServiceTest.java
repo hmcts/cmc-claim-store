@@ -73,9 +73,10 @@ public class DocumentOrchestrationServiceTest {
     private ClaimService claimService;
     @Mock
     private UserService userService;
-    private DocumentOrchestrationService documentOrchestrationService;
     @Mock
     private PrintableDocumentService printableDocumentService;
+
+    private DocumentOrchestrationService documentOrchestrationService;
 
     @Before
     public void before() {
@@ -113,22 +114,22 @@ public class DocumentOrchestrationServiceTest {
 
     @Test
     public void shouldCreateAllNewDocumentsForCitizen() {
-        given(printableDocumentService.pdf(DOCUMENT, AUTHORISATION)).willReturn(PDF_BYTES);
+        given(printableDocumentService.pdf(DOCUMENT, AUTHORISATION, false)).willReturn(PDF_BYTES);
         given(userService.generatePin(anyString(), anyString())).willReturn(PIN_RESPONSE);
         given(citizenServiceDocumentsService
             .createDefendantPinLetter(CLAIM, PIN, AUTHORISATION))
             .willReturn(DOCUMENT);
-        given(printableDocumentService.process(DOCUMENT, AUTHORISATION)).willReturn(COVER_DOCUMENT);
+        given(printableDocumentService.process(DOCUMENT, AUTHORISATION, false)).willReturn(COVER_DOCUMENT);
         // when
         documentOrchestrationService.generateForCitizen(CLAIM, AUTHORISATION, true);
 
         //verify
         verify(citizenServiceDocumentsService).sealedClaimDocument(eq(CLAIM));
         verify(citizenServiceDocumentsService).createDefendantPinLetter(eq(CLAIM), eq(PIN), eq(AUTHORISATION));
-        verify(printableDocumentService).process(eq(DOCUMENT), eq(AUTHORISATION));
+        verify(printableDocumentService).process(eq(DOCUMENT), eq(AUTHORISATION), eq(false));
         verify(pdfServiceClient, atLeast(1)).generateFromHtml(any(), anyMap());
         verify(claimIssueReceiptService).createPdf(eq(CLAIM));
-        verify(printableDocumentService).pdf(DOCUMENT, AUTHORISATION);
+        verify(printableDocumentService).pdf(DOCUMENT, AUTHORISATION, false);
     }
 
     @Test

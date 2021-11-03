@@ -35,14 +35,16 @@ class PrintableDocumentServiceTest {
     @Test
     void shouldDownloadDocumentFromDocumentManagement() {
 
-        when(documentManagementService.downloadDocument(anyString(), any(ClaimDocument.class)))
+        when(documentManagementService.downloadDocument(anyString(), any(ClaimDocument.class), any(boolean.class)))
             .thenReturn(new byte[]{1, 2, 3, 4});
 
-        printableDocumentService.pdf(document, AUTHORISATION);
+        printableDocumentService.pdf(document, AUTHORISATION, true);
 
         verify(documentManagementService, times(1)).downloadDocument(
             anyString(),
-            any(ClaimDocument.class));
+            any(ClaimDocument.class),
+            any(boolean.class)
+        );
     }
 
     @Test
@@ -50,10 +52,11 @@ class PrintableDocumentServiceTest {
 
         when(documentManagementService.downloadDocument(
             anyString(),
-            any(ClaimDocument.class))).thenThrow(new IllegalArgumentException("Exception"));
+            any(ClaimDocument.class),
+            any(boolean.class))).thenThrow(new IllegalArgumentException("Exception"));
 
         Assertions.assertThrows(IllegalArgumentException.class,
-            () -> printableDocumentService.pdf(document, AUTHORISATION));
+            () -> printableDocumentService.pdf(document, AUTHORISATION, true));
 
     }
 
@@ -62,10 +65,12 @@ class PrintableDocumentServiceTest {
 
         when(documentManagementService.downloadDocument(
             anyString(),
-            any(ClaimDocument.class))).thenThrow(new IllegalArgumentException("Exception"));
+            any(ClaimDocument.class),
+            any(boolean.class)
+            )).thenThrow(new IllegalArgumentException("Exception"));
 
         Assertions.assertThrows(IllegalArgumentException.class,
-            () -> printableDocumentService.process(document, AUTHORISATION));
+            () -> printableDocumentService.process(document, AUTHORISATION, true));
 
     }
 }

@@ -59,9 +59,9 @@ public class DocumentGenerator {
             pinLetter = citizenServiceDocumentsService.createDefendantPinLetter(event.getClaim(),
                 event.getPin(),
                 event.getAuthorisation());
-            defendantLetterDoc = printableDocumentService.process(pinLetter, event.getAuthorisation());
+            defendantLetterDoc = printableDocumentService.process(pinLetter, event.getAuthorisation(), false);
             defendantLetter = new PDF(buildDefendantLetterFileBaseName(event.getClaim().getReferenceNumber()),
-                printableDocumentService.pdf(pinLetter, event.getAuthorisation()), DEFENDANT_PIN_LETTER);
+                printableDocumentService.pdf(pinLetter, event.getAuthorisation(), false), DEFENDANT_PIN_LETTER);
         } else {
             defendantLetterDoc = citizenServiceDocumentsService.pinLetterDocument(event.getClaim(),
                 event.getPin());

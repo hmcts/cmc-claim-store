@@ -22,7 +22,7 @@ public class PrintableDocumentService {
         this.documentManagementService = documentManagementService;
     }
 
-    public Document process(CCDDocument document, String authorisation) {
+    public Document process(CCDDocument document, String authorisation, boolean isCaseDocument) {
         try {
             return new Document(Base64.getEncoder().encodeToString(
                 documentManagementService.downloadDocument(
@@ -30,21 +30,22 @@ public class PrintableDocumentService {
                     ClaimDocument.builder()
                         .documentName(document.getDocumentFileName())
                         .documentManagementUrl(new URI(document.getDocumentUrl()))
-                        .build())),
+                        .build(),
+                    isCaseDocument)),
                 Collections.emptyMap());
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException(e);
         }
     }
 
-    public byte[] pdf(CCDDocument document, String authorisation) {
+    public byte[] pdf(CCDDocument document, String authorisation, boolean isCaseDocument) {
         try {
             return documentManagementService.downloadDocument(
                 authorisation,
                 ClaimDocument.builder()
                     .documentName(document.getDocumentFileName())
                     .documentManagementUrl(new URI(document.getDocumentUrl()))
-                    .build());
+                    .build(), isCaseDocument);
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException(e);
         }

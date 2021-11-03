@@ -73,8 +73,8 @@ public class BreathingSpaceLetterService {
     private void publishLetter(Claim claim, String authorisation, CCDDocument letterDoc) {
 
         PDF bsLetter = new PDF(letterDoc.getDocumentFileName(),
-            printableDocumentService.pdf(letterDoc, authorisation), GENERAL_LETTER);
-        Document bsLetterDoc = printableDocumentService.process(letterDoc, authorisation);
+            printableDocumentService.pdf(letterDoc, authorisation, true), GENERAL_LETTER);
+        Document bsLetterDoc = printableDocumentService.process(letterDoc, authorisation, true);
         BulkPrintDetails bulkPrintDetails = bulkPrintService.printPdf(
             claim,
             List.of(

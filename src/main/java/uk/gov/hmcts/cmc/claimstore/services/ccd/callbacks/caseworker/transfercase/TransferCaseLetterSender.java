@@ -48,7 +48,7 @@ public class TransferCaseLetterSender {
         Claim claim,
         CCDDocument coverDoc
     ) {
-        Document coverLetterDoc = printableDocumentService.process(coverDoc, authorisation);
+        Document coverLetterDoc = printableDocumentService.process(coverDoc, authorisation, true);
         List<BulkPrintTransferEvent.PrintableDocument> caseDocuments = getAllCaseDocuments(ccdCase, authorisation);
         return bulkPrintHandler.printBulkTransferDocs(claim, coverLetterDoc, caseDocuments, authorisation);
     }
@@ -98,7 +98,7 @@ public class TransferCaseLetterSender {
     }
 
     private BulkPrintTransferEvent.PrintableDocument getPrintableDocument(String authorisation, CCDDocument document) {
-        Document printableDocument = printableDocumentService.process(document, authorisation);
+        Document printableDocument = printableDocumentService.process(document, authorisation, true);
         return new BulkPrintTransferEvent.PrintableDocument(printableDocument, document.getDocumentFileName());
     }
 }

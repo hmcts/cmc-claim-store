@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ScannedDocument;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
@@ -21,9 +24,12 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
+import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
+import uk.gov.hmcts.reform.document.DocumentMetadataDownloadClientApi;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 
 import java.net.URI;
+import java.util.List;
 
 import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.DOCUMENT_NAME;
@@ -41,17 +47,29 @@ public class DocumentManagementService {
 
     private final AuthTokenGenerator authTokenGenerator;
     private final AppInsights appInsights;
+    private final DocumentMetadataDownloadClientApi documentMetadataDownloadApi;
+    private final DocumentDownloadClientApi documentDownloadClientApi;
     private final CaseDocumentClient caseDocumentClient;
+    private final UserService userService;
+    private final List<String> userRoles;
 
     @Autowired
     public DocumentManagementService(
+        DocumentMetadataDownloadClientApi documentMetadataDownloadApi,
+        DocumentDownloadClientApi documentDownloadClientApi,
+        UserService userService,
         CaseDocumentClient caseDocumentClient,
         AuthTokenGenerator authTokenGenerator,
-        AppInsights appInsights
+        AppInsights appInsights,
+        @Value("${document_management.userRoles}") List<String> userRoles
     ) {
+        this.documentDownloadClientApi = documentDownloadClientApi;
+        this.documentMetadataDownloadApi = documentMetadataDownloadApi;
         this.caseDocumentClient = caseDocumentClient;
+        this.userService = userService;
         this.authTokenGenerator = authTokenGenerator;
         this.appInsights = appInsights;
+        this.userRoles = userRoles;
     }
 
     @Retryable(value = {DocumentManagementException.class}, backoff = @Backoff(delay = 200))
@@ -101,21 +119,69 @@ public class DocumentManagementService {
         throw exception;
     }
 
-    public byte[] downloadDocument(String authorisation, ClaimDocument claimDocument) {
-        return downloadDocumentByUrl(authorisation, claimDocument.getDocumentManagementUrl());
+    public byte[] downloadDocument(String authorisation, ClaimDocument claimDocument, boolean isCaseDocument) {
+        if (isCaseDocument) {
+            return downloadCaseDocumentByUrl(authorisation, claimDocument.getDocumentManagementUrl());
+        } else {
+            return downloadDocumentByUrl(authorisation, claimDocument.getDocumentManagementUrl());
+        }
     }
 
     public byte[] downloadScannedDocument(String authorisation, ScannedDocument scannedDocument) {
-        return downloadDocumentByUrl(authorisation, scannedDocument.getDocumentManagementUrl());
+        return downloadCaseDocumentByUrl(authorisation, scannedDocument.getDocumentManagementUrl());
+    }
+
+    @Retryable(value = DocumentManagementException.class, backoff = @Backoff(delay = 200))
+    private byte[] downloadCaseDocumentByUrl(String authorisation, URI documentManagementUrl) {
+        byte[] bytesArray = null;
+        try {
+            Document documentMetadata
+                = caseDocumentClient.getMetadataForDocument(authorisation,
+                authTokenGenerator.generate(),
+                documentManagementUrl.getPath());
+
+            ResponseEntity<Resource> responseEntity
+                = caseDocumentClient.getDocumentBinary(authorisation,
+                authTokenGenerator.generate(),
+                URI.create(documentMetadata.links.binary.href).getPath().replaceFirst("/", ""));
+
+            ByteArrayResource resource = (ByteArrayResource) responseEntity.getBody();
+            //noinspection ConstantConditions let the NPE be thrown
+            if (resource != null) {
+                bytesArray = resource.getByteArray();
+            }
+            return bytesArray;
+
+        } catch (Exception ex) {
+            throw new DocumentManagementException(
+                String.format("Unable to download document %s from document management.",
+                    documentManagementUrl), ex);
+        }
     }
 
     @Retryable(value = DocumentManagementException.class, backoff = @Backoff(delay = 200))
     private byte[] downloadDocumentByUrl(String authorisation, URI documentManagementUrl) {
         byte[] bytesArray = null;
         try {
-            ResponseEntity<Resource> responseEntity
-                = caseDocumentClient.getDocumentBinary(authorisation,
-                authTokenGenerator.generate(), documentManagementUrl.getPath());
+
+            UserDetails userDetails = userService.getUserDetails(authorisation);
+            String usrRoles = String.join(",", this.userRoles);
+            uk.gov.hmcts.reform.document.domain.Document documentMetadata
+                = documentMetadataDownloadApi.getDocumentMetadata(
+                authorisation,
+                authTokenGenerator.generate(),
+                usrRoles,
+                userDetails.getId(),
+                documentManagementUrl.getPath()
+            );
+
+            ResponseEntity<Resource> responseEntity = documentDownloadClientApi.downloadBinary(
+                authorisation,
+                authTokenGenerator.generate(),
+                usrRoles,
+                userDetails.getId(),
+                URI.create(documentMetadata.links.binary.href).getPath()
+            );
 
             ByteArrayResource resource = (ByteArrayResource) responseEntity.getBody();
             //noinspection ConstantConditions let the NPE be thrown

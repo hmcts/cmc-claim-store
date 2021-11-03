@@ -169,7 +169,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
         when(userService.getUser(AUTHORISATION)).thenReturn(DEFENDANT);
         Claim claim = getClaimWithDocuments();
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(DEFENDANT))).thenReturn(claim);
-        when(documentManagementService.downloadDocument(eq(AUTHORISATION), any(ClaimDocument.class)))
+        when(documentManagementService.downloadDocument(eq(AUTHORISATION), any(ClaimDocument.class), eq(true)))
             .thenReturn(PDF_BYTES);
         byte[] pdf = documentManagementBackendDocumentsService.generateDocument(claim.getExternalId(), GENERAL_LETTER,
             "12345", AUTHORISATION);
@@ -287,7 +287,8 @@ public class DocumentManagementBackedDocumentsServiceTest {
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(DEFENDANT)))
             .thenReturn(claim);
 
-        when(documentManagementService.downloadDocument(eq(AUTHORISATION), any(ClaimDocument.class)))
+        when(documentManagementService.downloadDocument(
+            eq(AUTHORISATION), any(ClaimDocument.class), any(boolean.class)))
             .thenReturn(PDF_BYTES);
 
         documentManagementBackendDocumentsService.generateDocument(
@@ -296,7 +297,8 @@ public class DocumentManagementBackedDocumentsServiceTest {
             AUTHORISATION);
         verify(documentManagementService, atLeastOnce()).downloadDocument(
             eq(AUTHORISATION),
-            any(ClaimDocument.class));
+            any(ClaimDocument.class),
+            any(boolean.class));
         verify(documentManagementService, never()).uploadDocument(anyString(), any(PDF.class));
         verify(claimService, never()).saveClaimDocuments(
             eq(AUTHORISATION),
@@ -336,13 +338,14 @@ public class DocumentManagementBackedDocumentsServiceTest {
             .build();
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(CLAIMANT)))
             .thenReturn(claim);
-        when(documentManagementService.downloadDocument(eq(AUTHORISATION), eq(claimDocument))).thenReturn(new byte[1]);
+        when(documentManagementService.downloadDocument(eq(AUTHORISATION), eq(claimDocument), eq(true)))
+            .thenReturn(new byte[1]);
         documentManagementBackendDocumentsService.generateDocument(
             claim.getExternalId(),
             documentType,
             AUTHORISATION
         );
-        verify(documentManagementService, once()).downloadDocument(any(), any());
+        verify(documentManagementService, once()).downloadDocument(eq(AUTHORISATION), eq(claimDocument), eq(true));
     }
 
     @Test
@@ -359,13 +362,14 @@ public class DocumentManagementBackedDocumentsServiceTest {
             .build();
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(CLAIMANT)))
             .thenReturn(claim);
-        when(documentManagementService.downloadDocument(eq(AUTHORISATION), eq(claimDocument))).thenReturn(new byte[1]);
+        when(documentManagementService.downloadDocument(eq(AUTHORISATION), eq(claimDocument), eq(true)))
+            .thenReturn(new byte[1]);
         documentManagementBackendDocumentsService.generateDocument(
             claim.getExternalId(),
             documentType,
             AUTHORISATION
         );
-        verify(documentManagementService, once()).downloadDocument(any(), any());
+        verify(documentManagementService, once()).downloadDocument(eq(AUTHORISATION), eq(claimDocument), eq(true));
     }
 
     @Test
@@ -382,13 +386,14 @@ public class DocumentManagementBackedDocumentsServiceTest {
             .build();
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(CLAIMANT)))
             .thenReturn(claim);
-        when(documentManagementService.downloadDocument(eq(AUTHORISATION), eq(claimDocument))).thenReturn(new byte[1]);
+        when(documentManagementService.downloadDocument(eq(AUTHORISATION), eq(claimDocument), eq(true)))
+            .thenReturn(new byte[1]);
         documentManagementBackendDocumentsService.generateDocument(
             claim.getExternalId(),
             documentType,
             AUTHORISATION
         );
-        verify(documentManagementService, once()).downloadDocument(any(), any());
+        verify(documentManagementService, once()).downloadDocument(eq(AUTHORISATION), eq(claimDocument), eq(true));
     }
 
     private void verifyCommon(byte[] pdf) {

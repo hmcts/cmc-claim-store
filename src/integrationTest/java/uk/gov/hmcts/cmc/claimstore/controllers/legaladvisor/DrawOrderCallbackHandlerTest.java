@@ -91,7 +91,7 @@ public class DrawOrderCallbackHandlerTest extends BaseMockSpringTest {
         given(documentManagementService
             .downloadDocument(
                 eq(AUTHORISATION_TOKEN),
-                any(ClaimDocument.class))).willReturn("template".getBytes());
+                any(ClaimDocument.class), any(boolean.class))).willReturn("template".getBytes());
 
         given(documentManagementService
             .getDocumentMetaData(

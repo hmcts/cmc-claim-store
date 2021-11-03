@@ -62,9 +62,9 @@ public class DocumentOrchestrationService {
         if (newPinLetterEnabled) {
             CCDDocument pinLetter = citizenServiceDocumentsService.createDefendantPinLetter(claim, pin,
                 authorisation);
-            defendantPinLetterDoc = printableDocumentService.process(pinLetter, authorisation);
+            defendantPinLetterDoc = printableDocumentService.process(pinLetter, authorisation, false);
             defendantPinLetter = new PDF(buildDefendantLetterFileBaseName(claim.getReferenceNumber()),
-                printableDocumentService.pdf(pinLetter, authorisation), DEFENDANT_PIN_LETTER);
+                printableDocumentService.pdf(pinLetter, authorisation, false), DEFENDANT_PIN_LETTER);
         } else {
             defendantPinLetterDoc = citizenServiceDocumentsService.pinLetterDocument(claim, pin);
             defendantPinLetter = new PDF(buildDefendantLetterFileBaseName(claim.getReferenceNumber()),

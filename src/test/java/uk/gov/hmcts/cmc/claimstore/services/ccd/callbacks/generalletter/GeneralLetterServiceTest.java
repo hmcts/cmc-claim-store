@@ -198,7 +198,7 @@ class GeneralLetterServiceTest {
             .contactChangeContent(null)
             .generalLetterContent(null)
             .build();
-        when(documentManagementService.downloadDocument(anyString(), any(ClaimDocument.class)))
+        when(documentManagementService.downloadDocument(anyString(), any(ClaimDocument.class), any(boolean.class)))
             .thenReturn(PDF_BYTES);
 
         when(documentManagementService.getDocumentMetaData(anyString(), anyString()))
@@ -207,7 +207,8 @@ class GeneralLetterServiceTest {
         CCDCase updatedCase = generalLetterService
             .publishLetter(ccdCase, claim, BEARER_TOKEN.name(), GENERAL_DOCUMENT_NAME);
 
-        verify(documentManagementService, once()).downloadDocument(eq(BEARER_TOKEN.name()), any(ClaimDocument.class));
+        verify(documentManagementService, once())
+            .downloadDocument(eq(BEARER_TOKEN.name()), any(ClaimDocument.class), eq(true));
         assertThat(updatedCase).isEqualTo(expected);
     }
 

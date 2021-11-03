@@ -85,7 +85,8 @@ public class LegalOrderService {
                     .documentName(ccdLegalOrder.getDocumentFileName())
                     .documentType(ClaimDocumentType.ORDER_DIRECTIONS)
                     .documentManagementUrl(new URI(ccdLegalOrder.getDocumentUrl()))
-                    .build())),
+                    .build(),
+                true)),
             Collections.emptyMap());
     }
 }

@@ -75,7 +75,9 @@ public class LegalOrderServiceTest {
     public void shouldSendPrintEventForOrderAndCoverSheetIfOrderIsInDocStore() {
         when(documentManagementService.downloadDocument(
             eq(BEARER_TOKEN),
-            any(ClaimDocument.class))).thenReturn("legalOrder".getBytes());
+            any(ClaimDocument.class),
+            any(boolean.class)
+            )).thenReturn("legalOrder".getBytes());
 
         Document legalOrder = new Document(
             Base64.getEncoder().encodeToString("legalOrder".getBytes()),
@@ -119,7 +121,9 @@ public class LegalOrderServiceTest {
     public void shouldThrowExceptionIfDocumentUrlIsWrong() {
         when(documentManagementService.downloadDocument(
             BEARER_TOKEN,
-            null)).thenThrow(new URISyntaxException("nope", "nope"));
+            null,
+            any(boolean.class)
+        )).thenThrow(new URISyntaxException("nope", "nope"));
         legalOrderService.print(
             BEARER_TOKEN,
             claim,
