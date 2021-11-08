@@ -421,7 +421,7 @@ public class GenerateOrderCallbackHandlerTest {
 
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
             when(documentManagementService.getDocumentMetaData(any(), any()))
-                .thenReturn(ResourceLoader.successfulDocumentManagementDownloadResponse());
+                .thenReturn(ResourceLoader.successfulCaseDocumentDownloadResponse());
 
             when(caseDetailsConverter.convertToMap(any(CCDCase.class)))
                 .thenReturn(ImmutableMap.<String, Object>builder()

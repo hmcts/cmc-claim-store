@@ -96,7 +96,7 @@ public class DrawOrderCallbackHandlerTest extends BaseMockSpringTest {
         given(documentManagementService
             .getDocumentMetaData(
                 eq(AUTHORISATION_TOKEN),
-                any(String.class))).willReturn(ResourceLoader.successfulDocumentManagementDownloadResponse());
+                any(String.class))).willReturn(ResourceLoader.successfulCaseDocumentDownloadResponse());
 
         userDetails = SampleUserDetails.builder().withRoles("caseworker-cmc-legaladvisor", "caseworker-cmc").build();
         given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);

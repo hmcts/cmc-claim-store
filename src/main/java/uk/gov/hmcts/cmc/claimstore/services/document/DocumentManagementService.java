@@ -163,13 +163,13 @@ public class DocumentManagementService {
     private byte[] downloadDocumentByUrl(String authorisation, URI documentManagementUrl) {
         byte[] bytesArray = null;
         try {
-
             UserDetails userDetails = userService.getUserDetails(authorisation);
+            String authToken = authTokenGenerator.generate();
             String usrRoles = String.join(",", this.userRoles);
             uk.gov.hmcts.reform.document.domain.Document documentMetadata
                 = documentMetadataDownloadApi.getDocumentMetadata(
                 authorisation,
-                authTokenGenerator.generate(),
+                authToken,
                 usrRoles,
                 userDetails.getId(),
                 documentManagementUrl.getPath()
@@ -177,14 +177,13 @@ public class DocumentManagementService {
 
             ResponseEntity<Resource> responseEntity = documentDownloadClientApi.downloadBinary(
                 authorisation,
-                authTokenGenerator.generate(),
+                authToken,
                 usrRoles,
                 userDetails.getId(),
                 URI.create(documentMetadata.links.binary.href).getPath()
             );
 
             ByteArrayResource resource = (ByteArrayResource) responseEntity.getBody();
-            //noinspection ConstantConditions let the NPE be thrown
             if (resource != null) {
                 bytesArray = resource.getByteArray();
             }
