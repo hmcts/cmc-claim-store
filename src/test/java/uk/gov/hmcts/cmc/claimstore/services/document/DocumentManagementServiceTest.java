@@ -33,6 +33,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -46,6 +47,7 @@ public class DocumentManagementServiceTest {
 
     public static final String EXPECTED_HREF = "/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4";
     private static final ImmutableList<String> USER_ROLES = ImmutableList.of("caseworker-cmc", "citizen");
+    private static final String USER_ROLES_JOINED = "caseworker-cmc,citizen";
     private final PDF document = new PDF("0000-claim", "test".getBytes(), SEALED_CLAIM);
     private final String authorisation = "authString";
     private final String selfHref = "http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4";
@@ -223,6 +225,29 @@ public class DocumentManagementServiceTest {
     public void getDocumentMetaData() {
         URI docUri = URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4");
 
+        when(documentMetadataDownloadClient
+            .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString())
+        ).thenReturn(successfulDocumentDownloadResponseResponse());
+
+        UserDetails userDetails = new UserDetails("id", "mail@mail.com",
+            "userFirstName", "userLastName", Collections.singletonList("role"));
+        when(userService.getUserDetails(anyString())).thenReturn(userDetails);
+        when(responseEntity.getBody()).thenReturn(new ByteArrayResource("test".getBytes()));
+
+        uk.gov.hmcts.reform.document.domain.Document documentMetaData =
+            documentManagementService.getDocumentMetaData("auth string", docUri.getPath());
+
+        assertEquals(72552L, documentMetaData.size);
+        assertEquals("000LR002.pdf", documentMetaData.originalDocumentName);
+
+        verify(documentMetadataDownloadClient)
+            .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString());
+    }
+
+    @Test
+    public void getCaseDocumentMetaData() {
+        URI docUri = URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4");
+
         when(caseDocumentClient.getMetadataForDocument(anyString(), anyString(), anyString())
         ).thenReturn(successfulCaseDocumentDownloadResponse());
 
@@ -231,7 +256,7 @@ public class DocumentManagementServiceTest {
         when(userService.getUserDetails(anyString())).thenReturn(userDetails);
         when(responseEntity.getBody()).thenReturn(new ByteArrayResource("test".getBytes()));
 
-        Document documentMetaData = documentManagementService.getDocumentMetaData("auth string", docUri.getPath());
+        Document documentMetaData = documentManagementService.getCaseDocumentMetaData("auth string", docUri.getPath());
 
         assertEquals(72552L, documentMetaData.size);
         assertEquals("000LR002.pdf", documentMetaData.originalDocumentName);

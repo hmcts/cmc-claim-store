@@ -167,11 +167,8 @@ public class DocumentManagementService {
             String authToken = authTokenGenerator.generate();
             String usrRoles = String.join(",", this.userRoles);
             uk.gov.hmcts.reform.document.domain.Document documentMetadata
-                = documentMetadataDownloadApi.getDocumentMetadata(
+                = getDocumentMetaData(
                 authorisation,
-                authToken,
-                usrRoles,
-                userDetails.getId(),
                 documentManagementUrl.getPath()
             );
 
@@ -209,7 +206,24 @@ public class DocumentManagementService {
         throw exception;
     }
 
-    public Document getDocumentMetaData(String authorisation, String documentPath) {
+    public uk.gov.hmcts.reform.document.domain.Document getDocumentMetaData(String authorisation, String documentPath) {
+        try {
+            UserDetails userDetails = userService.getUserDetails(authorisation);
+            String usrRoles = String.join(",", this.userRoles);
+            return documentMetadataDownloadApi.getDocumentMetadata(
+                authorisation,
+                authTokenGenerator.generate(),
+                usrRoles,
+                userDetails.getId(),
+                documentPath
+            );
+        } catch (Exception ex) {
+            throw new DocumentManagementException(
+                "Unable to download document from document management.", ex);
+        }
+    }
+
+    public Document getCaseDocumentMetaData(String authorisation, String documentPath) {
         try {
             return caseDocumentClient.getMetadataForDocument(authorisation,
                 authTokenGenerator.generate(),

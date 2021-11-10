@@ -159,7 +159,7 @@ public class GeneralLetterService {
     }
 
     public BulkPrintDetails printLetter(String authorisation, CCDDocument document, Claim claim) {
-        Document downloadedLetter = printableDocumentService.process(document, authorisation, true);
+        Document downloadedLetter = printableDocumentService.process(document, authorisation, false);
         return bulkPrintHandler.printGeneralLetter(claim, downloadedLetter, authorisation);
     }
 }

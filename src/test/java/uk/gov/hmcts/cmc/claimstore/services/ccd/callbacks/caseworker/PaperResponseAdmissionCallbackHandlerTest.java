@@ -211,7 +211,7 @@ class PaperResponseAdmissionCallbackHandlerTest {
         when(docAssemblyTemplateBodyMapper.paperResponseAdmissionLetter(any(CCDCase.class), any(String.class)))
             .thenReturn(DocAssemblyTemplateBody.builder().build());
         when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
-        when(documentManagementService.getDocumentMetaData(anyString(), anyString())).thenReturn(getLinks());
+        when(documentManagementService.getCaseDocumentMetaData(anyString(), anyString())).thenReturn(getLinks());
         when(clock.instant()).thenReturn(LocalDate.parse("2020-06-22").atStartOfDay().toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
         when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);
@@ -223,7 +223,7 @@ class PaperResponseAdmissionCallbackHandlerTest {
         verify(caseDetailsConverter).convertToMap(ccdDataArgumentCaptor.capture());
 
         verify(documentManagementService, times(1))
-            .getDocumentMetaData(anyString(), anyString());
+            .getCaseDocumentMetaData(anyString(), anyString());
 
         verify(docAssemblyTemplateBodyMapper, times(1)).paperResponseAdmissionLetter(any(CCDCase.class),
             any(String.class));
@@ -320,7 +320,7 @@ class PaperResponseAdmissionCallbackHandlerTest {
             when(docAssemblyTemplateBodyMapper.paperResponseAdmissionLetter(any(CCDCase.class), any(String.class)))
                 .thenReturn(DocAssemblyTemplateBody.builder().build());
             when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
-            when(documentManagementService.getDocumentMetaData(anyString(), anyString())).thenReturn(getLinks());
+            when(documentManagementService.getCaseDocumentMetaData(anyString(), anyString())).thenReturn(getLinks());
             when(clock.instant()).thenReturn(LocalDate.parse("2020-06-22").atStartOfDay().toInstant(ZoneOffset.UTC));
             when(clock.getZone()).thenReturn(ZoneOffset.UTC);
             when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);

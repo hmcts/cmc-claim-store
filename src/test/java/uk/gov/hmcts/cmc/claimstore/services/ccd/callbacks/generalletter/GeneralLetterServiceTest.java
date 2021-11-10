@@ -202,21 +202,31 @@ class GeneralLetterServiceTest {
             .thenReturn(PDF_BYTES);
 
         when(documentManagementService.getDocumentMetaData(anyString(), anyString()))
-            .thenReturn(getLinks());
+            .thenReturn(getDocumentLinks());
 
         CCDCase updatedCase = generalLetterService
             .publishLetter(ccdCase, claim, BEARER_TOKEN.name(), GENERAL_DOCUMENT_NAME);
 
         verify(documentManagementService, once())
-            .downloadDocument(eq(BEARER_TOKEN.name()), any(ClaimDocument.class), eq(true));
+            .downloadDocument(eq(BEARER_TOKEN.name()), any(ClaimDocument.class), eq(false));
         assertThat(updatedCase).isEqualTo(expected);
     }
 
     @NotNull
-    private Document getLinks() {
+    private Document getCaseDocumentLinks() {
         Document document = Document.builder().build();
         Document.Links links = new Document.Links();
         links.binary = new Document.Link();
+        links.binary.href = DOC_URL_BINARY;
+        document.links = links;
+        return document;
+    }
+
+    private uk.gov.hmcts.reform.document.domain.Document getDocumentLinks() {
+        var document = new uk.gov.hmcts.reform.document.domain.Document();
+        uk.gov.hmcts.reform.document.domain.Document.Links links =
+            new uk.gov.hmcts.reform.document.domain.Document.Links();
+        links.binary = new uk.gov.hmcts.reform.document.domain.Document.Link();
         links.binary.href = DOC_URL_BINARY;
         document.links = links;
         return document;
@@ -239,7 +249,7 @@ class GeneralLetterServiceTest {
     @Test
     void shouldAttachDocument() {
         when(documentManagementService.getDocumentMetaData(anyString(), anyString()))
-            .thenReturn(getLinks());
+            .thenReturn(getDocumentLinks());
         when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
         when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);

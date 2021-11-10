@@ -667,7 +667,7 @@ class DrawJudgeOrderCallbackHandlerTest {
 
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
                 .thenReturn(ccdCase);
-            when(documentManagementService.getDocumentMetaData(any(), any()))
+            when(documentManagementService.getCaseDocumentMetaData(any(), any()))
                 .thenReturn(ResourceLoader.successfulCaseDocumentDownloadResponse());
 
             when(caseDetailsConverter.convertToMap(any(CCDCase.class)))
@@ -711,7 +711,7 @@ class DrawJudgeOrderCallbackHandlerTest {
                 .build();
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
                 .thenReturn(ccdCase);
-            when(documentManagementService.getDocumentMetaData(any(), any()))
+            when(documentManagementService.getCaseDocumentMetaData(any(), any()))
                 .thenReturn(ResourceLoader.successfulCaseDocumentDownloadResponse());
 
             when(directionOrderService.getHearingCourt(any())).thenReturn(hearingCourt);
@@ -743,7 +743,7 @@ class DrawJudgeOrderCallbackHandlerTest {
             when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
             when(clock.getZone()).thenReturn(ZoneOffset.UTC);
             when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);
-            when(documentManagementService.getDocumentMetaData(any(), any()))
+            when(documentManagementService.getCaseDocumentMetaData(any(), any()))
                 .thenReturn(ResourceLoader.successfulCaseDocumentDownloadResponse());
 
             when(directionOrderService.getHearingCourt(any())).thenReturn(hearingCourt);

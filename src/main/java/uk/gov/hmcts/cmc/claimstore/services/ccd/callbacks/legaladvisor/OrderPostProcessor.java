@@ -91,7 +91,7 @@ public class OrderPostProcessor {
 
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
 
-        Document documentMetadata = documentManagementService.getDocumentMetaData(
+        Document documentMetadata = documentManagementService.getCaseDocumentMetaData(
             authorisation,
             URI.create(draftOrderDoc.getDocumentUrl()).getPath()
         );

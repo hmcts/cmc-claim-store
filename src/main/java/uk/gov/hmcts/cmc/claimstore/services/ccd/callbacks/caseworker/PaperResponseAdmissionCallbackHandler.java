@@ -190,7 +190,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
             docAssemblyTemplateBodyMapper.paperResponseAdmissionLetter(updatedCCDCase,
                 userService.getUserDetails(authorisation).getFullName()));
 
-        var documentMetadata = documentManagementService.getDocumentMetaData(
+        var documentMetadata = documentManagementService.getCaseDocumentMetaData(
             authorisation,
             URI.create(docAssemblyResponse.getRenditionOutputLocation()).getPath()
         );

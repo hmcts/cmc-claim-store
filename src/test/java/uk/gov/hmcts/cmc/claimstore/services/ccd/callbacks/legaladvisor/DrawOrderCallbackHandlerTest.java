@@ -195,7 +195,7 @@ public class DrawOrderCallbackHandlerTest {
         when(directionOrderService.getHearingCourt(any())).thenReturn(HearingCourt.builder().build());
 
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-        when(documentManagementService.getDocumentMetaData(any(), any()))
+        when(documentManagementService.getCaseDocumentMetaData(any(), any()))
             .thenReturn(ResourceLoader.successfulCaseDocumentDownloadResponse());
 
         when(caseDetailsConverter.convertToMap(any(CCDCase.class)))
