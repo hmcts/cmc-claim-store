@@ -116,6 +116,7 @@
     Doesn't look exploitable, will wait for spring boot to provide updated version in dependency management
    ]]></notes>
         <cve>CVE-2018-11039</cve>
+        <cve>CVE-2021-22096</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[
