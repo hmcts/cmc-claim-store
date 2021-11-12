@@ -134,7 +134,7 @@ public class CCDCase {
     private CCDHearingDurationType estimatedHearingDuration;
 
     private CCDDocument draftOrderDoc;
-    private CCDDocument draftLetterDoc;
+    private CCDDocument  draftLetterDoc;
 
     private CCDYesNoOption expertReportPermissionPartyAskedByClaimant;
     private CCDYesNoOption expertReportPermissionPartyAskedByDefendant;
