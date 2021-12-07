@@ -119,10 +119,10 @@ public class PilotCourtService {
         String pilotCourtName = getPilotHearingCourt(pilotCourt.getId())
             .orElseThrow(() -> new IllegalStateException("Hearing Court not found for " + pilotCourt.getId()))
             .getName();
-        logger.error("pilotCourtName..", pilotCourtName);
-        logger.error("courtName..", courtName);
-        logger.error("namematch..", StringUtils.containsIgnoreCase(pilotCourtName, courtName));
-        logger.error("isactive pilot..", pilotCourt.isActivePilotCourt(pilot, claimCreated));
+        logger.error("pilotCourtName {0}", pilotCourtName);
+        logger.error("courtName {0}", courtName);
+        logger.error("namematch {0}", StringUtils.containsIgnoreCase(pilotCourtName, courtName));
+        logger.error("isactive pilot {0}", pilotCourt.isActivePilotCourt(pilot, claimCreated));
         
         return StringUtils.containsIgnoreCase(pilotCourtName, courtName)
             && pilotCourt.isActivePilotCourt(pilot, claimCreated);
