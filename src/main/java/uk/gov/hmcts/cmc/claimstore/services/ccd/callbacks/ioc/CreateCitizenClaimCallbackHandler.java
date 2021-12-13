@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static java.math.BigDecimal.ZERO;
 import static java.lang.String.format;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_HWF_CASE;
@@ -129,6 +130,7 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
                 updatedClaim = claim.toBuilder()
                     .channel(ChannelType.CITIZEN)
                     .claimData(claim.getClaimData().toBuilder()
+                        .feeAmountInPennies(claim.getClaimData().getOutstandingFeeAmountInPennies().orElse(ZERO))
                         .outstandingFeeAmountInPennies(null)
                         .build())
                     .referenceNumber(referenceNumberRepository.getReferenceNumberForCitizen())
