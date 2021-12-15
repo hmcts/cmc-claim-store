@@ -62,7 +62,7 @@ public class DocAssemblyTemplateBodyMapper {
 
         String respondentPartyName = ccdCase.getRespondents().get(0)
             .getValue().getPartyName() != null
-             ? ccdCase.getRespondents().get(0).getValue().getPartyName():
+             ? ccdCase.getRespondents().get(0).getValue().getPartyName() :
             ccdCase.getRespondents().get(0).getValue().getClaimantProvidedPartyName();
 
         return DocAssemblyTemplateBody.builder()
