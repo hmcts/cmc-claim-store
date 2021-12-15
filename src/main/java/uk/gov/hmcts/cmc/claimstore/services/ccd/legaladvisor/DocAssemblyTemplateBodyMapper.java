@@ -60,6 +60,11 @@ public class DocAssemblyTemplateBodyMapper {
 
         LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
 
+        String respondentPartyName = ccdCase.getRespondents().get(0)
+            .getValue().getPartyName() != null
+             ? ccdCase.getRespondents().get(0).getValue().getPartyName():
+            ccdCase.getRespondents().get(0).getValue().getClaimantProvidedPartyName();
+
         return DocAssemblyTemplateBody.builder()
             .claimant(Party.builder()
                 .partyName(ccdCase.getApplicants()
@@ -68,10 +73,7 @@ public class DocAssemblyTemplateBodyMapper {
                     .getPartyName())
                 .build())
             .defendant(Party.builder()
-                .partyName(ccdCase.getRespondents()
-                    .get(0)
-                    .getValue()
-                    .getPartyName())
+                .partyName(respondentPartyName)
                 .build())
             .judicial(Judicial.builder()
                 .firstName(userDetails.getForename())
