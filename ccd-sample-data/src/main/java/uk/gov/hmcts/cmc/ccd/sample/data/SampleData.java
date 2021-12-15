@@ -888,4 +888,40 @@ public class SampleData {
                         .build()).build()
         );
     }
+
+    public static CCDRespondent withRespondentPartyNameAsNull() {
+        CCDAddress ccdAddress = getCCDAddress();
+        return CCDRespondent.builder()
+            .partyName(null)
+            .claimantProvidedDetail(
+                CCDParty.builder()
+                    .type(INDIVIDUAL)
+                    .primaryAddress(ccdAddress)
+                    .dateOfBirth(LocalDate.of(1950, 1, 1))
+                    .correspondenceAddress(ccdAddress)
+                    .build())
+            .partyDetail(
+                CCDParty.builder()
+                    .primaryAddress(ccdAddress)
+                    .correspondenceAddress(ccdAddress)
+                    .build())
+            .claimantProvidedPartyName("Mary Richards")
+            .claimantProvidedRepresentativeOrganisationAddress(ccdAddress)
+            .claimantProvidedRepresentativeOrganisationName("My Org")
+            .claimantProvidedRepresentativeOrganisationPhone("07987654321")
+            .claimantProvidedRepresentativeOrganisationPhone("my@email.com")
+            .claimantProvidedRepresentativeOrganisationDxAddress("dx123")
+            .claimantResponse(CCDResponseRejection.builder()
+                .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder()
+                    .expertRequired(YES)
+                    .expertReports(null)
+                    .build())
+                .build())
+            .directionsQuestionnaire(CCDDirectionsQuestionnaire
+                .builder()
+                .hearingLocation("Defendant Court")
+                .exceptionalCircumstancesReason("As a defendant I like this court more")
+                .build())
+            .build();
+    }
 }

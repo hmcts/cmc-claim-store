@@ -402,6 +402,26 @@ class DocAssemblyTemplateBodyMapperTest {
             assertThat(requestBody).isEqualTo(expectedBody);
         }
 
+        @Test
+        void getDefendantNameFromClaimantIfMissingFromDefendantResponse() {
+
+            ccdCase.setRespondents(
+                ImmutableList.of(
+                    CCDCollectionElement.<CCDRespondent>builder()
+                        .value(SampleData.withRespondentPartyNameAsNull())
+                        .build()
+                ));
+
+            DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
+                ccdCase,
+                userDetails
+            );
+
+            assertThat(ccdCase.getRespondents().get(0).getValue().getPartyName()).isEqualTo(null);
+            assertThat(requestBody.getDefendant().getPartyName())
+                .isEqualTo(ccdCase.getRespondents().get(0).getValue().getClaimantProvidedPartyName());
+        }
+
     }
 
     @Nested
