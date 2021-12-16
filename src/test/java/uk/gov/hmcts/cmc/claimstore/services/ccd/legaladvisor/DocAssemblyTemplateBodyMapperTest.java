@@ -403,7 +403,7 @@ class DocAssemblyTemplateBodyMapperTest {
         }
 
         @Test
-        void getDefendantNameFromClaimantIfMissingFromDefendantResponse() {
+        void getDefendantPartyNameFromClaimantIfMissingFromDefendantResponse() {
 
             ccdCase.setRespondents(
                 ImmutableList.of(
@@ -417,7 +417,7 @@ class DocAssemblyTemplateBodyMapperTest {
                 userDetails
             );
 
-            assertThat(ccdCase.getRespondents().get(0).getValue().getPartyName()).isEqualTo(null);
+            assertThat(ccdCase.getRespondents().get(0).getValue().getPartyName()).isNull();
             assertThat(requestBody.getDefendant().getPartyName())
                 .isEqualTo(ccdCase.getRespondents().get(0).getValue().getClaimantProvidedPartyName());
         }

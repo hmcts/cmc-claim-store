@@ -1,40 +1,13 @@
 package uk.gov.hmcts.cmc.ccd.sample.data;
 
 import com.google.common.collect.ImmutableList;
-import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
-import uk.gov.hmcts.cmc.ccd.domain.CCDAmountRow;
-import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
-import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
-import uk.gov.hmcts.cmc.ccd.domain.CCDClaimSubmissionOperationIndicators;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
-import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
-import uk.gov.hmcts.cmc.ccd.domain.CCDInterestDateType;
-import uk.gov.hmcts.cmc.ccd.domain.CCDInterestEndDateType;
-import uk.gov.hmcts.cmc.ccd.domain.CCDInterestType;
-import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
-import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentIntention;
-import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption;
-import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentSchedule;
-import uk.gov.hmcts.cmc.ccd.domain.CCDTelephone;
-import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
+import uk.gov.hmcts.cmc.ccd.domain.*;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDCourtDetermination;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDFormaliseOption;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseAcceptation;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDBankAccount;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDChildCategory;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDCourtOrder;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDebt;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDisabilityStatus;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDExpense;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDIncome;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDLivingPartner;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriorityDebt;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.*;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDBespokeOrderDirection;
@@ -52,10 +25,7 @@ import java.util.UUID;
 import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.BREAK_DOWN;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.RANGE;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.COMPANY;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.INDIVIDUAL;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.ORGANISATION;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.SOLE_TRADER;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.*;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDDecisionType.COURT;
@@ -69,13 +39,11 @@ import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPaymentF
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriorityDebtType.ELECTRICITY;
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDResidenceType.JOINT_OWN_HOME;
 import static uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceType.EXPERT_WITNESS;
-import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.DOCUMENTS;
-import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EXPERT_REPORT_PERMISSION;
-import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EYEWITNESS;
-import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.OTHER;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.*;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOtherDirectionHeaderType.UPLOAD;
 import static uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDClaimSubmissionOperationIndicators.defaultCCDClaimSubmissionOperationIndicators;
 import static uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDTelephone.withDefaultPhoneNumber;
+import static uk.gov.hmcts.cmc.ccd.sample.data.SampleDataConstants.*;
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.AWAITING_CITIZEN_PAYMENT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
@@ -280,27 +248,27 @@ public class SampleData {
     public static CCDRespondent getCCDRespondentIndividual() {
         CCDAddress ccdAddress = getCCDAddress();
         return CCDRespondent.builder()
-            .partyName("Mary Richards")
+            .partyName(DEFENDANT_PARTY_NAME)
             .responseMoreTimeNeededOption(NO)
             .claimantProvidedDetail(
                 CCDParty.builder()
                     .type(INDIVIDUAL)
                     .primaryAddress(ccdAddress)
-                    .dateOfBirth(LocalDate.of(1950, 1, 1))
+                    .dateOfBirth(DEFENDANT_DOB)
                     .correspondenceAddress(ccdAddress)
                     .telephoneNumber(withDefaultPhoneNumber())
                     .build())
             .partyDetail(
                 CCDParty.builder()
-                    .emailAddress("defendant@email.test")
+                    .emailAddress(DEFENDANT_EMAIL)
                     .build()
             )
             .claimantProvidedPartyName("Individual")
             .claimantProvidedRepresentativeOrganisationAddress(ccdAddress)
-            .claimantProvidedRepresentativeOrganisationName("My Org")
-            .claimantProvidedRepresentativeOrganisationPhone("07987654321")
-            .claimantProvidedRepresentativeOrganisationPhone("my@email.com")
-            .claimantProvidedRepresentativeOrganisationDxAddress("dx123")
+            .claimantProvidedRepresentativeOrganisationName(DEFENDANT_ORG_NAME)
+            .claimantProvidedRepresentativeOrganisationPhone(DEFENDANT_ORG_PHONE_NUMBER)
+            .claimantProvidedRepresentativeOrganisationEmail(DEFENDANT_EMAIL)
+            .claimantProvidedRepresentativeOrganisationDxAddress(DEFENDANT_ORG_DX_ADDRESS)
             .build();
     }
 
@@ -311,17 +279,17 @@ public class SampleData {
                 .type(ORGANISATION)
                 .primaryAddress(ccdAddress)
                 .correspondenceAddress(ccdAddress)
-                .contactPerson("MR. Hyde")
+                .contactPerson(DEFENDANT_CONTACT_PERSON)
                 .telephoneNumber(withDefaultPhoneNumber())
-                .companiesHouseNumber("12345678")
+                .companiesHouseNumber(DEFENDANT_COMPANIES_HOUSE_NUMBER)
                 .build()
             )
             .claimantProvidedPartyName("Organisation")
             .claimantProvidedRepresentativeOrganisationAddress(ccdAddress)
-            .claimantProvidedRepresentativeOrganisationName("My Org")
-            .claimantProvidedRepresentativeOrganisationPhone("07987654321")
-            .claimantProvidedRepresentativeOrganisationPhone("my@email.com")
-            .claimantProvidedRepresentativeOrganisationDxAddress("dx123")
+            .claimantProvidedRepresentativeOrganisationName(DEFENDANT_ORG_NAME)
+            .claimantProvidedRepresentativeOrganisationPhone(DEFENDANT_ORG_PHONE_NUMBER)
+            .claimantProvidedRepresentativeOrganisationEmail(DEFENDANT_EMAIL)
+            .claimantProvidedRepresentativeOrganisationDxAddress(DEFENDANT_ORG_DX_ADDRESS)
             .build();
     }
 
@@ -333,14 +301,14 @@ public class SampleData {
                 .primaryAddress(ccdAddress)
                 .correspondenceAddress(ccdAddress)
                 .telephoneNumber(withDefaultPhoneNumber())
-                .contactPerson("MR. Hyde")
+                .contactPerson(DEFENDANT_CONTACT_PERSON)
                 .build())
             .claimantProvidedPartyName("Abc Ltd")
             .claimantProvidedRepresentativeOrganisationAddress(ccdAddress)
-            .claimantProvidedRepresentativeOrganisationName("My Org")
-            .claimantProvidedRepresentativeOrganisationPhone("07987654321")
-            .claimantProvidedRepresentativeOrganisationPhone("my@email.com")
-            .claimantProvidedRepresentativeOrganisationDxAddress("dx123")
+            .claimantProvidedRepresentativeOrganisationName(DEFENDANT_ORG_NAME)
+            .claimantProvidedRepresentativeOrganisationPhone(DEFENDANT_ORG_PHONE_NUMBER)
+            .claimantProvidedRepresentativeOrganisationEmail(DEFENDANT_ORG_EMAIL)
+            .claimantProvidedRepresentativeOrganisationDxAddress(DEFENDANT_ORG_DX_ADDRESS)
             .build();
     }
 
@@ -358,10 +326,10 @@ public class SampleData {
             )
             .claimantProvidedPartyName("SoleTrader")
             .claimantProvidedRepresentativeOrganisationAddress(ccdAddress)
-            .claimantProvidedRepresentativeOrganisationName("My Org")
-            .claimantProvidedRepresentativeOrganisationPhone("07987654321")
-            .claimantProvidedRepresentativeOrganisationPhone("my@email.com")
-            .claimantProvidedRepresentativeOrganisationDxAddress("dx123")
+            .claimantProvidedRepresentativeOrganisationName(DEFENDANT_ORG_NAME)
+            .claimantProvidedRepresentativeOrganisationPhone(DEFENDANT_ORG_PHONE_NUMBER)
+            .claimantProvidedRepresentativeOrganisationEmail(DEFENDANT_EMAIL)
+            .claimantProvidedRepresentativeOrganisationDxAddress(DEFENDANT_ORG_DX_ADDRESS)
             .build();
     }
 
@@ -378,22 +346,22 @@ public class SampleData {
                 .build())
             .partyName("Individual")
             .representativeOrganisationAddress(ccdAddress)
-            .representativeOrganisationName("My Org")
-            .representativeOrganisationPhone("07987654321")
-            .representativeOrganisationEmail("my@email.com")
-            .representativeOrganisationDxAddress("dx123")
+            .representativeOrganisationName(DEFENDANT_ORG_NAME)
+            .representativeOrganisationPhone(DEFENDANT_ORG_PHONE_NUMBER)
+            .representativeOrganisationEmail(DEFENDANT_ORG_EMAIL)
+            .representativeOrganisationDxAddress(DEFENDANT_ORG_DX_ADDRESS)
             .build();
     }
 
     public static CCDRespondent getIndividualRespondentWithDQ() {
         CCDAddress ccdAddress = getCCDAddress();
         return CCDRespondent.builder()
-            .partyName("Mary Richards")
+            .partyName(DEFENDANT_PARTY_NAME)
             .claimantProvidedDetail(
                 CCDParty.builder()
                     .type(INDIVIDUAL)
                     .primaryAddress(ccdAddress)
-                    .dateOfBirth(LocalDate.of(1950, 1, 1))
+                    .dateOfBirth(CLAIMANT_DOB)
                     .correspondenceAddress(ccdAddress)
                     .build())
             .partyDetail(
@@ -403,10 +371,10 @@ public class SampleData {
                     .build())
             .claimantProvidedPartyName("Individual")
             .claimantProvidedRepresentativeOrganisationAddress(ccdAddress)
-            .claimantProvidedRepresentativeOrganisationName("My Org")
-            .claimantProvidedRepresentativeOrganisationPhone("07987654321")
-            .claimantProvidedRepresentativeOrganisationPhone("my@email.com")
-            .claimantProvidedRepresentativeOrganisationDxAddress("dx123")
+            .claimantProvidedRepresentativeOrganisationName(DEFENDANT_ORG_NAME)
+            .claimantProvidedRepresentativeOrganisationPhone(DEFENDANT_ORG_PHONE_NUMBER)
+            .claimantProvidedRepresentativeOrganisationEmail(DEFENDANT_ORG_EMAIL)
+            .claimantProvidedRepresentativeOrganisationDxAddress(DEFENDANT_ORG_DX_ADDRESS)
             .claimantResponse(CCDResponseRejection.builder()
                 .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder()
                     .expertRequired(YES)
@@ -415,8 +383,8 @@ public class SampleData {
                 .build())
             .directionsQuestionnaire(CCDDirectionsQuestionnaire
                 .builder()
-                .hearingLocation("Defendant Court")
-                .exceptionalCircumstancesReason("As a defendant I like this court more")
+                .hearingLocation(DEFENDANT_COURT)
+                .exceptionalCircumstancesReason(DEFENDANT_EXCEPTIONAL_CIRCUMSTANCES)
                 .build())
             .build();
     }
@@ -424,28 +392,28 @@ public class SampleData {
     public static CCDRespondent getIndividualRespondentWithDQInClaimantResponse() {
         CCDAddress ccdAddress = getCCDAddress();
         return CCDRespondent.builder()
-            .partyName("Mary Richards")
+            .partyName(DEFENDANT_PARTY_NAME)
             .claimantProvidedDetail(
                 CCDParty.builder()
                     .type(INDIVIDUAL)
                     .primaryAddress(ccdAddress)
-                    .dateOfBirth(LocalDate.of(1950, 1, 1))
+                    .dateOfBirth(DEFENDANT_DOB)
                     .correspondenceAddress(ccdAddress)
                     .build())
-            .claimantProvidedPartyName("Individual")
+            .claimantProvidedPartyName(DEFENDANT_PARTY_NAME)
             .claimantProvidedRepresentativeOrganisationAddress(ccdAddress)
-            .claimantProvidedRepresentativeOrganisationName("My Org")
-            .claimantProvidedRepresentativeOrganisationPhone("07987654321")
-            .claimantProvidedRepresentativeOrganisationPhone("my@email.com")
-            .claimantProvidedRepresentativeOrganisationDxAddress("dx123")
+            .claimantProvidedRepresentativeOrganisationName(DEFENDANT_ORG_NAME)
+            .claimantProvidedRepresentativeOrganisationPhone(DEFENDANT_ORG_PHONE_NUMBER)
+            .claimantProvidedRepresentativeOrganisationEmail(DEFENDANT_ORG_EMAIL)
+            .claimantProvidedRepresentativeOrganisationDxAddress(DEFENDANT_ORG_DX_ADDRESS)
             .claimantResponse(CCDResponseRejection.builder()
                 .directionsQuestionnaire(CCDDirectionsQuestionnaire
                     .builder()
-                    .hearingLocation("Claimant Court")
+                    .hearingLocation(CLAIMANT_COURT)
                     .expertRequired(YES)
                     .permissionForExpert(YES)
                     .expertEvidenceToExamine("Expert evidence required to examine")
-                    .exceptionalCircumstancesReason("As a claimant I like this court more").build())
+                    .exceptionalCircumstancesReason(CLAIMANT_EXCEPTIONAL_CIRCUMSTANCES).build())
                 .build())
             .directionsQuestionnaire(CCDDirectionsQuestionnaire
                 .builder()
@@ -897,7 +865,7 @@ public class SampleData {
                 CCDParty.builder()
                     .type(INDIVIDUAL)
                     .primaryAddress(ccdAddress)
-                    .dateOfBirth(LocalDate.of(1950, 1, 1))
+                    .dateOfBirth(DEFENDANT_DOB)
                     .correspondenceAddress(ccdAddress)
                     .build())
             .partyDetail(
@@ -905,12 +873,12 @@ public class SampleData {
                     .primaryAddress(ccdAddress)
                     .correspondenceAddress(ccdAddress)
                     .build())
-            .claimantProvidedPartyName("Mary Richards")
+            .claimantProvidedPartyName(DEFENDANT_PARTY_NAME)
             .claimantProvidedRepresentativeOrganisationAddress(ccdAddress)
-            .claimantProvidedRepresentativeOrganisationName("My Org")
-            .claimantProvidedRepresentativeOrganisationPhone("07987654321")
-            .claimantProvidedRepresentativeOrganisationPhone("my@email.com")
-            .claimantProvidedRepresentativeOrganisationDxAddress("dx123")
+            .claimantProvidedRepresentativeOrganisationName(DEFENDANT_ORG_NAME)
+            .claimantProvidedRepresentativeOrganisationPhone(DEFENDANT_ORG_PHONE_NUMBER)
+            .claimantProvidedRepresentativeOrganisationEmail(DEFENDANT_ORG_EMAIL)
+            .claimantProvidedRepresentativeOrganisationDxAddress(DEFENDANT_ORG_DX_ADDRESS)
             .claimantResponse(CCDResponseRejection.builder()
                 .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder()
                     .expertRequired(YES)
@@ -919,8 +887,8 @@ public class SampleData {
                 .build())
             .directionsQuestionnaire(CCDDirectionsQuestionnaire
                 .builder()
-                .hearingLocation("Defendant Court")
-                .exceptionalCircumstancesReason("As a defendant I like this court more")
+                .hearingLocation(DEFENDANT_COURT)
+                .exceptionalCircumstancesReason(DEFENDANT_EXCEPTIONAL_CIRCUMSTANCES)
                 .build())
             .build();
     }
