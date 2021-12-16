@@ -1,13 +1,40 @@
 package uk.gov.hmcts.cmc.ccd.sample.data;
 
 import com.google.common.collect.ImmutableList;
-import uk.gov.hmcts.cmc.ccd.domain.*;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAmountRow;
+import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
+import uk.gov.hmcts.cmc.ccd.domain.CCDClaimSubmissionOperationIndicators;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CCDInterestDateType;
+import uk.gov.hmcts.cmc.ccd.domain.CCDInterestEndDateType;
+import uk.gov.hmcts.cmc.ccd.domain.CCDInterestType;
+import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentIntention;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentSchedule;
+import uk.gov.hmcts.cmc.ccd.domain.CCDTelephone;
+import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDCourtDetermination;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDFormaliseOption;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseAcceptation;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.*;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDBankAccount;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDChildCategory;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDCourtOrder;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDebt;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDisabilityStatus;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDExpense;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDIncome;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDLivingPartner;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriorityDebt;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDBespokeOrderDirection;
@@ -25,7 +52,10 @@ import java.util.UUID;
 import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.BREAK_DOWN;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.RANGE;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.*;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.COMPANY;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.INDIVIDUAL;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.ORGANISATION;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.SOLE_TRADER;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDDecisionType.COURT;
@@ -39,11 +69,27 @@ import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPaymentF
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriorityDebtType.ELECTRICITY;
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDResidenceType.JOINT_OWN_HOME;
 import static uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceType.EXPERT_WITNESS;
-import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.*;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.DOCUMENTS;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EXPERT_REPORT_PERMISSION;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EYEWITNESS;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.OTHER;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOtherDirectionHeaderType.UPLOAD;
 import static uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDClaimSubmissionOperationIndicators.defaultCCDClaimSubmissionOperationIndicators;
 import static uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDTelephone.withDefaultPhoneNumber;
-import static uk.gov.hmcts.cmc.ccd.sample.data.SampleDataConstants.*;
+import static uk.gov.hmcts.cmc.ccd.sample.data.SampleDataConstants.CLAIMANT_COURT;
+import static uk.gov.hmcts.cmc.ccd.sample.data.SampleDataConstants.CLAIMANT_DOB;
+import static uk.gov.hmcts.cmc.ccd.sample.data.SampleDataConstants.CLAIMANT_EXCEPTIONAL_CIRCUMSTANCES;
+import static uk.gov.hmcts.cmc.ccd.sample.data.SampleDataConstants.DEFENDANT_COMPANIES_HOUSE_NUMBER;
+import static uk.gov.hmcts.cmc.ccd.sample.data.SampleDataConstants.DEFENDANT_CONTACT_PERSON;
+import static uk.gov.hmcts.cmc.ccd.sample.data.SampleDataConstants.DEFENDANT_COURT;
+import static uk.gov.hmcts.cmc.ccd.sample.data.SampleDataConstants.DEFENDANT_DOB;
+import static uk.gov.hmcts.cmc.ccd.sample.data.SampleDataConstants.DEFENDANT_EMAIL;
+import static uk.gov.hmcts.cmc.ccd.sample.data.SampleDataConstants.DEFENDANT_EXCEPTIONAL_CIRCUMSTANCES;
+import static uk.gov.hmcts.cmc.ccd.sample.data.SampleDataConstants.DEFENDANT_ORG_DX_ADDRESS;
+import static uk.gov.hmcts.cmc.ccd.sample.data.SampleDataConstants.DEFENDANT_ORG_EMAIL;
+import static uk.gov.hmcts.cmc.ccd.sample.data.SampleDataConstants.DEFENDANT_ORG_NAME;
+import static uk.gov.hmcts.cmc.ccd.sample.data.SampleDataConstants.DEFENDANT_ORG_PHONE_NUMBER;
+import static uk.gov.hmcts.cmc.ccd.sample.data.SampleDataConstants.DEFENDANT_PARTY_NAME;
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.AWAITING_CITIZEN_PAYMENT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
@@ -829,10 +875,10 @@ public class SampleData {
             CCDCollectionElement.<CCDBespokeOrderDirection>builder()
                 .value(
                     CCDBespokeOrderDirection.builder()
-            .beSpokeDirectionFor(CCDDirectionPartyType.CLAIMANT)
-            .beSpokeDirectionExplain("first direction")
-            .beSpokeDirectionDatetime(LocalDate.of(2020, 8, 4))
-            .build()).build(),
+                        .beSpokeDirectionFor(CCDDirectionPartyType.CLAIMANT)
+                        .beSpokeDirectionExplain("first direction")
+                        .beSpokeDirectionDatetime(LocalDate.of(2020, 8, 4))
+                        .build()).build(),
             CCDCollectionElement.<CCDBespokeOrderDirection>builder()
                 .value(
                     CCDBespokeOrderDirection.builder()
