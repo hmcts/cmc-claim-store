@@ -2,8 +2,10 @@ package uk.gov.hmcts.cmc.ccd.sample.data;
 
 import java.time.LocalDate;
 
-public class SampleDataConstants {
+public final class SampleDataConstants {
 
+    private SampleDataConstants() {
+    }
 
     // Claimant Data
     public static final LocalDate CLAIMANT_DOB = LocalDate.of(1950, 1, 1);
