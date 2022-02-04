@@ -34,8 +34,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.google.common.collect.Iterables.concat;
-import static com.google.common.collect.Lists.newArrayList;
 import static java.util.List.of;
 import static java.util.function.Predicate.isEqual;
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -45,6 +43,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.PAPER_RESPONSE_MORE_TIME;
 import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentType.CHERISHED;
+import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentType.COVERSHEET;
 import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentType.LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ScannedDocumentType.OTHER;
 
@@ -58,7 +57,7 @@ class PaperResponseReviewedHandler {
     private static final String OCON9X = "OCON9x";
     private static final List<String> responseForms = of("N9a", "N9b", "N11");
     private static final List<String> courtForms = of("N180", "EX160", "N244", "N245", "Non_prescribed_documents");
-    private static final List<String> SCANNED_DOCUMENT_TYPES = newArrayList(concat(responseForms, courtForms));
+    private static final List<String> SCANNED_DOCUMENT_TYPES = of("N9a", "N9b", "N11", OCON9X);
 
     private static final List<ClaimDocumentType> STAFF_UPLOADED_DOCS = of(
         ClaimDocumentType.PAPER_RESPONSE_FULL_ADMIT,
@@ -198,6 +197,8 @@ class PaperResponseReviewedHandler {
         } else if (CCJ_REQUEST.equals(subType)) {
             templateId = mailTemplates.getPaperResponseFormReceivedForCcjRequest();
         } else if (OCON9X.equals(subType)) {
+            templateId = NA;
+        } else if (COVERSHEET.equals(scannedDocument.getDocumentType())) {
             templateId = NA;
         } else if (otherDocumentTypes.contains(scannedDocument.getDocumentType())) {
             mailToParty = submittedByClaimant ? CLAIMANT : DEFENDANT;

@@ -116,6 +116,7 @@
     Doesn't look exploitable, will wait for spring boot to provide updated version in dependency management
    ]]></notes>
         <cve>CVE-2018-11039</cve>
+        <cve>CVE-2021-22096</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[
@@ -207,6 +208,9 @@
         ]]></notes>
         <cve>CVE-2021-22112</cve>
         <cve>CVE-2021-22118</cve>
+        <cve>CVE-2021-22119</cve>
+        <cve>CVE-2019-14900</cve>
+        <cve>CVE-2020-25638</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[
@@ -221,5 +225,29 @@
             Related json_smart_project
         ]]></notes>
         <cve>CVE-2021-27568</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+            jakarta error
+        ]]></notes>
+        <cve>CVE-2021-28170</cve>
+    </suppress>
+    <suppress>
+    <notes><![CDATA[
+            Related Nim-lang
+        ]]></notes>
+    <cve>CVE-2020-23171</cve>
+    </suppress>
+    <suppress>
+    <notes><![CDATA[
+            Related elasticsearch
+        ]]></notes>
+    <cve>CVE-2021-22147</cve>
+    </suppress>
+    <suppress>
+    <notes><![CDATA[
+            Related tomcat
+        ]]></notes>
+    <cve>CVE-2021-42340</cve>
     </suppress>
 </suppressions>

@@ -75,10 +75,10 @@ public class GenerateOrderCallbackHandlerTest extends BaseMockSpringTest {
             .willReturn(ImmutableList.of(Court.builder()
                 .name("Clerkenwell Court")
                 .slug("clerkenwell-court")
-                .address(Address.builder()
+                .addresses(ImmutableList.of(Address.builder()
                     .addressLines(ImmutableList.of("line1", "line2"))
                     .postcode("SW1P4BB")
-                    .town("Clerkenwell").build())
+                    .town("Clerkenwell").build()))
                 .build()
             ));
         given(pilotCourtService.getPilotHearingCourts(any(), any()))

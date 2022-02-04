@@ -60,7 +60,6 @@ public class ResumeHelpWithFeeClaimSubmissionCallbackHandler extends CallbackHan
             ccdCase.getExternalId());
         CCDCase updatedCCDCase = ccdCase.toBuilder()
             .paymentAmount(null)
-            .feeAmountInPennies(null)
             .paymentReference(null)
             .paymentDateCreated(null)
             .paymentStatus(null)
