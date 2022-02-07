@@ -140,17 +140,17 @@ resource "azurerm_key_vault_secret" "sendgrid_api_key-2" {
 
 module "database" {
   source = "git@github.com:hmcts/cnp-module-postgres?ref=master"
-  product = "${var.product}"
-  location = "${var.location}"
-  env = "${var.env}"
+  product = var.product
+  location = var.location
+  env = var.env
   postgresql_user = "cmc"
-  database_name = "${var.database-name}"
-  postgresql_version = "${var.postgresql_version}"
-  sku_name = "${var.database_sku_name}"
+  database_name = var.database-name
+  postgresql_version = var.postgresql_version
+  sku_name = var.database_sku_name
   sku_tier = "GeneralPurpose"
-  storage_mb = "${var.database_storage_mb}"
-  common_tags = "${var.common_tags}"
-  subscription = "${var.subscription}"
+  storage_mb = var.database_storage_mb
+  common_tags = var.common_tags
+  subscription = var.subscription
 }
 
 // DB version 11
@@ -158,16 +158,16 @@ module "database-v11" {
   source = "git@github.com:hmcts/cnp-module-postgres?ref=master"
   product = "${var.product}-db-v11"
   name  = "cmc-db-v11"
-  location = "${var.location}"
-  env = "${var.env}"
+  location = var.location
+  env = var.env
   postgresql_user = "cmc"
-  database_name = "${var.database-name}"
+  database_name = var.database-name
   postgresql_version = "11"
-  sku_name = "${var.database_sku_name}"
+  sku_name = var.database_sku_name
   sku_tier = "GeneralPurpose"
-  storage_mb = "${var.database_storage_mb}"
-  common_tags = "${var.common_tags}"
-  subscription = "${var.subscription}"
+  storage_mb = var.database_storage_mb
+  common_tags = var.common_tags
+  subscription = var.subscription
 }
 
 resource "azurerm_key_vault_secret" "cmc-db-password-v11" {
