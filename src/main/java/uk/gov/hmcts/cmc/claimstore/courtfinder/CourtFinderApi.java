@@ -12,7 +12,7 @@ import java.util.List;
 @FeignClient(name = "court-finder-api", primary = false, url = "${courtfinder.api.url}")
 public interface CourtFinderApi {
 
-    String SEARCH_POSTCODE_URL = "/search/results.json?postcode={postcode}&spoe=nearest&aol=Money%20Claims";
+    String SEARCH_POSTCODE_URL = "/search/results.json?postcode={postcode}&serviceArea=money-claims";
     String SEARCH_NAME_URL = "/search/results.json?q={name}";
     String COURT_DETAILS_URL = "/courts/{slug}.json";
 
