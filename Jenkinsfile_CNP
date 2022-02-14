@@ -51,4 +51,8 @@ withPipeline("java", product, component) {
   enableAksStagingDeployment()
   disableLegacyDeployment()
   syncBranchesWithMaster(branchesToSync)
+  
+  onPR {
+    enableCleanupOfHelmReleaseOnSuccess()
+  }
 }
