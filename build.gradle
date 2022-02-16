@@ -67,7 +67,7 @@ allprojects {
     // Specifies if the build should be failed if a CVSS score above a specified level is identified.
     // range of 0-10 fails the build, anything greater and it doesn't fail the build
     failBuildOnCVSS = System.getProperty('dependencyCheck.failBuild') == 'false' ? 11 : 0
-    suppressionFile = 'dependency-check-suppressions.xml'
+    suppressionFile = 'config/owasp/suppressions.xml'
     analyzers {
       // Disable scanning of .NET related binaries
       assemblyEnabled = false
