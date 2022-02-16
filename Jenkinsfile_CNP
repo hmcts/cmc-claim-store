@@ -50,5 +50,9 @@ withPipeline("java", product, component) {
   enableSlackNotifications(notificationsChannel)
   enableAksStagingDeployment()
   disableLegacyDeployment()
-  // syncBranchesWithMaster(branchesToSync)
+  syncBranchesWithMaster(branchesToSync)
+  
+  onPR {
+    enableCleanupOfHelmReleaseOnSuccess()
+  }
 }
