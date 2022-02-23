@@ -13,7 +13,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
+import uk.gov.hmcts.cmc.claimstore.models.courtfinder.factapi.Court;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
@@ -187,6 +187,7 @@ public class PaperResponseLetterService {
         return courtFinderApi.findMoneyClaimCourtByPostcode((partyType == CCDPartyType.COMPANY
             || partyType == CCDPartyType.ORGANISATION)
             ? claimantAddress.getPostCode() : defendantAddress.getPostCode())
+            .getCourts()
             .stream()
             .map(Court::getName)
             .findFirst()

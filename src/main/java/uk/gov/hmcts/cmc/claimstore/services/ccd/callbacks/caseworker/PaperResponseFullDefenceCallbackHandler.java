@@ -16,9 +16,9 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
+import uk.gov.hmcts.cmc.claimstore.models.courtfinder.factapi.Court;
 import uk.gov.hmcts.cmc.claimstore.rpa.DefenceResponseNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.CaseEventService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -333,6 +333,7 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
         return courtFinderApi.findMoneyClaimCourtByPostcode((partyType == CCDPartyType.COMPANY
             || partyType == CCDPartyType.ORGANISATION)
             ? claimantAddress.getPostCode() : defendantAddress.getPostCode())
+            .getCourts()
             .stream()
             .map(Court::getName)
             .findFirst()

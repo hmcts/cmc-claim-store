@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
+import uk.gov.hmcts.cmc.claimstore.models.courtfinder.factapi.CourtFinderResponse;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourtMapper;
 import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourt;
@@ -96,7 +97,7 @@ public class PilotCourtService {
 
         PilotCourt pilotCourt = pilotCourts.get(pilotCourtId);
 
-        if (!pilotCourt.getHearingCourt().isPresent()) {
+        if (pilotCourt.getHearingCourt().isEmpty()) {
             Optional<HearingCourt> court = getCourt(pilotCourt.getPostcode());
             pilotCourt.setHearingCourt(court.orElse(null));
         }
@@ -133,7 +134,7 @@ public class PilotCourtService {
 
             if (csvRecord.size() != PilotCourtCSVHeader.values().length) {
                 throw new AssertionError(String.format("Pilot court configuration for %s is expected to have %d values",
-                    csvRecord.toString(),
+                    csvRecord,
                     PilotCourtCSVHeader.values().length));
             }
 
@@ -192,7 +193,14 @@ public class PilotCourtService {
     }
 
     private Optional<HearingCourt> getCourt(String postcode) {
+        CourtFinderResponse courtFinderResponse =
+            courtFinderApi.findMoneyClaimCourtByPostcode(postcode)
+            .getCourts()
+            .stream()
+            .findFirst();
+
         return courtFinderApi.findMoneyClaimCourtByPostcode(postcode)
+            .getCourts()
             .stream()
             .findFirst()
             .map(hearingCourtMapper::from);

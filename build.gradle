@@ -291,7 +291,8 @@ sourceSets {
 }
 
 dependencies {
-  integrationTestCompile(sourceSets.test.output)
+  implementation 'org.projectlombok:lombok:1.18.20'
+    integrationTestCompile(sourceSets.test.output)
   integrationTestCompile(project(':email-client').sourceSets.main.output)
 }
 
