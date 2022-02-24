@@ -9,9 +9,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
+import uk.gov.hmcts.cmc.claimstore.containers.CourtFinderContainer;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
+import uk.gov.hmcts.cmc.claimstore.courtfinder.models.CourtDetails;
+import uk.gov.hmcts.cmc.claimstore.models.courtfinder.factapi.Court;
+import uk.gov.hmcts.cmc.claimstore.models.courtfinder.factapi.CourtAddress;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.factapi.CourtFinderResponse;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourtMapper;
@@ -23,13 +28,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
@@ -193,17 +192,48 @@ public class PilotCourtService {
     }
 
     private Optional<HearingCourt> getCourt(String postcode) {
-        CourtFinderResponse courtFinderResponse =
-            courtFinderApi.findMoneyClaimCourtByPostcode(postcode)
-            .getCourts()
-            .stream()
-            .findFirst();
 
-        return courtFinderApi.findMoneyClaimCourtByPostcode(postcode)
-            .getCourts()
-            .stream()
-            .findFirst()
-            .map(hearingCourtMapper::from);
+        List<Court> courts = courtFinderApi.findMoneyClaimCourtByPostcode(postcode).getCourts();
+
+        if (!courts.isEmpty()) {
+//            Court court = new CourtFinderContainer().getCourtFromCourtFinderResponse(courts.get(0));
+            // get first court and convert
+            Court court = null;
+
+            CourtDetails courtDetails = courtFinderApi.getCourtDetailsFromNameSlug(court.getSlug());
+            CourtAddress courtAddress = courtDetails.getAddresses().get(0);
+
+            HearingCourt hearingCourt = new HearingCourt();
+            hearingCourt.setName(court.getName());
+
+            // get address from request by slug
+            CCDAddress ccdAddress = new CCDAddress();
+
+            // courtAddress.getType()  = "Visit us", "Write to us", "Visit or contact us"
+            //
+            if (!courtAddress.getAddressLines().isEmpty()) {
+                ccdAddress.setAddressLine1(null);
+                ccdAddress.setAddressLine2(null);
+                ccdAddress.setAddressLine3(null);
+            }
+
+            ccdAddress.setPostCode(courtAddress.getPostcode());
+            ccdAddress.setPostTown(courtAddress.getTown());
+            // todo : confirm country code
+            ccdAddress.setCountry("UK");
+            ccdAddress.setCounty(null);
+            hearingCourt.setAddress(ccdAddress);
+        }
+
+        return Optional.empty();
+    }
+
+    private void setAddressLines(CourtAddress courtAddress, CCDAddress ccdAddress ) {
+        if (!courtAddress.getAddressLines().isEmpty()) {
+            ccdAddress.setAddressLine1(courtAddress.getAddressLines().get(0));
+            ccdAddress.setAddressLine2(null);
+            ccdAddress.setAddressLine3(null);
+        }
     }
 
     public String getPilotCourtId(HearingCourt hearingCourt) {

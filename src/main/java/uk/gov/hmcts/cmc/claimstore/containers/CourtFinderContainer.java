@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.claimstore.models.courtfinder.factapi.CourtFinderRespons
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Class to map legacy court finder to new fact api court finder
@@ -53,7 +54,7 @@ public class CourtFinderContainer {
      * @param court : for a given court object
      * @return {@linkplain Court}
      */
-    private Court getCourtFromCourtFinderResponse(uk.gov.hmcts.cmc.claimstore.models.courtfinder.factapi.Court court) {
+    public Court getCourtFromCourtFinderResponse(uk.gov.hmcts.cmc.claimstore.models.courtfinder.factapi.Court court) {
         Court courtItem = new Court();
 
         courtItem.setAddress(null);

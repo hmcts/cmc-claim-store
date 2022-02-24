@@ -1,11 +1,12 @@
 package uk.gov.hmcts.cmc.ccd.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
-import lombok.Value;
+import lombok.*;
 
-@Value
-@Builder(toBuilder = true)
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class CCDAddress {
 
     @JsonProperty("AddressLine1")
