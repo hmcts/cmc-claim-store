@@ -34,7 +34,6 @@
     <module name="SuppressWarningsFilter" />
     <module name="TreeWalker">
         <module name="UnusedImports"/>
-        <module name="HideUtilityClassConstructor"/>
         <module name="SuppressWarningsHolder" />
         <module name="OuterTypeFilename"/>
         <module name="IllegalTokenText">
