@@ -20,6 +20,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
@@ -42,11 +43,11 @@ public class DeadlineSupportController {
     private static final Predicate<Claim> HAS_DQ_DEADLINE = claim -> claim.getDirectionsQuestionnaireDeadline() != null;
     private static final Predicate<Claim> UNANSWERED = claim -> !claim.getResponse().isPresent();
     private static final Predicate<Claim> DEFENDANT_MEDIATION = claim -> claim.getResponse()
-        .flatMap(uk.gov.hmcts.cmc.domain.models.response.Response::getFreeMediation)
+        .flatMap(Response::getFreeMediation)
         .filter(YesNoOption.YES::equals)
         .isPresent();
     private static final Predicate<Claim> FULL_ADMIT_RESPONSE = claim -> claim.getResponse()
-        .map(uk.gov.hmcts.cmc.domain.models.response.Response::getResponseType)
+        .map(Response::getResponseType)
         .filter(ResponseType.FULL_ADMISSION::equals)
         .isPresent();
     private static final Predicate<Claim> CLAIMANT_ACCEPTED = claim -> claim.getClaimantResponse()
