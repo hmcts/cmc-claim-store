@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.cmc.claimstore.constants.ResponseConstants;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
@@ -19,7 +20,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
-import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
@@ -42,11 +42,11 @@ public class DeadlineSupportController {
     private static final Predicate<Claim> HAS_DQ_DEADLINE = claim -> claim.getDirectionsQuestionnaireDeadline() != null;
     private static final Predicate<Claim> UNANSWERED = claim -> !claim.getResponse().isPresent();
     private static final Predicate<Claim> DEFENDANT_MEDIATION = claim -> claim.getResponse()
-        .flatMap(Response::getFreeMediation)
+        .flatMap(uk.gov.hmcts.cmc.domain.models.response.Response::getFreeMediation)
         .filter(YesNoOption.YES::equals)
         .isPresent();
     private static final Predicate<Claim> FULL_ADMIT_RESPONSE = claim -> claim.getResponse()
-        .map(Response::getResponseType)
+        .map(uk.gov.hmcts.cmc.domain.models.response.Response::getResponseType)
         .filter(ResponseType.FULL_ADMISSION::equals)
         .isPresent();
     private static final Predicate<Claim> CLAIMANT_ACCEPTED = claim -> claim.getClaimantResponse()
@@ -103,7 +103,7 @@ public class DeadlineSupportController {
         }
 
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-            .body("Unrecognised deadline type: " + deadlineType);
+            .body(ResponseConstants.UNPROCESSABLE_ENTITY_UNRECOGNISED_DEADLINE_TYPE);
     }
 
     private ResponseEntity<String> defineDQDeadline(Claim claim, String authorisation, boolean overwrite) {
