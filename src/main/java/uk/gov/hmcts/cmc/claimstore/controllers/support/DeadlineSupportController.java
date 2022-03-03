@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.cmc.claimstore.constants.ResponseConstants;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
@@ -103,7 +104,7 @@ public class DeadlineSupportController {
         }
 
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-            .body("Unrecognised deadline type: " + deadlineType);
+            .body(ResponseConstants.UNPROCESSABLE_ENTITY_UNRECOGNISED_DEADLINE_TYPE);
     }
 
     private ResponseEntity<String> defineDQDeadline(Claim claim, String authorisation, boolean overwrite) {
