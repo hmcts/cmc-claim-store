@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.gov.hmcts.cmc.claimstore.constants.ResponseConstants;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
@@ -94,7 +95,7 @@ public class DeadlineSupportControllerTest {
         ResponseEntity<String> response = controller.defineDeadline("unknown", sampleClaim.getReferenceNumber(), false);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
-        assertThat(response.getBody()).isEqualTo("Unrecognised deadline type: unknown");
+        assertThat(response.getBody()).isEqualTo(ResponseConstants.UNPROCESSABLE_ENTITY_UNRECOGNISED_DEADLINE_TYPE);
         verifyNoInteractions(directionsQuestionnaireDeadlineCalculator);
         verifyNoInteractions(caseRepository);
     }
