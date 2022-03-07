@@ -1,7 +1,7 @@
 apiVersion: v2
 name: cmc-claim-store
 home: https://github.com/hmcts/cmc-claim-store
-version: 4.1.33
+version: 4.1.34
 description: Helm chart for the HMCTS CMC Claim-Store service
 # be aware when bumping version that it is used elsewhere, e.g.:
 # chart-cmc - demo: https://github.com/hmcts/chart-cmc/tree/master/cmc
@@ -12,15 +12,15 @@ maintainers:
     email: cmc-developers@HMCTS.NET
 dependencies:
   - name: java
-    version: 3.7.1
+    version: 3.7.2
     repository: '@hmctspublic'
 
   - name: postgresql
-    version: 8.9.8
+    version: 11.0.0
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 
   - name: ccd
-    version: 6.0.0
+    version: 7.0.1
     repository: '@hmctspublic'
     condition: ccd.enabled
