@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LetterContentBuilderTest {
-    private LetterContentBuilder letterContentBuilder = new LetterContentBuilder();
+    private final LetterContentBuilder letterContentBuilder = new LetterContentBuilder();
 
     @Test
     void shouldReturnLetterContentWithoutChanges() {
@@ -28,7 +28,8 @@ class LetterContentBuilderTest {
     void shouldReturnLetterContentWithChanges() {
         CCDParty partyA = SampleData.getCCDPartyWithEmail("j@bfdj.com");
         String modifiedEmail = "changed@bfdj.com";
-        CCDAddress modifiedAddress = SampleData.getCCDAddress().toBuilder().addressLine1("changedLine1").build();
+        CCDAddress modifiedAddress = new CCDAddress();
+        modifiedAddress.setAddressLine1("changedLine1");
         CCDTelephone modifiedTelephone = CCDTelephone.builder().telephoneNumber("01234567891").build();
 
         CCDParty partyWithUpdatedDetails = partyA.toBuilder()

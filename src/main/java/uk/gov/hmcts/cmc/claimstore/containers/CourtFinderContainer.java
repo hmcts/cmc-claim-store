@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Court Finder Container for mapping court finder responses
+ * Court Finder Container for mapping court finder responses.
  */
 public class CourtFinderContainer {
 
@@ -26,10 +26,10 @@ public class CourtFinderContainer {
     }
 
     /**
-     * Gets a list of court objects from the CourtFinderResponse
+     * Gets a list of court objects from the CourtFinderResponse.
      *
      * @param courtFinderResponse : for a given CourtFinderResponse
-     * @return {@linkplain  List<Court>}
+     * @return {@linkplain List<Court>}
      */
     public List<Court> getCourtsFromCourtFinderResponse(CourtFinderResponse courtFinderResponse) {
         List<Court> courts = new ArrayList<>();
@@ -42,7 +42,7 @@ public class CourtFinderContainer {
     }
 
     /**
-     * Get a court object from the fact api court object
+     * Get a court object from the fact api court object.
      *
      * @param court : for a given court object
      * @return {@linkplain Court}
@@ -60,7 +60,7 @@ public class CourtFinderContainer {
     }
 
     /**
-     * Method to populate the court addresses
+     * Method to populate the court addresses.
      *
      * @param courtItem for a provided court item
      * @param courtAddresses for a provided list of court addresses
@@ -84,7 +84,7 @@ public class CourtFinderContainer {
     }
 
     /**
-     * Method for setting the court address in order of priority
+     * Method for setting the court address in order of priority.
      *
      * @param courtItem for a provided court item
      * @param courtAddressMap for a map that contains the address type and the matching address
@@ -100,12 +100,13 @@ public class CourtFinderContainer {
     }
 
     /**
-     * Gets the AreaOfLaw From CourtFinderResponse
+     * Gets the AreaOfLaw From CourtFinderResponse.
      *
      * @param court for a provide fact api court object
      * @return {@linkplain List < AreaOfLaw >}
      */
-    private List<AreaOfLaw> getAreaOfLawFromCourtFinderCourt(uk.gov.hmcts.cmc.claimstore.models.courtfinder.factapi.Court court) {
+    private List<AreaOfLaw> getAreaOfLawFromCourtFinderCourt(
+        uk.gov.hmcts.cmc.claimstore.models.courtfinder.factapi.Court court) {
         List<AreaOfLaw> areasOfLaws = new ArrayList<>();
 
         for (AreasOfLaw areasOfLawSpoe : court.getAreasOfLawSpoe()) {

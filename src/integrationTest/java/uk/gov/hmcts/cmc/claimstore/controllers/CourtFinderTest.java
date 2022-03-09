@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
@@ -9,6 +8,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.CourtDetails;
+import uk.gov.hmcts.cmc.claimstore.models.courtfinder.factapi.CourtFinderResponse;
 import uk.gov.hmcts.cmc.email.EmailService;
 
 import java.util.List;
@@ -31,7 +31,7 @@ public class CourtFinderTest extends BaseMockSpringTest {
         String courtName = "Dudley County Court and Family Court";
 
         given(courtFinderApi.findMoneyClaimCourtByPostcode(postcode))
-            .willReturn(ImmutableList.of(Court.builder().name(courtName).build()));
+            .willReturn(CourtFinderResponse.builder().name(courtName).build());
 
         MvcResult result = doGet("/court-finder/search-postcode/{postcode}", postcode)
             .andExpect(status().isOk())

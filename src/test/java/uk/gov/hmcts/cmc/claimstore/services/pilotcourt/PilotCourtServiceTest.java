@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.pilotcourt;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import feign.FeignException;
 import feign.Request;
@@ -168,7 +167,7 @@ class PilotCourtServiceTest {
             appInsights
         );
 
-        when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString())).thenReturn(ImmutableList.of());
+        when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString())).thenReturn(null);
         pilotCourtService.init();
 
         Optional<HearingCourt> actualHearingCourt = pilotCourtService.getPilotHearingCourt("BIRMINGHAM");
@@ -185,7 +184,7 @@ class PilotCourtServiceTest {
             appInsights
         );
 
-        when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString())).thenReturn(ImmutableList.of());
+        when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString())).thenReturn(null);
         Assertions.assertThrows(AssertionError.class, pilotCourtService::init);
     }
 
@@ -193,11 +192,15 @@ class PilotCourtServiceTest {
     void shouldReturnListOfCourtIdsForPilot() {
 
         Court edmontonCourt = Court.builder().name("EDMONTON").build();
-        when(courtFinderApi.findMoneyClaimCourtByPostcode(eq("N182TN"))).thenReturn(ImmutableList.of(edmontonCourt));
+        CourtFinderResponse edmontonCourtFinderResponse = CourtFinderResponse.builder().name("EDMONTON").build();
+
+        when(courtFinderApi.findMoneyClaimCourtByPostcode(eq("N182TN"))).thenReturn(edmontonCourtFinderResponse);
         when(hearingCourtMapper.from(eq(edmontonCourt))).thenReturn(HearingCourt.builder().name("EDMONTON").build());
 
         Court manchesterCourt = Court.builder().name("MANCHESTER").build();
-        when(courtFinderApi.findMoneyClaimCourtByPostcode(eq("M609DJ"))).thenReturn(ImmutableList.of(manchesterCourt));
+        CourtFinderResponse manchesterCourtFinderResponse = CourtFinderResponse.builder().name("MANCHESTER").build();
+
+        when(courtFinderApi.findMoneyClaimCourtByPostcode(eq("M609DJ"))).thenReturn(manchesterCourtFinderResponse);
         when(hearingCourtMapper.from(eq(manchesterCourt)))
             .thenReturn(HearingCourt.builder().name("MANCHESTER").build());
 

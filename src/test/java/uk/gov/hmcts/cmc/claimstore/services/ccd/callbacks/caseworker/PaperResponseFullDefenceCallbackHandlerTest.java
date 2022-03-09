@@ -26,9 +26,9 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.claimstore.models.courtfinder.factapi.CourtFinderResponse;
 import uk.gov.hmcts.cmc.claimstore.rpa.DefenceResponseNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.CaseEventService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -146,7 +146,7 @@ class PaperResponseFullDefenceCallbackHandlerTest {
                 .features(List.of(ClaimFeatures.DQ_FLAG.getValue()))
                 .build());
             when(courtFinderApi.findMoneyClaimCourtByPostcode(postcode))
-                .thenReturn(List.of(Court.builder().name(court).build()));
+                .thenReturn(CourtFinderResponse.builder().name(court).build());
             when(userService.getUser(anyString())).thenReturn(mockUser);
             when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancements"), any(LDUser.class))).thenReturn(true);
             when(caseEventService.findEventsForCase(any(String.class), any(User.class))).thenReturn(CASE_EVENTS);
@@ -188,7 +188,7 @@ class PaperResponseFullDefenceCallbackHandlerTest {
 
             String court = "Court";
             when(courtFinderApi.findMoneyClaimCourtByPostcode(eq(postcode)))
-                .thenReturn(List.of(Court.builder().name(court).build()));
+                .thenReturn(CourtFinderResponse.builder().name(court).build());
 
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(Claim.builder()
                 .features(List.of(ClaimFeatures.DQ_FLAG.getValue()))
@@ -210,7 +210,7 @@ class PaperResponseFullDefenceCallbackHandlerTest {
 
             String court = "Court";
             when(courtFinderApi.findMoneyClaimCourtByPostcode(eq(postcode)))
-                .thenReturn(List.of(Court.builder().name(court).build()));
+                .thenReturn(CourtFinderResponse.builder().name(court).build());
 
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(Claim.builder()
                 .features(List.of(ClaimFeatures.DQ_FLAG.getValue()))
@@ -251,7 +251,7 @@ class PaperResponseFullDefenceCallbackHandlerTest {
 
             String court = "Central London County Court";
             when(courtFinderApi.findMoneyClaimCourtByPostcode(eq(postcode)))
-                .thenReturn(List.of(Court.builder().name(court).build()));
+                .thenReturn(CourtFinderResponse.builder().name(court).build());
 
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(Claim.builder()
                 .features(List.of(ClaimFeatures.DQ_FLAG.getValue()))
@@ -290,7 +290,7 @@ class PaperResponseFullDefenceCallbackHandlerTest {
 
             String court = "Court";
             when(courtFinderApi.findMoneyClaimCourtByPostcode(eq(postcode)))
-                .thenReturn(List.of(Court.builder().name(court).build()));
+                .thenReturn(CourtFinderResponse.builder().name(court).build());
 
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(Claim.builder()
                 .features(List.of(ClaimFeatures.DQ_FLAG.getValue()))

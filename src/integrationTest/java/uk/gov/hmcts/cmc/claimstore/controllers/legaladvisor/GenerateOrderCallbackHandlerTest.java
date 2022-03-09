@@ -15,12 +15,11 @@ import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Address;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.models.courtfinder.factapi.CourtFinderResponse;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
@@ -72,15 +71,11 @@ public class GenerateOrderCallbackHandlerTest extends BaseMockSpringTest {
         DocAssemblyResponse docAssemblyResponse = Mockito.mock(DocAssemblyResponse.class);
         when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOCUMENT_URL);
         given(courtFinderApi.findMoneyClaimCourtByPostcode(anyString()))
-            .willReturn(ImmutableList.of(Court.builder()
+            .willReturn(CourtFinderResponse.builder()
                 .name("Clerkenwell Court")
                 .slug("clerkenwell-court")
-                .addresses(ImmutableList.of(Address.builder()
-                    .addressLines(ImmutableList.of("line1", "line2"))
-                    .postcode("SW1P4BB")
-                    .town("Clerkenwell").build()))
                 .build()
-            ));
+            );
         given(pilotCourtService.getPilotHearingCourts(any(), any()))
             .willReturn(ImmutableSet.of(HearingCourt.builder()
                 .name("Clerkenwell Court")
