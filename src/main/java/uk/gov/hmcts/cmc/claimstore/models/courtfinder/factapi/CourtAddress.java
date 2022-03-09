@@ -7,7 +7,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Data
 @AllArgsConstructor
@@ -15,11 +19,22 @@ import java.util.List;
 @Builder
 @JsonPropertyOrder({"address_lines", "postcode", "town", "type"})
 public class CourtAddress {
-    @JsonProperty("type")
-    private String type;
     @JsonProperty("address_lines")
     private List<String> addressLines;
-    @JsonProperty("town")
-    private String town;
+
+    @JsonProperty("type")
+    private String type;
+
     private String postcode;
+
+    private String town;
+
+    //     todo : review
+    @Override
+    public String toString() {
+        return Stream.of(addressLines, Arrays.asList(postcode, town))
+            .flatMap(Collection::stream)
+            .map(s -> s.replaceAll("\\r\\n|\\r|\\n", ""))
+            .collect(Collectors.joining("\n"));
+    }
 }

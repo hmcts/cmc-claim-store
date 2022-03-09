@@ -13,7 +13,10 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Court {
     private String name;
+
     private String slug;
+
     private double distance;
+
     private List<AreasOfLaw> areasOfLawSpoe;
 }

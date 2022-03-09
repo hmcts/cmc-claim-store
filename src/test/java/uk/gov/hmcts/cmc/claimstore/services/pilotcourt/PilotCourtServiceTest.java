@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
+import uk.gov.hmcts.cmc.claimstore.models.courtfinder.factapi.CourtFinderResponse;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourtMapper;
 
@@ -115,10 +116,11 @@ class PilotCourtServiceTest {
             appInsights
         );
 
-        Court court = Court.builder().build();
+        CourtFinderResponse courtFinderResponse = CourtFinderResponse.builder().build();
         when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString()))
-            .thenReturn(ImmutableList.of(court));
+            .thenReturn(courtFinderResponse);
 
+        Court court = Court.builder().build();
         HearingCourt hearingCourt = HearingCourt.builder().name("SAMPLE COURT").build();
         when(hearingCourtMapper.from(eq(court))).thenReturn(hearingCourt);
         pilotCourtService.init();
@@ -139,11 +141,12 @@ class PilotCourtServiceTest {
         );
 
         //Simulate courtfinder being down on init
+        CourtFinderResponse courtFinderResponse = CourtFinderResponse.builder().build();
         Court court = Court.builder().build();
         Request request = Request.create(Request.HttpMethod.GET, "URL", ImmutableMap.of(), Request.Body.empty(), null);
         when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString())).thenThrow(FeignException.errorStatus("",
             Response.builder().request(request).build()))
-            .thenReturn(ImmutableList.of(court));
+            .thenReturn(courtFinderResponse);
 
         pilotCourtService.init();
 
@@ -238,8 +241,9 @@ class PilotCourtServiceTest {
         void setUp() {
 
             Court pilotCourt = Court.builder().name(pilotCourtName).build();
+            CourtFinderResponse courtFinderResponse = CourtFinderResponse.builder().build();
             when(courtFinderApi.findMoneyClaimCourtByPostcode(eq(pilotCourtPostcode)))
-                .thenReturn(ImmutableList.of(pilotCourt));
+                .thenReturn(courtFinderResponse);
 
             when(hearingCourtMapper.from(eq(pilotCourt)))
                 .thenReturn(HearingCourt.builder().name(pilotCourtName).build());
@@ -254,8 +258,10 @@ class PilotCourtServiceTest {
             void setUp() {
 
                 Court nonPilotCourt = Court.builder().name(nonPilotCourtName).build();
+                CourtFinderResponse courtFinderResponse = CourtFinderResponse.builder().build();
+
                 when(courtFinderApi.findMoneyClaimCourtByPostcode(eq(nonPilotCourtPostcode)))
-                    .thenReturn(ImmutableList.of(nonPilotCourt));
+                    .thenReturn(courtFinderResponse);
 
                 when(hearingCourtMapper.from(eq(nonPilotCourt)))
                     .thenReturn(HearingCourt.builder().name(nonPilotCourtName).build());

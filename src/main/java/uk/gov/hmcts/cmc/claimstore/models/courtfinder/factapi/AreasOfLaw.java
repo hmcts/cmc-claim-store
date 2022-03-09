@@ -14,6 +14,8 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AreasOfLaw {
     private int id;
+
     private String name;
+
     private boolean singlePointEntry;
 }

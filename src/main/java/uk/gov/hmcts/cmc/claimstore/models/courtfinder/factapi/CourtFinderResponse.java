@@ -14,8 +14,12 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CourtFinderResponse {
     private String slug;
+
     private String name;
+
     private String onlineText;
+
     private String onlineUrl;
+
     private List<Court> courts;
 }
