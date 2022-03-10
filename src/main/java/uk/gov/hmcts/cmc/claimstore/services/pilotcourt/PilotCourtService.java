@@ -12,7 +12,10 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
+import uk.gov.hmcts.cmc.claimstore.constants.CourtAddressType;
+import uk.gov.hmcts.cmc.claimstore.containers.CourtFinderContainer;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
+import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Address;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.CourtDetails;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.factapi.Court;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.factapi.CourtAddress;
@@ -194,46 +197,55 @@ public class PilotCourtService {
         List<Court> courts = courtFinderApi.findMoneyClaimCourtByPostcode(postcode).getCourts();
 
         if (!courts.isEmpty()) {
-//            Court court = new CourtFinderContainer().getCourtFromCourtFinderResponse(courts.get(0));
-            // get first court and convert
-            Court court = null;
+            uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court court = new CourtFinderContainer(courtFinderApi).getCourtFromCourtFinderResponse(courts.get(0));
 
             CourtDetails courtDetails = courtFinderApi.getCourtDetailsFromNameSlug(court.getSlug());
-            CourtAddress courtAddress = courtDetails.getAddresses().get(0);
 
-            HearingCourt hearingCourt = new HearingCourt();
-            hearingCourt.setName(court.getName());
+            HearingCourt hearingCourt = HearingCourt.builder()
+                .name(court.getName())
+                .address(getCCDAddress(courtDetails.getAddresses().get(0)))
+                .build();
 
-            // get address from request by slug
-            CCDAddress ccdAddress = new CCDAddress();
-
-            // courtAddress.getType()  = "Visit us", "Write to us", "Visit or contact us"
-            //
-            if (!courtAddress.getAddressLines().isEmpty()) {
-                ccdAddress.setAddressLine1(null);
-                ccdAddress.setAddressLine2(null);
-                ccdAddress.setAddressLine3(null);
-            }
-
-            ccdAddress.setPostCode(courtAddress.getPostcode());
-            ccdAddress.setPostTown(courtAddress.getTown());
-            // todo : confirm country code
-            ccdAddress.setCountry("UK");
-            ccdAddress.setCounty(null);
-            hearingCourt.setAddress(ccdAddress);
+            return Optional.of(hearingCourt);
         }
 
         return Optional.empty();
     }
 
-    private void setAddressLines(CourtAddress courtAddress, CCDAddress ccdAddress ) {
+    /**
+     * TODO : DESCRIPTION
+     *
+     * @param courtAddress
+     * @param ccdAddress
+     */
+    private CCDAddress getCCDAddress(CourtAddress courtAddress) {
+        CCDAddress ccdAddress = CCDAddress.builder()
+            .postCode(courtAddress.getPostcode())
+            .postTown(courtAddress.getTown())
+            .build();
+
         if (!courtAddress.getAddressLines().isEmpty()) {
             ccdAddress.setAddressLine1(courtAddress.getAddressLines().get(0));
-            ccdAddress.setAddressLine2(null);
-            ccdAddress.setAddressLine3(null);
+
+            int addressLineCount = courtAddress.getAddressLines().size();
+
+            if (addressLineCount >= 2) {
+                ccdAddress.setAddressLine2(courtAddress.getAddressLines().get(1));
+
+                if (addressLineCount >= 3) {
+                    ccdAddress.setAddressLine3(courtAddress.getAddressLines().get(2));
+                }
+            }
         }
+
+        return ccdAddress;
     }
 
+    /**
+     * TODO : DESCRIPTION
+     * @param hearingCourt
+     * @return {@linkplain String}
+     */
     public String getPilotCourtId(HearingCourt hearingCourt) {
 
         return pilotCourts.keySet()

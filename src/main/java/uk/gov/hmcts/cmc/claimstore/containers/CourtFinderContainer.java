@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.containers;
 
+import uk.gov.hmcts.cmc.claimstore.constants.CourtAddressType;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Address;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.AreaOfLaw;
@@ -90,12 +91,12 @@ public class CourtFinderContainer {
      * @param courtAddressMap for a map that contains the address type and the matching address
      */
     private void setCourtAddress(Court courtItem, Map<String, Address> courtAddressMap) {
-        if (courtAddressMap.containsKey("Write to us")) {
-            courtItem.setAddress(courtAddressMap.get("Write to us"));
-        } else if (courtAddressMap.containsKey("Visit or Contact Us")) {
-            courtItem.setAddress(courtAddressMap.get("Visit or Contact Us"));
-        } else if (courtAddressMap.containsKey("Visit Us")) {
-            courtItem.setAddress(courtAddressMap.get("Visit Us"));
+        if (courtAddressMap.containsKey(CourtAddressType.WRITE_TO_US.toString())) {
+            courtItem.setAddress(courtAddressMap.get(CourtAddressType.WRITE_TO_US.toString()));
+        } else if (courtAddressMap.containsKey(CourtAddressType.VISIT_OR_CONTACT_US.toString())) {
+            courtItem.setAddress(courtAddressMap.get(CourtAddressType.VISIT_OR_CONTACT_US.toString()));
+        } else if (courtAddressMap.containsKey(CourtAddressType.VISIT_US.toString())) {
+            courtItem.setAddress(courtAddressMap.get(CourtAddressType.VISIT_US.toString()));
         }
     }
 

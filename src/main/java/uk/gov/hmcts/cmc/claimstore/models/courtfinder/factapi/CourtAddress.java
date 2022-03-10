@@ -29,7 +29,6 @@ public class CourtAddress {
 
     private String town;
 
-    //     todo : review
     @Override
     public String toString() {
         return Stream.of(addressLines, Arrays.asList(postcode, town))
