@@ -13,9 +13,9 @@ import java.io.InputStreamReader;
  * A utility class that aids in the reading of file contents.
  */
 @UtilityClass
-public class FileReaderUtils {
+class FileReaderUtils {
 
-    private final Logger logger = LoggerFactory.getLogger(FileReaderUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(FileReaderUtils.class);
 
     /**
      * Reads the contents of a JSON file and stores it as a string.
@@ -23,7 +23,7 @@ public class FileReaderUtils {
      * @param jsonFile for a provided json file
      * @return {@linkplain String} json file contents as string
      */
-    public String readJsonFromFile(String jsonFile) {
+    static String readJsonFromFile(String jsonFile) {
         StringBuilder stringBuilder = new StringBuilder();
 
         try {

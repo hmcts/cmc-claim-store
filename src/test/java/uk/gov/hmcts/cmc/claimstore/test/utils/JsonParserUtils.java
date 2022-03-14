@@ -10,24 +10,42 @@ import org.slf4j.LoggerFactory;
  * A utility class for mapping json data to classes and type references.
  */
 @UtilityClass
-public class JsonParserUtils {
+class JsonParserUtils {
 
-    private static ObjectMapper objectMapper;
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    private final Logger logger = LoggerFactory.getLogger(JsonParserUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(JsonParserUtils.class);
 
-    public <T> T fromJson(String jsonFile, TypeReference<T> type) {
+    /**
+     * Util function to map the contents of a JSON file
+     * to generic Type Reference.
+     *
+     * @param jsonValue for a provide json string value
+     * @param type for a provided generic type reference
+     * @return {@linkplain T}
+     */
+     static <T> T fromJson(String jsonFileSrc, TypeReference<T> type) {
         try {
-            return objectMapper.readValue(jsonFile, type);
+            String jsonValue = FileReaderUtils.readJsonFromFile(jsonFileSrc);
+            return objectMapper.readValue(jsonValue, type);
         } catch (Exception e) {
             logger.error(String.valueOf(e));
             return null;
         }
     }
 
-    public <T> T fromJson(String jsonFile, Class<T> type) {
+    /**
+     * Util function to map the contents of a JSON file
+     * to generic Class Reference.
+     *
+     * @param jsonValue for a provide json string value
+     * @param type for a provided generic class
+     * @return {@linkplain T}
+     */
+    static <T> T fromJson(String jsonFileSrc, Class<T> type) {
         try {
-            return objectMapper.readValue(jsonFile, type);
+            String jsonValue = FileReaderUtils.readJsonFromFile(jsonFileSrc);
+            return objectMapper.readValue(jsonValue, type);
         } catch (Exception e) {
             logger.error(String.valueOf(e));
             return null;
