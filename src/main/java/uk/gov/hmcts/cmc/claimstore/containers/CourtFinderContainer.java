@@ -50,12 +50,14 @@ public class CourtFinderContainer {
      */
     public Court getCourtFromCourtFinderResponse(uk.gov.hmcts.cmc.claimstore.models.courtfinder.factapi.Court court) {
         Court courtItem = new Court();
-        CourtDetails courtDetails = courtFinderApi.getCourtDetailsFromNameSlug(court.getSlug());
-
         courtItem.setName(court.getName());
         courtItem.setSlug(court.getSlug());
-        populateCourtAddresses(courtItem, courtDetails.getAddresses());
         courtItem.setAreasOfLaw(getAreaOfLawFromCourtFinderCourt(court));
+
+        if (court.getSlug() != null) {
+            CourtDetails courtDetails = courtFinderApi.getCourtDetailsFromNameSlug(court.getSlug());
+            populateCourtAddresses(courtItem, courtDetails.getAddresses());
+        }
 
         return courtItem;
     }
@@ -71,11 +73,13 @@ public class CourtFinderContainer {
         Map<String, Address> courtAddressMap = new HashMap<>();
 
         for (CourtAddress courtAddress : courtAddresses) {
-            Address address =  new Address();
-            address.setAddressLines(courtAddress.getAddressLines());
-            address.setPostcode(courtAddress.getPostcode());
-            address.setTown(courtAddress.getTown());
-            address.setType(courtAddress.getType());
+            Address address = Address.builder()
+                .addressLines(courtAddress.getAddressLines())
+                .postcode(courtAddress.getPostcode())
+                .town(courtAddress.getTown())
+                .type(courtAddress.getType())
+                .build();
+
             courtAddressMap.put(courtAddress.getType(), address);
             addresses.add(address);
         }

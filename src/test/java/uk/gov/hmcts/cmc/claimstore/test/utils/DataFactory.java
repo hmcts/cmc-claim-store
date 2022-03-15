@@ -2,7 +2,9 @@ package uk.gov.hmcts.cmc.claimstore.test.utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.experimental.UtilityClass;
+import uk.gov.hmcts.cmc.claimstore.courtfinder.models.CourtDetails;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.factapi.CourtFinderResponse;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 
 import java.util.Set;
 
@@ -24,6 +26,16 @@ public class DataFactory {
     }
 
     public static Set<String> createStringSetFromJson(String jsonFileSrc) {
+        return JsonParserUtils.fromJson(jsonFileSrc, new TypeReference<>() {
+        });
+    }
+
+    public static CourtDetails createCourtDetailsFromJson(String jsonFileSrc) {
+        return JsonParserUtils.fromJson(jsonFileSrc, new TypeReference<>() {
+        });
+    }
+
+    public static HearingCourt createHearingCourtFromJson(String jsonFileSrc) {
         return JsonParserUtils.fromJson(jsonFileSrc, new TypeReference<>() {
         });
     }

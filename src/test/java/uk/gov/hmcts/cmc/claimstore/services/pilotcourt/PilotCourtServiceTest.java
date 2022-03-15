@@ -13,8 +13,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.containers.CourtFinderContainer;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
+import uk.gov.hmcts.cmc.claimstore.courtfinder.models.AreaOfLaw;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
+import uk.gov.hmcts.cmc.claimstore.courtfinder.models.CourtDetails;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.factapi.CourtFinderResponse;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourtMapper;
@@ -22,8 +25,7 @@ import uk.gov.hmcts.cmc.claimstore.test.utils.DataFactory;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -47,7 +49,9 @@ class PilotCourtServiceTest {
     @Mock
     private feign.Request request;
 
-    private final static String COURT_FINDER_RESPONSE_EDMONTON = "court-finder/response/EDMONTON_COURT_FINDER_RESPONSE.json";
+    private final static String COURT_FINDER_RESPONSE_NEWCASTLE = "court-finder/response/NEWCASTLE_COURT_FINDER_RESPONSE.json";
+    private final static String COURT_DETAILS_NEWCASTLE = "court-details/NEWCASTLE_COURT_DETAILS.json";
+    private final static String HEARING_COURT_NEWCASTLE = "hearing-court/NEWCASTLE_HEARING_COURT.json";
     private final static String PILOT_COURT_ALL_COURTS = "pilot-court/response/ALL_PILOT_COURT_IDS.json";
     private final static String PILOT_COURT_IDS = "pilot-court/response/PILOT_COURT_IDS.json";
     private final static String CSV_PATH = "/pilot-court/pilot-courts.csv";
@@ -111,30 +115,47 @@ class PilotCourtServiceTest {
     @Test
     void shouldReturnHearingCourt() {
         PilotCourtService pilotCourtService = new PilotCourtService(
-            CSV_PATH_SINGLE,
+            CSV_PATH_COURT_IDS,
             courtFinderApi,
             hearingCourtMapper,
             appInsights
         );
 
-        CourtFinderResponse courtFinderResponse = CourtFinderResponse.builder().build();
-        when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString()))
-            .thenReturn(courtFinderResponse);
+        CourtFinderResponse courtFinderResponse = DataFactory.createCourtFinderResponseFromJson(COURT_FINDER_RESPONSE_NEWCASTLE);
 
-        HearingCourt hearingCourt = HearingCourt.builder().name("SAMPLE COURT").build();
-        when(hearingCourtMapper.from(any(Court.class))).thenReturn(hearingCourt);
+        Request request = Request.create(Request.HttpMethod.GET, "URL", ImmutableMap.of(), Request.Body.empty(), null);
+        when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString())).thenThrow(FeignException.errorStatus("",
+                Response.builder().request(request).build()))
+            .thenReturn(courtFinderResponse);
 
         pilotCourtService.init();
 
+        HearingCourt expectedHearingCourt = DataFactory.createHearingCourtFromJson(HEARING_COURT_NEWCASTLE);
+
+        when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString()))
+            .thenReturn(courtFinderResponse);
+
+        // TODO :
+        Court oldCourt = Court.builder().slug("newcastle-civil-family-courts-and-tribunals-centre").build();
+
+        when(new CourtFinderContainer(courtFinderApi).getCourtFromCourtFinderResponse(any()))
+            .thenReturn(oldCourt);
+
+        CourtDetails courtDetails = DataFactory.createCourtDetailsFromJson(COURT_DETAILS_NEWCASTLE);
+
+        when(courtFinderApi.getCourtDetailsFromNameSlug(anyString()))
+            .thenReturn(courtDetails);
+
         HearingCourt actualHearingCourt = new HearingCourt();
-        Optional<HearingCourt> birminghamHearingCourt = pilotCourtService.getPilotHearingCourt("BIRMINGHAM");
-        if (birminghamHearingCourt.isPresent()) {
-            actualHearingCourt = birminghamHearingCourt.get();
+        Optional<HearingCourt> hearingCourt = pilotCourtService.getPilotHearingCourt("NEWCASTLE");
+        if (hearingCourt.isPresent()) {
+            actualHearingCourt = hearingCourt.get();
         }
 
-        assertEquals(hearingCourt, actualHearingCourt);
+        assertEquals(expectedHearingCourt, actualHearingCourt);
     }
 
+//    todo : make actual test
     @Test
     void shouldFetchHearingCourtOnDemandIfNotAlreadyExist() {
         PilotCourtService pilotCourtService = new PilotCourtService(
@@ -145,8 +166,8 @@ class PilotCourtServiceTest {
         );
 
         //Simulate court finder being down on init
-        CourtFinderResponse courtFinderResponse = CourtFinderResponse.builder().build();
-        Court court = Court.builder().build();
+        CourtFinderResponse courtFinderResponse = DataFactory.createCourtFinderResponseFromJson(COURT_FINDER_RESPONSE_NEWCASTLE);
+
         Request request = Request.create(Request.HttpMethod.GET, "URL", ImmutableMap.of(), Request.Body.empty(), null);
         when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString())).thenThrow(FeignException.errorStatus("",
             Response.builder().request(request).build()))
@@ -154,12 +175,15 @@ class PilotCourtServiceTest {
 
         pilotCourtService.init();
 
-        HearingCourt hearingCourt = HearingCourt.builder().name("SAMPLE COURT").build();
-        when(hearingCourtMapper.from(court)).thenReturn(hearingCourt);
+        HearingCourt expectedHearingCourt = DataFactory.createHearingCourtFromJson(HEARING_COURT_NEWCASTLE);
 
-//         todo :
-//        when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString()).getCourts())
-//            .thenReturn(Collections.singletonList(court));
+        when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString()))
+            .thenReturn(courtFinderResponse);
+
+        CourtDetails courtDetails = DataFactory.createCourtDetailsFromJson(COURT_DETAILS_NEWCASTLE);
+
+        when(courtFinderApi.getCourtDetailsFromNameSlug(anyString()))
+            .thenReturn(courtDetails);
 
         HearingCourt actualHearingCourt = new HearingCourt();
         Optional<HearingCourt> birminghamHearingCourt = pilotCourtService.getPilotHearingCourt("BIRMINGHAM");
@@ -167,8 +191,7 @@ class PilotCourtServiceTest {
             actualHearingCourt = birminghamHearingCourt.get();
         }
 
-        assertEquals(hearingCourt, actualHearingCourt);
-
+        assertEquals(expectedHearingCourt, actualHearingCourt);
     }
 
     @Test
@@ -180,7 +203,9 @@ class PilotCourtServiceTest {
             appInsights
         );
 
-        when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString())).thenReturn(null);
+        when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString()))
+            .thenReturn(null);
+
         pilotCourtService.init();
 
         Optional<HearingCourt> actualHearingCourt = pilotCourtService.getPilotHearingCourt("BIRMINGHAM");
@@ -197,23 +222,32 @@ class PilotCourtServiceTest {
             appInsights
         );
 
-        when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString())).thenReturn(null);
+        when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString()))
+            .thenReturn(null);
+
         Assertions.assertThrows(AssertionError.class, pilotCourtService::init);
     }
 
     @Test
     void shouldReturnListOfCourtIdsForPilot() {
 
+        CourtFinderResponse edmontonCourtFinderResponse = DataFactory.createCourtFinderResponseFromJson(COURT_FINDER_RESPONSE_NEWCASTLE);
+
+        when(courtFinderApi.findMoneyClaimCourtByPostcode("N182TN"))
+            .thenReturn(edmontonCourtFinderResponse);
+
         Court edmontonCourt = Court.builder().name("EDMONTON").build();
-        CourtFinderResponse edmontonCourtFinderResponse = DataFactory.createCourtFinderResponseFromJson(COURT_FINDER_RESPONSE_EDMONTON);
 
-        when(courtFinderApi.findMoneyClaimCourtByPostcode(eq("N182TN"))).thenReturn(edmontonCourtFinderResponse);
-        when(hearingCourtMapper.from(edmontonCourt)).thenReturn(HearingCourt.builder().name("EDMONTON").build());
+        when(hearingCourtMapper.from(edmontonCourt))
+            .thenReturn(HearingCourt.builder().name("EDMONTON").build());
 
-        Court manchesterCourt = Court.builder().name("MANCHESTER").build();
         CourtFinderResponse manchesterCourtFinderResponse = CourtFinderResponse.builder().name("MANCHESTER").build();
 
-        when(courtFinderApi.findMoneyClaimCourtByPostcode("M609DJ")).thenReturn(manchesterCourtFinderResponse);
+        when(courtFinderApi.findMoneyClaimCourtByPostcode("M609DJ"))
+            .thenReturn(manchesterCourtFinderResponse);
+
+        Court manchesterCourt = Court.builder().name("MANCHESTER").build();
+
         when(hearingCourtMapper.from(manchesterCourt))
             .thenReturn(HearingCourt.builder().name("MANCHESTER").build());
 
@@ -250,15 +284,16 @@ class PilotCourtServiceTest {
         @BeforeEach
         void setUp() {
 
-            Court pilotCourt = Court.builder().name(pilotCourtName).build();
             CourtFinderResponse courtFinderResponse = CourtFinderResponse.builder().build();
             String pilotCourtPostcode = "N182TN";
+
             when(courtFinderApi.findMoneyClaimCourtByPostcode(pilotCourtPostcode))
                 .thenReturn(courtFinderResponse);
 
+            Court pilotCourt = Court.builder().name(pilotCourtName).build();
+
             when(hearingCourtMapper.from(pilotCourt))
                 .thenReturn(HearingCourt.builder().name(pilotCourtName).build());
-
         }
 
         @Nested
@@ -268,12 +303,13 @@ class PilotCourtServiceTest {
             @BeforeEach
             void setUp() {
 
-                Court nonPilotCourt = Court.builder().name(nonPilotCourtName).build();
                 CourtFinderResponse courtFinderResponse = CourtFinderResponse.builder().build();
-
                 String nonPilotCourtPostcode = "M609DJ";
+
                 when(courtFinderApi.findMoneyClaimCourtByPostcode(nonPilotCourtPostcode))
                     .thenReturn(courtFinderResponse);
+
+                Court nonPilotCourt = Court.builder().name(nonPilotCourtName).build();
 
                 when(hearingCourtMapper.from(nonPilotCourt))
                     .thenReturn(HearingCourt.builder().name(nonPilotCourtName).build());

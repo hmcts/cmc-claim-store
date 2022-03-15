@@ -19,6 +19,7 @@ import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Address;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.CourtDetails;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.factapi.Court;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.factapi.CourtAddress;
+import uk.gov.hmcts.cmc.claimstore.models.courtfinder.factapi.CourtFinderResponse;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourtMapper;
 import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourt;
@@ -194,22 +195,24 @@ public class PilotCourtService {
 
     private Optional<HearingCourt> getCourt(String postcode) {
 
-        List<Court> courts = courtFinderApi.findMoneyClaimCourtByPostcode(postcode).getCourts();
+        CourtFinderResponse courtFinderResponse = courtFinderApi.findMoneyClaimCourtByPostcode(postcode);
 
-        if (!courts.isEmpty()) {
-            uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court court = new CourtFinderContainer(courtFinderApi).getCourtFromCourtFinderResponse(courts.get(0));
-
-            CourtDetails courtDetails = courtFinderApi.getCourtDetailsFromNameSlug(court.getSlug());
-
-            HearingCourt hearingCourt = HearingCourt.builder()
-                .name(court.getName())
-                .address(getCCDAddress(courtDetails.getAddresses().get(0)))
-                .build();
-
-            return Optional.of(hearingCourt);
+        if (courtFinderResponse == null || courtFinderResponse.getCourts().isEmpty()) {
+            return Optional.empty();
         }
 
-        return Optional.empty();
+        List<Court> courts = courtFinderResponse.getCourts();
+
+        uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court court = new CourtFinderContainer(courtFinderApi).getCourtFromCourtFinderResponse(courts.get(0));
+
+        CourtDetails courtDetails = courtFinderApi.getCourtDetailsFromNameSlug(court.getSlug());
+
+        HearingCourt hearingCourt = HearingCourt.builder()
+            .name(court.getName())
+            .address(getCCDAddress(courtDetails.getAddresses().get(0)))
+            .build();
+
+        return Optional.of(hearingCourt);
     }
 
     /**
