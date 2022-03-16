@@ -197,7 +197,7 @@ public class PilotCourtService {
 
         CourtFinderResponse courtFinderResponse = courtFinderApi.findMoneyClaimCourtByPostcode(postcode);
 
-        if (courtFinderResponse == null || courtFinderResponse.getCourts().isEmpty()) {
+        if (courtFinderResponse == null || courtFinderResponse.getCourts() != null || courtFinderResponse.getCourts().isEmpty()) {
             return Optional.empty();
         }
 

@@ -57,10 +57,10 @@
                 "PostCode": "DF1 3LJ",
                 "PostTown": "Manchester"
               },
-              "telephoneNumber":{
-                "telephoneNumber":"07873727165"
+              "telephoneNumber": {
+                "telephoneNumber": "07873727165"
               },
-              "dateOfBirth":"2000-01-01",
+              "dateOfBirth": "2000-01-01",
               "correspondenceAddress": {
                 "AddressLine1": "52",
                 "AddressLine2": "Down Street",
@@ -111,7 +111,14 @@
     },
     "countyCourtJudgmentRequestedAt": "2018-02-17T11:45:55.944",
     "features": "admissions",
-    "claimSubmissionOperationIndicators": {"rpa": "YES", "bulkPrint": "YES", "sealedClaimUpload": "YES", "staffNotification": "YES", "claimantNotification": "YES", "defendantNotification": "YES", "claimIssueReceiptUpload": "YES"}
-
+    "claimSubmissionOperationIndicators": {
+      "rpa": "YES",
+      "bulkPrint": "YES",
+      "sealedClaimUpload": "YES",
+      "staffNotification": "YES",
+      "claimantNotification": "YES",
+      "defendantNotification": "YES",
+      "claimIssueReceiptUpload": "YES"
+    }
   }
 }

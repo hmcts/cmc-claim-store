@@ -1,16 +1,16 @@
 {
-  "name" : "Newcastle Civil & Family Courts and Tribunals Centre",
-  "slug":"newcastle-civil-family-courts-and-tribunals-centre",
-  "courts" : [
+  "name": "Newcastle Civil & Family Courts and Tribunals Centre",
+  "slug": "newcastle-civil-family-courts-and-tribunals-centre",
+  "courts": [
     {
-      "name" : "Newcastle Civil & Family Courts and Tribunals Centre",
-      "slug":"newcastle-civil-family-courts-and-tribunals-centre",
-      "distance" : 1.1,
-      "areasOfLawSpoe" : [
+      "name": "Newcastle Civil & Family Courts and Tribunals Centre",
+      "slug": "newcastle-civil-family-courts-and-tribunals-centre",
+      "distance": 1.1,
+      "areasOfLawSpoe": [
         {
-          "id" : 1,
-          "name" : "Adoption",
-          "singlePointEntry" : false
+          "id": 1,
+          "name": "Adoption",
+          "singlePointEntry": false
         }
       ]
     }

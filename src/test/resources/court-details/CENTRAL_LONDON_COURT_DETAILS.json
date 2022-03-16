@@ -1,0 +1,19 @@
+{
+  "name": "Central London County Court",
+  "slug": "central-london-county-court",
+  "facilities": [
+  ],
+  "addresses": [
+    {
+      "type": "Write to us",
+      "address_lines": [
+        "Room 1.05",
+        "1st Floor, Thomas More Building",
+        "Royal Courts of Justice",
+        "Strand"
+      ],
+      "town": "London",
+      "postcode": "WC2A 2LL"
+    }
+  ]
+}

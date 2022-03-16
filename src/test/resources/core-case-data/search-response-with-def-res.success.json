@@ -50,8 +50,8 @@
               "AddressLine3": "Street 3"
             },
             "dateOfBirth": "1970-01-01",
-            "telephoneNumber":{
-              "telephoneNumber":"07873727165"
+            "telephoneNumber": {
+              "telephoneNumber": "07873727165"
             }
           }
         }
@@ -74,8 +74,8 @@
               "AddressLine3": "Middle Road"
             },
             "dateOfBirth": "1970-01-01",
-            "telephoneNumber":{
-              "telephoneNumber":"07873727165"
+            "telephoneNumber": {
+              "telephoneNumber": "07873727165"
             }
           },
           "defendantId": "62",
@@ -144,7 +144,7 @@
             "noOfMaintainedChildren": 0
           },
           "responseSubmittedOn": "2019-01-03T10:07:07.888",
-          "claimantProvidedDetail":{
+          "claimantProvidedDetail": {
             "type": "INDIVIDUAL",
             "emailAddress": "j.smith@example.com",
             "primaryAddress": {
@@ -188,6 +188,14 @@
     "previousServiceCaseReference": "000MC023",
     "paymentReference": "RC-1546-5072-4323-8255",
     "feeAmountInPennies": "2500",
-    "claimSubmissionOperationIndicators": {"rpa": "YES", "bulkPrint": "YES", "sealedClaimUpload": "YES", "staffNotification": "YES", "claimantNotification": "YES", "defendantNotification": "YES", "claimIssueReceiptUpload": "YES"}
+    "claimSubmissionOperationIndicators": {
+      "rpa": "YES",
+      "bulkPrint": "YES",
+      "sealedClaimUpload": "YES",
+      "staffNotification": "YES",
+      "claimantNotification": "YES",
+      "defendantNotification": "YES",
+      "claimIssueReceiptUpload": "YES"
+    }
   }
 }

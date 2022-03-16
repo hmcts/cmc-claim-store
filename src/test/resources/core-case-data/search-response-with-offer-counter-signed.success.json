@@ -81,8 +81,8 @@
                 "AddressLine3": "Middle Road"
               },
               "dateOfBirth": "1970-01-01",
-              "telephoneNumber":{
-                "telephoneNumber":"07873727165"
+              "telephoneNumber": {
+                "telephoneNumber": "07873727165"
               }
             }
           }
@@ -155,6 +155,14 @@
     "settlementReachedAt": "2018-05-17T12:55:58.505",
     "submitterEmail": "me@server.net",
     "features": "admissions",
-    "claimSubmissionOperationIndicators": {"rpa": "YES", "bulkPrint": "YES", "sealedClaimUpload": "YES", "staffNotification": "YES", "claimantNotification": "YES", "defendantNotification": "YES", "claimIssueReceiptUpload": "YES"}
+    "claimSubmissionOperationIndicators": {
+      "rpa": "YES",
+      "bulkPrint": "YES",
+      "sealedClaimUpload": "YES",
+      "staffNotification": "YES",
+      "claimantNotification": "YES",
+      "defendantNotification": "YES",
+      "claimIssueReceiptUpload": "YES"
+    }
   }
 }

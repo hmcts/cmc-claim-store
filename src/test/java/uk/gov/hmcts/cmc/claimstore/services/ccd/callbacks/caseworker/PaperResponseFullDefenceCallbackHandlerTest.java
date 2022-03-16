@@ -35,6 +35,7 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
+import uk.gov.hmcts.cmc.claimstore.test.utils.DataFactory;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimFeatures;
@@ -46,7 +47,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +63,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocumentType.form;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.PaperResponseOCON9xFormCallbackHandler.OCON9X_SUBTYPE;
+import static uk.gov.hmcts.cmc.claimstore.test.utils.DataFactory.getCCDData;
 
 @ExtendWith(MockitoExtension.class)
 class PaperResponseFullDefenceCallbackHandlerTest {
@@ -71,35 +72,54 @@ class PaperResponseFullDefenceCallbackHandlerTest {
     private static final LocalDateTime DATE = LocalDateTime.parse("2020-11-16T13:15:30");
     private static final String OCON9X_REVIEW =
         "Before continuing you must complete the ‘Review OCON9x paper response’ event";
-    private static final List<CaseEvent> CASE_EVENTS = Arrays.asList(CaseEvent.PAPER_RESPONSE_OCON_9X_FORM);
-    @Mock
-    private CaseDetailsConverter caseDetailsConverter;
-    @Mock
-    private Clock clock;
-    @Mock
-    private CaseMapper caseMapper;
-    @Mock
-    private EventProducer eventProducer;
-    @Mock
-    private CourtFinderApi courtFinderApi;
-    @InjectMocks
-    private PaperResponseFullDefenceCallbackHandler handler;
-    private CallbackParams callbackParams;
-    @Mock
-    private LaunchDarklyClient launchDarklyClient;
-    @Mock
-    private CaseEventService caseEventService;
-    @Mock
-    private UserService userService;
-    @Captor
-    private ArgumentCaptor<CCDCase> ccdCaseArgumentCaptor;
-    @Mock
-    private DefenceResponseNotificationService defenceResponseNotificationService;
-    @Mock
-    private Claim mockClaim;
+    private static final List<CaseEvent> CASE_EVENTS = List.of(CaseEvent.PAPER_RESPONSE_OCON_9X_FORM);
+    private final static String COURT_FINDER_RESPONSE_NEWCASTLE = "court-finder/response/NEWCASTLE_COURT_FINDER_RESPONSE.json";
+    private final static String COURT_NEWCASTLE = "Newcastle Civil & Family Courts and Tribunals Centre";;
+    private final static String POSTCODE = "postcode";
+    private final static String EXAMPLE_EMAIL = "abc@def.com";
+    private final static String PREFERRED_DQ_COURT = "preferredDQCourt";
+    private final static String OCON_ENHANCEMENTS = "ocon-enhancements";
 
     @Mock
     PilotCourtService pilotCourtService;
+
+    @Mock
+    private CaseDetailsConverter caseDetailsConverter;
+
+    @Mock
+    private Clock clock;
+
+    @Mock
+    private CaseMapper caseMapper;
+
+    @Mock
+    private EventProducer eventProducer;
+
+    @Mock
+    private CourtFinderApi courtFinderApi;
+
+    @InjectMocks
+    private PaperResponseFullDefenceCallbackHandler handler;
+
+    private CallbackParams callbackParams;
+
+    @Mock
+    private LaunchDarklyClient launchDarklyClient;
+
+    @Mock
+    private CaseEventService caseEventService;
+
+    @Mock
+    private UserService userService;
+
+    @Captor
+    private ArgumentCaptor<CCDCase> ccdCaseArgumentCaptor;
+
+    @Mock
+    private DefenceResponseNotificationService defenceResponseNotificationService;
+
+    @Mock
+    private Claim mockClaim;
 
     @Nested
     class AboutToStartTests {
@@ -120,97 +140,88 @@ class PaperResponseFullDefenceCallbackHandlerTest {
 
         @Test
         void showWarningMessage() {
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
+                .thenReturn(getCCDData(POSTCODE, CCDCase.builder(), CCDPartyType.COMPANY));
 
-            String postcode = "postcode";
-
-            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(getCCDData(postcode,
-                CCDCase.builder(), CCDPartyType.COMPANY));
             User mockUser = mock(User.class);
-            when(userService.getUser(anyString())).thenReturn(mockUser);
-            when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancements"), any(LDUser.class))).thenReturn(true);
+
+            when(userService.getUser(anyString()))
+                .thenReturn(mockUser);
+
+            when(launchDarklyClient.isFeatureEnabled(eq(OCON_ENHANCEMENTS), any(LDUser.class)))
+                .thenReturn(true);
+
             AboutToStartOrSubmitCallbackResponse actualResponse =
                 (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
 
             assertThat(actualResponse.getErrors().get(0)).isEqualTo(OCON9X_REVIEW);
-
         }
 
         @Test
         void showNoWarningMessage() {
-            String court = "Court";
-            String postcode = "postcode";
-            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(getCCDData(postcode,
-                CCDCase.builder(), CCDPartyType.COMPANY));
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
+                .thenReturn(getCCDData(POSTCODE, CCDCase.builder(), CCDPartyType.COMPANY));
+
+            CourtFinderResponse courtFinderResponse = DataFactory.createCourtFinderResponseFromJson(COURT_FINDER_RESPONSE_NEWCASTLE);
+
+            when(courtFinderApi.findMoneyClaimCourtByPostcode(any()))
+                .thenReturn(courtFinderResponse);
+
             User mockUser = mock(User.class);
-            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(Claim.builder()
+
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+                .thenReturn(Claim.builder()
                 .features(List.of(ClaimFeatures.DQ_FLAG.getValue()))
                 .build());
-            when(courtFinderApi.findMoneyClaimCourtByPostcode(postcode))
-                .thenReturn(CourtFinderResponse.builder().name(court).build());
-            when(userService.getUser(anyString())).thenReturn(mockUser);
-            when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancements"), any(LDUser.class))).thenReturn(true);
-            when(caseEventService.findEventsForCase(any(String.class), any(User.class))).thenReturn(CASE_EVENTS);
+
+            when(userService.getUser(anyString()))
+                .thenReturn(mockUser);
+
+            when(launchDarklyClient.isFeatureEnabled(eq(OCON_ENHANCEMENTS), any(LDUser.class)))
+                .thenReturn(true);
+
+            when(caseEventService.findEventsForCase(any(String.class), any(User.class)))
+                .thenReturn(CASE_EVENTS);
+
             AboutToStartOrSubmitCallbackResponse actualResponse =
                 (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
 
             Assertions.assertNull(actualResponse.getErrors());
-
-        }
-
-        private CCDCase getCCDData(String postcode, CCDCase.CCDCaseBuilder builder, CCDPartyType company) {
-            return builder
-                .features(ClaimFeatures.DQ_FLAG.getValue())
-                .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
-                    .value(CCDRespondent.builder()
-                        .partyDetail(CCDParty.builder()
-                            .primaryAddress(CCDAddress.builder().postCode(postcode).build())
-                            .build())
-                        .claimantProvidedDetail(CCDParty.builder()
-                            .emailAddress("abc@def.com")
-                            .type(company)
-                            .build())
-                        .build())
-                    .build()))
-                .applicants(
-                    com.google.common.collect.ImmutableList.of(
-                        CCDCollectionElement.<CCDApplicant>builder()
-                            .value(SampleData.getCCDApplicantIndividual())
-                            .build()
-                    ))
-                .build();
         }
 
         @Test
         void shouldAddPreferredCourtIfDQsEnabledAndNoPreferredCourtSet() {
-            String postcode = "postcode";
-            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(getCCDData(postcode,
+             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(getCCDData(POSTCODE,
                 CCDCase.builder(), CCDPartyType.COMPANY));
 
-            String court = "Court";
-            when(courtFinderApi.findMoneyClaimCourtByPostcode(eq(postcode)))
-                .thenReturn(CourtFinderResponse.builder().name(court).build());
+            CourtFinderResponse courtFinderResponse = DataFactory.createCourtFinderResponseFromJson(COURT_FINDER_RESPONSE_NEWCASTLE);
 
-            when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(Claim.builder()
+            when(courtFinderApi.findMoneyClaimCourtByPostcode(any()))
+                .thenReturn(courtFinderResponse);
+
+            when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+                .thenReturn(Claim.builder()
                 .features(List.of(ClaimFeatures.DQ_FLAG.getValue()))
                 .build());
 
-            when(caseDetailsConverter.convertToMap(any(CCDCase.class))).thenReturn(Collections.emptyMap());
+            when(caseDetailsConverter.convertToMap(any(CCDCase.class)))
+                .thenReturn(Collections.emptyMap());
 
             AboutToStartOrSubmitCallbackResponse response
                 = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
 
-            Assertions.assertEquals(court, response.getData().get("preferredDQCourt"));
+            Assertions.assertEquals(COURT_NEWCASTLE, response.getData().get(PREFERRED_DQ_COURT));
         }
 
         @Test
         void shouldAddPreferredCourtIfDQsEnabledAndPreferredCourtSetForOrganisation() {
-            String postcode = "postcode";
-            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(getCCDData(postcode,
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(getCCDData(POSTCODE,
                 CCDCase.builder(), CCDPartyType.ORGANISATION));
 
-            String court = "Court";
-            when(courtFinderApi.findMoneyClaimCourtByPostcode(eq(postcode)))
-                .thenReturn(CourtFinderResponse.builder().name(court).build());
+            CourtFinderResponse courtFinderResponse = DataFactory.createCourtFinderResponseFromJson(COURT_FINDER_RESPONSE_NEWCASTLE);
+
+            when(courtFinderApi.findMoneyClaimCourtByPostcode(any()))
+                .thenReturn(courtFinderResponse);
 
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(Claim.builder()
                 .features(List.of(ClaimFeatures.DQ_FLAG.getValue()))
@@ -221,12 +232,11 @@ class PaperResponseFullDefenceCallbackHandlerTest {
             AboutToStartOrSubmitCallbackResponse response
                 = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
 
-            Assertions.assertEquals(court, response.getData().get("preferredDQCourt"));
+            Assertions.assertEquals(COURT_NEWCASTLE, response.getData().get(PREFERRED_DQ_COURT));
         }
 
         @Test
         void shouldAddPreferredCourtIfDQsEnabledAndPreferredCourtSetForSoleTrader() {
-            String postcode = "postcode";
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(CCDCase.builder()
                 .features(ClaimFeatures.DQ_FLAG.getValue())
                 .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
@@ -235,8 +245,8 @@ class PaperResponseFullDefenceCallbackHandlerTest {
                             .primaryAddress(null)
                             .build())
                         .claimantProvidedDetail(CCDParty.builder()
-                            .primaryAddress(CCDAddress.builder().postCode(postcode).build())
-                            .emailAddress("abc@def.com")
+                            .primaryAddress(CCDAddress.builder().postCode(POSTCODE).build())
+                            .emailAddress(EXAMPLE_EMAIL)
                             .type(CCDPartyType.SOLE_TRADER)
                             .build())
                         .build())
@@ -249,33 +259,33 @@ class PaperResponseFullDefenceCallbackHandlerTest {
                     ))
                 .build());
 
-            String court = "Central London County Court";
-            when(courtFinderApi.findMoneyClaimCourtByPostcode(eq(postcode)))
-                .thenReturn(CourtFinderResponse.builder().name(court).build());
-
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(Claim.builder()
                 .features(List.of(ClaimFeatures.DQ_FLAG.getValue()))
                 .build());
 
             when(caseDetailsConverter.convertToMap(any(CCDCase.class))).thenReturn(Collections.emptyMap());
 
+            CourtFinderResponse courtFinderResponse = DataFactory.createCourtFinderResponseFromJson(COURT_FINDER_RESPONSE_NEWCASTLE);
+
+            when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString()))
+                .thenReturn(courtFinderResponse);
+
             AboutToStartOrSubmitCallbackResponse response
                 = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
 
-            Assertions.assertEquals(court, response.getData().get("preferredDQCourt"));
+            Assertions.assertEquals(COURT_NEWCASTLE, response.getData().get(PREFERRED_DQ_COURT));
         }
 
         @Test
         void shouldAddPreferredCourtWhenPartyDetailIsNull() {
-            String postcode = "postcode";
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(CCDCase.builder()
                 .features(ClaimFeatures.DQ_FLAG.getValue())
                 .respondents(List.of(CCDCollectionElement.<CCDRespondent>builder()
                     .value(CCDRespondent.builder()
                         .partyDetail(null)
                         .claimantProvidedDetail(CCDParty.builder()
-                            .primaryAddress(CCDAddress.builder().postCode(postcode).build())
-                            .emailAddress("abc@def.com")
+                            .primaryAddress(CCDAddress.builder().postCode(POSTCODE).build())
+                            .emailAddress(EXAMPLE_EMAIL)
                             .type(CCDPartyType.SOLE_TRADER)
                             .build())
                         .build())
@@ -288,9 +298,10 @@ class PaperResponseFullDefenceCallbackHandlerTest {
                     ))
                 .build());
 
-            String court = "Court";
-            when(courtFinderApi.findMoneyClaimCourtByPostcode(eq(postcode)))
-                .thenReturn(CourtFinderResponse.builder().name(court).build());
+            CourtFinderResponse courtFinderResponse = DataFactory.createCourtFinderResponseFromJson(COURT_FINDER_RESPONSE_NEWCASTLE);
+
+            when(courtFinderApi.findMoneyClaimCourtByPostcode(any()))
+                .thenReturn(courtFinderResponse);
 
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(Claim.builder()
                 .features(List.of(ClaimFeatures.DQ_FLAG.getValue()))
@@ -301,15 +312,14 @@ class PaperResponseFullDefenceCallbackHandlerTest {
             AboutToStartOrSubmitCallbackResponse response
                 = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
 
-            Assertions.assertEquals(court, response.getData().get("preferredDQCourt"));
+            Assertions.assertEquals(COURT_NEWCASTLE, response.getData().get(PREFERRED_DQ_COURT));
         }
 
         @Test
         void shouldAddPreferredCourtIfDQsEnabledAndNoPreferredCourtNotSet() {
-            String postcode = "postcode";
-            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(getCCDData(postcode,
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(getCCDData(POSTCODE,
                 CCDCase.builder()
-                    .preferredCourt("preferredDQCourt"), CCDPartyType.COMPANY));
+                    .preferredCourt(PREFERRED_DQ_COURT), CCDPartyType.COMPANY));
 
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(Claim.builder()
                 .features(List.of(ClaimFeatures.DQ_FLAG.getValue()))
@@ -320,7 +330,7 @@ class PaperResponseFullDefenceCallbackHandlerTest {
             AboutToStartOrSubmitCallbackResponse response
                 = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
 
-            assertThat(response.getData().get("preferredDQCourt")).isNull();
+            assertThat(response.getData().get(PREFERRED_DQ_COURT)).isNull();
         }
 
         @Test
@@ -340,17 +350,16 @@ class PaperResponseFullDefenceCallbackHandlerTest {
             AboutToStartOrSubmitCallbackResponse response
                 = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
 
-            Assertions.assertNull(response.getData().get("preferredDQCourt"));
+            Assertions.assertNull(response.getData().get(PREFERRED_DQ_COURT));
         }
 
         @Test
         void shouldNotAddPreferredCourtIfPreferredCourtSet() {
-            String court = "Court";
             when(caseDetailsConverter.convertToMap(any(CCDCase.class)))
-                .thenReturn(Map.of("preferredDQCourt", court));
+                .thenReturn(Map.of(PREFERRED_DQ_COURT, COURT_NEWCASTLE));
 
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(CCDCase.builder()
-                .preferredCourt(court)
+                .preferredCourt(COURT_NEWCASTLE)
                 .build());
 
             when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(Claim.builder().build());
@@ -358,7 +367,7 @@ class PaperResponseFullDefenceCallbackHandlerTest {
             AboutToStartOrSubmitCallbackResponse response
                 = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
 
-            Assertions.assertEquals(court, response.getData().get("preferredDQCourt"));
+            Assertions.assertEquals(COURT_NEWCASTLE, response.getData().get(PREFERRED_DQ_COURT));
         }
     }
 
@@ -386,22 +395,22 @@ class PaperResponseFullDefenceCallbackHandlerTest {
             ccdCase = CCDCase.builder()
                 .preferredDQCourt("Central London County Court")
                 .respondents(List.of(
-                    CCDCollectionElement.<CCDRespondent>builder()
-                        .value(CCDRespondent.builder()
-                            .partyDetail(CCDParty.builder().build())
-                            .claimantProvidedDetail(CCDParty.builder().build())
-                            .build())
-                        .build()
+                        CCDCollectionElement.<CCDRespondent>builder()
+                            .value(CCDRespondent.builder()
+                                .partyDetail(CCDParty.builder().build())
+                                .claimantProvidedDetail(CCDParty.builder().build())
+                                .build())
+                            .build()
                     )
                 )
                 .scannedDocuments(List.of(
-                    CCDCollectionElement.<CCDScannedDocument>builder()
-                        .value(CCDScannedDocument.builder()
-                            .type(form)
-                            .subtype(OCON9X_SUBTYPE)
-                            .deliveryDate(LocalDateTime.now())
-                            .build()
-                        ).build()
+                        CCDCollectionElement.<CCDScannedDocument>builder()
+                            .value(CCDScannedDocument.builder()
+                                .type(form)
+                                .subtype(OCON9X_SUBTYPE)
+                                .deliveryDate(LocalDateTime.now())
+                                .build()
+                            ).build()
                     )
                 )
                 .build();
@@ -429,7 +438,7 @@ class PaperResponseFullDefenceCallbackHandlerTest {
         @Test
         void shouldSetResponseDefenceType() {
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-            Claim claim = caseMapper.from(ccdCase);
+
             handler.handle(callbackParams);
 
             verify(caseDetailsConverter).convertToMap(ccdCaseArgumentCaptor.capture());
@@ -559,7 +568,7 @@ class PaperResponseFullDefenceCallbackHandlerTest {
         }
 
         @Test
-        void shouldSetEmailFromClaimantProvidedAddess() {
+        void shouldSetEmailFromClaimantProvidedAddress() {
 
             ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList()).toBuilder()
                 .scannedDocuments(List.of(
@@ -592,7 +601,7 @@ class PaperResponseFullDefenceCallbackHandlerTest {
         }
 
         @Test
-        void shouldSetEmailFromClaimantProvidedAddessWhenPartIsNull() {
+        void shouldSetEmailFromClaimantProvidedAddressWhenPartIsNull() {
 
             ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList()).toBuilder()
                 .scannedDocuments(List.of(
@@ -607,17 +616,20 @@ class PaperResponseFullDefenceCallbackHandlerTest {
                     .value(ccdCase.getRespondents().get(0).getValue().toBuilder()
                         .claimantProvidedDetail(ccdCase.getRespondents().get(0).getValue()
                             .getClaimantProvidedDetail().toBuilder()
-                            .emailAddress("abc@def.com")
+                            .emailAddress(EXAMPLE_EMAIL)
                             .build())
                         .partyDetail(null)
                         .build())
                     .build()))
                 .build();
 
-            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(this.ccdCase);
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
+                .thenReturn(this.ccdCase);
+
             handler.handle(callbackParams);
+
             verify(caseDetailsConverter).convertToMap(ccdCaseArgumentCaptor.capture());
-            assertEquals("abc@def.com",
+            assertEquals(EXAMPLE_EMAIL,
                 ccdCaseArgumentCaptor.getValue().getRespondents().get(0).getValue().getPartyDetail().getEmailAddress());
         }
 
@@ -652,7 +664,7 @@ class PaperResponseFullDefenceCallbackHandlerTest {
     }
 
     @Nested
-    class SubmitedTests {
+    class SubmittedTests {
 
         @BeforeEach
         void setUp() {

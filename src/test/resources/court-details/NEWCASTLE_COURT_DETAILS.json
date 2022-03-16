@@ -1,20 +1,29 @@
 {
-  "name" : "Newcastle Civil & Family Courts and Tribunals Centre",
-  "slug":"newcastle-civil-family-courts-and-tribunals-centre",
-  "facilities":[
+  "name": "Newcastle Civil & Family Courts and Tribunals Centre",
+  "slug": "newcastle-civil-family-courts-and-tribunals-centre",
+  "facilities": [
   ],
-  "addresses":[
+  "addresses": [
     {
-      "type":"Write to us",
-      "address_lines": [ "Immigration and Asylum ONLY:", "Bradford Tribunal Hearing Centre", "Phoenix House", "Rushton Avenue", "Thornbury" ],
-      "town":"Bradford",
-      "postcode":"BD3 7BH"
+      "type": "Write to us",
+      "address_lines": [
+        "Immigration and Asylum ONLY:",
+        "Bradford Tribunal Hearing Centre",
+        "Phoenix House",
+        "Rushton Avenue",
+        "Thornbury"
+      ],
+      "town": "Bradford",
+      "postcode": "BD3 7BH"
     },
     {
-      "type":"Visit or contact us",
-      "address_lines": [ "Newcastle Civil & Family Courts and Tribunals Centre", "Barras Bridge"],
-      "town":"Newcastle upon Tyne",
-      "postcode":"NE1 8QF"
+      "type": "Visit or contact us",
+      "address_lines": [
+        "Newcastle Civil & Family Courts and Tribunals Centre",
+        "Barras Bridge"
+      ],
+      "town": "Newcastle upon Tyne",
+      "postcode": "NE1 8QF"
     }
   ]
 }

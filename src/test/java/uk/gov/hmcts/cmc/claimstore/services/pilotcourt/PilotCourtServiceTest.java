@@ -251,6 +251,16 @@ class PilotCourtServiceTest {
         when(hearingCourtMapper.from(manchesterCourt))
             .thenReturn(HearingCourt.builder().name("MANCHESTER").build());
 
+        CourtFinderResponse courtFinderResponse = DataFactory.createCourtFinderResponseFromJson(COURT_FINDER_RESPONSE_NEWCASTLE);
+
+        when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString()))
+            .thenReturn(courtFinderResponse);
+
+        CourtDetails courtDetails = DataFactory.createCourtDetailsFromJson(COURT_DETAILS_NEWCASTLE);
+
+        when(courtFinderApi.getCourtDetailsFromNameSlug(anyString()))
+            .thenReturn(courtDetails);
+
         PilotCourtService pilotCourtService = new PilotCourtService(
             CSV_PATH_COURT_IDS,
             courtFinderApi,

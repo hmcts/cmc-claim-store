@@ -49,10 +49,10 @@
               "PostCode": "SW1A 9AA",
               "PostTown": "London"
             },
-            "telephoneNumber":{
-              "telephoneNumber":"07873727165"
+            "telephoneNumber": {
+              "telephoneNumber": "07873727165"
             },
-            "dateOfBirth":"2000-01-01"
+            "dateOfBirth": "2000-01-01"
           }
         }
       }
@@ -77,7 +77,7 @@
           },
           "directionsQuestionnaire": {
             "hearingLocation": "Preferred court",
-            "expertRequired" : "NO",
+            "expertRequired": "NO",
             "permissionForExpert": "YES",
             "expertEvidenceToExamine": "document need to be have expert review comment"
           },
@@ -90,7 +90,7 @@
           "claimantResponse": {
             "claimantResponseType": "REJECTION",
             "directionsQuestionnaire": {
-              "expertRequired" : "NO",
+              "expertRequired": "NO",
               "permissionForExpert": "YES",
               "expertEvidenceToExamine": "document need to be have expert review comment"
             }
@@ -132,7 +132,15 @@
     "previousServiceCaseReference": "000MC023",
     "paymentReference": "RC-1546-4419-9390-7385",
     "feeAmountInPennies": "2500",
-    "claimSubmissionOperationIndicators": {"rpa": "YES", "bulkPrint": "YES", "sealedClaimUpload": "YES", "staffNotification": "YES", "claimantNotification": "YES", "defendantNotification": "YES", "claimIssueReceiptUpload": "YES"}
+    "claimSubmissionOperationIndicators": {
+      "rpa": "YES",
+      "bulkPrint": "YES",
+      "sealedClaimUpload": "YES",
+      "staffNotification": "YES",
+      "claimantNotification": "YES",
+      "defendantNotification": "YES",
+      "claimIssueReceiptUpload": "YES"
+    }
   },
   "security_classification": "PUBLIC"
 }

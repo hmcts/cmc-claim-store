@@ -37,11 +37,13 @@
       "type": "JOINT_OWN_HOME"
     },
     "dependant": {
-      "children": [{
-        "id": "fa73da34-66c7-4909-8771-478f5bf1ffb7",
-        "ageGroupType": "BETWEEN_11_AND_15",
-        "numberOfChildren": 2
-      }],
+      "children": [
+        {
+          "id": "fa73da34-66c7-4909-8771-478f5bf1ffb7",
+          "ageGroupType": "BETWEEN_11_AND_15",
+          "numberOfChildren": 2
+        }
+      ],
       "numberOfMaintainedChildren": 2,
       "otherDependants": {
         "numberOfPeople": 3,
@@ -51,42 +53,54 @@
       "anyDisabledChildren": false
     },
     "employment": {
-      "employers": [{
-        "id": "0bf39079-eec1-4740-b14c-bd9427f9cc50",
-        "jobTitle": "My sweet job",
-        "name": "CMC"
-      }]
+      "employers": [
+        {
+          "id": "0bf39079-eec1-4740-b14c-bd9427f9cc50",
+          "jobTitle": "My sweet job",
+          "name": "CMC"
+        }
+      ]
     },
-    "bankAccounts": [{
-      "id": "5adfe417-0611-4e54-8751-4fb8ed600bf1",
-      "type": "SAVINGS_ACCOUNT",
-      "joint": true,
-      "balance": 10.99
-    }],
-    "debts": [{
-      "id": "d354b56d-8ec1-49ef-9650-57bca975e283",
-      "description": "Reference",
-      "totalOwed": 10.99,
-      "monthlyPayments": 1.99
-    }],
-    "incomes": [{
-      "id": "c4fc229d-87db-43ff-8201-acafc136b7e8",
-      "type": "JOB",
-      "frequency": "MONTH",
-      "amount": 10.99
-    }],
-    "expenses": [{
-      "id": "60a0179b-7f14-4a8c-a7cc-170877eadc76",
-      "type": "COUNCIL_TAX",
-      "frequency": "MONTH",
-      "amount": 10.99
-    }],
-    "courtOrders": [{
-      "id": "fffb3d88-6b67-4be3-a835-0df2db49f7f7",
-      "claimNumber": "Reference",
-      "amountOwed": 10.99,
-      "monthlyInstalmentAmount": 1.99
-    }],
+    "bankAccounts": [
+      {
+        "id": "5adfe417-0611-4e54-8751-4fb8ed600bf1",
+        "type": "SAVINGS_ACCOUNT",
+        "joint": true,
+        "balance": 10.99
+      }
+    ],
+    "debts": [
+      {
+        "id": "d354b56d-8ec1-49ef-9650-57bca975e283",
+        "description": "Reference",
+        "totalOwed": 10.99,
+        "monthlyPayments": 1.99
+      }
+    ],
+    "incomes": [
+      {
+        "id": "c4fc229d-87db-43ff-8201-acafc136b7e8",
+        "type": "JOB",
+        "frequency": "MONTH",
+        "amount": 10.99
+      }
+    ],
+    "expenses": [
+      {
+        "id": "60a0179b-7f14-4a8c-a7cc-170877eadc76",
+        "type": "COUNCIL_TAX",
+        "frequency": "MONTH",
+        "amount": 10.99
+      }
+    ],
+    "courtOrders": [
+      {
+        "id": "fffb3d88-6b67-4be3-a835-0df2db49f7f7",
+        "claimNumber": "Reference",
+        "amountOwed": 10.99,
+        "monthlyInstalmentAmount": 1.99
+      }
+    ],
     "partner": {
       "disability": "NO",
       "over18": true,

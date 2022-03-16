@@ -111,48 +111,48 @@
           "city": "Manchester",
           "postcode": "DF1 3LJ"
         },
-        "claimantResponse":{
+        "claimantResponse": {
           "claimantResponseType": "ACCEPTATION|REJECTION",
-          "amountPaid":100,
-          "formaliseOption":"CCJ|SETTLEMENT|REFER_TO_JUDGE",
-          "claimantPaymentIntention":{
-            "paymentOption":"IMMEDIATELY|BY_SPECIFIED_DATE|INSTALMENTS",
-            "paymentDate":"2018-08-25",
-            "repaymentPlanLabel":"-ignore-",
-            "rpInstalmentAmount":100,
-            "rpfirstPaymentDate":"2018-08-25",
-            "rpPaymentLength":"12",
-            "rpCompletionDate":"2018-08-25",
-            "rpPaymentSchedule":"EACH_WEEK|EVERY_TWO_WEEKS|EVERY_MONTH"
+          "amountPaid": 100,
+          "formaliseOption": "CCJ|SETTLEMENT|REFER_TO_JUDGE",
+          "claimantPaymentIntention": {
+            "paymentOption": "IMMEDIATELY|BY_SPECIFIED_DATE|INSTALMENTS",
+            "paymentDate": "2018-08-25",
+            "repaymentPlanLabel": "-ignore-",
+            "rpInstalmentAmount": 100,
+            "rpfirstPaymentDate": "2018-08-25",
+            "rpPaymentLength": "12",
+            "rpCompletionDate": "2018-08-25",
+            "rpPaymentSchedule": "EACH_WEEK|EVERY_TWO_WEEKS|EVERY_MONTH"
           },
-          "freeMediationOption":"Yes",
-          "reason":"adsfadsf",
-          "reDeterminationExplaination":"adsfasdf",
-          "reDeterminationRequestedDate":"2018-08-25",
-          "CourtDetermination" : {
-            "courtIntention":{
-              "paymentOption":"IMMEDIATELY|BY_SPECIFIED_DATE|INSTALMENTS",
-              "paymentDate":"2018-08-25",
-              "repaymentPlanLabel":"-ignore-",
-              "rpInstalmentAmount":100,
-              "rpfirstPaymentDate":"2018-08-25",
-              "rpPaymentLength":"12",
-              "rpCompletionDate":"2018-08-25",
-              "rpPaymentSchedule":"EACH_WEEK|EVERY_TWO_WEEKS|EVERY_MONTH"
+          "freeMediationOption": "Yes",
+          "reason": "adsfadsf",
+          "reDeterminationExplaination": "adsfasdf",
+          "reDeterminationRequestedDate": "2018-08-25",
+          "CourtDetermination": {
+            "courtIntention": {
+              "paymentOption": "IMMEDIATELY|BY_SPECIFIED_DATE|INSTALMENTS",
+              "paymentDate": "2018-08-25",
+              "repaymentPlanLabel": "-ignore-",
+              "rpInstalmentAmount": 100,
+              "rpfirstPaymentDate": "2018-08-25",
+              "rpPaymentLength": "12",
+              "rpCompletionDate": "2018-08-25",
+              "rpPaymentSchedule": "EACH_WEEK|EVERY_TWO_WEEKS|EVERY_MONTH"
             },
-            "courtDecision":{
-              "paymentOption":"IMMEDIATELY|BY_SPECIFIED_DATE|INSTALMENTS",
-              "paymentDate":"2018-08-25",
-              "repaymentPlanLabel":"-ignore-",
-              "rpInstalmentAmount":100,
-              "rpfirstPaymentDate":"2018-08-25",
-              "rpPaymentLength":"12",
-              "rpCompletionDate":"2018-08-25",
-              "rpPaymentSchedule":"EACH_WEEK|EVERY_TWO_WEEKS|EVERY_MONTH"
+            "courtDecision": {
+              "paymentOption": "IMMEDIATELY|BY_SPECIFIED_DATE|INSTALMENTS",
+              "paymentDate": "2018-08-25",
+              "repaymentPlanLabel": "-ignore-",
+              "rpInstalmentAmount": 100,
+              "rpfirstPaymentDate": "2018-08-25",
+              "rpPaymentLength": "12",
+              "rpCompletionDate": "2018-08-25",
+              "rpPaymentSchedule": "EACH_WEEK|EVERY_TWO_WEEKS|EVERY_MONTH"
             },
-            "rejectionReason":"adsfadsf",
-            "disposableIncome":1000,
-            "decisionType":"CLAIMANT_IN_FAVOUR_OF_DEFENDANT|CLAIMANT|DEFENDANTCOURT"
+            "rejectionReason": "adsfadsf",
+            "disposableIncome": 1000,
+            "decisionType": "CLAIMANT_IN_FAVOUR_OF_DEFENDANT|CLAIMANT|DEFENDANTCOURT"
           }
         },
         "partyName": "John Smith",

@@ -47,10 +47,10 @@
               "PostCode": "SW1A 9AA",
               "PostTown": "London"
             },
-            "telephoneNumber":{
-              "telephoneNumber":"07873727165"
+            "telephoneNumber": {
+              "telephoneNumber": "07873727165"
             },
-            "dateOfBirth":"2000-01-01"
+            "dateOfBirth": "2000-01-01"
           },
           "partyName": "Jan Clark"
         }
@@ -64,7 +64,7 @@
           "letterHolderId": "75",
           "defendantId": "100",
           "responseDeadline": "2020-02-06",
-          "claimantProvidedDetail":{
+          "claimantProvidedDetail": {
             "type": "INDIVIDUAL",
             "emailAddress": "j.smith@example.com",
             "primaryAddress": {
@@ -98,6 +98,14 @@
     "previousServiceCaseReference": "000MC023",
     "paymentReference": "RC-1546-4419-9390-7385",
     "feeAmountInPennies": "2500",
-    "claimSubmissionOperationIndicators": {"rpa": "YES", "bulkPrint": "YES", "sealedClaimUpload": "YES", "staffNotification": "YES", "claimantNotification": "YES", "defendantNotification": "YES", "claimIssueReceiptUpload": "YES"}
+    "claimSubmissionOperationIndicators": {
+      "rpa": "YES",
+      "bulkPrint": "YES",
+      "sealedClaimUpload": "YES",
+      "staffNotification": "YES",
+      "claimantNotification": "YES",
+      "defendantNotification": "YES",
+      "claimIssueReceiptUpload": "YES"
+    }
   }
 }

@@ -5,12 +5,14 @@
     "amount": {
       "type": "BREAK_DOWN",
       "amountBreakDown": {
-        "rows": [{
-          "value": {
-            "amount": 1000,
-            "reason": "Test"
+        "rows": [
+          {
+            "value": {
+              "amount": 1000,
+              "reason": "Test"
+            }
           }
-        }]
+        ]
       }
     },
     "reason": "My solid reason.",
@@ -28,45 +30,49 @@
     "interest": {
       "type": "NO_INTEREST"
     },
-    "applicants": [{
-      "id": "ebad17dd-726b-4ad3-93af-e024bf9fc893",
-      "value": {
-        "partyName": "MR Claimant",
-        "partyDetail": {
-          "type": "INDIVIDUAL",
-          "primaryAddress": {
-            "AddressLine1": "1",
-            "AddressLine2": "Claimant street",
-            "PostCode": "SW1 2AA",
-            "PostTown": "London"
-          },
-          "telephoneNumber":{
-            "telephoneNumber":"07873727165"
-          },
-          "dateOfBirth":"2000-01-01"
-        }
-      }
-    }],
-    "respondents": [{
-      "id": "8b27ff99-1ddc-4076-972f-8cd75644c6a8",
-      "value": {
-        "partyName": "Mr Defendant",
-        "partyDetail": {
-          "type": "INDIVIDUAL",
-          "emailAddress": "civilmoneyclaims@gmail.com",
-          "primaryAddress": {
-            "PostCode": "SW18 5AA",
-            "PostTown": "London",
-            "AddressLine1": "2",
-            "AddressLine2": "Defendant Street"
-          },
-          "dateOfBirth": "1970-01-01",
-          "telephoneNumber":{
-            "telephoneNumber":"07873727165"
+    "applicants": [
+      {
+        "id": "ebad17dd-726b-4ad3-93af-e024bf9fc893",
+        "value": {
+          "partyName": "MR Claimant",
+          "partyDetail": {
+            "type": "INDIVIDUAL",
+            "primaryAddress": {
+              "AddressLine1": "1",
+              "AddressLine2": "Claimant street",
+              "PostCode": "SW1 2AA",
+              "PostTown": "London"
+            },
+            "telephoneNumber": {
+              "telephoneNumber": "07873727165"
+            },
+            "dateOfBirth": "2000-01-01"
           }
         }
       }
-    }],
+    ],
+    "respondents": [
+      {
+        "id": "8b27ff99-1ddc-4076-972f-8cd75644c6a8",
+        "value": {
+          "partyName": "Mr Defendant",
+          "partyDetail": {
+            "type": "INDIVIDUAL",
+            "emailAddress": "civilmoneyclaims@gmail.com",
+            "primaryAddress": {
+              "PostCode": "SW18 5AA",
+              "PostTown": "London",
+              "AddressLine1": "2",
+              "AddressLine2": "Defendant Street"
+            },
+            "dateOfBirth": "1970-01-01",
+            "telephoneNumber": {
+              "telephoneNumber": "07873727165"
+            }
+          }
+        }
+      }
+    ],
     "externalId": "9c9a87c3-1ec1-4d9d-aa7c-a500558b667b",
     "feeAmountInPennies": "6000"
   },
@@ -87,5 +93,13 @@
     "defendantDateOfBirth": "1990-01-01"
   },
   "countyCourtJudgmentRequestedAt": "2018-02-01T11:18:00.59",
-  "claimSubmissionOperationIndicators": {"rpa": "YES", "bulkPrint": "YES", "sealedClaimUpload": "YES", "staffNotification": "YES", "claimantNotification": "YES", "defendantNotification": "YES", "claimIssueReceiptUpload": "YES"}
+  "claimSubmissionOperationIndicators": {
+    "rpa": "YES",
+    "bulkPrint": "YES",
+    "sealedClaimUpload": "YES",
+    "staffNotification": "YES",
+    "claimantNotification": "YES",
+    "defendantNotification": "YES",
+    "claimIssueReceiptUpload": "YES"
+  }
 }
