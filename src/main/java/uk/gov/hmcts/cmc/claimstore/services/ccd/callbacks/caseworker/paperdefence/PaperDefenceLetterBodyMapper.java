@@ -63,6 +63,7 @@ public class PaperDefenceLetterBodyMapper {
     public DocAssemblyTemplateBody oconFormSoleTraderWithDQsMapper(CCDCase ccdCase, LocalDate extendedDeadline,
                                                                    String courtName, boolean disableN9Form) {
         DocAssemblyTemplateBody commonTemplate = oconFormCommonTemplateMapper(ccdCase, extendedDeadline, disableN9Form);
+
         return commonTemplate.toBuilder()
             .soleTradingTraderName(ccdCase.getRespondents().get(0).getValue().getClaimantProvidedDetail()
                 .getBusinessName())
