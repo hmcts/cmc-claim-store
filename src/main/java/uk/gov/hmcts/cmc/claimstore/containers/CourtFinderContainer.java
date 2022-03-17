@@ -56,7 +56,10 @@ public class CourtFinderContainer {
 
         if (court.getSlug() != null) {
             CourtDetails courtDetails = courtFinderApi.getCourtDetailsFromNameSlug(court.getSlug());
-            populateCourtAddresses(courtItem, courtDetails.getAddresses());
+
+            if (courtDetails != null) {
+                populateCourtAddresses(courtItem, courtDetails.getAddresses());
+            }
         }
 
         return courtItem;

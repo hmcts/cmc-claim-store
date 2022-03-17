@@ -12,18 +12,13 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
-import uk.gov.hmcts.cmc.claimstore.constants.CourtAddressType;
 import uk.gov.hmcts.cmc.claimstore.containers.CourtFinderContainer;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Address;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.CourtDetails;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.factapi.Court;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.factapi.CourtAddress;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.factapi.CourtFinderResponse;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourtMapper;
-import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourt;
-import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtCSVHeader;
 import uk.gov.hmcts.cmc.claimstore.utils.ResourceReader;
 
 import java.io.IOException;
@@ -45,7 +40,6 @@ public class PilotCourtService {
 
     private Map<String, PilotCourt> pilotCourts;
     private final CourtFinderApi courtFinderApi;
-    private final HearingCourtMapper hearingCourtMapper;
     private final String dataSource;
     private final AppInsights appInsights;
 
@@ -53,10 +47,8 @@ public class PilotCourtService {
 
     public PilotCourtService(@Value("${pilot-courts.datafile}") String dataSource,
                              CourtFinderApi courtFinderApi,
-                             HearingCourtMapper hearingCourtMapper,
                              AppInsights appInsights) {
         this.dataSource = dataSource;
-        this.hearingCourtMapper = hearingCourtMapper;
         this.courtFinderApi = courtFinderApi;
         this.appInsights = appInsights;
     }
@@ -67,8 +59,8 @@ public class PilotCourtService {
         try {
             String data = ResourceReader.readString(dataSource);
 
-            Map<String, PilotCourt> pilotCourts = buildPilotCourts(data);
-            this.pilotCourts = Collections.unmodifiableMap(pilotCourts);
+            Map<String, PilotCourt> pilotCourtMap = buildPilotCourts(data);
+            this.pilotCourts = Collections.unmodifiableMap(pilotCourtMap);
 
         } catch (IOException e) {
             throw new IllegalStateException(e);
@@ -129,7 +121,7 @@ public class PilotCourtService {
         CSVParser parse = CSVParser.parse(data, CSVFormat.DEFAULT);
         Iterator<CSVRecord> iterator = parse.iterator();
 
-        Map<String, PilotCourt> pilotCourts = new HashMap<>();
+        Map<String, PilotCourt> pilotCourtMap = new HashMap<>();
         while (iterator.hasNext()) {
             CSVRecord csvRecord = iterator.next();
 
@@ -146,16 +138,16 @@ public class PilotCourtService {
 
             try {
                 Optional<HearingCourt> pilotCourt = getCourt(postcode);
-                pilotCourts.put(id, new PilotCourt(id, postcode, pilotCourt.orElse(null), pilots));
+                pilotCourtMap.put(id, new PilotCourt(id, postcode, pilotCourt.orElse(null), pilots));
 
             } catch (FeignException e) {
                 logger.error("Failed to get address from Court Finder API", e);
                 appInsights.trackEvent(AppInsightsEvent.COURT_FINDER_API_FAILURE, "Court postcode", postcode);
-                pilotCourts.put(id, new PilotCourt(id, postcode, null, pilots));
+                pilotCourtMap.put(id, new PilotCourt(id, postcode, null, pilots));
             }
         }
 
-        return pilotCourts;
+        return pilotCourtMap;
     }
 
     private Map<Pilot, LocalDateTime> getPilots(CSVRecord csvRecord) {
@@ -197,7 +189,7 @@ public class PilotCourtService {
 
         CourtFinderResponse courtFinderResponse = courtFinderApi.findMoneyClaimCourtByPostcode(postcode);
 
-        if (courtFinderResponse == null || courtFinderResponse.getCourts() != null || courtFinderResponse.getCourts().isEmpty()) {
+        if (courtFinderResponse == null || courtFinderResponse.getCourts() == null || courtFinderResponse.getCourts().isEmpty()) {
             return Optional.empty();
         }
 
@@ -207,9 +199,15 @@ public class PilotCourtService {
 
         CourtDetails courtDetails = courtFinderApi.getCourtDetailsFromNameSlug(court.getSlug());
 
+        CCDAddress ccdAddress = null;
+
+        if (courtDetails != null && !courtDetails.getAddresses().isEmpty()) {
+            ccdAddress = getCCDAddress(courtDetails.getAddresses().get(0));
+        }
+
         HearingCourt hearingCourt = HearingCourt.builder()
             .name(court.getName())
-            .address(getCCDAddress(courtDetails.getAddresses().get(0)))
+            .address(ccdAddress)
             .build();
 
         return Optional.of(hearingCourt);
