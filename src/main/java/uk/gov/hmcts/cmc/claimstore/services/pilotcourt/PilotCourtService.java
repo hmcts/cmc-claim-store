@@ -139,7 +139,6 @@ public class PilotCourtService {
             try {
                 Optional<HearingCourt> pilotCourt = getCourt(postcode);
                 pilotCourtMap.put(id, new PilotCourt(id, postcode, pilotCourt.orElse(null), pilots));
-
             } catch (FeignException e) {
                 logger.error("Failed to get address from Court Finder API", e);
                 appInsights.trackEvent(AppInsightsEvent.COURT_FINDER_API_FAILURE, "Court postcode", postcode);
@@ -189,13 +188,15 @@ public class PilotCourtService {
 
         CourtFinderResponse courtFinderResponse = courtFinderApi.findMoneyClaimCourtByPostcode(postcode);
 
-        if (courtFinderResponse == null || courtFinderResponse.getCourts() == null || courtFinderResponse.getCourts().isEmpty()) {
+        if (courtFinderResponse == null || courtFinderResponse.getCourts() == null
+            || courtFinderResponse.getCourts().isEmpty()) {
             return Optional.empty();
         }
 
         List<Court> courts = courtFinderResponse.getCourts();
 
-        uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court court = new CourtFinderContainer(courtFinderApi).getCourtFromCourtFinderResponse(courts.get(0));
+        uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court court =
+            new CourtFinderContainer(courtFinderApi).getCourtFromCourtFinderResponse(courts.get(0));
 
         CourtDetails courtDetails = courtFinderApi.getCourtDetailsFromNameSlug(court.getSlug());
 
@@ -214,10 +215,9 @@ public class PilotCourtService {
     }
 
     /**
-     * TODO : DESCRIPTION
+     * Get CCD Address from court address.
      *
-     * @param courtAddress
-     * @param ccdAddress
+     * @param courtAddress for a provided court address
      */
     private CCDAddress getCCDAddress(CourtAddress courtAddress) {
         CCDAddress ccdAddress = CCDAddress.builder()
@@ -243,8 +243,9 @@ public class PilotCourtService {
     }
 
     /**
-     * TODO : DESCRIPTION
-     * @param hearingCourt
+     * Get Pilot Court Id.
+     *
+     * @param hearingCourt for a provided hearing court
      * @return {@linkplain String}
      */
     public String getPilotCourtId(HearingCourt hearingCourt) {

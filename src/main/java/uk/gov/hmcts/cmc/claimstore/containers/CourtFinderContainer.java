@@ -30,7 +30,7 @@ public class CourtFinderContainer {
      * Gets a list of court objects from the CourtFinderResponse.
      *
      * @param courtFinderResponse : for a given CourtFinderResponse
-     * @return {@linkplain List<Court>}
+     * @return {@linkplain List}
      */
     public List<Court> getCourtsFromCourtFinderResponse(CourtFinderResponse courtFinderResponse) {
         List<Court> courts = new ArrayList<>();

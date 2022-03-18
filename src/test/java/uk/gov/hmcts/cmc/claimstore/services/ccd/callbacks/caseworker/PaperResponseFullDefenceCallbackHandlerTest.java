@@ -73,12 +73,12 @@ class PaperResponseFullDefenceCallbackHandlerTest {
     private static final String OCON9X_REVIEW =
         "Before continuing you must complete the ‘Review OCON9x paper response’ event";
     private static final List<CaseEvent> CASE_EVENTS = List.of(CaseEvent.PAPER_RESPONSE_OCON_9X_FORM);
-    private final static String COURT_FINDER_RESPONSE_NEWCASTLE = "court-finder/response/NEWCASTLE_COURT_FINDER_RESPONSE.json";
-    private final static String COURT_NEWCASTLE = "Newcastle Civil & Family Courts and Tribunals Centre";;
-    private final static String POSTCODE = "postcode";
-    private final static String EXAMPLE_EMAIL = "abc@def.com";
-    private final static String PREFERRED_DQ_COURT = "preferredDQCourt";
-    private final static String OCON_ENHANCEMENTS = "ocon-enhancements";
+    private static final String COURT_FINDER_RESPONSE_NEWCASTLE = "court-finder/response/NEWCASTLE_COURT_FINDER_RESPONSE.json";
+    private static final String COURT_NEWCASTLE = "Newcastle Civil & Family Courts and Tribunals Centre";
+    private static final String POSTCODE = "postcode";
+    private static final String EXAMPLE_EMAIL = "abc@def.com";
+    private static final String PREFERRED_DQ_COURT = "preferredDQCourt";
+    private static final String OCON_ENHANCEMENTS = "ocon-enhancements";
 
     @Mock
     PilotCourtService pilotCourtService;
@@ -191,8 +191,8 @@ class PaperResponseFullDefenceCallbackHandlerTest {
 
         @Test
         void shouldAddPreferredCourtIfDQsEnabledAndNoPreferredCourtSet() {
-             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(getCCDData(POSTCODE,
-                CCDCase.builder(), CCDPartyType.COMPANY));
+            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
+                .thenReturn(getCCDData(POSTCODE, CCDCase.builder(), CCDPartyType.COMPANY));
 
             CourtFinderResponse courtFinderResponse = DataFactory.createCourtFinderResponseFromJson(COURT_FINDER_RESPONSE_NEWCASTLE);
 

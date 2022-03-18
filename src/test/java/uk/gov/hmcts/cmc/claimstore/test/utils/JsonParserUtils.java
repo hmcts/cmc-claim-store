@@ -20,11 +20,11 @@ class JsonParserUtils {
      * Util function to map the contents of a JSON file
      * to generic Type Reference.
      *
-     * @param jsonValue for a provide json string value
-     * @param type for a provided generic type reference
+     * @param jsonFileSrc for a provide json string value
+     * @param type        for a provided generic type reference
      * @return {@linkplain T}
      */
-     static <T> T fromJson(String jsonFileSrc, TypeReference<T> type) {
+    static <T> T fromJson(String jsonFileSrc, TypeReference<T> type) {
         try {
             String jsonValue = FileReaderUtils.readJsonFromFile(jsonFileSrc);
             return objectMapper.readValue(jsonValue, type);
@@ -38,8 +38,8 @@ class JsonParserUtils {
      * Util function to map the contents of a JSON file
      * to generic Class Reference.
      *
-     * @param jsonValue for a provide json string value
-     * @param type for a provided generic class
+     * @param jsonFileSrc for a provide json string value
+     * @param type        for a provided generic class
      * @return {@linkplain T}
      */
     static <T> T fromJson(String jsonFileSrc, Class<T> type) {

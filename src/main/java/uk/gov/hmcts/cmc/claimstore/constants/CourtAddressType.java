@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.constants;
 
 /**
- * TODO : DESCRIPTION
+ * Enum class to contain court address types.
  */
 public enum CourtAddressType {
     WRITE_TO_US("Write to us"),

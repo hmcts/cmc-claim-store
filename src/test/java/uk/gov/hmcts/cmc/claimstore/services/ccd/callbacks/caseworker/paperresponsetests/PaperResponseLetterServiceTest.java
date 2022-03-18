@@ -138,7 +138,7 @@ class PaperResponseLetterServiceTest {
     }
 
     @Test
-    void shouldOCON9Letter() {
+    void shouldOcon9Letter() {
         DocAssemblyTemplateBody docAssemblyTemplateBody = DocAssemblyTemplateBody.builder().build();
         CCDDocument ccdDocument = CCDDocument.builder().build();
 
@@ -176,7 +176,7 @@ class PaperResponseLetterServiceTest {
         }
 
         @Test
-        void shouldCreateOCONFormForIndividualWithDQs() {
+        void shouldCreateOconFormForIndividualWithDQs() {
             ccdCase.setRespondents(
                 ImmutableList.of(
                     CCDCollectionElement.<CCDRespondent>builder()
@@ -202,7 +202,7 @@ class PaperResponseLetterServiceTest {
         }
 
         @Test
-        void shouldCreateOCONFormForSoleTraderWthDQs() {
+        void shouldCreateOconFormForSoleTraderWthDQs() {
             ccdCase.setRespondents(
                 ImmutableList.of(
                     CCDCollectionElement.<CCDRespondent>builder()
@@ -266,7 +266,7 @@ class PaperResponseLetterServiceTest {
         }
 
         @Test
-        void shouldCreateOCONFormForIndividualWithoutDQs() {
+        void shouldCreateOconFormForIndividualWithoutDQs() {
             ccdCase.setRespondents(
                 ImmutableList.of(
                     CCDCollectionElement.<CCDRespondent>builder()
@@ -294,7 +294,7 @@ class PaperResponseLetterServiceTest {
         }
 
         @Test
-        void shouldCreateOCONFormForSoleTraderWithoutDQs() {
+        void shouldCreateOconFormForSoleTraderWithoutDQs() {
             ccdCase.setRespondents(
                 ImmutableList.of(
                     CCDCollectionElement.<CCDRespondent>builder()
