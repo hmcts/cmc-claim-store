@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.containers;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +21,7 @@ public class CourtFinderContainerTest {
     private static final String COURT_FINDER_RESPONSE_NEWCASTLE = "court-finder/response/NEWCASTLE_COURT_FINDER_RESPONSE.json";
 
     @Test
-    public void shouldGetCourtFromCourtFinderResponse () {
+    public void shouldGetCourtsFromCourtFinderResponse() {
         CourtFinderResponse courtFinderResponse = DataFactory.createCourtFinderResponseFromJson(COURT_FINDER_RESPONSE_NEWCASTLE);
 
         List<Court> actualCourtsFromCourtFinderResponse = new CourtFinderContainer(courtFinderApi)
