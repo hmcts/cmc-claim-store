@@ -14,7 +14,6 @@ import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.containers.CourtFinderContainer;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.LegacyCourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.CourtDetails;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.factapi.Court;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.factapi.CourtAddress;
@@ -41,7 +40,6 @@ public class PilotCourtService {
 
     private Map<String, PilotCourt> pilotCourts;
     private final CourtFinderApi courtFinderApi;
-    private final LegacyCourtFinderApi legacyCourtFinderApi;
     private final String dataSource;
     private final AppInsights appInsights;
 
@@ -49,11 +47,9 @@ public class PilotCourtService {
 
     public PilotCourtService(@Value("${pilot-courts.datafile}") String dataSource,
                              CourtFinderApi courtFinderApi,
-                             LegacyCourtFinderApi legacyCourtFinderApi,
                              AppInsights appInsights) {
         this.dataSource = dataSource;
         this.courtFinderApi = courtFinderApi;
-        this.legacyCourtFinderApi = legacyCourtFinderApi;
         this.appInsights = appInsights;
     }
 
@@ -200,9 +196,9 @@ public class PilotCourtService {
         List<Court> courts = courtFinderResponse.getCourts();
 
         uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court court =
-            new CourtFinderContainer(legacyCourtFinderApi).getCourtFromCourtFinderResponse(courts.get(0));
+            new CourtFinderContainer(courtFinderApi).getCourtFromCourtFinderResponse(courts.get(0));
 
-        CourtDetails courtDetails = legacyCourtFinderApi.getCourtDetailsFromNameSlug(court.getSlug());
+        CourtDetails courtDetails = courtFinderApi.getCourtDetailsFromNameSlug(court.getSlug());
 
         CCDAddress ccdAddress = null;
 

@@ -28,7 +28,7 @@ public class CourtFinderContainerTest {
     public void shouldGetCourtsFromCourtFinderResponse() {
         CourtFinderResponse courtFinderResponse = DataFactory.createCourtFinderResponseFromJson(COURT_FINDER_RESPONSE_NEWCASTLE);
 
-        List<Court> actualCourtsFromCourtFinderResponse = new CourtFinderContainer(legacyCourtFinderApi)
+        List<Court> actualCourtsFromCourtFinderResponse = new CourtFinderContainer(courtFinderApi)
             .getCourtsFromCourtFinderResponse(courtFinderResponse);
 
         Assert.assertEquals(1, actualCourtsFromCourtFinderResponse.size());

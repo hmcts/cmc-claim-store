@@ -63,7 +63,6 @@ class PilotCourtServiceTest {
         PilotCourtService pilotCourtService = new PilotCourtService(
             CSV_PATH_SINGLE,
             courtFinderApi,
-            legacyCourtFinderApi,
             appInsights
         );
 
@@ -78,7 +77,6 @@ class PilotCourtServiceTest {
         PilotCourtService pilotCourtService = new PilotCourtService(
             CSV_PATH_COURT_IDS,
             courtFinderApi,
-            legacyCourtFinderApi,
             appInsights
         );
 
@@ -105,7 +103,6 @@ class PilotCourtServiceTest {
         PilotCourtService pilotCourtService = new PilotCourtService(
             CSV_PATH_SINGLE,
             courtFinderApi,
-            legacyCourtFinderApi,
             appInsights
         );
 
@@ -123,7 +120,7 @@ class PilotCourtServiceTest {
 
         CourtDetails courtDetails = DataFactory.createCourtDetailsFromJson(COURT_DETAILS_NEWCASTLE);
 
-        when(legacyCourtFinderApi.getCourtDetailsFromNameSlug(anyString()))
+        when(courtFinderApi.getCourtDetailsFromNameSlug(anyString()))
             .thenReturn(courtDetails);
 
         HearingCourt actualHearingCourt = new HearingCourt();
@@ -142,7 +139,6 @@ class PilotCourtServiceTest {
         PilotCourtService pilotCourtService = new PilotCourtService(
             CSV_PATH_SINGLE,
             courtFinderApi,
-            legacyCourtFinderApi,
             appInsights
         );
 
@@ -161,7 +157,6 @@ class PilotCourtServiceTest {
         PilotCourtService pilotCourtService = new PilotCourtService(
             CSV_PATH_INVALID,
             courtFinderApi,
-            legacyCourtFinderApi,
             appInsights
         );
 
@@ -180,13 +175,12 @@ class PilotCourtServiceTest {
 
         CourtDetails courtDetails = DataFactory.createCourtDetailsFromJson(COURT_DETAILS_NEWCASTLE);
 
-        when(legacyCourtFinderApi.getCourtDetailsFromNameSlug(anyString()))
+        when(courtFinderApi.getCourtDetailsFromNameSlug(anyString()))
             .thenReturn(courtDetails);
 
         PilotCourtService pilotCourtService = new PilotCourtService(
             CSV_PATH_COURT_IDS,
             courtFinderApi,
-            legacyCourtFinderApi,
             appInsights
         );
 
@@ -213,7 +207,6 @@ class PilotCourtServiceTest {
             PilotCourtService pilotCourtService = new PilotCourtService(
                 "InvalidPath",
                 courtFinderApi,
-                legacyCourtFinderApi,
                 appInsights
             );
 
@@ -225,7 +218,6 @@ class PilotCourtServiceTest {
             PilotCourtService pilotCourtService = new PilotCourtService(
                 CSV_PATH,
                 courtFinderApi,
-                legacyCourtFinderApi,
                 appInsights
             );
 
@@ -264,7 +256,6 @@ class PilotCourtServiceTest {
                     pilotCourtService = new PilotCourtService(
                         CSV_PATH_LA,
                         courtFinderApi,
-                        legacyCourtFinderApi,
                         appInsights
                     );
 
@@ -286,7 +277,6 @@ class PilotCourtServiceTest {
                     pilotCourtService = new PilotCourtService(
                         CSV_PATH_JDDO,
                         courtFinderApi,
-                        legacyCourtFinderApi,
                         appInsights
                     );
 
@@ -317,7 +307,6 @@ class PilotCourtServiceTest {
                 pilotCourtService = new PilotCourtService(
                     CSV_PATH_DATES,
                     courtFinderApi,
-                    legacyCourtFinderApi,
                     appInsights
                 );
 

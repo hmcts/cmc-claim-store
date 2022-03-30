@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.containers;
 
 import uk.gov.hmcts.cmc.claimstore.constants.CourtAddressType;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.LegacyCourtFinderApi;
+import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Address;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.AreaOfLaw;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
@@ -20,10 +20,10 @@ import java.util.Map;
  */
 public class CourtFinderContainer {
 
-    private final LegacyCourtFinderApi legacyCourtFinderApi;
+    private final CourtFinderApi courtFinderApi;
 
-    public CourtFinderContainer(LegacyCourtFinderApi legacyCourtFinderApi) {
-        this.legacyCourtFinderApi = legacyCourtFinderApi;
+    public CourtFinderContainer(CourtFinderApi courtFinderApi) {
+        this.courtFinderApi = courtFinderApi;
     }
 
     /**
@@ -55,7 +55,7 @@ public class CourtFinderContainer {
         courtItem.setAreasOfLaw(getAreaOfLawFromCourtFinderCourt(court));
 
         if (court.getSlug() != null) {
-            CourtDetails courtDetails = legacyCourtFinderApi.getCourtDetailsFromNameSlug(court.getSlug());
+            CourtDetails courtDetails = courtFinderApi.getCourtDetailsFromNameSlug(court.getSlug());
 
             if (courtDetails != null) {
                 populateCourtAddresses(courtItem, courtDetails.getAddresses());

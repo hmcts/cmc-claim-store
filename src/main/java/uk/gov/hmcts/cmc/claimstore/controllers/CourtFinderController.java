@@ -43,12 +43,12 @@ public class CourtFinderController {
     public List<Court> searchByPostcode(
         @NotEmpty @NotNull @PathVariable("postcode") String postcode) {
         CourtFinderResponse courtFinderResponse = courtFinderApi.findMoneyClaimCourtByPostcode(postcode);
-        return new CourtFinderContainer(legacyCourtFinderApi).getCourtsFromCourtFinderResponse(courtFinderResponse);
+        return new CourtFinderContainer(courtFinderApi).getCourtsFromCourtFinderResponse(courtFinderResponse);
     }
 
     @GetMapping(value = "/court-details/{court-slug}")
     public CourtDetails getCourtDetails(@NotEmpty @NotNull @PathVariable("court-slug") String courtNameSlug) {
-        return legacyCourtFinderApi.getCourtDetailsFromNameSlug(courtNameSlug);
+        return courtFinderApi.getCourtDetailsFromNameSlug(courtNameSlug);
     }
 
     @GetMapping(value = "/search-name/{name}")
