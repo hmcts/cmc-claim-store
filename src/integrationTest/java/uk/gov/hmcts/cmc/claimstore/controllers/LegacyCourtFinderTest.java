@@ -13,9 +13,9 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @TestPropertySource(value = "/environment.properties", properties = {
-    "courtfinder.api.url=http://court-finder-api"
+    "courtfinder.api.legacy.url=http://court-finder-api"
 })
-public class CourtFinderTest extends BaseMockSpringTest {
+public class LegacyCourtFinderTest extends BaseMockSpringTest {
 
     @MockBean
     protected EmailService emailService;
@@ -25,7 +25,7 @@ public class CourtFinderTest extends BaseMockSpringTest {
         String courtSlug = "sluggity-slug";
         String courtName = "Dudley County Court and Family Court";
 
-        given(courtFinderApi.getCourtDetailsFromNameSlug(courtSlug))
+        given(legacyCourtFinderApi.getCourtDetailsFromNameSlug(courtSlug))
             .willReturn(CourtDetails.builder().name(courtName).build());
 
         MvcResult result = doGet("/court-finder/court-details/{slug}", courtSlug)

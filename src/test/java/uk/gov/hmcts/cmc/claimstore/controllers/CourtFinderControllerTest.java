@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
+import uk.gov.hmcts.cmc.claimstore.courtfinder.LegacyCourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.AreaOfLaw;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
 
@@ -33,14 +34,17 @@ public class CourtFinderControllerTest {
     @Mock
     private CourtFinderApi courtFinderApi;
 
+    @Mock
+    private LegacyCourtFinderApi legacyCourtFinderApi;
+
     @Before
     public void setup() {
-        courtFinderController = new CourtFinderController(courtFinderApi);
+        courtFinderController = new CourtFinderController(courtFinderApi, legacyCourtFinderApi);
     }
 
     @Test
     public void shouldFilterCourtsWithoutMoneyClaimAOE() {
-        when(courtFinderApi.findMoneyClaimCourtByName(COURT_NAME))
+        when(legacyCourtFinderApi.findMoneyClaimCourtByName(COURT_NAME))
             .thenReturn(ImmutableList.of(courtWithMoneyClaimAOE, courtWithoutMoneyClaimAOE));
 
         List<Court> output = courtFinderController.searchByName(COURT_NAME);

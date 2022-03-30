@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.containers.CourtFinderContainer;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
+import uk.gov.hmcts.cmc.claimstore.courtfinder.LegacyCourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.CourtDetails;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.factapi.CourtFinderResponse;
@@ -30,27 +31,30 @@ public class CourtFinderController {
 
     private final CourtFinderApi courtFinderApi;
 
+    private final LegacyCourtFinderApi legacyCourtFinderApi;
+
     @Autowired
-    public CourtFinderController(CourtFinderApi courtFinderApi) {
+    public CourtFinderController(CourtFinderApi courtFinderApi, LegacyCourtFinderApi legacyCourtFinderApi) {
         this.courtFinderApi = courtFinderApi;
+        this.legacyCourtFinderApi = legacyCourtFinderApi;
     }
 
     @GetMapping(value = "/search-postcode/{postcode}")
     public List<Court> searchByPostcode(
         @NotEmpty @NotNull @PathVariable("postcode") String postcode) {
         CourtFinderResponse courtFinderResponse = courtFinderApi.findMoneyClaimCourtByPostcode(postcode);
-        return new CourtFinderContainer(courtFinderApi).getCourtsFromCourtFinderResponse(courtFinderResponse);
+        return new CourtFinderContainer(legacyCourtFinderApi).getCourtsFromCourtFinderResponse(courtFinderResponse);
     }
 
     @GetMapping(value = "/court-details/{court-slug}")
     public CourtDetails getCourtDetails(@NotEmpty @NotNull @PathVariable("court-slug") String courtNameSlug) {
-        return courtFinderApi.getCourtDetailsFromNameSlug(courtNameSlug);
+        return legacyCourtFinderApi.getCourtDetailsFromNameSlug(courtNameSlug);
     }
 
     @GetMapping(value = "/search-name/{name}")
     public List<Court> searchByName(
         @NotEmpty @NotNull @PathVariable("name") String name) {
-        return courtFinderApi.findMoneyClaimCourtByName(name)
+        return legacyCourtFinderApi.findMoneyClaimCourtByName(name)
             .stream()
             .filter(
                 c -> c.getAreasOfLaw()

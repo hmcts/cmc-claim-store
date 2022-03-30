@@ -32,6 +32,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
+import uk.gov.hmcts.cmc.claimstore.courtfinder.LegacyCourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.helper.JsonMappingHelper;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -118,6 +119,8 @@ public abstract class BaseMockSpringTest {
     protected UserService userService;
     @MockBean(name = "courtFinderApi")
     protected CourtFinderApi courtFinderApi;
+    @MockBean(name = "legacyCourtFinderApi")
+    protected LegacyCourtFinderApi legacyCourtFinderApi;
     @MockBean(name = "docAssemblyApi")
     protected DocAssemblyApi docAssemblyApi;
     @MockBean
