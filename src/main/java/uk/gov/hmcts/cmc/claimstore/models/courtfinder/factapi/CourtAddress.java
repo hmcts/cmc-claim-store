@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.models.courtfinder.factapi;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,7 @@ import java.util.stream.Stream;
 @NoArgsConstructor
 @Builder
 @JsonPropertyOrder({"address_lines", "postcode", "town", "type"})
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CourtAddress {
     @JsonProperty("address_lines")
     private List<String> addressLines;
