@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.idam;
+package uk.gov.hmcts.cmc.claimstore.requests.idam;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpHeaders;
@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import uk.gov.hmcts.cmc.claimstore.models.AuthenticateUserResponse;
-import uk.gov.hmcts.cmc.claimstore.models.GeneratePinRequest;
-import uk.gov.hmcts.cmc.claimstore.models.GeneratePinResponse;
-import uk.gov.hmcts.cmc.claimstore.models.TokenExchangeResponse;
-import uk.gov.hmcts.cmc.claimstore.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.models.UserInfo;
+import uk.gov.hmcts.cmc.claimstore.models.idam.AuthenticateUserResponse;
+import uk.gov.hmcts.cmc.claimstore.models.idam.GeneratePinRequest;
+import uk.gov.hmcts.cmc.claimstore.models.idam.GeneratePinResponse;
+import uk.gov.hmcts.cmc.claimstore.models.idam.TokenExchangeResponse;
+import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.models.idam.UserInfo;
 
 @FeignClient(name = "idam-api", url = "${idam.api.url}")
 public interface IdamApi {

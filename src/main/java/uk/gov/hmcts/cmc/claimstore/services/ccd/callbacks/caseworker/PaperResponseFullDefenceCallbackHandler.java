@@ -2,23 +2,16 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
 import net.logstash.logback.encoder.org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
-import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
-import uk.gov.hmcts.cmc.ccd.domain.CCDPartyType;
-import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocument;
-import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.ccd.domain.*;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefenceType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
+import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Court;
+import uk.gov.hmcts.cmc.claimstore.requests.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.rpa.DefenceResponseNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.CaseEventService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -34,11 +27,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.otherparty.CompanyDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.OrganisationDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.SoleTraderDetails;
-import uk.gov.hmcts.cmc.domain.models.party.Company;
-import uk.gov.hmcts.cmc.domain.models.party.Individual;
-import uk.gov.hmcts.cmc.domain.models.party.Organisation;
-import uk.gov.hmcts.cmc.domain.models.party.Party;
-import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
+import uk.gov.hmcts.cmc.domain.models.party.*;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
@@ -79,7 +68,7 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
     private final CaseEventService caseEventService;
     private final LaunchDarklyClient launchDarklyClient;
     private final DefenceResponseNotificationService defenceResponseNotificationService;
-    private  final PilotCourtService pilotCourtService;
+    private final PilotCourtService pilotCourtService;
 
     public PaperResponseFullDefenceCallbackHandler(CaseDetailsConverter caseDetailsConverter, Clock clock,
                                                    EventProducer eventProducer, CaseMapper caseMapper,
@@ -331,8 +320,8 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
 
     private String getCourtName(CCDPartyType partyType, CCDAddress defendantAddress, CCDAddress claimantAddress) {
         return courtFinderApi.findMoneyClaimCourtByPostcode((partyType == CCDPartyType.COMPANY
-            || partyType == CCDPartyType.ORGANISATION)
-            ? claimantAddress.getPostCode() : defendantAddress.getPostCode())
+                || partyType == CCDPartyType.ORGANISATION)
+                ? claimantAddress.getPostCode() : defendantAddress.getPostCode())
             .stream()
             .map(Court::getName)
             .findFirst()

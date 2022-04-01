@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.courtfinder.models;
+package uk.gov.hmcts.cmc.claimstore.models.courtfinder;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Builder;
