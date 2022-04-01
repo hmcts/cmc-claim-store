@@ -461,4 +461,76 @@
         <vulnerabilityName>CWE-862: Missing Authorization</vulnerabilityName>
     </suppress>
 
+    <suppress until="2022-06-01">
+        <notes><![CDATA[
+   file name: jackson-databind-2.11.0.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
+        <cpe>cpe:/a:fasterxml:jackson-databind</cpe>
+    </suppress>
+
+    <suppress until="2022-06-01">
+        <notes><![CDATA[
+   file name: jackson-databind-2.11.0.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
+        <cpe>cpe:/a:fasterxml:jackson-modules-java8</cpe>
+    </suppress>
+
+    <suppress until="2022-06-01">
+        <notes><![CDATA[
+   file name: jackson-databind-2.11.0.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
+        <cve>CVE-2020-36518</cve>
+    </suppress>
+
+    <suppress until="2022-06-01">
+        <notes><![CDATA[
+   file name: jackson-databind-2.11.0.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
+        <cve>CVE-2020-36518</cve>
+    </suppress>
+
+    <suppress until="2022-06-01">
+        <notes><![CDATA[
+   file name: jackson-databind-2.11.0.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
+        <cpe>cpe:/a:fasterxml:jackson-modules-java8</cpe>
+    </suppress>
+
+    <suppress until="2022-06-01">
+        <notes><![CDATA[
+   file name: jackson-databind-2.11.0.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
+        <cve>CVE-2020-36518</cve>
+    </suppress>
+
+    <suppress until="2022-06-01">
+        <notes><![CDATA[
+   file name: postgresql-42.2.14.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.postgresql/postgresql@.*$</packageUrl>
+        <cpe>cpe:/a:postgresql:postgresql_jdbc_driver</cpe>
+    </suppress>
+
+    <suppress until="2022-06-01">
+        <notes><![CDATA[
+   file name: postgresql-42.2.14.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.postgresql/postgresql@.*$</packageUrl>
+        <cve>CVE-2022-21724</cve>
+    </suppress>
+
+    <suppress until="2022-06-01">
+        <notes><![CDATA[
+   file name: postgresql-42.2.14.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.postgresql/postgresql@.*$</packageUrl>
+        <cpe>cpe:/a:postgresql:postgresql</cpe>
+    </suppress>
+
 </suppressions>
