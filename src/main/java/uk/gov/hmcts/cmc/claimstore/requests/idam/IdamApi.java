@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import uk.gov.hmcts.cmc.claimstore.idam.models.AuthenticateUserResponse;
-import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinRequest;
-import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
-import uk.gov.hmcts.cmc.claimstore.idam.models.TokenExchangeResponse;
-import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.idam.models.UserInfo;
+import uk.gov.hmcts.cmc.claimstore.models.AuthenticateUserResponse;
+import uk.gov.hmcts.cmc.claimstore.models.GeneratePinRequest;
+import uk.gov.hmcts.cmc.claimstore.models.GeneratePinResponse;
+import uk.gov.hmcts.cmc.claimstore.models.TokenExchangeResponse;
+import uk.gov.hmcts.cmc.claimstore.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.models.UserInfo;
 
 @FeignClient(name = "idam-api", url = "${idam.api.url}")
 public interface IdamApi {

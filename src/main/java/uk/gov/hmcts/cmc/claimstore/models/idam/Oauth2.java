@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.idam.models;
+package uk.gov.hmcts.cmc.claimstore.models.idam;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
