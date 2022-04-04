@@ -6,9 +6,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.models.AreaOfLaw;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
+import uk.gov.hmcts.cmc.claimstore.models.courtfinder.AreaOfLaw;
+import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Court;
+import uk.gov.hmcts.cmc.claimstore.requests.courtfinder.CourtFinderApi;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,15 +21,11 @@ import static org.mockito.Mockito.when;
 public class CourtFinderControllerTest {
 
     private static final String COURT_NAME = "A Court Name";
-
-    private CourtFinderController courtFinderController;
-
     private final List<AreaOfLaw> moneyClaimAOEList = Collections
         .singletonList(AreaOfLaw.builder().name(CourtFinderController.MONEY_CLAIM_AOL).build());
-
     private final Court courtWithMoneyClaimAOE = Court.builder().name("Court A").areasOfLaw(moneyClaimAOEList).build();
     private final Court courtWithoutMoneyClaimAOE = Court.builder().name("Court B").areasOfLaw(emptyList()).build();
-
+    private CourtFinderController courtFinderController;
     @Mock
     private CourtFinderApi courtFinderApi;
 

@@ -6,22 +6,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.config.properties.idam.IdamCaseworkerProperties;
-import uk.gov.hmcts.cmc.claimstore.idam.IdamApi;
-import uk.gov.hmcts.cmc.claimstore.idam.models.AuthenticateUserResponse;
-import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinRequest;
-import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
-import uk.gov.hmcts.cmc.claimstore.idam.models.Oauth2;
-import uk.gov.hmcts.cmc.claimstore.idam.models.TokenExchangeResponse;
-import uk.gov.hmcts.cmc.claimstore.idam.models.User;
-import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.idam.models.UserInfo;
+import uk.gov.hmcts.cmc.claimstore.models.idam.*;
+import uk.gov.hmcts.cmc.claimstore.requests.idam.IdamApi;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.PIN;
 import static uk.gov.hmcts.cmc.claimstore.services.UserService.CODE;

@@ -2,8 +2,8 @@ package uk.gov.hmcts.cmc.claimstore.rules;
 
 import org.apache.commons.lang3.ObjectUtils;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentDownloadForbiddenException;
-import uk.gov.hmcts.cmc.claimstore.idam.models.User;
-import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.models.idam.User;
+import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 

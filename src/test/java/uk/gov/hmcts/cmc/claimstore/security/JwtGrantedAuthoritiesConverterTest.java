@@ -9,7 +9,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
-import uk.gov.hmcts.cmc.claimstore.idam.models.UserInfo;
+import uk.gov.hmcts.cmc.claimstore.models.idam.UserInfo;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 
 import java.util.ArrayList;

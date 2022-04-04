@@ -9,7 +9,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
-import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
+import uk.gov.hmcts.cmc.claimstore.models.idam.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CCDCreateCaseService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
