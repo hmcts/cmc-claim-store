@@ -9,5 +9,8 @@ import lombok.Data;
 @Builder
 public class Facilities {
     private String description;
+
     private String name;
+
+    private int order;
 }

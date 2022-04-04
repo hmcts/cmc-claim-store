@@ -9,11 +9,17 @@ import lombok.Data;
 @Data
 @Builder
 public class AreaOfLaw {
-    String name;
-    @JsonProperty("external_link")
-    String externalLink;
     @JsonProperty("display_url")
     String displayUrl;
+
+    @JsonProperty("display_name")
+    String displayName;
+
+    @JsonProperty("external_link")
+    String externalLink;
+
     @JsonProperty("external_link_desc")
     String externalDescription;
+
+    String name;
 }
