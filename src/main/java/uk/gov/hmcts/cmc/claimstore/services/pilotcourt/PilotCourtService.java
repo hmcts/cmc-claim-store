@@ -11,11 +11,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
+import uk.gov.hmcts.cmc.claimstore.requests.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourtMapper;
-import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourt;
-import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtCSVHeader;
 import uk.gov.hmcts.cmc.claimstore.utils.ResourceReader;
 
 import java.io.IOException;

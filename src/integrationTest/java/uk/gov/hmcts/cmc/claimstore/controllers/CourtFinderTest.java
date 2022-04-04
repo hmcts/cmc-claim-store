@@ -7,8 +7,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.models.CourtDetails;
+import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Court;
+import uk.gov.hmcts.cmc.claimstore.models.courtfinder.CourtDetails;
 import uk.gov.hmcts.cmc.email.EmailService;
 
 import java.util.List;

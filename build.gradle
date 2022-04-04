@@ -396,6 +396,8 @@ sonarqube {
         "**/ClaimRepository.java",
         "**/CCDCaseRepository.java",
         "**/cmc/claimstore/appinsights/**",
+        "**/cmc/claimstore/constants/**",
+        "**/cmc/claimstore/models/**",
         "**/cmc/claimstore/services/ccd/legaladvisor/**",
         "**/cmc/claimstore/services/ccd/callbacks/ioc/FeesAndPaymentsConfiguration.java",
         "**/cmc/claimstore/services/ccd/callbacks/HWFMiscellaneousCallbackHandler.java",

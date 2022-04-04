@@ -16,26 +16,13 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseEventMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
-import uk.gov.hmcts.cmc.claimstore.idam.models.User;
-import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireService;
-import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
-import uk.gov.hmcts.cmc.claimstore.services.StateTransitionCalculator;
-import uk.gov.hmcts.cmc.claimstore.services.UserService;
-import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
+import uk.gov.hmcts.cmc.claimstore.models.idam.User;
+import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.*;
 import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
-import uk.gov.hmcts.cmc.domain.models.BreathingSpace;
-import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
-import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
-import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
-import uk.gov.hmcts.cmc.domain.models.PaidInFull;
-import uk.gov.hmcts.cmc.domain.models.ReDetermination;
-import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.*;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.legalrep.LegalRepUpdate;
@@ -44,11 +31,7 @@ import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.ccd.client.model.Event;
-import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
-import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
+import uk.gov.hmcts.reform.ccd.client.model.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -56,20 +39,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_REQUESTED;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CASE;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_HWF_CASE;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_LEGAL_REP_CLAIM;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INITIATE_CLAIM_PAYMENT_CITIZEN;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LINK_LETTER_HOLDER;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED_ONLINE;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ORDER_REVIEW_REQUESTED;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUPPORT_UPDATE;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.UPDATE_LEGAL_REP_CLAIM;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.*;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
 import static uk.gov.hmcts.cmc.claimstore.services.pilotcourt.Pilot.JDDO;
@@ -219,10 +189,10 @@ public class CoreCaseDataService {
                 .build();
 
             return caseDetailsConverter.extractClaim(submitUpdate(user.getAuthorisation(),
-                eventRequestData,
-                caseDataContent,
-                claim.getCcdCaseId(),
-                isRepresented(userDetails)
+                    eventRequestData,
+                    caseDataContent,
+                    claim.getCcdCaseId(),
+                    isRepresented(userDetails)
                 )
             );
         } catch (Exception exception) {
@@ -609,10 +579,10 @@ public class CoreCaseDataService {
             CaseDataContent caseDataContent = caseDataContent(startEventResponse, claimBuilder.build());
 
             return caseDetailsConverter.extractClaim(submitUpdate(authorisation,
-                eventRequestData,
-                caseDataContent,
-                caseId,
-                isRepresented(userDetails)
+                    eventRequestData,
+                    caseDataContent,
+                    caseId,
+                    isRepresented(userDetails)
                 )
             );
         } catch (Exception exception) {
@@ -738,7 +708,7 @@ public class CoreCaseDataService {
             var caseDataContent = caseDataContent(startEventResponse, updatedClaim);
             logger.info("Updating preferred DQ pilot court by support for claim {} ",
                 updatedClaim.getReferenceNumber());
-            return  submitUpdate(
+            return submitUpdate(
                 user.getAuthorisation(), eventRequestData, caseDataContent, caseId, isRepresented(userDetails));
         } catch (Exception e) {
             throw new CoreCaseDataStoreException(
