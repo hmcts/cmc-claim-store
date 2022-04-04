@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.models.CourtDetails;
+import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Court;
+import uk.gov.hmcts.cmc.claimstore.models.courtfinder.CourtDetails;
+import uk.gov.hmcts.cmc.claimstore.requests.courtfinder.CourtFinderApi;
 
 import java.util.List;
 import java.util.stream.Collectors;

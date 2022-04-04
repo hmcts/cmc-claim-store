@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures;
 
-import uk.gov.hmcts.cmc.claimstore.idam.models.User;
-import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.models.idam.User;
+import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
 
 public class SampleUser {
     private static final String DEFAULT_CLAIMANT_ID = "1";

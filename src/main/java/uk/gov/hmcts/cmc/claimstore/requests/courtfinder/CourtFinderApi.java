@@ -1,11 +1,11 @@
-package uk.gov.hmcts.cmc.claimstore.courtfinder;
+package uk.gov.hmcts.cmc.claimstore.requests.courtfinder;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.models.CourtDetails;
+import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Court;
+import uk.gov.hmcts.cmc.claimstore.models.courtfinder.CourtDetails;
 
 import java.util.List;
 

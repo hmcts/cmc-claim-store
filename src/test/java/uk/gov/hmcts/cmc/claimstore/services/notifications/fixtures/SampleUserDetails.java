@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures;
 
-import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
 
 import java.util.Arrays;
 import java.util.Collections;

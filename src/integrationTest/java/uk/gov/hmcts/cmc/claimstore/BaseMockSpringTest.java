@@ -31,12 +31,12 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.PlatformTransactionManager;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.helper.JsonMappingHelper;
-import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.TestingSupportRepository;
+import uk.gov.hmcts.cmc.claimstore.requests.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionOrderService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.bankholidays.BankHolidays;
@@ -68,9 +68,7 @@ import javax.sql.DataSource;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(
@@ -149,6 +147,12 @@ public abstract class BaseMockSpringTest {
     @MockBean
     protected BankHolidaysApi bankHolidaysApi;
     @MockBean
+    protected Authentication authentication;
+    @MockBean
+    protected SecurityContext securityContext;
+    @MockBean
+    protected JwtDecoder jwtDecoder;
+    @MockBean
     private Flyway flyway;
     @MockBean
     private TestingSupportRepository testingSupportRepository;
@@ -164,13 +168,6 @@ public abstract class BaseMockSpringTest {
     private TransactionAwareDataSourceProxy transactionAwareDataSourceProxy;
     @MockBean(name = "transactionManager")
     private PlatformTransactionManager transactionManager;
-
-    @MockBean
-    protected Authentication authentication;
-    @MockBean
-    protected SecurityContext securityContext;
-    @MockBean
-    protected JwtDecoder jwtDecoder;
 
     @Before
     public void setUpBase() {
