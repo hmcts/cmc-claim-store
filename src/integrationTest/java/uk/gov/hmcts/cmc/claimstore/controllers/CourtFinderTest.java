@@ -29,7 +29,10 @@ public class CourtFinderTest extends BaseMockSpringTest {
     @Test
     public void shouldFindPostcodeThatExists() throws Exception {
         String postcode = "SW1H9AJ";
-        String courtName = "Dudley County Court and Family Court";
+        String courtName = "Newcastle Civil & Family Courts and Tribunals Centre";
+
+        given(courtFinderApi.getCourtDetailsFromNameSlug(anyString()))
+            .willReturn(DataFactory.createSearchCourtBySlugResponseFromJson("factapi/courtfinder/search/response/slug/SEARCH_BY_SLUG_NEWCASTLE.json"));
 
         given(courtFinderApi.findMoneyClaimCourtByPostcode(anyString()))
             .willReturn(DataFactory.createSearchCourtByPostcodeResponseFromJson("factapi/courtfinder/search/response/postcode/SEARCH_BY_POSTCODE_NEWCASTLE.json"));
@@ -48,7 +51,7 @@ public class CourtFinderTest extends BaseMockSpringTest {
     @Test
     public void shouldFindCourtThatExists() throws Exception {
         String courtSlug = "sluggity-slug";
-        String courtName = "Dudley County Court and Family Court";
+        String courtName = "Newcastle Civil & Family Courts and Tribunals Centre";
 
         given(courtFinderApi.getCourtDetailsFromNameSlug(courtSlug))
             .willReturn(DataFactory.createSearchCourtBySlugResponseFromJson("factapi/courtfinder/search/response/slug/SEARCH_BY_SLUG_NEWCASTLE.json"));
