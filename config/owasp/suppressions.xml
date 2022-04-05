@@ -533,4 +533,20 @@
         <cpe>cpe:/a:postgresql:postgresql</cpe>
     </suppress>
 
+    <suppress until="2022-06-01">
+        <notes><![CDATA[
+   file name: spring-beans-5.3.4.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-beans@.*$</packageUrl>
+        <cpe>cpe:/a:pivotal_software:spring_framework</cpe>
+    </suppress>
+
+    <suppress until="2022-06-01">
+        <notes><![CDATA[
+   file name: spring-beans-5.3.4.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-beans@.*$</packageUrl>
+        <vulnerabilityName>CVE-2022-22965</vulnerabilityName>
+    </suppress>
+
 </suppressions>
