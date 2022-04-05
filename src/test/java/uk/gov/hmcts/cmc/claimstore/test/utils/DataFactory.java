@@ -32,7 +32,7 @@ public class DataFactory {
         });
     }
 
-    public static SearchCourtByNameResponse createSearchCourtByNameResponseFromJson(String jsonFileSrc) {
+    public static List<SearchCourtByNameResponse> createSearchCourtByNameResponseFromJson(String jsonFileSrc) {
         return JsonParserUtils.fromJson(jsonFileSrc, new TypeReference<>() {
         });
     }

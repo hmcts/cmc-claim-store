@@ -21,14 +21,18 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class CourtFinderServiceTest {
 
+    private static final String SEARCH_BY_SLUG_NEWCASTLE_RESPONSE = "factapi/courtfinder/search/response/slug/SEARCH_BY_SLUG_NEWCASTLE.json";
+    private static final String SEARCH_BY_POSTCODE_NEWCASTLE_RESPONSE = "factapi/courtfinder/search/response/postcode/SEARCH_BY_POSTCODE_NEWCASTLE.json";
     private static final String COURT_NAME = "A Court Name";
     private final List<AreaOfLaw> moneyClaimAOEList = Collections
         .singletonList(AreaOfLaw.builder().name(CourtFinderService.MONEY_CLAIM_AOL).build());
     private final Court courtWithMoneyClaimAOE = Court.builder().name("Court A").areasOfLaw(moneyClaimAOEList).build();
     private final Court courtWithoutMoneyClaimAOE = Court.builder().name("Court B").areasOfLaw(emptyList()).build();
     private CourtFinderController courtFinderController;
+
     @Mock
     private CourtFinderApi courtFinderApi;
+
     @Mock
     private CourtFinderService courtFinderService;
 
@@ -46,6 +50,12 @@ public class CourtFinderServiceTest {
 
         assertThat(output.size()).isEqualTo(2);
         assertThat(output.get(0)).isEqualTo(courtWithMoneyClaimAOE);
+    }
+
+    @Test
+    public void shouldGetNoCourtsByName() {
+        List<Court> courtList = courtFinderService.getCourtsByName("Newcastle Civil & Family Courts and Tribunals Centre");
+        assertThat(courtList.size()).isZero();
     }
 
 }
