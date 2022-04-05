@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class CourtFinderControllerTest {
 
-    private final String SEARCH_BY_NAME_NEWCASTLE_RESPONSE = "factapi/courtfinder/search/response/name/SEARCH_BY_NAME_NEWCASTLE.json";
+    private static final String SEARCH_BY_NAME_NEWCASTLE_RESPONSE = "factapi/courtfinder/search/response/name/SEARCH_BY_NAME_NEWCASTLE.json";
 
     private CourtFinderController courtFinderController;
 

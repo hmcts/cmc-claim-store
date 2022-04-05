@@ -22,7 +22,6 @@ import java.util.Set;
 @UtilityClass
 public class DataFactory {
 
-
     public static Court createCourtFromJson(String jsonFileSrc) {
         return JsonParserUtils.fromJson(jsonFileSrc, new TypeReference<>() {
         });
