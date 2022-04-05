@@ -1,11 +1,14 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor;
 
-import lombok.Builder;
-import lombok.Value;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.*;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
-@Value
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class HearingCourt {
     String name;
     CCDAddress address;

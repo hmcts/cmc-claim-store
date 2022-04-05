@@ -1,29 +1,27 @@
 package uk.gov.hmcts.cmc.claimstore.services.pilotcourt;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import feign.FeignException;
-import feign.Request;
-import feign.Response;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import org.mockito.junit.jupiter.MockitoExtension;import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Court;
 import uk.gov.hmcts.cmc.claimstore.requests.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourtMapper;
+import uk.gov.hmcts.cmc.claimstore.services.courtfinder.CourtFinderService;
+import uk.gov.hmcts.cmc.claimstore.test.utils.DataFactory;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,6 +32,9 @@ class PilotCourtServiceTest {
 
     @Mock
     private CourtFinderApi courtFinderApi;
+
+    @Mock
+    private CourtFinderService courtFinderService;
 
     @Mock
     private HearingCourtMapper hearingCourtMapper;
@@ -49,12 +50,15 @@ class PilotCourtServiceTest {
     private final String csvPathNames = "/pilot-court/pilot-courts-names.csv";
     private final String csvPathDates = "/pilot-court/pilot-courts-dates.csv";
     private final String csvPathCourtIds = "/pilot-court/pilot-courts-court-ids.csv";
+    private static final String HEARING_COURT_NEWCASTLE = "hearing-court/NEWCASTLE_HEARING_COURT.json";
+    private static final String LIST_COURTS_SINGLE_NEWCASTLE = "courtfinder/COURT_LIST_SINGLE_NEWCASTLE.json";
+    private static final String PILOT_COURT_ALL_COURTS = "pilot-court/response/ALL_PILOT_COURT_IDS.json";
 
     @Test
     void shouldThrowRIllegalArgumentExceptionOnUnknownCourtId() {
         PilotCourtService pilotCourtService = new PilotCourtService(
             csvPathSingle,
-            courtFinderApi,
+            courtFinderService,
             hearingCourtMapper,
             appInsights
         );
@@ -67,62 +71,69 @@ class PilotCourtServiceTest {
     void shouldReturnHearingCourt() {
         PilotCourtService pilotCourtService = new PilotCourtService(
             csvPathSingle,
-            courtFinderApi,
+            courtFinderService,
             hearingCourtMapper,
             appInsights
         );
 
-        Court court = Court.builder().build();
-        when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString()))
-            .thenReturn(ImmutableList.of(court));
+        List<Court> courtDetailsListFromPostcode = DataFactory.createCourtListFromJson(LIST_COURTS_SINGLE_NEWCASTLE);
 
-        HearingCourt hearingCourt = HearingCourt.builder().name("SAMPLE COURT").build();
-        when(hearingCourtMapper.from(eq(court))).thenReturn(hearingCourt);
+        when(courtFinderService.getCourtDetailsListFromPostcode(anyString()))
+            .thenReturn(courtDetailsListFromPostcode);
+
+        HearingCourt hearingCourt = DataFactory.createHearingCourtFromJson(HEARING_COURT_NEWCASTLE);
+        when(hearingCourtMapper.from(any())).thenReturn(hearingCourt);
+
         pilotCourtService.init();
 
-        HearingCourt actualHearingCourt = pilotCourtService.getPilotHearingCourt("BIRMINGHAM").get();
+        HearingCourt actualHearingCourt = HearingCourt.builder().build();
 
-        assertEquals(hearingCourt, actualHearingCourt);
+        Optional<HearingCourt> birminghamHearingCourt = pilotCourtService.getPilotHearingCourt("BIRMINGHAM");
+        if (birminghamHearingCourt.isPresent()) {
+            actualHearingCourt = birminghamHearingCourt.get();
+        }
 
+        HearingCourt expectedHearingCourt = DataFactory.createHearingCourtFromJson(HEARING_COURT_NEWCASTLE);
+
+        assertEquals(expectedHearingCourt, actualHearingCourt);
     }
 
     @Test
     void shouldFetchHearingCourtOnDemandIfNotAlreadyExist() {
         PilotCourtService pilotCourtService = new PilotCourtService(
             csvPathSingle,
-            courtFinderApi,
+            courtFinderService,
             hearingCourtMapper,
             appInsights
         );
 
-        //Simulate courtfinder being down on init
-        Court court = Court.builder().build();
-        Request request = Request.create(Request.HttpMethod.GET, "URL", ImmutableMap.of(), Request.Body.empty(), null);
-        when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString())).thenThrow(FeignException.errorStatus("",
-                Response.builder().request(request).build()))
-            .thenReturn(ImmutableList.of(court));
+        List<Court> courtDetailsListFromPostcode = DataFactory.createCourtListFromJson(LIST_COURTS_SINGLE_NEWCASTLE);
+
+        when(courtFinderService.getCourtDetailsListFromPostcode(anyString()))
+            .thenReturn(courtDetailsListFromPostcode);
 
         pilotCourtService.init();
 
         HearingCourt hearingCourt = HearingCourt.builder().name("SAMPLE COURT").build();
-        when(hearingCourtMapper.from(eq(court))).thenReturn(hearingCourt);
+        when(hearingCourtMapper.from(any())).thenReturn(hearingCourt);
 
         HearingCourt actualHearingCourt = pilotCourtService.getPilotHearingCourt("BIRMINGHAM").get();
 
         assertEquals(hearingCourt, actualHearingCourt);
-
     }
 
     @Test
     void shouldReturnAnEmptyOptionalIfCourtFinderReturnsNothing() {
         PilotCourtService pilotCourtService = new PilotCourtService(
             csvPathSingle,
-            courtFinderApi,
+            courtFinderService,
             hearingCourtMapper,
             appInsights
         );
 
-        when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString())).thenReturn(ImmutableList.of());
+        when(courtFinderService.getCourtDetailsListFromPostcode(anyString()))
+            .thenReturn(emptyList());
+
         pilotCourtService.init();
 
         Optional<HearingCourt> actualHearingCourt = pilotCourtService.getPilotHearingCourt("BIRMINGHAM");
@@ -134,49 +145,46 @@ class PilotCourtServiceTest {
     void shouldThrowValidationErrorForMissingValuesFromCSV() {
         PilotCourtService pilotCourtService = new PilotCourtService(
             csvPathInvalid,
-            courtFinderApi,
+            courtFinderService,
             hearingCourtMapper,
             appInsights
         );
 
-        when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString())).thenReturn(ImmutableList.of());
+        when(courtFinderService.getCourtDetailsListFromPostcode(anyString()))
+            .thenReturn(emptyList());
+
         Assertions.assertThrows(AssertionError.class, pilotCourtService::init);
     }
 
     @Test
     void shouldReturnListOfCourtIdsForPilot() {
+        List<Court> courtDetailsListFromPostcode = DataFactory.createCourtListFromJson(LIST_COURTS_SINGLE_NEWCASTLE);
 
-        Court edmontonCourt = Court.builder().name("EDMONTON").build();
-        when(courtFinderApi.findMoneyClaimCourtByPostcode(eq("N182TN"))).thenReturn(ImmutableList.of(edmontonCourt));
-        when(hearingCourtMapper.from(eq(edmontonCourt))).thenReturn(HearingCourt.builder().name("EDMONTON").build());
+        when(courtFinderService.getCourtDetailsListFromPostcode(anyString()))
+            .thenReturn(courtDetailsListFromPostcode);
 
-        Court manchesterCourt = Court.builder().name("MANCHESTER").build();
-        when(courtFinderApi.findMoneyClaimCourtByPostcode(eq("M609DJ"))).thenReturn(ImmutableList.of(manchesterCourt));
-        when(hearingCourtMapper.from(eq(manchesterCourt)))
-            .thenReturn(HearingCourt.builder().name("MANCHESTER").build());
+        HearingCourt hearingCourt = HearingCourt.builder().name("Newcastle Civil & Family Courts and Tribunals Centre").build();
+        when(hearingCourtMapper.from(any())).thenReturn(hearingCourt);
 
         PilotCourtService pilotCourtService = new PilotCourtService(
             csvPathCourtIds,
-            courtFinderApi,
+            courtFinderService,
             hearingCourtMapper,
             appInsights
         );
+
         pilotCourtService.init();
 
         LocalDateTime claimCreatedDate = LocalDateTime.of(2019, 9, 9, 11, 0, 0);
-        Pilot pilot = Pilot.LA;
 
-        Set<String> pilotHearingCourtNames = pilotCourtService.getPilotHearingCourts(pilot, claimCreatedDate)
+        Set<String> actualPilotHearingCourtNames = pilotCourtService.getPilotHearingCourts(Pilot.LA, claimCreatedDate)
             .stream()
             .map(HearingCourt::getName)
             .collect(Collectors.toSet());
 
-        assertEquals(2, pilotHearingCourtNames.size());
-        assertTrue(pilotHearingCourtNames.contains("EDMONTON"));
-        assertTrue(pilotHearingCourtNames.contains("MANCHESTER"));
-        assertFalse(pilotHearingCourtNames.contains("BIRMINGHAM"));
-        assertFalse(pilotHearingCourtNames.contains("CLERKENWELL"));
+        Set<String> expectedPilotHearingCourtNames = Collections.singleton("Newcastle Civil & Family Courts and Tribunals Centre");
 
+        assertEquals(expectedPilotHearingCourtNames, actualPilotHearingCourtNames);
     }
 
     @Nested
@@ -188,7 +196,7 @@ class PilotCourtServiceTest {
             Assertions.assertThrows(IllegalStateException.class, () ->
                 new PilotCourtService(
                     "InvalidPath",
-                    courtFinderApi,
+                    courtFinderService,
                     hearingCourtMapper,
                     appInsights
                 ).init()
@@ -199,20 +207,18 @@ class PilotCourtServiceTest {
         void shouldBuildListOfCourtsFromCSV() {
             PilotCourtService pilotCourtService = new PilotCourtService(
                 csvPath,
-                courtFinderApi,
+                courtFinderService,
                 hearingCourtMapper,
                 appInsights
             );
 
             pilotCourtService.init();
 
-            Set<String> allPilotCourtIds = pilotCourtService.getAllPilotCourtIds();
+            Set<String> actualPilotCourtIds = pilotCourtService.getAllPilotCourtIds();
 
-            assertEquals(4, allPilotCourtIds.size());
-            assertTrue(allPilotCourtIds.contains("EDMONTON"));
-            assertTrue(allPilotCourtIds.contains("MANCHESTER"));
-            assertTrue(allPilotCourtIds.contains("BIRMINGHAM"));
-            assertTrue(allPilotCourtIds.contains("CLERKENWELL"));
+            Set<String> expectedPilotCourtIds = DataFactory.createStringSetFromJson(PILOT_COURT_ALL_COURTS);
+
+            assertEquals(expectedPilotCourtIds, actualPilotCourtIds);
         }
     }
 
@@ -228,30 +234,18 @@ class PilotCourtServiceTest {
 
         @BeforeEach
         void setUp() {
+            List<Court> courtDetailsListFromPostcode = DataFactory.createCourtListFromJson(LIST_COURTS_SINGLE_NEWCASTLE);
 
-            Court pilotCourt = Court.builder().name(pilotCourtName).build();
-            when(courtFinderApi.findMoneyClaimCourtByPostcode(eq(pilotCourtPostcode)))
-                .thenReturn(ImmutableList.of(pilotCourt));
+            when(courtFinderService.getCourtDetailsListFromPostcode(anyString()))
+                .thenReturn(courtDetailsListFromPostcode);
 
-            when(hearingCourtMapper.from(eq(pilotCourt)))
+            when(hearingCourtMapper.from(any()))
                 .thenReturn(HearingCourt.builder().name(pilotCourtName).build());
-
         }
 
         @Nested
         @DisplayName("Pilot tests")
         class PilotTests {
-
-            @BeforeEach
-            void setUp() {
-
-                Court nonPilotCourt = Court.builder().name(nonPilotCourtName).build();
-                when(courtFinderApi.findMoneyClaimCourtByPostcode(eq(nonPilotCourtPostcode)))
-                    .thenReturn(ImmutableList.of(nonPilotCourt));
-
-                when(hearingCourtMapper.from(eq(nonPilotCourt)))
-                    .thenReturn(HearingCourt.builder().name(nonPilotCourtName).build());
-            }
 
             @Nested
             @DisplayName("LA Pilot tests")
@@ -265,7 +259,7 @@ class PilotCourtServiceTest {
 
                     pilotCourtService = new PilotCourtService(
                         csvPilotPath,
-                        courtFinderApi,
+                        courtFinderService,
                         hearingCourtMapper,
                         appInsights
                     );
@@ -295,7 +289,7 @@ class PilotCourtServiceTest {
                 void setUp() {
                     pilotCourtService = new PilotCourtService(
                         csvPilotPath,
-                        courtFinderApi,
+                        courtFinderService,
                         hearingCourtMapper,
                         appInsights
                     );
@@ -323,7 +317,7 @@ class PilotCourtServiceTest {
             void setUp() {
                 pilotCourtService = new PilotCourtService(
                     csvPathNames,
-                    courtFinderApi,
+                    courtFinderService,
                     hearingCourtMapper,
                     appInsights
                 );
@@ -380,7 +374,7 @@ class PilotCourtServiceTest {
 
                 pilotCourtService = new PilotCourtService(
                     csvPathDates,
-                    courtFinderApi,
+                    courtFinderService,
                     hearingCourtMapper,
                     appInsights
                 );

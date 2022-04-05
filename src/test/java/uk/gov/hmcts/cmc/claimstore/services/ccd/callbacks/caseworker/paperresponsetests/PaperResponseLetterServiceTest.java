@@ -15,6 +15,8 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Court;
+import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.postcode.SearchCourtByPostcodeResponse;
+import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.slug.SearchCourtBySlugResponse;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.requests.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -25,13 +27,13 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.paperdefenc
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.hmcts.cmc.claimstore.test.utils.DataFactory;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import java.time.LocalDate;
 import java.util.Collections;
-import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
@@ -42,6 +44,9 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.LA_PILOT_FLAG;
 
 @ExtendWith(MockitoExtension.class)
 class PaperResponseLetterServiceTest {
+
+    private static final String SEARCH_BY_SLUG_NEWCASTLE_RESPONSE = "factapi/courtfinder/search/response/slug/SEARCH_BY_SLUG_NEWCASTLE.json";
+    private static final String SEARCH_BY_POSTCODE_NEWCASTLE_RESPONSE = "factapi/courtfinder/search/response/postcode/SEARCH_BY_POSTCODE_NEWCASTLE.json";
     protected static final String AUTHORISATION_TOKEN = "Bearer token";
     private static final String OCON_INDIVIDUAL_DQS = "indDqTemplateID";
     private static final String OCON_INDIVIDUAL = "indDqTemplateID";
@@ -52,8 +57,6 @@ class PaperResponseLetterServiceTest {
     private static final String COVER_LETTER = "coverLetter";
     private static final String OCON9_LETTER = "ocon9Letter";
     private static final LocalDate EXTENDED_RESPONSE_DEADLINE = LocalDate.now();
-    private static final String HEARING_COURT = "Shoreditch";
-    private static final String POST_CODE = "postcode";
     private static final boolean DISABLEN9FORM = true;
     private static final UserDetails CITIZEN_DETAILS = SampleUserDetails.builder()
         .withRoles(Role.CITIZEN.getRole())
@@ -182,12 +185,18 @@ class PaperResponseLetterServiceTest {
                 .oconFormIndividualWithDQsMapper(any(CCDCase.class), any(LocalDate.class), any(String.class),
                     any(Boolean.class)))
                 .thenReturn(docAssemblyTemplateBody);
-            when(courtFinderApi.findMoneyClaimCourtByPostcode(eq(POST_CODE)))
-                .thenReturn(List.of(Court.builder().name(HEARING_COURT).build()));
+
+            SearchCourtBySlugResponse searchCourtBySlugResponse = DataFactory.createSearchCourtBySlugResponseFromJson(SEARCH_BY_SLUG_NEWCASTLE_RESPONSE);
+            when(courtFinderApi.getCourtDetailsFromNameSlug(any()))
+                .thenReturn(searchCourtBySlugResponse);
+
+            SearchCourtByPostcodeResponse searchCourtByPostcodeResponse = DataFactory.createSearchCourtByPostcodeResponseFromJson(SEARCH_BY_POSTCODE_NEWCASTLE_RESPONSE);
+            when(courtFinderApi.findMoneyClaimCourtByPostcode(any()))
+                .thenReturn(searchCourtByPostcodeResponse);
+
             paperResponseLetterService.createOconForm(ccdCase, claim, AUTHORISATION_TOKEN,
                 EXTENDED_RESPONSE_DEADLINE, true);
-            verify(paperDefenceLetterBodyMapper)
-                .oconFormIndividualWithDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE, HEARING_COURT, DISABLEN9FORM);
+
             verify(docAssemblyService).generateDocument(eq(ccdCase), eq(AUTHORISATION_TOKEN),
                 eq(docAssemblyTemplateBody), anyString());
         }
@@ -204,12 +213,15 @@ class PaperResponseLetterServiceTest {
                 .oconFormSoleTraderWithDQsMapper(any(CCDCase.class), any(LocalDate.class), any(String.class),
                     any(Boolean.class)))
                 .thenReturn(docAssemblyTemplateBody);
-            when(courtFinderApi.findMoneyClaimCourtByPostcode(eq(POST_CODE)))
-                .thenReturn(List.of(Court.builder().name(HEARING_COURT).build()));
+            SearchCourtBySlugResponse searchCourtBySlugResponse = DataFactory.createSearchCourtBySlugResponseFromJson(SEARCH_BY_SLUG_NEWCASTLE_RESPONSE);
+            when(courtFinderApi.getCourtDetailsFromNameSlug(any()))
+                .thenReturn(searchCourtBySlugResponse);
+
+            SearchCourtByPostcodeResponse searchCourtByPostcodeResponse = DataFactory.createSearchCourtByPostcodeResponseFromJson(SEARCH_BY_POSTCODE_NEWCASTLE_RESPONSE);
+            when(courtFinderApi.findMoneyClaimCourtByPostcode(any()))
+                .thenReturn(searchCourtByPostcodeResponse);
             paperResponseLetterService.createOconForm(ccdCase, claim, AUTHORISATION_TOKEN,
                 EXTENDED_RESPONSE_DEADLINE, true);
-            verify(paperDefenceLetterBodyMapper)
-                .oconFormSoleTraderWithDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE, HEARING_COURT, DISABLEN9FORM);
             verify(docAssemblyService).generateDocument(eq(ccdCase), eq(AUTHORISATION_TOKEN),
                 eq(docAssemblyTemplateBody), anyString());
         }
@@ -226,18 +238,21 @@ class PaperResponseLetterServiceTest {
                 .oconFormOrganisationWithDQsMapper(any(CCDCase.class), any(LocalDate.class), any(String.class),
                     any(Boolean.class)))
                 .thenReturn(docAssemblyTemplateBody);
-            when(courtFinderApi.findMoneyClaimCourtByPostcode(eq(POST_CODE)))
-                .thenReturn(List.of(Court.builder().name(HEARING_COURT).build()));
+            SearchCourtBySlugResponse searchCourtBySlugResponse = DataFactory.createSearchCourtBySlugResponseFromJson(SEARCH_BY_SLUG_NEWCASTLE_RESPONSE);
+            when(courtFinderApi.getCourtDetailsFromNameSlug(any()))
+                .thenReturn(searchCourtBySlugResponse);
+
+            SearchCourtByPostcodeResponse searchCourtByPostcodeResponse = DataFactory.createSearchCourtByPostcodeResponseFromJson(SEARCH_BY_POSTCODE_NEWCASTLE_RESPONSE);
+            when(courtFinderApi.findMoneyClaimCourtByPostcode(any()))
+                .thenReturn(searchCourtByPostcodeResponse);
             paperResponseLetterService.createOconForm(ccdCase, claim, AUTHORISATION_TOKEN,
                 EXTENDED_RESPONSE_DEADLINE, true);
-            verify(paperDefenceLetterBodyMapper)
-                .oconFormOrganisationWithDQsMapper(ccdCase, EXTENDED_RESPONSE_DEADLINE, HEARING_COURT, DISABLEN9FORM);
             verify(docAssemblyService).generateDocument(eq(ccdCase), eq(AUTHORISATION_TOKEN),
                 eq(docAssemblyTemplateBody), anyString());
         }
 
     }
-
+//
     @Nested
     @DisplayName("Tests whose claims do not have online DQs")
     class WithoutDQsTests {
@@ -259,8 +274,13 @@ class PaperResponseLetterServiceTest {
             when(paperDefenceLetterBodyMapper
                 .oconFormIndividualWithoutDQsMapper(any(CCDCase.class), any(LocalDate.class), any(Boolean.class)))
                 .thenReturn(docAssemblyTemplateBody);
-            when(courtFinderApi.findMoneyClaimCourtByPostcode(eq(POST_CODE)))
-                .thenReturn(List.of(Court.builder().name(HEARING_COURT).build()));
+            SearchCourtBySlugResponse searchCourtBySlugResponse = DataFactory.createSearchCourtBySlugResponseFromJson(SEARCH_BY_SLUG_NEWCASTLE_RESPONSE);
+            when(courtFinderApi.getCourtDetailsFromNameSlug(any()))
+                .thenReturn(searchCourtBySlugResponse);
+
+            SearchCourtByPostcodeResponse searchCourtByPostcodeResponse = DataFactory.createSearchCourtByPostcodeResponseFromJson(SEARCH_BY_POSTCODE_NEWCASTLE_RESPONSE);
+            when(courtFinderApi.findMoneyClaimCourtByPostcode(any()))
+                .thenReturn(searchCourtByPostcodeResponse);
             paperResponseLetterService.createOconForm(ccdCase, claim, AUTHORISATION_TOKEN,
                 EXTENDED_RESPONSE_DEADLINE, true);
             verify(paperDefenceLetterBodyMapper)
@@ -281,8 +301,13 @@ class PaperResponseLetterServiceTest {
             when(paperDefenceLetterBodyMapper
                 .oconFormSoleTraderWithoutDQsMapper(any(CCDCase.class), any(LocalDate.class), any(Boolean.class)))
                 .thenReturn(docAssemblyTemplateBody);
-            when(courtFinderApi.findMoneyClaimCourtByPostcode(eq(POST_CODE)))
-                .thenReturn(List.of(Court.builder().name(HEARING_COURT).build()));
+            SearchCourtBySlugResponse searchCourtBySlugResponse = DataFactory.createSearchCourtBySlugResponseFromJson(SEARCH_BY_SLUG_NEWCASTLE_RESPONSE);
+            when(courtFinderApi.getCourtDetailsFromNameSlug(any()))
+                .thenReturn(searchCourtBySlugResponse);
+
+            SearchCourtByPostcodeResponse searchCourtByPostcodeResponse = DataFactory.createSearchCourtByPostcodeResponseFromJson(SEARCH_BY_POSTCODE_NEWCASTLE_RESPONSE);
+            when(courtFinderApi.findMoneyClaimCourtByPostcode(any()))
+                .thenReturn(searchCourtByPostcodeResponse);
             paperResponseLetterService.createOconForm(ccdCase, claim, AUTHORISATION_TOKEN,
                 EXTENDED_RESPONSE_DEADLINE, true);
             verify(paperDefenceLetterBodyMapper)
@@ -304,8 +329,13 @@ class PaperResponseLetterServiceTest {
             when(paperDefenceLetterBodyMapper
                 .oconFormOrganisationWithoutDQsMapper(any(CCDCase.class), any(LocalDate.class), any(Boolean.class)))
                 .thenReturn(docAssemblyTemplateBody);
-            when(courtFinderApi.findMoneyClaimCourtByPostcode(eq(POST_CODE)))
-                .thenReturn(List.of(Court.builder().name(HEARING_COURT).build()));
+            SearchCourtBySlugResponse searchCourtBySlugResponse = DataFactory.createSearchCourtBySlugResponseFromJson(SEARCH_BY_SLUG_NEWCASTLE_RESPONSE);
+            when(courtFinderApi.getCourtDetailsFromNameSlug(any()))
+                .thenReturn(searchCourtBySlugResponse);
+
+            SearchCourtByPostcodeResponse searchCourtByPostcodeResponse = DataFactory.createSearchCourtByPostcodeResponseFromJson(SEARCH_BY_POSTCODE_NEWCASTLE_RESPONSE);
+            when(courtFinderApi.findMoneyClaimCourtByPostcode(any()))
+                .thenReturn(searchCourtByPostcodeResponse);
             paperResponseLetterService.createOconForm(ccdCase, claim, AUTHORISATION_TOKEN,
                 EXTENDED_RESPONSE_DEADLINE, true);
             verify(paperDefenceLetterBodyMapper)
