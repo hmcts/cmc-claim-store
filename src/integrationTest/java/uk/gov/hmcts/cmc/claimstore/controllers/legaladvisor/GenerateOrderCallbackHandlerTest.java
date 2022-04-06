@@ -1,4 +1,3 @@
-
 package uk.gov.hmcts.cmc.claimstore.controllers.legaladvisor;
 
 import com.google.common.collect.ImmutableList;
@@ -15,12 +14,12 @@ import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Address;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
-import uk.gov.hmcts.cmc.claimstore.idam.models.User;
-import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Address;
+import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Court;
+import uk.gov.hmcts.cmc.claimstore.models.idam.User;
+import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
@@ -54,17 +53,15 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
 )
 public class GenerateOrderCallbackHandlerTest extends BaseMockSpringTest {
 
-    @MockBean
-    protected EmailService emailService;
-
     private static final UserDetails USER_DETAILS = SampleUserDetails.builder()
         .withForename("legal")
         .withSurname("Advisor")
         .withRoles("caseworker-cmc-legaladvisor")
         .build();
-
     private static final String AUTHORISATION_TOKEN = "Bearer let me in";
     private static final String DOCUMENT_URL = "http://bla.test";
+    @MockBean
+    protected EmailService emailService;
 
     @Before
     public void setUp() {
@@ -194,14 +191,14 @@ public class GenerateOrderCallbackHandlerTest extends BaseMockSpringTest {
                 "id", "",
                 "value", ImmutableMap.of(
                     "extraOrderDirection", "EYEWITNESS",
-                    "sendBy",  LocalDate.now().plusDays(10),
+                    "sendBy", LocalDate.now().plusDays(10),
                     "forParty", "CLAIMANT")),
             ImmutableMap.of(
                 "id", "",
                 "value", ImmutableMap.of(
                     "extraOrderDirection", "OTHER",
                     "directionComment", "second",
-                    "sendBy",  LocalDate.now().plusDays(10),
+                    "sendBy", LocalDate.now().plusDays(10),
                     "forParty", "BOTH"))));
         data.put("preferredDQCourt", "Preferred court");
         data.put("newRequestedCourt", "Another court");

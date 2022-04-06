@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.UserRolesRepository;
 import uk.gov.hmcts.cmc.domain.models.UserRole;
 

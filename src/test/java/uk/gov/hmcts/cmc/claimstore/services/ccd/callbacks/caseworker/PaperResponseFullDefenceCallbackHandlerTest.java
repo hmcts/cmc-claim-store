@@ -12,23 +12,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
-import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
-import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
-import uk.gov.hmcts.cmc.ccd.domain.CCDPartyType;
-import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocument;
-import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.ccd.domain.*;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefenceType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
-import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Court;
+import uk.gov.hmcts.cmc.claimstore.models.idam.User;
+import uk.gov.hmcts.cmc.claimstore.requests.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.rpa.DefenceResponseNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.CaseEventService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -54,12 +47,8 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocumentType.form;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.PaperResponseOCON9xFormCallbackHandler.OCON9X_SUBTYPE;
@@ -72,6 +61,8 @@ class PaperResponseFullDefenceCallbackHandlerTest {
     private static final String OCON9X_REVIEW =
         "Before continuing you must complete the ‘Review OCON9x paper response’ event";
     private static final List<CaseEvent> CASE_EVENTS = Arrays.asList(CaseEvent.PAPER_RESPONSE_OCON_9X_FORM);
+    @Mock
+    PilotCourtService pilotCourtService;
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
     @Mock
@@ -97,9 +88,6 @@ class PaperResponseFullDefenceCallbackHandlerTest {
     private DefenceResponseNotificationService defenceResponseNotificationService;
     @Mock
     private Claim mockClaim;
-
-    @Mock
-    PilotCourtService pilotCourtService;
 
     @Nested
     class AboutToStartTests {
@@ -386,22 +374,22 @@ class PaperResponseFullDefenceCallbackHandlerTest {
             ccdCase = CCDCase.builder()
                 .preferredDQCourt("Central London County Court")
                 .respondents(List.of(
-                    CCDCollectionElement.<CCDRespondent>builder()
-                        .value(CCDRespondent.builder()
-                            .partyDetail(CCDParty.builder().build())
-                            .claimantProvidedDetail(CCDParty.builder().build())
-                            .build())
-                        .build()
+                        CCDCollectionElement.<CCDRespondent>builder()
+                            .value(CCDRespondent.builder()
+                                .partyDetail(CCDParty.builder().build())
+                                .claimantProvidedDetail(CCDParty.builder().build())
+                                .build())
+                            .build()
                     )
                 )
                 .scannedDocuments(List.of(
-                    CCDCollectionElement.<CCDScannedDocument>builder()
-                        .value(CCDScannedDocument.builder()
-                            .type(form)
-                            .subtype(OCON9X_SUBTYPE)
-                            .deliveryDate(LocalDateTime.now())
-                            .build()
-                        ).build()
+                        CCDCollectionElement.<CCDScannedDocument>builder()
+                            .value(CCDScannedDocument.builder()
+                                .type(form)
+                                .subtype(OCON9X_SUBTYPE)
+                                .deliveryDate(LocalDateTime.now())
+                                .build()
+                            ).build()
                     )
                 )
                 .build();

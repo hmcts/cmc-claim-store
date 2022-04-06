@@ -2,8 +2,8 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Address;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
+import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Address;
+import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Court;
 
 import java.util.List;
 import java.util.Optional;

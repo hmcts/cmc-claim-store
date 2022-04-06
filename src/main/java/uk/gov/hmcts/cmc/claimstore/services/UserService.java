@@ -7,33 +7,24 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.idam.IdamCaseworker;
 import uk.gov.hmcts.cmc.claimstore.config.properties.idam.IdamCaseworkerProperties;
-import uk.gov.hmcts.cmc.claimstore.idam.IdamApi;
-import uk.gov.hmcts.cmc.claimstore.idam.models.AuthenticateUserResponse;
-import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinRequest;
-import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
-import uk.gov.hmcts.cmc.claimstore.idam.models.Oauth2;
-import uk.gov.hmcts.cmc.claimstore.idam.models.TokenExchangeResponse;
-import uk.gov.hmcts.cmc.claimstore.idam.models.User;
-import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.idam.models.UserInfo;
+import uk.gov.hmcts.cmc.claimstore.models.idam.*;
+import uk.gov.hmcts.cmc.claimstore.requests.idam.IdamApi;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 
 import java.util.Base64;
 
 @Component
 public class UserService {
-    Logger logger = LoggerFactory.getLogger(this.getClass());
-
     public static final String BEARER = "Bearer ";
     public static final String AUTHORIZATION_CODE = "authorization_code";
     public static final String CODE = "code";
     public static final String BASIC = "Basic ";
     public static final String GRANT_TYPE_PASSWORD = "password";
     public static final String DEFAULT_SCOPE = "openid profile roles";
-
     private final IdamApi idamApi;
     private final IdamCaseworkerProperties idamCaseworkerProperties;
     private final Oauth2 oauth2;
+    Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     public UserService(
