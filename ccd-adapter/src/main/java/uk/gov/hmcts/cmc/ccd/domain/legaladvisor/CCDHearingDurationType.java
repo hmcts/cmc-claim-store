@@ -6,7 +6,7 @@ public enum CCDHearingDurationType {
     THREE_HOURS,
     TWO_HOURS,
     HALF_HOUR,
-    ONE_AND_HALF_HOUR,
+    ONE_AND_HALF_HOURS,
     ONE_HOUR,
     TWO_AND_HALF_HOURS
 }
