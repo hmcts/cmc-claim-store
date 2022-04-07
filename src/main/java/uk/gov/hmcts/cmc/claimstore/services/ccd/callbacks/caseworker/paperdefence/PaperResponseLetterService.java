@@ -8,6 +8,9 @@ import uk.gov.hmcts.cmc.ccd.domain.*;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Court;
+import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.postcode.CourtDetails;
+import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.postcode.SearchCourtByPostcodeResponse;
+import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.slug.SearchCourtBySlugResponse;
 import uk.gov.hmcts.cmc.claimstore.requests.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
@@ -17,6 +20,8 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @ConditionalOnProperty(prefix = "doc_assembly", name = "url")
@@ -179,9 +184,26 @@ public class PaperResponseLetterService {
     }
 
     private String getCourtName(CCDPartyType partyType, CCDAddress defendantAddress, CCDAddress claimantAddress) {
-        return courtFinderApi.findMoneyClaimCourtByPostcode((partyType == CCDPartyType.COMPANY
-                || partyType == CCDPartyType.ORGANISATION)
-                ? claimantAddress.getPostCode() : defendantAddress.getPostCode())
+        String postcode = (partyType == CCDPartyType.COMPANY
+            || partyType == CCDPartyType.ORGANISATION)
+            ? claimantAddress.getPostCode() : defendantAddress.getPostCode();
+
+        SearchCourtByPostcodeResponse searchByPostcodeResponse = courtFinderApi.findMoneyClaimCourtByPostcode(postcode);
+
+        List<Court> courtList = new ArrayList<>();
+
+        for (CourtDetails courtDetails: searchByPostcodeResponse.getCourts()) {
+            SearchCourtBySlugResponse searchCourtBySlugResponse = courtFinderApi.getCourtDetailsFromNameSlug(courtDetails.getSlug());
+
+            Court court = Court.builder()
+                .name(courtDetails.getName())
+                .slug(courtDetails.getSlug())
+                .addresses(searchCourtBySlugResponse.getAddresses())
+                .build();
+            courtList.add(court);
+        }
+
+        return courtList
             .stream()
             .map(Court::getName)
             .findFirst()
