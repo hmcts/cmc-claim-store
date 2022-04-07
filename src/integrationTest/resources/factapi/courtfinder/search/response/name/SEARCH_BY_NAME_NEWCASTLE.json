@@ -1,0 +1,346 @@
+{
+  "name": "Newcastle Civil & Family Courts and Tribunals Centre",
+  "slug": "newcastle-civil-family-courts-and-tribunals-centre",
+  "info": "Scammers are using automated messages mimicking HMCTS phone numbers to demand payment. If you receive an automated call don't pay anything; report it to Action Fraud <a href=\"https://www.gov.uk/government/news/scammers-using-hmcts-telephone-numbers\">https://www.gov.uk/government/news/scammers-using-hmcts-telephone-numbers</a>",
+  "open": true,
+  "directions": null,
+  "image_file": null,
+  "lat": 54.978706,
+  "lon": -1.609995,
+  "urgent_message": null,
+  "crown_location_code": null,
+  "county_location_code": 278,
+  "magistrates_location_code": null,
+  "areas_of_law": [
+    {
+      "name": "Adoption",
+      "external_link": "https://www.gov.uk/child-adoption",
+      "display_url": null,
+      "external_link_desc": "Information about adopting a child",
+      "display_name": null,
+      "display_external_link": "https://www.gov.uk/child-adoption/applying-for-an-adoption-court-order"
+    },
+    {
+      "name": "Bankruptcy",
+      "external_link": "https://www.gov.uk/apply-for-bankruptcy",
+      "display_url": null,
+      "external_link_desc": "Information about applying for bankruptcy",
+      "display_name": null,
+      "display_external_link": "https://www.gov.uk/bankruptcy"
+    },
+    {
+      "name": "Children",
+      "external_link": "",
+      "display_url": null,
+      "external_link_desc": null,
+      "display_name": "Childcare arrangements if you separate from your partner",
+      "display_external_link": "https://www.gov.uk/looking-after-children-divorce"
+    },
+    {
+      "name": "Divorce",
+      "external_link": "https://www.gov.uk/divorce",
+      "display_url": null,
+      "external_link_desc": "Information about getting a divorce",
+      "display_name": "Divorce hearings",
+      "display_external_link": null
+    },
+    {
+      "name": "Domestic violence",
+      "external_link": "",
+      "display_url": null,
+      "external_link_desc": null,
+      "display_name": "Domestic abuse",
+      "display_external_link": "https://www.gov.uk/injunction-domestic-violence"
+    },
+    {
+      "name": "Employment",
+      "external_link": "https://www.gov.uk/courts-tribunals/employment-tribunal",
+      "display_url": null,
+      "external_link_desc": "Information about the Employment Tribunal",
+      "display_name": "Claims against employers",
+      "display_external_link": "https://www.gov.uk/employment-tribunals"
+    },
+    {
+      "name": "FGM",
+      "external_link": "https://www.gov.uk/government/collections/female-genital-mutilation",
+      "display_url": null,
+      "external_link_desc": null,
+      "display_name": "Female Genital Mutilation",
+      "display_external_link": null
+    },
+    {
+      "name": "Financial Remedy",
+      "external_link": "https://www.gov.uk/money-property-when-relationship-ends",
+      "display_url": null,
+      "external_link_desc": null,
+      "display_name": null,
+      "display_external_link": null
+    },
+    {
+      "name": "Forced marriage",
+      "external_link": "https://www.gov.uk/apply-forced-marriage-protection-order",
+      "display_url": null,
+      "external_link_desc": "Information about forced marriage protection orders",
+      "display_name": null,
+      "display_external_link": null
+    },
+    {
+      "name": "High Court District Registry",
+      "external_link": "",
+      "display_url": null,
+      "external_link_desc": null,
+      "display_name": "High Court cases – serious or high profile criminal or civil law cases",
+      "display_external_link": null
+    },
+    {
+      "name": "Housing possession",
+      "external_link": "https://www.gov.uk/evicting-tenants",
+      "display_url": null,
+      "external_link_desc": "Information about evicting tenants",
+      "display_name": "Housing",
+      "display_external_link": null
+    },
+    {
+      "name": "Immigration",
+      "external_link": "https://www.gov.uk/tribunal/iac",
+      "display_url": null,
+      "external_link_desc": "Information about the Immigration and Asylum Tribunal",
+      "display_name": "Immigration and asylum",
+      "display_external_link": "https://www.gov.uk/immigration-asylum-tribunal"
+    },
+    {
+      "name": "Money claims",
+      "external_link": "https://www.gov.uk/make-court-claim-for-money",
+      "display_url": null,
+      "external_link_desc": "Information about making a court claim for money",
+      "display_name": null,
+      "display_external_link": null
+    },
+    {
+      "name": "Social security",
+      "external_link": "https://www.gov.uk/tribunal/sscs",
+      "display_url": null,
+      "external_link_desc": "Information about the Social Security and Child Support Tribunal",
+      "display_name": "Benefits",
+      "display_external_link": "https://www.gov.uk/appeal-benefit-decision"
+    }
+  ],
+  "types": [
+    "Family Court",
+    "Tribunal",
+    "County Court"
+  ],
+  "emails": [
+    {
+      "address": "sscsa-leeds@justice.gov.uk",
+      "description": "Social security and child support",
+      "explanation": null
+    },
+    {
+      "address": "family.newcastle.countycourt@justice.gov.uk",
+      "description": "Family public law (children in care)",
+      "explanation": "Paper process including C100 applications"
+    },
+    {
+      "address": "contactfpl@justice.gov.uk",
+      "description": "Family public law (children in care)",
+      "explanation": "Digital process for case numbers starting with C5"
+    },
+    {
+      "address": "transcripts.newcastle.countycourt@justice.gov.uk",
+      "description": "Transcripts",
+      "explanation": ""
+    },
+    {
+      "address": "bailiffs.newcastle.countycourt@justice.gov.uk",
+      "description": "Enquiries",
+      "explanation": "Bailiffs Queries"
+    },
+    {
+      "address": "COPNewcastle.newcastle.countycourt@Justice.gov.uk",
+      "description": "Enquiries",
+      "explanation": "Court of Protection"
+    },
+    {
+      "address": "adoptionsnewcastle@justice.gov.uk",
+      "description": "Adoption",
+      "explanation": null
+    },
+    {
+      "address": "NewcastleBPC@justice.gov.uk",
+      "description": "Business and property courts",
+      "explanation": null
+    },
+    {
+      "address": "newcastleet@justice.gov.uk",
+      "description": "Tribunal",
+      "explanation": null
+    },
+    {
+      "address": "north-shields-iac@justice.gov.uk",
+      "description": "Immigration",
+      "explanation": "Enquiries and bail applications"
+    },
+    {
+      "address": "newcastle.c100applications@justice.gov.uk",
+      "description": "Applications",
+      "explanation": "C100 Applications"
+    },
+    {
+      "address": "civil.newcastle.countycourt@justice.gov.uk",
+      "description": "Enquiries",
+      "explanation": "Civil Listings"
+    }
+  ],
+  "contacts": [
+    {
+      "number": "0191 205 8750",
+      "description": "Family public law (children in care)",
+      "explanation": "Paper process"
+    },
+    {
+      "number": "0330 808 4424",
+      "description": "Family public law (children in care)",
+      "explanation": "Digital process for case numbers starting with C5"
+    },
+    {
+      "number": "0300 123 1142",
+      "description": "Social security and child support",
+      "explanation": null
+    },
+    {
+      "number": "0300 123 1711",
+      "description": "Enquiries",
+      "explanation": "IAC enquiries"
+    },
+    {
+      "number": "0870 761 7692",
+      "description": "Fax",
+      "explanation": "IAC enquiries and bail applications"
+    }
+  ],
+  "opening_times": [
+    {
+      "description": "Court open",
+      "hours": "9am to 5pm Monday to Friday",
+      "description_cy": null
+    },
+    {
+      "description": "Counter service by appointment only",
+      "hours": "County Court: 10am to 2pm",
+      "description_cy": null
+    },
+    {
+      "description": "Counter service by appointment only",
+      "hours": "High Court BPC 10am-2pm, extended to 4pm in an emergency, or in time critical applications",
+      "description_cy": null
+    }
+  ],
+  "application_updates": [],
+  "facilities": [
+    {
+      "description": "There are no parking facilities available at the building. However, paid off site parking is available adjacent to the building at Sandyford Square Car Park - NE1 8PP\r\nPublic transport is available to the building - a bus station is just outside, andit is within walking distance of Haymarket Metro station.",
+      "name": "No parking",
+      "order": 1
+    },
+    {
+      "description": "The public entrance is accessiblevia a disabled accessramp. All other public floors are accessible by lifts.",
+      "name": "Disabled access",
+      "order": 2
+    },
+    {
+      "description": "Assistance dogs are welcome.",
+      "name": "Assistance dogs",
+      "order": 3
+    },
+    {
+      "description": "Loop Neck hearing enhancement facilities areavailable in all Hearing Rooms.",
+      "name": "Hearing Loop",
+      "order": 4
+    },
+    {
+      "description": "This building has hearing enchancement facilities that work by setting hearing aids to the 'T' setting. These are in all Hearing Rooms.",
+      "name": "Hearing Loop",
+      "order": 4
+    },
+    {
+      "description": "For safety and security, all users and their possessions will be searched by security when they enter this building. We have a security arch. Please alert the security officer if you have a pacemaker.",
+      "name": "Security arch",
+      "order": 6
+    },
+    {
+      "description": "Lifts are available in the building to access all public floors. The doors are 90cm wide and have a weight limit of 630kg.",
+      "name": "Lift",
+      "order": 7
+    },
+    {
+      "description": "There are public toilets on all floors.",
+      "name": "Public toilets",
+      "order": 8
+    },
+    {
+      "description": "Disabled toilets are available on each floor.",
+      "name": "Disabled toilet",
+      "order": 9
+    },
+    {
+      "description": "Water dispensers are available to the public on all floors.",
+      "name": "Refreshments",
+      "order": 10
+    },
+    {
+      "description": "Thirty interview rooms spread out across all floors. They cannot be booked in advance and are available on a first come first serve basis.",
+      "name": "Interview room",
+      "order": 11
+    },
+    {
+      "description": "A separate waiting room is available for those who have had to bring children with them. Children must be supervised at all times.",
+      "name": "Children's waiting room",
+      "order": 13
+    },
+    {
+      "description": "Court/hearing room video conferencing facilities and prison to court video link facilities are available (by prior arrangement)",
+      "name": "Video facilities",
+      "order": 16
+    },
+    {
+      "description": "Gov Wi-Fi is available throughout the building.Personal passwords are provided when one signsup to it.",
+      "name": "Wireless network connection",
+      "order": 17
+    },
+    {
+      "description": "Support Through Court is available on site to provide assistance.",
+      "name": "Witness service",
+      "order": 18
+    }
+  ],
+  "addresses": [
+    {
+      "address_lines": [
+        "Newcastle Civil & Family Courts and Tribunals Centre",
+        "Barras Bridge"
+      ],
+      "postcode": "NE1 8QF",
+      "town": "Newcastle upon Tyne",
+      "type": "Visit or contact us"
+    }
+  ],
+  "gbs": "Y268",
+  "dx_number": [
+    "336901 Newcastle upon Tyne 55"
+  ],
+  "service_area": [],
+  "in_person": true,
+  "access_scheme": true,
+  "additional_links": [
+    {
+      "url": "https://www.gov.uk/guidance/debt-respite-breathing-space-scheme-creditors-responsibilities-to-the-court",
+      "description": "Breathing Space"
+    }
+  ],
+  "service_centre": {
+    "is_a_service_centre": false,
+    "intro_paragraph": "",
+    "intro_paragraph_cy": ""
+  }
+}
