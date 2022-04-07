@@ -1,0 +1,16 @@
+{
+  "courts": [
+    {
+      "areasOfLawSpoe": [
+        "string"
+      ],
+      "distance": 0,
+      "name": "Newcastle Civil & Family Courts and Tribunals Centre",
+      "slug": "newcastle-civil-family-courts-and-tribunals-centre"
+    }
+  ],
+  "name": "Newcastle Civil & Family Courts and Tribunals Centre",
+  "onlineText": "string",
+  "onlineUrl": "string",
+  "slug": "newcastle-civil-family-courts-and-tribunals-centre"
+}

@@ -11,22 +11,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
-import uk.gov.hmcts.cmc.claimstore.requests.courtfinder.CourtFinderApi;
+import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Court;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourtMapper;
+import uk.gov.hmcts.cmc.claimstore.services.courtfinder.CourtFinderService;
 import uk.gov.hmcts.cmc.claimstore.utils.ResourceReader;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
@@ -40,7 +35,7 @@ public class PilotCourtService {
     private static final int PILOT_COURT_GO_LIVE_TIME = 11;
 
     private Map<String, PilotCourt> pilotCourts;
-    private final CourtFinderApi courtFinderApi;
+    private final CourtFinderService courtFinderService;
     private final HearingCourtMapper hearingCourtMapper;
     private final String dataSource;
     private final AppInsights appInsights;
@@ -48,12 +43,12 @@ public class PilotCourtService {
     public static final String OTHER_COURT_ID = "OTHER";
 
     public PilotCourtService(@Value("${pilot-courts.datafile}") String dataSource,
-                             CourtFinderApi courtFinderApi,
+                             CourtFinderService courtFinderService,
                              HearingCourtMapper hearingCourtMapper,
                              AppInsights appInsights) {
         this.dataSource = dataSource;
         this.hearingCourtMapper = hearingCourtMapper;
-        this.courtFinderApi = courtFinderApi;
+        this.courtFinderService = courtFinderService;
         this.appInsights = appInsights;
     }
 
@@ -94,7 +89,7 @@ public class PilotCourtService {
 
         PilotCourt pilotCourt = pilotCourts.get(pilotCourtId);
 
-        if (!pilotCourt.getHearingCourt().isPresent()) {
+        if (pilotCourt.getHearingCourt().isEmpty()) {
             Optional<HearingCourt> court = getCourt(pilotCourt.getPostcode());
             pilotCourt.setHearingCourt(court.orElse(null));
         }
@@ -190,7 +185,9 @@ public class PilotCourtService {
     }
 
     private Optional<HearingCourt> getCourt(String postcode) {
-        return courtFinderApi.findMoneyClaimCourtByPostcode(postcode)
+        List<Court> courtList = courtFinderService.getCourtDetailsListFromPostcode(postcode);
+
+        return courtList
             .stream()
             .findFirst()
             .map(hearingCourtMapper::from);
