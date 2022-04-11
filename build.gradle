@@ -386,6 +386,7 @@ sonarqube {
         "**/cmc/domain/amount/**",
         "**/cmc/ccd/sample/data/**",
         "**/cmc/ccd/mapper/**",
+        "**/cmc/claimstore/services/courtfinder/**",
         "**/cmc/claimstore/idam/models/**",
         "**/cmc/claimstore/idam/IdamApi.java",
         "**/ExceptionForClient.java",

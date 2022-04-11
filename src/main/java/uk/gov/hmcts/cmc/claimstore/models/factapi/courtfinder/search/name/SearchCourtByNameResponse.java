@@ -1,6 +1,7 @@
-package uk.gov.hmcts.cmc.claimstore.models.courtfinder;
+package uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.name;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,10 +12,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Facilities {
-    private String description;
+public class SearchCourtByNameResponse {
+
+    private Boolean displayed;
 
     private String name;
 
-    private int order;
+    private String slug;
+
+    @JsonProperty("updated_at")
+    private String updatedAt;
 }
