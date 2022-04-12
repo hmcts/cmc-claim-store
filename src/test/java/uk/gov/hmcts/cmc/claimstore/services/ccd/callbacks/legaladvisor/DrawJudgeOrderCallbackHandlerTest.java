@@ -940,7 +940,7 @@ class DrawJudgeOrderCallbackHandlerTest {
 
                 @Test
                 void shouldUseSavedEstimatedHearingDurationWhenExistingCcdCase() {
-                    CCDHearingDurationType estimatedHearingDuration = CCDHearingDurationType.TWO_AND_HALF_HOURS;
+                    CCDHearingDurationType estimatedHearingDuration = CCDHearingDurationType.TWO_AND_A_HALF_HOURS;
 
                     ccdCase.setEstimatedHearingDuration(estimatedHearingDuration);
 
