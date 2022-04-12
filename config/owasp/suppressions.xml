@@ -554,7 +554,6 @@
         <notes><![CDATA[
    file name: spring-context@5.3.4
    ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-context@.*$</packageUrl>
         <vulnerabilityName>CVE-2022-22950</vulnerabilityName>
     </suppress>
 </suppressions>
