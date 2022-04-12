@@ -549,4 +549,11 @@
         <vulnerabilityName>CVE-2022-22965</vulnerabilityName>
     </suppress>
 
+    
+    <suppress until="2022-06-01">
+        <notes><![CDATA[
+   file name: spring-context@5.3.4
+   ]]></notes>
+        <cve>CVE-2022-22950</cve>
+    </suppress>
 </suppressions>

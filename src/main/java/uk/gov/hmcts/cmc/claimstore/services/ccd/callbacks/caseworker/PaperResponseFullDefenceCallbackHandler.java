@@ -11,6 +11,9 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Court;
+import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.postcode.CourtDetails;
+import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.postcode.SearchCourtByPostcodeResponse;
+import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.slug.SearchCourtBySlugResponse;
 import uk.gov.hmcts.cmc.claimstore.requests.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.rpa.DefenceResponseNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.CaseEventService;
@@ -40,10 +43,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.PAPER_RESPONSE_FULL_DEFENCE;
@@ -318,10 +318,31 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
             .build();
     }
 
+    private String getPostcode(CCDPartyType partyType, CCDAddress defendantAddress, CCDAddress claimantAddress) {
+        return (partyType == CCDPartyType.COMPANY
+            || partyType == CCDPartyType.ORGANISATION)
+            ? claimantAddress.getPostCode() : defendantAddress.getPostCode();
+    }
+
     private String getCourtName(CCDPartyType partyType, CCDAddress defendantAddress, CCDAddress claimantAddress) {
-        return courtFinderApi.findMoneyClaimCourtByPostcode((partyType == CCDPartyType.COMPANY
-                || partyType == CCDPartyType.ORGANISATION)
-                ? claimantAddress.getPostCode() : defendantAddress.getPostCode())
+        String postcode = getPostcode(partyType, defendantAddress, claimantAddress);
+
+        SearchCourtByPostcodeResponse searchByPostcodeResponse = courtFinderApi.findMoneyClaimCourtByPostcode(postcode);
+
+        List<Court> courtList = new ArrayList<>();
+
+        for (CourtDetails courtDetails: searchByPostcodeResponse.getCourts()) {
+            SearchCourtBySlugResponse searchCourtBySlugResponse = courtFinderApi.getCourtDetailsFromNameSlug(courtDetails.getSlug());
+
+            Court court = Court.builder()
+                .name(courtDetails.getName())
+                .slug(courtDetails.getSlug())
+                .addresses(searchCourtBySlugResponse.getAddresses())
+                .build();
+            courtList.add(court);
+        }
+
+        return courtList
             .stream()
             .map(Court::getName)
             .findFirst()
@@ -333,7 +354,6 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
     }
 
     private CCDAddress getDefendantAddress(CCDRespondent respondent, CCDParty givenRespondent) {
-
         return respondent.getPartyDetail() != null && respondent.getPartyDetail().getPrimaryAddress() != null
             ? respondent.getPartyDetail().getPrimaryAddress() : givenRespondent.getPrimaryAddress();
     }
