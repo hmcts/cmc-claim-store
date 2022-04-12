@@ -1,6 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.paperdefence;
 
 import com.google.common.collect.ImmutableList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDBulkPrintDetails;
@@ -22,6 +24,7 @@ public class DocumentPublishService {
     private final PrintableDocumentService printableDocumentService;
     private final BulkPrintHandler bulkPrintHandler;
     private final BulkPrintDetailsMapper bulkPrintDetailsMapper;
+    private final Logger logger = LoggerFactory.getLogger(DocumentPublishService.class);
 
     @Autowired
     public DocumentPublishService(
@@ -57,6 +60,8 @@ public class DocumentPublishService {
 
         CCDDocument oconForm = paperResponseLetterService
             .createOconForm(ccdCase, claim, authorisation, extendedResponseDeadline, disableN9Form);
+        
+        logger.info("Received oconForm: {}.. {}.. {}", oconForm.documentUrl, oconForm.documentBinaryUrl, oconForm.documentFileName);
 
         var formDoc = printableDocumentService.process(oconForm, authorisation);
         if (featureFlag) {
