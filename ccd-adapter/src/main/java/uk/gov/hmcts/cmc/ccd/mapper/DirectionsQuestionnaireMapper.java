@@ -5,14 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDCourtLocationOption;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.CourtLocationType;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReport;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertRequest;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.RequireSupport;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.UnavailableDate;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.Witness;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.*;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.util.List;
@@ -59,7 +52,7 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
             .ifPresent(hearingLocation -> toHearingLocation(hearingLocation, builder));
 
         directionsQuestionnaire.getWitness().ifPresent(toWitness(builder));
-
+        directionsQuestionnaire.getVulnerabilityQuestions().ifPresent(toVulnerabilityQuestions(builder));
         directionsQuestionnaire.getExpertRequired()
             .map(YesNoOption::name)
             .map(CCDYesNoOption::valueOf)
@@ -121,6 +114,13 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
         return witness -> {
             builder.selfWitness(yesNoMapper.to(witness.getSelfWitness()));
             witness.getNoOfOtherWitness().ifPresent(builder::numberOfOtherWitnesses);
+        };
+    }
+
+    private Consumer<VulnerabilityQuestions> toVulnerabilityQuestions(CCDDirectionsQuestionnaire.CCDDirectionsQuestionnaireBuilder builder) {
+        return vulnerability -> {
+            builder.vulnerabilityQuestions(yesNoMapper.to(vulnerability.getVulnerabilityQuestions()));
+            vulnerability.getVulnerabilityDetails().ifPresent(builder::vulnerabilityDetails);
         };
     }
 
