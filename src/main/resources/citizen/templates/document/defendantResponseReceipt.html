@@ -1038,6 +1038,30 @@
     <tr>
       <td>
         <div>
+          Do you considder that this claim is suitable for determination without a hearing, i.e. by a judge reading and
+          considering the case papers, witness statements and other documents filed by the parties, making a decision,
+          and giving a note of reasons for that decision?
+        </div>
+      </td>
+      <td>
+        <div>{% hearingContent.determinationQuestions.decision.toString | capitalize %}</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div>
+          If not, please state why not
+        </div>
+      </td>
+      <td>
+        <div>{% hearingContent.determinationQuestions.reason.toString %}</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div>
           Support required for a hearing
         </div>
       </td>
