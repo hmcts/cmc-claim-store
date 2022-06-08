@@ -16,7 +16,7 @@ dependencies:
     repository: '@hmctspublic'
 
   - name: postgresql
-    version: 10.16.2
+    version: 11.6.3
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 
