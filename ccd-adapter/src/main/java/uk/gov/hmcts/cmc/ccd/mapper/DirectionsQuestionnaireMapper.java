@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertRequest;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.RequireSupport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.UnavailableDate;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.determinationWithoutHearingQuestions;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.Witness;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
@@ -60,6 +61,7 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
 
         directionsQuestionnaire.getWitness().ifPresent(toWitness(builder));
 
+        directionsQuestionnaire.getDeterminationWithoutHearingQuestions().ifPresent(toDeterminationWithoutHearingQuestions(builder));
         directionsQuestionnaire.getExpertRequired()
             .map(YesNoOption::name)
             .map(CCDYesNoOption::valueOf)
@@ -121,6 +123,13 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
         return witness -> {
             builder.selfWitness(yesNoMapper.to(witness.getSelfWitness()));
             witness.getNoOfOtherWitness().ifPresent(builder::numberOfOtherWitnesses);
+        };
+    }
+
+    private Consumer<DeterminationWithoutHearingQuestions> toDeterminationWithoutHearingQuestions(CCDDirectionsQuestionnaire.CCDDirectionsQuestionnaireBuilder builder) {
+        return determination -> {
+            builder.determinationWithoutHearingQuestions(yesNoMapper.to(determination.getDeterminationWithoutHearingQuestions()));
+            determination.getDeterminationWithoutHearingQuestionsDetails().ifPresent(builder::determinationWithoutHearingQuestionsDetails);
         };
     }
 

@@ -44,6 +44,9 @@ public class DirectionsQuestionnaire {
     @Valid
     private final ExpertRequest expertRequest;
 
+    @Valid
+    private final DeterminationWithoutHearingQuestions determinationWithoutHearingQuestions;
+
     @Builder
     public DirectionsQuestionnaire(
         RequireSupport requireSupport,
@@ -53,7 +56,8 @@ public class DirectionsQuestionnaire {
         List<UnavailableDate> unavailableDates,
         YesNoOption expertRequired,
         YesNoOption permissionForExpert,
-        ExpertRequest expertRequest
+        ExpertRequest expertRequest,
+        DeterminationWithoutHearingQuestions determinationWithoutHearingQuestions
     ) {
         this.requireSupport = requireSupport;
         this.hearingLocation = hearingLocation;
@@ -63,6 +67,7 @@ public class DirectionsQuestionnaire {
         this.expertRequired = expertRequired;
         this.permissionForExpert = permissionForExpert;
         this.expertRequest = expertRequest;
+        this.determinationWithoutHearingQuestions = determinationWithoutHearingQuestions;
     }
 
     public Optional<RequireSupport> getRequireSupport() {
@@ -77,6 +82,10 @@ public class DirectionsQuestionnaire {
         return Optional.ofNullable(witness);
     }
 
+    public Optional<DeterminationWithoutHearingQuestions> getDeterminationWithoutHearingQuestions() {
+        return Optional.ofNullable(determinationWithoutHearingQuestions);
+    }
+    
     public List<UnavailableDate> getUnavailableDates() {
         return Optional.ofNullable(unavailableDates).orElse(emptyList());
     }
