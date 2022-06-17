@@ -558,10 +558,6 @@
     </suppress>
 
     <suppress until="2023-03-01">
-        <cve>CVE-2022-25647</cve>
-    </suppress>
-
-    <suppress until="2023-03-01">
         <cve>CVE-2021-31684</cve>
         <cve>CVE-2022-26520</cve>
         <cve>CVE-2021-22044</cve>
