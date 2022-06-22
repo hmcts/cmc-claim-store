@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.migration;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
@@ -19,10 +20,13 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MIGRATE_CASE;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
 @Service
+@RequiredArgsConstructor
 public class CaseMigrationCallbackHandler extends CallbackHandler {
 
     private static final List<CaseEvent> EVENTS = Arrays.asList(MIGRATE_CASE);
     private static final List<Role> ROLES = Arrays.asList(CASEWORKER); // Need to double check
+
+    private final RetainAndDisposeService retainAndDisposeService;
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
@@ -33,7 +37,7 @@ public class CaseMigrationCallbackHandler extends CallbackHandler {
 
     private CallbackResponse migrateCase(CallbackParams callbackParams) {
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
-        // TODO: add TTL details here
+        caseDetails.getData().put("TTL", retainAndDisposeService.calculateTTL(caseDetails));
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
