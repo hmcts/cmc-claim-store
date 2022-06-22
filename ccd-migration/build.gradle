@@ -23,6 +23,8 @@ def versions = [
 ]
 
 dependencies {
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter'
+
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
@@ -32,6 +34,8 @@ dependencies {
 
   testCompile group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.5.0'
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.11.1'
+
+  compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.6'
 
 }
 
