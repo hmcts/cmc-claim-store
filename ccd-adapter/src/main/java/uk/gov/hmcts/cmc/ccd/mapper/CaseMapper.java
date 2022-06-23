@@ -96,6 +96,7 @@ public class CaseMapper {
         );
 
         return builder
+            .ccdClaimTTL(claim.getClaimTTL())
             .id(claim.getId())
             .externalId(claim.getExternalId())
             .previousServiceCaseReference(claim.getReferenceNumber())
@@ -126,6 +127,7 @@ public class CaseMapper {
         bespokeOrderDirectionMapper.from(ccdCase, builder);
 
         builder
+            .claimTTL(ClaimTTL.builder().)
             .id(ccdCase.getId())
             .lastModified(ccdCase.getLastModified())
             .state(EnumUtils.getEnumIgnoreCase(ClaimState.class, ccdCase.getState()))
@@ -147,6 +149,7 @@ public class CaseMapper {
             .proceedOfflineOtherReasonDescription(ccdCase.getProceedOnPaperOtherReason())
             .mediationOutcome(getMediationOutcome(ccdCase))
             .transferContent(transferContentMapper.from(ccdCase.getTransferContent()));
+
 
         Optional.ofNullable(ccdCase.getProceedOnPaperReason())
             .map(CCDProceedOnPaperReasonType::name)
