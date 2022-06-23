@@ -20,7 +20,7 @@ public class RetainAndDisposeService {
 
     private final CaseEventService caseEventService;
     List<CaseEvent> events;
-    List<CaseEvent> TTLevents = List.of(INTERLOCUTORY_JUDGMENT, SETTLED_PRE_JUDGMENT, STAY_CLAIM, CCJ_REQUESTED,
+    List<CaseEvent> TTLEvents = List.of(INTERLOCUTORY_JUDGMENT, SETTLED_PRE_JUDGMENT, STAY_CLAIM, CCJ_REQUESTED,
     PAPER_HAND_OFF, TRANSFER, PROCEEDS_IN_CASEMAN, TRANSFER_TO_CCBC,
     DEFAULT_CCJ_REQUESTED, MEDIATION_SUCCESSFUL);
     Map<CaseEvent, Integer> EventMapTTL = Map.of(INTERLOCUTORY_JUDGMENT, 2281, SETTLED_PRE_JUDGMENT, 2190,
@@ -46,8 +46,8 @@ public class RetainAndDisposeService {
 
     public Object calculateTTL(CaseDetails caseDetails) {
 
-        for (CaseEvent i : TTLevents) {
-            if (events.contains(TTLevents)) {
+        for (CaseEvent i : TTLEvents) {
+            if (events.contains(TTLEvents)) {
                 TTLEventsOnCase.add(i);
             }
         }
