@@ -11,6 +11,6 @@ import java.time.LocalDate;
 public class CCDClaimTTL {
     private LocalDate SystemTTL;
     private LocalDate OverrideTTL;
-    private YesNoOption Suspended;
+    private CCDYesNoOption Suspended;
 
 }
