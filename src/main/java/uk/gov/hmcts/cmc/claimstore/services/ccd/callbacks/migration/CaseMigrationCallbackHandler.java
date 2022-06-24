@@ -18,6 +18,7 @@ import java.util.Map;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MIGRATE_CASE;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.Params.BEARER_TOKEN;
 
 @Service
 @RequiredArgsConstructor
@@ -36,8 +37,9 @@ public class CaseMigrationCallbackHandler extends CallbackHandler {
     }
 
     private CallbackResponse migrateCase(CallbackParams callbackParams) {
+        String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
-        caseDetails.getData().put("TTL", retainAndDisposeService.calculateTTL(caseDetails));
+        caseDetails.getData().put("TTL", retainAndDisposeService.calculateTTL(caseDetails, authorisation));
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();

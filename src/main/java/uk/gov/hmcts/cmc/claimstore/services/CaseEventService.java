@@ -29,10 +29,7 @@ public class CaseEventService {
     public List<CaseEvent> findEventsForCase(String ccdCaseId, User user) {
         List<CaseEvent> caseEventList = new ArrayList<>();
 
-        List<CaseEventDetail> caseEventDetails = caseEventsApi.findEventDetailsForCase(user.getAuthorisation(),
-            authTokenGenerator.generate(), user.getUserDetails().getId(),
-            JURISDICTION_ID,
-            CASE_TYPE_ID, ccdCaseId);
+        List<CaseEventDetail> caseEventDetails = getEventDetailsForCase(ccdCaseId, user);
 
         caseEventDetails.sort(Comparator.comparing(CaseEventDetail::getCreatedDate).reversed());
 
@@ -42,5 +39,12 @@ public class CaseEventService {
         }
 
         return caseEventList;
+    }
+
+    public List<CaseEventDetail> getEventDetailsForCase(String ccdCaseId, User user) {
+        return caseEventsApi.findEventDetailsForCase(user.getAuthorisation(),
+            authTokenGenerator.generate(), user.getUserDetails().getId(),
+            JURISDICTION_ID,
+            CASE_TYPE_ID, ccdCaseId);
     }
 }
