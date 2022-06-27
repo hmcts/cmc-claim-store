@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.CaseEventDetail;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -56,6 +57,8 @@ public class RetainAndDisposeService {
                 TTLEventsOnCase.add(event);
             }
         }
+
+        //TTLEventsOnCase.sort(Comparator.comparing(CaseEventDetail::getCreatedDate));
         var index = TTLEventsOnCase.size() - 1;
         LocalDate eventDate = TTLEventsOnCase.get(index).getCreatedDate().toLocalDate();
         CaseEvent eventName = CaseEvent.valueOf(TTLEventsOnCase.get(index).getEventName());
