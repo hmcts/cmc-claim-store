@@ -1,7 +1,7 @@
 apiVersion: v2
 name: cmc-claim-store
 home: https://github.com/hmcts/cmc-claim-store
-version: 4.1.40
+version: 4.1.41
 description: Helm chart for the HMCTS CMC Claim-Store service
 # be aware when bumping version that it is used elsewhere, e.g.:
 # chart-cmc - demo: https://github.com/hmcts/chart-cmc/tree/master/cmc
@@ -13,7 +13,7 @@ maintainers:
 dependencies:
   - name: java
     version: 4.0.0
-    repository: '@hmctspublic'
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
 
   - name: postgresql
     version: 10.16.2
@@ -22,5 +22,5 @@ dependencies:
 
   - name: ccd
     version: 7.1.0
-    repository: '@hmctspublic'
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ccd.enabled
