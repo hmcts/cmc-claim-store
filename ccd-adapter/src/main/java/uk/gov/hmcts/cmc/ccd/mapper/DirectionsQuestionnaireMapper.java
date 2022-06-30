@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertRequest;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.RequireSupport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.UnavailableDate;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.VulnerabilityQuestions;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.Witness;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
@@ -59,7 +60,7 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
             .ifPresent(hearingLocation -> toHearingLocation(hearingLocation, builder));
 
         directionsQuestionnaire.getWitness().ifPresent(toWitness(builder));
-
+        directionsQuestionnaire.getVulnerabilityQuestions().ifPresent(toVulnerabilityQuestions(builder));
         directionsQuestionnaire.getExpertRequired()
             .map(YesNoOption::name)
             .map(CCDYesNoOption::valueOf)
@@ -121,6 +122,13 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
         return witness -> {
             builder.selfWitness(yesNoMapper.to(witness.getSelfWitness()));
             witness.getNoOfOtherWitness().ifPresent(builder::numberOfOtherWitnesses);
+        };
+    }
+
+    private Consumer<VulnerabilityQuestions> toVulnerabilityQuestions(CCDDirectionsQuestionnaire.CCDDirectionsQuestionnaireBuilder builder) {
+        return vulnerability -> {
+            builder.vulnerabilityQuestions(yesNoMapper.to(vulnerability.getVulnerabilityQuestions()));
+            vulnerability.getVulnerabilityDetails().ifPresent(builder::vulnerabilityDetails);
         };
     }
 
