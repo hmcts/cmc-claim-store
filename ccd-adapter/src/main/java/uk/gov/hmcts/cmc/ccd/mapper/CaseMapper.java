@@ -98,11 +98,7 @@ public class CaseMapper {
         );
 
         return builder
-            .TTL(CCDClaimTTL.builder()
-                .OverrideTTL(claim.getClaimTTL().getOverrideTTL())
-                .SystemTTL(claim.getClaimTTL().getSystemTTL())
-                .Suspended(convertYesNo(claim.getClaimTTL().getSuspended()))
-                .build())
+            .TTL(mapClaimTtl(claim))
             .id(claim.getId())
             .externalId(claim.getExternalId())
             .previousServiceCaseReference(claim.getReferenceNumber())
@@ -124,6 +120,17 @@ public class CaseMapper {
             .build();
     }
 
+    private CCDClaimTTL mapClaimTtl(Claim claim) {
+       if (claim.getClaimTTL() == null ) {
+           return null;
+       }
+        return CCDClaimTTL.builder()
+            .OverrideTTL(claim.getClaimTTL().getOverrideTTL())
+            .SystemTTL(claim.getClaimTTL().getSystemTTL())
+            .Suspended(convertYesNo(claim.getClaimTTL().getSuspended()))
+            .build();
+    }
+
     public Claim from(CCDCase ccdCase) {
         Claim.ClaimBuilder builder = Claim.builder();
         claimMapper.from(ccdCase, builder);
@@ -133,11 +140,7 @@ public class CaseMapper {
         bespokeOrderDirectionMapper.from(ccdCase, builder);
 
         builder
-            .claimTTL(ClaimTTL.builder()
-                .Suspended(convertCCDYesNo(ccdCase.getTTL().getSuspended()))
-                .SystemTTL(ccdCase.getTTL().getSystemTTL())
-                .OverrideTTL(ccdCase.getTTL().getOverrideTTL())
-                .build())
+            .claimTTL(mapFromCcdTtl(ccdCase))
             .id(ccdCase.getId())
             .lastModified(ccdCase.getLastModified())
             .state(EnumUtils.getEnumIgnoreCase(ClaimState.class, ccdCase.getState()))
@@ -193,6 +196,17 @@ public class CaseMapper {
         }
 
         return builder.build();
+    }
+
+    private ClaimTTL mapFromCcdTtl(CCDCase ccdCase) {
+        if (ccdCase.getTTL() == null) {
+            return null;
+        }
+        return ClaimTTL.builder()
+            .Suspended(convertCCDYesNo(ccdCase.getTTL().getSuspended()))
+            .SystemTTL(ccdCase.getTTL().getSystemTTL())
+            .OverrideTTL(ccdCase.getTTL().getOverrideTTL())
+            .build();
     }
 
     private YesNoOption convertCCDYesNo(CCDYesNoOption ccdYesNoOption) {
