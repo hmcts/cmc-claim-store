@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.services.staff.models;
 
 import lombok.Builder;
 import lombok.Value;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.VulnerabilityQuestions;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.Witness;
 
 import java.util.List;
@@ -23,5 +22,4 @@ public class HearingContent {
     String evidenceRequired;
     Witness witness;
     List<String> unavailableDates;
-    VulnerabilityQuestions vulnerabilityQuestions;
 }
