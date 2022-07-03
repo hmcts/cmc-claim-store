@@ -1,22 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
-import uk.gov.hmcts.cmc.domain.models.ChannelType;
-import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimData;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
-import uk.gov.hmcts.cmc.domain.models.ClaimState;
-import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
-import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
-import uk.gov.hmcts.cmc.domain.models.Interest;
-import uk.gov.hmcts.cmc.domain.models.MediationOutcome;
-import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
-import uk.gov.hmcts.cmc.domain.models.ReDetermination;
-import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
-import uk.gov.hmcts.cmc.domain.models.ScannedDocument;
-import uk.gov.hmcts.cmc.domain.models.ScannedDocumentType;
-import uk.gov.hmcts.cmc.domain.models.TransferContent;
+import uk.gov.hmcts.cmc.domain.models.*;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.PrintRequestType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
@@ -64,6 +48,11 @@ import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.RESPONSE_DEADLINE;
 
 public final class SampleClaimForHwF {
 
+    public static final ClaimTTL A_CLAIM_TTL = ClaimTTL.builder()
+        .OverrideTTL(LocalDate.now())
+        .SystemTTL(LocalDate.now())
+        .Suspended(NO)
+        .build();
     public static final String USER_ID = "1";
     public static final String LETTER_HOLDER_ID = "2";
     public static final String DEFENDANT_ID = "4";
@@ -81,6 +70,7 @@ public final class SampleClaimForHwF {
     public static final String LEGAL_ADVISOR_ORDER_PDF = "legal-advisor-order.pdf";
     public static final String GENERAL_LETTER_PDF = "general-letter.pdf";
 
+    private ClaimTTL aClaimTTL = A_CLAIM_TTL;
     private String submitterId = USER_ID;
     private String letterHolderId = LETTER_HOLDER_ID;
     private String defendantId = DEFENDANT_ID;
@@ -593,6 +583,7 @@ public final class SampleClaimForHwF {
 
     public Claim build() {
         return new Claim(
+            aClaimTTL,
             claimId,
             submitterId,
             letterHolderId,

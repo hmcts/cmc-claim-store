@@ -37,6 +37,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @EqualsAndHashCode
 public class Claim {
 
+    private final ClaimTTL claimTTL;
     private final Long id;
     private final String submitterId;
     private final String letterHolderId;
@@ -97,6 +98,7 @@ public class Claim {
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
     public Claim(
+        ClaimTTL claimTTL,
         Long id,
         String submitterId,
         String letterHolderId,
@@ -152,6 +154,7 @@ public class Claim {
         LocalDate paperFormServedDate,
         LocalDate paperFormIssueDate
     ) {
+        this.claimTTL = claimTTL;
         this.id = id;
         this.submitterId = submitterId;
         this.letterHolderId = letterHolderId;

@@ -1,24 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
-import uk.gov.hmcts.cmc.domain.models.BreathingSpace;
-import uk.gov.hmcts.cmc.domain.models.BreathingSpaceType;
-import uk.gov.hmcts.cmc.domain.models.ChannelType;
-import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimData;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
-import uk.gov.hmcts.cmc.domain.models.ClaimState;
-import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
-import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
-import uk.gov.hmcts.cmc.domain.models.Interest;
-import uk.gov.hmcts.cmc.domain.models.MediationOutcome;
-import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
-import uk.gov.hmcts.cmc.domain.models.ReDetermination;
-import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
-import uk.gov.hmcts.cmc.domain.models.ScannedDocument;
-import uk.gov.hmcts.cmc.domain.models.ScannedDocumentType;
-import uk.gov.hmcts.cmc.domain.models.TransferContent;
+import uk.gov.hmcts.cmc.domain.models.*;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.PrintRequestType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
@@ -70,6 +52,11 @@ public final class SampleClaim {
     public static final String USER_ID = "1";
     public static final String LETTER_HOLDER_ID = "2";
     public static final String DEFENDANT_ID = "4";
+    public static final ClaimTTL A_CLAIM_TTL = ClaimTTL.builder()
+        .OverrideTTL(LocalDate.now())
+        .SystemTTL(LocalDate.now())
+        .Suspended(NO)
+        .build();
     public static final Long CLAIM_ID = 3L;
     public static final String REFERENCE_NUMBER = "000MC001";
     public static final UUID RAND_UUID = UUID.randomUUID();
@@ -87,6 +74,7 @@ public final class SampleClaim {
     private String submitterId = USER_ID;
     private String letterHolderId = LETTER_HOLDER_ID;
     private String defendantId = DEFENDANT_ID;
+    private ClaimTTL aClaimTTL = A_CLAIM_TTL;
     private Long claimId = CLAIM_ID;
     private String referenceNumber = REFERENCE_NUMBER;
     private String externalId = EXTERNAL_ID;
@@ -694,6 +682,8 @@ public final class SampleClaim {
 
     public Claim build() {
         return new Claim(
+
+            aClaimTTL,
             claimId,
             submitterId,
             letterHolderId,

@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 public enum CaseEvent {
     CREATE_CASE("CreateClaim"),
+    MIGRATE_CASE("MigrateCase"),
     CREATE_HWF_CASE("CreateHelpWithFeesClaim"),
     ISSUE_HWF_CASE("IssueHelpWithFeesClaim"),
     INVALID_HWF_REFERENCE("InvalidHWFReference"),

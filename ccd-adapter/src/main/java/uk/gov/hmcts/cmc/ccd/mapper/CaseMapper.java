@@ -5,12 +5,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDChannelType;
+import uk.gov.hmcts.cmc.ccd.domain.CCDClaimTTL;
 import uk.gov.hmcts.cmc.ccd.domain.CCDProceedOnPaperReasonType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.util.MapperUtil;
 import uk.gov.hmcts.cmc.domain.models.ChannelType;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
+import uk.gov.hmcts.cmc.domain.models.ClaimTTL;
 import uk.gov.hmcts.cmc.domain.models.ProceedOfflineReasonType;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
@@ -96,6 +98,7 @@ public class CaseMapper {
         );
 
         return builder
+            .TTL(mapClaimTtl(claim))
             .id(claim.getId())
             .externalId(claim.getExternalId())
             .previousServiceCaseReference(claim.getReferenceNumber())
@@ -117,6 +120,17 @@ public class CaseMapper {
             .build();
     }
 
+    private CCDClaimTTL mapClaimTtl(Claim claim) {
+       if (claim.getClaimTTL() == null ) {
+           return null;
+       }
+        return CCDClaimTTL.builder()
+            .OverrideTTL(claim.getClaimTTL().getOverrideTTL())
+            .SystemTTL(claim.getClaimTTL().getSystemTTL())
+            .Suspended(convertYesNo(claim.getClaimTTL().getSuspended()))
+            .build();
+    }
+
     public Claim from(CCDCase ccdCase) {
         Claim.ClaimBuilder builder = Claim.builder();
         claimMapper.from(ccdCase, builder);
@@ -126,6 +140,7 @@ public class CaseMapper {
         bespokeOrderDirectionMapper.from(ccdCase, builder);
 
         builder
+            .claimTTL(mapFromCcdTtl(ccdCase))
             .id(ccdCase.getId())
             .lastModified(ccdCase.getLastModified())
             .state(EnumUtils.getEnumIgnoreCase(ClaimState.class, ccdCase.getState()))
@@ -147,6 +162,7 @@ public class CaseMapper {
             .proceedOfflineOtherReasonDescription(ccdCase.getProceedOnPaperOtherReason())
             .mediationOutcome(getMediationOutcome(ccdCase))
             .transferContent(transferContentMapper.from(ccdCase.getTransferContent()));
+
 
         Optional.ofNullable(ccdCase.getProceedOnPaperReason())
             .map(CCDProceedOnPaperReasonType::name)
@@ -180,6 +196,17 @@ public class CaseMapper {
         }
 
         return builder.build();
+    }
+
+    private ClaimTTL mapFromCcdTtl(CCDCase ccdCase) {
+        if (ccdCase.getTTL() == null) {
+            return null;
+        }
+        return ClaimTTL.builder()
+            .Suspended(convertCCDYesNo(ccdCase.getTTL().getSuspended()))
+            .SystemTTL(ccdCase.getTTL().getSystemTTL())
+            .OverrideTTL(ccdCase.getTTL().getOverrideTTL())
+            .build();
     }
 
     private YesNoOption convertCCDYesNo(CCDYesNoOption ccdYesNoOption) {

@@ -171,6 +171,7 @@ dependencies {
   compile project(':domain-sample-data')
   compile project(':job-scheduler')
   compile project(':launch-darkly-client')
+  compile project(':ccd-migration')
 
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'

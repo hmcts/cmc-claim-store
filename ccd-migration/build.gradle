@@ -1,0 +1,45 @@
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
+plugins {
+  id 'application'
+  id 'maven-publish'
+}
+
+group 'uk.gov.hmcts.cmc'
+version = "1.0.0-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("YYYYMMdd-HHmm"))
+
+mainClassName = 'uk.gov.hmcts.reform.migration.CaseMigrationRunner'
+
+repositories {
+  mavenLocal()
+  jcenter()
+
+  maven { url "https://dl.bintray.com/hmcts/hmcts-maven" }
+  maven { url "http://repo.maven.apache.org/maven2" }
+}
+
+def versions = [
+  lombok: '1.18.8'
+]
+
+dependencies {
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter'
+
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+  compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+
+  compile group: 'uk.gov.hmcts.reform.ccd-case-migration', name: 'processor', version: '3.0.0'
+  compile group: 'uk.gov.hmcts.reform.ccd-case-migration', name: 'domain', version: '3.0.0'
+  compile group: 'com.google.guava', name: 'guava', version: '28.0-jre'
+
+  testCompile group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.5.0'
+  testCompile group: 'org.assertj', name: 'assertj-core', version: '3.11.1'
+
+  compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.6'
+
+}
+
+test {
+    useJUnitPlatform()
+}
