@@ -30,7 +30,8 @@ import java.util.List;
 @Builder(toBuilder = true)
 public class CCDCase {
 
-    private CCDClaimTTL TTL;
+    @JsonProperty("TTL")
+    private CCDClaimTTL ttl;
     private Long id;
     private String previousServiceCaseReference;
     private String submitterId;

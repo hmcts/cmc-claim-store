@@ -98,7 +98,7 @@ public class CaseMapper {
         );
 
         return builder
-            .TTL(mapClaimTtl(claim))
+            .ttl(mapClaimTtl(claim))
             .id(claim.getId())
             .externalId(claim.getExternalId())
             .previousServiceCaseReference(claim.getReferenceNumber())
@@ -121,13 +121,13 @@ public class CaseMapper {
     }
 
     private CCDClaimTTL mapClaimTtl(Claim claim) {
-       if (claim.getClaimTTL() == null ) {
-           return null;
-       }
+        if (claim.getClaimTTL() == null) {
+            return null;
+        }
         return CCDClaimTTL.builder()
-            .OverrideTTL(claim.getClaimTTL().getOverrideTTL())
-            .SystemTTL(claim.getClaimTTL().getSystemTTL())
-            .Suspended(convertYesNo(claim.getClaimTTL().getSuspended()))
+            .overrideTTL(claim.getClaimTTL().getOverrideTTL())
+            .systemTTL(claim.getClaimTTL().getSystemTTL())
+            .suspended(convertYesNo(claim.getClaimTTL().getSuspended()))
             .build();
     }
 
@@ -162,7 +162,6 @@ public class CaseMapper {
             .proceedOfflineOtherReasonDescription(ccdCase.getProceedOnPaperOtherReason())
             .mediationOutcome(getMediationOutcome(ccdCase))
             .transferContent(transferContentMapper.from(ccdCase.getTransferContent()));
-
 
         Optional.ofNullable(ccdCase.getProceedOnPaperReason())
             .map(CCDProceedOnPaperReasonType::name)
@@ -199,13 +198,13 @@ public class CaseMapper {
     }
 
     private ClaimTTL mapFromCcdTtl(CCDCase ccdCase) {
-        if (ccdCase.getTTL() == null) {
+        if (ccdCase.getTtl() == null) {
             return null;
         }
         return ClaimTTL.builder()
-            .Suspended(convertCCDYesNo(ccdCase.getTTL().getSuspended()))
-            .SystemTTL(ccdCase.getTTL().getSystemTTL())
-            .OverrideTTL(ccdCase.getTTL().getOverrideTTL())
+            .Suspended(convertCCDYesNo(ccdCase.getTtl().getSuspended()))
+            .SystemTTL(ccdCase.getTtl().getSystemTTL())
+            .OverrideTTL(ccdCase.getTtl().getOverrideTTL())
             .build();
     }
 
