@@ -3,12 +3,9 @@ package uk.gov.hmcts.reform.migration.service;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 @Component
 public class DataMigrationServiceImpl implements DataMigrationService<Map<String, Object>> {
@@ -17,9 +14,6 @@ public class DataMigrationServiceImpl implements DataMigrationService<Map<String
 
     @Override
     public Predicate<CaseDetails> accepts() {
-         /*
-         Implement filter here that selects the cases to be migrated.
-        */
         return caseDetails -> Optional.ofNullable(caseDetails)
             .filter(details -> !details.getData().containsKey("TTL"))
             .isPresent();
