@@ -405,6 +405,7 @@ sonarqube {
         "**/cmc/claimstore/services/ccd/callbacks/HWFFullAndPartRemissionCallbackHandler.java",
         "**/cmc/claimstore/courtfinder/models/**",
         "**/ccd/migration/**",
+        "**/ccd/callbacks/migration/**",
         "**/EmailData.java",
         "**/CCDCaseHandler.java",
         "**/CCDReDetermination.java",
