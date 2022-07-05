@@ -25,7 +25,7 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
     public Claim map(int index, ResultSet result, StatementContext ctx) throws SQLException {
         LocalDate issuedOn = result.getTimestamp("issued_on").toLocalDateTime().toLocalDate();
         return new Claim(
-            (ClaimTTL) result.getObject("aClaimTtl"),
+            (ClaimTTL) result.getObject("aClaimTTL"),
             result.getLong("id"),
             result.getString("submitter_id"),
             result.getString("letter_holder_id"),
