@@ -74,7 +74,7 @@ public final class SampleClaim {
     private String submitterId = USER_ID;
     private String letterHolderId = LETTER_HOLDER_ID;
     private String defendantId = DEFENDANT_ID;
-    private ClaimTTL aClaimTTL;
+    private ClaimTTL aClaimTtl;
     private Long claimId = CLAIM_ID;
     private String referenceNumber = REFERENCE_NUMBER;
     private String externalId = EXTERNAL_ID;
@@ -682,7 +682,7 @@ public final class SampleClaim {
 
     public Claim build() {
         return new Claim(
-            aClaimTTL,
+            aClaimTtl,
             claimId,
             submitterId,
             letterHolderId,
@@ -1022,8 +1022,8 @@ public final class SampleClaim {
         return this;
     }
 
-    public SampleClaim withClaimTTL(ClaimTTL claimTTL) {
-        this.aClaimTTL = claimTTL;
+    public SampleClaim withClaimTTL(ClaimTTL claimTtl) {
+        this.aClaimTtl = claimTtl;
         return this;
     }
 }
