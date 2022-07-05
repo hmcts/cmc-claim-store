@@ -30,7 +30,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
     value = {"totalClaimAmount", "totalAmountTillToday", "totalAmountTillDateOfIssue",
         "amountWithInterestUntilIssueDate", "totalInterestTillDateOfIssue", "totalInterest",
         "serviceDate", "amountWithInterest", "directionsQuestionnaireDeadline", "claimSubmissionOperationIndicators",
-        "proceedOfflineOtherReasonDescription", "lastEventTriggeredForHwfCase", "lastModified"},
+        "proceedOfflineOtherReasonDescription", "lastEventTriggeredForHwfCase", "lastModified", "claimTTL"},
     allowGetters = true
 )
 @Getter
