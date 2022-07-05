@@ -202,9 +202,9 @@ public class CaseMapper {
             return null;
         }
         return ClaimTTL.builder()
-            .Suspended(convertCCDYesNo(ccdCase.getTtl().getSuspended()))
-            .SystemTTL(ccdCase.getTtl().getSystemTTL())
-            .OverrideTTL(ccdCase.getTtl().getOverrideTTL())
+            .suspended(convertCCDYesNo(ccdCase.getTtl().getSuspended()))
+            .systemTTL(ccdCase.getTtl().getSystemTTL())
+            .overrideTTL(ccdCase.getTtl().getOverrideTTL())
             .build();
     }
 
