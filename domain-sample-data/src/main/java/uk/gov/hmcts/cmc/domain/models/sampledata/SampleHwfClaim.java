@@ -69,7 +69,7 @@ public final class SampleHwfClaim {
     public static final String LEGAL_ADVISOR_ORDER_PDF = "legal-advisor-order.pdf";
     public static final String GENERAL_LETTER_PDF = "general-letter.pdf";
 
-    private ClaimTTL aClaimTTL = A_CLAIM_TTL;
+    private ClaimTTL claimTimeToLive = A_CLAIM_TTL;
     private String submitterId = USER_ID;
     private String letterHolderId = LETTER_HOLDER_ID;
     private String defendantId = DEFENDANT_ID;
@@ -582,7 +582,7 @@ public final class SampleHwfClaim {
 
     public Claim build() {
         return new Claim(
-            aClaimTTL,
+            claimTimeToLive,
             claimId,
             submitterId,
             letterHolderId,
