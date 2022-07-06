@@ -54,7 +54,7 @@ public class RetainAndDisposeService {
         // Traverse through these events and calculate the appropriate TTL value.
         List<CaseEventDetail> timeToLiveEventsOnCase = Collections.emptyList();
         for (CaseEventDetail event : caseEventDetails) {
-            if (event.getEventName().contains((CharSequence) timeToLiveEvent)) {
+            if (timeToLiveEvent.contains(CaseEvent.fromValue(event.getEventName()))) {
                 timeToLiveEventsOnCase.add(event);
             }
         }
