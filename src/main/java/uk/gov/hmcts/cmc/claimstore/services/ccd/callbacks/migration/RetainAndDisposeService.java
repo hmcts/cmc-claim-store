@@ -63,7 +63,7 @@ public class RetainAndDisposeService {
         if (timeToLiveEventsOnCase.size() > 0) {
             var lastEvent = Iterables.getLast(timeToLiveEventsOnCase);
             LocalDate eventDate = lastEvent.getCreatedDate().toLocalDate();
-            CaseEvent eventName = CaseEvent.valueOf(lastEvent.getId());
+            CaseEvent eventName = CaseEvent.fromValue(lastEvent.getId());
             var ttlIncrement = eventMapTimeToLive.getOrDefault(eventName, 0);
             if (ttlIncrement > 0) {
                 builder.overrideTTL(eventDate.plusDays(ttlIncrement));
