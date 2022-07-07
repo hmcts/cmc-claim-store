@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.CaseEventDetail;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +53,7 @@ public class RetainAndDisposeService {
         String ccdCaseId = String.valueOf(caseDetails.getId());
         List<CaseEventDetail> caseEventDetails = caseEventService.getEventDetailsForCase(ccdCaseId, user);
         // Traverse through these events and calculate the appropriate TTL value.
-        List<CaseEventDetail> timeToLiveEventsOnCase = Collections.emptyList();
+        List<CaseEventDetail> timeToLiveEventsOnCase = new ArrayList<>();
         for (CaseEventDetail event : caseEventDetails) {
             if (timeToLiveEvent.contains(CaseEvent.fromValue(event.getId()))) {
                 timeToLiveEventsOnCase.add(event);
