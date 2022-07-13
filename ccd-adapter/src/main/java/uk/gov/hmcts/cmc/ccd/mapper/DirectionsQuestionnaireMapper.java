@@ -182,7 +182,9 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
         return builder.build();
     }
 
-    private VulnerabilityQuestions extractVulnerability(CCDDirectionsQuestionnaire ccdDirectionsQuestionnaire) {
+    private VulnerabilityQuestions extractVulnerability(
+        CCDDirectionsQuestionnaire ccdDirectionsQuestionnaire
+    ) {
         CCDYesNoOption vulnerabilityQuestions = ccdDirectionsQuestionnaire.getVulnerabilityQuestions();
         if (isNull(vulnerabilityQuestions)
             && isNull(ccdDirectionsQuestionnaire.getVulnerabilityDetails())) {
