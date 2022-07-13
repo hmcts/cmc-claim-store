@@ -51,6 +51,8 @@ public class SampleCCDDirectionsQuestionnaire {
             .otherSupportRequired("maybe")
             .expertReports(expertReportRow)
             .expertRequired(NO)
+            .vulnerabilityQuestions(YES)
+            .vulnerabilityDetails("any detail")
             .permissionForExpert(NO)
             .expertEvidenceToExamine("nothing")
             .reasonForExpertAdvice("for specified reason")

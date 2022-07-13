@@ -163,6 +163,7 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
         builder.permissionForExpert(yesNoMapper.from(ccdDirectionsQuestionnaire.getPermissionForExpert()));
         builder.expertRequest(extractExpertRequest(ccdDirectionsQuestionnaire));
         builder.requireSupport(extractRequireSupport(ccdDirectionsQuestionnaire));
+        builder.vulnerabilityQuestions(extractVulnerability(ccdDirectionsQuestionnaire));
 
         List<ExpertReport> expertReports = asStream(ccdDirectionsQuestionnaire.getExpertReports())
             .filter(Objects::nonNull)
@@ -179,6 +180,20 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
         builder.unavailableDates(unavailableDates);
 
         return builder.build();
+    }
+
+    private VulnerabilityQuestions extractVulnerability
+        (CCDDirectionsQuestionnaire ccdDirectionsQuestionnaire) {
+        CCDYesNoOption vulnerabilityQuestions = ccdDirectionsQuestionnaire.getVulnerabilityQuestions();
+        if (isNull(vulnerabilityQuestions)
+            && isNull(ccdDirectionsQuestionnaire.getVulnerabilityDetails())) {
+            return null;
+        }
+
+        return VulnerabilityQuestions.builder()
+            .vulnerabilityQuestions(yesNoMapper.from(vulnerabilityQuestions))
+            .vulnerabilityDetails(ccdDirectionsQuestionnaire.getVulnerabilityDetails())
+            .build();
     }
 
     private RequireSupport extractRequireSupport(
