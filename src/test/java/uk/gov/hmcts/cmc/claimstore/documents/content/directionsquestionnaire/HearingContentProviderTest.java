@@ -89,7 +89,7 @@ public class HearingContentProviderTest {
             assertEquals(location.getCourtName(), hearingContent.getHearingLocation())
         );
 
-        dq.getDeterminationWithoutHearingQuestions ().ifPresent(
+        dq.getDeterminationWithoutHearingQuestions().ifPresent(
             determinationWithoutHearingQuestions -> assertEquals(determinationWithoutHearingQuestions, hearingContent.getDeterminationWithoutHearingQuestions())
         );
 
