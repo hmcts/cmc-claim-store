@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: log4j-api-2.13.3.jar
    ]]></notes>
@@ -9,7 +9,7 @@
         <cve>CVE-2021-44228</cve>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: log4j-api-2.13.3.jar
    ]]></notes>
@@ -17,7 +17,7 @@
         <cve>CVE-2021-44832</cve>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: log4j-api-2.13.3.jar
    ]]></notes>
@@ -26,7 +26,7 @@
     </suppress>
 
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: log4j-api-2.13.3.jar
    ]]></notes>
@@ -34,7 +34,7 @@
         <cve>CVE-2021-45105</cve>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: log4j-to-slf4j-2.13.3.jar
    ]]></notes>
@@ -42,7 +42,7 @@
         <cpe>cpe:/a:apache:log4j</cpe>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: log4j-to-slf4j-2.13.3.jar
    ]]></notes>
@@ -50,7 +50,7 @@
         <cve>CVE-2021-44228</cve>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: log4j-to-slf4j-2.13.3.jar
    ]]></notes>
@@ -58,7 +58,7 @@
         <cve>CVE-2021-44832</cve>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: log4j-to-slf4j-2.13.3.jar
    ]]></notes>
@@ -66,7 +66,7 @@
         <cve>CVE-2021-45046</cve>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: log4j-to-slf4j-2.13.3.jar
    ]]></notes>
@@ -74,7 +74,7 @@
         <cve>CVE-2021-45105</cve>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: logback-classic-1.2.3.jar
    ]]></notes>
@@ -82,7 +82,7 @@
         <cpe>cpe:/a:qos:logback</cpe>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: logback-classic-1.2.3.jar
    ]]></notes>
@@ -90,7 +90,7 @@
         <cve>CVE-2021-42550</cve>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: logback-core-1.2.3.jar
    ]]></notes>
@@ -98,7 +98,7 @@
         <cpe>cpe:/a:qos:logback</cpe>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: logback-core-1.2.3.jar
    ]]></notes>
@@ -106,7 +106,7 @@
         <cve>CVE-2021-42550</cve>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: spring-core-5.3.4.jar
    ]]></notes>
@@ -114,7 +114,7 @@
         <cpe>cpe:/a:pivotal_software:spring_framework</cpe>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: spring-core-5.3.4.jar
    ]]></notes>
@@ -122,7 +122,7 @@
         <cpe>cpe:/a:springsource:spring_framework</cpe>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: spring-core-5.3.4.jar
    ]]></notes>
@@ -130,7 +130,7 @@
         <cpe>cpe:/a:vmware:spring_framework</cpe>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: spring-core-5.3.4.jar
    ]]></notes>
@@ -138,7 +138,7 @@
         <cpe>cpe:/a:vmware:springsource_spring_framework</cpe>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: spring-core-5.3.4.jar
    ]]></notes>
@@ -146,7 +146,7 @@
         <cve>CVE-2021-22060</cve>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: tomcat-embed-core-9.0.44.jar
    ]]></notes>
@@ -154,7 +154,7 @@
         <cpe>cpe:/a:apache:tomcat</cpe>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: tomcat-embed-core-9.0.44.jar
    ]]></notes>
@@ -162,7 +162,7 @@
         <cpe>cpe:/a:apache_tomcat:apache_tomcat</cpe>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: tomcat-embed-core-9.0.44.jar
    ]]></notes>
@@ -170,7 +170,7 @@
         <cve>CVE-2022-23181</cve>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: tomcat-embed-websocket-9.0.44.jar
    ]]></notes>
@@ -178,7 +178,7 @@
         <cpe>cpe:/a:apache:tomcat</cpe>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: tomcat-embed-websocket-9.0.44.jar
    ]]></notes>
@@ -186,7 +186,7 @@
         <cpe>cpe:/a:apache_tomcat:apache_tomcat</cpe>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: tomcat-embed-websocket-9.0.44.jar
    ]]></notes>
@@ -194,166 +194,166 @@
         <cve>CVE-2022-23181</cve>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
          We are not using STOMP: https://docs.spring.io/spring/docs/current/spring-framework-reference/web.html#websocket-stomp-enable
         ]]></notes>
         <gav regex="true">.*</gav>
         <cve>CVE-2018-1270</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
             Related to Windows and specifically serving static content, which we are not doing
         ]]></notes>
         <gav regex="true">.*</gav>
         <cve>CVE-2018-1271</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
             We are not chaining multipart requests to other servers
         ]]></notes>
         <gav regex="true">.*</gav>
         <cve>CVE-2018-1272</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
             Related to PostgreSQL server startup script, also up to 9.4 while we are using 9.6
         ]]></notes>
         <gav regex="true">^org\.postgresql:postgresql:.*$</gav>
         <cve>CVE-2017-14798</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
 			only relates to ssl which we don't do at the java app level
 			]]></notes>
         <gav regex="true">.*</gav>
         <cve>CVE-2014-3488</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
 			only relates to ssl which we don't do at the java app level
 			]]></notes>
         <gav regex="true">.*</gav>
         <cve>CVE-2015-2156</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    CVE-2016-7048: only for Postgres lt 9.6 and we use 9.6 on Azure.  Also only impacts the installer.
    ]]></notes>
         <cve>CVE-2016-7048</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
     temp disable for prod release, spring boot 2 upgrade coming very soon
     ]]></notes>
         <gav regex="true">.*</gav>
         <cve>CVE-2018-7489</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    temp disable for prod release, spring boot 2 upgrade coming very soon
    ]]></notes>
         <gav regex="true">.*</gav>
         <cve>CVE-2017-14798</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    temp disable for prod release, spring boot 2 upgrade coming very soon
    ]]></notes>
         <gav regex="true">.*</gav>
         <cve>CVE-2018-1304</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    temp disable for prod release, spring boot 2 upgrade coming very soon
    ]]></notes>
         <gav regex="true">.*</gav>
         <cve>CVE-2018-1305</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    temp disable for prod release, spring boot 2 upgrade coming very soon
    ]]></notes>
         <gav regex="true">^org\.springframework:spring-context-support:.*$</gav>
         <cve>CVE-2018-1199</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    relates to admin pack extension which is not installed for us
    ]]></notes>
         <gav regex="true">^org\.postgresql:postgresql:.*$</gav>
         <cve>CVE-2018-1115</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    relates to CORS
    ]]></notes>
         <gav regex="true">.*</gav>
         <cve>CVE-2018-8014</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    Unauthorized Access with Spring Security Method Security
    ]]></notes>
         <gav regex="true">.*</gav>
         <cve>CVE-2018-1258</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    ReDoS Attack with spring-messaging
    ]]></notes>
         <gav regex="true">.*</gav>
         <cve>CVE-2018-1257</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
     Doesn't look exploitable, will wait for spring boot to provide updated version in dependency management
    ]]></notes>
         <cve>CVE-2018-11039</cve>
         <cve>CVE-2021-22096</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    JSONP is not enabled in our application
    ]]></notes>
         <cve>CVE-2018-11040</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
 			Not applicable - relates to XML processing
 			]]></notes>
         <gav regex="true">.*</gav>
         <cve>CVE-2018-1000840</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
 			Not applicable - Randomness vulnerability when using SecureRandomFactoryBean
 			]]></notes>
         <gav regex="true">.*</gav>
         <cve>CVE-2019-3795</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
 			Netty before 4.1.42.Final mishandles whitespace before the colon in HTTP headers
 			]]></notes>
         <gav regex="true">.*</gav>
         <cve>CVE-2019-16869</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
 			Improper validation of certificate with host mismatch in Apache Log4j SMTP appender
 			]]></notes>
         <gav regex="true">.*</gav>
         <cve>CVE-2020-9488</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    snakeyaml-1.25.jar is not used directly
    ]]></notes>
         <gav regex="true">.*</gav>
         <cve>CVE-2017-18640</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <cve>CVE-2020-5407</cve>
         <cve>CVE-2020-5408</cve>
         <cve>CVE-2020-7019</cve>
@@ -363,14 +363,14 @@
         <cve>CVE-2020-7021</cve>
         <cve>CVE-2021-22132</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
             CVE is a json vulnerability for Node projects. False positive reported at https://github.com/jeremylong/DependencyCheck/issues/2794
         ]]></notes>
         <cve>CVE-2020-10663</cve>
         <cve>CVE-2020-7712</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
             apache tomcat version
         ]]></notes>
@@ -383,20 +383,20 @@
         <cve>CVE-2021-33037</cve>
         <cve>CVE-2021-30640</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
             httpclient
         ]]></notes>
         <cve>CVE-2020-13956</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
             Launch Darkly Related
         ]]></notes>
         <cve>CVE-2020-8908</cve>
         <cve>CVE-2018-10237</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
             Spring issues
         ]]></notes>
@@ -406,7 +406,7 @@
         <cve>CVE-2019-14900</cve>
         <cve>CVE-2020-25638</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
             Hibernate validator - 6.1.5 is used
         ]]></notes>
@@ -414,38 +414,38 @@
         <cve>CVE-2020-10693</cve>
         <cve>CVE-2019-10219</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
             Related json_smart_project
         ]]></notes>
         <cve>CVE-2021-27568</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
             jakarta error
         ]]></notes>
         <cve>CVE-2021-28170</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
             Related Nim-lang
         ]]></notes>
         <cve>CVE-2020-23171</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
             Related elasticsearch
         ]]></notes>
         <cve>CVE-2021-22147</cve>
     </suppress>
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
             Related tomcat
         ]]></notes>
         <cve>CVE-2021-42340</cve>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: spring-security-core-5.4.5.jar
    ]]></notes>
@@ -453,7 +453,7 @@
         <cpe>cpe:/a:pivotal_software:spring_security</cpe>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: spring-security-core-5.4.5.jar
    ]]></notes>
@@ -461,7 +461,7 @@
         <vulnerabilityName>CWE-862: Missing Authorization</vulnerabilityName>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: jackson-databind-2.11.0.jar
    ]]></notes>
@@ -469,7 +469,7 @@
         <cpe>cpe:/a:fasterxml:jackson-databind</cpe>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: jackson-databind-2.11.0.jar
    ]]></notes>
@@ -477,7 +477,7 @@
         <cpe>cpe:/a:fasterxml:jackson-modules-java8</cpe>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: jackson-databind-2.11.0.jar
    ]]></notes>
@@ -485,7 +485,7 @@
         <cve>CVE-2020-36518</cve>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: jackson-databind-2.11.0.jar
    ]]></notes>
@@ -493,7 +493,7 @@
         <cve>CVE-2020-36518</cve>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: jackson-databind-2.11.0.jar
    ]]></notes>
@@ -501,7 +501,7 @@
         <cpe>cpe:/a:fasterxml:jackson-modules-java8</cpe>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: jackson-databind-2.11.0.jar
    ]]></notes>
@@ -509,7 +509,7 @@
         <cve>CVE-2020-36518</cve>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: postgresql-42.2.14.jar
    ]]></notes>
@@ -517,7 +517,7 @@
         <cpe>cpe:/a:postgresql:postgresql_jdbc_driver</cpe>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: postgresql-42.2.14.jar
    ]]></notes>
@@ -525,7 +525,7 @@
         <cve>CVE-2022-21724</cve>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: postgresql-42.2.14.jar
    ]]></notes>
@@ -533,7 +533,7 @@
         <cpe>cpe:/a:postgresql:postgresql</cpe>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: spring-beans-5.3.4.jar
    ]]></notes>
@@ -541,7 +541,7 @@
         <cpe>cpe:/a:pivotal_software:spring_framework</cpe>
     </suppress>
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: spring-beans-5.3.4.jar
    ]]></notes>
@@ -550,15 +550,31 @@
     </suppress>
 
 
-    <suppress until="2022-06-01">
+    <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: spring-context@5.3.4
    ]]></notes>
         <cve>CVE-2022-22950</cve>
     </suppress>
 
-    <suppress until="2022-06-01">
-        <cve>CVE-2022-25647</cve>
+    <suppress until="2023-03-01">
+        <cve>CVE-2021-31684</cve>
+        <cve>CVE-2022-26520</cve>
+        <cve>CVE-2021-22044</cve>
+        <cve>CVE-2022-22968</cve>
+        <cve>CVE-2022-22976</cve>
+        <cve>CVE-2022-22978</cve>
+        <cve>CVE-2016-1000027</cve>
+        <cve>CVE-2021-22060</cve>
+    </suppress>
+
+    <suppress>
+        <packageUrl regex="true">^pkg:maven/org.apache.logging.log4j/log4j-api@.*$</packageUrl>
+        <cve>CVE-2022-33915</cve>
+    </suppress>
+    <suppress>
+        <packageUrl regex="true">^pkg:maven/org.apache.logging.log4j/log4j-to-slf4j@.*$</packageUrl>
+        <cve>CVE-2022-33915</cve>
     </suppress>
 
 </suppressions>
