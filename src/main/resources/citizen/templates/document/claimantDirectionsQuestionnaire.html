@@ -488,6 +488,7 @@
     </td>
   </tr>
 
+  {% if hearingContent.vulnerabilityQuestions is not empty  %}
   <tr>
     <td>
       <div>Do you believe you, or a witness who will give evidence on your behalf, are vulnerable in any way which the Court needs to consider?</div>
@@ -509,7 +510,7 @@
       {% endif %}
     </td>
   </tr>
-
+  {% endif %}
   </tbody>
 </table>
 
