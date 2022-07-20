@@ -10,7 +10,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.VulnerabilityQuestions;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
-import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
