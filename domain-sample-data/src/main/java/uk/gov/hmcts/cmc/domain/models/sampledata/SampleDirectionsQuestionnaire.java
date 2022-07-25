@@ -61,6 +61,12 @@ public class SampleDirectionsQuestionnaire {
                 .expertEvidenceToExamine("Evidence to examine")
                 .build()
             )
+            .vulnerabilityQuestions(
+                VulnerabilityQuestions.builder()
+                    .vulnerabilityQuestions(YES)
+                    .vulnerabilityDetails("some details")
+                    .build()
+            )
             .witness(Witness.builder()
                 .selfWitness(YES)
                 .noOfOtherWitness(1)
