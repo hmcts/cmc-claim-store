@@ -100,7 +100,7 @@
     },
     "vulnerabilityQuestions": {
       "vulnerabilityQuestions": "yes",
-      "vulnerabilityDetails": "some details"
+      "vulnerabilityDetails": "Some details"
     }
   }
 }

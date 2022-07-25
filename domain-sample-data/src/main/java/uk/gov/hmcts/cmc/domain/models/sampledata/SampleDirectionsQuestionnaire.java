@@ -64,7 +64,7 @@ public class SampleDirectionsQuestionnaire {
             .vulnerabilityQuestions(
                 VulnerabilityQuestions.builder()
                     .vulnerabilityQuestions(YES)
-                    .vulnerabilityDetails("some details")
+                    .vulnerabilityDetails("Some details")
                     .build()
             )
             .witness(Witness.builder()
