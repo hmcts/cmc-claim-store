@@ -88,6 +88,11 @@ public class HearingContentProviderTest {
         dq.getHearingLocation().ifPresent(location ->
             assertEquals(location.getCourtName(), hearingContent.getHearingLocation())
         );
+
+        dq.getVulnerabilityQuestions().ifPresent(
+            vulnerabilityQuestions -> assertEquals(vulnerabilityQuestions, hearingContent.getVulnerabilityQuestions())
+        );
+
         compareExpertReport(dq.getExpertReports(), hearingContent.getExpertReports());
         assertArrayEquals(
             unavailabeDatesToISOString(dq.getUnavailableDates()),

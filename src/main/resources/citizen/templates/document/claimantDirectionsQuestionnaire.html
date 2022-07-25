@@ -488,6 +488,29 @@
     </td>
   </tr>
 
+  {% if hearingContent.vulnerabilityQuestions is not empty  %}
+  <tr>
+    <td>
+      <div>Do you believe you, or a witness who will give evidence on your behalf, are vulnerable in any way which the Court needs to consider?</div>
+    </td>
+    <td>
+      <div>{{ hearingContent.vulnerabilityQuestions.vulnerabilityQuestions.toString | capitalize }}</div>
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <div>In what way/s are you/the witness vulnerable and what steps, support or adjustments do you wish the Court to consider?</div>
+    </td>
+    <td>
+      {% if hearingContent.vulnerabilityQuestions.vulnerabilityDetails is not empty  %}
+      <div>{% hearingContent.vulnerabilityQuestions.vulnerabilityDetails %}</div>
+      {% else %}
+      <div>None</div>
+      {% endif %}
+    </td>
+  </tr>
+  {% endif %}
   </tbody>
 </table>
 
