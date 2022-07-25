@@ -68,7 +68,10 @@ public class SampleDirectionsQuestionnaire {
             )
             .unavailableDates(unavailableDates)
             .expertReports(expertReportRowsData)
-            .vulnerabilityQuestions(vulnerabilityQuestions)
+            .vulnerabilityQuestions(VulnerabilityQuestions.builder()
+                .vulnerabilityQuestions(YES)
+                .vulnerabilityDetails("some details")
+                .build())
             .build();
     }
 
