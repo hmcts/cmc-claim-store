@@ -81,7 +81,7 @@ public class DefendantResponseReceiptServiceIT extends BaseMockSpringTest {
             .builder()
             .withVulnerabilityQuestions(VulnerabilityQuestions.builder()
                 .vulnerabilityQuestions(YES)
-                .vulnerabilityDetails("Some details here")
+                .vulnerabilityDetails("Some details")
                 .build())
             .withRequireSupport(null).build();
 
