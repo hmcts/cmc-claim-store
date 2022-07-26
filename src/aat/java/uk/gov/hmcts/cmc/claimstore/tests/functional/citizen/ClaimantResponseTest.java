@@ -169,29 +169,7 @@ public class ClaimantResponseTest extends BaseTest {
         assertThat(claimWithClaimantResponse.getCountyCourtJudgment()).isNull();
         assertThat(claimWithClaimantResponse.getSettlement()).isNotEmpty();
     }
-
-    @Test
-    @Retry
-    public void shouldSaveClaimantResponseRejection() {
-        commonOperations.submitClaimantResponse(
-            SampleClaimantResponse.validRejectionWithDirectionsQuestionnaire(),
-            claim.getExternalId(),
-            claimant
-        ).then()
-            .statusCode(HttpStatus.CREATED.value());
-
-        Claim claimWithClaimantResponse = commonOperations
-            .retrieveClaim(claim.getExternalId(), claimant.getAuthorisation());
-
-        assertThat(claimWithClaimantResponse.getClaimantRespondedAt()).isNotEmpty();
-
-        ResponseRejection claimantResponse = (ResponseRejection) claimWithClaimantResponse.getClaimantResponse()
-            .orElseThrow(() -> new AssertionError(MISSING_CLAIMANT_RESPONSE));
-
-        assertThat(claimantResponse.getFreeMediation()).isNotEmpty();
-        assertThat(claimantResponse.getAmountPaid()).contains(TEN_2DP);
-    }
-
+    
     private Claim createClaimWithResponse(Claim createdCase, User defendant) {
         commonOperations.linkDefendant(
             defendant.getAuthorisation(), createdCase.getLetterHolderId()

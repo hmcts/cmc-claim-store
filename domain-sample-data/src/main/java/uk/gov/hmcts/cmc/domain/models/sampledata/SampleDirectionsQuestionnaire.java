@@ -16,7 +16,6 @@ import java.util.List;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleHearingLocation.defaultHearingLocation;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleRequireSupport.defaultRequireSupport;
-import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleVQ.defaultVQ;
 
 public class SampleDirectionsQuestionnaire {
 
@@ -24,7 +23,7 @@ public class SampleDirectionsQuestionnaire {
 
     private RequireSupport requireSupport = defaultRequireSupport;
 
-    private VulnerabilityQuestions vulnerabilityQuestions = defaultVQ;
+    private VulnerabilityQuestions vulnerabilityQuestions;
 
     public static SampleDirectionsQuestionnaire builder() {
         return new SampleDirectionsQuestionnaire();
