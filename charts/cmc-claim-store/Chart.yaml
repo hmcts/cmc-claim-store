@@ -21,6 +21,6 @@ dependencies:
     condition: postgresql.enabled
 
   - name: ccd
-    version: v8.0.12
+    version: 8.0.17
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ccd.enabled
