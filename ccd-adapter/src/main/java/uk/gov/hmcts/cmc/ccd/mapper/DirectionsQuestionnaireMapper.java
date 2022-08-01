@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDCourtLocationOption;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.CourtLocationType;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DeterminationWithoutHearingQuestions;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertRequest;
@@ -13,7 +14,6 @@ import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.RequireSupport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.UnavailableDate;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.Witness;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DeterminationWithoutHearingQuestions;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.util.List;
@@ -255,7 +255,7 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
 
     private DeterminationWithoutHearingQuestions extractDeterminationWithoutHearingQuestions(
         CCDDirectionsQuestionnaire ccdDirectionsQuestionnaire
-    ){
+    ) {
         CCDYesNoOption determinationWithoutHearingQuestions = ccdDirectionsQuestionnaire.getDeterminationWithoutHearingQuestions();
         if (isNull(determinationWithoutHearingQuestions)
             && isNull(ccdDirectionsQuestionnaire.getDeterminationWithoutHearingQuestionsDetails())) {
