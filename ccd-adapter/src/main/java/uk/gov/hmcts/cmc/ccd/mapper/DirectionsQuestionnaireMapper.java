@@ -5,7 +5,15 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDCourtLocationOption;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.*;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.CourtLocationType;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReport;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertRequest;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.RequireSupport;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.UnavailableDate;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.Witness;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DeterminationWithoutHearingQuestions;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.util.List;
@@ -118,7 +126,8 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
         };
     }
 
-    private Consumer<DeterminationWithoutHearingQuestions> toDeterminationWithoutHearingQuestions(CCDDirectionsQuestionnaire.CCDDirectionsQuestionnaireBuilder builder) {
+    private Consumer<DeterminationWithoutHearingQuestions> toDeterminationWithoutHearingQuestions(
+        CCDDirectionsQuestionnaire.CCDDirectionsQuestionnaireBuilder builder) {
         return determination -> {
             builder.determinationWithoutHearingQuestions(yesNoMapper.to(determination.getDeterminationWithoutHearingQuestions()));
             determination.getDeterminationWithoutHearingQuestionsDetails().ifPresent(builder::determinationWithoutHearingQuestionsDetails);
@@ -156,6 +165,8 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
         builder.permissionForExpert(yesNoMapper.from(ccdDirectionsQuestionnaire.getPermissionForExpert()));
         builder.expertRequest(extractExpertRequest(ccdDirectionsQuestionnaire));
         builder.requireSupport(extractRequireSupport(ccdDirectionsQuestionnaire));
+        builder.determinationWithoutHearingQuestions(
+            extractDeterminationWithoutHearingQuestions(ccdDirectionsQuestionnaire));
 
         List<ExpertReport> expertReports = asStream(ccdDirectionsQuestionnaire.getExpertReports())
             .filter(Objects::nonNull)
@@ -240,5 +251,20 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
             .ifPresent(hearingLocation::locationOption);
 
         return hearingLocation.build();
+    }
+
+    private DeterminationWithoutHearingQuestions extractDeterminationWithoutHearingQuestions(
+        CCDDirectionsQuestionnaire ccdDirectionsQuestionnaire
+    ){
+        CCDYesNoOption determinationWithoutHearingQuestions = ccdDirectionsQuestionnaire.getDeterminationWithoutHearingQuestions();
+        if (isNull(determinationWithoutHearingQuestions)
+            && isNull(ccdDirectionsQuestionnaire.getDeterminationWithoutHearingQuestionsDetails())) {
+            return null;
+        }
+
+        return DeterminationWithoutHearingQuestions.builder()
+            .determinationWithoutHearingQuestions(yesNoMapper.from(determinationWithoutHearingQuestions))
+            .determinationWithoutHearingQuestionsDetails(ccdDirectionsQuestionnaire.getDeterminationWithoutHearingQuestionsDetails())
+            .build();
     }
 }
