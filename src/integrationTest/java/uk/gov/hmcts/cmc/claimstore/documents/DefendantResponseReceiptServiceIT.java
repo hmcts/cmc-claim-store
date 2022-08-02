@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.documents;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
