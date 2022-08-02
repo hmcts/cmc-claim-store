@@ -20,10 +20,14 @@ public class CCDDocument {
     @JsonProperty("document_filename")
     private String documentFileName;
 
+    @JsonProperty("document_hash")
+    private String documentHash;
+
     @JsonCreator
-    public CCDDocument(String documentUrl, String documentBinaryUrl, String documentFileName) {
+    public CCDDocument(String documentUrl, String documentBinaryUrl, String documentFileName, String documentHash) {
         this.documentUrl = documentUrl;
         this.documentBinaryUrl = documentBinaryUrl;
         this.documentFileName = documentFileName;
+        this.documentHash = documentHash;
     }
 }
