@@ -7,6 +7,7 @@ import lombok.Value;
 
 @Value
 @Builder(toBuilder = true)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CCDDocument {
 
     @JsonProperty("document_url")
