@@ -45,6 +45,7 @@ public class DirectionsQuestionnaire {
     private final ExpertRequest expertRequest;
 
     @Valid
+    private final DeterminationWithoutHearingQuestions determinationWithoutHearingQuestions;
     private final VulnerabilityQuestions vulnerabilityQuestions;
 
     @Builder
@@ -57,6 +58,7 @@ public class DirectionsQuestionnaire {
         YesNoOption expertRequired,
         YesNoOption permissionForExpert,
         ExpertRequest expertRequest,
+        DeterminationWithoutHearingQuestions determinationWithoutHearingQuestions,
         VulnerabilityQuestions vulnerabilityQuestions
     ) {
         this.requireSupport = requireSupport;
@@ -67,6 +69,7 @@ public class DirectionsQuestionnaire {
         this.expertRequired = expertRequired;
         this.permissionForExpert = permissionForExpert;
         this.expertRequest = expertRequest;
+        this.determinationWithoutHearingQuestions = determinationWithoutHearingQuestions;
         this.vulnerabilityQuestions = vulnerabilityQuestions;
     }
 
@@ -82,6 +85,10 @@ public class DirectionsQuestionnaire {
         return Optional.ofNullable(witness);
     }
 
+    public Optional<DeterminationWithoutHearingQuestions> getDeterminationWithoutHearingQuestions() {
+        return Optional.ofNullable(determinationWithoutHearingQuestions);
+    }
+    
     public Optional<VulnerabilityQuestions> getVulnerabilityQuestions() {
         return Optional.ofNullable(vulnerabilityQuestions);
     }

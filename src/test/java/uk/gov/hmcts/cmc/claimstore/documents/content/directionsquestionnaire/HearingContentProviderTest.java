@@ -89,6 +89,11 @@ public class HearingContentProviderTest {
             assertEquals(location.getCourtName(), hearingContent.getHearingLocation())
         );
 
+        dq.getDeterminationWithoutHearingQuestions().ifPresent(
+            determinationWithoutHearingQuestions -> assertEquals(determinationWithoutHearingQuestions, 
+            hearingContent.getDeterminationWithoutHearingQuestions())
+        );
+
         dq.getVulnerabilityQuestions().ifPresent(
             vulnerabilityQuestions -> assertEquals(vulnerabilityQuestions, hearingContent.getVulnerabilityQuestions())
         );
