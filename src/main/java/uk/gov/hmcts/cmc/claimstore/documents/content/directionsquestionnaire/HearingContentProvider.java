@@ -127,6 +127,7 @@ public class HearingContentProvider {
             .collect(toList()));
 
         questionnaire.getDeterminationWithoutHearingQuestions().ifPresent(contentBuilder::determinationWithoutHearingQuestions);
+        questionnaire.getVulnerabilityQuestions().ifPresent(contentBuilder::vulnerabilityQuestions);
 
         return contentBuilder.build();
     }
