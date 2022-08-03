@@ -260,17 +260,17 @@
   </tr>
   </thead>
   <tbody>
-
+  {% if hearingContent.determinationWithoutHearingQuestions is not empty  %}
   <tr>
     <td>
       <div>
-        Do you considder that this claim is suitable for determination without a hearing, i.e. by a judge reading and
+        Do you consider that this claim is suitable for determination without a hearing, i.e. by a judge reading and
         considering the case papers, witness statements and other documents filed by the parties, making a decision,
         and giving a note of reasons for that decision?
       </div>
     </td>
     <td>
-      <div>{% hearingContent.determinationQuestions.decision.toString | capitalize %}</div>
+      <div>{{ hearingContent.determinationWithoutHearingQuestions.determinationWithoutHearingQuestions.toString | capitalize }}</div>
     </td>
   </tr>
 
@@ -281,10 +281,14 @@
       </div>
     </td>
     <td>
-      <div>{% hearingContent.determinationQuestions.reason.toString %}</div>
+      {% if hearingContent.determinationWithoutHearingQuestions.determinationWithoutHearingQuestionsDetails is not empty  %}
+      <div>{{ hearingContent.determinationWithoutHearingQuestions.determinationWithoutHearingQuestionsDetails.toString }}</div>
+      {% else %}
+      <div>None</div>
+      {% endif %}
     </td>
   </tr>
-
+  {% endif %}
   <tr>
     <td>
       <div>
