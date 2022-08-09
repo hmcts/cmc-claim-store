@@ -12,7 +12,6 @@ import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertRequest;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.RequireSupport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.UnavailableDate;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.VulnerabilityQuestions;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.Witness;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
@@ -60,7 +59,7 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
             .ifPresent(hearingLocation -> toHearingLocation(hearingLocation, builder));
 
         directionsQuestionnaire.getWitness().ifPresent(toWitness(builder));
-        directionsQuestionnaire.getVulnerabilityQuestions().ifPresent(toVulnerabilityQuestions(builder));
+
         directionsQuestionnaire.getExpertRequired()
             .map(YesNoOption::name)
             .map(CCDYesNoOption::valueOf)
@@ -125,13 +124,6 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
         };
     }
 
-    private Consumer<VulnerabilityQuestions> toVulnerabilityQuestions(CCDDirectionsQuestionnaire.CCDDirectionsQuestionnaireBuilder builder) {
-        return vulnerability -> {
-            builder.vulnerabilityQuestions(yesNoMapper.to(vulnerability.getVulnerabilityQuestions()));
-            vulnerability.getVulnerabilityDetails().ifPresent(builder::vulnerabilityDetails);
-        };
-    }
-
     private void toHearingLocation(
         HearingLocation hearingLocation,
         CCDDirectionsQuestionnaire.CCDDirectionsQuestionnaireBuilder builder
@@ -163,7 +155,6 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
         builder.permissionForExpert(yesNoMapper.from(ccdDirectionsQuestionnaire.getPermissionForExpert()));
         builder.expertRequest(extractExpertRequest(ccdDirectionsQuestionnaire));
         builder.requireSupport(extractRequireSupport(ccdDirectionsQuestionnaire));
-        builder.vulnerabilityQuestions(extractVulnerability(ccdDirectionsQuestionnaire));
 
         List<ExpertReport> expertReports = asStream(ccdDirectionsQuestionnaire.getExpertReports())
             .filter(Objects::nonNull)
@@ -180,21 +171,6 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
         builder.unavailableDates(unavailableDates);
 
         return builder.build();
-    }
-
-    private VulnerabilityQuestions extractVulnerability(
-        CCDDirectionsQuestionnaire ccdDirectionsQuestionnaire
-    ) {
-        CCDYesNoOption vulnerabilityQuestions = ccdDirectionsQuestionnaire.getVulnerabilityQuestions();
-        if (isNull(vulnerabilityQuestions)
-            && isNull(ccdDirectionsQuestionnaire.getVulnerabilityDetails())) {
-            return null;
-        }
-
-        return VulnerabilityQuestions.builder()
-            .vulnerabilityQuestions(yesNoMapper.from(vulnerabilityQuestions))
-            .vulnerabilityDetails(ccdDirectionsQuestionnaire.getVulnerabilityDetails())
-            .build();
     }
 
     private RequireSupport extractRequireSupport(
