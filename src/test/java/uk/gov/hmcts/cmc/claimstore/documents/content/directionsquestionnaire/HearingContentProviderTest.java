@@ -90,12 +90,8 @@ public class HearingContentProviderTest {
         );
 
         dq.getDeterminationWithoutHearingQuestions().ifPresent(
-            determinationWithoutHearingQuestions -> assertEquals(determinationWithoutHearingQuestions, 
+            determinationWithoutHearingQuestions -> assertEquals(determinationWithoutHearingQuestions,
             hearingContent.getDeterminationWithoutHearingQuestions())
-        );
-
-        dq.getVulnerabilityQuestions().ifPresent(
-            vulnerabilityQuestions -> assertEquals(vulnerabilityQuestions, hearingContent.getVulnerabilityQuestions())
         );
 
         compareExpertReport(dq.getExpertReports(), hearingContent.getExpertReports());

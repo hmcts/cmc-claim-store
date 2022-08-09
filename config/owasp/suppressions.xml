@@ -576,9 +576,10 @@
         <packageUrl regex="true">^pkg:maven/org.apache.logging.log4j/log4j-to-slf4j@.*$</packageUrl>
         <cve>CVE-2022-33915</cve>
     </suppress>
-    <!-- Bug in plugin https://github.com/jeremylong/DependencyCheck/issues/4671 -->
+        <!-- Bug in plugin https://github.com/jeremylong/DependencyCheck/issues/4671 -->
     <suppress>
         <gav regex="true">^.*$</gav>
         <cve>CVE-2022-31569</cve>
     </suppress>
+
 </suppressions>

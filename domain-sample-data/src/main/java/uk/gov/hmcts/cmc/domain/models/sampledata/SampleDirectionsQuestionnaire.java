@@ -6,7 +6,6 @@ import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertRequest;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.RequireSupport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.UnavailableDate;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.VulnerabilityQuestions;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.Witness;
 
 import java.time.LocalDate;
@@ -23,8 +22,6 @@ public class SampleDirectionsQuestionnaire {
 
     private RequireSupport requireSupport = defaultRequireSupport;
 
-    private VulnerabilityQuestions vulnerabilityQuestions;
-
     public static SampleDirectionsQuestionnaire builder() {
         return new SampleDirectionsQuestionnaire();
     }
@@ -36,11 +33,6 @@ public class SampleDirectionsQuestionnaire {
 
     public SampleDirectionsQuestionnaire withRequireSupport(RequireSupport requireSupport) {
         this.requireSupport = requireSupport;
-        return this;
-    }
-
-    public SampleDirectionsQuestionnaire withVulnerabilityQuestions(VulnerabilityQuestions vulnerabilityQuestions) {
-        this.vulnerabilityQuestions = vulnerabilityQuestions;
         return this;
     }
 
@@ -68,7 +60,6 @@ public class SampleDirectionsQuestionnaire {
             )
             .unavailableDates(unavailableDates)
             .expertReports(expertReportRowsData)
-            .vulnerabilityQuestions(vulnerabilityQuestions)
             .build();
     }
 
