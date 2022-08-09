@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.assertion;
 
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DeterminationWithoutHearingQuestions;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertRequest;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
@@ -92,6 +93,13 @@ public class DirectionsQuestionnaireAssert
         compare("vulnerabilityDetails",
             expected.getVulnerabilityQuestions(),
             actual.getVulnerabilityQuestions().map(VulnerabilityQuestions::getVulnerabilityDetails));
+        compare("determinationWithoutHearingQuestions",
+            expected.getDeterminationWithoutHearingQuestions(),
+            actual.getDeterminationWithoutHearingQuestions().map(DeterminationWithoutHearingQuestions::getDeterminationWithoutHearingQuestions));
+
+        compare("determinationWithoutHearingQuestionsDetails",
+            expected.getDeterminationWithoutHearingQuestions(),
+            actual.getDeterminationWithoutHearingQuestions().map(DeterminationWithoutHearingQuestions::getDeterminationWithoutHearingQuestionsDetails));
         return this;
     }
 

@@ -93,6 +93,11 @@ public class HearingContentProviderTest {
             vulnerabilityQuestions -> assertEquals(vulnerabilityQuestions, hearingContent.getVulnerabilityQuestions())
         );
 
+        dq.getDeterminationWithoutHearingQuestions().ifPresent(
+            determinationWithoutHearingQuestions -> assertEquals(determinationWithoutHearingQuestions,
+            hearingContent.getDeterminationWithoutHearingQuestions())
+        );
+
         compareExpertReport(dq.getExpertReports(), hearingContent.getExpertReports());
         assertArrayEquals(
             unavailabeDatesToISOString(dq.getUnavailableDates()),

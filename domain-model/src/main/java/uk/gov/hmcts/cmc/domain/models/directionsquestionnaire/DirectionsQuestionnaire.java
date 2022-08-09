@@ -47,6 +47,9 @@ public class DirectionsQuestionnaire {
     @Valid
     private final VulnerabilityQuestions vulnerabilityQuestions;
 
+    @Valid
+    private final DeterminationWithoutHearingQuestions determinationWithoutHearingQuestions;
+
     @Builder
     public DirectionsQuestionnaire(
         RequireSupport requireSupport,
@@ -57,7 +60,8 @@ public class DirectionsQuestionnaire {
         YesNoOption expertRequired,
         YesNoOption permissionForExpert,
         ExpertRequest expertRequest,
-        VulnerabilityQuestions vulnerabilityQuestions
+        VulnerabilityQuestions vulnerabilityQuestions,
+        DeterminationWithoutHearingQuestions determinationWithoutHearingQuestions
     ) {
         this.requireSupport = requireSupport;
         this.hearingLocation = hearingLocation;
@@ -68,6 +72,7 @@ public class DirectionsQuestionnaire {
         this.permissionForExpert = permissionForExpert;
         this.expertRequest = expertRequest;
         this.vulnerabilityQuestions = vulnerabilityQuestions;
+        this.determinationWithoutHearingQuestions = determinationWithoutHearingQuestions;
     }
 
     public Optional<RequireSupport> getRequireSupport() {
@@ -84,6 +89,10 @@ public class DirectionsQuestionnaire {
 
     public Optional<VulnerabilityQuestions> getVulnerabilityQuestions() {
         return Optional.ofNullable(vulnerabilityQuestions);
+    }
+
+    public Optional<DeterminationWithoutHearingQuestions> getDeterminationWithoutHearingQuestions() {
+        return Optional.ofNullable(determinationWithoutHearingQuestions);
     }
 
     public List<UnavailableDate> getUnavailableDates() {
