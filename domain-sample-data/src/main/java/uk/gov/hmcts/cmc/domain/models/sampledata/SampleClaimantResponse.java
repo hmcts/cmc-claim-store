@@ -4,7 +4,6 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.VulnerabilityQuestions;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SampleCourtDetermination;
 
 import java.math.BigDecimal;
@@ -190,10 +189,6 @@ public abstract class SampleClaimantResponse {
                 .reason("Some valid reason")
                 .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder()
                     .withHearingLocation(pilotHearingLocation)
-                    .withVulnerabilityQuestions(VulnerabilityQuestions.builder()
-                        .vulnerabilityQuestions(YES)
-                        .vulnerabilityDetails("Some details")
-                        .build())
                     .build())
                 .build();
         }
