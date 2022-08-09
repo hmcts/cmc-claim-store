@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.domain.models.sampledata;
 
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.VulnerabilityQuestions;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
@@ -20,8 +19,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.statementofmeans.SampleStatemen
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-
-import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
 public abstract class SampleResponse<T extends SampleResponse<T>> {
 
@@ -154,12 +151,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .timeline(SampleDefendantTimeline.validDefaults())
                 .evidence(SampleDefendantEvidence.validDefaults())
                 .statementOfMeans(SampleStatementOfMeans.builder().build())
-                .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder()
-                    .withVulnerabilityQuestions(VulnerabilityQuestions.builder()
-                        .vulnerabilityQuestions(YES)
-                        .vulnerabilityDetails("Some details")
-                        .build())
-                    .build())
+                .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder().build())
                 .build();
         }
 

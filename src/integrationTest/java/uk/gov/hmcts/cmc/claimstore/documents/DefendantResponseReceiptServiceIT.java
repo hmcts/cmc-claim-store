@@ -8,7 +8,6 @@ import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.helper.HTMLTemplateProcessor;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.VulnerabilityQuestions;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleDirectionsQuestionnaire;
@@ -28,7 +27,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.xmlunit.matchers.CompareMatcher.isIdenticalTo;
-import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
 public class DefendantResponseReceiptServiceIT extends BaseMockSpringTest {
 
@@ -78,12 +76,7 @@ public class DefendantResponseReceiptServiceIT extends BaseMockSpringTest {
         provideLocalPdfService();
 
         DirectionsQuestionnaire directionsQuestionnaire = SampleDirectionsQuestionnaire
-            .builder()
-            .withVulnerabilityQuestions(VulnerabilityQuestions.builder()
-                .vulnerabilityQuestions(YES)
-                .vulnerabilityDetails("Some details here")
-                .build())
-            .withRequireSupport(null).build();
+            .builder().withRequireSupport(null).build();
 
         Claim claim = SampleClaim.builder()
             .withResponse(
