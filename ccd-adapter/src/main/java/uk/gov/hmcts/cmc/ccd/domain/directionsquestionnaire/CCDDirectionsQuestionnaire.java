@@ -36,4 +36,8 @@ public class CCDDirectionsQuestionnaire {
     private CCDYesNoOption permissionForExpert;
     private String expertEvidenceToExamine;
     private String reasonForExpertAdvice;
+    private CCDYesNoOption vulnerabilityQuestions;
+    private String vulnerabilityDetails;
+    private CCDYesNoOption determinationWithoutHearingQuestions;
+    private String determinationWithoutHearingQuestionsDetails;
 }
