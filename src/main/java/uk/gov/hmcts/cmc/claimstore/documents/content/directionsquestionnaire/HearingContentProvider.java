@@ -126,6 +126,9 @@ public class HearingContentProvider {
         contentBuilder.expertReports(asStream(questionnaire.getExpertReports()).map(mapExpertReport)
             .collect(toList()));
 
+        questionnaire.getVulnerabilityQuestions().ifPresent(contentBuilder::vulnerabilityQuestions);
+
+        questionnaire.getDeterminationWithoutHearingQuestions().ifPresent(contentBuilder::determinationWithoutHearingQuestions);
         return contentBuilder.build();
     }
 
