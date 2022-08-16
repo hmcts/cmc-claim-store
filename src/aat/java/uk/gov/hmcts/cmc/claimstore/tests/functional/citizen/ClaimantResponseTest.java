@@ -13,7 +13,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse.ClaimantResponseAcceptation;
@@ -56,10 +55,10 @@ public class ClaimantResponseTest extends BaseTest {
     @Retry
     public void shouldSaveClaimantResponseAcceptationReferToJudge() {
         commonOperations.submitClaimantResponse(
-            SampleClaimantResponse.validDefaultAcceptation(),
-            claim.getExternalId(),
-            claimant
-        ).then()
+                SampleClaimantResponse.validDefaultAcceptation(),
+                claim.getExternalId(),
+                claimant
+            ).then()
             .statusCode(HttpStatus.CREATED.value());
 
         Claim claimWithClaimantResponse = commonOperations
@@ -76,10 +75,10 @@ public class ClaimantResponseTest extends BaseTest {
     @Retry
     public void shouldSaveClaimantResponseAcceptationIssueCCJWithDefendantPaymentIntention() {
         commonOperations.submitClaimantResponse(
-            ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithDefendantPaymentIntention(),
-            claim.getExternalId(),
-            claimant
-        ).then()
+                ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithDefendantPaymentIntention(),
+                claim.getExternalId(),
+                claimant
+            ).then()
             .statusCode(HttpStatus.CREATED.value());
 
         Claim claimWithClaimantResponse = commonOperations
@@ -104,10 +103,10 @@ public class ClaimantResponseTest extends BaseTest {
     @Retry
     public void shouldNotSaveClaimantResponseAcceptationIssueCCJWithClaimantPaymentIntention() {
         commonOperations.submitClaimantResponse(
-            ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithClaimantPaymentIntentionBySetDate(),
-            claim.getExternalId(),
-            claimant
-        ).then()
+                ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithClaimantPaymentIntentionBySetDate(),
+                claim.getExternalId(),
+                claimant
+            ).then()
             .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -115,10 +114,10 @@ public class ClaimantResponseTest extends BaseTest {
     @Retry
     public void shouldSaveClaimantResponseAcceptationIssueCCJWithCourtDetermination() {
         commonOperations.submitClaimantResponse(
-            ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithCourtDetermination(),
-            claim.getExternalId(),
-            claimant
-        ).then()
+                ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithCourtDetermination(),
+                claim.getExternalId(),
+                claimant
+            ).then()
             .statusCode(HttpStatus.CREATED.value());
 
         Claim claimWithClaimantResponse = commonOperations
@@ -131,10 +130,10 @@ public class ClaimantResponseTest extends BaseTest {
     @Retry
     public void shouldSaveClaimantResponseAcceptationIssueSettlementWithCourtDetermination() {
         commonOperations.submitClaimantResponse(
-            ClaimantResponseAcceptation.builder().buildAcceptationIssueSettlementWithCourtDetermination(),
-            claim.getExternalId(),
-            claimant
-        ).then()
+                ClaimantResponseAcceptation.builder().buildAcceptationIssueSettlementWithCourtDetermination(),
+                claim.getExternalId(),
+                claimant
+            ).then()
             .statusCode(HttpStatus.CREATED.value());
 
         Claim claimWithClaimantResponse = commonOperations
@@ -147,10 +146,10 @@ public class ClaimantResponseTest extends BaseTest {
     @Retry
     public void shouldSaveClaimantResponseAcceptationIssueSettlementWithDefendantPaymentIntention() {
         commonOperations.submitClaimantResponse(
-            ClaimantResponseAcceptation.builder().buildAcceptationIssueSettlementWithDefendantPaymentIntention(),
-            claim.getExternalId(),
-            claimant
-        ).then()
+                ClaimantResponseAcceptation.builder().buildAcceptationIssueSettlementWithDefendantPaymentIntention(),
+                claim.getExternalId(),
+                claimant
+            ).then()
             .statusCode(HttpStatus.CREATED.value());
 
         Claim claimWithClaimantResponse = commonOperations
@@ -168,28 +167,6 @@ public class ClaimantResponseTest extends BaseTest {
         assertThat(claimantResponse.getFormaliseOption()).contains(SETTLEMENT);
         assertThat(claimWithClaimantResponse.getCountyCourtJudgment()).isNull();
         assertThat(claimWithClaimantResponse.getSettlement()).isNotEmpty();
-    }
-
-    @Test
-    @Retry
-    public void shouldSaveClaimantResponseRejection() {
-        commonOperations.submitClaimantResponse(
-            SampleClaimantResponse.validRejectionWithDirectionsQuestionnaire(),
-            claim.getExternalId(),
-            claimant
-        ).then()
-            .statusCode(HttpStatus.CREATED.value());
-
-        Claim claimWithClaimantResponse = commonOperations
-            .retrieveClaim(claim.getExternalId(), claimant.getAuthorisation());
-
-        assertThat(claimWithClaimantResponse.getClaimantRespondedAt()).isNotEmpty();
-
-        ResponseRejection claimantResponse = (ResponseRejection) claimWithClaimantResponse.getClaimantResponse()
-            .orElseThrow(() -> new AssertionError(MISSING_CLAIMANT_RESPONSE));
-
-        assertThat(claimantResponse.getFreeMediation()).isNotEmpty();
-        assertThat(claimantResponse.getAmountPaid()).contains(TEN_2DP);
     }
 
     private Claim createClaimWithResponse(Claim createdCase, User defendant) {
