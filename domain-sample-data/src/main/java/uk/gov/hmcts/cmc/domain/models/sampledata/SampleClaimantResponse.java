@@ -188,7 +188,8 @@ public abstract class SampleClaimantResponse {
                 .noMediationReason("Not interested")
                 .reason("Some valid reason")
                 .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder()
-                    .withHearingLocation(pilotHearingLocation).build())
+                    .withHearingLocation(pilotHearingLocation)
+                    .build())
                 .build();
         }
     }
