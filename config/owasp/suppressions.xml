@@ -74,78 +74,24 @@
         <cve>CVE-2021-45105</cve>
     </suppress>
 
+    <!-- false positive: https://nvd.nist.gov/vuln/detail/CVE-2021-42550  -->
     <suppress until="2023-03-01">
         <notes><![CDATA[
-   file name: logback-classic-1.2.3.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/ch\.qos\.logback/logback\-classic@.*$</packageUrl>
-        <cpe>cpe:/a:qos:logback</cpe>
-    </suppress>
-
-    <suppress until="2023-03-01">
-        <notes><![CDATA[
-   file name: logback-classic-1.2.3.jar
+   file name: logback-classic-1.2.11.jar
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/ch\.qos\.logback/logback\-classic@.*$</packageUrl>
         <cve>CVE-2021-42550</cve>
     </suppress>
 
+    <!-- false positive: https://nvd.nist.gov/vuln/detail/CVE-2021-42550  -->
     <suppress until="2023-03-01">
         <notes><![CDATA[
-   file name: logback-core-1.2.3.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/ch\.qos\.logback/logback\-core@.*$</packageUrl>
-        <cpe>cpe:/a:qos:logback</cpe>
-    </suppress>
-
-    <suppress until="2023-03-01">
-        <notes><![CDATA[
-   file name: logback-core-1.2.3.jar
+   file name: logback-core-1.2.11.jar
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/ch\.qos\.logback/logback\-core@.*$</packageUrl>
         <cve>CVE-2021-42550</cve>
     </suppress>
-
-    <suppress until="2023-03-01">
-        <notes><![CDATA[
-   file name: spring-core-5.3.4.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-core@.*$</packageUrl>
-        <cpe>cpe:/a:pivotal_software:spring_framework</cpe>
-    </suppress>
-
-    <suppress until="2023-03-01">
-        <notes><![CDATA[
-   file name: spring-core-5.3.4.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-core@.*$</packageUrl>
-        <cpe>cpe:/a:springsource:spring_framework</cpe>
-    </suppress>
-
-    <suppress until="2023-03-01">
-        <notes><![CDATA[
-   file name: spring-core-5.3.4.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-core@.*$</packageUrl>
-        <cpe>cpe:/a:vmware:spring_framework</cpe>
-    </suppress>
-
-    <suppress until="2023-03-01">
-        <notes><![CDATA[
-   file name: spring-core-5.3.4.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-core@.*$</packageUrl>
-        <cpe>cpe:/a:vmware:springsource_spring_framework</cpe>
-    </suppress>
-
-    <suppress until="2023-03-01">
-        <notes><![CDATA[
-   file name: spring-core-5.3.4.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-core@.*$</packageUrl>
-        <cve>CVE-2021-22060</cve>
-    </suppress>
-
+    
     <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: tomcat-embed-core-9.0.44.jar
