@@ -1,0 +1,24 @@
+{
+  "id" : "93c5facd-1dee-4634-af63-306254e8da83",
+  "name" : "fees-register_fees_lookup",
+  "request" : {
+    "url" : "/fees-register/fees/lookup?service=test%20service&jurisdiction1=test%20jurisdiction1&jurisdiction2=test%20jurisdiction2&channel=test%20channel&event=test%20event&amount_or_volume=1000.0",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "{\"code\":\"FEE123\",\"description\":\"Test service fees - Amount - 500.01 upto 1000 GBP\",\"version\":3,\"fee_amount\":60.00}",
+    "headers" : {
+      "X-Content-Type-Options" : "nosniff",
+      "X-XSS-Protection" : "1; mode=block",
+      "Cache-Control" : "no-cache, no-store, max-age=0, must-revalidate",
+      "Pragma" : "no-cache",
+      "Expires" : "0",
+      "X-Frame-Options" : "DENY",
+      "Content-Type" : "application/json;charset=UTF-8",
+      "Date" : "Thu, 15 Aug 2019 12:35:08 GMT"
+    }
+  },
+  "uuid" : "93c5facd-1dee-4634-af63-306254e8da83",
+  "persistent" : true
+}

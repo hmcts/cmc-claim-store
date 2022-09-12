@@ -1,0 +1,24 @@
+{
+  "id": "ae05cd02-2c47-4ca3-acc0-e83cabfcefd9",
+  "name": "fees-register_fees",
+  "request": {
+    "url": "/fees-register/fees?service=test%20service&jurisdiction1=test%20jurisdiction1&jurisdiction2=test%20jurisdiction2&channel=test%20channel&event=test%20event&feeVersionStatus=approved",
+    "method": "GET"
+  },
+  "response": {
+    "status": 200,
+    "body": "[{\"code\":\"FEE0123\",\"fee_type\":\"extortionate\",\"channel_type\":{\"name\":\"test channel\"},\"event_type\":{\"name\":\"test event\"},\"jurisdiction1\":{\"name\":\"test jurisdiction1\"},\"jurisdiction2\":{\"name\":\"test jurisdiction2\"},\"service_type\":{\"name\":\"test service\"},\"applicant_type\":{\"name\":\"all\"},\"fee_versions\":[{\"description\":\"Test service fees - Amount - 3000.01 up to 5000 GBP\",\"status\":\"approved\",\"version\":3,\"valid_from\":\"2015-03-09T00:00:00.000+0000\",\"flat_amount\":{\"amount\":205.00},\"memo_line\":\"Test fees £3,000-5,000\",\"statutory_instrument\":\"2015 No 576\",\"natural_account_code\":\"4481102133\",\"direction\":\"enhanced\"}],\"current_version\":{\"description\":\"Test service fees - Amount - 3000.01 up to 5000 GBP\",\"status\":\"approved\",\"version\":3,\"valid_from\":\"2015-03-09T00:00:00.000+0000\",\"flat_amount\":{\"amount\":205.00},\"memo_line\":\"Test fees £3,000-5,000\",\"statutory_instrument\":\"2015 No 576\",\"natural_account_code\":\"4481102133\",\"direction\":\"enhanced\"},\"min_range\":3000.01,\"max_range\":5000.00,\"range_unit\":\"GBP\",\"unspecified_claim_amount\":false,\"matching_version\":{\"description\":\"Test service fees - Amount - 3000.01 up to 5000 GBP\",\"status\":\"approved\",\"version\":3,\"valid_from\":\"2015-03-09T00:00:00.000+0000\",\"flat_amount\":{\"amount\":205.00},\"memo_line\":\"Test fees £3,000-5,000\",\"statutory_instrument\":\"2015 No 576\",\"natural_account_code\":\"4481102133\",\"direction\":\"enhanced\"}},{\"code\":\"FEE1234\",\"fee_type\":\"ranged\",\"channel_type\":{\"name\":\"test channel\"},\"event_type\":{\"name\":\"test event\"},\"jurisdiction1\":{\"name\":\"test jurisdiction1\"},\"jurisdiction2\":{\"name\":\"test jurisdiction2\"},\"service_type\":{\"name\":\"test service\"},\"applicant_type\":{\"name\":\"all\"},\"fee_versions\":[{\"description\":\"Test service fees - Amount - 0.01 up to 200 GBP.\",\"status\":\"approved\",\"version\":1,\"valid_from\":\"2015-03-09T00:00:00.000+0000\",\"flat_amount\":{\"amount\":5.00},\"memo_line\":\"Test fees £0.01-200\",\"natural_account_code\":\"4481102133\",\"direction\":\"enhanced\"}],\"current_version\":{\"description\":\"Test service fees - Amount - 0.01 up to 200 GBP.\",\"status\":\"approved\",\"version\":1,\"valid_from\":\"2015-03-09T00:00:00.000+0000\",\"flat_amount\":{\"amount\":5.00},\"memo_line\":\"Test fees £0.01-200\",\"natural_account_code\":\"4481102133\",\"direction\":\"enhanced\"},\"min_range\":0.01,\"max_range\":200.00,\"range_unit\":\"GBP\",\"unspecified_claim_amount\":false,\"matching_version\":{\"description\":\"Test service fees - Amount - 0.01 up to 200 GBP.\",\"status\":\"approved\",\"version\":1,\"valid_from\":\"2015-03-09T00:00:00.000+0000\",\"flat_amount\":{\"amount\":5.00},\"memo_line\":\"Test fees £0.01-200\",\"natural_account_code\":\"4481102133\",\"direction\":\"enhanced\"}}]",
+    "headers": {
+      "X-Content-Type-Options": "nosniff",
+      "X-XSS-Protection": "1; mode=block",
+      "Cache-Control": "no-cache, no-store, max-age=0, must-revalidate",
+      "Pragma": "no-cache",
+      "Expires": "0",
+      "X-Frame-Options": "DENY",
+      "Content-Type": "application/json;charset=UTF-8",
+      "Date": "Thu, 15 Aug 2019 13:00:47 GMT"
+    }
+  },
+  "uuid": "ae05cd02-2c47-4ca3-acc0-e83cabfcefd9",
+  "persistent": true
+}
