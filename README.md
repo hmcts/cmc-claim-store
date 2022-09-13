@@ -1,6 +1,6 @@
 # CMC claim store
 
-[![codecov](https://codecov.io/gh/hmcts/cmc-claim-store/branch/master/graph/badge.svg)](https://codecov.io/gh/hmcts/cmc-claim-store)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=uk.gov.hmcts.cmc%3Aclaim-store&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=uk.gov.hmcts.cmc%3Aclaim-store) [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=uk.gov.hmcts.cmc%3Aclaim-store&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=uk.gov.hmcts.cmc%3Aclaim-store) [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=uk.gov.hmcts.cmc%3Aclaim-store&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=uk.gov.hmcts.cmc%3Aclaim-store) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=uk.gov.hmcts.cmc%3Aclaim-store&metric=coverage)](https://sonarcloud.io/summary/new_code?id=uk.gov.hmcts.cmc%3Aclaim-store)
 
 This is the backend service for Civil Money Claims.
 The service provides a set of RESTful endpoints for the CMC frontend application.
@@ -10,6 +10,18 @@ The two main responsibilities of this application are:
 
 Internally state is persisted to a relational database.
 The service also delegates some responsibilities to other RESTful services e.g. idam-api or pdf-service. 
+
+## Overview
+
+<p align="center">
+<a href="https://github.com/hmcts/cmc-citizen-frontend">cmc-citizen-frontend</a> • <a href="https://github.com/hmcts/cmc-legal-rep-frontend">cmc-legal-rep-frontend</a> • <b><a href="https://github.com/hmcts/cmc-claim-store">cmc-claim-store</a></b>
+</p>
+
+<br>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/hmcts/reform-api-docs/master/docs/c4/cmc/images/structurizr-cmc-overview.png" width="550"/>
+</p>
 
 ## Getting started
 
