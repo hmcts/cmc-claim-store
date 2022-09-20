@@ -112,6 +112,9 @@ public class ClaimData {
 
     private final List<String> hwfMoreInfoNeededDocuments;
 
+
+    private final String hwfProvideDocumentName;
+
     private final LocalDate hwfDocumentsToBeSentBefore;
 
     private final BreathingSpace breathingSpace;
@@ -145,6 +148,7 @@ public class ClaimData {
         String hwfFeeDetailsSummary,
         String hwfMandatoryDetails,
         List<String> hwfMoreInfoNeededDocuments,
+        String hwfProvideDocumentName,
         LocalDate hwfDocumentsToBeSentBefore,
         BreathingSpace breathingSpace) {
         this.externalId = externalId != null ? externalId : UUID.randomUUID();
@@ -173,6 +177,7 @@ public class ClaimData {
         this.hwfFeeDetailsSummary = hwfFeeDetailsSummary;
         this.hwfMandatoryDetails = hwfMandatoryDetails;
         this.hwfMoreInfoNeededDocuments = hwfMoreInfoNeededDocuments;
+        this.hwfProvideDocumentName = hwfProvideDocumentName;
         this.hwfDocumentsToBeSentBefore = hwfDocumentsToBeSentBefore;
         this.breathingSpace = breathingSpace;
     }
@@ -330,6 +335,9 @@ public class ClaimData {
         return hwfMoreInfoNeededDocuments;
     }
 
+    public String getHwfProvideDocumentName() {
+        return hwfProvideDocumentName;
+    }
     public LocalDate getHwfDocumentsToBeSentBefore() {
         return hwfDocumentsToBeSentBefore;
     }
