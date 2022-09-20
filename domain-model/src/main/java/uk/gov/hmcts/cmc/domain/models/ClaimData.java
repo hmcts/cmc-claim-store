@@ -112,7 +112,6 @@ public class ClaimData {
 
     private final List<String> hwfMoreInfoNeededDocuments;
 
-
     private final String hwfProvideDocumentName;
 
     private final LocalDate hwfDocumentsToBeSentBefore;
@@ -338,6 +337,7 @@ public class ClaimData {
     public String getHwfProvideDocumentName() {
         return hwfProvideDocumentName;
     }
+
     public LocalDate getHwfDocumentsToBeSentBefore() {
         return hwfDocumentsToBeSentBefore;
     }
