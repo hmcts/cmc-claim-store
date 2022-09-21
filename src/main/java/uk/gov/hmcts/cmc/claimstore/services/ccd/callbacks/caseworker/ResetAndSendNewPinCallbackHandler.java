@@ -106,7 +106,7 @@ public class ResetAndSendNewPinCallbackHandler extends CallbackHandler {
         GeneratePinResponse pinResponse =
             userService.generatePin(claim.getClaimData().getDefendant().getName(), authorisation);
 
-        if (pinResponse.getPin() == null || pinResponse.getPin().isEmpty()){
+        if (pinResponse.getPin() == null || pinResponse.getPin().isEmpty()) {
             logger.info("Claim {} does not have any pin associated", claim.getReferenceNumber());
 
             return AboutToStartOrSubmitCallbackResponse.builder()
