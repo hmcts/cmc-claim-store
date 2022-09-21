@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
@@ -104,7 +105,16 @@ public class ResetAndSendNewPinCallbackHandler extends CallbackHandler {
 
         GeneratePinResponse pinResponse =
             userService.generatePin(claim.getClaimData().getDefendant().getName(), authorisation);
-        String letterHolderId = pinResponse.getUserId();
+
+        if (pinResponse.getPin() == null || pinResponse.getPin().isEmpty()){
+            logger.info("Claim {} does not have any pin associated", claim.getReferenceNumber());
+
+            return AboutToStartOrSubmitCallbackResponse.builder()
+                .errors(List.of("Pin does not exist for Claim, cannot send notification - please try again"))
+                .build();
+        }
+
+        logger.info("Reset pin action triggered for claim {} ", claim.getReferenceNumber());
 
         claim.getClaimData().getDefendant().getEmail().ifPresent(defendantEmail ->
             claimIssuedNotificationService.sendMail(
@@ -116,16 +126,24 @@ public class ResetAndSendNewPinCallbackHandler extends CallbackHandler {
                 claim.getClaimData().getDefendant().getName()
             ));
 
-        ccdCreateCaseService.grantAccessToCase(claim.getId().toString(), letterHolderId);
+        Optional.ofNullable(pinResponse.getUserId()).ifPresent(
+            letterHolderId ->
+                ccdCreateCaseService.grantAccessToCase(claim.getId().toString(), letterHolderId));
+
         Optional.ofNullable(claim.getLetterHolderId()).ifPresent(
             previousLetterHolderId ->
                 ccdCreateCaseService.removeAccessToCase(claim.getId().toString(), previousLetterHolderId)
         );
 
-        var ccdCase = caseDetailsConverter.extractCCDCase(callbackParams.getRequest().getCaseDetails());
-        ccdCase = updateLetterHolderId(ccdCase, letterHolderId);
+        AtomicReference<CCDCase> ccdCase = new AtomicReference<>(caseDetailsConverter.extractCCDCase(callbackParams.getRequest().getCaseDetails()));
+
+        Optional.ofNullable(pinResponse.getUserId()).ifPresent(
+            letterHolderId ->
+                ccdCase.set(updateLetterHolderId(ccdCase.get(), letterHolderId))
+        );
+
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetailsConverter.convertToMap(ccdCase))
+            .data(caseDetailsConverter.convertToMap(ccdCase.get()))
             .build();
     }
 
