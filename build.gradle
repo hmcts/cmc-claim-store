@@ -34,7 +34,7 @@ def versions = [
   springfoxSwagger  : '2.9.2',
   reformJavaLogging : '5.1.1',
   restAssuredVersion: '4.2.0',
-  jackson           : '2.11.0',
+  jackson           : '2.13.3',
   junit             : '5.7.1',
   junitPlatform     : '1.7.1',
 ]
@@ -137,6 +137,12 @@ allprojects {
       ) {
         entry 'jackson-module-parameter-names'
       }
+      dependencySet(
+        group: 'com.fasterxml.jackson.core',
+        version: versions.jackson
+      ) {
+        entry 'jackson-annotations'
+      }
       // solves CVE-2019-13990
       dependencySet(
         group: 'org.quartz-scheduler',
@@ -150,6 +156,13 @@ allprojects {
         version: '5.5.1'
       ) {
         entry 'spring-security-crypto'
+      }
+      // solves CVE-2022-25857
+      dependencySet(
+        group: 'org.yaml',
+        version: '1.31'
+      ) {
+        entry 'snakeyaml'
       }
     }
   }
