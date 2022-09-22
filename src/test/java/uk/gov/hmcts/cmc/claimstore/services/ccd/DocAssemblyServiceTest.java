@@ -32,6 +32,9 @@ public class DocAssemblyServiceTest {
     private static final String BEARER_TOKEN = "Bearer let me in";
     private static final String SERVICE_TOKEN = "Bearer service let me in";
     private static final String DOC_URL = "http://success.test";
+    private static final String CASE_TYPE_ID = "MoneyClaimCase";
+    private static final String JURISDICTION_ID = "CMC";
+    private static final String TEMPLATE_ID = "templateId";
 
     private static final UserDetails JUDGE = new UserDetails(
         "1",
@@ -67,10 +70,9 @@ public class DocAssemblyServiceTest {
     public void shouldGenerateDocument() {
 
         DocAssemblyTemplateBody formPayload = mock(DocAssemblyTemplateBody.class);
-        final String templateId = "templateId";
 
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
-            .templateId(templateId)
+            .templateId(TEMPLATE_ID)
             .outputType(OutputType.PDF)
             .formPayload(formPayload)
             .build();
@@ -79,18 +81,17 @@ public class DocAssemblyServiceTest {
             .generateOrder(eq(BEARER_TOKEN), eq(SERVICE_TOKEN), eq(docAssemblyRequest)))
             .thenReturn(docAssemblyResponse);
 
-        CCDDocument document = docAssemblyService.generateDocument(ccdCase, BEARER_TOKEN, formPayload, templateId);
+        CCDDocument document = docAssemblyService.generateDocument(ccdCase, BEARER_TOKEN, formPayload, TEMPLATE_ID);
 
         assertEquals(DOC_URL, document.getDocumentUrl());
     }
 
     @Test
     public void shouldRenderTemplate() {
-        String templateId = "templateId";
         ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
         DocAssemblyTemplateBody docAssemblyTemplateBody = DocAssemblyTemplateBody.builder().build();
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
-            .templateId(templateId)
+            .templateId(TEMPLATE_ID)
             .outputType(OutputType.PDF)
             .formPayload(docAssemblyTemplateBody)
             .build();
@@ -98,7 +99,31 @@ public class DocAssemblyServiceTest {
             .generateOrder(eq(BEARER_TOKEN), eq(SERVICE_TOKEN), eq(docAssemblyRequest)))
             .thenReturn(docAssemblyResponse);
 
-        DocAssemblyResponse response = docAssemblyService.renderTemplate(ccdCase, BEARER_TOKEN, templateId,
+        DocAssemblyResponse response = docAssemblyService.renderTemplate(ccdCase, BEARER_TOKEN, TEMPLATE_ID,
+            docAssemblyTemplateBody);
+
+        assertThat(response.getRenditionOutputLocation()).isEqualTo(DOC_URL);
+
+        verify(docAssemblyClient).generateOrder(eq(BEARER_TOKEN), eq(SERVICE_TOKEN), any(DocAssemblyRequest.class));
+    }
+
+    @Test
+    public void shouldRenderTemplateWhenCaseTypeIdAndJurisdictionIDisPresent() {
+        ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
+        DocAssemblyTemplateBody docAssemblyTemplateBody = DocAssemblyTemplateBody.builder().build();
+        DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
+            .templateId(TEMPLATE_ID)
+            .jurisdictionId(JURISDICTION_ID)
+            .caseTypeId(CASE_TYPE_ID)
+            .outputType(OutputType.PDF)
+            .formPayload(docAssemblyTemplateBody)
+            .build();
+        when(docAssemblyClient
+            .generateOrder(eq(BEARER_TOKEN), eq(SERVICE_TOKEN), eq(docAssemblyRequest)))
+            .thenReturn(docAssemblyResponse);
+
+        DocAssemblyResponse response = docAssemblyService.renderTemplate(ccdCase, BEARER_TOKEN, TEMPLATE_ID,
+            JURISDICTION_ID, CASE_TYPE_ID,
             docAssemblyTemplateBody);
 
         assertThat(response.getRenditionOutputLocation()).isEqualTo(DOC_URL);

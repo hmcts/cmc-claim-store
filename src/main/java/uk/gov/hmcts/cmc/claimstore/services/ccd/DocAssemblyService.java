@@ -38,33 +38,41 @@ public class DocAssemblyService {
     public CCDDocument generateDocument(CCDCase ccdCase,
                                         String authorisation,
                                         DocAssemblyTemplateBody formPayload,
-                                        String templateId) {
+                                        String templateId,
+                                        String caseTypeId,
+                                        String jurisdictionId) {
 
         var docAssemblyResponse = renderTemplate(
             ccdCase,
             authorisation,
             templateId,
+            caseTypeId,
+            jurisdictionId,
             formPayload
-            );
+        );
 
         return CCDDocument.builder()
-          .documentUrl(docAssemblyResponse.getRenditionOutputLocation())
-          .build();
+            .documentUrl(docAssemblyResponse.getRenditionOutputLocation())
+            .build();
     }
 
     public DocAssemblyResponse renderTemplate(CCDCase ccdCase, String authorisation, String templateId,
+                                              String caseTypeId, String jurisdictionId,
                                               DocAssemblyTemplateBody payload) {
-        return renderTemplate(ccdCase, authorisation, templateId, payload, builder());
+        return renderTemplate(ccdCase, authorisation, templateId, caseTypeId, jurisdictionId, payload, builder());
     }
 
     public DocAssemblyResponse renderTemplate(CCDCase ccdCase, String authorisation, String templateId,
+                                              String caseTypeId, String jurisdictionId,
                                               DocAssemblyTemplateBody payload, String fileName) {
-        return renderTemplate(ccdCase, authorisation, templateId, payload, builder().outputFilename(fileName));
+        return renderTemplate(ccdCase, authorisation, templateId, caseTypeId, jurisdictionId, payload, builder().outputFilename(fileName));
     }
 
     public DocAssemblyResponse renderTemplate(CCDCase ccdCase,
                                               String authorisation,
                                               String templateId,
+                                              String caseTypeId,
+                                              String jurisdictionId,
                                               DocAssemblyTemplateBody payload, DocAssemblyRequestBuilder builder) {
         logger.info("Creating document request for template: {}, external id: {}", templateId, ccdCase.getExternalId());
 
@@ -72,6 +80,8 @@ public class DocAssemblyService {
             .templateId(templateId)
             .outputType(OutputType.PDF)
             .formPayload(payload)
+            .caseTypeId(caseTypeId)
+            .jurisdictionId(jurisdictionId)
             .build();
 
         logger.info("Sending document request for template: {} external id: {}", templateId, ccdCase.getExternalId());

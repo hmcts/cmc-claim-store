@@ -42,6 +42,8 @@ public class PaperResponseLetterService {
     private final UserService userService;
     private final GeneralLetterService generalLetterService;
     private final CourtFinderApi courtFinderApi;
+    private final String caseTypeId;
+    private final String jurisdictionId;
 
     @Autowired
     public PaperResponseLetterService(
@@ -53,6 +55,8 @@ public class PaperResponseLetterService {
         @Value("${doc_assembly.oconFormOrganisationWithoutDQs}") String oconFormOrganisationWithoutDQs,
         @Value("${doc_assembly.paperDefenceCoverLetterTemplateID}") String paperDefenceCoverLetterTemplateID,
         @Value("${doc_assembly.oconN9FormTemplateID}") String oconN9FormTemplateID,
+        @Value("${ocmc.caseTypeId") String caseTypeId,
+        @Value("${ocmc.jurisdictionId}") String jurisdictionId,
         PaperDefenceLetterBodyMapper paperDefenceLetterBodyMapper,
         DocAssemblyService docAssemblyService,
         UserService userService,
@@ -72,6 +76,8 @@ public class PaperResponseLetterService {
         this.generalLetterService = generalLetterService;
         this.courtFinderApi = courtFinderApi;
         this.oconN9FormTemplateID = oconN9FormTemplateID;
+        this.caseTypeId = caseTypeId;
+        this.jurisdictionId = jurisdictionId;
     }
 
     public CCDDocument createCoverLetter(CCDCase ccdCase, String authorisation, LocalDate extendedResponseDeadline) {
@@ -81,7 +87,9 @@ public class PaperResponseLetterService {
         return docAssemblyService.generateDocument(ccdCase,
             authorisation,
             formPayloadForCoverLetter,
-            paperDefenceCoverLetterTemplateID);
+            paperDefenceCoverLetterTemplateID,
+            caseTypeId,
+            jurisdictionId);
     }
 
     private DocAssemblyTemplateBody getDocAssemblyTemplateBody(CCDCase ccdCase, String authorisation,
@@ -97,7 +105,9 @@ public class PaperResponseLetterService {
         return docAssemblyService.generateDocument(ccdCase,
             authorisation,
             formPayloadForCoverLetter,
-            oconN9FormTemplateID);
+            oconN9FormTemplateID,
+            caseTypeId,
+            jurisdictionId);
     }
 
     private String getCaseWorkerName(String authorisation) {
@@ -116,7 +126,9 @@ public class PaperResponseLetterService {
         return docAssemblyService.generateDocument(ccdCase,
             authorisation,
             paperResponseLetter.getPayload(),
-            paperResponseLetter.getTemplateId());
+            paperResponseLetter.getTemplateId(),
+            caseTypeId,
+            jurisdictionId);
     }
 
     private PaperResponseLetter formForCorrectDefendantType(CCDCase ccdCase, Claim claim, LocalDate extendedDeadline,
