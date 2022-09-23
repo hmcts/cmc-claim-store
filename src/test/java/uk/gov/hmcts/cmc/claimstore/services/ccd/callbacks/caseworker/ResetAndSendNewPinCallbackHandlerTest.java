@@ -150,20 +150,6 @@ public class ResetAndSendNewPinCallbackHandlerTest {
         );
     }
 
-    @Test
-    public void shouldReturnErrorWhenPinDoesNotExistForClaim() {
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(sampleClaimWithDefendantEmail);
-        String letterHolderId = "333";
-        GeneratePinResponse pinResponse = new GeneratePinResponse(null, letterHolderId);
-        when(userService.generatePin(anyString(), eq(AUTHORISATION))).thenReturn(pinResponse);
-
-        AboutToStartOrSubmitCallbackResponse response
-            = (AboutToStartOrSubmitCallbackResponse) resetAndSendNewPinCallbackHandler.handle(callbackParams);
-
-        assertThat(response.getErrors())
-            .contains("Pin does not exist for Claim, cannot send notification - please try again");
-    }
-
     private CCDCase getCcdCase() {
         return CCDCase.builder()
             .externalId(EXTERNAL_ID)

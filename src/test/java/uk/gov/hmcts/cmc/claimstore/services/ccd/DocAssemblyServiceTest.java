@@ -35,6 +35,7 @@ public class DocAssemblyServiceTest {
     private static final String CASE_TYPE_ID = "MoneyClaimCase";
     private static final String JURISDICTION_ID = "CMC";
     private static final String TEMPLATE_ID = "templateId";
+    private static final boolean secureDocStoreEnabled = true;
 
     private static final UserDetails JUDGE = new UserDetails(
         "1",
@@ -77,6 +78,7 @@ public class DocAssemblyServiceTest {
             .formPayload(formPayload)
             .caseTypeId(CASE_TYPE_ID)
             .jurisdictionId(JURISDICTION_ID)
+            .secureDocStoreEnabled(secureDocStoreEnabled)
             .build();
 
         when(docAssemblyClient
@@ -99,6 +101,7 @@ public class DocAssemblyServiceTest {
             .formPayload(docAssemblyTemplateBody)
             .caseTypeId(CASE_TYPE_ID)
             .jurisdictionId(JURISDICTION_ID)
+            .secureDocStoreEnabled(secureDocStoreEnabled)
             .build();
         when(docAssemblyClient
             .generateOrder(eq(BEARER_TOKEN), eq(SERVICE_TOKEN), eq(docAssemblyRequest)))

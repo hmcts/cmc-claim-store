@@ -25,6 +25,7 @@ public class DocAssemblyService {
 
     private final AuthTokenGenerator authTokenGenerator;
     private final DocAssemblyClient docAssemblyClient;
+    private static final boolean secureDocStoreEnabled = true;
 
     @Autowired
     public DocAssemblyService(
@@ -82,6 +83,7 @@ public class DocAssemblyService {
             .formPayload(payload)
             .caseTypeId(caseTypeId)
             .jurisdictionId(jurisdictionId)
+            .secureDocStoreEnabled(secureDocStoreEnabled)
             .build();
 
         logger.info("Sending document request for template: {} external id: {}", templateId, ccdCase.getExternalId());

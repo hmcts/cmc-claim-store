@@ -77,9 +77,9 @@ class TransferCaseDocumentPublishServiceTest {
             DEFENDANT_LETTER_TEMPLATE_ID, true);
         FieldUtils.writeField(transferCaseDocumentPublishService, "ccbcTransferTemplateId",
             DEFENDANT_CCBC_LETTER_TEMPLATE_ID, true);
-        FieldUtils.writeField(transferCaseDocumentPublishService, "CASE_TYPE_ID",
+        FieldUtils.writeField(transferCaseDocumentPublishService, "caseTypeId",
             CASE_TYPE_ID, true);
-        FieldUtils.writeField(transferCaseDocumentPublishService, "JURISDICTION_ID",
+        FieldUtils.writeField(transferCaseDocumentPublishService, "jurisdictionId",
             JURISDICTION_ID, true);
     }
 
