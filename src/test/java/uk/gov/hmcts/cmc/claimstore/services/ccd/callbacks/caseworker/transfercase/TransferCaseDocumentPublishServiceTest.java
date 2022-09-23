@@ -40,6 +40,8 @@ class TransferCaseDocumentPublishServiceTest {
     private static final String COURT_LETTER_TEMPLATE_ID = "courtLetterTemplateId";
     private static final String DEFENDANT_LETTER_TEMPLATE_ID = "defendantLetterTemplateId";
     private static final String DEFENDANT_CCBC_LETTER_TEMPLATE_ID = "ccbcTransferTemplateId";
+    private static final String CASE_TYPE_ID = "MoneyClaimCase";
+    private static final String JURISDICTION_ID = "CMC";
 
     @InjectMocks
     private TransferCaseDocumentPublishService transferCaseDocumentPublishService;
@@ -75,6 +77,10 @@ class TransferCaseDocumentPublishServiceTest {
             DEFENDANT_LETTER_TEMPLATE_ID, true);
         FieldUtils.writeField(transferCaseDocumentPublishService, "ccbcTransferTemplateId",
             DEFENDANT_CCBC_LETTER_TEMPLATE_ID, true);
+        FieldUtils.writeField(transferCaseDocumentPublishService, "CASE_TYPE_ID",
+            CASE_TYPE_ID, true);
+        FieldUtils.writeField(transferCaseDocumentPublishService, "JURISDICTION_ID",
+            JURISDICTION_ID, true);
     }
 
     @Test
@@ -89,7 +95,8 @@ class TransferCaseDocumentPublishServiceTest {
             .thenReturn(formPayloadForCourt);
 
         when(docAssemblyService
-            .generateDocument(eq(ccdCase), eq(AUTHORISATION), eq(formPayloadForCourt), eq(COURT_LETTER_TEMPLATE_ID)))
+            .generateDocument(eq(ccdCase), eq(AUTHORISATION), eq(formPayloadForCourt), eq(COURT_LETTER_TEMPLATE_ID),
+                eq(CASE_TYPE_ID), eq(JURISDICTION_ID)))
             .thenReturn(generatedCoverDoc);
 
         CCDDocument namedCoverDoc = generatedCoverDoc.toBuilder()
@@ -137,7 +144,7 @@ class TransferCaseDocumentPublishServiceTest {
         when(noticeOfTransferLetterTemplateMapper.noticeOfTransferToCcbcLetterBodyForDefendant(ccdCase, AUTHORISATION))
             .thenReturn(formPayloadForCourt);
         when(docAssemblyService.generateDocument(ccdCase, AUTHORISATION, formPayloadForCourt,
-            DEFENDANT_CCBC_LETTER_TEMPLATE_ID)).thenReturn(generatedCoverDoc);
+            DEFENDANT_CCBC_LETTER_TEMPLATE_ID, CASE_TYPE_ID, JURISDICTION_ID)).thenReturn(generatedCoverDoc);
 
         CCDDocument namedCoverDoc = generatedCoverDoc.toBuilder()
             .documentFileName(ccdCase.getPreviousServiceCaseReference() + "-defendant-case-handoff.pdf").build();
@@ -153,7 +160,7 @@ class TransferCaseDocumentPublishServiceTest {
 
         verify(transferCaseLetterSender).sendNoticeOfTransferForDefendant(AUTHORISATION, namedCoverDoc, claim);
         verify(docAssemblyService).generateDocument(ccdCase, AUTHORISATION, formPayloadForCourt,
-            DEFENDANT_CCBC_LETTER_TEMPLATE_ID);
+            DEFENDANT_CCBC_LETTER_TEMPLATE_ID, CASE_TYPE_ID, JURISDICTION_ID);
     }
 
     private void givenDefendantIsLinked(boolean isLinked) {
