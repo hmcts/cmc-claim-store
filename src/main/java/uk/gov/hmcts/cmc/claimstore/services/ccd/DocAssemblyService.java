@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.claimstore.config.DocAssemblyAdditionalFieldsConfiguration;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.docassembly.DocAssemblyClient;
@@ -25,14 +26,16 @@ public class DocAssemblyService {
 
     private final AuthTokenGenerator authTokenGenerator;
     private final DocAssemblyClient docAssemblyClient;
+    private final DocAssemblyAdditionalFieldsConfiguration config;
 
     @Autowired
     public DocAssemblyService(
         AuthTokenGenerator authTokenGenerator,
-        DocAssemblyClient docAssemblyClient
-    ) {
+        DocAssemblyClient docAssemblyClient,
+        DocAssemblyAdditionalFieldsConfiguration config) {
         this.authTokenGenerator = authTokenGenerator;
         this.docAssemblyClient = docAssemblyClient;
+        this.config = config;
     }
 
     public CCDDocument generateDocument(CCDCase ccdCase,
@@ -72,6 +75,9 @@ public class DocAssemblyService {
             .templateId(templateId)
             .outputType(OutputType.PDF)
             .formPayload(payload)
+            .caseTypeId(config.getCaseTypeId())
+            .jurisdictionId(config.getJurisdictionId())
+            .secureDocStoreEnabled(config.isSecureDocStoreEnabled())
             .build();
 
         logger.info("Sending document request for template: {} external id: {}", templateId, ccdCase.getExternalId());
