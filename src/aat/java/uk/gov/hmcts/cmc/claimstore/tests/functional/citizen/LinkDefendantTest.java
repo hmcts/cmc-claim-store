@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
@@ -28,6 +29,7 @@ public class LinkDefendantTest extends BaseTest {
 
     @Test
     @Retry
+    @Cacheable("claimant-details")
     public void shouldBeAbleToSuccessfullyLinkDefendant() {
         Claim createdCase = commonOperations.submitClaim(
             claimant.getAuthorisation(),
