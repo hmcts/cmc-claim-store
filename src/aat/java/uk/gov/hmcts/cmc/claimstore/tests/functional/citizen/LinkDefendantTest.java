@@ -29,7 +29,6 @@ public class LinkDefendantTest extends BaseTest {
 
     @Test
     @Retry
-    @Cacheable("claimant-details")
     public void shouldBeAbleToSuccessfullyLinkDefendant() {
         Claim createdCase = commonOperations.submitClaim(
             claimant.getAuthorisation(),
