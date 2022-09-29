@@ -4,7 +4,6 @@ import io.restassured.RestAssured;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
