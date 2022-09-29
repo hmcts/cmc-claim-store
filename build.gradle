@@ -164,6 +164,13 @@ allprojects {
       ) {
         entry 'snakeyaml'
       }
+      // solves CVE-2020-25638
+      dependencySet(
+        group: 'org.hibernate',
+        version: '5.4.24.Final'
+      ) {
+        entry: 'hibernate-core'
+      }
     }
   }
 }
