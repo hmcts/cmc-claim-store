@@ -169,7 +169,7 @@ allprojects {
         group: 'org.hibernate',
         version: '5.4.24.Final'
       ) {
-        entry: 'hibernate-core'
+        entry 'hibernate-core'
       }
     }
   }
