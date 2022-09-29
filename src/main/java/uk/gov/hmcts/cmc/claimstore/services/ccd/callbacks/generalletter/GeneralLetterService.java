@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter;
 import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDBulkPrintDetails;
@@ -48,6 +49,8 @@ public class GeneralLetterService {
     private final DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
     private final DocumentManagementService documentManagementService;
     private final BulkPrintDetailsMapper bulkPrintDetailsMapper;
+    private final String caseTypeId;
+    private final String jurisdictionId;
 
     public GeneralLetterService(
         DocAssemblyService docAssemblyService,
@@ -57,7 +60,9 @@ public class GeneralLetterService {
         UserService userService,
         DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper,
         DocumentManagementService documentManagementService,
-        BulkPrintDetailsMapper bulkPrintDetailsMapper
+        BulkPrintDetailsMapper bulkPrintDetailsMapper,
+        @Value("${ocmc.caseTypeId") String caseTypeId,
+        @Value("${ocmc.jurisdictionId}") String jurisdictionId
     ) {
         this.docAssemblyService = docAssemblyService;
         this.bulkPrintHandler = bulkPrintHandler;
@@ -67,6 +72,8 @@ public class GeneralLetterService {
         this.docAssemblyTemplateBodyMapper = docAssemblyTemplateBodyMapper;
         this.documentManagementService = documentManagementService;
         this.bulkPrintDetailsMapper = bulkPrintDetailsMapper;
+        this.caseTypeId = caseTypeId;
+        this.jurisdictionId = jurisdictionId;
     }
 
     public CallbackResponse prepopulateData(String authorisation) {
@@ -84,7 +91,7 @@ public class GeneralLetterService {
         throws DocumentGenerationFailedException {
         logger.info("General Letter: creating general letter");
         var docAssemblyResponse = docAssemblyService.renderTemplate(ccdCase, authorisation, templateId,
-            docAssemblyTemplateBodyMapper.generalLetterBody(ccdCase));
+            caseTypeId, jurisdictionId, docAssemblyTemplateBodyMapper.generalLetterBody(ccdCase));
         return docAssemblyResponse.getRenditionOutputLocation();
     }
 

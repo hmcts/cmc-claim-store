@@ -70,6 +70,8 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
     private final GeneralLetterService generalLetterService;
     private final CaseEventService caseEventService;
     private final LaunchDarklyClient launchDarklyClient;
+    private final String caseTypeId;
+    private final String jurisdictionId;
 
     private final Map<CallbackType, Callback> callbacks = Map.of(
         CallbackType.ABOUT_TO_START, this::aboutToStart,
@@ -84,6 +86,10 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
              DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper,
              @Value("${doc_assembly.paperResponseAdmissionTemplateId}")
                  String paperResponseAdmissionTemplateId,
+             @Value("${ocmc.caseTypeId")
+                 String caseTypeId,
+             @Value("${ocmc.jurisdictionId}")
+                 String jurisdictionId,
              UserService userService,
              DocumentManagementService documentManagementService,
              Clock clock,
@@ -102,6 +108,8 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
         this.generalLetterService = generalLetterService;
         this.caseEventService = caseEventService;
         this.launchDarklyClient = launchDarklyClient;
+        this.caseTypeId = caseTypeId;
+        this.jurisdictionId = jurisdictionId;
     }
 
     private CallbackResponse aboutToStart(CallbackParams callbackParams) {
@@ -186,7 +194,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
     private CCDCase sendDefendantLetter(CallbackParams callbackParams, CCDCase updatedCCDCase, Claim claim) {
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
         var docAssemblyResponse = docAssemblyService.renderTemplate(updatedCCDCase, authorisation,
-            paperResponseAdmissionTemplateId,
+            paperResponseAdmissionTemplateId, caseTypeId, jurisdictionId,
             docAssemblyTemplateBodyMapper.paperResponseAdmissionLetter(updatedCCDCase,
                 userService.getUserDetails(authorisation).getFullName()));
 
