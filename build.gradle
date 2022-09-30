@@ -165,7 +165,7 @@ allprojects {
         entry 'snakeyaml'
       }
       // solves CVE-2019-14900
-      dependency 'org.hibernate:hibernate-validator:8.0.0.Final'
+      dependency 'org.hibernate:hibernate-validator:6.2.4.Final'
     }
   }
 }
