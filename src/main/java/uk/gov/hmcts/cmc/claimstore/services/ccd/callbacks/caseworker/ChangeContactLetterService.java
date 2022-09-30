@@ -17,9 +17,13 @@ public class ChangeContactLetterService {
     private final GeneralLetterService generalLetterService;
     private final DocAssemblyService docAssemblyService;
     private final DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
+    private final String caseTypeId;
+    private final String jurisdictionId;
 
     public ChangeContactLetterService(
         @Value("${doc_assembly.contactChangeTemplateId}") String generalLetterTemplateId,
+        @Value("${ocmc.caseTypeId") String caseTypeId,
+        @Value("${ocmc.jurisdictionId}") String jurisdictionId,
         GeneralLetterService generalLetterService,
         DocAssemblyService docAssemblyService,
         DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper
@@ -28,11 +32,13 @@ public class ChangeContactLetterService {
         this.generalLetterService = generalLetterService;
         this.docAssemblyService = docAssemblyService;
         this.docAssemblyTemplateBodyMapper = docAssemblyTemplateBodyMapper;
+        this.caseTypeId = caseTypeId;
+        this.jurisdictionId = jurisdictionId;
     }
 
     public String createGeneralLetter(CCDCase ccdCase, String authorisation) {
-        var docAssemblyResponse = docAssemblyService.renderTemplate(ccdCase, authorisation, generalLetterTemplateId,
-            docAssemblyTemplateBodyMapper.changeContactBody(ccdCase));
+        var docAssemblyResponse = docAssemblyService.renderTemplate(ccdCase, authorisation,
+            generalLetterTemplateId, caseTypeId, jurisdictionId, docAssemblyTemplateBodyMapper.changeContactBody(ccdCase));
 
         return docAssemblyResponse.getRenditionOutputLocation();
     }

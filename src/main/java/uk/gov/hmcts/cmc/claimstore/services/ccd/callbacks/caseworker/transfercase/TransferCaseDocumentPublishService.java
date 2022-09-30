@@ -34,6 +34,8 @@ public class TransferCaseDocumentPublishService {
     private final String defendantLetterTemplateId;
     private final BulkPrintDetailsMapper bulkPrintDetailsMapper;
     private final String ccbcTransferTemplateId;
+    private final String caseTypeId;
+    private final String jurisdictionId;
 
     public TransferCaseDocumentPublishService(
         TransferCaseLetterSender transferCaseLetterSender,
@@ -43,7 +45,10 @@ public class TransferCaseDocumentPublishService {
         BulkPrintDetailsMapper bulkPrintDetailsMapper,
         @Value("${doc_assembly.noticeOfTransferSentToCourtTemplateId}") String courtLetterTemplateId,
         @Value("${doc_assembly.noticeOfTransferSentToDefendantTemplateId}") String defendantLetterTemplateId,
-        @Value("${doc_assembly.noticeOfTransferToCcbcSentToDefendantTemplateId}") String ccbcTransferTemplateId
+        @Value("${doc_assembly.noticeOfTransferToCcbcSentToDefendantTemplateId}") String ccbcTransferTemplateId,
+        @Value("${ocmc.caseTypeId") String caseTypeId,
+        @Value("${ocmc.jurisdictionId}") String jurisdictionId
+
     ) {
         this.transferCaseLetterSender = transferCaseLetterSender;
         this.transferCaseDocumentService = transferCaseDocumentService;
@@ -53,6 +58,8 @@ public class TransferCaseDocumentPublishService {
         this.defendantLetterTemplateId = defendantLetterTemplateId;
         this.ccbcTransferTemplateId = ccbcTransferTemplateId;
         this.bulkPrintDetailsMapper = bulkPrintDetailsMapper;
+        this.caseTypeId = caseTypeId;
+        this.jurisdictionId = jurisdictionId;
     }
 
     public CCDCase publishCaseDocuments(CCDCase ccdCase, String authorisation, Claim claim) {
@@ -81,7 +88,7 @@ public class TransferCaseDocumentPublishService {
         CCDDocument defendantLetter = docAssemblyService.generateDocument(ccdCase,
             authorisation,
             formPayloadForDefendant,
-            letterTemplateId)
+            letterTemplateId, caseTypeId, jurisdictionId)
             .toBuilder()
             .documentFileName(buildNoticeOfTransferLetterFileName(ccdCase, letterType))
             .build();
@@ -100,7 +107,7 @@ public class TransferCaseDocumentPublishService {
         CCDDocument coverDoc = docAssemblyService.generateDocument(ccdCase,
             authorisation,
             formPayloadForCourt,
-            courtLetterTemplateId)
+            courtLetterTemplateId, caseTypeId, jurisdictionId)
             .toBuilder()
             .documentFileName(buildNoticeOfTransferLetterFileName(ccdCase, FOR_COURT))
             .build();
