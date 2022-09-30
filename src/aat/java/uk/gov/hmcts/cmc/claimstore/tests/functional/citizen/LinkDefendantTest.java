@@ -26,7 +26,7 @@ public class LinkDefendantTest extends BaseTest {
     @Before
     public void before() {
         claimant = bootstrap.getClaimant();
-        logger.info("Retrieving claimant details {}",claimant);
+        logger.info("Retrieving claimant details {}", claimant);
     }
 
     @Rule
