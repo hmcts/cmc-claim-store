@@ -171,6 +171,12 @@ allprojects {
       ) {
         entry 'hibernate-core'
       }
+      dependencySet(
+        group: 'org.hibernate',
+        version: '6.2.4.Final'
+      ) {
+        entry 'hibernate-validator'
+      }
     }
   }
 }
