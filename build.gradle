@@ -34,7 +34,7 @@ def versions = [
   springfoxSwagger  : '2.9.2',
   reformJavaLogging : '5.1.1',
   restAssuredVersion: '4.2.0',
-  jackson           : '2.13.3',
+  jackson           : '2.13.4',
   junit             : '5.7.1',
   junitPlatform     : '1.7.1',
 ]
@@ -160,7 +160,7 @@ allprojects {
       // solves CVE-2022-25857
       dependencySet(
         group: 'org.yaml',
-        version: '1.31'
+        version: '1.33'
       ) {
         entry 'snakeyaml'
       }
@@ -176,13 +176,6 @@ allprojects {
         version: '6.2.4.Final'
       ) {
         entry 'hibernate-validator'
-      }
-      // solves CVE-2022-38751, CVE-2022-38752
-      dependencySet(
-        group: 'org.yaml',
-        version: '1.32'
-      ) {
-        entry 'snakeyaml'
       }
     }
   }
