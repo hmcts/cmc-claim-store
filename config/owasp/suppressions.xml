@@ -346,13 +346,6 @@
         <gav regex="true">.*</gav>
         <cve>CVE-2020-9488</cve>
     </suppress>
-    <!--<suppress until="2023-03-01">
-        <notes><![CDATA[
-   snakeyaml-1.25.jar is not used directly
-   ]]></notes>
-        <gav regex="true">.*</gav>
-        <cve>CVE-2017-18640</cve>
-    </suppress>-->
     <suppress until="2023-03-01">
         <cve>CVE-2020-5407</cve>
         <cve>CVE-2020-5408</cve>
