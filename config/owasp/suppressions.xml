@@ -583,5 +583,8 @@
         <gav regex="true">^.*$</gav>
         <cve>CVE-2022-31569</cve>
     </suppress>
-
+    <suppress>
+        <notes>no updates yet for tomcat-embed-core and tomcat-embed-websocket</notes>
+        <cve>CVE-2021-43980</cve>
+    </suppress>
 </suppressions>
