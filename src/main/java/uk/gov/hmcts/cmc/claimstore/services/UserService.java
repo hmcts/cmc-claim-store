@@ -96,14 +96,12 @@ public class UserService {
         return idamApi.retrieveUserInfo(bearerToken);
     }
 
-    @Cacheable(value = "authenticateUserForTests")
     public User authenticateUserForTests(String username, String password) {
         String authorisation = getAuthorisationTokenForTests(username, password);
         UserDetails userDetails = getUserDetails(authorisation);
         return new User(authorisation, userDetails);
     }
 
-    @Cacheable(value = "getAuthorisationTokenForTests")
     public String getAuthorisationTokenForTests(String username, String password) {
         String authorisation = username + ":" + password;
         String base64Authorisation = Base64.getEncoder().encodeToString(authorisation.getBytes());
