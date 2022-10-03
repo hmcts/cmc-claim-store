@@ -177,6 +177,13 @@ allprojects {
       ) {
         entry 'hibernate-validator'
       }
+      // solves CVE-2022-38751, CVE-2022-38752
+      dependencySet(
+        group: 'org.yaml',
+        version: '1.32'
+      ) {
+        entry 'snakeyaml'
+      }
     }
   }
 }
