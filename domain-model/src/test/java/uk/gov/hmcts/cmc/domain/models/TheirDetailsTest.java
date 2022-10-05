@@ -27,7 +27,7 @@ class TheirDetailsTest {
 
         assertThat(validationErrors)
             .hasSize(1)
-            .contains("address : may not be null");
+            .contains("address : must not be null");
     }
 
     @Test
