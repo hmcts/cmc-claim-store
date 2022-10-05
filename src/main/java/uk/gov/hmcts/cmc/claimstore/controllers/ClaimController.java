@@ -157,11 +157,16 @@ public class ClaimController {
 
     @PostMapping(value = "/initiate-citizen-payment", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Initiates a citizen payment")
-    public CreatePaymentResponse initiatePayment(
+    public ResponseEntity<String> initiatePayment(
         @Valid @NotNull @RequestBody ClaimData claimData,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        return claimService.initiatePayment(authorisation, claimData);
+        try {
+            claimService.initiatePayment(authorisation, claimData);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Payment successfully initiated");
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
     @PutMapping(value = "/resume-citizen-payment", consumes = MediaType.APPLICATION_JSON_VALUE)
