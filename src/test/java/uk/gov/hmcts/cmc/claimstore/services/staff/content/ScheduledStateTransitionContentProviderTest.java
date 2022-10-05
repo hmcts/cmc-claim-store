@@ -54,7 +54,7 @@ public class ScheduledStateTransitionContentProviderTest {
             + "000MC002\n"
             + "000MC003", caseEvent, claims.size());
 
-        assertThat(content.getBody()).isEqualTo(subject);
+        assertThat(content.getBody().replace("\r\n", "\n").replace('\r', '\n')).isEqualTo(subject);
     }
 
     @Test
