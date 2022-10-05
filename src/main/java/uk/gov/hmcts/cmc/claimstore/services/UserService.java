@@ -103,7 +103,6 @@ public class UserService {
         return new User(authorisation, userDetails);
     }
 
-    @Cacheable(value = "getAuthorisationTokenForTests")
     public String getAuthorisationTokenForTests(String username, String password) {
         String authorisation = username + ":" + password;
         String base64Authorisation = Base64.getEncoder().encodeToString(authorisation.getBytes());
