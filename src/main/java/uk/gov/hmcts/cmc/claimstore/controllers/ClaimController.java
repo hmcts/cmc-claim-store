@@ -163,7 +163,7 @@ public class ClaimController {
     ) {
         try {
             claimService.initiatePayment(authorisation, claimData);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Payment successfully initiated");
+            return ResponseEntity.status(HttpStatus.OK).body("Payment successfully initiated");
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
