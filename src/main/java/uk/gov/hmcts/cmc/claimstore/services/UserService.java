@@ -52,6 +52,7 @@ public class UserService {
     }
 
     @LogExecutionTime
+    @Cacheable(value = "getUserAuth")
     public User getUser(String authorisation) {
         return new User(authorisation, getUserDetails(authorisation));
     }
@@ -96,7 +97,6 @@ public class UserService {
         return idamApi.retrieveUserInfo(bearerToken);
     }
 
-    @Cacheable(value = "authenticateUserForTests")
     public User authenticateUserForTests(String username, String password) {
         String authorisation = getAuthorisationTokenForTests(username, password);
         UserDetails userDetails = getUserDetails(authorisation);
