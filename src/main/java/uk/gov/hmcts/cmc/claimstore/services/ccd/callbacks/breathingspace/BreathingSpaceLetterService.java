@@ -47,7 +47,7 @@ public class BreathingSpaceLetterService {
         ClaimService claimService,
         DocumentManagementService documentManagementService,
         GeneralLetterService generalLetterService,
-        @Value("${ocmc.caseTypeId") String caseTypeId,
+        @Value("${ocmc.caseTypeId}") String caseTypeId,
         @Value("${ocmc.jurisdictionId}") String jurisdictionId
     ) {
         this.docAssemblyService = docAssemblyService;

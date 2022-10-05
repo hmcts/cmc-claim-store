@@ -61,7 +61,7 @@ public class GeneralLetterService {
         DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper,
         DocumentManagementService documentManagementService,
         BulkPrintDetailsMapper bulkPrintDetailsMapper,
-        @Value("${ocmc.caseTypeId") String caseTypeId,
+        @Value("${ocmc.caseTypeId}") String caseTypeId,
         @Value("${ocmc.jurisdictionId}") String jurisdictionId
     ) {
         this.docAssemblyService = docAssemblyService;

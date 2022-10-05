@@ -37,7 +37,7 @@ public class OrderRenderer {
         @Value("${doc_assembly.templateId}") String legalAdvisorTemplateId,
         @Value("${doc_assembly.judgeTemplateId}") String judgeTemplateId,
         @Value("${doc_assembly.bespokeTemplateId}") String bespokeTemplateId,
-        @Value("${ocmc.caseTypeId") String caseTypeId,
+        @Value("${ocmc.caseTypeId}") String caseTypeId,
         @Value("${ocmc.jurisdictionId}") String jurisdictionId
     ) {
         this.docAssemblyService = docAssemblyService;

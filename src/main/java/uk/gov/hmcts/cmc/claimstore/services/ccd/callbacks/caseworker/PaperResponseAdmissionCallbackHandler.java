@@ -86,7 +86,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
              DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper,
              @Value("${doc_assembly.paperResponseAdmissionTemplateId}")
                  String paperResponseAdmissionTemplateId,
-             @Value("${ocmc.caseTypeId")
+             @Value("${ocmc.caseTypeId}")
                  String caseTypeId,
              @Value("${ocmc.jurisdictionId}")
                  String jurisdictionId,

@@ -22,7 +22,7 @@ public class ChangeContactLetterService {
 
     public ChangeContactLetterService(
         @Value("${doc_assembly.contactChangeTemplateId}") String generalLetterTemplateId,
-        @Value("${ocmc.caseTypeId") String caseTypeId,
+        @Value("${ocmc.caseTypeId}") String caseTypeId,
         @Value("${ocmc.jurisdictionId}") String jurisdictionId,
         GeneralLetterService generalLetterService,
         DocAssemblyService docAssemblyService,

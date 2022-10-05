@@ -55,7 +55,7 @@ public class PaperResponseLetterService {
         @Value("${doc_assembly.oconFormOrganisationWithoutDQs}") String oconFormOrganisationWithoutDQs,
         @Value("${doc_assembly.paperDefenceCoverLetterTemplateID}") String paperDefenceCoverLetterTemplateID,
         @Value("${doc_assembly.oconN9FormTemplateID}") String oconN9FormTemplateID,
-        @Value("${ocmc.caseTypeId") String caseTypeId,
+        @Value("${ocmc.caseTypeId}") String caseTypeId,
         @Value("${ocmc.jurisdictionId}") String jurisdictionId,
         PaperDefenceLetterBodyMapper paperDefenceLetterBodyMapper,
         DocAssemblyService docAssemblyService,

@@ -56,7 +56,7 @@ public class CitizenServiceDocumentsService {
         DefendantPinLetterContentProvider letterContentProvider,
         DocAssemblyService docAssemblyService,
         @Value("${doc_assembly.defendantPinLetterTemplateID}") String defendantPinLetterTemplateID,
-        @Value("${ocmc.caseTypeId") String caseTypeId,
+        @Value("${ocmc.caseTypeId}") String caseTypeId,
         @Value("${ocmc.jurisdictionId}") String jurisdictionId,
         CaseMapper caseMapper,
         NotificationsProperties notificationsProperties,

@@ -46,7 +46,7 @@ public class TransferCaseDocumentPublishService {
         @Value("${doc_assembly.noticeOfTransferSentToCourtTemplateId}") String courtLetterTemplateId,
         @Value("${doc_assembly.noticeOfTransferSentToDefendantTemplateId}") String defendantLetterTemplateId,
         @Value("${doc_assembly.noticeOfTransferToCcbcSentToDefendantTemplateId}") String ccbcTransferTemplateId,
-        @Value("${ocmc.caseTypeId") String caseTypeId,
+        @Value("${ocmc.caseTypeId}") String caseTypeId,
         @Value("${ocmc.jurisdictionId}") String jurisdictionId
 
     ) {
