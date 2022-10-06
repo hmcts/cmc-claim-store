@@ -31,7 +31,6 @@ import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
@@ -137,10 +136,10 @@ public class ClaimControllerTest {
             .thenReturn(response);
 
         //when
-        claimController.initiatePayment(input, AUTHORISATION);
+        CreatePaymentResponse output = claimController.initiatePayment(input, AUTHORISATION);
 
         //then
-        verify(claimService).initiatePayment(AUTHORISATION, input);
+        assertThat(output).isEqualTo(response);
     }
 
     @Test

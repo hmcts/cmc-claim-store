@@ -30,6 +30,7 @@ import uk.gov.hmcts.cmc.domain.models.response.DefendantLinkStatus;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -157,16 +158,13 @@ public class ClaimController {
 
     @PostMapping(value = "/initiate-citizen-payment", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Initiates a citizen payment")
-    public ResponseEntity<String> initiatePayment(
+    public CreatePaymentResponse initiatePayment(
         @Valid @NotNull @RequestBody ClaimData claimData,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        try {
-            claimService.initiatePayment(authorisation, claimData);
-            return ResponseEntity.status(HttpStatus.OK).body("Payment successfully initiated");
-        } catch (NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+        return Optional.ofNullable(claimService.initiatePayment(authorisation, claimData))
+            .orElseThrow(() ->
+                new NotFoundException("Claim not found by claim reference " + claimData.getExternalId()));
     }
 
     @PutMapping(value = "/resume-citizen-payment", consumes = MediaType.APPLICATION_JSON_VALUE)
