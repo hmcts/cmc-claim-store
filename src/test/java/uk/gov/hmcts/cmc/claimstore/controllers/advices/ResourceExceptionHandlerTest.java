@@ -15,6 +15,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsExceptionLogger;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.InvalidApplicationException;
@@ -194,6 +195,18 @@ public class ResourceExceptionHandlerTest {
             AppInsightsExceptionLogger::error
         );
     }
+
+    @Test
+    public void testCoreCaseDataException() {
+        testTemplate(
+            "Error communicating with CCD",
+            CoreCaseDataStoreException::new,
+            handler::handleCoreCaseDataException,
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            AppInsightsExceptionLogger::debug
+        );
+    }
+
 
     private <E extends Exception> void testTemplate(
         String message,

@@ -23,6 +23,7 @@ import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsExceptionLogger;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantLinkException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentDownloadForbiddenException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
@@ -197,5 +198,13 @@ public class ResourceExceptionHandler {
         return ResponseEntity
             .status(exc.status())
             .body(new ExceptionForClient(exc.status(), errorMessage));
+    }
+
+    @ExceptionHandler(CoreCaseDataStoreException.class)
+    public ResponseEntity<String> handleCoreCaseDataException(CoreCaseDataStoreException exception) {
+        logger.warn("Error communicating with CCD", exception);
+        return new ResponseEntity<>(exception.getMessage(),
+            new HttpHeaders(),
+            HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
