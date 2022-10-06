@@ -397,6 +397,7 @@
         <cve>CVE-2021-22118</cve>
         <cve>CVE-2021-22119</cve>
         <cve>CVE-2020-25638</cve>
+
     </suppress>
     <suppress until="2023-03-01">
         <notes><![CDATA[
@@ -558,6 +559,7 @@
         <cve>CVE-2022-22978</cve>
         <cve>CVE-2016-1000027</cve>
         <cve>CVE-2021-22060</cve>
+        <cve>CVE-2022-42003</cve>
     </suppress>
 
     <suppress>
@@ -606,6 +608,13 @@
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.yaml/snakeyaml@.*$</packageUrl>
         <vulnerabilityName>CVE-2022-38752</vulnerabilityName>
+    </suppress>
+
+    <suppress until="2023-03-01">
+        <notes><![CDATA[
+   file name: launchdarkly-java-server-sdk-5.10.1.jar
+   ]]></notes>
+        <vulnerabilityName>CVE-2022-38751</vulnerabilityName>
     </suppress>
 
 </suppressions>
