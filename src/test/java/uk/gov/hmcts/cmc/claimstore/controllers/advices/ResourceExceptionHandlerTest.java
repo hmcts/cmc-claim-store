@@ -207,7 +207,6 @@ public class ResourceExceptionHandlerTest {
         );
     }
 
-
     private <E extends Exception> void testTemplate(
         String message,
         Function<String, E> exceptionBuilder,
