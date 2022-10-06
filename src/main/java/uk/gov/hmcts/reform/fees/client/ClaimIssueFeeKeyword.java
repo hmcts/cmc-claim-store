@@ -19,7 +19,7 @@ enum ClaimIssueFeeKeyword {
         if (amount.compareTo(BigDecimal.valueOf(0.01)) >= 0 && amount.compareTo(BigDecimal.valueOf(300)) <= 0) {
             return PaperClaimUpTo300.name();
         } else if (amount.compareTo(BigDecimal.valueOf(300.01)) >= 0 && amount.compareTo(BigDecimal.valueOf(500)) <= 0) {
-            return PaperClaimUpTo5k.name();
+            return PaperClaimUpTo500.name();
         } else if (amount.compareTo(BigDecimal.valueOf(500.01)) >= 0 && amount.compareTo(BigDecimal.valueOf(1000)) <= 0) {
             return PaperClaimUpTo1000.name();
         } else if (amount.compareTo(BigDecimal.valueOf(1000.01)) >= 0 && amount.compareTo(BigDecimal.valueOf(1500)) <= 0) {
