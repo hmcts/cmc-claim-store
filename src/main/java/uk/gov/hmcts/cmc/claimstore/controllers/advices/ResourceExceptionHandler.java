@@ -23,17 +23,22 @@ import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsExceptionLogger;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantLinkException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentDownloadForbiddenException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.InvalidApplicationException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.OnHoldClaimAccessAttemptException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.UnprocessableEntityException;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.exceptions.IllegalSettlementStatementException;
 
 import java.util.List;
 import java.util.Optional;
+
+import static org.springframework.http.HttpStatus.FAILED_DEPENDENCY;
+import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 
 @ControllerAdvice
 public class ResourceExceptionHandler {
@@ -197,5 +202,21 @@ public class ResourceExceptionHandler {
         return ResponseEntity
             .status(exc.status())
             .body(new ExceptionForClient(exc.status(), errorMessage));
+    }
+
+    @ExceptionHandler(CoreCaseDataStoreException.class)
+    public ResponseEntity<Object> handleCoreCaseDataStoreException(Exception exception) {
+        logger.error(exception);
+        return ResponseEntity
+            .status(FAILED_DEPENDENCY)
+            .body(new ExceptionForClient(FAILED_DEPENDENCY.value(), exception.getMessage()));
+    }
+
+    @ExceptionHandler({FeignException.UnprocessableEntity.class, UnprocessableEntityException.class})
+    public ResponseEntity<Object> handleUnprocessableEntity(Exception exception) {
+        logger.error(exception);
+        return ResponseEntity
+            .status(UNPROCESSABLE_ENTITY)
+            .body(new ExceptionForClient(UNPROCESSABLE_ENTITY.value(), exception.getMessage()));
     }
 }
