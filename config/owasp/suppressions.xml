@@ -605,7 +605,7 @@
    file name: snakeyaml-1.31.jar
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.yaml/snakeyaml@.*$</packageUrl>
-        <cve>CVE-2022-38752</cve>
+        <vulnerabilityName>CVE-2022-38752</vulnerabilityName>
     </suppress>
 
 </suppressions>
