@@ -9,6 +9,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.BreathingSpace;
 import uk.gov.hmcts.cmc.domain.models.BreathingSpaceType;
@@ -140,6 +141,20 @@ public class ClaimControllerTest {
 
         //then
         assertThat(output).isEqualTo(response);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void shouldThrowNotFoundExceptionForInitiatePaymentForCitizen() {
+        //given
+        ClaimData input = SampleClaimData.validDefaults();
+        when(claimService.initiatePayment(AUTHORISATION, input))
+            .thenThrow(NotFoundException.class);
+
+        //when
+        CreatePaymentResponse output = claimController.initiatePayment(input, AUTHORISATION);
+
+        //then
+        assertThat(output).isEqualTo(NotFoundException.class);
     }
 
     @Test

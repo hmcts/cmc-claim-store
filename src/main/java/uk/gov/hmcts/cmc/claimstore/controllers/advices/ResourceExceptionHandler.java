@@ -202,7 +202,7 @@ public class ResourceExceptionHandler {
 
     @ExceptionHandler(CoreCaseDataStoreException.class)
     public ResponseEntity<String> handleCoreCaseDataException(CoreCaseDataStoreException exception) {
-        logger.warn("Error communicating with CCD", exception);
+        logger.error(exception);
         return new ResponseEntity<>(exception.getMessage(),
             new HttpHeaders(),
             HttpStatus.INTERNAL_SERVER_ERROR);

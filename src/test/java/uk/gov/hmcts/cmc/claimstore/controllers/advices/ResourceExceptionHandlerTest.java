@@ -203,7 +203,7 @@ public class ResourceExceptionHandlerTest {
             CoreCaseDataStoreException::new,
             handler::handleCoreCaseDataException,
             HttpStatus.INTERNAL_SERVER_ERROR,
-            AppInsightsExceptionLogger::debug
+            AppInsightsExceptionLogger::error
         );
     }
 

@@ -164,7 +164,7 @@ public class ClaimController {
     ) {
         return Optional.ofNullable(claimService.initiatePayment(authorisation, claimData))
             .orElseThrow(() ->
-                new NotFoundException("Claim not found by claim reference " + claimData.getExternalId()));
+                new NotFoundException("Payment response not generated " + claimData.getExternalId()));
     }
 
     @PutMapping(value = "/resume-citizen-payment", consumes = MediaType.APPLICATION_JSON_VALUE)
