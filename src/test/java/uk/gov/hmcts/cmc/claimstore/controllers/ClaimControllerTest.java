@@ -154,7 +154,7 @@ public class ClaimControllerTest {
         CreatePaymentResponse output = claimController.initiatePayment(input, AUTHORISATION);
 
         //then
-        assertThat(output).isEqualTo(NotFoundException.class);
+        assertThat(output).isNotNull();
     }
 
     @Test
