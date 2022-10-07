@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.breathingspace;
 
 import com.google.common.collect.ImmutableList;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
@@ -35,6 +36,8 @@ public class BreathingSpaceLetterService {
     private final ClaimService claimService;
     private final DocumentManagementService documentManagementService;
     private final GeneralLetterService generalLetterService;
+    private final String caseTypeId;
+    private final String jurisdictionId;
 
     public BreathingSpaceLetterService(
         DocAssemblyService docAssemblyService,
@@ -43,7 +46,9 @@ public class BreathingSpaceLetterService {
         PrintService bulkPrintService,
         ClaimService claimService,
         DocumentManagementService documentManagementService,
-        GeneralLetterService generalLetterService
+        GeneralLetterService generalLetterService,
+        @Value("${ocmc.caseTypeId}") String caseTypeId,
+        @Value("${ocmc.jurisdictionId}") String jurisdictionId
     ) {
         this.docAssemblyService = docAssemblyService;
         this.docAssemblyTemplateBodyMapper = docAssemblyTemplateBodyMapper;
@@ -52,6 +57,8 @@ public class BreathingSpaceLetterService {
         this.claimService = claimService;
         this.documentManagementService = documentManagementService;
         this.generalLetterService = generalLetterService;
+        this.caseTypeId = caseTypeId;
+        this.jurisdictionId = jurisdictionId;
     }
 
     public void sendLetterToDefendant(CCDCase ccdCase, Claim claim, String authorisation, String letterTemplateId,
@@ -65,7 +72,7 @@ public class BreathingSpaceLetterService {
 
     private String generateLetter(CCDCase ccdCase, String authorisation, String generalLetterTemplateId) {
         var docAssemblyResponse = docAssemblyService.renderTemplate(ccdCase, authorisation, generalLetterTemplateId,
-            docAssemblyTemplateBodyMapper.breathingSpaceLetter(ccdCase));
+            caseTypeId, jurisdictionId, docAssemblyTemplateBodyMapper.breathingSpaceLetter(ccdCase));
 
         return docAssemblyResponse.getRenditionOutputLocation();
     }
