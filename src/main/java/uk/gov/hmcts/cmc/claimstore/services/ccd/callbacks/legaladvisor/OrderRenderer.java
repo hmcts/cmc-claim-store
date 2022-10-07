@@ -27,6 +27,8 @@ public class OrderRenderer {
     private final String bespokeTemplateId;
     private final UserService userService;
     private final DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
+    private final String caseTypeId;
+    private final String jurisdictionId;
 
     public OrderRenderer(
         DocAssemblyService docAssemblyService,
@@ -34,7 +36,9 @@ public class OrderRenderer {
         DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper,
         @Value("${doc_assembly.templateId}") String legalAdvisorTemplateId,
         @Value("${doc_assembly.judgeTemplateId}") String judgeTemplateId,
-        @Value("${doc_assembly.bespokeTemplateId}") String bespokeTemplateId
+        @Value("${doc_assembly.bespokeTemplateId}") String bespokeTemplateId,
+        @Value("${ocmc.caseTypeId}") String caseTypeId,
+        @Value("${ocmc.jurisdictionId}") String jurisdictionId
     ) {
         this.docAssemblyService = docAssemblyService;
         this.legalAdvisorTemplateId = legalAdvisorTemplateId;
@@ -42,6 +46,8 @@ public class OrderRenderer {
         this.bespokeTemplateId = bespokeTemplateId;
         this.userService = userService;
         this.docAssemblyTemplateBodyMapper = docAssemblyTemplateBodyMapper;
+        this.caseTypeId = caseTypeId;
+        this.jurisdictionId = jurisdictionId;
     }
 
     public DocAssemblyResponse renderOrder(CCDCase ccdCase, String authorisation) {
@@ -59,6 +65,8 @@ public class OrderRenderer {
         return docAssemblyService.renderTemplate(ccdCase,
             authorisation,
             templateId,
+            caseTypeId,
+            jurisdictionId,
             docAssemblyTemplateBodyMapper.from(ccdCase, userDetails), file);
     }
 
@@ -71,6 +79,8 @@ public class OrderRenderer {
         return docAssemblyService.renderTemplate(ccdCase,
             authorisation,
             templateId,
+            caseTypeId,
+            jurisdictionId,
             docAssemblyTemplateBodyMapper.mapBespokeDirectionOrder(ccdCase, userDetails), file);
     }
 
