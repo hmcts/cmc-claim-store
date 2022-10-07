@@ -80,6 +80,8 @@ class PaperResponseAdmissionCallbackHandlerTest {
     private static final String DOC_URL_BINARY = "http://success.test/binary";
     private static final String OCON9X_REVIEW =
         "Before continuing you must complete the ‘Review OCON9x paper response’ event";
+    private static final String CASE_TYPE_ID = "MoneyClaimCase";
+    private static final String JURISDICTION_ID = "CMC";
     private static final List<CaseEvent> CASE_EVENTS = Arrays.asList(CaseEvent.PAPER_RESPONSE_OCON_9X_FORM);
     private PaperResponseAdmissionCallbackHandler handler;
     private CallbackParams callbackParams;
@@ -114,7 +116,8 @@ class PaperResponseAdmissionCallbackHandlerTest {
         String paperResponseAdmissionTemplateId = "CV-CMC-GOR-ENG-0016.docx";
         handler = new PaperResponseAdmissionCallbackHandler(caseDetailsConverter,
             defendantResponseNotificationService, caseMapper, docAssemblyService, docAssemblyTemplateBodyMapper,
-            paperResponseAdmissionTemplateId, userService, documentManagementService, clock, generalLetterService,
+            paperResponseAdmissionTemplateId, CASE_TYPE_ID, JURISDICTION_ID,
+            userService, documentManagementService, clock, generalLetterService,
             caseEventService, launchDarklyClient);
         CallbackRequest callbackRequest = getCallBackRequest();
         callbackParams = getBuild(callbackRequest, CallbackType.ABOUT_TO_SUBMIT);
@@ -206,7 +209,8 @@ class PaperResponseAdmissionCallbackHandlerTest {
         when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
         when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetails);
         when(docAssemblyService
-            .renderTemplate(any(CCDCase.class), anyString(), anyString(), any(DocAssemblyTemplateBody.class)))
+            .renderTemplate(any(CCDCase.class), anyString(), anyString(), anyString(), anyString(),
+                any(DocAssemblyTemplateBody.class)))
             .thenReturn(docAssemblyResponse);
         when(docAssemblyTemplateBodyMapper.paperResponseAdmissionLetter(any(CCDCase.class), any(String.class)))
             .thenReturn(DocAssemblyTemplateBody.builder().build());
@@ -246,7 +250,8 @@ class PaperResponseAdmissionCallbackHandlerTest {
         when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
         when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetails);
         when(docAssemblyService
-            .renderTemplate(any(CCDCase.class), anyString(), anyString(), any(DocAssemblyTemplateBody.class)))
+            .renderTemplate(any(CCDCase.class), anyString(), anyString(), anyString(), anyString(),
+                any(DocAssemblyTemplateBody.class)))
             .thenThrow(new RuntimeException("exception"));
         when(docAssemblyTemplateBodyMapper.paperResponseAdmissionLetter(any(CCDCase.class), any(String.class)))
             .thenReturn(DocAssemblyTemplateBody.builder().build());
@@ -315,7 +320,8 @@ class PaperResponseAdmissionCallbackHandlerTest {
 
             when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetails);
             when(docAssemblyService
-                .renderTemplate(any(CCDCase.class), anyString(), anyString(), any(DocAssemblyTemplateBody.class)))
+                .renderTemplate(any(CCDCase.class), anyString(), anyString(), anyString(), anyString(),
+                    any(DocAssemblyTemplateBody.class)))
                 .thenReturn(docAssemblyResponse);
             when(docAssemblyTemplateBodyMapper.paperResponseAdmissionLetter(any(CCDCase.class), any(String.class)))
                 .thenReturn(DocAssemblyTemplateBody.builder().build());

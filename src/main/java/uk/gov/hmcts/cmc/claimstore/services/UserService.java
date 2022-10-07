@@ -56,6 +56,7 @@ public class UserService {
         return new User(authorisation, getUserDetails(authorisation));
     }
 
+    @Cacheable(value = "authenticateUserCache")
     public User authenticateUser(String username, String password) {
 
         String authorisation = getAuthorisationToken(username, password);
