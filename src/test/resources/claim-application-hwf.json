@@ -104,5 +104,6 @@
     "BANK_STATEMENTS",
     "PRISONERS_INCOME"
   ],
+  "hwfProvideDocumentName": "Evidence of income needs to be checked",
   "hwfDocumentsToBeSentBefore": "2020-01-01"
 }
