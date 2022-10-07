@@ -26,6 +26,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentDownloadForbiddenException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.DuplicateKeyException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.InvalidApplicationException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
@@ -33,6 +34,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.OnHoldClaimAccessAttemptException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.UnprocessableEntityException;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.exceptions.IllegalSettlementStatementException;
+import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 
 import java.util.List;
 import java.util.Optional;
@@ -202,6 +204,18 @@ public class ResourceExceptionHandler {
         return ResponseEntity
             .status(exc.status())
             .body(new ExceptionForClient(exc.status(), errorMessage));
+    }
+
+    @ExceptionHandler(DuplicateKeyException.class)
+    public ResponseEntity<String> duplicateKeyException(DuplicateKeyException exception) {
+        logger.debug(exception);
+        return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(NotificationException.class)
+    public ResponseEntity<String> notificationException(NotificationException exception) {
+        logger.debug(exception);
+        return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(CoreCaseDataStoreException.class)

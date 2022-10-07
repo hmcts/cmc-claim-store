@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.DuplicateKeyException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.InvalidApplicationException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.OnHoldClaimAccessAttemptException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.UnprocessableEntityException;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.exceptions.IllegalSettlementStatementException;
+import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -216,6 +218,28 @@ public class ResourceExceptionHandlerTest {
             handler::unableToExecuteStatement,
             HttpStatus.CONFLICT,
             AppInsightsExceptionLogger::error
+        );
+    }
+
+    @Test
+    public void testDuplicateKeyException() {
+        testTemplate(
+            "expected exception for duplicate key exception",
+            DuplicateKeyException::new,
+            handler::duplicateKeyException,
+            HttpStatus.CONFLICT,
+            AppInsightsExceptionLogger::debug
+        );
+    }
+
+    @Test
+    public void testNotificationException() {
+        testTemplate(
+            "expected exception for notification exception",
+            NotificationException::new,
+            handler::notificationException,
+            HttpStatus.BAD_REQUEST,
+            AppInsightsExceptionLogger::debug
         );
     }
 
