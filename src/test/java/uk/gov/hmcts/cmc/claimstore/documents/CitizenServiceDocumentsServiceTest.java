@@ -41,6 +41,8 @@ public class CitizenServiceDocumentsServiceTest {
     private static final String claimAmount = "£80.99";
     private static final String refernceNumber = "000MC001";
     private static final String claimantName = "John Rambo";
+    private static final String CASE_TYPE_ID = "MoneyClaimCase";
+    private static final String JURISDICTION_ID = "CMC";
     private static final LocalDate RESPONSE_DEADLINE = LocalDate.now().plusDays(15);
 
     private String defendantPinLetterTemplateID;
@@ -70,7 +72,7 @@ public class CitizenServiceDocumentsServiceTest {
         defendantPinLetterTemplateID = "XYZ";
         citizenServiceDocumentsService
             = new CitizenServiceDocumentsService(documentTemplates, claimContentProvider, letterContentProvider,
-            docAssemblyService, defendantPinLetterTemplateID, caseMapper, notificationsProperties, staffEmailProperties,
+            docAssemblyService, defendantPinLetterTemplateID, CASE_TYPE_ID, JURISDICTION_ID, caseMapper, notificationsProperties, staffEmailProperties,
             interestContentProvider, addressMapper);
     }
 
@@ -142,12 +144,13 @@ public class CitizenServiceDocumentsServiceTest {
         when(caseMapper.to(eq(claim))).thenReturn(ccdCase);
 
         when(docAssemblyService
-            .generateDocument(any(CCDCase.class), anyString(), any(DocAssemblyTemplateBody.class), anyString()))
+            .generateDocument(any(CCDCase.class), anyString(), any(DocAssemblyTemplateBody.class), anyString(), anyString(), anyString()))
             .thenReturn(ccdDocument);
         citizenServiceDocumentsService.createDefendantPinLetter(claim, PIN, AUTHORISATION_TOKEN);
 
         verify(docAssemblyService).generateDocument(any(CCDCase.class), eq(AUTHORISATION_TOKEN),
-            any(DocAssemblyTemplateBody.class), eq(defendantPinLetterTemplateID));
+            any(DocAssemblyTemplateBody.class), eq(defendantPinLetterTemplateID),
+            eq(CASE_TYPE_ID), eq(JURISDICTION_ID));
     }
 
     @Test
