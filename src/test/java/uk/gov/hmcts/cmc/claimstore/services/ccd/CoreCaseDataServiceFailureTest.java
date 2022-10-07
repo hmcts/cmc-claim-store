@@ -318,6 +318,7 @@ public class CoreCaseDataServiceFailureTest {
             any(CaseDataContent.class)
         );
     }
+
     @Test(expected = CoreCaseDataStoreException.class)
     public void linkSealedClaimDocumentFailure() {
 
