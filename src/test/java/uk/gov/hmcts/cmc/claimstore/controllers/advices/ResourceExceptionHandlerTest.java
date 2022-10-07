@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.advices;
 
+import feign.FeignException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.InvalidApplicationException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.OnHoldClaimAccessAttemptException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.UnprocessableEntityException;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.exceptions.IllegalSettlementStatementException;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
@@ -215,6 +217,17 @@ public class ResourceExceptionHandlerTest {
             NotificationException::new,
             handler::notificationException,
             HttpStatus.BAD_REQUEST,
+            AppInsightsExceptionLogger::debug
+        );
+    }
+
+    @Test
+    public void testFeignCleintUnprocessableException() {
+        testTemplate(
+            "FeignClient Exception error occurred",
+            UnprocessableEntityException::new,
+            handler::feignUnprocessableEntity,
+            HttpStatus.UNPROCESSABLE_ENTITY,
             AppInsightsExceptionLogger::debug
         );
     }
