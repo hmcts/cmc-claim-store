@@ -182,8 +182,8 @@ public class ResourceExceptionHandlerTest {
         testTemplate(
             "expected exception for on unprocessable entity",
             UnprocessableEntityException::new,
-            handler::handleCoreCaseDataStoreException,
-            HttpStatus.FAILED_DEPENDENCY,
+            handler::handleUnprocessableEntity,
+            HttpStatus.UNPROCESSABLE_ENTITY,
             AppInsightsExceptionLogger::error
         );
     }
