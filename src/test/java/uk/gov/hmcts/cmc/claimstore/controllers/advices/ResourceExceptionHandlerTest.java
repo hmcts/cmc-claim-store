@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.advices;
 
-import feign.FeignException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +21,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.InvalidApplicationException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.OnHoldClaimAccessAttemptException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.UnprocessableEntityException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.SocketTimeoutException;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.exceptions.IllegalSettlementStatementException;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
@@ -222,12 +221,12 @@ public class ResourceExceptionHandlerTest {
     }
 
     @Test
-    public void testFeignCleintUnprocessableException() {
+    public void testSocketTimeOutException() {
         testTemplate(
-            "FeignClient Exception error occurred",
-            UnprocessableEntityException::new,
-            handler::feignUnprocessableEntity,
-            HttpStatus.UNPROCESSABLE_ENTITY,
+            "Socket Timeout Exception error occurred",
+            SocketTimeoutException::new,
+            handler::socketTimeoutException,
+            HttpStatus.GATEWAY_TIMEOUT,
             AppInsightsExceptionLogger::debug
         );
     }

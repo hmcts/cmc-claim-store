@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.claimstore.exceptions.SocketTimeoutException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
@@ -324,5 +325,42 @@ public class PaymentsServiceTest {
             BEARER_TOKEN,
             claim
         );
+    }
+
+    @Test(expected = SocketTimeoutException.class)
+    public void shouldThrowSocketTimeoutExceptionOnMakePayment() {
+        FeeDto[] fees = new FeeDto[]{
+            FeeDto.builder()
+                .ccdCaseNumber(String.valueOf(claim.getCcdCaseId()))
+                .calculatedAmount(feeOutcome.getFeeAmount())
+                .code(feeOutcome.getCode())
+                .version(String.valueOf(feeOutcome.getVersion()))
+                .build()
+        };
+
+        CardPaymentRequest expectedPaymentRequest =
+            CardPaymentRequest.builder()
+                .siteId(SITE_ID)
+                .description(DESCRIPTION)
+                .currency(CURRENCY)
+                .service(SERVICE)
+                .fees(fees)
+                .amount(feeOutcome.getFeeAmount())
+                .ccdCaseNumber(String.valueOf(claim.getCcdCaseId()))
+                .caseReference(claim.getExternalId())
+                .build();
+
+        when(paymentsClient.createPayment(
+            BEARER_TOKEN,
+            expectedPaymentRequest,
+            RETURN_URL
+        )).thenThrow(SocketTimeoutException.class);
+
+        paymentsService.createPayment(
+            BEARER_TOKEN,
+            claim
+        );
+
+        verify(paymentsService).createPayment(BEARER_TOKEN, claim);
     }
 }
