@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseEventMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.UnprocessableEntityException;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.*;
@@ -98,7 +99,7 @@ public class CoreCaseDataService {
         CCDCreateCaseService ccdCreateCaseService,
         CaseDetailsConverter caseDetailsConverter,
         @Value("#{new Integer('${dateCalculations.stayClaimDeadlineInDays}')}")
-            Integer intentionToProceedDeadlineDays,
+        Integer intentionToProceedDeadlineDays,
         WorkingDayIndicator workingDayIndicator,
         DirectionsQuestionnaireService directionsQuestionnaireService,
         PilotCourtService pilotCourtService
@@ -390,7 +391,14 @@ public class CoreCaseDataService {
                 isRepresented(userDetails)
             );
 
+        } catch (FeignException.UnprocessableEntity exception) {
+            throw new UnprocessableEntityException(String.format(
+                CCD_UPDATE_FAILURE_MESSAGE,
+                caseId,
+                caseEvent
+            ), exception);
         } catch (Exception exception) {
+            logger.error("Error communicating with CCD API");
             throw new CoreCaseDataStoreException(
                 String.format(
                     CCD_UPDATE_FAILURE_MESSAGE,
@@ -454,6 +462,7 @@ public class CoreCaseDataService {
             );
             return caseDetailsConverter.extractClaim(caseDetails);
         } catch (Exception exception) {
+            logger.error("Error communicating with CCD API");
             throw new CoreCaseDataStoreException(
                 String.format(
                     CCD_UPDATE_FAILURE_MESSAGE,
@@ -519,6 +528,7 @@ public class CoreCaseDataService {
                 isRepresented(userDetails)
             );
         } catch (Exception exception) {
+            logger.error("Error communicating with CCD API");
             throw new CoreCaseDataStoreException(
                 String.format(
                     CCD_UPDATE_FAILURE_MESSAGE,
@@ -586,6 +596,7 @@ public class CoreCaseDataService {
                 )
             );
         } catch (Exception exception) {
+            logger.error("Error communicating with CCD API");
             throw new CoreCaseDataStoreException(
                 String.format(
                     CCD_UPDATE_FAILURE_MESSAGE,
@@ -635,6 +646,7 @@ public class CoreCaseDataService {
                 isRepresented(userDetails)
             );
         } catch (Exception exception) {
+            logger.error("Error communicating with CCD API");
             throw new CoreCaseDataStoreException(
                 String.format(
                     CCD_UPDATE_FAILURE_MESSAGE,
@@ -678,6 +690,7 @@ public class CoreCaseDataService {
                 isRepresented(userDetails)
             );
         } catch (Exception exception) {
+            logger.error("Error communicating with CCD API");
             throw new CoreCaseDataStoreException(
                 String.format(
                     CCD_UPDATE_FAILURE_MESSAGE,
@@ -711,6 +724,7 @@ public class CoreCaseDataService {
             return submitUpdate(
                 user.getAuthorisation(), eventRequestData, caseDataContent, caseId, isRepresented(userDetails));
         } catch (Exception e) {
+            logger.error("Error communicating with CCD API");
             throw new CoreCaseDataStoreException(
                 String.format(
                     CCD_UPDATE_FAILURE_MESSAGE,
@@ -751,6 +765,7 @@ public class CoreCaseDataService {
                 isRepresented(userDetails)
             );
         } catch (Exception exception) {
+            logger.error("Error communicating with CCD API");
             throw new CoreCaseDataStoreException(
                 String.format(
                     CCD_UPDATE_FAILURE_MESSAGE,
@@ -792,6 +807,7 @@ public class CoreCaseDataService {
                 isRepresented(userDetails)
             );
         } catch (Exception exception) {
+            logger.error("Error communicating with CCD API");
             throw new CoreCaseDataStoreException(
                 String.format(
                     CCD_UPDATE_FAILURE_MESSAGE,
@@ -868,6 +884,7 @@ public class CoreCaseDataService {
             return submitUpdate(authorisation, eventRequestData, caseDataContent, caseId,
                 isRepresented(userDetails));
         } catch (Exception exception) {
+            logger.error("Error communicating with CCD API");
             throw new CoreCaseDataStoreException(
                 String.format(
                     "Failed updating claim in CCD store for claim %s on event %s",
@@ -965,6 +982,7 @@ public class CoreCaseDataService {
                 isRepresented(userDetails)
             );
         } catch (Exception exception) {
+            logger.error("Error communicating with CCD API");
             throw new CoreCaseDataStoreException(
                 String.format(
                     CCD_UPDATE_FAILURE_MESSAGE,
@@ -979,6 +997,7 @@ public class CoreCaseDataService {
         try {
             return sendCaseEvent(authorisation, caseEvent, caseId);
         } catch (Exception exception) {
+            logger.error("Error communicating with CCD API");
             throw new CoreCaseDataStoreException(
                 String.format(
                     CCD_UPDATE_FAILURE_MESSAGE,
@@ -1021,6 +1040,7 @@ public class CoreCaseDataService {
                 isRepresented(userDetails)
             );
         } catch (Exception exception) {
+            logger.error("Error communicating with CCD API");
             throw new CoreCaseDataStoreException(
                 String.format(
                     CCD_UPDATE_FAILURE_MESSAGE,
@@ -1057,6 +1077,7 @@ public class CoreCaseDataService {
                 isRepresented(userDetails)
             );
         } catch (Exception exception) {
+            logger.error("Error communicating with CCD API");
             throw new CoreCaseDataStoreException(
                 String.format(
                     CCD_UPDATE_FAILURE_MESSAGE,
@@ -1102,6 +1123,7 @@ public class CoreCaseDataService {
 
             return caseDetailsConverter.extractClaim(caseDetails);
         } catch (Exception exception) {
+            logger.error("Error communicating with CCD API");
             throw new CoreCaseDataStoreException(
                 String.format(
                     CCD_UPDATE_FAILURE_MESSAGE,
@@ -1150,6 +1172,7 @@ public class CoreCaseDataService {
 
             return caseDetailsConverter.extractClaim(caseDetails);
         } catch (Exception exception) {
+            logger.error("Error communicating with CCD API");
             throw new CoreCaseDataStoreException(
                 String.format(
                     CCD_UPDATE_FAILURE_MESSAGE,
@@ -1187,6 +1210,7 @@ public class CoreCaseDataService {
             );
             return caseDetailsConverter.extractClaim(caseDetails);
         } catch (Exception exception) {
+            logger.error("Error communicating with CCD API");
             throw new CoreCaseDataStoreException(
                 String.format(
                     CCD_UPDATE_FAILURE_MESSAGE,
@@ -1225,6 +1249,7 @@ public class CoreCaseDataService {
             logger.warn("Event {} Ambiguous 422 from CCD, swallow this until fix for RDM-6411 is released", caseEvent);
             return claim;
         } catch (Exception exception) {
+            logger.error("Error communicating with CCD API");
             throw new CoreCaseDataStoreException(
                 String.format(
                     CCD_UPDATE_FAILURE_MESSAGE,
@@ -1267,6 +1292,7 @@ public class CoreCaseDataService {
             );
             return caseDetailsConverter.extractClaim(caseDetails);
         } catch (Exception exception) {
+            logger.error("Error communicating with CCD API");
             throw new CoreCaseDataStoreException(
                 String.format(
                     CCD_UPDATE_FAILURE_MESSAGE,
