@@ -15,12 +15,14 @@ import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsExceptionLogger;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DuplicateKeyException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.InvalidApplicationException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.OnHoldClaimAccessAttemptException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.UnprocessableEntityException;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.exceptions.IllegalSettlementStatementException;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
@@ -160,6 +162,28 @@ public class ResourceExceptionHandlerTest {
             OnHoldClaimAccessAttemptException::new,
             handler::onHoldClaim,
             HttpStatus.CONFLICT,
+            AppInsightsExceptionLogger::error
+        );
+    }
+
+    @Test
+    public void testHandleCoreCaseDataStoreException() {
+        testTemplate(
+            "expected exception for core case data api",
+            CoreCaseDataStoreException::new,
+            handler::handleCoreCaseDataStoreException,
+            HttpStatus.FAILED_DEPENDENCY,
+            AppInsightsExceptionLogger::error
+        );
+    }
+
+    @Test
+    public void testHandleUnprocessableEntity() {
+        testTemplate(
+            "expected exception for on unprocessable entity",
+            UnprocessableEntityException::new,
+            handler::handleUnprocessableEntity,
+            HttpStatus.UNPROCESSABLE_ENTITY,
             AppInsightsExceptionLogger::error
         );
     }
