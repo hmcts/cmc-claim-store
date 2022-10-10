@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
+import uk.gov.hmcts.cmc.claimstore.exceptions.DuplicateKeyException;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
@@ -36,6 +37,7 @@ import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
@@ -285,6 +287,40 @@ class PaperResponseReviewedHandlerTest {
                 eq("paper-response-submitted-" + party + "-" + REFERENCE_NUMBER));
 
         return response;
+    }
+
+    @Test
+    void shouldThrowDuplicateKeyExceptionIfDuplicateKeysInMailDetailsCollection() {
+        documentCollectionAfter = new ClaimDocumentCollection();
+        // The same scanned document has to be added twice to cause the expected error
+        documentCollectionAfter.addScannedDocument(ScannedDocument.builder()
+            .documentType(FORM).subtype("OCON9x").submittedBy(CLAIMANT).build());
+        documentCollectionAfter.addScannedDocument(ScannedDocument.builder()
+            .documentType(FORM).subtype("OCON9x").submittedBy(CLAIMANT).build());
+
+        Claim afterClaim = withFullClaimData().toBuilder().claimDocumentCollection(documentCollectionAfter).build();
+        Claim beforeClaim = withFullClaimData().toBuilder().claimDocumentCollection(documentCollection).build();
+
+        when(caseDetailsConverter.extractClaim(detailsAfterEvent)).thenReturn(afterClaim);
+        when(caseDetailsConverter.extractClaim(detailsBeforeEvent)).thenReturn(beforeClaim);
+
+        LocalDate newResponseDeadline = LocalDate.now().plusDays(7);
+        lenient().when(responseDeadlineCalculator.calculatePostponedResponseDeadline(
+                afterClaim.getIssuedOn().get()))
+            .thenReturn(newResponseDeadline);
+
+        callbackRequest = CallbackRequest.builder()
+            .caseDetailsBefore(detailsBeforeEvent)
+            .caseDetails(detailsAfterEvent)
+            .eventId(CaseEvent.REVIEWED_PAPER_RESPONSE.getValue())
+            .build();
+
+        CallbackParams callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_SUBMIT)
+            .request(callbackRequest)
+            .build();
+
+        assertThrows(DuplicateKeyException.class, () -> paperResponseReviewedHandler.handle(callbackParams));
     }
 
     @Test

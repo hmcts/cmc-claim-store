@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.UnprocessableEntityException;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireService;
@@ -263,6 +264,43 @@ public class CoreCaseDataServiceFailureTest {
             .builder()
             .ccjType(CountyCourtJudgmentType.DEFAULT)
             .build();
+
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(providedClaim);
+
+        service.saveCountyCourtJudgment(AUTHORISATION,
+            providedClaim.getId(),
+            providedCCJ);
+
+        verify(coreCaseDataApi).submitForCitizen(
+            eq(AUTHORISATION),
+            eq(AUTH_TOKEN),
+            eq(USER_DETAILS.getId()),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(true),
+            any(CaseDataContent.class)
+        );
+    }
+
+    @Test(expected = UnprocessableEntityException.class)
+    public void saveCountyCourtJudgmentFailedWithUnprocessableEntity() {
+        Claim providedClaim = SampleClaim.getDefault();
+        CountyCourtJudgment providedCCJ = SampleCountyCourtJudgment
+            .builder()
+            .ccjType(CountyCourtJudgmentType.DEFAULT)
+            .build();
+
+        when(coreCaseDataApi.submitEventForCitizen(
+            eq(AUTHORISATION),
+            eq(AUTH_TOKEN),
+            eq(USER_DETAILS.getId()),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(SampleClaim.CLAIM_ID.toString()),
+            anyBoolean(),
+            any()
+        ))
+            .thenThrow(new FeignException.UnprocessableEntity("422 from CCD", request, null));
 
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(providedClaim);
 
