@@ -242,13 +242,14 @@ public class ResourceExceptionHandlerTest {
             AppInsightsExceptionLogger::debug
         );
     }
-    
+
+    @Test
     public void testCoreCaseDataException() {
         testTemplate(
-            "Error communicating with CCD",
+            "expected failed dependency exception",
             CoreCaseDataStoreException::new,
             handler::handleCoreCaseDataException,
-            HttpStatus.INTERNAL_SERVER_ERROR,
+            HttpStatus.FAILED_DEPENDENCY,
             AppInsightsExceptionLogger::error
         );
     }

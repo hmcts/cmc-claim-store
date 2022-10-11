@@ -239,6 +239,6 @@ public class ResourceExceptionHandler {
         logger.error(exception);
         return new ResponseEntity<>(exception.getMessage(),
             new HttpHeaders(),
-            HttpStatus.INTERNAL_SERVER_ERROR);
+            HttpStatus.FAILED_DEPENDENCY);
     }
 }
