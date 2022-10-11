@@ -22,12 +22,12 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.InvalidApplicationException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.OnHoldClaimAccessAttemptException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.SocketTimeoutException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.UnprocessableEntityException;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.exceptions.IllegalSettlementStatementException;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 
+import java.net.SocketTimeoutException;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -245,21 +245,10 @@ public class ResourceExceptionHandlerTest {
     }
 
     @Test
-    public void testSocketTimeOutException() {
-        testTemplate(
-            "Socket Timeout Exception error occurred",
-            SocketTimeoutException::new,
-            handler::socketTimeoutException,
-            HttpStatus.GATEWAY_TIMEOUT,
-            AppInsightsExceptionLogger::debug
-        );
-    }
-
-    @Test
     public void testFeignExceptionGatewayTimeoutException() {
         testTemplate(
             "expected exception for notification exception",
-            NotificationException::new,
+            SocketTimeoutException::new,
             handler::handleFeignExceptionGatewayTimeout,
             HttpStatus.GATEWAY_TIMEOUT,
             AppInsightsExceptionLogger::error

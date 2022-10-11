@@ -31,12 +31,12 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.InvalidApplicationException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.OnHoldClaimAccessAttemptException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.SocketTimeoutException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.UnprocessableEntityException;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.exceptions.IllegalSettlementStatementException;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 
+import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.Optional;
 
@@ -235,17 +235,10 @@ public class ResourceExceptionHandler {
             .body(new ExceptionForClient(UNPROCESSABLE_ENTITY.value(), exception.getMessage()));
     }
 
-    @ExceptionHandler(SocketTimeoutException.class)
-    public ResponseEntity<Object> socketTimeoutException(SocketTimeoutException exception) {
-        logger.debug(exception);
-        return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.GATEWAY_TIMEOUT);
-    }
-
-    @ExceptionHandler({FeignException.GatewayTimeout .class,  SocketTimeoutException.class})
-    public ResponseEntity<Object> handleFeignExceptionGatewayTimeout(Exception exception) {
+    @ExceptionHandler({FeignException.GatewayTimeout.class, SocketTimeoutException.class})
+    public ResponseEntity<String> handleFeignExceptionGatewayTimeout(Exception exception) {
         logger.error(exception);
-        return ResponseEntity
-            .status(HttpStatus.GATEWAY_TIMEOUT)
-            .body(new ExceptionForClient(HttpStatus.GATEWAY_TIMEOUT.value(), exception.getMessage()));
+        return new ResponseEntity<>(exception.getMessage(),
+            new HttpHeaders(), HttpStatus.GATEWAY_TIMEOUT);
     }
 }

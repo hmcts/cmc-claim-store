@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.claimstore.exceptions.SocketTimeoutException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Payment;
@@ -94,13 +93,7 @@ public class PaymentsService {
             channel = DEFAULT_FEE_CHANNEL;
         }
 
-        FeeLookupResponseDto feeOutcome = null;
-        try {
-            feeOutcome = feesClient.lookupFee(channel, FEE_EVENT, amountPlusInterest);
-        } catch (SocketTimeoutException e) {
-            logger.error("Error communication with fees client for claim with external id {}",
-                claim.getExternalId());
-        }
+        FeeLookupResponseDto feeOutcome = feesClient.lookupFee(channel, FEE_EVENT, amountPlusInterest);
 
         CardPaymentRequest paymentRequest = buildPaymentRequest(
             claim,
