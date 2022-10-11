@@ -41,6 +41,8 @@ public class CitizenServiceDocumentsService {
     private final DefendantPinLetterContentProvider letterContentProvider;
     private final DocAssemblyService docAssemblyService;
     private final String defendantPinLetterTemplateID;
+    private final String caseTypeId;
+    private final String jurisdictionId;
     private final CaseMapper caseMapper;
     private final NotificationsProperties notificationsProperties;
     private final StaffEmailProperties staffEmailProperties;
@@ -54,6 +56,8 @@ public class CitizenServiceDocumentsService {
         DefendantPinLetterContentProvider letterContentProvider,
         DocAssemblyService docAssemblyService,
         @Value("${doc_assembly.defendantPinLetterTemplateID}") String defendantPinLetterTemplateID,
+        @Value("${ocmc.caseTypeId}") String caseTypeId,
+        @Value("${ocmc.jurisdictionId}") String jurisdictionId,
         CaseMapper caseMapper,
         NotificationsProperties notificationsProperties,
         StaffEmailProperties staffEmailProperties,
@@ -65,6 +69,8 @@ public class CitizenServiceDocumentsService {
         this.letterContentProvider = letterContentProvider;
         this.docAssemblyService = docAssemblyService;
         this.defendantPinLetterTemplateID = defendantPinLetterTemplateID;
+        this.caseTypeId = caseTypeId;
+        this.jurisdictionId = jurisdictionId;
         this.caseMapper = caseMapper;
         this.notificationsProperties = notificationsProperties;
         this.staffEmailProperties = staffEmailProperties;
@@ -93,7 +99,8 @@ public class CitizenServiceDocumentsService {
         return docAssemblyService.generateDocument(ccdCase,
             authorisation,
             formPayloadForPinLetter,
-            defendantPinLetterTemplateID);
+            defendantPinLetterTemplateID,
+            caseTypeId, jurisdictionId);
     }
 
     public DocAssemblyTemplateBody pinLetterTemplateMapper(Claim claim, String defendantPin

@@ -138,7 +138,7 @@ class AddressTest {
         //then
         assertThat(errors)
             .hasSize(1)
-            .containsAnyOf("postcode : may not be null", "postcode : Postcode is not of valid format",
+            .containsAnyOf("postcode : must not be null", "postcode : Postcode is not of valid format",
                 "postcode : Postcode is not of valid format");
     }
 
