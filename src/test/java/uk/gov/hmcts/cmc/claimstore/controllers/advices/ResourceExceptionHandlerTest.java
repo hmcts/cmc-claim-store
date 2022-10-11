@@ -255,6 +255,17 @@ public class ResourceExceptionHandlerTest {
         );
     }
 
+    @Test
+    public void testFeignExceptionGatewayTimeoutException() {
+        testTemplate(
+            "expected exception for notification exception",
+            NotificationException::new,
+            handler::handleFeignExceptionGatewayTimeout,
+            HttpStatus.GATEWAY_TIMEOUT,
+            AppInsightsExceptionLogger::error
+        );
+    }
+
     private <E extends Exception> void testTemplate(
         String message,
         Function<String, E> exceptionBuilder,

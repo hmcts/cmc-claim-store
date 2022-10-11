@@ -240,4 +240,12 @@ public class ResourceExceptionHandler {
         logger.debug(exception);
         return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.GATEWAY_TIMEOUT);
     }
+
+    @ExceptionHandler({FeignException.GatewayTimeout .class,  SocketTimeoutException.class})
+    public ResponseEntity<Object> handleFeignExceptionGatewayTimeout(Exception exception) {
+        logger.error(exception);
+        return ResponseEntity
+            .status(HttpStatus.GATEWAY_TIMEOUT)
+            .body(new ExceptionForClient(HttpStatus.GATEWAY_TIMEOUT.value(), exception.getMessage()));
+    }
 }
