@@ -584,7 +584,7 @@
    ]]></notes>
         <cve>CVE-2022-38751</cve>
         <cve>CVE-2022-38752</cve>
-    </supress>
+    </suppress>
     <suppress>
         <notes><![CDATA[
    file name: jackson-databind-2.12.3.jar
