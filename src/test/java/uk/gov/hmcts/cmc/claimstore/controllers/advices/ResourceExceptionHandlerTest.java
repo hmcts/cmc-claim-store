@@ -243,6 +243,17 @@ public class ResourceExceptionHandlerTest {
         );
     }
 
+    @Test
+    public void testCoreCaseDataException() {
+        testTemplate(
+            "expected failed dependency exception",
+            CoreCaseDataStoreException::new,
+            handler::handleCoreCaseDataException,
+            HttpStatus.FAILED_DEPENDENCY,
+            AppInsightsExceptionLogger::error
+        );
+    }
+
     private <E extends Exception> void testTemplate(
         String message,
         Function<String, E> exceptionBuilder,

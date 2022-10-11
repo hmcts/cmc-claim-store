@@ -233,4 +233,12 @@ public class ResourceExceptionHandler {
             .status(UNPROCESSABLE_ENTITY)
             .body(new ExceptionForClient(UNPROCESSABLE_ENTITY.value(), exception.getMessage()));
     }
+
+    @ExceptionHandler(CoreCaseDataStoreException.class)
+    public ResponseEntity<String> handleCoreCaseDataException(CoreCaseDataStoreException exception) {
+        logger.error(exception);
+        return new ResponseEntity<>(exception.getMessage(),
+            new HttpHeaders(),
+            HttpStatus.FAILED_DEPENDENCY);
+    }
 }
