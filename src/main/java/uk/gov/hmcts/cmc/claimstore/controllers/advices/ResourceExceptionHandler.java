@@ -36,6 +36,7 @@ import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.exceptions.IllegalSettlementStatementException;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 
+import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.Optional;
 
@@ -232,5 +233,12 @@ public class ResourceExceptionHandler {
         return ResponseEntity
             .status(UNPROCESSABLE_ENTITY)
             .body(new ExceptionForClient(UNPROCESSABLE_ENTITY.value(), exception.getMessage()));
+    }
+
+    @ExceptionHandler({FeignException.GatewayTimeout.class, SocketTimeoutException.class})
+    public ResponseEntity<String> handleFeignExceptionGatewayTimeout(Exception exception) {
+        logger.error(exception);
+        return new ResponseEntity<>(exception.getMessage(),
+            new HttpHeaders(), HttpStatus.GATEWAY_TIMEOUT);
     }
 }
