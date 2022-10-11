@@ -93,7 +93,8 @@ public class PaymentsService {
             channel = DEFAULT_FEE_CHANNEL;
         }
 
-        FeeLookupResponseDto feeOutcome = feesClient.lookupFee(channel, FEE_EVENT, amountPlusInterest);
+        FeeLookupResponseDto feeOutcome
+            = feesClient.lookupFee(channel, FEE_EVENT, amountPlusInterest);
 
         CardPaymentRequest paymentRequest = buildPaymentRequest(
             claim,
