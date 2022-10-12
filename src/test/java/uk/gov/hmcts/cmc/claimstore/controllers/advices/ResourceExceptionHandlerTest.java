@@ -27,6 +27,7 @@ import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.exceptions.IllegalSettlementStatementException;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 
+import java.net.SocketTimeoutException;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -240,6 +241,17 @@ public class ResourceExceptionHandlerTest {
             handler::notificationException,
             HttpStatus.BAD_REQUEST,
             AppInsightsExceptionLogger::debug
+        );
+    }
+
+    @Test
+    public void testFeignExceptionGatewayTimeoutException() {
+        testTemplate(
+            "expected exception for notification exception",
+            SocketTimeoutException::new,
+            handler::handleFeignExceptionGatewayTimeout,
+            HttpStatus.GATEWAY_TIMEOUT,
+            AppInsightsExceptionLogger::error
         );
     }
 
