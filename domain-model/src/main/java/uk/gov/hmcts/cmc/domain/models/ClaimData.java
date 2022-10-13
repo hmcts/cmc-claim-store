@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -112,6 +113,9 @@ public class ClaimData {
 
     private final List<String> hwfMoreInfoNeededDocuments;
 
+    @Getter
+    private final String hwfProvideDocumentName;
+
     private final LocalDate hwfDocumentsToBeSentBefore;
 
     private final BreathingSpace breathingSpace;
@@ -145,6 +149,7 @@ public class ClaimData {
         String hwfFeeDetailsSummary,
         String hwfMandatoryDetails,
         List<String> hwfMoreInfoNeededDocuments,
+        String hwfProvideDocumentName,
         LocalDate hwfDocumentsToBeSentBefore,
         BreathingSpace breathingSpace) {
         this.externalId = externalId != null ? externalId : UUID.randomUUID();
@@ -173,6 +178,7 @@ public class ClaimData {
         this.hwfFeeDetailsSummary = hwfFeeDetailsSummary;
         this.hwfMandatoryDetails = hwfMandatoryDetails;
         this.hwfMoreInfoNeededDocuments = hwfMoreInfoNeededDocuments;
+        this.hwfProvideDocumentName = hwfProvideDocumentName;
         this.hwfDocumentsToBeSentBefore = hwfDocumentsToBeSentBefore;
         this.breathingSpace = breathingSpace;
     }

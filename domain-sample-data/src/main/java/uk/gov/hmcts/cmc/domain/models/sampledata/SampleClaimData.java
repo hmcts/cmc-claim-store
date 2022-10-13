@@ -51,6 +51,7 @@ public class SampleClaimData {
     private String hwfFeeDetailsSummary = null;
     private String hwfMandatoryDetails = null;
     private List<String> hwfMoreInfoNeededDocuments = null;
+    private String hwfProvideDocumentName = null;
     private LocalDate hwfDocumentsToBeSentBefore = null;
     private HousingDisrepair housingDisrepair = new HousingDisrepair(
         DamagesExpectation.MORE_THAN_THOUSAND_POUNDS,
@@ -272,6 +273,7 @@ public class SampleClaimData {
             hwfFeeDetailsSummary,
             hwfMandatoryDetails,
             hwfMoreInfoNeededDocuments,
+            hwfProvideDocumentName,
             hwfDocumentsToBeSentBefore,
             breathingSpace);
     }

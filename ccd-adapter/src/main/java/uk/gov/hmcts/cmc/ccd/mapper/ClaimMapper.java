@@ -185,6 +185,7 @@ public class ClaimMapper {
                 ccdCase.getHwfFeeDetailsSummary(),
                 ccdCase.getHwfMandatoryDetails(),
                 ccdCase.getHwfMoreInfoNeededDocuments(),
+                ccdCase.getHwfProvideDocumentName(),
                 ccdCase.getHwfDocumentsToBeSentBefore(),
                 breathingSpaceMapper.from(ccdCase))
         )
