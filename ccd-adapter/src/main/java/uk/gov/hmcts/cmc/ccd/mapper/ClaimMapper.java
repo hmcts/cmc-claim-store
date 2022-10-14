@@ -152,10 +152,6 @@ public class ClaimMapper {
         List<Party> claimants = asStream(ccdCase.getApplicants())
             .map(claimantMapper::from)
             .collect(Collectors.toList());
-        if (ccdCase.getHwfProvideDocumentName() != null) {
-            ccdCase.getHwfMoreInfoNeededDocuments()
-                .add(ccdCase.getHwfProvideDocumentName());
-        }
 
         claimBuilder.claimData(
             new ClaimData(

@@ -106,10 +106,6 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
     private CallbackResponse createCitizenClaim(CallbackParams callbackParams) {
         Claim updatedClaim = null;
         Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
-
-        System.out.println("*****************Created a claim with values from value: hwfMoreInfoNeededDocuments + " +
-            claim.getClaimData().getHwfMoreInfoNeededDocuments() +" and hwfProvideDocumentName+ " +
-            claim.getClaimData().getHwfProvideDocumentName()+"******************8");
         logger.info("Created citizen case for callback of type {}, claim with external id {}",
             callbackParams.getType(),
             claim.getExternalId());

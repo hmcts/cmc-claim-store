@@ -235,6 +235,11 @@ public class SampleClaimData {
         return this;
     }
 
+    public SampleClaimData withHwfProvideDocumentName(String hwfProvideDocumentName) {
+        this.hwfProvideDocumentName = hwfProvideDocumentName;
+        return this;
+    }
+
     public SampleClaimData withHwfDocumentsToBeSentBefore(LocalDate hwfDocumentsToBeSentBefore) {
         this.hwfDocumentsToBeSentBefore = hwfDocumentsToBeSentBefore;
         return this;
