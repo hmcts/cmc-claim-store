@@ -236,6 +236,7 @@ public class SampleClaimDataForHwF {
         this.hwfMoreInfoNeededDocuments = hwfMoreInfoNeededDocuments;
         return this;
     }
+
     public SampleClaimDataForHwF withHwfProvideDocumentName(String hwfProvideDocumentName) {
         this.hwfProvideDocumentName = hwfProvideDocumentName;
         return this;
