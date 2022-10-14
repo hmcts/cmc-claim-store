@@ -530,6 +530,13 @@
         <cve>CVE-2022-31569</cve>
     </suppress>
 
+    <suppress until="2023-03-01">
+    <notes><![CDATA[
+   file name: launchdarkly-java-server-sdk-5.10.1.jar
+   ]]></notes>
+        <cve>CVE-2022-38751</cve>
+        <cve>CVE-2022-38752</cve>
+    </suppress>
     <suppress>
         <notes><![CDATA[
    file name: snakeyaml-1.31.jar
