@@ -104,5 +104,6 @@
     "BANK_STATEMENTS",
     "PRISONERS_INCOME"
   ],
+  "hwfProvideDocumentName": "Sample document name",
   "hwfDocumentsToBeSentBefore": "2020-01-01"
 }
