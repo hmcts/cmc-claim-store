@@ -182,6 +182,7 @@ public class JsonMapperTest {
             .withTimeline(SampleTimeline.validDefaults())
             .withEvidence(SampleEvidence.validDefaults())
             .withHwfMoreInfoNeededDocuments(asList("BANK_STATEMENTS", "PRISONERS_INCOME"))
+            .withHwfProvideDocumentName("Sample document name")
             .withHwfDocumentsToBeSentBefore(LocalDate.parse("2020-01-01"))
             .build();
 
