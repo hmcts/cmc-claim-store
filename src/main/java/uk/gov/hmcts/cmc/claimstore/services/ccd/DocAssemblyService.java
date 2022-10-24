@@ -32,7 +32,7 @@ public class DocAssemblyService {
     public DocAssemblyService(
         AuthTokenGenerator authTokenGenerator,
         DocAssemblyClient docAssemblyClient,
-        @Value("${ocmc.secureDocStoreEnabled}") boolean secureDocStoreEnabled ) {
+        @Value("${ocmc.secureDocStoreEnabled}") boolean secureDocStoreEnabled) {
         this.authTokenGenerator = authTokenGenerator;
         this.docAssemblyClient = docAssemblyClient;
         this.secureDocStoreEnabled = secureDocStoreEnabled;
@@ -84,7 +84,7 @@ public class DocAssemblyService {
             templateId,
             caseTypeId,
             jurisdictionId,
-           true,
+            true,
             payload,
             builder
             ) :

@@ -90,6 +90,7 @@ public class DocAssemblyServiceTest {
 
         verify(docAssemblyClient).generateOrder(eq(BEARER_TOKEN), eq(SERVICE_TOKEN), any(DocAssemblyRequest.class));
     }
+
     @Test
     public void shouldGenerateSecureDocument() {
         docAssemblyService = new DocAssemblyService(authTokenGenerator, docAssemblyClient, true);
