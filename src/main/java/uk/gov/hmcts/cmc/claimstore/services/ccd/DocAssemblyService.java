@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -25,15 +26,16 @@ public class DocAssemblyService {
 
     private final AuthTokenGenerator authTokenGenerator;
     private final DocAssemblyClient docAssemblyClient;
-    private static final boolean secureDocStoreEnabled = true;
+    private final boolean secureDocStoreEnabled;
 
     @Autowired
     public DocAssemblyService(
         AuthTokenGenerator authTokenGenerator,
-        DocAssemblyClient docAssemblyClient
-    ) {
+        DocAssemblyClient docAssemblyClient,
+        @Value("${ocmc.secureDocStoreEnabled}") boolean secureDocStoreEnabled) {
         this.authTokenGenerator = authTokenGenerator;
         this.docAssemblyClient = docAssemblyClient;
+        this.secureDocStoreEnabled = secureDocStoreEnabled;
     }
 
     public CCDDocument generateDocument(CCDCase ccdCase,
@@ -44,13 +46,13 @@ public class DocAssemblyService {
                                         String jurisdictionId) {
 
         var docAssemblyResponse = renderTemplate(
-            ccdCase,
-            authorisation,
-            templateId,
-            caseTypeId,
-            jurisdictionId,
-            formPayload
-        );
+                ccdCase,
+                authorisation,
+                templateId,
+                caseTypeId,
+                jurisdictionId,
+                formPayload
+            );
 
         return CCDDocument.builder()
             .documentUrl(docAssemblyResponse.getRenditionOutputLocation())
@@ -77,14 +79,20 @@ public class DocAssemblyService {
                                               DocAssemblyTemplateBody payload, DocAssemblyRequestBuilder builder) {
         logger.info("Creating document request for template: {}, external id: {}", templateId, ccdCase.getExternalId());
 
-        DocAssemblyRequest docAssemblyRequest = builder
-            .templateId(templateId)
-            .outputType(OutputType.PDF)
-            .formPayload(payload)
-            .caseTypeId(caseTypeId)
-            .jurisdictionId(jurisdictionId)
-            .secureDocStoreEnabled(secureDocStoreEnabled)
-            .build();
+        DocAssemblyRequest docAssemblyRequest =
+            secureDocStoreEnabled ? docAssemblyRequestBuilder(
+            templateId,
+            caseTypeId,
+            jurisdictionId,
+            true,
+            payload,
+            builder
+            ) :
+            docAssemblyRequestBuilder(
+                templateId,
+                payload,
+                builder
+            );
 
         logger.info("Sending document request for template: {} external id: {}", templateId, ccdCase.getExternalId());
         try {
@@ -97,5 +105,37 @@ public class DocAssemblyService {
             logger.error("Error while trying to generate a document for external id: {}", ccdCase.getExternalId());
             throw new DocumentGenerationFailedException(e);
         }
+    }
+
+    private DocAssemblyRequest docAssemblyRequestBuilder(
+        String templateId,
+        String caseTypeId,
+        String jurisdictionId,
+        boolean secureDocStoreEnabled,
+        DocAssemblyTemplateBody payload,
+        DocAssemblyRequest.DocAssemblyRequestBuilder builder
+    ) {
+        return
+            builder
+                .templateId(templateId)
+                .outputType(OutputType.PDF)
+                .formPayload(payload)
+                .caseTypeId(caseTypeId)
+                .jurisdictionId(jurisdictionId)
+                .secureDocStoreEnabled(secureDocStoreEnabled)
+                .build();
+    }
+
+    private DocAssemblyRequest docAssemblyRequestBuilder(
+        String templateId,
+        DocAssemblyTemplateBody payload,
+        DocAssemblyRequest.DocAssemblyRequestBuilder builder
+    ) {
+        return
+            builder
+                .templateId(templateId)
+                .outputType(OutputType.PDF)
+                .formPayload(payload)
+                .build();
     }
 }
