@@ -102,7 +102,7 @@ fees:
 ocmc:
   caseTypeId: "MoneyClaimCase"
   jurisdictionId: "CMC"
-  secureDocStoreEnabled: false
+  secureDocStoreEnabled: ${FEATURE_TOGGLES_SECURE_DOC_STORE_ENABLED:false}
 
 payments:
   api:
