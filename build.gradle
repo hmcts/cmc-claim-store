@@ -34,7 +34,7 @@ def versions = [
   springfoxSwagger  : '2.9.2',
   reformJavaLogging : '5.1.1',
   restAssuredVersion: '4.2.0',
-  jackson           : '2.13.3',
+  jackson           : '2.14.0-rc1',
   junit             : '5.7.1',
   junitPlatform     : '1.7.1',
 ]
@@ -160,9 +160,26 @@ allprojects {
       // solves CVE-2022-25857
       dependencySet(
         group: 'org.yaml',
-        version: '1.31'
+        version: '1.33'
       ) {
         entry 'snakeyaml'
+      }
+      
+      // solves CVE-2019-14900
+      dependency 'org.hibernate:hibernate-validator:6.2.4.Final'
+      
+      // solves CVE-2020-25638
+      dependencySet(
+        group: 'org.hibernate',
+        version: '5.4.24.Final'
+      ) {
+        entry 'hibernate-core'
+      }
+      dependencySet(
+        group: 'org.hibernate',
+        version: '6.2.4.Final'
+      ) {
+        entry 'hibernate-validator'
       }
     }
   }
@@ -215,7 +232,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
 
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.6'
-  compile group: 'uk.gov.hmcts.reform', name: 'doc-assembly-client', version: '1.07'
+  compile group: 'com.github.hmcts', name: 'doc-assembly-client', version: '1.2.2'
   compile group: 'com.github.hmcts', name: 'fees-java-client', version: '0.0.6'
   compile group: 'com.github.hmcts', name: 'payments-java-client', version: '0.0.7'
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '4.0.0'

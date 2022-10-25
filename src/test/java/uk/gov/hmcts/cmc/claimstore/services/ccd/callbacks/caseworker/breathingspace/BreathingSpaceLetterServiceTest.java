@@ -54,6 +54,8 @@ class BreathingSpaceLetterServiceTest {
     private static final String DOC_URL = "http://success.test";
     private static final String DOC_URL_BINARY = "http://success.test/binary";
     private static final String DOC_NAME = "doc-name";
+    private static final String CASE_TYPE_ID = "MoneyClaimCase";
+    private static final String JURISDICTION_ID = "CMC";
     private static final CCDDocument DRAFT_LETTER_DOC = CCDDocument.builder()
         .documentFileName(DOC_NAME)
         .documentBinaryUrl(DOC_URL_BINARY)
@@ -92,7 +94,7 @@ class BreathingSpaceLetterServiceTest {
         breathingSpaceLetterService = new BreathingSpaceLetterService(
             docAssemblyService,
             docAssemblyTemplateBodyMapper, printableDocumentService, bulkPrintService, claimService,
-            documentManagementService, generalLetterService);
+            documentManagementService, generalLetterService, CASE_TYPE_ID, JURISDICTION_ID);
 
         String documentUrl = DOCUMENT_URI.toString();
         CCDDocument document = new CCDDocument(documentUrl, documentUrl, GENERAL_LETTER_PDF);
@@ -111,7 +113,8 @@ class BreathingSpaceLetterServiceTest {
     @Test
     void shouldCreateAndPreviewLetter() {
         when(docAssemblyService
-            .renderTemplate(any(CCDCase.class), anyString(), anyString(), any(DocAssemblyTemplateBody.class)))
+            .renderTemplate(any(CCDCase.class), anyString(), anyString(), anyString(), anyString(),
+                any(DocAssemblyTemplateBody.class)))
             .thenReturn(docAssemblyResponse);
 
         DocAssemblyTemplateBody docAssemblyTemplateBody = DocAssemblyTemplateBody.builder().build();
@@ -134,13 +137,13 @@ class BreathingSpaceLetterServiceTest {
             BREATHING_SPACE_LETTER_TEMPLATE_ID, FILE_NAME);
 
         verify(docAssemblyService, once()).renderTemplate(ccdCase, BEARER_TOKEN.name(),
-            BREATHING_SPACE_LETTER_TEMPLATE_ID, docAssemblyTemplateBody);
+            BREATHING_SPACE_LETTER_TEMPLATE_ID, CASE_TYPE_ID, JURISDICTION_ID, docAssemblyTemplateBody);
     }
 
     @Test
     void shouldPrintLetter() {
         when(docAssemblyService
-            .renderTemplate(any(CCDCase.class), anyString(), anyString(), any(DocAssemblyTemplateBody.class)))
+            .renderTemplate(any(CCDCase.class), anyString(), anyString(), anyString(), anyString(), any(DocAssemblyTemplateBody.class)))
             .thenReturn(docAssemblyResponse);
 
         DocAssemblyTemplateBody docAssemblyTemplateBody = DocAssemblyTemplateBody.builder().build();
@@ -174,7 +177,7 @@ class BreathingSpaceLetterServiceTest {
     @Test
     void shouldUploadLetter() {
         when(docAssemblyService
-            .renderTemplate(any(CCDCase.class), anyString(), anyString(), any(DocAssemblyTemplateBody.class)))
+            .renderTemplate(any(CCDCase.class), anyString(), anyString(), anyString(), anyString(), any(DocAssemblyTemplateBody.class)))
             .thenReturn(docAssemblyResponse);
 
         DocAssemblyTemplateBody docAssemblyTemplateBody = DocAssemblyTemplateBody.builder().build();
@@ -205,7 +208,7 @@ class BreathingSpaceLetterServiceTest {
     @Test
     void shouldThrowExceptionWhenDocAssemblyFails() {
         when(docAssemblyService
-            .renderTemplate(any(CCDCase.class), anyString(), anyString(), any(DocAssemblyTemplateBody.class)))
+            .renderTemplate(any(CCDCase.class), anyString(), anyString(), anyString(), anyString(), any(DocAssemblyTemplateBody.class)))
             .thenThrow(new DocumentGenerationFailedException(new RuntimeException("exception")));
 
         DocAssemblyTemplateBody docAssemblyTemplateBody = DocAssemblyTemplateBody.builder().build();
@@ -220,7 +223,7 @@ class BreathingSpaceLetterServiceTest {
     @Test
     void shouldCreateAndPreviewLetterFromCCD() {
         when(docAssemblyService
-            .renderTemplate(any(CCDCase.class), anyString(), anyString(), any(DocAssemblyTemplateBody.class)))
+            .renderTemplate(any(CCDCase.class), anyString(), anyString(), anyString(), anyString(), any(DocAssemblyTemplateBody.class)))
             .thenReturn(docAssemblyResponse);
 
         DocAssemblyTemplateBody docAssemblyTemplateBody = DocAssemblyTemplateBody.builder().build();
@@ -232,13 +235,13 @@ class BreathingSpaceLetterServiceTest {
             BREATHING_SPACE_LETTER_TEMPLATE_ID, FILE_NAME);
 
         verify(docAssemblyService, once()).renderTemplate(ccdCase, BEARER_TOKEN.name(),
-            BREATHING_SPACE_LETTER_TEMPLATE_ID, docAssemblyTemplateBody);
+            BREATHING_SPACE_LETTER_TEMPLATE_ID, CASE_TYPE_ID, JURISDICTION_ID, docAssemblyTemplateBody);
     }
 
     @Test
     void shouldPublishLetter() {
         when(docAssemblyService
-            .renderTemplate(any(CCDCase.class), anyString(), anyString(), any(DocAssemblyTemplateBody.class)))
+            .renderTemplate(any(CCDCase.class), anyString(), anyString(), anyString(), anyString(), any(DocAssemblyTemplateBody.class)))
             .thenReturn(docAssemblyResponse);
 
         DocAssemblyTemplateBody docAssemblyTemplateBody = DocAssemblyTemplateBody.builder().build();
@@ -257,7 +260,7 @@ class BreathingSpaceLetterServiceTest {
     @Test
     void shouldThrowExceptionWhenDocAssemblyFailsFromCCD() {
         when(docAssemblyService
-            .renderTemplate(any(CCDCase.class), anyString(), anyString(), any(DocAssemblyTemplateBody.class)))
+            .renderTemplate(any(CCDCase.class), anyString(), anyString(), anyString(), anyString(), any(DocAssemblyTemplateBody.class)))
             .thenThrow(new DocumentGenerationFailedException(new RuntimeException("exception")));
 
         DocAssemblyTemplateBody docAssemblyTemplateBody = DocAssemblyTemplateBody.builder().build();
