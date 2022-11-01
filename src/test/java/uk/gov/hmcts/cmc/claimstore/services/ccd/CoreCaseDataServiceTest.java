@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.requests.idam.IdamApi;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -26,6 +27,7 @@ import uk.gov.hmcts.cmc.domain.models.BreathingSpace;
 import uk.gov.hmcts.cmc.domain.models.BreathingSpaceType;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
@@ -50,6 +52,7 @@ import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
+import uk.gov.hmcts.reform.ccd.client.model.PaginatedSearchMetadata;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 
 import java.math.BigInteger;
@@ -57,6 +60,7 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static java.time.LocalDate.now;
@@ -127,6 +131,9 @@ public class CoreCaseDataServiceTest {
     private ArgumentCaptor<Claim> claimArgumentCaptor;
 
     @Mock
+    private IdamApi idamApi;
+
+    @Mock
     private PilotCourtService pilotCourtService;
     private CoreCaseDataService service;
 
@@ -177,7 +184,8 @@ public class CoreCaseDataServiceTest {
             intentionToProceedDeadlineDays,
             workingDayIndicator,
             directionsQuestionnaireService,
-            pilotCourtService
+            pilotCourtService,
+            idamApi
         );
 
         /*this.pilotCourtService = new PilotCourtService(
@@ -949,5 +957,74 @@ public class CoreCaseDataServiceTest {
         } catch (Exception e) {
             assertThatExceptionOfType(CoreCaseDataStoreException.class);
         }
+    }
+
+    @Test
+    public void coreCaseDataApishouldReturnPaginationInfoWhenInvoked(){
+        var pagination = new PaginatedSearchMetadata();
+        pagination.setTotalPagesCount(1);
+        pagination.getTotalPagesCount();
+
+        when(coreCaseDataApi.getPaginationInfoForSearchForCaseworkers(
+            eq(AUTHORISATION),
+            eq(AUTH_TOKEN),
+            eq(USER_DETAILS.getId()),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(
+                Map.of("key", "value")
+            )
+        )).thenReturn(pagination);
+
+        Integer expected = 1;
+
+        var actual = service.getPaginationInfo(
+            AUTHORISATION,
+            USER_DETAILS.getId(),
+            Map.of(
+            "key","value"
+        ));
+
+        verify(coreCaseDataApi, atLeastOnce()).getPaginationInfoForSearchForCaseworkers(
+            AUTHORISATION,
+            AUTH_TOKEN,
+            USER_DETAILS.getId(),
+            JURISDICTION_ID,
+            CASE_TYPE_ID,
+            Map.of("key", "value")
+        );
+        assertEquals(expected,actual);
+
+    }
+
+    @Test
+    public void coreCaseDataApiShouldGetSearchedCasesWhenInvoked(){
+        when(coreCaseDataApi.searchForCaseworker(
+            eq(AUTHORISATION),
+            eq(AUTH_TOKEN),
+            eq(USER_DETAILS.getId()),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(
+                Map.of("key","value"))
+            )
+        ).thenReturn(
+            List.of(CaseDetails.builder()
+                .caseTypeId(CASE_TYPE_ID)
+                .jurisdiction(JURISDICTION_ID)
+                .build())
+        );
+
+        var expected = List.of(CaseDetails.builder()
+            .caseTypeId(CASE_TYPE_ID)
+            .jurisdiction(JURISDICTION_ID)
+            .build());
+
+        var actual = service.searchCases(
+            AUTHORISATION,
+            USER_DETAILS.getId(),
+            Map.of("key","value")
+        );
+        assertEquals(expected,actual);
     }
 }

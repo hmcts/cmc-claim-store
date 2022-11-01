@@ -74,6 +74,7 @@ public class TransferCaseStayedService {
 
         var listOfCases = listCasesWithDeadLIne(
             authorisation,
+            userId,
             pageNumber <= numberOfPages && pageNumber > 0
                 ? pageNumber : 1
         );
@@ -112,8 +113,10 @@ public class TransferCaseStayedService {
             }
     }
 
-    private List<Object> listCasesWithDeadLIne(String authorisation, Integer pageNumber) {
-        var searchedCases = new ArrayList<>(coreCaseDataService.searchCases(authorisation,
+    private List<Object> listCasesWithDeadLIne(String authorisation,String userId, Integer pageNumber) {
+        var searchedCases = new ArrayList<>(coreCaseDataService.searchCases(
+            authorisation,
+            userId,
             getSearchCriteria(
                 true,
                 pageNumber

@@ -19,7 +19,6 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.UnprocessableEntityException;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.requests.idam.IdamApi;
 import uk.gov.hmcts.cmc.claimstore.services.*;
 import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
@@ -37,7 +36,6 @@ import uk.gov.hmcts.reform.ccd.client.model.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -63,7 +61,6 @@ public class CoreCaseDataService {
     private static final String SUBMITTING_CMC_CASE_CREATE_DESCRIPTION = "Submitting CMC case create";
     private static final String SUBMITTING_CMC_INITIATE_PAYMENT_DESCRIPTION = "Submitting CMC initiate payment";
     private static final String MORE_TIME_DEFENDANT_MSG = "Response Deadline Extended by Defendant";
-    private final IdamApi idamApi;
 
     private static final String CCD_UPDATE_FAILURE_MESSAGE
         = "Failed updating claim in CCD store for case id %s on event %s";
@@ -106,8 +103,7 @@ public class CoreCaseDataService {
         Integer intentionToProceedDeadlineDays,
         WorkingDayIndicator workingDayIndicator,
         DirectionsQuestionnaireService directionsQuestionnaireService,
-        PilotCourtService pilotCourtService,
-        IdamApi idamApi
+        PilotCourtService pilotCourtService
     ) {
         this.caseMapper = caseMapper;
         this.userService = userService;
@@ -120,7 +116,6 @@ public class CoreCaseDataService {
         this.intentionToProceedDeadlineDays = intentionToProceedDeadlineDays;
         this.directionsQuestionnaireService = directionsQuestionnaireService;
         this.pilotCourtService = pilotCourtService;
-        this.idamApi = idamApi;
     }
 
     @LogExecutionTime
@@ -1356,8 +1351,8 @@ public class CoreCaseDataService {
     }
 
     public List<CaseDetails> searchCases(String authorisation,
+                                         String userId,
                                          Map<String, String> searchCriteria) {
-        String userId = idamApi.retrieveUserDetails(authorisation).getId();
 
         return coreCaseDataApi.searchForCaseworker(
             authorisation,
