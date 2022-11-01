@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd;
 
-import com.google.common.collect.ImmutableMap;
 import feign.FeignException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -1356,15 +1355,10 @@ public class CoreCaseDataService {
         return caseDetailsConverter.extractClaim(update(authorisation, ccdCase, CaseEvent.BREATHING_SPACE_LIFTED));
     }
 
-    public List<CaseDetails> searchCases(String authorisation, String userId, Integer page, ClaimState state) {
-        userId = idamApi.retrieveUserDetails(authorisation).getId();
-        Map<String, String> searchCriteria = new HashMap<>();
+    public List<CaseDetails> searchCases(String authorisation,
+                                         Map<String, String> searchCriteria) {
+        String userId = idamApi.retrieveUserDetails(authorisation).getId();
 
-        searchCriteria.put("page", page.toString());
-        searchCriteria.put("sortDirection", "desc");
-        if (state != null) {
-            searchCriteria.put("state", state.getValue());
-        }
         return coreCaseDataApi.searchForCaseworker(
             authorisation,
             authTokenGenerator.generate(),
@@ -1375,12 +1369,10 @@ public class CoreCaseDataService {
         );
     }
 
-    public Integer getPaginationInfo(String authorisation, String userId, ClaimState state){
-        Map<String, String> searchCriteria = new HashMap<>();
-        searchCriteria.put("sortDirection", "desc");
-        if (state != null) {
-            searchCriteria.put("state", state.getValue());
-        }
+    public Integer getPaginationInfo(String authorisation,
+                                     String userId,
+                                     Map<String, String> searchCriteria
+    ){
         return coreCaseDataApi.getPaginationInfoForSearchForCaseworkers(
             authorisation,
             authTokenGenerator.generate(),

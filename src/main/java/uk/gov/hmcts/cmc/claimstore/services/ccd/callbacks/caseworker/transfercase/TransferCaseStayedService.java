@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimState;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,8 +52,21 @@ public class TransferCaseStayedService {
         return coreCaseDataService.getPaginationInfo(
             authorisation,
             userId,
-            ClaimState.OPEN
+            getSearchCriteria(false, null)
         );
+    }
+
+    private Map<String,String> getSearchCriteria(boolean isSearchingPerPageEnabled, Integer pageNumber){
+        Map<String, String> searchCriteria = new HashMap<>();
+
+            if (isSearchingPerPageEnabled && pageNumber != null) {
+                searchCriteria.put("page", pageNumber.toString());
+            }
+
+            searchCriteria.put("sortDirection", "desc");
+            searchCriteria.put("state", ClaimState.OPEN.getValue());
+
+        return searchCriteria;
     }
 
     private void compareCases(String authorisation, String userId, Integer pageNumber){
@@ -60,7 +74,6 @@ public class TransferCaseStayedService {
 
         var listOfCases = listCasesWithDeadLIne(
             authorisation,
-            userId,
             pageNumber <= numberOfPages && pageNumber > 0
                 ? pageNumber : 1
         );
@@ -99,22 +112,29 @@ public class TransferCaseStayedService {
             }
     }
 
-    private List<Object> listCasesWithDeadLIne(String authorisation, String userId, Integer pageNumber) {
-        var searchedCases = new ArrayList<>(coreCaseDataService.searchCases(authorisation, userId, pageNumber, ClaimState.OPEN));
+    private List<Object> listCasesWithDeadLIne(String authorisation, Integer pageNumber) {
+        var searchedCases = new ArrayList<>(coreCaseDataService.searchCases(authorisation,
+            getSearchCriteria(
+                true,
+                pageNumber
+            )
+        ));
+
         List<Object> claimsList = new ArrayList<>();
-        List<Object> returnList = new ArrayList<>();
+        List<Object> generatedList = new ArrayList<>();
         int index = -1;
+
         for (var searchedCase : searchedCases) {
             Map<String, Object> searchedCaseDataMap = searchedCase.getData();
             index++;
             claimsList.add(searchedCaseDataMap);
             for (Map.Entry<String, Object> entry : searchedCaseDataMap.entrySet()) {
                 if (entry.getKey().contains("intentionToProceedDeadline")){
-                    returnList.add(claimsList.get(index));
+                    generatedList.add(claimsList.get(index));
                 }
             }
         }
-        return returnList;
+        return generatedList;
     }
 
 }
