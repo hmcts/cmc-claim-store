@@ -52,23 +52,24 @@ public class TransferCaseStayedService {
     public void compareCases(String authorisation, String userId, Integer pageNumber) {
         Integer numberOfPages = getNumberOfPages(authorisation, userId);
 
-        var listOfCases = Optional.of(listCasesWithDeadLIne(
+        var listOfCases = listCasesWithDeadLIne(
             authorisation,
             userId,
             pageNumber <= numberOfPages && pageNumber > 0
                 ? pageNumber : 1
-        )).orElse(null);
+        );
 
         LocalDate currentDate = LocalDate.now();
 
-        JSONArray listOfCasesJson = listOfCases.size() > 0
+        JSONArray listOfCasesJson = !listOfCases.isEmpty()
             ? new JSONArray(listOfCases) : null;
 
         for (int caseIndex = 0; caseIndex < listOfCases.size(); caseIndex++) {
             String intentionToProceedDeadline = null;
             Long caseId = null;
+            boolean isJsonCasesNotNull = !listOfCasesJson.isEmpty() && listOfCasesJson != null;
 
-            if (!listOfCasesJson.isEmpty()) {
+            if (isJsonCasesNotNull) {
 
                 intentionToProceedDeadline = listOfCasesJson
                     .getJSONObject(caseIndex)
