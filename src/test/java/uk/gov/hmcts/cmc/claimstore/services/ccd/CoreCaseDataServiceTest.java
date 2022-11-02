@@ -15,7 +15,6 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.requests.idam.IdamApi;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -128,9 +127,6 @@ public class CoreCaseDataServiceTest {
     private DirectionsQuestionnaireService directionsQuestionnaireService;
     @Captor
     private ArgumentCaptor<Claim> claimArgumentCaptor;
-
-    @Mock
-    private IdamApi idamApi;
 
     @Mock
     private PilotCourtService pilotCourtService;
