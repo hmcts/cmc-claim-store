@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @AllArgsConstructor
 @Service
@@ -67,9 +66,11 @@ public class TransferCaseStayedService {
         for (int caseIndex = 0; caseIndex < listOfCases.size(); caseIndex++) {
             String intentionToProceedDeadline = null;
             Long caseId = null;
-            boolean isJsonCasesNotNull = !listOfCasesJson.isEmpty() && listOfCasesJson != null;
 
-            if (isJsonCasesNotNull) {
+            if (listOfCasesJson.get(caseIndex) != null
+                && !listOfCasesJson.isEmpty()
+                && listOfCasesJson != null
+            ) {
 
                 intentionToProceedDeadline = listOfCasesJson
                     .getJSONObject(caseIndex)
