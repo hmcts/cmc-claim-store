@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Service
@@ -51,12 +53,12 @@ public class TransferCaseStayedService {
     public void compareCases(String authorisation, String userId, Integer pageNumber) {
         Integer numberOfPages = getNumberOfPages(authorisation, userId);
 
-        var listOfCases = listCasesWithDeadLIne(
+        var listOfCases = Optional.of(listCasesWithDeadLIne(
             authorisation,
             userId,
             pageNumber <= numberOfPages && pageNumber > 0
                 ? pageNumber : 1
-        );
+        )).orElse(null);
 
         LocalDate currentDate = LocalDate.now();
 
@@ -65,14 +67,14 @@ public class TransferCaseStayedService {
 
         for (int caseIndex = 0; caseIndex < listOfCases.size(); caseIndex++) {
 
-            String intentionToProceedDeadline = listOfCasesJson
+            String intentionToProceedDeadline = Objects.requireNonNull(listOfCasesJson
                 .getJSONObject(caseIndex)
-                .get("intentionToProceedDeadline").toString();
+                .get("intentionToProceedDeadline").toString());
 
             Long caseId = Long.parseLong(
-                listOfCasesJson
+                Objects.requireNonNull(listOfCasesJson
                     .getJSONObject(caseIndex)
-                    .get("id").toString());
+                    .get("id").toString()));
 
             boolean currentDateAfter = currentDate
                 .isAfter(LocalDate
