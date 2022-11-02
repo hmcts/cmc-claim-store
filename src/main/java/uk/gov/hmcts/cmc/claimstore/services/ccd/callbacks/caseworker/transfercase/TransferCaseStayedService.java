@@ -40,36 +40,15 @@ public class TransferCaseStayedService {
 
         log.info("Comparing cases to update into ccd");
 
-        if (pageNumber <= getNumberOfPages(authorisation, userId)){
+        if (pageNumber <= getNumberOfPages(authorisation, userId)) {
             caseStayedIncrementConfiguration.setPageIncrement(pageNumber + 1);
-            if (pageNumber.equals(caseStayedIncrementConfiguration.getPageIncrement())){
+            if (pageNumber.equals(caseStayedIncrementConfiguration.getPageIncrement())) {
                 caseStayedIncrementConfiguration.setPageIncrement(1);
             }
         }
     }
 
-    private Integer getNumberOfPages(String authorisation, String userId){
-        return coreCaseDataService.getPaginationInfo(
-            authorisation,
-            userId,
-            getSearchCriteria(false, null)
-        );
-    }
-
-    private Map<String,String> getSearchCriteria(boolean isSearchingPerPageEnabled, Integer pageNumber){
-        Map<String, String> searchCriteria = new HashMap<>();
-
-            if (isSearchingPerPageEnabled && pageNumber != null) {
-                searchCriteria.put("page", pageNumber.toString());
-            }
-
-            searchCriteria.put("sortDirection", "desc");
-            searchCriteria.put("state", ClaimState.OPEN.getValue());
-
-        return searchCriteria;
-    }
-
-    private void compareCases(String authorisation, String userId, Integer pageNumber){
+    public void compareCases(String authorisation, String userId, Integer pageNumber) {
         Integer numberOfPages = getNumberOfPages(authorisation, userId);
 
         var listOfCases = listCasesWithDeadLIne(
@@ -84,36 +63,57 @@ public class TransferCaseStayedService {
         JSONArray listOfCasesJson = listOfCases.size() > 0
             ? new JSONArray(listOfCases) : null;
 
-            for (int CASE_INDEX = 0 ; CASE_INDEX < listOfCases.size() ; CASE_INDEX++) {
+        for (int caseIndex = 0; caseIndex < listOfCases.size(); caseIndex++) {
 
-                String intentionToProceedDeadline = listOfCasesJson
-                    .getJSONObject(CASE_INDEX)
-                    .get("intentionToProceedDeadline").toString();
+            String intentionToProceedDeadline = listOfCasesJson
+                .getJSONObject(caseIndex)
+                .get("intentionToProceedDeadline").toString();
 
-                Long caseId = Long.parseLong(
-                    listOfCasesJson
-                        .getJSONObject(CASE_INDEX)
-                        .get("id").toString());
+            Long caseId = Long.parseLong(
+                listOfCasesJson
+                    .getJSONObject(caseIndex)
+                    .get("id").toString());
 
-               boolean currentDateAfter = currentDate
-                   .isAfter(LocalDate
-                       .parse(intentionToProceedDeadline));
+            boolean currentDateAfter = currentDate
+                .isAfter(LocalDate
+                    .parse(intentionToProceedDeadline));
 
-                var ccdStayClaim = CCDCase.builder()
-                    .id(caseId)
-                    .build();
+            var ccdStayClaim = CCDCase.builder()
+                .id(caseId)
+                .build();
 
-                if (currentDateAfter) {
-                    coreCaseDataService.update(
-                        authorisation,
-                        ccdStayClaim,
-                        CaseEvent.STAY_CLAIM
-                    );
-                }
+            if (currentDateAfter) {
+                coreCaseDataService.update(
+                    authorisation,
+                    ccdStayClaim,
+                    CaseEvent.STAY_CLAIM
+                );
             }
+        }
     }
 
-    private List<Object> listCasesWithDeadLIne(String authorisation,String userId, Integer pageNumber) {
+    private Integer getNumberOfPages(String authorisation, String userId) {
+        return coreCaseDataService.getPaginationInfo(
+            authorisation,
+            userId,
+            getSearchCriteria(false, null)
+        );
+    }
+
+    private Map<String, String> getSearchCriteria(boolean isSearchingPerPageEnabled, Integer pageNumber) {
+        Map<String, String> searchCriteria = new HashMap<>();
+
+        if (isSearchingPerPageEnabled && pageNumber != null) {
+            searchCriteria.put("page", pageNumber.toString());
+        }
+
+        searchCriteria.put("sortDirection", "desc");
+        searchCriteria.put("state", ClaimState.OPEN.getValue());
+
+        return searchCriteria;
+    }
+
+    private List<Object> listCasesWithDeadLIne(String authorisation, String userId, Integer pageNumber) {
         var searchedCases = new ArrayList<>(coreCaseDataService.searchCases(
             authorisation,
             userId,
@@ -132,12 +132,11 @@ public class TransferCaseStayedService {
             index++;
             claimsList.add(searchedCaseDataMap);
             for (Map.Entry<String, Object> entry : searchedCaseDataMap.entrySet()) {
-                if (entry.getKey().contains("intentionToProceedDeadline")){
+                if (entry.getKey().contains("intentionToProceedDeadline")) {
                     generatedList.add(claimsList.get(index));
                 }
             }
         }
         return generatedList;
     }
-
 }

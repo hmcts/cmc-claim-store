@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase.TransferCaseStayedService;
 import uk.gov.hmcts.cmc.scheduler.model.CronJob;
 
-
 @Component
 @Getter
 @DisallowConcurrentExecution

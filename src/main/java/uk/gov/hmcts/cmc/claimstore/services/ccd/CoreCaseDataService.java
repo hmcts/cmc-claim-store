@@ -1367,7 +1367,7 @@ public class CoreCaseDataService {
     public Integer getPaginationInfo(String authorisation,
                                      String userId,
                                      Map<String, String> searchCriteria
-    ){
+    ) {
         return coreCaseDataApi.getPaginationInfoForSearchForCaseworkers(
             authorisation,
             authTokenGenerator.generate(),

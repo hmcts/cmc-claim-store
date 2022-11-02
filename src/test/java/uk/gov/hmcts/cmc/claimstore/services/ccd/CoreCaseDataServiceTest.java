@@ -27,7 +27,6 @@ import uk.gov.hmcts.cmc.domain.models.BreathingSpace;
 import uk.gov.hmcts.cmc.domain.models.BreathingSpaceType;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
-import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
@@ -184,8 +183,7 @@ public class CoreCaseDataServiceTest {
             intentionToProceedDeadlineDays,
             workingDayIndicator,
             directionsQuestionnaireService,
-            pilotCourtService,
-            idamApi
+            pilotCourtService
         );
 
         /*this.pilotCourtService = new PilotCourtService(
@@ -960,7 +958,7 @@ public class CoreCaseDataServiceTest {
     }
 
     @Test
-    public void coreCaseDataApishouldReturnPaginationInfoWhenInvoked(){
+    public void coreCaseDataApiShouldReturnPaginationInfoWhenInvoked() {
         var pagination = new PaginatedSearchMetadata();
         pagination.setTotalPagesCount(1);
         pagination.getTotalPagesCount();
@@ -982,7 +980,7 @@ public class CoreCaseDataServiceTest {
             AUTHORISATION,
             USER_DETAILS.getId(),
             Map.of(
-            "key","value"
+            "key", "value"
         ));
 
         verify(coreCaseDataApi, atLeastOnce()).getPaginationInfoForSearchForCaseworkers(
@@ -993,12 +991,12 @@ public class CoreCaseDataServiceTest {
             CASE_TYPE_ID,
             Map.of("key", "value")
         );
-        assertEquals(expected,actual);
+        assertEquals(expected, actual);
 
     }
 
     @Test
-    public void coreCaseDataApiShouldGetSearchedCasesWhenInvoked(){
+    public void coreCaseDataApiShouldGetSearchedCasesWhenInvoked() {
         when(coreCaseDataApi.searchForCaseworker(
             eq(AUTHORISATION),
             eq(AUTH_TOKEN),
@@ -1006,7 +1004,7 @@ public class CoreCaseDataServiceTest {
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
             eq(
-                Map.of("key","value"))
+                Map.of("key", "value"))
             )
         ).thenReturn(
             List.of(CaseDetails.builder()
@@ -1023,8 +1021,18 @@ public class CoreCaseDataServiceTest {
         var actual = service.searchCases(
             AUTHORISATION,
             USER_DETAILS.getId(),
-            Map.of("key","value")
+            Map.of("key", "value")
         );
-        assertEquals(expected,actual);
+
+        verify(coreCaseDataApi, atLeastOnce()).searchForCaseworker(
+            AUTHORISATION,
+            AUTH_TOKEN,
+            USER_DETAILS.getId(),
+            JURISDICTION_ID,
+            CASE_TYPE_ID,
+            Map.of("key", "value")
+        );
+
+        assertEquals(expected, actual);
     }
 }
