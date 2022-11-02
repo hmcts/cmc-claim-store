@@ -66,25 +66,30 @@ public class TransferCaseStayedService {
             ? new JSONArray(listOfCases) : null;
 
         for (int caseIndex = 0; caseIndex < listOfCases.size(); caseIndex++) {
+            String intentionToProceedDeadline = null;
+            Long caseId = null;
 
-            String intentionToProceedDeadline = Objects.requireNonNull(listOfCasesJson
-                .getJSONObject(caseIndex)
-                .get("intentionToProceedDeadline").toString());
+            if (!listOfCasesJson.isEmpty()) {
 
-            Long caseId = Long.parseLong(
-                Objects.requireNonNull(listOfCasesJson
+                intentionToProceedDeadline = listOfCasesJson
                     .getJSONObject(caseIndex)
-                    .get("id").toString()));
+                    .get("intentionToProceedDeadline").toString();
 
-            boolean currentDateAfter = currentDate
+                caseId = Long.parseLong(
+                    listOfCasesJson
+                        .getJSONObject(caseIndex)
+                        .get("id").toString());
+            }
+
+            boolean currentDateAfter = intentionToProceedDeadline != null && currentDate
                 .isAfter(LocalDate
                     .parse(intentionToProceedDeadline));
 
-            var ccdStayClaim = CCDCase.builder()
+            CCDCase ccdStayClaim = caseId != null ? CCDCase.builder()
                 .id(caseId)
-                .build();
+                .build() : null;
 
-            if (currentDateAfter) {
+            if (currentDateAfter && ccdStayClaim != null) {
                 coreCaseDataService.update(
                     authorisation,
                     ccdStayClaim,
