@@ -57,6 +57,8 @@ class GeneralLetterServiceTest {
     private static final String DOC_URL = "http://success.test";
     private static final String DOC_URL_BINARY = "http://success.test/binary";
     private static final String DOC_NAME = "doc-name";
+    private static final String CASE_TYPE_ID = "MoneyClaimCase";
+    private static final String JURISDICTION_ID = "CMC";
     private static final CCDDocument DRAFT_LETTER_DOC = CCDDocument.builder()
         .documentFileName(DOC_NAME)
         .documentBinaryUrl(DOC_URL_BINARY)
@@ -113,7 +115,9 @@ class GeneralLetterServiceTest {
             userService,
             docAssemblyTemplateBodyMapper,
             documentManagementService,
-            bulkPrintDetailsMapper);
+            bulkPrintDetailsMapper,
+            CASE_TYPE_ID,
+            JURISDICTION_ID);
 
         String documentUrl = DOCUMENT_URI.toString();
         CCDDocument document = new CCDDocument(documentUrl, documentUrl, GENERAL_LETTER_PDF);
@@ -144,7 +148,7 @@ class GeneralLetterServiceTest {
     @Test
     void shouldCreateAndPreviewLetter() {
         when(docAssemblyService
-            .renderTemplate(any(CCDCase.class), anyString(), anyString(), any(DocAssemblyTemplateBody.class)))
+            .renderTemplate(any(CCDCase.class), anyString(), anyString(), anyString(), anyString(), any(DocAssemblyTemplateBody.class)))
             .thenReturn(docAssemblyResponse);
 
         DocAssemblyTemplateBody docAssemblyTemplateBody = DocAssemblyTemplateBody.builder().build();
@@ -154,13 +158,15 @@ class GeneralLetterServiceTest {
         generalLetterService.generateLetter(ccdCase, BEARER_TOKEN.name(), GENERAL_LETTER_TEMPLATE_ID);
 
         verify(docAssemblyService, once()).renderTemplate(eq(ccdCase), eq(BEARER_TOKEN.name()),
-            eq(GENERAL_LETTER_TEMPLATE_ID), eq(docAssemblyTemplateBody));
+            eq(GENERAL_LETTER_TEMPLATE_ID), eq(CASE_TYPE_ID), eq(JURISDICTION_ID),
+            eq(docAssemblyTemplateBody));
     }
 
     @Test
     void shouldThrowExceptionWhenDocAssemblyFails() {
         when(docAssemblyService
-            .renderTemplate(any(CCDCase.class), anyString(), anyString(), any(DocAssemblyTemplateBody.class)))
+            .renderTemplate(any(CCDCase.class), anyString(), anyString(), anyString(), anyString(),
+                any(DocAssemblyTemplateBody.class)))
             .thenThrow(new DocumentGenerationFailedException(new RuntimeException("exception")));
 
         DocAssemblyTemplateBody docAssemblyTemplateBody = DocAssemblyTemplateBody.builder().build();
@@ -224,7 +230,7 @@ class GeneralLetterServiceTest {
     @Test
     void shouldThrowExceptionWhenPrintAndUpdateCaseDocumentFails() {
         when(docAssemblyService
-            .renderTemplate(any(CCDCase.class), anyString(), anyString(), any(DocAssemblyTemplateBody.class)))
+            .renderTemplate(any(CCDCase.class), anyString(), anyString(), anyString(), anyString(), any(DocAssemblyTemplateBody.class)))
             .thenThrow(new RuntimeException("exception"));
 
         DocAssemblyTemplateBody docAssemblyTemplateBody = DocAssemblyTemplateBody.builder().build();

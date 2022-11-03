@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
+import uk.gov.hmcts.cmc.claimstore.exceptions.DuplicateKeyException;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
@@ -168,10 +169,15 @@ class PaperResponseReviewedHandler {
 
     private void email(AboutToStartOrSubmitCallbackResponseBuilder response, Claim beforeClaim, Claim afterClaim) {
         EmailTemplates mailTemplates = notificationsProperties.getTemplates().getEmail();
-        Map<String, String> mailsDetails = getUploadedScannedDocuments(beforeClaim, afterClaim)
-            .stream()
-            .map(scannedDocument -> getMailDetails(response, scannedDocument))
-            .collect(Collectors.toMap(mailDetail -> mailDetail[0], mailDetail -> mailDetail[1]));
+        Map<String, String> mailsDetails;
+        try {
+            mailsDetails = getUploadedScannedDocuments(beforeClaim, afterClaim)
+                .stream()
+                .map(scannedDocument -> getMailDetails(response, scannedDocument))
+                .collect(Collectors.toMap(mailDetail -> mailDetail[0], mailDetail -> mailDetail[1]));
+        } catch (IllegalStateException exception) {
+            throw new DuplicateKeyException(exception);
+        }
 
         if (mailsDetails.size() > 0) {
             mailsDetails.forEach((mailTemplateId, mailToParty) -> notify(afterClaim, mailTemplateId, mailToParty));
