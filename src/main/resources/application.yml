@@ -165,6 +165,7 @@ schedule:
   transfer-claims: ""
   issue-created-claims: "0 0 7,19 ? * * *"
   close-hwf-claims-in-awaiting-state: "${SCHEDULE_CLOSE_HWF_CLAIMS_IN_AWAITING_STATE:}"
+  transfer-stayed-claims: "0/20 0 0 ? * * *"
   state-transition:
     waiting-transfer: ""
     stay-claim: ""
@@ -184,7 +185,7 @@ dateCalculations:
   offerMadeTimeForResponseInDays: 14
   lastResponseReminderDay: 1
   firstResponseReminderDay: 5
-  stayClaimDeadlineInDays: 33
+  stayClaimDeadlineInDays: 0
   waitingTransferDeadlineInDays: 19
   claimantCcjReminderDays: 10
 
