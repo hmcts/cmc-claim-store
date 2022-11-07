@@ -49,8 +49,7 @@ public class DefendantPinLetterContentProviderTest {
             staffEmailProperties,
             new InterestContentProvider(
                 new InterestCalculationService(Clock.systemDefaultZone())
-            ),
-            false
+            )
         );
         when(notificationsProperties.getRespondToClaimUrl()).thenReturn(RESPOND_TO_CLAIM_URL);
         when(staffEmailProperties.getRecipient()).thenReturn(STAFF_NOTIFICATIONS_RECIPIENT);
@@ -141,6 +140,20 @@ public class DefendantPinLetterContentProviderTest {
         Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
 
         assertThat(content).containsEntry("responseDeadline", formatDate(RESPONSE_DEADLINE));
+    }
+
+    @Test
+    public void shouldProvideResponseDeadlineDay() {
+        Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
+
+        assertThat(content).containsEntry("responseDeadlineDay", RESPONSE_DEADLINE.getDayOfMonth());
+    }
+
+    @Test
+    public void shouldProvideResponseDeadlineMonth() {
+        Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
+
+        assertThat(content).containsEntry("responseDeadlineMonth", RESPONSE_DEADLINE.getMonth().toString());
     }
 
     @Test

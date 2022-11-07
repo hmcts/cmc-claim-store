@@ -32,18 +32,15 @@ public class DefendantPinLetterContentProvider {
     private final NotificationsProperties notificationsProperties;
     private final StaffEmailProperties staffEmailProperties;
     private final InterestContentProvider interestContentProvider;
-    private final boolean ctscEnabled;
 
     public DefendantPinLetterContentProvider(
         NotificationsProperties notificationsProperties,
         StaffEmailProperties staffEmailProperties,
-        InterestContentProvider interestContentProvider,
-        @Value("${feature_toggles.ctsc_enabled}") boolean ctscEnabled
+        InterestContentProvider interestContentProvider
     ) {
         this.notificationsProperties = notificationsProperties;
         this.staffEmailProperties = staffEmailProperties;
         this.interestContentProvider = interestContentProvider;
-        this.ctscEnabled = ctscEnabled;
     }
 
     public Map<String, Object> createContent(Claim claim, String defendantPin) {
@@ -90,13 +87,14 @@ public class DefendantPinLetterContentProvider {
         content.put("claimReferenceNumber", claim.getReferenceNumber());
         content.put("defendantPin", defendantPin);
         content.put("responseDeadline", formatDate(claim.getResponseDeadline()));
+        content.put("responseDeadlineDay", claim.getResponseDeadline().getDayOfMonth());
+        content.put("responseDeadlineMonth", (claim.getResponseDeadline().getMonth().toString()));
         content.put("defendantAddress", claim.getClaimData()
             .getDefendant()
             .getAddress()
         );
         content.put("hmctsEmail", staffEmailProperties.getRecipient());
         content.put(NEW_FEATURES, claim.getFeatures() != null && !claim.getFeatures().isEmpty());
-        content.put("ctscEnabled", ctscEnabled);
         return content;
     }
 }
