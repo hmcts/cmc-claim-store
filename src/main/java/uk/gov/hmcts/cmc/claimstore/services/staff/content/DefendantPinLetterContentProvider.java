@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
