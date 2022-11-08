@@ -154,10 +154,10 @@ public class ContactDetailsChangeCallbackHandlerTest extends BaseMockSpringTest 
                 .build())
             .build();
 
-        given(documentManagementService.downloadDocument(anyString(), any(ClaimDocument.class)))
+        given(unsecuredDocumentManagementService.downloadDocument(anyString(), any(ClaimDocument.class)))
             .willReturn(new byte[] {1, 2, 3, 4});
 
-        given(documentManagementService.getDocumentMetaData(anyString(), anyString())).willReturn(getLinks());
+        given(unsecuredDocumentManagementService.getDocumentMetaData(anyString(), anyString())).willReturn(getLinks());
 
         given(sendLetterApi.sendLetter(anyString(), any(LetterWithPdfsRequest.class))).willReturn(sendLetterResponse);
 

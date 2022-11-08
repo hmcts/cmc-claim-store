@@ -44,7 +44,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.unsuccessfulDocum
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-public class DocumentManagementServiceTest {
+public class UnsecuredDocumentManagementServiceTest {
 
     private static final ImmutableList<String> USER_ROLES = ImmutableList.of("caseworker-cmc", "citizen");
     private static final String USER_ROLES_JOINED = "caseworker-cmc,citizen";
@@ -61,14 +61,14 @@ public class DocumentManagementServiceTest {
     private UserService userService;
     @Mock
     private AppInsights appInsights;
-    private DocumentManagementService documentManagementService;
+    private UnsecuredDocumentManagementService documentManagementService;
     @Mock
     private ResponseEntity<Resource> responseEntity;
 
     @Before
     public void setUp() {
         when(authTokenGenerator.generate()).thenReturn("authString");
-        documentManagementService = new DocumentManagementService(
+        documentManagementService = new UnsecuredDocumentManagementService(
             documentMetadataDownloadClient,
             documentDownloadClient,
             documentUploadClient,
@@ -92,7 +92,7 @@ public class DocumentManagementServiceTest {
         URI documentSelfPath = documentManagementService
             .uploadDocument("authString", document).getDocumentManagementUrl();
         assertNotNull(documentSelfPath);
-        assertEquals("/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4", documentSelfPath.getPath());
+        assertEquals("/documents/85d97996-22a5-40d7-882e-3a382c8ae1b2", documentSelfPath.getPath());
 
         verify(documentUploadClient)
             .upload(anyString(), anyString(), anyString(), eq(USER_ROLES), any(Classification.class), anyList());
@@ -211,7 +211,7 @@ public class DocumentManagementServiceTest {
         Document documentMetaData = documentManagementService.getDocumentMetaData("auth string", docUri.getPath());
 
         assertEquals(72552L, documentMetaData.size);
-        assertEquals("000LR002.pdf", documentMetaData.originalDocumentName);
+        assertEquals("TEST_DOCUMENT_1.pdf", documentMetaData.originalDocumentName);
 
         verify(documentMetadataDownloadClient)
             .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString());

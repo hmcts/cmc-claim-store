@@ -164,10 +164,10 @@ allprojects {
       ) {
         entry 'snakeyaml'
       }
-      
+
       // solves CVE-2019-14900
       dependency 'org.hibernate:hibernate-validator:6.2.4.Final'
-      
+
       // solves CVE-2020-25638
       dependencySet(
         group: 'org.hibernate',
@@ -232,6 +232,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
 
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.6'
+  compile group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.7.1'
   compile group: 'com.github.hmcts', name: 'doc-assembly-client', version: '1.2.2'
   compile group: 'com.github.hmcts', name: 'fees-java-client', version: '0.0.6'
   compile group: 'com.github.hmcts', name: 'payments-java-client', version: '0.0.7'
@@ -455,7 +456,8 @@ sonarqube {
         "**/ValidExpenseConstraintValidator.java",
         "**/ValidResidenceConstraintValidator.java",
         "**/PaperResponseFullDefenceCallbackHandler.java",
-        "**/cmc/claimstore/services/ccd/callbacks/roboticssupport/RoboticsNotificationServiceImpl.java"
+        "**/cmc/claimstore/services/ccd/callbacks/roboticssupport/RoboticsNotificationServiceImpl.java",
+        "**/*DocumentManagementService.java"
     ].join(",")
   }
 }

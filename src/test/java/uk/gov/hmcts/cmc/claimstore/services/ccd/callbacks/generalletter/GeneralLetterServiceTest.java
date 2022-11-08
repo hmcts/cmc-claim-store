@@ -21,7 +21,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.PrintableDocumentService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
-import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.UnsecuredDocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
@@ -89,7 +89,7 @@ class GeneralLetterServiceTest {
     @Mock
     private DocAssemblyService docAssemblyService;
     @Mock
-    private DocumentManagementService documentManagementService;
+    private UnsecuredDocumentManagementService unsecuredDocumentManagementService;
     @Mock
     private DocAssemblyResponse docAssemblyResponse;
     @Mock
@@ -110,11 +110,11 @@ class GeneralLetterServiceTest {
         generalLetterService = new GeneralLetterService(
             docAssemblyService,
             bulkPrintHandler,
-            new PrintableDocumentService(documentManagementService),
+            new PrintableDocumentService(unsecuredDocumentManagementService),
             clock,
             userService,
             docAssemblyTemplateBodyMapper,
-            documentManagementService,
+            unsecuredDocumentManagementService,
             bulkPrintDetailsMapper,
             CASE_TYPE_ID,
             JURISDICTION_ID);
@@ -204,16 +204,16 @@ class GeneralLetterServiceTest {
             .contactChangeContent(null)
             .generalLetterContent(null)
             .build();
-        when(documentManagementService.downloadDocument(anyString(), any(ClaimDocument.class)))
+        when(unsecuredDocumentManagementService.downloadDocument(anyString(), any(ClaimDocument.class)))
             .thenReturn(PDF_BYTES);
 
-        when(documentManagementService.getDocumentMetaData(anyString(), anyString()))
+        when(unsecuredDocumentManagementService.getDocumentMetaData(anyString(), anyString()))
             .thenReturn(getLinks());
 
         CCDCase updatedCase = generalLetterService
             .publishLetter(ccdCase, claim, BEARER_TOKEN.name(), GENERAL_DOCUMENT_NAME);
 
-        verify(documentManagementService, once()).downloadDocument(eq(BEARER_TOKEN.name()), any(ClaimDocument.class));
+        verify(unsecuredDocumentManagementService, once()).downloadDocument(eq(BEARER_TOKEN.name()), any(ClaimDocument.class));
         assertThat(updatedCase).isEqualTo(expected);
     }
 
@@ -243,12 +243,12 @@ class GeneralLetterServiceTest {
 
     @Test
     void shouldAttachDocument() {
-        when(documentManagementService.getDocumentMetaData(anyString(), anyString()))
+        when(unsecuredDocumentManagementService.getDocumentMetaData(anyString(), anyString()))
             .thenReturn(getLinks());
         when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
         when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);
         generalLetterService.attachGeneralLetterToCase(ccdCase, DOCUMENT, anyString(), anyString());
-        verify(documentManagementService, once()).getDocumentMetaData(anyString(), anyString());
+        verify(unsecuredDocumentManagementService, once()).getDocumentMetaData(anyString(), anyString());
     }
 }

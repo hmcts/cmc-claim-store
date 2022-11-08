@@ -14,7 +14,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.PrintableDocumentService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
-import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.UnsecuredDocumentManagementService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
@@ -34,7 +34,7 @@ public class BreathingSpaceLetterService {
     private final PrintableDocumentService printableDocumentService;
     private final PrintService bulkPrintService;
     private final ClaimService claimService;
-    private final DocumentManagementService documentManagementService;
+    private final UnsecuredDocumentManagementService unsecuredDocumentManagementService;
     private final GeneralLetterService generalLetterService;
     private final String caseTypeId;
     private final String jurisdictionId;
@@ -45,7 +45,7 @@ public class BreathingSpaceLetterService {
         PrintableDocumentService printableDocumentService,
         PrintService bulkPrintService,
         ClaimService claimService,
-        DocumentManagementService documentManagementService,
+        UnsecuredDocumentManagementService unsecuredDocumentManagementService,
         GeneralLetterService generalLetterService,
         @Value("${ocmc.caseTypeId}") String caseTypeId,
         @Value("${ocmc.jurisdictionId}") String jurisdictionId
@@ -55,7 +55,7 @@ public class BreathingSpaceLetterService {
         this.printableDocumentService = printableDocumentService;
         this.bulkPrintService = bulkPrintService;
         this.claimService = claimService;
-        this.documentManagementService = documentManagementService;
+        this.unsecuredDocumentManagementService = unsecuredDocumentManagementService;
         this.generalLetterService = generalLetterService;
         this.caseTypeId = caseTypeId;
         this.jurisdictionId = jurisdictionId;
@@ -102,7 +102,7 @@ public class BreathingSpaceLetterService {
     }
 
     public Claim uploadToDocumentManagement(PDF document, String authorisation, Claim claim) {
-        ClaimDocument claimDocument = documentManagementService.uploadDocument(authorisation, document);
+        ClaimDocument claimDocument = unsecuredDocumentManagementService.uploadDocument(authorisation, document);
         ClaimDocumentCollection claimDocumentCollection = getClaimDocumentCollection(claim, claimDocument);
 
         return claimService.saveClaimDocuments(authorisation,

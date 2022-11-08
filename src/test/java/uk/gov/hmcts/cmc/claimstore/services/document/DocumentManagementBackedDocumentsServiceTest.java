@@ -72,7 +72,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
     @Mock
     private DraftClaimReceiptService draftClaimReceiptService;
     @Mock
-    private DocumentManagementService documentManagementService;
+    private UnsecuredDocumentManagementService unsecuredDocumentManagementService;
     @Mock
     private SealedClaimPdfService sealedClaimPdfService;
     @Mock
@@ -92,7 +92,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
     public void setUp() {
         documentManagementBackendDocumentsService = new DocumentManagementBackedDocumentsService(
             claimService,
-            documentManagementService,
+                unsecuredDocumentManagementService,
             draftClaimReceiptService,
             sealedClaimPdfService,
             claimIssueReceiptService,
@@ -119,7 +119,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
         when(userService.getUser(AUTHORISATION)).thenReturn(DEFENDANT);
         when(claimService.getClaimByExternalId(claim.getExternalId(), DEFENDANT)).thenReturn(claim);
 
-        when(documentManagementService.downloadScannedDocument(AUTHORISATION, oconDocument))
+        when(unsecuredDocumentManagementService.downloadScannedDocument(AUTHORISATION, oconDocument))
             .thenReturn(PDF_BYTES);
 
         byte[] pdf = documentManagementBackendDocumentsService.generateScannedDocument(claim.getExternalId(),
@@ -169,7 +169,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
         when(userService.getUser(AUTHORISATION)).thenReturn(DEFENDANT);
         Claim claim = getClaimWithDocuments();
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(DEFENDANT))).thenReturn(claim);
-        when(documentManagementService.downloadDocument(eq(AUTHORISATION), any(ClaimDocument.class)))
+        when(unsecuredDocumentManagementService.downloadDocument(eq(AUTHORISATION), any(ClaimDocument.class)))
             .thenReturn(PDF_BYTES);
         byte[] pdf = documentManagementBackendDocumentsService.generateDocument(claim.getExternalId(), GENERAL_LETTER,
             "12345", AUTHORISATION);
@@ -287,17 +287,17 @@ public class DocumentManagementBackedDocumentsServiceTest {
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(DEFENDANT)))
             .thenReturn(claim);
 
-        when(documentManagementService.downloadDocument(eq(AUTHORISATION), any(ClaimDocument.class)))
+        when(unsecuredDocumentManagementService.downloadDocument(eq(AUTHORISATION), any(ClaimDocument.class)))
             .thenReturn(PDF_BYTES);
 
         documentManagementBackendDocumentsService.generateDocument(
             claim.getExternalId(),
             SEALED_CLAIM,
             AUTHORISATION);
-        verify(documentManagementService, atLeastOnce()).downloadDocument(
+        verify(unsecuredDocumentManagementService, atLeastOnce()).downloadDocument(
             eq(AUTHORISATION),
             any(ClaimDocument.class));
-        verify(documentManagementService, never()).uploadDocument(anyString(), any(PDF.class));
+        verify(unsecuredDocumentManagementService, never()).uploadDocument(anyString(), any(PDF.class));
         verify(claimService, never()).saveClaimDocuments(
             eq(AUTHORISATION),
             eq(claim.getId()),
@@ -336,13 +336,13 @@ public class DocumentManagementBackedDocumentsServiceTest {
             .build();
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(CLAIMANT)))
             .thenReturn(claim);
-        when(documentManagementService.downloadDocument(eq(AUTHORISATION), eq(claimDocument))).thenReturn(new byte[1]);
+        when(unsecuredDocumentManagementService.downloadDocument(eq(AUTHORISATION), eq(claimDocument))).thenReturn(new byte[1]);
         documentManagementBackendDocumentsService.generateDocument(
             claim.getExternalId(),
             documentType,
             AUTHORISATION
         );
-        verify(documentManagementService, once()).downloadDocument(any(), any());
+        verify(unsecuredDocumentManagementService, once()).downloadDocument(any(), any());
     }
 
     @Test
@@ -359,13 +359,13 @@ public class DocumentManagementBackedDocumentsServiceTest {
             .build();
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(CLAIMANT)))
             .thenReturn(claim);
-        when(documentManagementService.downloadDocument(eq(AUTHORISATION), eq(claimDocument))).thenReturn(new byte[1]);
+        when(unsecuredDocumentManagementService.downloadDocument(eq(AUTHORISATION), eq(claimDocument))).thenReturn(new byte[1]);
         documentManagementBackendDocumentsService.generateDocument(
             claim.getExternalId(),
             documentType,
             AUTHORISATION
         );
-        verify(documentManagementService, once()).downloadDocument(any(), any());
+        verify(unsecuredDocumentManagementService, once()).downloadDocument(any(), any());
     }
 
     @Test
@@ -382,17 +382,17 @@ public class DocumentManagementBackedDocumentsServiceTest {
             .build();
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(CLAIMANT)))
             .thenReturn(claim);
-        when(documentManagementService.downloadDocument(eq(AUTHORISATION), eq(claimDocument))).thenReturn(new byte[1]);
+        when(unsecuredDocumentManagementService.downloadDocument(eq(AUTHORISATION), eq(claimDocument))).thenReturn(new byte[1]);
         documentManagementBackendDocumentsService.generateDocument(
             claim.getExternalId(),
             documentType,
             AUTHORISATION
         );
-        verify(documentManagementService, once()).downloadDocument(any(), any());
+        verify(unsecuredDocumentManagementService, once()).downloadDocument(any(), any());
     }
 
     private void verifyCommon(byte[] pdf) {
         assertArrayEquals(PDF_BYTES, pdf);
-        verify(documentManagementService).uploadDocument(anyString(), any(PDF.class));
+        verify(unsecuredDocumentManagementService).uploadDocument(anyString(), any(PDF.class));
     }
 }
