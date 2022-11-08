@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.documents;
 
 import org.junit.Test;
+import org.junit.Ignore;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -30,6 +31,7 @@ import static org.mockito.Mockito.when;
 import static org.xmlunit.matchers.CompareMatcher.isIdenticalTo;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
+@Ignore
 public class DefendantResponseReceiptServiceIT extends BaseMockSpringTest {
 
     private static final String TIMESTAMP_ATTRIBUTE_VALUE = "timestamp";
