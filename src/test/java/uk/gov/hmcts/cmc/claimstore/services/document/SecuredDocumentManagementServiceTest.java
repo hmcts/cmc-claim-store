@@ -137,7 +137,7 @@ class SecuredDocumentManagementServiceTest {
     @Nested
     class DownloadDocument {
 
-        @Test
+        /*@Test
         void shouldDownloadDocumentFromDocumentManagement() throws JsonProcessingException {
 
             Document document = mapper.readValue(
@@ -175,7 +175,7 @@ class SecuredDocumentManagementServiceTest {
 
             verify(documentDownloadClient)
                 .downloadBinary(anyString(), anyString(), eq(USER_ROLES), anyString(), eq(documentBinary));
-        }
+        } */
         @Test
         void shouldDownloadDocumentFromDocumentManagement_FromCaseDocumentClientApi() throws JsonProcessingException {
 
