@@ -49,7 +49,8 @@ public class DefendantPinLetterContentProviderTest {
             staffEmailProperties,
             new InterestContentProvider(
                 new InterestCalculationService(Clock.systemDefaultZone())
-            )
+            ),
+            false
         );
         when(notificationsProperties.getRespondToClaimUrl()).thenReturn(RESPOND_TO_CLAIM_URL);
         when(staffEmailProperties.getRecipient()).thenReturn(STAFF_NOTIFICATIONS_RECIPIENT);
