@@ -21,7 +21,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.breathingspace.Breathi
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
-import uk.gov.hmcts.cmc.claimstore.services.document.UnsecuredDocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.SecuredDocumentManagementService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
@@ -71,7 +71,7 @@ class BreathingSpaceLetterServiceTest {
         = claim.toBuilder().bulkPrintDetails(List.of(bulkPrintDetails)).build();
 
     @Mock
-    UnsecuredDocumentManagementService unsecuredDocumentManagementService;
+    SecuredDocumentManagementService securedDocumentManagementService;
     private CCDCase ccdCase;
     @Mock
     private DocAssemblyService docAssemblyService;
@@ -94,7 +94,7 @@ class BreathingSpaceLetterServiceTest {
         breathingSpaceLetterService = new BreathingSpaceLetterService(
             docAssemblyService,
             docAssemblyTemplateBodyMapper, printableDocumentService, bulkPrintService, claimService,
-            unsecuredDocumentManagementService, generalLetterService, CASE_TYPE_ID, JURISDICTION_ID);
+            securedDocumentManagementService, generalLetterService, CASE_TYPE_ID, JURISDICTION_ID);
 
         String documentUrl = DOCUMENT_URI.toString();
         CCDDocument document = new CCDDocument(documentUrl, documentUrl, GENERAL_LETTER_PDF);
@@ -199,7 +199,7 @@ class BreathingSpaceLetterServiceTest {
         breathingSpaceLetterService.sendLetterToDefendant(ccdCase, claim, BEARER_TOKEN.name(),
             BREATHING_SPACE_LETTER_TEMPLATE_ID, FILE_NAME);
 
-        verify(unsecuredDocumentManagementService, once()).uploadDocument(any(String.class), any());
+        verify(securedDocumentManagementService, once()).uploadDocument(any(String.class), any());
 
         verify(claimService, once()).saveClaimDocuments(any(String.class), any(), any(), any(ClaimDocumentType.class));
 
