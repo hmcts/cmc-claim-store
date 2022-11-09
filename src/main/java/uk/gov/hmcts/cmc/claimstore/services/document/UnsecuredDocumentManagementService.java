@@ -37,7 +37,7 @@ import static java.util.Collections.singletonList;
 @Slf4j
 @Service("documentManagementService")
 @RequiredArgsConstructor
-@ConditionalOnProperty(prefix = "document_management", name = "secured", havingValue = "true")
+@ConditionalOnProperty(prefix = "document_management", name = "secured", havingValue = "false")
 public class UnsecuredDocumentManagementService implements DocumentManagementService {
 
     private final Logger logger = LoggerFactory.getLogger(DocumentManagementService.class);

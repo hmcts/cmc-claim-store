@@ -19,7 +19,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
         "uk.gov.hmcts.reform.authorisation",
         "uk.gov.hmcts.reform.sendletter",
         "uk.gov.hmcts.reform.ccd.client",
-        "uk.gov.hmcts.reform.ccd.document.am"
+        "uk.gov.hmcts.reform.ccd.document.am",
+        "uk.gov.hmcts.reform.idam.client"
     })
 public class ClaimStoreApplication {
 
