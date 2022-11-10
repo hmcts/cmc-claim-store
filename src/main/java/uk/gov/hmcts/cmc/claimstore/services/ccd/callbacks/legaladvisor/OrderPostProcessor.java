@@ -19,7 +19,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionOrderService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
-import uk.gov.hmcts.cmc.claimstore.services.document.UnsecuredDocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -30,7 +30,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 
 import java.net.URI;
 import java.time.Clock;
@@ -53,7 +53,7 @@ public class OrderPostProcessor {
     private final CaseDetailsConverter caseDetailsConverter;
     private final LegalOrderService legalOrderService;
     private final DirectionOrderService directionOrderService;
-    private final UnsecuredDocumentManagementService unsecuredDocumentManagementService;
+    private final DocumentManagementService documentManagementService;
     private final ClaimService claimService;
     private AppInsights appInsights;
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -67,7 +67,7 @@ public class OrderPostProcessor {
         LegalOrderService legalOrderService,
         AppInsights appInsights,
         DirectionOrderService directionOrderService,
-        UnsecuredDocumentManagementService unsecuredDocumentManagementService,
+        DocumentManagementService documentManagementService,
         ClaimService claimService
     ) {
         this.clock = clock;
@@ -76,7 +76,7 @@ public class OrderPostProcessor {
         this.legalOrderService = legalOrderService;
         this.directionOrderService = directionOrderService;
         this.appInsights = appInsights;
-        this.unsecuredDocumentManagementService = unsecuredDocumentManagementService;
+        this.documentManagementService = documentManagementService;
         this.claimService = claimService;
     }
 
@@ -91,7 +91,7 @@ public class OrderPostProcessor {
 
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
 
-        Document documentMetadata = unsecuredDocumentManagementService.getDocumentMetaData(
+        Document documentMetadata = documentManagementService.getDocumentMetaData(
             authorisation,
             URI.create(draftOrderDoc.getDocumentUrl()).getPath()
         );

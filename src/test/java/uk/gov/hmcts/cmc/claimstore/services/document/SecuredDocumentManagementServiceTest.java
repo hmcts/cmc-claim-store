@@ -39,7 +39,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.services.document.DocumentDownloadException.MESSAGE_TEMPLATE;
-import static uk.gov.hmcts.cmc.claimstore.services.document.SecuredDocumentManagementService.DOC_UUID_LENGTH;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceReader.readString;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
@@ -49,6 +48,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
     properties = {"document_management.secured=true"})
 class SecuredDocumentManagementServiceTest {
 
+    private static final int DOC_UUID_LENGTH = 36;
     private static final String USER_ROLES = "caseworker-civil";
     public static final String BEARER_TOKEN = "Bearer Token";
 
@@ -65,7 +65,7 @@ class SecuredDocumentManagementServiceTest {
     private ObjectMapper mapper;
 
     @Autowired
-    private SecuredDocumentManagementService documentManagementService;
+    private DocumentManagementService documentManagementService;
 
     @Mock
     private ResponseEntity<Resource> responseEntity;

@@ -37,8 +37,8 @@ import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
-import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
@@ -154,10 +154,10 @@ public class ContactDetailsChangeCallbackHandlerTest extends BaseMockSpringTest 
                 .build())
             .build();
 
-        given(unsecuredDocumentManagementService.downloadDocument(anyString(), any(ClaimDocument.class)))
+        given(documentManagementService.downloadDocument(anyString(), any(ClaimDocument.class)))
             .willReturn(new byte[] {1, 2, 3, 4});
 
-        given(unsecuredDocumentManagementService.getDocumentMetaData(anyString(), anyString())).willReturn(getLinks());
+        given(documentManagementService.getDocumentMetaData(anyString(), anyString())).willReturn(getLinks());
 
         given(sendLetterApi.sendLetter(anyString(), any(LetterWithPdfsRequest.class))).willReturn(sendLetterResponse);
 
@@ -316,7 +316,7 @@ public class ContactDetailsChangeCallbackHandlerTest extends BaseMockSpringTest 
 
     @NotNull
     private Document getLinks() {
-        Document document = new Document();
+        Document document = Document.builder().build();
         Document.Links links = new Document.Links();
         links.binary = new Document.Link();
         links.binary.href = DOCUMENT_BINARY_URL;

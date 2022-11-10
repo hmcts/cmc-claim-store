@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.services.document;
+/*package uk.gov.hmcts.cmc.claimstore.services.document;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -22,7 +22,7 @@ import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.reform.document.DocumentMetadataDownloadClientApi;
 import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
 import uk.gov.hmcts.reform.document.domain.Classification;
-import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 
 import java.net.URI;
 import java.util.Collections;
@@ -38,7 +38,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementDownloadResponse;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementDownloadResponseUnsecure;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementUploadResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.unsuccessfulDocumentManagementUploadResponse;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
@@ -61,22 +61,15 @@ public class UnsecuredDocumentManagementServiceTest {
     private UserService userService;
     @Mock
     private AppInsights appInsights;
-    private UnsecuredDocumentManagementService documentManagementService;
+    @Mock
+    private DocumentManagementService documentManagementService;
     @Mock
     private ResponseEntity<Resource> responseEntity;
 
     @Before
     public void setUp() {
         when(authTokenGenerator.generate()).thenReturn("authString");
-        documentManagementService = new UnsecuredDocumentManagementService(
-            documentMetadataDownloadClient,
-            documentDownloadClient,
-            documentUploadClient,
-            authTokenGenerator,
-            userService,
-            appInsights,
-            USER_ROLES
-        );
+
     }
 
     @Test
@@ -158,7 +151,7 @@ public class UnsecuredDocumentManagementServiceTest {
     private URI setupDocumentDownloadClient() {
         when(documentMetadataDownloadClient
             .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString())
-        ).thenReturn(successfulDocumentManagementDownloadResponse());
+        ).thenReturn(successfulDocumentManagementDownloadResponseUnsecure());
 
         UserDetails userDetails = new UserDetails("id", "mail@mail.com",
             "userFirstName", "userLastName", Collections.singletonList("role"));
@@ -201,7 +194,7 @@ public class UnsecuredDocumentManagementServiceTest {
 
         when(documentMetadataDownloadClient
             .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString())
-        ).thenReturn(successfulDocumentManagementDownloadResponse());
+        ).thenReturn(successfulDocumentManagementDownloadResponseUnsecure());
 
         UserDetails userDetails = new UserDetails("id", "mail@mail.com",
             "userFirstName", "userLastName", Collections.singletonList("role"));
@@ -217,3 +210,4 @@ public class UnsecuredDocumentManagementServiceTest {
             .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString());
     }
 }
+*/
