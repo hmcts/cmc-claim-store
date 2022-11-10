@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.services.document;
+/*package uk.gov.hmcts.cmc.claimstore.services.document;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -147,4 +147,4 @@ public class UnsecuredDocumentManagementService implements DocumentManagementSer
                 "Unable to download document from document management.", ex);
         }
     }
-}
+}*/
