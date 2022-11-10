@@ -185,7 +185,7 @@ dateCalculations:
   offerMadeTimeForResponseInDays: 14
   lastResponseReminderDay: 1
   firstResponseReminderDay: 5
-  stayClaimDeadlineInDays: 0
+  stayClaimDeadlineInDays: 1
   waitingTransferDeadlineInDays: 19
   claimantCcjReminderDays: 10
 
