@@ -40,12 +40,13 @@ public class TransferCaseStayedService {
 
         log.info("Comparing cases to update into ccd");
 
-        if (pageNumber < getNumberOfPages(authorisation, userId)) {
+        if (pageNumber <= getNumberOfPages(authorisation, userId)) {
             caseStayedIncrementConfiguration.setPageIncrement(pageNumber + 1);
-        } else
+
             if (pageNumber.equals(caseStayedIncrementConfiguration.getPageIncrement())) {
                 caseStayedIncrementConfiguration.setPageIncrement(1);
             }
+        }
     }
 
     public void compareCases(String authorisation, String userId, Integer pageNumber) {
