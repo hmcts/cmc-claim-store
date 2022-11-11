@@ -40,7 +40,7 @@ public class TransferCaseStayedService {
 
         log.info("Comparing cases to update into ccd");
 
-        if (pageNumber <= getNumberOfPages(authorisation, userId)) {
+        if (pageNumber < getNumberOfPages(authorisation, userId)) {
             caseStayedIncrementConfiguration.setPageIncrement(pageNumber + 1);
 
             if (pageNumber.equals(caseStayedIncrementConfiguration.getPageIncrement())) {
@@ -59,7 +59,7 @@ public class TransferCaseStayedService {
                 ? pageNumber : 1
         );
 
-        LocalDate currentDate = LocalDate.now();
+        LocalDate currentDate = LocalDate.parse("2022-12-15");
 
         JSONArray listOfCasesJson = !listOfCases.isEmpty()
             ? new JSONArray(listOfCases) : null;
