@@ -115,7 +115,7 @@ public class TransferCaseStayedService {
             searchCriteria.put("page", pageNumber.toString());
         }
 
-        searchCriteria.put("sortDirection", "desc");
+        searchCriteria.put("sortDirection", "asc");
         searchCriteria.put("state", ClaimState.OPEN.getValue());
 
         return searchCriteria;
