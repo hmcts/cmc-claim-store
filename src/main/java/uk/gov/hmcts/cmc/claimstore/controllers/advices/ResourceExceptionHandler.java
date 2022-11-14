@@ -32,6 +32,8 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.InvalidApplicationException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.OnHoldClaimAccessAttemptException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.UnprocessableEntityException;
+import uk.gov.hmcts.cmc.claimstore.services.document.DocumentDownloadException;
+import uk.gov.hmcts.cmc.claimstore.services.document.DocumentUploadException;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.exceptions.IllegalSettlementStatementException;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
@@ -241,4 +243,5 @@ public class ResourceExceptionHandler {
         return new ResponseEntity<>(exception.getMessage(),
             new HttpHeaders(), HttpStatus.GATEWAY_TIMEOUT);
     }
+
 }
