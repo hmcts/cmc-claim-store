@@ -84,6 +84,7 @@ class PaperResponseAdmissionCallbackHandlerTest {
     private static final List<CaseEvent> CASE_EVENTS = Arrays.asList(CaseEvent.PAPER_RESPONSE_OCON_9X_FORM);
     private PaperResponseAdmissionCallbackHandler handler;
     private CallbackParams callbackParams;
+    private boolean secureDocumentManagement = false;
     @Mock
     private DefendantResponseNotificationService defendantResponseNotificationService;
     @Mock
@@ -115,7 +116,7 @@ class PaperResponseAdmissionCallbackHandlerTest {
         String paperResponseAdmissionTemplateId = "CV-CMC-GOR-ENG-0016.docx";
         handler = new PaperResponseAdmissionCallbackHandler(caseDetailsConverter,
             defendantResponseNotificationService, caseMapper, docAssemblyService, docAssemblyTemplateBodyMapper,
-            paperResponseAdmissionTemplateId, CASE_TYPE_ID, JURISDICTION_ID,
+            secureDocumentManagement, paperResponseAdmissionTemplateId, CASE_TYPE_ID, JURISDICTION_ID,
             userService, documentManagementService, clock, generalLetterService,
             caseEventService, launchDarklyClient);
         CallbackRequest callbackRequest = getCallBackRequest();

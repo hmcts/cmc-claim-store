@@ -35,10 +35,10 @@ import static java.util.Collections.singletonList;
 @Service("documentManagementService")
 @RequiredArgsConstructor
 @ConditionalOnProperty(prefix = "document_management", name = "secured", havingValue = "false")
-public class LegacyDocumentManagementService implements DocumentManagementService {
+public class LegacyDocumentManagementService implements DocumentManagementService<Document> {
 
     private static final String FILES_NAME = "files";
-    private static final String OCMC = "OCMC";
+    private static final String CMC = "CMC";
 
     private final DocumentMetadataDownloadClientApi documentMetadataDownloadClientApi;
     private final DocumentDownloadClientApi documentDownloadClient;
@@ -77,7 +77,7 @@ public class LegacyDocumentManagementService implements DocumentManagementServic
                 .documentType(pdf.getClaimDocumentType())
                 .createdDatetime(LocalDateTimeFactory.nowInUTC())
                 .size(document.size)
-                .createdBy(OCMC)
+                .createdBy(CMC)
                 .build();
         } catch (Exception ex) {
             throw new DocumentManagementException(String.format("Unable to upload document %s to document management.",

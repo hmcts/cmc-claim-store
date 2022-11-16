@@ -37,11 +37,11 @@ import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
 @Service("documentManagementService")
 @RequiredArgsConstructor
 @ConditionalOnProperty(prefix = "document_management", name = "secured", havingValue = "true")
-public class SecuredDocumentManagementService implements DocumentManagementService {
+public class SecuredDocumentManagementService implements DocumentManagementService<Document> {
 
     protected static final int DOC_UUID_LENGTH = 36;
     protected static final String FILES_NAME = "files";
-    private static final String OCMC = "OCMC";
+    private static final String CMC = "CMC";
 
     private final DocumentDownloadClientApi documentDownloadClientApi;
     private final AuthTokenGenerator authTokenGenerator;
@@ -61,8 +61,8 @@ public class SecuredDocumentManagementService implements DocumentManagementServi
 
             DocumentUploadRequest documentUploadRequest = new DocumentUploadRequest(
                 Classification.RESTRICTED.toString(),
-                "CIVIL",
-                "CIVIL",
+                "MoneyClaimCase",
+                "CMC",
                 Collections.singletonList(file)
             );
 
@@ -83,7 +83,7 @@ public class SecuredDocumentManagementService implements DocumentManagementServi
                 .documentType(pdf.getClaimDocumentType())
                 .createdDatetime(LocalDateTimeFactory.nowInUTC())
                 .size(document.size)
-                .createdBy(OCMC)
+                .createdBy(CMC)
                 .build();
         } catch (Exception ex) {
             log.error("Failed uploading file {}", originalFileName, ex);
@@ -136,7 +136,7 @@ public class SecuredDocumentManagementService implements DocumentManagementServi
         }
     }
 
-    public uk.gov.hmcts.reform.document.domain.Document getDocumentMetaData(String authorisation, String documentPath) {
+    public Document getDocumentMetaData(String authorisation, String documentPath) {
         log.info("Getting metadata for file {}", documentPath);
 
         try {

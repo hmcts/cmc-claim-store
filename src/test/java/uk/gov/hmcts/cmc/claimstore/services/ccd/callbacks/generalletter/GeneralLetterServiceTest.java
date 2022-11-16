@@ -58,6 +58,7 @@ class GeneralLetterServiceTest {
     private static final String DOC_NAME = "doc-name";
     private static final String CASE_TYPE_ID = "MoneyClaimCase";
     private static final String JURISDICTION_ID = "CMC";
+    private static final boolean secureDocumentManagement = true;
     private static final CCDDocument DRAFT_LETTER_DOC = CCDDocument.builder()
         .documentFileName(DOC_NAME)
         .documentBinaryUrl(DOC_URL_BINARY)
@@ -88,7 +89,8 @@ class GeneralLetterServiceTest {
     @Mock
     private DocAssemblyService docAssemblyService;
     @Mock
-    private DocumentManagementService documentManagementService;
+    private DocumentManagementService<Document>
+        documentManagementService;
     @Mock
     private DocAssemblyResponse docAssemblyResponse;
     @Mock
@@ -102,7 +104,7 @@ class GeneralLetterServiceTest {
 
     private GeneralLetterService generalLetterService;
     private UserDetails userDetails;
-    private BulkPrintDetailsMapper bulkPrintDetailsMapper = new BulkPrintDetailsMapper();
+    private final BulkPrintDetailsMapper bulkPrintDetailsMapper = new BulkPrintDetailsMapper();
 
     @BeforeEach
     void setUp() {
@@ -115,6 +117,7 @@ class GeneralLetterServiceTest {
             docAssemblyTemplateBodyMapper,
             documentManagementService,
             bulkPrintDetailsMapper,
+            secureDocumentManagement,
             CASE_TYPE_ID,
             JURISDICTION_ID);
 

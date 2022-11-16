@@ -63,9 +63,10 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
     private final CaseMapper caseMapper;
     private final DocAssemblyService docAssemblyService;
     private final DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
+    private final boolean secureDocumentManagement;
     private final String paperResponseAdmissionTemplateId;
     private final UserService userService;
-    private final DocumentManagementService documentManagementService;
+    private final DocumentManagementService<?> documentManagementService;
     private final Clock clock;
     private final GeneralLetterService generalLetterService;
     private final CaseEventService caseEventService;
@@ -84,6 +85,8 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
              CaseMapper caseMapper,
              DocAssemblyService docAssemblyService,
              DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper,
+             @Value("${document_management.secured}")
+                  boolean secureDocumentManagement,
              @Value("${doc_assembly.paperResponseAdmissionTemplateId}")
                  String paperResponseAdmissionTemplateId,
              @Value("${ocmc.caseTypeId}")
@@ -91,7 +94,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
              @Value("${ocmc.jurisdictionId}")
                  String jurisdictionId,
              UserService userService,
-             DocumentManagementService documentManagementService,
+             DocumentManagementService<?> documentManagementService,
              Clock clock,
              GeneralLetterService generalLetterService,
              CaseEventService caseEventService,
@@ -101,6 +104,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
         this.caseMapper = caseMapper;
         this.docAssemblyService = docAssemblyService;
         this.docAssemblyTemplateBodyMapper = docAssemblyTemplateBodyMapper;
+        this.secureDocumentManagement = secureDocumentManagement;
         this.paperResponseAdmissionTemplateId = paperResponseAdmissionTemplateId;
         this.userService = userService;
         this.documentManagementService = documentManagementService;
@@ -198,28 +202,51 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
             docAssemblyTemplateBodyMapper.paperResponseAdmissionLetter(updatedCCDCase,
                 userService.getUserDetails(authorisation).getFullName()));
 
-        var documentMetadata = documentManagementService.getDocumentMetaData(
+        var documentMetaData = (uk.gov.hmcts.reform.document.domain.Document)
+            documentManagementService.getDocumentMetaData(
             authorisation,
             URI.create(docAssemblyResponse.getRenditionOutputLocation()).getPath()
         );
 
+        var secureDocumentMetaData = (uk.gov.hmcts.reform.ccd.document.am.model.Document)
+            documentManagementService.getDocumentMetaData(
+                authorisation,
+                URI.create(docAssemblyResponse.getRenditionOutputLocation()).getPath()
+            );
+
         String documentName = String.format("%s-defendant-case-handoff.pdf",
             updatedCCDCase.getPreviousServiceCaseReference());
 
-        CCDDocument ccdDocument = CCDDocument.builder()
+        CCDDocument ccdDocument = secureDocumentManagement
+            ? CCDDocument.builder()
+                .documentFileName(documentName)
+                .documentBinaryUrl(secureDocumentMetaData.links.binary.href)
+                .documentUrl(docAssemblyResponse.getRenditionOutputLocation())
+                .build()
+            : CCDDocument.builder()
             .documentFileName(documentName)
-            .documentBinaryUrl(documentMetadata.links.binary.href)
+            .documentBinaryUrl(documentMetaData.links.binary.href)
             .documentUrl(docAssemblyResponse.getRenditionOutputLocation())
             .build();
 
         printLetter(claim, authorisation, ccdDocument);
 
-        CCDCollectionElement<CCDClaimDocument> claimDocument = CCDCollectionElement.<CCDClaimDocument>builder()
+        CCDCollectionElement<CCDClaimDocument> claimDocument = secureDocumentManagement
+            ? CCDCollectionElement.<CCDClaimDocument>builder()
+                .value(CCDClaimDocument.builder()
+                    .documentLink(ccdDocument)
+                    .documentName(documentName)
+                    .createdDatetime(LocalDateTime.now(clock.withZone(UTC_ZONE)))
+                    .size(secureDocumentMetaData.size)
+                    .documentType(GENERAL_LETTER)
+                    .build())
+                .build()
+            : CCDCollectionElement.<CCDClaimDocument>builder()
             .value(CCDClaimDocument.builder()
                 .documentLink(ccdDocument)
                 .documentName(documentName)
                 .createdDatetime(LocalDateTime.now(clock.withZone(UTC_ZONE)))
-                .size(documentMetadata.size)
+                .size(documentMetaData.size)
                 .documentType(GENERAL_LETTER)
                 .build())
             .build();

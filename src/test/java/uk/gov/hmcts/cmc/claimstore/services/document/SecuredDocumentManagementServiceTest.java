@@ -65,7 +65,7 @@ class SecuredDocumentManagementServiceTest {
     private ObjectMapper mapper;
 
     @Autowired
-    private DocumentManagementService documentManagementService;
+    private DocumentManagementService<Document> documentManagementService;
 
     @Mock
     private ResponseEntity<Resource> responseEntity;

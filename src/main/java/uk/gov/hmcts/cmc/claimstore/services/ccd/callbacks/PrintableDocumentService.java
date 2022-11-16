@@ -15,10 +15,10 @@ import java.util.Collections;
 @Service
 public class PrintableDocumentService {
 
-    private final DocumentManagementService documentManagementService;
+    private final DocumentManagementService<?> documentManagementService;
 
     @Autowired
-    public PrintableDocumentService(DocumentManagementService documentManagementService) {
+    public PrintableDocumentService(DocumentManagementService<?> documentManagementService) {
         this.documentManagementService = documentManagementService;
     }
 

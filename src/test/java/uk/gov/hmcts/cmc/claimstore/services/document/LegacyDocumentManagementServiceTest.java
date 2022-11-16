@@ -1,4 +1,4 @@
-/*package uk.gov.hmcts.cmc.claimstore.services.document;
+package uk.gov.hmcts.cmc.claimstore.services.document;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -22,7 +22,7 @@ import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.reform.document.DocumentMetadataDownloadClientApi;
 import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
 import uk.gov.hmcts.reform.document.domain.Classification;
-import uk.gov.hmcts.reform.ccd.document.am.model.Document;
+import uk.gov.hmcts.reform.document.domain.Document;
 
 import java.net.URI;
 import java.util.Collections;
@@ -44,7 +44,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.unsuccessfulDocum
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-public class UnsecuredDocumentManagementServiceTest {
+public class LegacyDocumentManagementServiceTest {
 
     private static final ImmutableList<String> USER_ROLES = ImmutableList.of("caseworker-cmc", "citizen");
     private static final String USER_ROLES_JOINED = "caseworker-cmc,citizen";
@@ -62,7 +62,7 @@ public class UnsecuredDocumentManagementServiceTest {
     @Mock
     private AppInsights appInsights;
     @Mock
-    private DocumentManagementService documentManagementService;
+    private DocumentManagementService<Document> documentManagementService;
     @Mock
     private ResponseEntity<Resource> responseEntity;
 
@@ -210,4 +210,3 @@ public class UnsecuredDocumentManagementServiceTest {
             .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString());
     }
 }
-*/

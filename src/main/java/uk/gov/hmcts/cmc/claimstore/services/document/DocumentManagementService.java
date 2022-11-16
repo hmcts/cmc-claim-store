@@ -1,11 +1,12 @@
 package uk.gov.hmcts.cmc.claimstore.services.document;
 
+import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ScannedDocument;
-import uk.gov.hmcts.reform.document.domain.Document;
 
-public interface DocumentManagementService {
+@Service
+public interface DocumentManagementService<T> {
 
     byte[] downloadDocumentByUrl(String authorisation, String documentPath);
 
@@ -13,7 +14,7 @@ public interface DocumentManagementService {
 
     byte[] downloadScannedDocument(String authorisation, ScannedDocument scannedDocument);
 
-    Document getDocumentMetaData(String authorisation, String documentPath);
+    T getDocumentMetaData(String authorisation, String documentPath);
 
     ClaimDocument uploadDocument(String authorisation, PDF pdf);
 

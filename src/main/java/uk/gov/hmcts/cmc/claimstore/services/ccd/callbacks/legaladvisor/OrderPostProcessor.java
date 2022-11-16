@@ -53,9 +53,9 @@ public class OrderPostProcessor {
     private final CaseDetailsConverter caseDetailsConverter;
     private final LegalOrderService legalOrderService;
     private final DirectionOrderService directionOrderService;
-    private final DocumentManagementService documentManagementService;
+    private final DocumentManagementService<?> documentManagementService;
     private final ClaimService claimService;
-    private AppInsights appInsights;
+    private final AppInsights appInsights;
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final String REVIEW_OR_DRAW_ORDER = "reviewOrDrawOrder";
     public static final String LA_DRAW_ORDER = "LA_DRAW_ORDER";
@@ -67,7 +67,7 @@ public class OrderPostProcessor {
         LegalOrderService legalOrderService,
         AppInsights appInsights,
         DirectionOrderService directionOrderService,
-        DocumentManagementService documentManagementService,
+        DocumentManagementService<?> documentManagementService,
         ClaimService claimService
     ) {
         this.clock = clock;
@@ -91,17 +91,18 @@ public class OrderPostProcessor {
 
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
 
-        Document documentMetadata = documentManagementService.getDocumentMetaData(
-            authorisation,
-            URI.create(draftOrderDoc.getDocumentUrl()).getPath()
-        );
+        var secureDocumentMetadata = (uk.gov.hmcts.reform.ccd.document.am.model.Document)
+            documentManagementService.getDocumentMetaData(
+                authorisation,
+                URI.create(draftOrderDoc.getDocumentUrl()).getPath()
+            );
 
         CCDCase updatedCase = ccdCase.toBuilder()
             .expertReportPermissionPartyGivenToClaimant(null)
             .expertReportPermissionPartyGivenToDefendant(null)
             .expertReportInstructionClaimant(null)
             .expertReportInstructionDefendant(null)
-            .caseDocuments(updateCaseDocumentsWithOrder(ccdCase, draftOrderDoc, documentMetadata))
+            .caseDocuments(updateCaseDocumentsWithOrder(ccdCase, draftOrderDoc, secureDocumentMetadata))
             .directionOrder(CCDDirectionOrder.builder()
                 .createdOn(nowInUTC())
                 .hearingCourtName(hearingCourt.getName())
