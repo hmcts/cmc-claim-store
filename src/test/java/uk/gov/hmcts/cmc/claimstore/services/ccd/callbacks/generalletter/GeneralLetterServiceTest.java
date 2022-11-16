@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter;
 
 import com.google.common.collect.ImmutableList;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,9 +27,9 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 import uk.gov.hmcts.reform.docassembly.exception.DocumentGenerationFailedException;
-import uk.gov.hmcts.reform.document.domain.Document;
 
 import java.net.URI;
 import java.time.Clock;
@@ -59,6 +58,7 @@ class GeneralLetterServiceTest {
     private static final String DOC_NAME = "doc-name";
     private static final String CASE_TYPE_ID = "MoneyClaimCase";
     private static final String JURISDICTION_ID = "CMC";
+    private static final boolean secureDocumentManagement = true;
     private static final CCDDocument DRAFT_LETTER_DOC = CCDDocument.builder()
         .documentFileName(DOC_NAME)
         .documentBinaryUrl(DOC_URL_BINARY)
@@ -89,7 +89,8 @@ class GeneralLetterServiceTest {
     @Mock
     private DocAssemblyService docAssemblyService;
     @Mock
-    private DocumentManagementService documentManagementService;
+    private DocumentManagementService<Document>
+        documentManagementService;
     @Mock
     private DocAssemblyResponse docAssemblyResponse;
     @Mock
@@ -103,7 +104,7 @@ class GeneralLetterServiceTest {
 
     private GeneralLetterService generalLetterService;
     private UserDetails userDetails;
-    private BulkPrintDetailsMapper bulkPrintDetailsMapper = new BulkPrintDetailsMapper();
+    private final BulkPrintDetailsMapper bulkPrintDetailsMapper = new BulkPrintDetailsMapper();
 
     @BeforeEach
     void setUp() {
@@ -116,6 +117,7 @@ class GeneralLetterServiceTest {
             docAssemblyTemplateBodyMapper,
             documentManagementService,
             bulkPrintDetailsMapper,
+            secureDocumentManagement,
             CASE_TYPE_ID,
             JURISDICTION_ID);
 
@@ -217,9 +219,8 @@ class GeneralLetterServiceTest {
         assertThat(updatedCase).isEqualTo(expected);
     }
 
-    @NotNull
     private Document getLinks() {
-        Document document = new Document();
+        Document document = Document.builder().build();
         Document.Links links = new Document.Links();
         links.binary = new Document.Link();
         links.binary.href = DOC_URL_BINARY;

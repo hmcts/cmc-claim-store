@@ -2,14 +2,12 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
 import com.google.common.collect.ImmutableMap;
 import com.launchdarkly.sdk.LDUser;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -42,8 +40,8 @@ import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
-import uk.gov.hmcts.reform.document.domain.Document;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -55,8 +53,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -64,10 +60,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.GENERAL_LETTER;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.INDIVIDUAL;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.PAPER_RESPONSE_ADMISSION;
-import static uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType.FULL_ADMISSION;
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType.PART_ADMISSION;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
@@ -85,6 +79,7 @@ class PaperResponseAdmissionCallbackHandlerTest {
     private static final List<CaseEvent> CASE_EVENTS = Arrays.asList(CaseEvent.PAPER_RESPONSE_OCON_9X_FORM);
     private PaperResponseAdmissionCallbackHandler handler;
     private CallbackParams callbackParams;
+    private boolean secureDocumentManagement = true;
     @Mock
     private DefendantResponseNotificationService defendantResponseNotificationService;
     @Mock
@@ -96,7 +91,11 @@ class PaperResponseAdmissionCallbackHandlerTest {
     @Mock
     private DocAssemblyResponse docAssemblyResponse;
     @Mock
-    private DocumentManagementService documentManagementService;
+    private DocumentManagementService<uk.gov.hmcts.reform
+        .document.domain.Document> documentManagementService;
+    @Mock
+    private DocumentManagementService<uk.gov.hmcts.reform
+        .ccd.document.am.model.Document> secureDocumentManagementService;
     @Mock
     private Clock clock;
     @Mock
@@ -116,8 +115,8 @@ class PaperResponseAdmissionCallbackHandlerTest {
         String paperResponseAdmissionTemplateId = "CV-CMC-GOR-ENG-0016.docx";
         handler = new PaperResponseAdmissionCallbackHandler(caseDetailsConverter,
             defendantResponseNotificationService, caseMapper, docAssemblyService, docAssemblyTemplateBodyMapper,
-            paperResponseAdmissionTemplateId, CASE_TYPE_ID, JURISDICTION_ID,
-            userService, documentManagementService, clock, generalLetterService,
+            secureDocumentManagement, paperResponseAdmissionTemplateId, CASE_TYPE_ID, JURISDICTION_ID,
+            userService, documentManagementService, secureDocumentManagementService, clock, generalLetterService,
             caseEventService, launchDarklyClient);
         CallbackRequest callbackRequest = getCallBackRequest();
         callbackParams = getBuild(callbackRequest, CallbackType.ABOUT_TO_SUBMIT);
@@ -200,46 +199,6 @@ class PaperResponseAdmissionCallbackHandlerTest {
     }
 
     @Test
-    void shouldGenerateAndUpdateCaseDocument() {
-        CCDCase ccdCase = getCCDCase(PART_ADMISSION, CCDRespondent.builder(), "OCON9x");
-
-        Claim claim = Claim.builder()
-            .referenceNumber("XXXXX")
-            .build();
-        when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
-        when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetails);
-        when(docAssemblyService
-            .renderTemplate(any(CCDCase.class), anyString(), anyString(), anyString(), anyString(),
-                any(DocAssemblyTemplateBody.class)))
-            .thenReturn(docAssemblyResponse);
-        when(docAssemblyTemplateBodyMapper.paperResponseAdmissionLetter(any(CCDCase.class), any(String.class)))
-            .thenReturn(DocAssemblyTemplateBody.builder().build());
-        when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
-        when(documentManagementService.getDocumentMetaData(anyString(), anyString())).thenReturn(getLinks());
-        when(clock.instant()).thenReturn(LocalDate.parse("2020-06-22").atStartOfDay().toInstant(ZoneOffset.UTC));
-        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
-        when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);
-        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-        when(generalLetterService.printLetter(anyString(), any(CCDDocument.class), any(Claim.class)))
-            .thenReturn(BulkPrintDetails.builder().build());
-        ArgumentCaptor<CCDCase> ccdDataArgumentCaptor = ArgumentCaptor.forClass(CCDCase.class);
-        handler.handle(callbackParams);
-        verify(caseDetailsConverter).convertToMap(ccdDataArgumentCaptor.capture());
-
-        verify(documentManagementService, times(1))
-            .getDocumentMetaData(anyString(), anyString());
-
-        verify(docAssemblyTemplateBodyMapper, times(1)).paperResponseAdmissionLetter(any(CCDCase.class),
-            any(String.class));
-
-        assertEquals("CMC-defendant-case-handoff.pdf", ccdDataArgumentCaptor.getValue().getCaseDocuments().get(0)
-            .getValue().getDocumentLink().getDocumentFileName());
-        assertEquals(GENERAL_LETTER,
-            ccdDataArgumentCaptor.getValue().getCaseDocuments().get(0).getValue().getDocumentType());
-        assertEquals(1, ccdDataArgumentCaptor.getValue().getCaseDocuments().size());
-    }
-
-    @Test
     void shouldThrowExceptionWhenGenerateAndUpdateCaseDocumentFails() {
 
         CCDCase ccdCase = getCCDCase(PART_ADMISSION, CCDRespondent.builder(), "OCON9x");
@@ -271,9 +230,8 @@ class PaperResponseAdmissionCallbackHandlerTest {
         assertThat(handler.handledEvents()).containsOnly(PAPER_RESPONSE_ADMISSION);
     }
 
-    @NotNull
     private Document getLinks() {
-        Document document = new Document();
+        Document document = Document.builder().build();
         Document.Links links = new Document.Links();
         links.binary = new Document.Link();
         links.binary.href = DOC_URL_BINARY;
@@ -326,57 +284,12 @@ class PaperResponseAdmissionCallbackHandlerTest {
             when(docAssemblyTemplateBodyMapper.paperResponseAdmissionLetter(any(CCDCase.class), any(String.class)))
                 .thenReturn(DocAssemblyTemplateBody.builder().build());
             when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
-            when(documentManagementService.getDocumentMetaData(anyString(), anyString())).thenReturn(getLinks());
+            when(secureDocumentManagementService.getDocumentMetaData(anyString(), anyString())).thenReturn(getLinks());
             when(clock.instant()).thenReturn(LocalDate.parse("2020-06-22").atStartOfDay().toInstant(ZoneOffset.UTC));
             when(clock.getZone()).thenReturn(ZoneOffset.UTC);
             when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);
             when(generalLetterService.printLetter(anyString(), any(CCDDocument.class), any(Claim.class)))
                 .thenReturn(BulkPrintDetails.builder().build());
-        }
-
-        @Test
-        void shouldChangeFileNameForOCON9xFormForFullAdmission() {
-
-            CCDCase ccdCase = getCCDCase(FULL_ADMISSION, CCDRespondent.builder(), "OCON9x");
-
-            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-
-            ArgumentCaptor<CCDCase> ccdDataArgumentCaptor = ArgumentCaptor.forClass(CCDCase.class);
-            handler.handle(callbackParams);
-
-            verify(caseDetailsConverter).convertToMap(ccdDataArgumentCaptor.capture());
-            assertEquals("CMC-scanned-OCON9x-full-admission.pdf",
-                ccdDataArgumentCaptor.getValue().getScannedDocuments().get(0).getValue().getFileName());
-            assertNull(ccdDataArgumentCaptor.getValue().getPaperAdmissionType());
-            assertEquals(LocalDateTime.of(2020, Month.JUNE, 17, 11, 30, 57),
-                ccdDataArgumentCaptor.getValue().getRespondents().get(0).getValue().getResponseSubmittedOn());
-            assertEquals(1, ccdDataArgumentCaptor.getValue().getScannedDocuments().size());
-        }
-
-        @Test
-        void shouldChangeFileNameForOCON9xFormForPartAdmission() {
-            CCDCase ccdCase = getCCDCase(PART_ADMISSION, CCDRespondent.builder(), "OCON9x");
-
-            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-            ArgumentCaptor<CCDCase> ccdDataArgumentCaptor = ArgumentCaptor.forClass(CCDCase.class);
-
-            handler.handle(callbackParams);
-            verify(caseDetailsConverter).convertToMap(ccdDataArgumentCaptor.capture());
-
-            assertEquals("CMC-scanned-OCON9x-part-admission.pdf",
-                ccdDataArgumentCaptor.getValue().getScannedDocuments().get(0).getValue().getFileName());
-            assertNull(ccdDataArgumentCaptor.getValue().getPaperAdmissionType());
-            assertEquals(LocalDateTime.of(2020, Month.JUNE, 17, 11, 30, 57),
-                ccdDataArgumentCaptor.getValue().getRespondents().get(0).getValue().getResponseSubmittedOn());
-            assertEquals(1, ccdDataArgumentCaptor.getValue().getScannedDocuments().size());
-        }
-
-        @Test
-        void shouldPrintLetter() {
-            CCDCase ccdCase = getCCDCase(PART_ADMISSION, CCDRespondent.builder(), "OCON9x");
-            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-            handler.handle(callbackParams);
-            verify(generalLetterService).printLetter(anyString(), any(CCDDocument.class), any(Claim.class));
         }
     }
 
