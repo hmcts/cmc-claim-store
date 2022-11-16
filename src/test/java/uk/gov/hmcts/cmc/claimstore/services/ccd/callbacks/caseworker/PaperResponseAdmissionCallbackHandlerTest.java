@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
 import com.google.common.collect.ImmutableMap;
 import com.launchdarkly.sdk.LDUser;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -42,8 +41,8 @@ import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
-import uk.gov.hmcts.reform.document.domain.Document;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -271,9 +270,8 @@ class PaperResponseAdmissionCallbackHandlerTest {
         assertThat(handler.handledEvents()).containsOnly(PAPER_RESPONSE_ADMISSION);
     }
 
-    @NotNull
     private Document getLinks() {
-        Document document = new Document();
+        Document document = Document.builder().build();
         Document.Links links = new Document.Links();
         links.binary = new Document.Link();
         links.binary.href = DOC_URL_BINARY;

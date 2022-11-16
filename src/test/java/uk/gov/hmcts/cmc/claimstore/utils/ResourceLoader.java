@@ -6,7 +6,7 @@ import uk.gov.hmcts.cmc.claimstore.repositories.mapping.JsonMapperFactory;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
-import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.document.domain.UploadResponse;
 
 import java.util.List;
@@ -114,5 +114,10 @@ public class ResourceLoader {
     public static Document successfulDocumentManagementDownloadResponse() {
         String response = new ResourceReader().read("/document-management/download.success.json");
         return jsonMapper.fromJson(response, Document.class);
+    }
+
+    public static uk.gov.hmcts.reform.document.domain.Document successfulDocumentManagementDownloadResponseUnsecure() {
+        String response = new ResourceReader().read("/document-management/download.success.json");
+        return jsonMapper.fromJson(response, uk.gov.hmcts.reform.document.domain.Document.class);
     }
 }

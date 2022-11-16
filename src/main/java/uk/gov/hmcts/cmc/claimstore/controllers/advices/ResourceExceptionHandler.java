@@ -241,4 +241,5 @@ public class ResourceExceptionHandler {
         return new ResponseEntity<>(exception.getMessage(),
             new HttpHeaders(), HttpStatus.GATEWAY_TIMEOUT);
     }
+
 }
