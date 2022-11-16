@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.domain.models.otherparty;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
-import org.hibernate.validator.constraints.NotBlank;
+import javax.validation.constraints.NotBlank;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 import uk.gov.hmcts.cmc.domain.models.party.HasContactPerson;

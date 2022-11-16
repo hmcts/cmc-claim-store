@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.domain.models.offers;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.hibernate.validator.constraints.NotBlank;
+import javax.validation.constraints.NotBlank;
 import uk.gov.hmcts.cmc.domain.constraints.FutureDate;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 

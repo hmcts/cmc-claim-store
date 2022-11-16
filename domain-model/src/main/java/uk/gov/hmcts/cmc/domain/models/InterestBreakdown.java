@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.domain.models;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.hibernate.validator.constraints.NotBlank;
+import javax.validation.constraints.NotBlank;
 import uk.gov.hmcts.cmc.domain.constraints.Money;
 
 import java.math.BigDecimal;
