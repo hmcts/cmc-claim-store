@@ -89,8 +89,11 @@ class GeneralLetterServiceTest {
     @Mock
     private DocAssemblyService docAssemblyService;
     @Mock
-    private DocumentManagementService<Document>
-        documentManagementService;
+    private DocumentManagementService<uk.gov.hmcts.reform
+        .document.domain.Document> documentManagementService;
+    @Mock
+    private DocumentManagementService<uk.gov.hmcts.reform
+        .ccd.document.am.model.Document> secureDocumentManagementService;
     @Mock
     private DocAssemblyResponse docAssemblyResponse;
     @Mock
@@ -116,6 +119,7 @@ class GeneralLetterServiceTest {
             userService,
             docAssemblyTemplateBodyMapper,
             documentManagementService,
+            secureDocumentManagementService,
             bulkPrintDetailsMapper,
             secureDocumentManagement,
             CASE_TYPE_ID,
@@ -209,7 +213,7 @@ class GeneralLetterServiceTest {
         when(documentManagementService.downloadDocument(anyString(), any(ClaimDocument.class)))
             .thenReturn(PDF_BYTES);
 
-        when(documentManagementService.getDocumentMetaData(anyString(), anyString()))
+        when(secureDocumentManagementService.getDocumentMetaData(anyString(), anyString()))
             .thenReturn(getLinks());
 
         CCDCase updatedCase = generalLetterService
@@ -244,7 +248,7 @@ class GeneralLetterServiceTest {
 
     @Test
     void shouldAttachDocument() {
-        when(documentManagementService.getDocumentMetaData(anyString(), anyString()))
+        when(secureDocumentManagementService.getDocumentMetaData(anyString(), anyString()))
             .thenReturn(getLinks());
         when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
