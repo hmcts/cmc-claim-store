@@ -36,7 +36,7 @@ import static java.util.Collections.singletonList;
 public class LegacyDocumentManagementService implements DocumentManagementService<Document> {
 
     private static final String FILES_NAME = "files";
-    private static final String CMC = "CMC";
+    private static final String OCMC = "OCMC";
 
     private final DocumentMetadataDownloadClientApi documentMetadataDownloadClientApi;
     private final DocumentDownloadClientApi documentDownloadClient;
@@ -74,7 +74,7 @@ public class LegacyDocumentManagementService implements DocumentManagementServic
                 .documentType(pdf.getClaimDocumentType())
                 .createdDatetime(LocalDateTimeFactory.nowInUTC())
                 .size(document.size)
-                .createdBy(CMC)
+                .createdBy(OCMC)
                 .build();
         } catch (Exception ex) {
             throw new DocumentManagementException(String.format("Unable to upload document %s to document management.",

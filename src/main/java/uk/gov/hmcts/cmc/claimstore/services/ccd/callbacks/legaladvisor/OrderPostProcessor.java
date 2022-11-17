@@ -30,7 +30,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 
 import java.net.URI;
 import java.time.Clock;
@@ -53,7 +52,10 @@ public class OrderPostProcessor {
     private final CaseDetailsConverter caseDetailsConverter;
     private final LegalOrderService legalOrderService;
     private final DirectionOrderService directionOrderService;
-    private final DocumentManagementService<?> documentManagementService;
+    private final DocumentManagementService<uk.gov.hmcts.reform
+        .document.domain.Document> documentManagementService;
+    private final DocumentManagementService<uk.gov.hmcts.reform
+        .ccd.document.am.model.Document> secureDocumentManagementService;
     private final ClaimService claimService;
     private final AppInsights appInsights;
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -67,7 +69,10 @@ public class OrderPostProcessor {
         LegalOrderService legalOrderService,
         AppInsights appInsights,
         DirectionOrderService directionOrderService,
-        DocumentManagementService<?> documentManagementService,
+        DocumentManagementService<uk.gov.hmcts.reform.document.domain.Document>
+            documentManagementService,
+        DocumentManagementService<uk.gov.hmcts.reform.ccd.document.am.model.Document>
+            secureDocumentManagementService,
         ClaimService claimService
     ) {
         this.clock = clock;
@@ -77,6 +82,7 @@ public class OrderPostProcessor {
         this.directionOrderService = directionOrderService;
         this.appInsights = appInsights;
         this.documentManagementService = documentManagementService;
+        this.secureDocumentManagementService = secureDocumentManagementService;
         this.claimService = claimService;
     }
 
@@ -91,7 +97,7 @@ public class OrderPostProcessor {
 
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
 
-        var secureDocumentMetadata = (uk.gov.hmcts.reform.ccd.document.am.model.Document)
+        var documentMetadata =
             documentManagementService.getDocumentMetaData(
                 authorisation,
                 URI.create(draftOrderDoc.getDocumentUrl()).getPath()
@@ -102,7 +108,7 @@ public class OrderPostProcessor {
             .expertReportPermissionPartyGivenToDefendant(null)
             .expertReportInstructionClaimant(null)
             .expertReportInstructionDefendant(null)
-            .caseDocuments(updateCaseDocumentsWithOrder(ccdCase, draftOrderDoc, secureDocumentMetadata))
+            .caseDocuments(updateCaseDocumentsWithOrder(ccdCase, draftOrderDoc, documentMetadata))
             .directionOrder(CCDDirectionOrder.builder()
                 .createdOn(nowInUTC())
                 .hearingCourtName(hearingCourt.getName())
@@ -212,7 +218,8 @@ public class OrderPostProcessor {
     private List<CCDCollectionElement<CCDClaimDocument>> updateCaseDocumentsWithOrder(
         CCDCase ccdCase,
         CCDDocument draftOrderDoc,
-        Document documentMetaData
+        uk.gov.hmcts.reform
+            .document.domain.Document documentMetaData
     ) {
         CCDCollectionElement<CCDClaimDocument> claimDocument = CCDCollectionElement.<CCDClaimDocument>builder()
             .value(CCDClaimDocument.builder()

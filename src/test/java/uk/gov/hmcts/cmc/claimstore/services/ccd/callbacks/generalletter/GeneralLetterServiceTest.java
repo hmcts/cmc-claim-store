@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter;
 
 import com.google.common.collect.ImmutableList;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,7 +28,6 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
-import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 import uk.gov.hmcts.reform.docassembly.exception.DocumentGenerationFailedException;
 
@@ -58,7 +58,7 @@ class GeneralLetterServiceTest {
     private static final String DOC_NAME = "doc-name";
     private static final String CASE_TYPE_ID = "MoneyClaimCase";
     private static final String JURISDICTION_ID = "CMC";
-    private static final boolean secureDocumentManagement = true;
+    private static final boolean secureDocumentManagement = false;
     private static final CCDDocument DRAFT_LETTER_DOC = CCDDocument.builder()
         .documentFileName(DOC_NAME)
         .documentBinaryUrl(DOC_URL_BINARY)
@@ -89,8 +89,11 @@ class GeneralLetterServiceTest {
     @Mock
     private DocAssemblyService docAssemblyService;
     @Mock
-    private DocumentManagementService<Document>
-        documentManagementService;
+    private DocumentManagementService<uk.gov.hmcts.reform
+        .document.domain.Document> documentManagementService;
+    @Mock
+    private DocumentManagementService<uk.gov.hmcts.reform
+        .ccd.document.am.model.Document> secureDocumentManagementService;
     @Mock
     private DocAssemblyResponse docAssemblyResponse;
     @Mock
@@ -116,6 +119,7 @@ class GeneralLetterServiceTest {
             userService,
             docAssemblyTemplateBodyMapper,
             documentManagementService,
+            secureDocumentManagementService,
             bulkPrintDetailsMapper,
             secureDocumentManagement,
             CASE_TYPE_ID,
@@ -219,10 +223,19 @@ class GeneralLetterServiceTest {
         assertThat(updatedCase).isEqualTo(expected);
     }
 
-    private Document getLinks() {
-        Document document = Document.builder().build();
-        Document.Links links = new Document.Links();
-        links.binary = new Document.Link();
+    @NotNull
+    private uk.gov.hmcts.reform.document.domain.Document getLinks() {
+        uk.gov.hmcts.reform
+            .document.domain
+            .Document document = new uk.gov.hmcts
+            .reform.document
+            .domain.Document();
+        uk.gov.hmcts.reform
+            .document.domain
+            .Document.Links links = new uk.gov.hmcts
+            .reform.document.domain.Document.Links();
+        links.binary = new uk.gov.hmcts.reform
+            .document.domain.Document.Link();
         links.binary.href = DOC_URL_BINARY;
         document.links = links;
         return document;

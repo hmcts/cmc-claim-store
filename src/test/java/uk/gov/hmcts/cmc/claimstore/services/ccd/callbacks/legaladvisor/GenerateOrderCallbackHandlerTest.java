@@ -119,7 +119,11 @@ public class GenerateOrderCallbackHandlerTest {
     @Mock
     private OrderRenderer orderRenderer;
     @Mock
-    private DocumentManagementService documentManagementService;
+    private DocumentManagementService<uk.gov.hmcts.reform
+        .document.domain.Document> documentManagementService;
+    @Mock
+    private DocumentManagementService<uk.gov.hmcts.reform
+        .ccd.document.am.model.Document> secureDocumentManagementService;
     @Mock
     private ClaimService claimService;
     @Mock
@@ -156,7 +160,7 @@ public class GenerateOrderCallbackHandlerTest {
 
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
             caseDetailsConverter, legalOrderService, appInsights, directionOrderService,
-            documentManagementService, claimService);
+            documentManagementService, secureDocumentManagementService, claimService);
 
         generateOrderCallbackHandler = new GenerateOrderCallbackHandler(orderCreator, orderPostProcessor
         );

@@ -47,7 +47,10 @@ public class GeneralLetterService {
     private final Clock clock;
     private final UserService userService;
     private final DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
-    private final DocumentManagementService<?> documentManagementService;
+    private final DocumentManagementService<uk.gov.hmcts.reform
+        .document.domain.Document> documentManagementService;
+    private final DocumentManagementService<uk.gov.hmcts.reform
+        .ccd.document.am.model.Document> secureDocumentManagementService;
     private final boolean secureDocumentManagement;
     private final BulkPrintDetailsMapper bulkPrintDetailsMapper;
     private final String caseTypeId;
@@ -60,7 +63,10 @@ public class GeneralLetterService {
         Clock clock,
         UserService userService,
         DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper,
-        DocumentManagementService<?> documentManagementService,
+        DocumentManagementService<uk.gov.hmcts.reform
+            .document.domain.Document> documentManagementService,
+        DocumentManagementService<uk.gov.hmcts.reform
+        .ccd.document.am.model.Document> secureDocumentManagementService,
         BulkPrintDetailsMapper bulkPrintDetailsMapper,
         @Value("${document_management.secured}") boolean secureDocumentManagement,
         @Value("${ocmc.caseTypeId}") String caseTypeId,
@@ -73,6 +79,7 @@ public class GeneralLetterService {
         this.userService = userService;
         this.docAssemblyTemplateBodyMapper = docAssemblyTemplateBodyMapper;
         this.documentManagementService = documentManagementService;
+        this.secureDocumentManagementService = secureDocumentManagementService;
         this.bulkPrintDetailsMapper = bulkPrintDetailsMapper;
         this.secureDocumentManagement = secureDocumentManagement;
         this.caseTypeId = caseTypeId;
@@ -144,16 +151,15 @@ public class GeneralLetterService {
         String documentName,
         String authorisation) {
 
-        var secureDocumentMetadata = (uk.gov.hmcts.reform.ccd.document.am.model.Document)
-            documentManagementService.getDocumentMetaData(
+        var secureDocumentMetadata = secureDocumentManagementService.getDocumentMetaData(
                 authorisation,
                 URI.create(ccdDocument.getDocumentUrl()).getPath());
 
-        var documentMetaData = (uk.gov.hmcts.reform.document.domain.Document) documentManagementService.getDocumentMetaData(
+        var documentMetaData =  documentManagementService.getDocumentMetaData(
             authorisation,
             URI.create(ccdDocument.getDocumentUrl()).getPath());
 
-        CCDCollectionElement<CCDClaimDocument> claimDocument = secureDocumentManagement 
+        CCDCollectionElement<CCDClaimDocument> claimDocument = secureDocumentManagement
             ? CCDCollectionElement.<CCDClaimDocument>builder()
                     .value(CCDClaimDocument.builder()
                         .documentLink(CCDDocument.builder()
