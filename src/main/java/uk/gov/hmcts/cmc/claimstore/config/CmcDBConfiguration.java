@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.config;
 import org.flywaydb.core.Flyway;
 import org.skife.jdbi.v2.DBI;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -16,15 +17,18 @@ import uk.gov.hmcts.cmc.claimstore.repositories.UserRolesRepository;
 import javax.sql.DataSource;
 
 @Configuration
+@ConfigurationProperties
 public class CmcDBConfiguration {
     @Bean
     @Primary
+    @ConfigurationProperties("spring.datasource")
     public DataSourceProperties dataSourceProperties() {
         return new DataSourceProperties();
     }
 
     @Primary
     @Bean
+    @ConfigurationProperties("spring.datasource")
     public DataSource dataSource() {
         return dataSourceProperties().initializeDataSourceBuilder().build();
     }
