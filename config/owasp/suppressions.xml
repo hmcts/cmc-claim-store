@@ -510,6 +510,7 @@
         <cve>CVE-2022-22978</cve>
         <cve>CVE-2016-1000027</cve>
         <cve>CVE-2022-42003</cve>
+        <cve>CVE-2022-41854</cve>
     </suppress>
 
     <suppress>
