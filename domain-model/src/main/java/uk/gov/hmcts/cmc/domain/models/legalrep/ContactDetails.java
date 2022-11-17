@@ -3,10 +3,10 @@ package uk.gov.hmcts.cmc.domain.models.legalrep;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.hibernate.validator.constraints.Email;
 import uk.gov.hmcts.cmc.domain.constraints.PhoneNumber;
 
 import java.util.Optional;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
