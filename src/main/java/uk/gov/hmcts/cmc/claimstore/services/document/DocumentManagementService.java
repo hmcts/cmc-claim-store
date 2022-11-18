@@ -16,10 +16,8 @@ public interface DocumentManagementService<T> {
     @Retryable(value = DocumentManagementException.class, backoff = @Backoff(delay = 200))
     byte[] downloadDocumentByUrl(String authorisation, URI documentManagementUrl);
 
-    @Retryable(value = DocumentManagementException.class, backoff = @Backoff(delay = 200))
     byte[] downloadDocument(String authorisation, ClaimDocument claimDocument);
 
-    @Retryable(value = DocumentManagementException.class, backoff = @Backoff(delay = 200))
     byte[] downloadScannedDocument(String authorisation, ScannedDocument scannedDocument);
 
     T getDocumentMetaData(String authorisation, String documentPath);

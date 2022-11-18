@@ -111,7 +111,12 @@ public class ResourceLoader {
         return ImmutableList.of(jsonMapper.fromJson(response, CaseDetails.class));
     }
 
-    public static Document successfulDocumentManagementDownloadResponse() {
+    public static uk.gov.hmcts.reform.document.domain.Document successfulDocumentManagementDownloadResponse() {
+        String response = new ResourceReader().read("/document-management/download.success.json");
+        return jsonMapper.fromJson(response, uk.gov.hmcts.reform.document.domain.Document.class);
+    }
+
+    public static Document secureSuccessfulDocumentManagementDownloadResponse() {
         String response = new ResourceReader().read("/document-management/download.success.json");
         return jsonMapper.fromJson(response, Document.class);
     }
