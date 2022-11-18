@@ -134,7 +134,11 @@ class DrawJudgeOrderCallbackHandlerTest {
     @Mock
     private DirectionOrderService directionOrderService;
     @Mock
-    private DocumentManagementService documentManagementService;
+    private DocumentManagementService<uk.gov.hmcts.reform
+        .document.domain.Document> documentManagementService;
+    @Mock
+    private DocumentManagementService<uk.gov.hmcts.reform
+        .ccd.document.am.model.Document> secureDocumentManagementService;
     @Mock
     private OrderRenderer orderRenderer;
     @Mock
@@ -157,7 +161,7 @@ class DrawJudgeOrderCallbackHandlerTest {
 
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
             caseDetailsConverter, legalOrderService, appInsights, directionOrderService,
-            documentManagementService, claimService);
+            documentManagementService, secureDocumentManagementService, claimService);
 
         drawJudgeOrderCallbackHandler = new DrawJudgeOrderCallbackHandler(orderCreator, orderPostProcessor);
 

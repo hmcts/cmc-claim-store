@@ -94,7 +94,11 @@ public class DrawOrderCallbackHandlerTest {
     private DirectionOrderService directionOrderService;
 
     @Mock
-    private DocumentManagementService documentManagementService;
+    private DocumentManagementService<uk.gov.hmcts.reform
+        .document.domain.Document> documentManagementService;
+    @Mock
+    private DocumentManagementService<uk.gov.hmcts.reform
+        .ccd.document.am.model.Document> secureDocumentManagementService;
 
     private CallbackParams callbackParams;
 
@@ -112,7 +116,7 @@ public class DrawOrderCallbackHandlerTest {
     public void setUp() {
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
             caseDetailsConverter, legalOrderService, appInsights, directionOrderService,
-            documentManagementService, claimService);
+            documentManagementService, secureDocumentManagementService, claimService);
 
         drawOrderCallbackHandler = new DrawOrderCallbackHandler(orderPostProcessor, caseDetailsConverter,
             orderRenderer);
