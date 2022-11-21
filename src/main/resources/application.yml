@@ -120,7 +120,7 @@ pdf-service:
 document_management:
   url: "${DOCUMENT_MANAGEMENT_URL:}"
   userRoles: ${DOCUMENT_MANAGEMENT_USERROLES}
-  secured: ${DOCUMENT_MANAGEMENT_SECURED:true}
+  secured: ${DOCUMENT_MANAGEMENT_SECURED:false}
 
 core_case_data:
   api:
