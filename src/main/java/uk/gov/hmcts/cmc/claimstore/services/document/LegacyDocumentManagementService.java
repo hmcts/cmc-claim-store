@@ -30,7 +30,7 @@ import java.util.List;
 import static java.util.Collections.singletonList;
 
 @Slf4j
-@Service("documentManagementService")
+@Service
 @RequiredArgsConstructor
 @ConditionalOnProperty(prefix = "document_management", name = "secured", havingValue = "false")
 public class LegacyDocumentManagementService implements DocumentManagementService<Document> {
