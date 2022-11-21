@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.quartz.Scheduler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -109,7 +110,11 @@ public abstract class BaseMockSpringTest {
     @MockBean
     protected OrderDrawnNotificationService orderDrawnNotificationService;
     @MockBean
-    protected DocumentManagementService documentManagementService;
+    protected DocumentManagementService<uk.gov.hmcts.reform
+        .document.domain.Document> legacyDocumentManagementService;
+    @MockBean
+    protected DocumentManagementService<uk.gov.hmcts.reform
+        .ccd.document.am.model.Document> securedDocumentManagementService;
     @MockBean
     protected LegalOrderService legalOrderService;
     @MockBean
@@ -173,6 +178,8 @@ public abstract class BaseMockSpringTest {
     public void setUpBase() {
 
         bankHolidaysSetup();
+        setLegacyDocumentManagementService(legacyDocumentManagementService);
+        setSecuredDocumentManagementService(securedDocumentManagementService);
 
         when(securityContext.getAuthentication()).thenReturn(authentication);
         SecurityContextHolder.setContext(securityContext);
@@ -242,6 +249,21 @@ public abstract class BaseMockSpringTest {
                 .header("LetterHolderID", SampleClaim.LETTER_HOLDER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonMappingHelper.toJson(content)));
+    }
+
+    @Autowired
+    @Qualifier("legacyDocumentManagementService")
+    private void setLegacyDocumentManagementService(DocumentManagementService<uk.gov.hmcts.reform
+        .document.domain.Document> legacyDocumentManagementService) {
+        this.legacyDocumentManagementService = legacyDocumentManagementService;
+    }
+
+    @Autowired
+    @Qualifier("securedDocumentManagementService")
+    private void setSecuredDocumentManagementService(DocumentManagementService<uk.gov.hmcts.reform
+        .ccd.document.am.model.Document> securedDocumentManagementService) {
+        this.securedDocumentManagementService = securedDocumentManagementService;
+
     }
 
 }

@@ -114,7 +114,7 @@ class GeneralLetterServiceTest {
         generalLetterService = new GeneralLetterService(
             docAssemblyService,
             bulkPrintHandler,
-            new PrintableDocumentService(documentManagementService),
+            new PrintableDocumentService(secureDocumentManagementService, documentManagementService, false),
             clock,
             userService,
             docAssemblyTemplateBodyMapper,

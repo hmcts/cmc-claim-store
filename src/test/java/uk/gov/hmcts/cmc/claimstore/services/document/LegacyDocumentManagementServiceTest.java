@@ -76,6 +76,7 @@ public class LegacyDocumentManagementServiceTest {
             documentDownloadClient,
             documentUploadClient,
             authTokenGenerator,
+            appInsights,
             userService,
             USER_ROLES
         );

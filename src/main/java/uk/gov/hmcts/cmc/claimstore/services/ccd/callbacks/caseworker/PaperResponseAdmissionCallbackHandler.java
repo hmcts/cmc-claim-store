@@ -2,6 +2,8 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -67,7 +69,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
     private final String paperResponseAdmissionTemplateId;
     private final UserService userService;
     private final DocumentManagementService<uk.gov.hmcts.reform
-        .document.domain.Document> documentManagementService;
+        .document.domain.Document> legacyDocumentManagementService;
     private final DocumentManagementService<uk.gov.hmcts.reform
         .ccd.document.am.model.Document> secureDocumentManagementService;
     private final Clock clock;
@@ -82,6 +84,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
         CallbackType.ABOUT_TO_SUBMIT, this::aboutToSubmit
     );
 
+    @Autowired
     public PaperResponseAdmissionCallbackHandler(CaseDetailsConverter caseDetailsConverter,
              DefendantResponseNotificationService
                  defendantResponseNotificationService,
@@ -97,10 +100,12 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
              @Value("${ocmc.jurisdictionId}")
                  String jurisdictionId,
              UserService userService,
+             @Qualifier("legacyDocumentManagementService")
              DocumentManagementService<uk.gov.hmcts.reform.document.domain.Document>
-                                                     documentManagementService,
+                legacyDocumentManagementService,
+             @Qualifier("securedDocumentManagementService")
              DocumentManagementService<uk.gov.hmcts.reform.ccd.document.am.model.Document>
-                                                     secureDocumentManagementService,
+                secureDocumentManagementService,
              Clock clock,
              GeneralLetterService generalLetterService,
              CaseEventService caseEventService,
@@ -113,7 +118,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
         this.secureDocumentManagement = secureDocumentManagement;
         this.paperResponseAdmissionTemplateId = paperResponseAdmissionTemplateId;
         this.userService = userService;
-        this.documentManagementService = documentManagementService;
+        this.legacyDocumentManagementService = legacyDocumentManagementService;
         this.secureDocumentManagementService = secureDocumentManagementService;
         this.clock = clock;
         this.generalLetterService = generalLetterService;
@@ -210,7 +215,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
                 userService.getUserDetails(authorisation).getFullName()));
 
         var documentMetaData =
-            documentManagementService.getDocumentMetaData(
+            legacyDocumentManagementService.getDocumentMetaData(
             authorisation,
             URI.create(docAssemblyResponse.getRenditionOutputLocation()).getPath()
         );

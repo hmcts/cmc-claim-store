@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter;
 import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -48,7 +49,7 @@ public class GeneralLetterService {
     private final UserService userService;
     private final DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
     private final DocumentManagementService<uk.gov.hmcts.reform
-        .document.domain.Document> documentManagementService;
+        .document.domain.Document> legacyDocumentManagementService;
     private final DocumentManagementService<uk.gov.hmcts.reform
         .ccd.document.am.model.Document> secureDocumentManagementService;
     private final boolean secureDocumentManagement;
@@ -63,10 +64,12 @@ public class GeneralLetterService {
         Clock clock,
         UserService userService,
         DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper,
-        DocumentManagementService<uk.gov.hmcts.reform
-            .document.domain.Document> documentManagementService,
-        DocumentManagementService<uk.gov.hmcts.reform
-        .ccd.document.am.model.Document> secureDocumentManagementService,
+        @Qualifier("legacyDocumentManagementService")
+        DocumentManagementService<uk.gov.hmcts.reform.document.domain.Document>
+            legacyDocumentManagementService,
+        @Qualifier("securedDocumentManagementService")
+            DocumentManagementService<uk.gov.hmcts.reform.ccd.document.am.model.Document>
+            secureDocumentManagementService,
         BulkPrintDetailsMapper bulkPrintDetailsMapper,
         @Value("${document_management.secured}") boolean secureDocumentManagement,
         @Value("${ocmc.caseTypeId}") String caseTypeId,
@@ -78,7 +81,7 @@ public class GeneralLetterService {
         this.clock = clock;
         this.userService = userService;
         this.docAssemblyTemplateBodyMapper = docAssemblyTemplateBodyMapper;
-        this.documentManagementService = documentManagementService;
+        this.legacyDocumentManagementService = legacyDocumentManagementService;
         this.secureDocumentManagementService = secureDocumentManagementService;
         this.bulkPrintDetailsMapper = bulkPrintDetailsMapper;
         this.secureDocumentManagement = secureDocumentManagement;
@@ -155,7 +158,7 @@ public class GeneralLetterService {
                 authorisation,
                 URI.create(ccdDocument.getDocumentUrl()).getPath());
 
-        var documentMetaData =  documentManagementService.getDocumentMetaData(
+        var documentMetaData =  legacyDocumentManagementService.getDocumentMetaData(
             authorisation,
             URI.create(ccdDocument.getDocumentUrl()).getPath());
 

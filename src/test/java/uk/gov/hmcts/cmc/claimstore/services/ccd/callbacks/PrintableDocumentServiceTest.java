@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
@@ -25,22 +27,28 @@ class PrintableDocumentServiceTest {
         .documentUrl("http://www.cnn.com").build();
     private PrintableDocumentService printableDocumentService;
     @Mock
-    private DocumentManagementService documentManagementService;
+    private DocumentManagementService<uk.gov.hmcts.reform
+        .document.domain.Document> legacyDocumentManagementService;
+    @Mock
+    private DocumentManagementService<uk.gov.hmcts.reform
+        .ccd.document.am.model.Document> securedDocumentManagementService;
 
     @BeforeEach
     void setUp() {
-        printableDocumentService = new PrintableDocumentService(documentManagementService);
+        printableDocumentService = new PrintableDocumentService(securedDocumentManagementService, legacyDocumentManagementService, false);
+        setLegacyDocumentManagementService(legacyDocumentManagementService);
+        setSecuredDocumentManagementService(securedDocumentManagementService);
     }
 
     @Test
     void shouldDownloadDocumentFromDocumentManagement() {
 
-        when(documentManagementService.downloadDocument(anyString(), any(ClaimDocument.class)))
+        when(legacyDocumentManagementService.downloadDocument(anyString(), any(ClaimDocument.class)))
             .thenReturn(new byte[]{1, 2, 3, 4});
 
         printableDocumentService.pdf(document, AUTHORISATION);
 
-        verify(documentManagementService, times(1)).downloadDocument(
+        verify(legacyDocumentManagementService, times(1)).downloadDocument(
             anyString(),
             any(ClaimDocument.class));
     }
@@ -48,7 +56,7 @@ class PrintableDocumentServiceTest {
     @Test
     void shouldThrowExceptionIfDownloadUrlIsWrong() {
 
-        when(documentManagementService.downloadDocument(
+        when(legacyDocumentManagementService.downloadDocument(
             anyString(),
             any(ClaimDocument.class))).thenThrow(new IllegalArgumentException("Exception"));
 
@@ -60,12 +68,27 @@ class PrintableDocumentServiceTest {
     @Test
     void shouldThrowExceptionIfUrlIsWrong() {
 
-        when(documentManagementService.downloadDocument(
+        when(legacyDocumentManagementService.downloadDocument(
             anyString(),
             any(ClaimDocument.class))).thenThrow(new IllegalArgumentException("Exception"));
 
         Assertions.assertThrows(IllegalArgumentException.class,
             () -> printableDocumentService.process(document, AUTHORISATION));
+
+    }
+
+    @Autowired
+    @Qualifier("legacyDocumentManagementService")
+    private void setLegacyDocumentManagementService(DocumentManagementService<uk.gov.hmcts.reform
+        .document.domain.Document> documentManagementService) {
+        this.legacyDocumentManagementService = documentManagementService;
+    }
+
+    @Autowired
+    @Qualifier("securedDocumentManagementService")
+    private void setSecuredDocumentManagementService(DocumentManagementService<uk.gov.hmcts.reform
+        .ccd.document.am.model.Document> securedDocumentManagementService) {
+        this.securedDocumentManagementService = securedDocumentManagementService;
 
     }
 }

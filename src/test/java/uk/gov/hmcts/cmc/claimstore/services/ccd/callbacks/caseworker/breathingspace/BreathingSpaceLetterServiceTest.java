@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
@@ -70,8 +72,6 @@ class BreathingSpaceLetterServiceTest {
     private final Claim claimWithBulkPrintDetails
         = claim.toBuilder().bulkPrintDetails(List.of(bulkPrintDetails)).build();
 
-    @Mock
-    DocumentManagementService documentManagementService;
     private CCDCase ccdCase;
     @Mock
     private DocAssemblyService docAssemblyService;
@@ -88,13 +88,22 @@ class BreathingSpaceLetterServiceTest {
     @Mock
     private GeneralLetterService generalLetterService;
     private BreathingSpaceLetterService breathingSpaceLetterService;
+    @Mock
+    private DocumentManagementService<uk.gov.hmcts.reform
+        .document.domain.Document> legacyDocumentManagementService;
+    @Mock
+    private DocumentManagementService<uk.gov.hmcts.reform
+        .ccd.document.am.model.Document> securedDocumentManagementService;
+
+    private boolean secureDocumentManagement = false;
 
     @BeforeEach
     void setUp() {
         breathingSpaceLetterService = new BreathingSpaceLetterService(
             docAssemblyService,
             docAssemblyTemplateBodyMapper, printableDocumentService, bulkPrintService, claimService,
-            documentManagementService, generalLetterService, CASE_TYPE_ID, JURISDICTION_ID);
+            securedDocumentManagementService, legacyDocumentManagementService, secureDocumentManagement,
+            generalLetterService, CASE_TYPE_ID, JURISDICTION_ID);
 
         String documentUrl = DOCUMENT_URI.toString();
         CCDDocument document = new CCDDocument(documentUrl, documentUrl, GENERAL_LETTER_PDF);
@@ -108,6 +117,8 @@ class BreathingSpaceLetterServiceTest {
                     .build())
                 .build()))
             .draftLetterDoc(DRAFT_LETTER_DOC).build();
+        setLegacyDocumentManagementService(legacyDocumentManagementService);
+        setSecuredDocumentManagementService(securedDocumentManagementService);
     }
 
     @Test
@@ -199,7 +210,7 @@ class BreathingSpaceLetterServiceTest {
         breathingSpaceLetterService.sendLetterToDefendant(ccdCase, claim, BEARER_TOKEN.name(),
             BREATHING_SPACE_LETTER_TEMPLATE_ID, FILE_NAME);
 
-        verify(documentManagementService, once()).uploadDocument(any(String.class), any());
+        verify(legacyDocumentManagementService, once()).uploadDocument(any(String.class), any());
 
         verify(claimService, once()).saveClaimDocuments(any(String.class), any(), any(), any(ClaimDocumentType.class));
 
@@ -272,4 +283,17 @@ class BreathingSpaceLetterServiceTest {
                 BREATHING_SPACE_LETTER_TEMPLATE_ID, FILE_NAME));
     }
 
+    @Autowired
+    @Qualifier("legacyDocumentManagementService")
+    private void setLegacyDocumentManagementService(DocumentManagementService<uk.gov.hmcts.reform
+        .document.domain.Document> documentManagementService) {
+        this.legacyDocumentManagementService = documentManagementService;
+    }
+
+    @Autowired
+    @Qualifier("securedDocumentManagementService")
+    private void setSecuredDocumentManagementService(DocumentManagementService<uk.gov.hmcts.reform
+        .ccd.document.am.model.Document> securedDocumentManagementService) {
+        this.securedDocumentManagementService = securedDocumentManagementService;
+    }
 }

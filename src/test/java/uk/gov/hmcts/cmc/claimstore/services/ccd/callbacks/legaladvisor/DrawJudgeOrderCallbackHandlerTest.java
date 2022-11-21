@@ -46,6 +46,8 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackVersion;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.rules.GenerateOrderRule;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.LegacyDocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.SecuredDocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
@@ -96,6 +98,7 @@ class DrawJudgeOrderCallbackHandlerTest {
     private static final String DOCUMENT_URL = "http://bla.test";
     private static final String DOCUMENT_BINARY_URL = "http://bla.binary.test";
     private static final String DOCUMENT_FILE_NAME = "sealed_claim.pdf";
+    private static final boolean secureDocumentManagement = true;
 
     private static final CCDDocument DOCUMENT = CCDDocument
         .builder()
@@ -133,12 +136,13 @@ class DrawJudgeOrderCallbackHandlerTest {
     private LegalOrderService legalOrderService;
     @Mock
     private DirectionOrderService directionOrderService;
-    @Mock
-    private DocumentManagementService<uk.gov.hmcts.reform
-        .document.domain.Document> documentManagementService;
-    @Mock
-    private DocumentManagementService<uk.gov.hmcts.reform
-        .ccd.document.am.model.Document> secureDocumentManagementService;
+
+    private final DocumentManagementService<uk.gov.hmcts.reform
+        .document.domain.Document> documentManagementService = Mockito.mock(LegacyDocumentManagementService.class);
+
+    private final DocumentManagementService<uk.gov.hmcts.reform
+        .ccd.document.am.model.Document> secureDocumentManagementService = Mockito.mock(SecuredDocumentManagementService.class);
+
     @Mock
     private OrderRenderer orderRenderer;
     @Mock
@@ -160,7 +164,7 @@ class DrawJudgeOrderCallbackHandlerTest {
             launchDarklyClient);
 
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
-            caseDetailsConverter, legalOrderService, appInsights, directionOrderService,
+            caseDetailsConverter, legalOrderService, secureDocumentManagement, appInsights, directionOrderService,
             documentManagementService, secureDocumentManagementService, claimService);
 
         drawJudgeOrderCallbackHandler = new DrawJudgeOrderCallbackHandler(orderCreator, orderPostProcessor);
@@ -674,6 +678,9 @@ class DrawJudgeOrderCallbackHandlerTest {
             when(documentManagementService.getDocumentMetaData(any(), any()))
                 .thenReturn(ResourceLoader.successfulDocumentManagementDownloadResponse());
 
+            when(secureDocumentManagementService.getDocumentMetaData(any(), any()))
+                .thenReturn(ResourceLoader.secureSuccessfulDocumentManagementDownloadResponse());
+
             when(caseDetailsConverter.convertToMap(any(CCDCase.class)))
                 .thenReturn(ImmutableMap.<String, Object>builder()
                     .put("data", "existingData")
@@ -718,6 +725,9 @@ class DrawJudgeOrderCallbackHandlerTest {
             when(documentManagementService.getDocumentMetaData(any(), any()))
                 .thenReturn(ResourceLoader.successfulDocumentManagementDownloadResponse());
 
+            when(secureDocumentManagementService.getDocumentMetaData(any(), any()))
+                .thenReturn(ResourceLoader.secureSuccessfulDocumentManagementDownloadResponse());
+
             when(directionOrderService.getHearingCourt(any())).thenReturn(hearingCourt);
 
             when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
@@ -749,6 +759,9 @@ class DrawJudgeOrderCallbackHandlerTest {
             when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);
             when(documentManagementService.getDocumentMetaData(any(), any()))
                 .thenReturn(ResourceLoader.successfulDocumentManagementDownloadResponse());
+
+            when(secureDocumentManagementService.getDocumentMetaData(any(), any()))
+                .thenReturn(ResourceLoader.secureSuccessfulDocumentManagementDownloadResponse());
 
             when(directionOrderService.getHearingCourt(any())).thenReturn(hearingCourt);
 
