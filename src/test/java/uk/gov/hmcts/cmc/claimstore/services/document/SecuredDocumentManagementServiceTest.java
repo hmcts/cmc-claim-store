@@ -65,7 +65,7 @@ class SecuredDocumentManagementServiceTest {
     private ObjectMapper mapper;
 
     @Autowired
-    private DocumentManagementService<Document> documentManagementService;
+    private DocumentManagementService<Document> securedDocumentManagementService;
 
     @Mock
     private ResponseEntity<Resource> responseEntity;
@@ -98,7 +98,7 @@ class SecuredDocumentManagementServiceTest {
             when(caseDocumentClientApi.uploadDocuments(anyString(), anyString(), any(DocumentUploadRequest.class)))
                 .thenReturn(uploadResponse);
 
-            ClaimDocument claimDocument = documentManagementService.uploadDocument(BEARER_TOKEN, document);
+            ClaimDocument claimDocument = securedDocumentManagementService.uploadDocument(BEARER_TOKEN, document);
             assertNotNull(claimDocument.getDocumentManagementUrl().getPath());
             assertEquals(
                 uploadResponse.getDocuments().get(0).links.self.href,
@@ -121,7 +121,7 @@ class SecuredDocumentManagementServiceTest {
 
             DocumentUploadException documentManagementException = assertThrows(
                 DocumentUploadException.class,
-                () -> documentManagementService.uploadDocument(BEARER_TOKEN, document)
+                () -> securedDocumentManagementService.uploadDocument(BEARER_TOKEN, document)
             );
 
             assertEquals(
@@ -144,36 +144,37 @@ class SecuredDocumentManagementServiceTest {
                 Document.class
             );
             var documentPath = URI.create(document.links.self.href);
-            String documentBinary = URI.create(document.links.binary.href).getPath().replaceFirst("/", "");
             UUID documentId = getDocumentIdFromSelfHref(documentPath.getPath());
+            String documentBinary = URI.create(document.links.binary.href).getPath().replaceFirst("/", "");
 
-            when(caseDocumentClientApi.getMetadataForDocument(
+            when(responseEntity.getBody()).thenReturn(new ByteArrayResource("test".getBytes()));
+
+            when(caseDocumentClientApi.getDocumentBinary(
                     anyString(),
                     anyString(),
                     eq(documentId)
                 )
-            ).thenReturn(document);
-
-            when(responseEntity.getBody()).thenReturn(new ByteArrayResource("test".getBytes()));
-
-            when(documentDownloadClient.downloadBinary(
-                    anyString(),
-                    anyString(),
-                    eq(USER_ROLES),
-                    anyString(),
-                    eq(documentBinary)
-                )
             ).thenReturn(responseEntity);
 
-            byte[] pdf = documentManagementService.downloadDocumentByUrl(BEARER_TOKEN, documentPath);
+            when(userService.getUserInfo(anyString()))
+                .thenReturn(userInfo);
+
+            when(documentDownloadClient.downloadBinary(
+                BEARER_TOKEN,
+                BEARER_TOKEN,
+                USER_ROLES,
+                userInfo.getUid(),
+                documentBinary
+            )).thenReturn(responseEntity);
+
+            byte[] pdf = securedDocumentManagementService.downloadDocumentByUrl(BEARER_TOKEN, documentPath);
 
             assertNotNull(pdf);
             assertArrayEquals("test".getBytes(), pdf);
 
-            verify(caseDocumentClientApi).getMetadataForDocument(anyString(), anyString(), eq(documentId));
+            verify(caseDocumentClientApi)
+                .getDocumentBinary(anyString(), anyString(), eq(documentId));
 
-            verify(documentDownloadClient)
-                .downloadBinary(anyString(), anyString(), eq(USER_ROLES), anyString(), eq(documentBinary));
         }
 
         @Test
@@ -195,7 +196,7 @@ class SecuredDocumentManagementServiceTest {
                 )
             ).thenReturn(responseEntity);
 
-            byte[] pdf = documentManagementService.downloadDocumentByUrl(BEARER_TOKEN, documentPath);
+            byte[] pdf = securedDocumentManagementService.downloadDocumentByUrl(BEARER_TOKEN, documentPath);
 
             assertNotNull(pdf);
             assertArrayEquals("test".getBytes(), pdf);
@@ -229,7 +230,7 @@ class SecuredDocumentManagementServiceTest {
 
             DocumentDownloadException documentManagementException = assertThrows(
                 DocumentDownloadException.class,
-                () -> documentManagementService.downloadDocumentByUrl(BEARER_TOKEN, documentPathURI)
+                () -> securedDocumentManagementService.downloadDocumentByUrl(BEARER_TOKEN, documentPathURI)
             );
 
             assertEquals(format(MESSAGE_TEMPLATE, documentPath), documentManagementException.getMessage());
@@ -257,7 +258,7 @@ class SecuredDocumentManagementServiceTest {
             when(responseEntity.getBody()).thenReturn(new ByteArrayResource("test".getBytes()));
 
             uk.gov.hmcts.reform.ccd.document.am.model.Document documentMetaData
-                = documentManagementService.getDocumentMetaData(BEARER_TOKEN, documentPath);
+                = securedDocumentManagementService.getDocumentMetaData(BEARER_TOKEN, documentPath);
 
             assertEquals(72552L, documentMetaData.size);
             assertEquals("TEST_DOCUMENT_1.pdf", documentMetaData.originalDocumentName);
@@ -276,7 +277,7 @@ class SecuredDocumentManagementServiceTest {
 
             DocumentDownloadException documentManagementException = assertThrows(
                 DocumentDownloadException.class,
-                () -> documentManagementService.getDocumentMetaData(BEARER_TOKEN, documentPath)
+                () -> securedDocumentManagementService.getDocumentMetaData(BEARER_TOKEN, documentPath)
             );
 
             assertEquals(

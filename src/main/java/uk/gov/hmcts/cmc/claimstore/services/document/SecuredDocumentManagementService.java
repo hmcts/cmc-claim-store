@@ -108,7 +108,7 @@ public class SecuredDocumentManagementService implements DocumentManagementServi
             ResponseEntity<Resource> responseEntity = caseDocumentClientApi.getDocumentBinary(
                 authorisation,
                 authTokenGenerator.generate(),
-                UUID.fromString(documentManagementUrl.toString().substring(documentManagementUrl
+                getDocumentIdFromSelfHref(documentManagementUrl.toString().substring(documentManagementUrl
                     .getPath().lastIndexOf("/") + 1))
             );
 
