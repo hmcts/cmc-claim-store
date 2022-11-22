@@ -2,12 +2,16 @@ package uk.gov.hmcts.cmc.claimstore.services.document;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.annotation.Recover;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
@@ -28,6 +32,9 @@ import java.net.URI;
 import java.util.List;
 
 import static java.util.Collections.singletonList;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.DOCUMENT_NAME;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.DOCUMENT_MANAGEMENT_DOWNLOAD_FAILURE;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.DOCUMENT_MANAGEMENT_UPLOAD_FAILURE;
 
 @Slf4j
 @Service
@@ -35,6 +42,7 @@ import static java.util.Collections.singletonList;
 @ConditionalOnProperty(prefix = "document_management", name = "secured", havingValue = "false")
 public class LegacyDocumentManagementService implements DocumentManagementService<Document> {
 
+    private final Logger logger = LoggerFactory.getLogger(DocumentManagementService.class);
     private static final String FILES_NAME = "files";
     private static final String OCMC = "OCMC";
 
@@ -42,6 +50,7 @@ public class LegacyDocumentManagementService implements DocumentManagementServic
     private final DocumentDownloadClientApi documentDownloadClient;
     private final DocumentUploadClientApi documentUploadClient;
     private final AuthTokenGenerator authTokenGenerator;
+    private final AppInsights appInsights;
     private final UserService userService;
     private final List<String> userRoles;
 
@@ -82,6 +91,19 @@ public class LegacyDocumentManagementService implements DocumentManagementServic
         }
     }
 
+    @Recover
+    public ClaimDocument logUploadDocumentFailure(
+        DocumentManagementException exception,
+        String authorisation,
+        PDF pdf
+    ) {
+        String filename = pdf.getFilename();
+        logger.warn(" Following exception has occurred {} and cause {} and"
+            + "other details are {}", exception.getMessage(), exception.getCause(), exception);
+        appInsights.trackEvent(DOCUMENT_MANAGEMENT_UPLOAD_FAILURE, DOCUMENT_NAME, filename);
+        throw exception;
+    }
+
     @Override
     public byte[] downloadDocument(String authorisation, ClaimDocument claimDocument) {
         return downloadDocumentByUrl(authorisation, claimDocument.getDocumentManagementUrl());
@@ -120,6 +142,19 @@ public class LegacyDocumentManagementService implements DocumentManagementServic
                 String.format("Unable to download document %s from document management.",
                     documentManagementUrl.getPath()), ex);
         }
+    }
+
+    @Recover
+    public byte[] logDownloadDocumentFailure(
+        DocumentManagementException exception,
+        String authorisation,
+        ClaimDocument claimDocument
+    ) {
+        String filename = claimDocument.getDocumentName() + ".pdf";
+        logger.warn(" Following exception has occurred {} and cause {} and"
+            + "other details are {}", exception.getMessage(), exception.getCause(), exception);
+        appInsights.trackEvent(DOCUMENT_MANAGEMENT_DOWNLOAD_FAILURE, DOCUMENT_NAME, filename);
+        throw exception;
     }
 
     public Document getDocumentMetaData(String authorisation, String documentPath) {
