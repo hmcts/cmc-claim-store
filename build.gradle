@@ -164,10 +164,10 @@ allprojects {
       ) {
         entry 'snakeyaml'
       }
-      
+
       // solves CVE-2019-14900
       dependency 'org.hibernate:hibernate-validator:6.2.4.Final'
-      
+
       // solves CVE-2020-25638
       dependencySet(
         group: 'org.hibernate',
@@ -180,6 +180,12 @@ allprojects {
         version: '6.2.4.Final'
       ) {
         entry 'hibernate-validator'
+      }
+      dependencySet(
+        group: 'org.glassfish',
+        version: '4.0.1'
+      ) {
+        entry 'jakarta.el'
       }
     }
   }
