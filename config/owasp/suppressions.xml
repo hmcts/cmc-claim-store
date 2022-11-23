@@ -161,15 +161,6 @@
         <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-core@.*$</packageUrl>
         <cpe>cpe:/a:apache_tomcat:apache_tomcat</cpe>
     </suppress>
-
-    <suppress until="2023-03-01">
-        <notes><![CDATA[
-   file name: tomcat-embed-core-9.0.44.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-core@.*$</packageUrl>
-        <cve>CVE-2022-23181</cve>
-    </suppress>
-
     <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: tomcat-embed-websocket-9.0.44.jar
@@ -512,6 +503,7 @@
         <cve>CVE-2016-1000027</cve>
         <cve>CVE-2021-22060</cve>
         <cve>CVE-2022-42003</cve>
+        <cve>CVE-2022-41854</cve>
     </suppress>
 
     <suppress>
