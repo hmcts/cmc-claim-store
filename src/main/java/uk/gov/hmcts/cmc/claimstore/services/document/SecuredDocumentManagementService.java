@@ -32,7 +32,6 @@ import java.util.UUID;
 import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
 
 @Slf4j
-@Service
 @RequiredArgsConstructor
 @ConditionalOnProperty(prefix = "document_management", name = "secured", havingValue = "true")
 public class SecuredDocumentManagementService implements DocumentManagementService<Document> {

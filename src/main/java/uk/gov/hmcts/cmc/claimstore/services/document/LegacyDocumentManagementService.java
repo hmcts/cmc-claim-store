@@ -37,7 +37,6 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.DOCUMENT_
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.DOCUMENT_MANAGEMENT_UPLOAD_FAILURE;
 
 @Slf4j
-@Service
 @RequiredArgsConstructor
 @ConditionalOnProperty(prefix = "document_management", name = "secured", havingValue = "false")
 public class LegacyDocumentManagementService implements DocumentManagementService<Document> {
