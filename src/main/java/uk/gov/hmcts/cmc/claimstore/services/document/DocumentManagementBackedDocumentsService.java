@@ -34,7 +34,8 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.ORDER_SANCTIONS;
 public class DocumentManagementBackedDocumentsService implements DocumentsService {
 
     private final ClaimService claimService;
-    private final DocumentManagementService documentManagementService;
+    private final DocumentManagementService<uk.gov.hmcts.reform
+        .ccd.document.am.model.Document> documentManagementService;
     private final SealedClaimPdfService sealedClaimPdfService;
     private final DraftClaimReceiptService draftClaimReceiptService;
     private final ClaimIssueReceiptService claimIssueReceiptService;
@@ -51,7 +52,8 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     // Content providers are formatted values and aren't worth splitting into multiple models.
     public DocumentManagementBackedDocumentsService(
         ClaimService claimService,
-        DocumentManagementService documentManagementService,
+        DocumentManagementService<uk.gov.hmcts.reform
+            .ccd.document.am.model.Document> documentManagementService,
         DraftClaimReceiptService draftClaimReceiptService,
         SealedClaimPdfService sealedClaimPdfService,
         ClaimIssueReceiptService claimIssueReceiptService,

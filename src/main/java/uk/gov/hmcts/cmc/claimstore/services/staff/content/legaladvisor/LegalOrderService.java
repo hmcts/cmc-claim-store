@@ -30,13 +30,13 @@ public class LegalOrderService {
     private final DocumentTemplates documentTemplates;
     private final LegalOrderCoverSheetContentProvider legalOrderCoverSheetContentProvider;
     private final BulkPrintHandler bulkPrintHandler;
-    private final DocumentManagementService documentManagementService;
+    private final DocumentManagementService<?> documentManagementService;
 
     @Autowired
     public LegalOrderService(
         DocumentTemplates documentTemplates,
         LegalOrderCoverSheetContentProvider legalOrderCoverSheetContentProvider,
-        DocumentManagementService documentManagementService,
+        DocumentManagementService<?> documentManagementService,
         BulkPrintHandler bulkPrintHandler
     ) {
         this.documentTemplates = documentTemplates;

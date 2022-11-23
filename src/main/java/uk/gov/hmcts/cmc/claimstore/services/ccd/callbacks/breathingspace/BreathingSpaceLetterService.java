@@ -34,7 +34,7 @@ public class BreathingSpaceLetterService {
     private final PrintableDocumentService printableDocumentService;
     private final PrintService bulkPrintService;
     private final ClaimService claimService;
-    private final DocumentManagementService documentManagementService;
+    private final DocumentManagementService<?> documentManagementService;
     private final GeneralLetterService generalLetterService;
     private final String caseTypeId;
     private final String jurisdictionId;
@@ -45,7 +45,7 @@ public class BreathingSpaceLetterService {
         PrintableDocumentService printableDocumentService,
         PrintService bulkPrintService,
         ClaimService claimService,
-        DocumentManagementService documentManagementService,
+        DocumentManagementService<?> documentManagementService,
         GeneralLetterService generalLetterService,
         @Value("${ocmc.caseTypeId}") String caseTypeId,
         @Value("${ocmc.jurisdictionId}") String jurisdictionId
