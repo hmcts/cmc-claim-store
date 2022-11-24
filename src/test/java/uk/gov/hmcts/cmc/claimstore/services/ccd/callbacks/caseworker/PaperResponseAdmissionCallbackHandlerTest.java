@@ -32,6 +32,8 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralL
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.LegacyDocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.SecuredDocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.DefendantResponseNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -95,12 +97,8 @@ class PaperResponseAdmissionCallbackHandlerTest {
     private DocAssemblyService docAssemblyService;
     @Mock
     private DocAssemblyResponse docAssemblyResponse;
-    @Mock
-    private DocumentManagementService<uk.gov.hmcts.reform
-        .document.domain.Document> documentManagementService;
-    @Mock
-    private DocumentManagementService<uk.gov.hmcts.reform
-        .ccd.document.am.model.Document> secureDocumentManagementService;
+    private final DocumentManagementService legacyDocumentManagementService = mock(LegacyDocumentManagementService.class);
+    private final DocumentManagementService secureDocumentManagementService = mock(SecuredDocumentManagementService.class);
     @Mock
     private Clock clock;
     @Mock
@@ -121,7 +119,7 @@ class PaperResponseAdmissionCallbackHandlerTest {
         handler = new PaperResponseAdmissionCallbackHandler(caseDetailsConverter,
             defendantResponseNotificationService, caseMapper, docAssemblyService, docAssemblyTemplateBodyMapper,
             secureDocumentManagement, paperResponseAdmissionTemplateId, CASE_TYPE_ID, JURISDICTION_ID,
-            userService, documentManagementService, secureDocumentManagementService, clock, generalLetterService,
+            userService, legacyDocumentManagementService, secureDocumentManagementService, clock, generalLetterService,
             caseEventService, launchDarklyClient);
         CallbackRequest callbackRequest = getCallBackRequest();
         callbackParams = getBuild(callbackRequest, CallbackType.ABOUT_TO_SUBMIT);
@@ -219,7 +217,7 @@ class PaperResponseAdmissionCallbackHandlerTest {
         when(docAssemblyTemplateBodyMapper.paperResponseAdmissionLetter(any(CCDCase.class), any(String.class)))
             .thenReturn(DocAssemblyTemplateBody.builder().build());
         when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
-        when(documentManagementService.getDocumentMetaData(anyString(), anyString())).thenReturn(getLinks());
+        when(legacyDocumentManagementService.getDocumentMetaData(anyString(), anyString())).thenReturn(getLinks());
         when(clock.instant()).thenReturn(LocalDate.parse("2020-06-22").atStartOfDay().toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
         when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);
@@ -230,7 +228,7 @@ class PaperResponseAdmissionCallbackHandlerTest {
         handler.handle(callbackParams);
         verify(caseDetailsConverter).convertToMap(ccdDataArgumentCaptor.capture());
 
-        verify(documentManagementService, times(1))
+        verify(legacyDocumentManagementService, times(1))
             .getDocumentMetaData(anyString(), anyString());
 
         verify(docAssemblyTemplateBodyMapper, times(1)).paperResponseAdmissionLetter(any(CCDCase.class),
@@ -335,7 +333,7 @@ class PaperResponseAdmissionCallbackHandlerTest {
             when(docAssemblyTemplateBodyMapper.paperResponseAdmissionLetter(any(CCDCase.class), any(String.class)))
                 .thenReturn(DocAssemblyTemplateBody.builder().build());
             when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
-            when(documentManagementService.getDocumentMetaData(anyString(), anyString())).thenReturn(getLinks());
+            when(legacyDocumentManagementService.getDocumentMetaData(anyString(), anyString())).thenReturn(getLinks());
             when(clock.instant()).thenReturn(LocalDate.parse("2020-06-22").atStartOfDay().toInstant(ZoneOffset.UTC));
             when(clock.getZone()).thenReturn(ZoneOffset.UTC);
             when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);

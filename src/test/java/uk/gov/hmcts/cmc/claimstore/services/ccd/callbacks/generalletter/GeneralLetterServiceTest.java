@@ -22,6 +22,8 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.PrintableDocumentServi
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.LegacyDocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.SecuredDocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
@@ -41,6 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.Params.BEARER_TOKEN;
@@ -88,16 +91,11 @@ class GeneralLetterServiceTest {
 
     @Mock
     private DocAssemblyService docAssemblyService;
-    @Mock
-    private DocumentManagementService<uk.gov.hmcts.reform
-        .document.domain.Document> documentManagementService;
-    @Mock
-    private DocumentManagementService<uk.gov.hmcts.reform
-        .ccd.document.am.model.Document> secureDocumentManagementService;
+    private final DocumentManagementService legacyDocumentManagementService = mock(LegacyDocumentManagementService.class);
+    private final DocumentManagementService secureDocumentManagementService = mock(SecuredDocumentManagementService.class);
     @Mock
     private DocAssemblyResponse docAssemblyResponse;
-    @Mock
-    private Clock clock;
+    private final Clock clock = mock(Clock.class);
     @Mock
     private UserService userService;
     @Mock
@@ -114,11 +112,11 @@ class GeneralLetterServiceTest {
         generalLetterService = new GeneralLetterService(
             docAssemblyService,
             bulkPrintHandler,
-            new PrintableDocumentService(documentManagementService),
+            new PrintableDocumentService(secureDocumentManagement, legacyDocumentManagementService, secureDocumentManagementService),
             clock,
             userService,
             docAssemblyTemplateBodyMapper,
-            documentManagementService,
+            legacyDocumentManagementService,
             secureDocumentManagementService,
             bulkPrintDetailsMapper,
             secureDocumentManagement,
@@ -210,16 +208,16 @@ class GeneralLetterServiceTest {
             .contactChangeContent(null)
             .generalLetterContent(null)
             .build();
-        when(documentManagementService.downloadDocument(anyString(), any(ClaimDocument.class)))
+        when(legacyDocumentManagementService.downloadDocument(anyString(), any(ClaimDocument.class)))
             .thenReturn(PDF_BYTES);
 
-        when(documentManagementService.getDocumentMetaData(anyString(), anyString()))
+        when(legacyDocumentManagementService.getDocumentMetaData(anyString(), anyString()))
             .thenReturn(getLinks());
 
         CCDCase updatedCase = generalLetterService
             .publishLetter(ccdCase, claim, BEARER_TOKEN.name(), GENERAL_DOCUMENT_NAME);
 
-        verify(documentManagementService, once()).downloadDocument(eq(BEARER_TOKEN.name()), any(ClaimDocument.class));
+        verify(legacyDocumentManagementService, once()).downloadDocument(eq(BEARER_TOKEN.name()), any(ClaimDocument.class));
         assertThat(updatedCase).isEqualTo(expected);
     }
 
@@ -257,12 +255,12 @@ class GeneralLetterServiceTest {
 
     @Test
     void shouldAttachDocument() {
-        when(documentManagementService.getDocumentMetaData(anyString(), anyString()))
+        when(legacyDocumentManagementService.getDocumentMetaData(anyString(), anyString()))
             .thenReturn(getLinks());
         when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
         when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);
         generalLetterService.attachGeneralLetterToCase(ccdCase, DOCUMENT, anyString(), anyString());
-        verify(documentManagementService, once()).getDocumentMetaData(anyString(), anyString());
+        verify(legacyDocumentManagementService, once()).getDocumentMetaData(anyString(), anyString());
     }
 }

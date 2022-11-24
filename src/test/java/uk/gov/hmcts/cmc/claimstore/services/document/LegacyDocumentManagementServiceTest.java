@@ -63,7 +63,7 @@ public class LegacyDocumentManagementServiceTest {
     @Mock
     private URI docUri;
 
-    private DocumentManagementService<Document> legacyDocumentManagementService;
+    private DocumentManagementService legacyDocumentManagementService;
 
     @Mock
     private ResponseEntity<Resource> responseEntity;
@@ -212,7 +212,8 @@ public class LegacyDocumentManagementServiceTest {
         when(userService.getUserDetails(anyString())).thenReturn(userDetails);
         when(responseEntity.getBody()).thenReturn(new ByteArrayResource("test".getBytes()));
 
-        Document documentMetaData = legacyDocumentManagementService.getDocumentMetaData("auth string", docUri.getPath());
+        Document documentMetaData = (uk.gov.hmcts.reform.document.domain.Document)
+            legacyDocumentManagementService.getDocumentMetaData("auth string", docUri.getPath());
 
         assertEquals(72552L, documentMetaData.size);
         assertEquals("000LR002.pdf", documentMetaData.originalDocumentName);

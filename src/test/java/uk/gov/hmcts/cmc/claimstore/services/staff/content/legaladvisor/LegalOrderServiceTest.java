@@ -10,6 +10,8 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
 import uk.gov.hmcts.cmc.claimstore.documents.BulkPrintHandler;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.LegacyDocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.SecuredDocumentManagementService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
@@ -23,6 +25,7 @@ import java.util.Collections;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.domain.models.bulkprint.PrintRequestType.PIN_LETTER_TO_DEFENDANT;
@@ -30,6 +33,7 @@ import static uk.gov.hmcts.cmc.domain.models.bulkprint.PrintRequestType.PIN_LETT
 @RunWith(MockitoJUnitRunner.class)
 public class LegalOrderServiceTest {
 
+    private static final boolean securedDocumentManagement = true;
     private static final String BEARER_TOKEN = "Bearer let me in";
     private static final String DOCUMENT_URL = "http://bla.test";
     private static final CCDDocument DOCUMENT = CCDDocument
@@ -38,8 +42,10 @@ public class LegalOrderServiceTest {
         .documentBinaryUrl(DOCUMENT_URL)
         .build();
 
-    @Mock
-    private DocumentManagementService documentManagementService;
+    private final DocumentManagementService legacyDocumentManagementService = mock(LegacyDocumentManagementService.class);
+
+    private final DocumentManagementService secureDocumentManagementService = mock(SecuredDocumentManagementService.class);
+
     @Mock
     private DocumentTemplates documentTemplates;
     @Mock
@@ -59,8 +65,10 @@ public class LegalOrderServiceTest {
         legalOrderService = new LegalOrderService(
             documentTemplates,
             legalOrderCoverSheetContentProvider,
-            documentManagementService,
-            bulkPrintHandler
+            bulkPrintHandler,
+            securedDocumentManagement,
+            legacyDocumentManagementService,
+            secureDocumentManagementService
         );
         claim = SampleClaim.builder().build();
         when(documentTemplates.getLegalOrderCoverSheet()).thenReturn("coverSheet".getBytes());
@@ -73,7 +81,7 @@ public class LegalOrderServiceTest {
 
     @Test
     public void shouldSendPrintEventForOrderAndCoverSheetIfOrderIsInDocStore() {
-        when(documentManagementService.downloadDocument(
+        when(legacyDocumentManagementService.downloadDocument(
             eq(BEARER_TOKEN),
             any(ClaimDocument.class))).thenReturn("legalOrder".getBytes());
 
@@ -117,7 +125,7 @@ public class LegalOrderServiceTest {
 
     @Test(expected = Exception.class)
     public void shouldThrowExceptionIfDocumentUrlIsWrong() {
-        when(documentManagementService.downloadDocument(
+        when(legacyDocumentManagementService.downloadDocument(
             BEARER_TOKEN,
             null)).thenThrow(new URISyntaxException("nope", "nope"));
         legalOrderService.print(

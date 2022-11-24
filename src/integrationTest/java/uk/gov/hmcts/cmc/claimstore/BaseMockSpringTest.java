@@ -9,7 +9,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.quartz.Scheduler;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -109,11 +108,13 @@ public abstract class BaseMockSpringTest {
 
     @MockBean
     protected OrderDrawnNotificationService orderDrawnNotificationService;
-    @MockBean
-    @Autowired
-    @Qualifier(("securedDocumentManagementService"))
-    protected DocumentManagementService<uk.gov.hmcts.reform
-        .ccd.document.am.model.Document> documentManagementService;
+
+    @MockBean(name = "legacyDocumentManagementService")
+    protected DocumentManagementService documentManagementService;
+
+    @MockBean(name = "securedDocumentManagementService")
+    protected DocumentManagementService secureDocumentManagementService;
+
     @MockBean
     protected LegalOrderService legalOrderService;
     @MockBean

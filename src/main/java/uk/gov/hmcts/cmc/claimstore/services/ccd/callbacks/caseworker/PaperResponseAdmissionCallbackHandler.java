@@ -2,6 +2,8 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -31,6 +33,7 @@ import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 
 import java.net.URI;
 import java.time.Clock;
@@ -66,22 +69,24 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
     private final boolean secureDocumentManagement;
     private final String paperResponseAdmissionTemplateId;
     private final UserService userService;
-    private final DocumentManagementService<uk.gov.hmcts.reform
-        .document.domain.Document> documentManagementService;
-    private final DocumentManagementService<uk.gov.hmcts.reform
-        .ccd.document.am.model.Document> secureDocumentManagementService;
+    private final DocumentManagementService legacyDocumentManagementService;
+    private final DocumentManagementService secureDocumentManagementService;
     private final Clock clock;
     private final GeneralLetterService generalLetterService;
     private final CaseEventService caseEventService;
     private final LaunchDarklyClient launchDarklyClient;
     private final String caseTypeId;
     private final String jurisdictionId;
+    private Document secureDocumentMetadata;
+    private uk.gov.hmcts.reform
+        .document.domain.Document legacyDocumentMetadata;
 
     private final Map<CallbackType, Callback> callbacks = Map.of(
         CallbackType.ABOUT_TO_START, this::aboutToStart,
         CallbackType.ABOUT_TO_SUBMIT, this::aboutToSubmit
     );
 
+    @Autowired
     public PaperResponseAdmissionCallbackHandler(CaseDetailsConverter caseDetailsConverter,
              DefendantResponseNotificationService
                  defendantResponseNotificationService,
@@ -97,10 +102,10 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
              @Value("${ocmc.jurisdictionId}")
                  String jurisdictionId,
              UserService userService,
-             DocumentManagementService<uk.gov.hmcts.reform.document.domain.Document>
-                                                     documentManagementService,
-             DocumentManagementService<uk.gov.hmcts.reform.ccd.document.am.model.Document>
-                                                     secureDocumentManagementService,
+             @Qualifier("legacyDocumentManagementService")
+                DocumentManagementService legacyDocumentManagementService,
+             @Qualifier("securedDocumentManagementService")
+                DocumentManagementService secureDocumentManagementService,
              Clock clock,
              GeneralLetterService generalLetterService,
              CaseEventService caseEventService,
@@ -113,7 +118,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
         this.secureDocumentManagement = secureDocumentManagement;
         this.paperResponseAdmissionTemplateId = paperResponseAdmissionTemplateId;
         this.userService = userService;
-        this.documentManagementService = documentManagementService;
+        this.legacyDocumentManagementService = legacyDocumentManagementService;
         this.secureDocumentManagementService = secureDocumentManagementService;
         this.clock = clock;
         this.generalLetterService = generalLetterService;
@@ -209,17 +214,17 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
             docAssemblyTemplateBodyMapper.paperResponseAdmissionLetter(updatedCCDCase,
                 userService.getUserDetails(authorisation).getFullName()));
 
-        var documentMetaData =
-            documentManagementService.getDocumentMetaData(
-            authorisation,
-            URI.create(docAssemblyResponse.getRenditionOutputLocation()).getPath()
-        );
-
-        var secureDocumentMetaData =
-            secureDocumentManagementService.getDocumentMetaData(
-                authorisation,
-                URI.create(docAssemblyResponse.getRenditionOutputLocation()).getPath()
-            );
+        if (secureDocumentManagement) {
+            secureDocumentMetadata = (uk.gov.hmcts.reform.ccd.document.am.model.Document)
+                secureDocumentManagementService.getDocumentMetaData(
+                    authorisation,
+                    URI.create(docAssemblyResponse.getRenditionOutputLocation()).getPath());
+        } else {
+            legacyDocumentMetadata = (uk.gov.hmcts.reform.document.domain.Document)
+                legacyDocumentManagementService.getDocumentMetaData(
+                    authorisation,
+                    URI.create(docAssemblyResponse.getRenditionOutputLocation()).getPath());
+        }
 
         String documentName = String.format("%s-defendant-case-handoff.pdf",
             updatedCCDCase.getPreviousServiceCaseReference());
@@ -227,12 +232,12 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
         CCDDocument ccdDocument = secureDocumentManagement
             ? CCDDocument.builder()
                 .documentFileName(documentName)
-                .documentBinaryUrl(secureDocumentMetaData.links.binary.href)
+                .documentBinaryUrl(secureDocumentMetadata.links.binary.href)
                 .documentUrl(docAssemblyResponse.getRenditionOutputLocation())
                 .build()
             : CCDDocument.builder()
             .documentFileName(documentName)
-            .documentBinaryUrl(documentMetaData.links.binary.href)
+            .documentBinaryUrl(legacyDocumentMetadata.links.binary.href)
             .documentUrl(docAssemblyResponse.getRenditionOutputLocation())
             .build();
 
@@ -244,7 +249,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
                     .documentLink(ccdDocument)
                     .documentName(documentName)
                     .createdDatetime(LocalDateTime.now(clock.withZone(UTC_ZONE)))
-                    .size(secureDocumentMetaData.size)
+                    .size(secureDocumentMetadata.size)
                     .documentType(GENERAL_LETTER)
                     .build())
                 .build()
@@ -253,7 +258,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
                 .documentLink(ccdDocument)
                 .documentName(documentName)
                 .createdDatetime(LocalDateTime.now(clock.withZone(UTC_ZONE)))
-                .size(documentMetaData.size)
+                .size(legacyDocumentMetadata.size)
                 .documentType(GENERAL_LETTER)
                 .build())
             .build();

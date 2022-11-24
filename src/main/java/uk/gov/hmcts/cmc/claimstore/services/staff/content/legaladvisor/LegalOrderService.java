@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
@@ -30,19 +32,28 @@ public class LegalOrderService {
     private final DocumentTemplates documentTemplates;
     private final LegalOrderCoverSheetContentProvider legalOrderCoverSheetContentProvider;
     private final BulkPrintHandler bulkPrintHandler;
-    private final DocumentManagementService<?> documentManagementService;
+    private final boolean secureDocumentManagement;
+    private final DocumentManagementService documentManagementService;
+    private final DocumentManagementService secureDocumentManagementService;
 
     @Autowired
     public LegalOrderService(
         DocumentTemplates documentTemplates,
         LegalOrderCoverSheetContentProvider legalOrderCoverSheetContentProvider,
-        DocumentManagementService<?> documentManagementService,
-        BulkPrintHandler bulkPrintHandler
+        BulkPrintHandler bulkPrintHandler,
+        @Value("${document_management.secured}")
+            boolean secureDocumentManagement,
+        @Qualifier("legacyDocumentManagementService")
+            DocumentManagementService documentManagementService,
+        @Qualifier("securedDocumentManagementService")
+            DocumentManagementService secureDocumentManagementService
     ) {
         this.documentTemplates = documentTemplates;
         this.bulkPrintHandler = bulkPrintHandler;
         this.legalOrderCoverSheetContentProvider = legalOrderCoverSheetContentProvider;
+        this.secureDocumentManagement = secureDocumentManagement;
         this.documentManagementService = documentManagementService;
+        this.secureDocumentManagementService = secureDocumentManagementService;
     }
 
     public List<BulkPrintDetails> print(String authorisation, Claim claim, CCDDocument ccdLegalOrder) {

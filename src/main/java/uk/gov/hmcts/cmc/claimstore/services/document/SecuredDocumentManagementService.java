@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserInfo;
@@ -32,10 +32,10 @@ import java.util.UUID;
 import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
 
 @Slf4j
-@Service("securedDocumentManagementService")
+@Component("securedDocumentManagementService")
 @RequiredArgsConstructor
 @ConditionalOnProperty(prefix = "document_management", name = "secured", havingValue = "true")
-public class SecuredDocumentManagementService implements DocumentManagementService<Document> {
+public class SecuredDocumentManagementService implements DocumentManagementService {
 
     protected static final int DOC_UUID_LENGTH = 36;
     protected static final String FILES_NAME = "files";

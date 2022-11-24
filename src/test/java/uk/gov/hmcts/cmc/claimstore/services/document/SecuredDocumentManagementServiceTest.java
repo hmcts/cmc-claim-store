@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -65,7 +66,8 @@ class SecuredDocumentManagementServiceTest {
     private ObjectMapper mapper;
 
     @Autowired
-    private DocumentManagementService<Document> securedDocumentManagementService;
+    @Qualifier("securedDocumentManagementService")
+    private DocumentManagementService securedDocumentManagementService;
 
     @Mock
     private ResponseEntity<Resource> responseEntity;
@@ -257,8 +259,8 @@ class SecuredDocumentManagementServiceTest {
 
             when(responseEntity.getBody()).thenReturn(new ByteArrayResource("test".getBytes()));
 
-            uk.gov.hmcts.reform.ccd.document.am.model.Document documentMetaData
-                = securedDocumentManagementService.getDocumentMetaData(BEARER_TOKEN, documentPath);
+            var documentMetaData = (uk.gov.hmcts.reform.ccd.document.am.model.Document)
+                 securedDocumentManagementService.getDocumentMetaData(BEARER_TOKEN, documentPath);
 
             assertEquals(72552L, documentMetaData.size);
             assertEquals("TEST_DOCUMENT_1.pdf", documentMetaData.originalDocumentName);

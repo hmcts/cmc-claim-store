@@ -45,6 +45,8 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackVersion;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.rules.GenerateOrderRule;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.LegacyDocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.SecuredDocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
@@ -75,6 +77,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.MapEntry.entry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
@@ -95,6 +98,7 @@ public class GenerateOrderCallbackHandlerTest {
     private static final String BEARER_TOKEN = "Bearer let me in";
     private static final String DOC_URL = "http://success.test";
     private static final String DEFENDANT_PREFERRED_COURT = "Defendant Preferred Court";
+    private final boolean secureDocumentManagement = false;
 
     @Mock
     private LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator;
@@ -118,12 +122,11 @@ public class GenerateOrderCallbackHandlerTest {
     private DirectionOrderService directionOrderService;
     @Mock
     private OrderRenderer orderRenderer;
-    @Mock
-    private DocumentManagementService<uk.gov.hmcts.reform
-        .document.domain.Document> documentManagementService;
-    @Mock
-    private DocumentManagementService<uk.gov.hmcts.reform
-        .ccd.document.am.model.Document> secureDocumentManagementService;
+
+    private final DocumentManagementService legacyDocumentManagementService = mock(LegacyDocumentManagementService.class);
+
+    private final DocumentManagementService secureDocumentManagementService = mock(SecuredDocumentManagementService.class);
+
     @Mock
     private ClaimService claimService;
     @Mock
@@ -159,8 +162,8 @@ public class GenerateOrderCallbackHandlerTest {
             orderRenderer, launchDarklyClient);
 
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
-            caseDetailsConverter, legalOrderService, appInsights, directionOrderService,
-            documentManagementService, secureDocumentManagementService, claimService);
+            caseDetailsConverter, legalOrderService, secureDocumentManagement, appInsights, directionOrderService,
+            legacyDocumentManagementService, secureDocumentManagementService, claimService);
 
         generateOrderCallbackHandler = new GenerateOrderCallbackHandler(orderCreator, orderPostProcessor
         );
@@ -424,7 +427,7 @@ public class GenerateOrderCallbackHandlerTest {
             when(directionOrderService.getHearingCourt(any())).thenReturn(HearingCourt.builder().build());
 
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-            when(documentManagementService.getDocumentMetaData(any(), any()))
+            when(legacyDocumentManagementService.getDocumentMetaData(any(), any()))
                 .thenReturn(ResourceLoader.successfulDocumentManagementDownloadResponse());
 
             when(caseDetailsConverter.convertToMap(any(CCDCase.class)))

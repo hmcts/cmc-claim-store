@@ -1,6 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.services.document;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
@@ -34,8 +36,11 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.ORDER_SANCTIONS;
 public class DocumentManagementBackedDocumentsService implements DocumentsService {
 
     private final ClaimService claimService;
-    private final DocumentManagementService<uk.gov.hmcts.reform
-        .ccd.document.am.model.Document> documentManagementService;
+    private final boolean secureDocumentManagement;
+
+    private final DocumentManagementService legacyDocumentManagementService;
+    private final DocumentManagementService secureDocumentManagementService;
+
     private final SealedClaimPdfService sealedClaimPdfService;
     private final DraftClaimReceiptService draftClaimReceiptService;
     private final ClaimIssueReceiptService claimIssueReceiptService;
@@ -52,8 +57,12 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     // Content providers are formatted values and aren't worth splitting into multiple models.
     public DocumentManagementBackedDocumentsService(
         ClaimService claimService,
-        DocumentManagementService<uk.gov.hmcts.reform
-            .ccd.document.am.model.Document> documentManagementService,
+        @Value("${document_management.secured}")
+            boolean secureDocumentManagement,
+        @Qualifier("legacyDocumentManagementService")
+            DocumentManagementService legacyDocumentManagementService,
+        @Qualifier("securedDocumentManagementService")
+            DocumentManagementService secureDocumentManagementService,
         DraftClaimReceiptService draftClaimReceiptService,
         SealedClaimPdfService sealedClaimPdfService,
         ClaimIssueReceiptService claimIssueReceiptService,
@@ -64,7 +73,9 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         UserService userService
     ) {
         this.claimService = claimService;
-        this.documentManagementService = documentManagementService;
+        this.secureDocumentManagement = secureDocumentManagement;
+        this.legacyDocumentManagementService = legacyDocumentManagementService;
+        this.secureDocumentManagementService = secureDocumentManagementService;
         this.sealedClaimPdfService = sealedClaimPdfService;
         this.draftClaimReceiptService = draftClaimReceiptService;
         this.claimIssueReceiptService = claimIssueReceiptService;
@@ -106,7 +117,9 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         ScannedDocument oconDocument = claim.getScannedDocument(scannedDocumentType, scannedDocumentSubtype)
             .orElseThrow(() -> new IllegalArgumentException(DOCUMENT_IS_NOT_AVAILABLE_FOR_DOWNLOAD));
 
-        return documentManagementService.downloadScannedDocument(authorisation, oconDocument);
+        return !secureDocumentManagement
+            ? legacyDocumentManagementService.downloadScannedDocument(authorisation, oconDocument) :
+            secureDocumentManagementService.downloadScannedDocument(authorisation, oconDocument);
     }
 
     @Override
@@ -135,14 +148,14 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     private byte[] getGeneralLetters(Claim claim, String authorisation, String claimDocumentId) {
         Optional<ClaimDocument> claimDocument = claim.getClaimDocument(claimDocumentId);
         return claimDocument
-            .map(document -> documentManagementService.downloadDocument(authorisation, document))
+            .map(document -> legacyDocumentManagementService.downloadDocument(authorisation, document))
             .orElseThrow(() -> new IllegalArgumentException(DOCUMENT_IS_NOT_AVAILABLE_FOR_DOWNLOAD));
     }
 
     private byte[] getOrderDocuments(Claim claim, String authorisation, ClaimDocumentType claimDocumentType) {
         Optional<ClaimDocument> claimDocument = claim.getClaimDocument(claimDocumentType);
         return claimDocument
-            .map(document -> documentManagementService.downloadDocument(authorisation, document))
+            .map(document -> legacyDocumentManagementService.downloadDocument(authorisation, document))
             .orElseThrow(() -> new IllegalArgumentException(DOCUMENT_IS_NOT_AVAILABLE_FOR_DOWNLOAD));
     }
 
@@ -151,7 +164,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
             Optional<ClaimDocument> claimDocument = claim.getClaimDocument(claimDocumentType);
             if (claimDocument.isPresent()) {
                 return claimDocument
-                    .map(document -> documentManagementService.downloadDocument(authorisation, document))
+                    .map(document -> legacyDocumentManagementService.downloadDocument(authorisation, document))
                     .orElseGet(() -> generateNewDocument(claim, authorisation, claimDocumentType));
             }
 
@@ -168,7 +181,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     }
 
     public Claim uploadToDocumentManagement(PDF document, String authorisation, Claim claim) {
-        ClaimDocument claimDocument = documentManagementService.uploadDocument(authorisation, document);
+        ClaimDocument claimDocument = legacyDocumentManagementService.uploadDocument(authorisation, document);
         ClaimDocumentCollection claimDocumentCollection = getClaimDocumentCollection(claim, claimDocument);
 
         return claimService.saveClaimDocuments(authorisation,

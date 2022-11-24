@@ -9,7 +9,7 @@ import uk.gov.hmcts.cmc.domain.models.ScannedDocument;
 
 import java.net.URI;
 
-public interface DocumentManagementService<T> {
+public interface DocumentManagementService {
 
     @Retryable(value = DocumentManagementException.class, backoff = @Backoff(delay = 200))
     byte[] downloadDocumentByUrl(String authorisation, URI documentManagementUrl);
@@ -18,7 +18,7 @@ public interface DocumentManagementService<T> {
 
     byte[] downloadScannedDocument(String authorisation, ScannedDocument scannedDocument);
 
-    T getDocumentMetaData(String authorisation, String documentPath);
+    Object getDocumentMetaData(String authorisation, String documentPath);
 
     @Retryable(value = {DocumentManagementException.class}, backoff = @Backoff(delay = 200))
     ClaimDocument uploadDocument(String authorisation, PDF pdf);

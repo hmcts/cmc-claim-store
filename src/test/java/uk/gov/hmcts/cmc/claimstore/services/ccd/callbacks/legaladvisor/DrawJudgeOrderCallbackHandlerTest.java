@@ -46,6 +46,8 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackVersion;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.rules.GenerateOrderRule;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.LegacyDocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.SecuredDocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
@@ -76,6 +78,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.MapEntry.entry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
@@ -96,6 +99,7 @@ class DrawJudgeOrderCallbackHandlerTest {
     private static final String DOCUMENT_URL = "http://bla.test";
     private static final String DOCUMENT_BINARY_URL = "http://bla.binary.test";
     private static final String DOCUMENT_FILE_NAME = "sealed_claim.pdf";
+    private final boolean secureDocumentManagement = false;
 
     private static final CCDDocument DOCUMENT = CCDDocument
         .builder()
@@ -133,12 +137,11 @@ class DrawJudgeOrderCallbackHandlerTest {
     private LegalOrderService legalOrderService;
     @Mock
     private DirectionOrderService directionOrderService;
-    @Mock
-    private DocumentManagementService<uk.gov.hmcts.reform
-        .document.domain.Document> documentManagementService;
-    @Mock
-    private DocumentManagementService<uk.gov.hmcts.reform
-        .ccd.document.am.model.Document> secureDocumentManagementService;
+
+    private DocumentManagementService documentManagementService = mock(LegacyDocumentManagementService.class);
+
+    private DocumentManagementService secureDocumentManagementService = mock(SecuredDocumentManagementService.class);
+
     @Mock
     private OrderRenderer orderRenderer;
     @Mock
@@ -160,7 +163,7 @@ class DrawJudgeOrderCallbackHandlerTest {
             launchDarklyClient);
 
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
-            caseDetailsConverter, legalOrderService, appInsights, directionOrderService,
+            caseDetailsConverter, legalOrderService, secureDocumentManagement, appInsights, directionOrderService,
             documentManagementService, secureDocumentManagementService, claimService);
 
         drawJudgeOrderCallbackHandler = new DrawJudgeOrderCallbackHandler(orderCreator, orderPostProcessor);

@@ -9,7 +9,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.retry.annotation.Recover;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
@@ -38,9 +38,9 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.DOCUMENT_
 
 @Slf4j
 @RequiredArgsConstructor
-@Service("legacyDocumentManagementService")
+@Component
 @ConditionalOnProperty(prefix = "document_management", name = "secured", havingValue = "false")
-public class LegacyDocumentManagementService implements DocumentManagementService<Document> {
+public class LegacyDocumentManagementService implements DocumentManagementService {
 
     private final Logger logger = LoggerFactory.getLogger(DocumentManagementService.class);
     private static final String FILES_NAME = "files";

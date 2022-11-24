@@ -22,6 +22,8 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralL
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.LegacyDocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.SecuredDocumentManagementService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
@@ -38,6 +40,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.Params.BEARER_TOKEN;
@@ -69,9 +72,12 @@ class BreathingSpaceLetterServiceTest {
         .printRequestType(PIN_LETTER_TO_DEFENDANT).printRequestId("requestId").build();
     private final Claim claimWithBulkPrintDetails
         = claim.toBuilder().bulkPrintDetails(List.of(bulkPrintDetails)).build();
+    private final boolean secureDocumentManagement = false;
 
-    @Mock
-    DocumentManagementService documentManagementService;
+    private final DocumentManagementService legacyDocumentManagementService = mock(LegacyDocumentManagementService.class);
+
+    private final DocumentManagementService secureDocumentManagementService = mock(SecuredDocumentManagementService.class);
+
     private CCDCase ccdCase;
     @Mock
     private DocAssemblyService docAssemblyService;
@@ -94,7 +100,7 @@ class BreathingSpaceLetterServiceTest {
         breathingSpaceLetterService = new BreathingSpaceLetterService(
             docAssemblyService,
             docAssemblyTemplateBodyMapper, printableDocumentService, bulkPrintService, claimService,
-            documentManagementService, generalLetterService, CASE_TYPE_ID, JURISDICTION_ID);
+            secureDocumentManagement, legacyDocumentManagementService, secureDocumentManagementService, generalLetterService, CASE_TYPE_ID, JURISDICTION_ID);
 
         String documentUrl = DOCUMENT_URI.toString();
         CCDDocument document = new CCDDocument(documentUrl, documentUrl, GENERAL_LETTER_PDF);
@@ -199,7 +205,7 @@ class BreathingSpaceLetterServiceTest {
         breathingSpaceLetterService.sendLetterToDefendant(ccdCase, claim, BEARER_TOKEN.name(),
             BREATHING_SPACE_LETTER_TEMPLATE_ID, FILE_NAME);
 
-        verify(documentManagementService, once()).uploadDocument(any(String.class), any());
+        verify(legacyDocumentManagementService, once()).uploadDocument(any(String.class), any());
 
         verify(claimService, once()).saveClaimDocuments(any(String.class), any(), any(), any(ClaimDocumentType.class));
 

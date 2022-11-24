@@ -25,6 +25,8 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.LegacyDocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.SecuredDocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -46,6 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.MapEntry.entry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DRAW_ORDER;
@@ -60,6 +63,7 @@ public class DrawOrderCallbackHandlerTest {
     private static final String DOCUMENT_URL = "http://bla.test";
     private static final String DOCUMENT_BINARY_URL = "http://bla.binary.test";
     private static final String DOCUMENT_FILE_NAME = "sealed_claim.pdf";
+    private final boolean secureDocumentManagement = false;
 
     private final CaseDetails caseDetails = CaseDetails.builder().id(3L).data(Collections.emptyMap()).build();
 
@@ -93,12 +97,9 @@ public class DrawOrderCallbackHandlerTest {
     @Mock
     private DirectionOrderService directionOrderService;
 
-    @Mock
-    private DocumentManagementService<uk.gov.hmcts.reform
-        .document.domain.Document> documentManagementService;
-    @Mock
-    private DocumentManagementService<uk.gov.hmcts.reform
-        .ccd.document.am.model.Document> secureDocumentManagementService;
+    private final DocumentManagementService legacyDocumentManagementService = mock(LegacyDocumentManagementService.class);
+
+    private final DocumentManagementService secureDocumentManagementService = mock(SecuredDocumentManagementService.class);
 
     private CallbackParams callbackParams;
 
@@ -115,8 +116,8 @@ public class DrawOrderCallbackHandlerTest {
     @Before
     public void setUp() {
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
-            caseDetailsConverter, legalOrderService, appInsights, directionOrderService,
-            documentManagementService, secureDocumentManagementService, claimService);
+            caseDetailsConverter, legalOrderService, secureDocumentManagement, appInsights, directionOrderService,
+            legacyDocumentManagementService, secureDocumentManagementService, claimService);
 
         drawOrderCallbackHandler = new DrawOrderCallbackHandler(orderPostProcessor, caseDetailsConverter,
             orderRenderer);
@@ -199,7 +200,7 @@ public class DrawOrderCallbackHandlerTest {
         when(directionOrderService.getHearingCourt(any())).thenReturn(HearingCourt.builder().build());
 
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-        when(documentManagementService.getDocumentMetaData(any(), any()))
+        when(legacyDocumentManagementService.getDocumentMetaData(any(), any()))
             .thenReturn(ResourceLoader.successfulDocumentManagementDownloadResponse());
 
         when(caseDetailsConverter.convertToMap(any(CCDCase.class)))
