@@ -58,7 +58,7 @@ public class TransferCaseStayedService {
                 ? pageNumber : 1
         );
 
-        LocalDate currentDate = LocalDate.parse("2022-12-25");
+        LocalDate currentDate = LocalDate.parse("2022-12-30");
 
         JSONArray listOfCasesJson = !listOfCases.isEmpty()
             ? new JSONArray(listOfCases) : null;
