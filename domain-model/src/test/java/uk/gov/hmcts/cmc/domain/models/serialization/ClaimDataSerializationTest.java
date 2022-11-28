@@ -59,6 +59,7 @@ public class ClaimDataSerializationTest {
             .withHwfFeeDetailsSummary("Summary")
             .withHwfMandatoryDetails("Details")
             .withHwfMoreInfoNeededDocuments(asList("BANK_STATEMENTS", "PRISONERS_INCOME"))
+            .withHwfProvideDocumentName("Sample document name")
             .withHwfDocumentsToBeSentBefore(LocalDate.now())
             .build();
 

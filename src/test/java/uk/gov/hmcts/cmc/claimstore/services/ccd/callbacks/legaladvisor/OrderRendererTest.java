@@ -22,6 +22,8 @@ class OrderRendererTest {
 
     public static final String DIRECTION_TYPE_BESPOKE = "BESPOKE";
     public static final String DIRECTION_TYPE_INVALID = "INVALID";
+    private static final String CASE_TYPE_ID = "MoneyClaimCase";
+    private static final String JURISDICTION_ID = "CMC";
 
     private OrderRenderer orderRenderer;
 
@@ -50,7 +52,9 @@ class OrderRendererTest {
             docAssemblyTemplateBodyMapper,
             LEGAL_ADVISOR_TEMPLATE_ID,
             JUDGE_TEMPLATE_ID,
-            BESPOKE_TEMPLATE_ID);
+            BESPOKE_TEMPLATE_ID,
+            CASE_TYPE_ID,
+            JURISDICTION_ID);
     }
 
     @Test
@@ -61,6 +65,7 @@ class OrderRendererTest {
         orderRenderer.renderLegalAdvisorOrder(ccdCase, AUTHORISATION);
 
         verify(docAssemblyService).renderTemplate(ccdCase, AUTHORISATION, LEGAL_ADVISOR_TEMPLATE_ID,
+            CASE_TYPE_ID, JURISDICTION_ID,
             docAssemblyTemplateBody, "OCMC00001-Legal-Adviser-Directions-Order");
     }
 
@@ -71,8 +76,9 @@ class OrderRendererTest {
 
         orderRenderer.renderJudgeOrder(ccdCase, AUTHORISATION);
 
-        verify(docAssemblyService).renderTemplate(ccdCase, AUTHORISATION, JUDGE_TEMPLATE_ID, docAssemblyTemplateBody,
-            "OCMC00001-Judge-Directions-Order");
+        verify(docAssemblyService).renderTemplate(ccdCase, AUTHORISATION, JUDGE_TEMPLATE_ID,
+            CASE_TYPE_ID, JURISDICTION_ID,
+            docAssemblyTemplateBody, "OCMC00001-Judge-Directions-Order");
     }
 
     @Test
@@ -85,8 +91,9 @@ class OrderRendererTest {
 
         orderRenderer.renderOrder(ccdCase, AUTHORISATION);
 
-        verify(docAssemblyService).renderTemplate(ccdCase, AUTHORISATION, JUDGE_TEMPLATE_ID, docAssemblyTemplateBody,
-            "OCMC00001-Judge-Directions-Order");
+        verify(docAssemblyService).renderTemplate(ccdCase, AUTHORISATION, JUDGE_TEMPLATE_ID,
+            CASE_TYPE_ID, JURISDICTION_ID,
+            docAssemblyTemplateBody, "OCMC00001-Judge-Directions-Order");
     }
 
     @Test
@@ -99,6 +106,7 @@ class OrderRendererTest {
         orderRenderer.renderOrder(ccdCase, AUTHORISATION);
 
         verify(docAssemblyService).renderTemplate(ccdCase, AUTHORISATION, LEGAL_ADVISOR_TEMPLATE_ID,
+            CASE_TYPE_ID, JURISDICTION_ID,
             docAssemblyTemplateBody, "OCMC00001-Legal-Adviser-Directions-Order");
     }
 
@@ -108,8 +116,9 @@ class OrderRendererTest {
             any(UserDetails.class))).thenReturn(docAssemblyTemplateBody);
         orderRenderer.renderJudgeBespokeOrder(ccdCase, AUTHORISATION);
 
-        verify(docAssemblyService).renderTemplate(ccdCase, AUTHORISATION, BESPOKE_TEMPLATE_ID, docAssemblyTemplateBody,
-            "OCMC00001-Judge-Directions-Order");
+        verify(docAssemblyService).renderTemplate(ccdCase, AUTHORISATION, BESPOKE_TEMPLATE_ID,
+            CASE_TYPE_ID, JURISDICTION_ID,
+            docAssemblyTemplateBody, "OCMC00001-Judge-Directions-Order");
     }
 
     @Test
@@ -122,8 +131,9 @@ class OrderRendererTest {
 
         orderRenderer.renderOrder(ccdCase, AUTHORISATION);
 
-        verify(docAssemblyService).renderTemplate(ccdCase, AUTHORISATION, BESPOKE_TEMPLATE_ID, docAssemblyTemplateBody,
-            "000MC001-Judge-Directions-Order");
+        verify(docAssemblyService).renderTemplate(ccdCase, AUTHORISATION, BESPOKE_TEMPLATE_ID,
+            CASE_TYPE_ID, JURISDICTION_ID,
+            docAssemblyTemplateBody, "000MC001-Judge-Directions-Order");
     }
 
     @Test
@@ -137,8 +147,9 @@ class OrderRendererTest {
 
         orderRenderer.renderOrder(ccdCase, AUTHORISATION);
 
-        verify(docAssemblyService).renderTemplate(ccdCase, AUTHORISATION, JUDGE_TEMPLATE_ID, docAssemblyTemplateBody,
-            "000MC001-Judge-Directions-Order");
+        verify(docAssemblyService).renderTemplate(ccdCase, AUTHORISATION, JUDGE_TEMPLATE_ID,
+            CASE_TYPE_ID, JURISDICTION_ID,
+            docAssemblyTemplateBody, "000MC001-Judge-Directions-Order");
     }
 
 }

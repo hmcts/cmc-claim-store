@@ -145,7 +145,7 @@ public class InitiatePaymentTest extends BaseMockSpringTest {
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
 
         MvcResult result = makeInitiatePaymentRequest(claimData, BEARER_TOKEN)
-            .andExpect(status().isInternalServerError())
+            .andExpect(status().isFailedDependency())
             .andReturn();
 
         assertThat(result.getResolvedException())
@@ -181,7 +181,7 @@ public class InitiatePaymentTest extends BaseMockSpringTest {
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
 
         MvcResult result = makeInitiatePaymentRequest(claimData, BEARER_TOKEN)
-            .andExpect(status().isInternalServerError())
+            .andExpect(status().isFailedDependency())
             .andReturn();
 
         assertThat(result.getResolvedException())

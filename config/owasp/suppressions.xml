@@ -161,15 +161,6 @@
         <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-core@.*$</packageUrl>
         <cpe>cpe:/a:apache_tomcat:apache_tomcat</cpe>
     </suppress>
-
-    <suppress until="2023-03-01">
-        <notes><![CDATA[
-   file name: tomcat-embed-core-9.0.44.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-core@.*$</packageUrl>
-        <cve>CVE-2022-23181</cve>
-    </suppress>
-
     <suppress until="2023-03-01">
         <notes><![CDATA[
    file name: tomcat-embed-websocket-9.0.44.jar
@@ -347,13 +338,6 @@
         <cve>CVE-2020-9488</cve>
     </suppress>
     <suppress until="2023-03-01">
-        <notes><![CDATA[
-   snakeyaml-1.25.jar is not used directly
-   ]]></notes>
-        <gav regex="true">.*</gav>
-        <cve>CVE-2017-18640</cve>
-    </suppress>
-    <suppress until="2023-03-01">
         <cve>CVE-2020-5407</cve>
         <cve>CVE-2020-5408</cve>
         <cve>CVE-2020-7019</cve>
@@ -403,8 +387,8 @@
         <cve>CVE-2021-22112</cve>
         <cve>CVE-2021-22118</cve>
         <cve>CVE-2021-22119</cve>
-        <cve>CVE-2019-14900</cve>
         <cve>CVE-2020-25638</cve>
+
     </suppress>
     <suppress until="2023-03-01">
         <notes><![CDATA[
@@ -459,54 +443,6 @@
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-core@.*$</packageUrl>
         <vulnerabilityName>CWE-862: Missing Authorization</vulnerabilityName>
-    </suppress>
-
-    <suppress until="2023-03-01">
-        <notes><![CDATA[
-   file name: jackson-databind-2.11.0.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
-        <cpe>cpe:/a:fasterxml:jackson-databind</cpe>
-    </suppress>
-
-    <suppress until="2023-03-01">
-        <notes><![CDATA[
-   file name: jackson-databind-2.11.0.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
-        <cpe>cpe:/a:fasterxml:jackson-modules-java8</cpe>
-    </suppress>
-
-    <suppress until="2023-03-01">
-        <notes><![CDATA[
-   file name: jackson-databind-2.11.0.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
-        <cve>CVE-2020-36518</cve>
-    </suppress>
-
-    <suppress until="2023-03-01">
-        <notes><![CDATA[
-   file name: jackson-databind-2.11.0.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
-        <cve>CVE-2020-36518</cve>
-    </suppress>
-
-    <suppress until="2023-03-01">
-        <notes><![CDATA[
-   file name: jackson-databind-2.11.0.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
-        <cpe>cpe:/a:fasterxml:jackson-modules-java8</cpe>
-    </suppress>
-
-    <suppress until="2023-03-01">
-        <notes><![CDATA[
-   file name: jackson-databind-2.11.0.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
-        <cve>CVE-2020-36518</cve>
     </suppress>
 
     <suppress until="2023-03-01">
@@ -566,6 +502,8 @@
         <cve>CVE-2022-22978</cve>
         <cve>CVE-2016-1000027</cve>
         <cve>CVE-2021-22060</cve>
+        <cve>CVE-2022-42003</cve>
+        <cve>CVE-2022-41854</cve>
     </suppress>
 
     <suppress>
@@ -582,6 +520,36 @@
     <suppress>
         <gav regex="true">^.*$</gav>
         <cve>CVE-2022-31569</cve>
+    </suppress>
+
+    <suppress until="2023-03-01">
+    <notes><![CDATA[
+   file name: launchdarkly-java-server-sdk-5.10.1.jar
+   ]]></notes>
+        <cve>CVE-2022-38751</cve>
+        <cve>CVE-2022-38752</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: snakeyaml-1.31.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.yaml/snakeyaml@.*$</packageUrl>
+        <vulnerabilityName>CVE-2022-38751</vulnerabilityName>
+    </suppress>
+
+    <suppress>
+        <notes><![CDATA[
+   file name: snakeyaml-1.31.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.yaml/snakeyaml@.*$</packageUrl>
+        <vulnerabilityName>CVE-2022-38752</vulnerabilityName>
+    </suppress>
+
+    <suppress until="2023-03-01">
+        <notes><![CDATA[
+   file name: launchdarkly-java-server-sdk-5.10.1.jar
+   ]]></notes>
+        <vulnerabilityName>CVE-2022-38751</vulnerabilityName>
     </suppress>
 
 </suppressions>
