@@ -95,6 +95,7 @@ public class GenerateOrderCallbackHandlerTest {
     private static final String BEARER_TOKEN = "Bearer let me in";
     private static final String DOC_URL = "http://success.test";
     private static final String DEFENDANT_PREFERRED_COURT = "Defendant Preferred Court";
+    private static final boolean secureDocumentManagement = false;
 
     @Mock
     private LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator;
@@ -119,7 +120,11 @@ public class GenerateOrderCallbackHandlerTest {
     @Mock
     private OrderRenderer orderRenderer;
     @Mock
-    private DocumentManagementService documentManagementService;
+    private DocumentManagementService<uk.gov.hmcts.reform
+        .document.domain.Document> documentManagementService;
+    @Mock
+    private DocumentManagementService<uk.gov.hmcts.reform
+        .ccd.document.am.model.Document> secureDocumentManagementService;
     @Mock
     private ClaimService claimService;
     @Mock
@@ -155,8 +160,8 @@ public class GenerateOrderCallbackHandlerTest {
             orderRenderer, launchDarklyClient);
 
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
-            caseDetailsConverter, legalOrderService, appInsights, directionOrderService,
-            documentManagementService, claimService);
+            caseDetailsConverter, legalOrderService, secureDocumentManagement, appInsights, directionOrderService,
+            documentManagementService, secureDocumentManagementService, claimService);
 
         generateOrderCallbackHandler = new GenerateOrderCallbackHandler(orderCreator, orderPostProcessor
         );
@@ -422,6 +427,9 @@ public class GenerateOrderCallbackHandlerTest {
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
             when(documentManagementService.getDocumentMetaData(any(), any()))
                 .thenReturn(ResourceLoader.successfulDocumentManagementDownloadResponse());
+
+            when(secureDocumentManagementService.getDocumentMetaData(any(), any()))
+                .thenReturn(ResourceLoader.secureSuccessfulDocumentManagementDownloadResponse());
 
             when(caseDetailsConverter.convertToMap(any(CCDCase.class)))
                 .thenReturn(ImmutableMap.<String, Object>builder()

@@ -43,7 +43,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
-import uk.gov.hmcts.reform.document.domain.Document;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -85,6 +84,7 @@ class PaperResponseAdmissionCallbackHandlerTest {
     private static final List<CaseEvent> CASE_EVENTS = Arrays.asList(CaseEvent.PAPER_RESPONSE_OCON_9X_FORM);
     private PaperResponseAdmissionCallbackHandler handler;
     private CallbackParams callbackParams;
+    private boolean secureDocumentManagement = false;
     @Mock
     private DefendantResponseNotificationService defendantResponseNotificationService;
     @Mock
@@ -96,7 +96,11 @@ class PaperResponseAdmissionCallbackHandlerTest {
     @Mock
     private DocAssemblyResponse docAssemblyResponse;
     @Mock
-    private DocumentManagementService documentManagementService;
+    private DocumentManagementService<uk.gov.hmcts.reform
+        .document.domain.Document> documentManagementService;
+    @Mock
+    private DocumentManagementService<uk.gov.hmcts.reform
+        .ccd.document.am.model.Document> secureDocumentManagementService;
     @Mock
     private Clock clock;
     @Mock
@@ -116,8 +120,8 @@ class PaperResponseAdmissionCallbackHandlerTest {
         String paperResponseAdmissionTemplateId = "CV-CMC-GOR-ENG-0016.docx";
         handler = new PaperResponseAdmissionCallbackHandler(caseDetailsConverter,
             defendantResponseNotificationService, caseMapper, docAssemblyService, docAssemblyTemplateBodyMapper,
-            paperResponseAdmissionTemplateId, CASE_TYPE_ID, JURISDICTION_ID,
-            userService, documentManagementService, clock, generalLetterService,
+            secureDocumentManagement, paperResponseAdmissionTemplateId, CASE_TYPE_ID, JURISDICTION_ID,
+            userService, documentManagementService, secureDocumentManagementService, clock, generalLetterService,
             caseEventService, launchDarklyClient);
         CallbackRequest callbackRequest = getCallBackRequest();
         callbackParams = getBuild(callbackRequest, CallbackType.ABOUT_TO_SUBMIT);
@@ -272,10 +276,15 @@ class PaperResponseAdmissionCallbackHandlerTest {
     }
 
     @NotNull
-    private Document getLinks() {
-        Document document = new Document();
-        Document.Links links = new Document.Links();
-        links.binary = new Document.Link();
+    private uk.gov.hmcts.reform
+        .document.domain.Document getLinks() {
+        uk.gov.hmcts.reform.document.domain.Document document = new uk.gov.hmcts.reform
+            .document.domain.Document();
+        uk.gov.hmcts.reform
+            .document.domain.Document.Links links = new uk.gov.hmcts.reform
+            .document.domain.Document.Links();
+        links.binary = new uk.gov.hmcts.reform
+            .document.domain.Document.Link();
         links.binary.href = DOC_URL_BINARY;
         document.links = links;
         return document;

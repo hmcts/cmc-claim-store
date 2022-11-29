@@ -1,6 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.breathingspace;
 
 import com.google.common.collect.ImmutableList;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -34,18 +36,29 @@ public class BreathingSpaceLetterService {
     private final PrintableDocumentService printableDocumentService;
     private final PrintService bulkPrintService;
     private final ClaimService claimService;
-    private final DocumentManagementService documentManagementService;
+    private final DocumentManagementService<uk.gov.hmcts.reform
+        .ccd.document.am.model.Document> securedDocumentManagementService;
+    private final DocumentManagementService<uk.gov.hmcts.reform
+        .document.domain.Document> legacyDocumentManagementService;
+    private final boolean secureDocumentManagement;
     private final GeneralLetterService generalLetterService;
     private final String caseTypeId;
     private final String jurisdictionId;
 
+    @Autowired
     public BreathingSpaceLetterService(
         DocAssemblyService docAssemblyService,
         DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper,
         PrintableDocumentService printableDocumentService,
         PrintService bulkPrintService,
         ClaimService claimService,
-        DocumentManagementService documentManagementService,
+        @Qualifier("securedDocumentManagementService")
+        DocumentManagementService<uk.gov.hmcts.reform.ccd.document.am.model.Document>
+            securedDocumentManagementService,
+        @Qualifier("legacyDocumentManagementService")
+        DocumentManagementService<uk.gov.hmcts.reform.document.domain.Document>
+            legacyDocumentManagementService,
+        @Value("${document_management.secured}") boolean secureDocumentManagement,
         GeneralLetterService generalLetterService,
         @Value("${ocmc.caseTypeId}") String caseTypeId,
         @Value("${ocmc.jurisdictionId}") String jurisdictionId
@@ -55,7 +68,9 @@ public class BreathingSpaceLetterService {
         this.printableDocumentService = printableDocumentService;
         this.bulkPrintService = bulkPrintService;
         this.claimService = claimService;
-        this.documentManagementService = documentManagementService;
+        this.legacyDocumentManagementService = legacyDocumentManagementService;
+        this.securedDocumentManagementService = securedDocumentManagementService;
+        this.secureDocumentManagement = secureDocumentManagement;
         this.generalLetterService = generalLetterService;
         this.caseTypeId = caseTypeId;
         this.jurisdictionId = jurisdictionId;
@@ -102,7 +117,9 @@ public class BreathingSpaceLetterService {
     }
 
     public Claim uploadToDocumentManagement(PDF document, String authorisation, Claim claim) {
-        ClaimDocument claimDocument = documentManagementService.uploadDocument(authorisation, document);
+        ClaimDocument claimDocument = !secureDocumentManagement
+            ? legacyDocumentManagementService.uploadDocument(authorisation, document)
+            : securedDocumentManagementService.uploadDocument(authorisation, document);
         ClaimDocumentCollection claimDocumentCollection = getClaimDocumentCollection(claim, claimDocument);
 
         return claimService.saveClaimDocuments(authorisation,

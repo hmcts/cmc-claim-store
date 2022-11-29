@@ -3,6 +3,9 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legaladvisor;
 import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -53,36 +56,50 @@ public class OrderPostProcessor {
     private final CaseDetailsConverter caseDetailsConverter;
     private final LegalOrderService legalOrderService;
     private final DirectionOrderService directionOrderService;
-    private final DocumentManagementService documentManagementService;
+    private final boolean secureDocumentManagement;
+    private final DocumentManagementService<uk.gov.hmcts.reform
+        .document.domain.Document> legacyDocumentManagementService;
+    private final DocumentManagementService<uk.gov.hmcts.reform
+        .ccd.document.am.model.Document> secureDocumentManagementService;
     private final ClaimService claimService;
-    private AppInsights appInsights;
+    private final AppInsights appInsights;
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final String REVIEW_OR_DRAW_ORDER = "reviewOrDrawOrder";
     public static final String LA_DRAW_ORDER = "LA_DRAW_ORDER";
 
+    @Autowired
     public OrderPostProcessor(
         Clock clock,
         OrderDrawnNotificationService orderDrawnNotificationService,
         CaseDetailsConverter caseDetailsConverter,
         LegalOrderService legalOrderService,
+        @Value("${document_management.secured}") boolean secureDocumentManagement,
         AppInsights appInsights,
         DirectionOrderService directionOrderService,
-        DocumentManagementService documentManagementService,
+        @Qualifier("legacyDocumentManagementService")
+            DocumentManagementService<Document>
+            legacyDocumentManagementService,
+        @Qualifier("securedDocumentManagementService")
+            DocumentManagementService<uk.gov.hmcts.reform.ccd.document.am.model.Document>
+            secureDocumentManagementService,
         ClaimService claimService
     ) {
         this.clock = clock;
         this.orderDrawnNotificationService = orderDrawnNotificationService;
         this.caseDetailsConverter = caseDetailsConverter;
         this.legalOrderService = legalOrderService;
+        this.secureDocumentManagement = secureDocumentManagement;
         this.directionOrderService = directionOrderService;
         this.appInsights = appInsights;
-        this.documentManagementService = documentManagementService;
+        this.legacyDocumentManagementService = legacyDocumentManagementService;
+        this.secureDocumentManagementService = secureDocumentManagementService;
         this.claimService = claimService;
     }
 
     public CallbackResponse copyDraftToCaseDocument(CallbackParams callbackParams) {
         CallbackRequest callbackRequest = callbackParams.getRequest();
-        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
+        CCDCase ccdCase = Optional.ofNullable(caseDetailsConverter
+            .extractCCDCase(callbackRequest.getCaseDetails())).orElseThrow();
 
         CCDDocument draftOrderDoc = Optional.ofNullable(ccdCase.getDraftOrderDoc())
             .orElseThrow(() -> new CallbackException("Draft order not present"));
@@ -91,23 +108,45 @@ public class OrderPostProcessor {
 
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
 
-        Document documentMetadata = documentManagementService.getDocumentMetaData(
-            authorisation,
-            URI.create(draftOrderDoc.getDocumentUrl()).getPath()
-        );
+        var documentMetadata =
+            legacyDocumentManagementService.getDocumentMetaData(
+                authorisation,
+                URI.create(draftOrderDoc.getDocumentUrl()).getPath()
+            );
 
-        CCDCase updatedCase = ccdCase.toBuilder()
+        var secureDocumentMetadata =
+            secureDocumentManagementService.getDocumentMetaData(
+                authorisation,
+                URI.create(draftOrderDoc.getDocumentUrl()).getPath()
+            );
+
+        CCDCase updatedCase = !secureDocumentManagement
+            ? ccdCase.toBuilder()
             .expertReportPermissionPartyGivenToClaimant(null)
             .expertReportPermissionPartyGivenToDefendant(null)
             .expertReportInstructionClaimant(null)
             .expertReportInstructionDefendant(null)
-            .caseDocuments(updateCaseDocumentsWithOrder(ccdCase, draftOrderDoc, documentMetadata))
+            .caseDocuments(updateCaseDocumentsWithOrder(
+                ccdCase, draftOrderDoc, false, documentMetadata, null))
             .directionOrder(CCDDirectionOrder.builder()
                 .createdOn(nowInUTC())
                 .hearingCourtName(hearingCourt.getName())
                 .hearingCourtAddress(hearingCourt.getAddress())
                 .build())
-            .build();
+            .build() :
+            ccdCase.toBuilder()
+                .expertReportPermissionPartyGivenToClaimant(null)
+                .expertReportPermissionPartyGivenToDefendant(null)
+                .expertReportInstructionClaimant(null)
+                .expertReportInstructionDefendant(null)
+                .caseDocuments(updateCaseDocumentsWithOrder(
+                    ccdCase, draftOrderDoc, true, null, secureDocumentMetadata))
+                .directionOrder(CCDDirectionOrder.builder()
+                    .createdOn(nowInUTC())
+                    .hearingCourtName(hearingCourt.getName())
+                    .hearingCourtAddress(hearingCourt.getAddress())
+                    .build())
+                .build();
 
         return AboutToStartOrSubmitCallbackResponse
             .builder()
@@ -211,17 +250,30 @@ public class OrderPostProcessor {
     private List<CCDCollectionElement<CCDClaimDocument>> updateCaseDocumentsWithOrder(
         CCDCase ccdCase,
         CCDDocument draftOrderDoc,
-        Document documentMetaData
+        boolean secureDocumentManagement,
+        Document documentMetaData,
+        uk.gov.hmcts.reform
+            .ccd.document.am.model.Document secureDocumentMetadata
     ) {
-        CCDCollectionElement<CCDClaimDocument> claimDocument = CCDCollectionElement.<CCDClaimDocument>builder()
+        CCDCollectionElement<CCDClaimDocument> claimDocument = secureDocumentManagement
+            ? CCDCollectionElement.<CCDClaimDocument>builder()
             .value(CCDClaimDocument.builder()
                 .documentLink(draftOrderDoc)
                 .documentName(draftOrderDoc.getDocumentFileName())
                 .createdDatetime(LocalDateTime.now(clock.withZone(UTC_ZONE)))
                 .documentType(ORDER_DIRECTIONS)
-                .size(documentMetaData.size)
+                .size(secureDocumentMetadata.size)
                 .build())
-            .build();
+            .build() :
+            CCDCollectionElement.<CCDClaimDocument>builder()
+                .value(CCDClaimDocument.builder()
+                    .documentLink(draftOrderDoc)
+                    .documentName(draftOrderDoc.getDocumentFileName())
+                    .createdDatetime(LocalDateTime.now(clock.withZone(UTC_ZONE)))
+                    .documentType(ORDER_DIRECTIONS)
+                    .size(documentMetaData.size)
+                    .build())
+                .build();
 
         return ImmutableList.<CCDCollectionElement<CCDClaimDocument>>builder()
             .addAll(ccdCase.getCaseDocuments())
