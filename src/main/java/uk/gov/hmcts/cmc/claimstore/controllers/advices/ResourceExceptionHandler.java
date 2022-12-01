@@ -28,7 +28,6 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentDownloadForbiddenException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DuplicateKeyException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.InvalidApplicationException;
@@ -246,21 +245,21 @@ public class ResourceExceptionHandler {
     }
 
     @ExceptionHandler({NestedServletException.class, FeignException.BadRequest.class})
-    public ResponseEntity<String> handleNestedServletExceptionBadRequest(Exception exception){
+    public ResponseEntity<String> handleNestedServletExceptionBadRequest(Exception exception) {
         logger.error(exception);
         return new ResponseEntity<>(exception.getMessage(),
             new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
-
-    @ExceptionHandler({IllegalArgumentException.class, DocumentDownloadForbiddenException.class})
-    public ResponseEntity<String> handleIllegalArgumentException(Exception exception){
+    
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(Exception exception) {
         logger.error(exception);
         return new ResponseEntity<>(exception.getMessage(),
             new HttpHeaders(), HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     @ExceptionHandler({HttpMediaTypeNotAcceptableException.class, FeignException.UnsupportedMediaType.class})
-    public ResponseEntity<String> handleHttpMediaTypeNotAcceptableException(Exception exception){
+    public ResponseEntity<String> handleHttpMediaTypeNotAcceptableException(Exception exception) {
         logger.error(exception);
         return new ResponseEntity<>(exception.getMessage(),
             new HttpHeaders(), HttpStatus.UNSUPPORTED_MEDIA_TYPE);

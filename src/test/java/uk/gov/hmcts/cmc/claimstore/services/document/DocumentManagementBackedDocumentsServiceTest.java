@@ -393,7 +393,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
     }
 
     @Test(expected = DocumentDownloadForbiddenException.class)
-    public void generateDocumentShouldThrowExceptionWhenExceptionIsThrown(){
+    public void generateDocumentShouldThrowExceptionWhenExceptionIsThrown() {
         final ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
         Claim claim = Claim.builder()
             .externalId("externalID")
@@ -401,7 +401,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
             .claimDocumentCollection(claimDocumentCollection)
             .build();
 
-       documentManagementBackendDocumentsService.generateDocument(claim.getExternalId(), SEALED_CLAIM, AUTHORISATION);
+        documentManagementBackendDocumentsService.generateDocument(claim.getExternalId(), SEALED_CLAIM, AUTHORISATION);
     }
 
     private void verifyCommon(byte[] pdf) {
