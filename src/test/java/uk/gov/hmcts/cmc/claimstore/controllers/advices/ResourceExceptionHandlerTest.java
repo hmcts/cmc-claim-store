@@ -268,23 +268,45 @@ public class ResourceExceptionHandlerTest {
     }
 
     @Test
-    public void testIllegalArgumentDocumentException() {
+    public void testHttpMediaTypeNotAcceptableException() {
         testTemplate(
             "expected exception for notification exception",
             SocketTimeoutException::new,
-            handler::handleIllegalArgumentException,
+            handler::handleHttpMediaTypeNotAcceptableException,
             HttpStatus.UNPROCESSABLE_ENTITY,
             AppInsightsExceptionLogger::error
         );
     }
 
     @Test
-    public void testHttpMediaTypeNotAcceptableException() {
+    public void testHttpUnsupportedMediaTypeException() {
         testTemplate(
             "expected exception for notification exception",
             HttpMediaTypeNotAcceptableException::new,
-            handler::handleHttpMediaTypeNotAcceptableException,
+            handler::handleHttpUnsupportedMediaTypeException,
             HttpStatus.UNSUPPORTED_MEDIA_TYPE,
+            AppInsightsExceptionLogger::error
+        );
+    }
+
+    @Test
+    public void testIllegalArgumentExceptionException() {
+        testTemplate(
+            "expected exception for notification exception",
+            SocketTimeoutException::new,
+            handler::handleIllegalArgumentExceptionException,
+            HttpStatus.FORBIDDEN,
+            AppInsightsExceptionLogger::error
+        );
+    }
+
+    @Test
+    public void testDocumentManagementException() {
+        testTemplate(
+            "expected exception for notification exception",
+            HttpMediaTypeNotAcceptableException::new,
+            handler::handleDocumentManagementException,
+            HttpStatus.UNPROCESSABLE_ENTITY,
             AppInsightsExceptionLogger::error
         );
     }

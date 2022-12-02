@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.documents.questionnaire.ClaimantDirectionsQuestionnairePdfService;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentDownloadForbiddenException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
@@ -34,6 +35,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
 import java.time.LocalDate;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -401,7 +403,23 @@ public class DocumentManagementBackedDocumentsServiceTest {
             .claimDocumentCollection(claimDocumentCollection)
             .build();
 
-        documentManagementBackendDocumentsService.generateDocument(claim.getExternalId(), SEALED_CLAIM, AUTHORISATION);
+        when(documentManagementBackendDocumentsService.generateDocument(claim.getExternalId(), SEALED_CLAIM, AUTHORISATION))
+            .thenThrow(DocumentManagementException.class);
+
+        boolean exceptionThrown = false;
+
+        try {
+            documentManagementBackendDocumentsService.generateDocument(
+                claim.getExternalId(),
+                ORDER_DIRECTIONS,
+                AUTHORISATION
+            );
+
+        } catch (DocumentManagementException ex) {
+            exceptionThrown = true;
+        }
+
+        assertTrue(exceptionThrown);
     }
 
     private void verifyCommon(byte[] pdf) {

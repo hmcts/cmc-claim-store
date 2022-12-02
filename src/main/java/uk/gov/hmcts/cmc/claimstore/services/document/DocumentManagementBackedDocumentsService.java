@@ -11,7 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.documents.questionnaire.ClaimantDirectionsQuestionnairePdfService;
-import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentDownloadForbiddenException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimDocumentsAccessRule;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
@@ -112,8 +112,8 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     public byte[] generateDocument(String externalId, ClaimDocumentType claimDocumentType, String authorisation) {
         try {
             return generateDocument(externalId, claimDocumentType, null, authorisation);
-        } catch (DocumentDownloadForbiddenException ex) {
-            throw new DocumentDownloadForbiddenException(DOCUMENT_IS_NOT_AVAILABLE_FOR_DOWNLOAD);
+        } catch (DocumentManagementException ex) {
+            throw new DocumentManagementException(DOCUMENT_IS_NOT_AVAILABLE_FOR_DOWNLOAD);
         }
     }
 
