@@ -35,7 +35,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
 import java.time.LocalDate;
 
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -406,20 +406,13 @@ public class DocumentManagementBackedDocumentsServiceTest {
         when(documentManagementBackendDocumentsService.generateDocument(claim.getExternalId(), SEALED_CLAIM, AUTHORISATION))
             .thenThrow(DocumentManagementException.class);
 
-        boolean exceptionThrown = false;
-
-        try {
+        assertThrows(DocumentManagementException.class, () -> {
             documentManagementBackendDocumentsService.generateDocument(
                 claim.getExternalId(),
                 ORDER_DIRECTIONS,
                 AUTHORISATION
             );
-
-        } catch (DocumentManagementException ex) {
-            exceptionThrown = true;
-        }
-
-        assertTrue(exceptionThrown);
+        });
     }
 
     private void verifyCommon(byte[] pdf) {
