@@ -22,6 +22,8 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsExceptionLogger;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantLinkException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantProvidedDetailsException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantResponseAlreadySubmittedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
@@ -35,11 +37,13 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.UnprocessableEntityException;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.exceptions.IllegalSettlementStatementException;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
+import uk.gov.service.notify.NotificationClientException;
 
 import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.Optional;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.FAILED_DEPENDENCY;
 import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 
@@ -47,6 +51,7 @@ import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 public class ResourceExceptionHandler {
     private static final CharSequence UNIQUE_CONSTRAINT_MESSAGE = "duplicate key value violates unique constraint";
     private static final String INTERNAL_SERVER_ERROR = "Internal server error";
+    private static final String NOTIFICATION_CLIENT_EX_MESSAGE = "Error occurred during handling notification";
     private final AppInsightsExceptionLogger logger;
 
     @Autowired
@@ -240,5 +245,37 @@ public class ResourceExceptionHandler {
         logger.error(exception);
         return new ResponseEntity<>(exception.getMessage(),
             new HttpHeaders(), HttpStatus.GATEWAY_TIMEOUT);
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<Object> handleIllegalStateException(Exception exception) {
+        logger.error(exception);
+        return ResponseEntity
+            .status(UNPROCESSABLE_ENTITY)
+            .body(new ExceptionForClient(UNPROCESSABLE_ENTITY.value(), exception.getMessage()));
+    }
+
+    @ExceptionHandler(ClaimantResponseAlreadySubmittedException.class)
+    public ResponseEntity<String> handleClaimantResponseAlreadySubmittedException(Exception exception) {
+        logger.error(exception);
+        return new ResponseEntity<>(exception.getMessage(),
+            new HttpHeaders(), HttpStatus.ALREADY_REPORTED);
+    }
+
+    @ExceptionHandler(ClaimantProvidedDetailsException.class)
+    public ResponseEntity<String> handleClaimantProvidedDetailsException(Exception exception) {
+        logger.error(exception);
+        return new ResponseEntity<>(exception.getMessage(),
+            new HttpHeaders(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(NotificationClientException.class)
+    public ResponseEntity<Object> handleNotificationClientException(Exception exception) {
+        logger.error(exception);
+        return ResponseEntity.status(BAD_REQUEST).body(
+            new NotificationClientException(
+                NOTIFICATION_CLIENT_EX_MESSAGE,
+                exception
+            ));
     }
 }

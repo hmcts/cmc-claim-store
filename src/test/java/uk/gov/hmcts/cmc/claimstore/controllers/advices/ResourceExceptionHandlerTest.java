@@ -8,12 +8,16 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.postgresql.util.PSQLException;
 import org.postgresql.util.PSQLState;
 import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsExceptionLogger;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantProvidedDetailsException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantResponseAlreadySubmittedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
@@ -26,6 +30,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.UnprocessableEntityException;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.exceptions.IllegalSettlementStatementException;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
+import uk.gov.service.notify.NotificationClientException;
 
 import java.net.SocketTimeoutException;
 import java.util.function.BiConsumer;
@@ -251,6 +256,56 @@ public class ResourceExceptionHandlerTest {
             SocketTimeoutException::new,
             handler::handleFeignExceptionGatewayTimeout,
             HttpStatus.GATEWAY_TIMEOUT,
+            AppInsightsExceptionLogger::error
+        );
+    }
+
+    @Test
+    public void testIllegalStateException() {
+        testTemplate(
+            "expected exception for notification exception",
+            IllegalStateException::new,
+            handler::handleIllegalStateException,
+            HttpStatus.UNPROCESSABLE_ENTITY,
+            AppInsightsExceptionLogger::error
+        );
+    }
+
+    @Test
+    public void testClaimantResponseAlreadySubmittedException() {
+        testTemplate(
+            "expected exception for notification exception",
+            ClaimantResponseAlreadySubmittedException::new,
+            handler::handleClaimantResponseAlreadySubmittedException,
+            HttpStatus.ALREADY_REPORTED,
+            AppInsightsExceptionLogger::error
+        );
+    }
+
+    @Test
+    public void testClaimantProvidedDetailsException() {
+        testTemplate(
+            "expected exception for notification exception",
+            m -> new ClaimantProvidedDetailsException(
+                "expected exception for notification exception",
+                null
+            ),
+            handler::handleClaimantProvidedDetailsException,
+            HttpStatus.NOT_FOUND,
+            AppInsightsExceptionLogger::error
+        );
+    }
+
+    @Test
+    public void testNotificationClientException() {
+        testTemplate(
+            "Error occurred during handling notification",
+            m -> new NotificationClientException(
+                "Error occurred during handling notification",
+                null
+            ),
+            handler::handleNotificationClientException,
+            HttpStatus.BAD_REQUEST,
             AppInsightsExceptionLogger::error
         );
     }
