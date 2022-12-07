@@ -22,7 +22,6 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsExceptionLogger;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantLinkException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantProvidedDetailsException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantResponseAlreadySubmittedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
@@ -260,13 +259,6 @@ public class ResourceExceptionHandler {
         logger.error(exception);
         return new ResponseEntity<>(exception.getMessage(),
             new HttpHeaders(), HttpStatus.ALREADY_REPORTED);
-    }
-
-    @ExceptionHandler(ClaimantProvidedDetailsException.class)
-    public ResponseEntity<String> handleClaimantProvidedDetailsException(Exception exception) {
-        logger.error(exception);
-        return new ResponseEntity<>(exception.getMessage(),
-            new HttpHeaders(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(NotificationClientException.class)

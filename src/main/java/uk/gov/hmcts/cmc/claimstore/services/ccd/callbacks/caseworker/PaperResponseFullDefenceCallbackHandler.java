@@ -10,7 +10,6 @@ import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestion
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantProvidedDetailsException;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Court;
 import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.postcode.CourtDetails;
 import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.postcode.SearchCourtByPostcodeResponse;
@@ -60,7 +59,6 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
     private static final List<CaseEvent> EVENTS = List.of(PAPER_RESPONSE_FULL_DEFENCE);
     private static final String OCON9X_REVIEW =
         "Before continuing you must complete the ‘Review OCON9x paper response’ event";
-    private static final String CLAIMANT_PROVIDED_DETAILS_NOT_FOUND = "Claimant provided details not found.";
     private final CaseDetailsConverter caseDetailsConverter;
     private final Clock clock;
     private final EventProducer eventProducer;
@@ -272,7 +270,7 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
                     .partyDetail(getPartyDetail(r)
                         .toBuilder()
                         .emailAddress(getEmailAddress(r))
-                        .type(getClaimantProvidedDetail(r))
+                        .type(r.getValue().getClaimantProvidedDetail().getType())
                         .build())
                     .responseSubmittedOn(respondedDate)
                     .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder()
@@ -297,18 +295,6 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
         return partyDetail != null && !StringUtils.isBlank(partyDetail.getEmailAddress())
             ? partyDetail.getEmailAddress()
             : r.getValue().getClaimantProvidedDetail().getEmailAddress();
-    }
-
-    private CCDPartyType getClaimantProvidedDetail(CCDCollectionElement<CCDRespondent> r){
-        CCDPartyType ccdPartyType = null;
-        try {
-            ccdPartyType = r.getValue().getClaimantProvidedDetail().getType();
-        } catch (ClaimantProvidedDetailsException ex) {
-            throw new ClaimantProvidedDetailsException(
-                CLAIMANT_PROVIDED_DETAILS_NOT_FOUND, ex
-            );
-        }
-       return Objects.requireNonNull(ccdPartyType);
     }
 
     private LocalDateTime getResponseDate(CCDCase ccdCase) {
