@@ -8,15 +8,12 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.postgresql.util.PSQLException;
 import org.postgresql.util.PSQLState;
 import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsExceptionLogger;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantProvidedDetailsException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantResponseAlreadySubmittedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
@@ -278,20 +275,6 @@ public class ResourceExceptionHandlerTest {
             ClaimantResponseAlreadySubmittedException::new,
             handler::handleClaimantResponseAlreadySubmittedException,
             HttpStatus.ALREADY_REPORTED,
-            AppInsightsExceptionLogger::error
-        );
-    }
-
-    @Test
-    public void testClaimantProvidedDetailsException() {
-        testTemplate(
-            "expected exception for notification exception",
-            m -> new ClaimantProvidedDetailsException(
-                "expected exception for notification exception",
-                null
-            ),
-            handler::handleClaimantProvidedDetailsException,
-            HttpStatus.NOT_FOUND,
             AppInsightsExceptionLogger::error
         );
     }

@@ -404,15 +404,6 @@ class PaperResponseFullDefenceCallbackHandlerTest {
         }
 
         @Test
-        void shouldRaiseExceptionWhenClaimantProvidedDetailNotPresent() {
-
-            when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-
-            handler.handle(callbackParams);
-
-        }
-
-        @Test
         void shouldSetResponseType() {
 
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
