@@ -97,7 +97,7 @@ public class HwfClaimNotificationService {
                                                 String submitterName) {
         ImmutableMap.Builder<String, String> parameters = new ImmutableMap.Builder<>();
 
-        if (claim.getReferenceNumber() != null){
+        if (claim.getReferenceNumber() != null) {
             parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
         }
 

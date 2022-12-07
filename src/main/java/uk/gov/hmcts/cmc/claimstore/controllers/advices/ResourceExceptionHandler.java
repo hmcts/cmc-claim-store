@@ -22,7 +22,6 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsExceptionLogger;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantLinkException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantResponseAlreadySubmittedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
@@ -244,21 +243,6 @@ public class ResourceExceptionHandler {
         logger.error(exception);
         return new ResponseEntity<>(exception.getMessage(),
             new HttpHeaders(), HttpStatus.GATEWAY_TIMEOUT);
-    }
-
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<Object> handleIllegalStateException(Exception exception) {
-        logger.error(exception);
-        return ResponseEntity
-            .status(UNPROCESSABLE_ENTITY)
-            .body(new ExceptionForClient(UNPROCESSABLE_ENTITY.value(), exception.getMessage()));
-    }
-
-    @ExceptionHandler(ClaimantResponseAlreadySubmittedException.class)
-    public ResponseEntity<String> handleClaimantResponseAlreadySubmittedException(Exception exception) {
-        logger.error(exception);
-        return new ResponseEntity<>(exception.getMessage(),
-            new HttpHeaders(), HttpStatus.ALREADY_REPORTED);
     }
 
     @ExceptionHandler(NotificationClientException.class)

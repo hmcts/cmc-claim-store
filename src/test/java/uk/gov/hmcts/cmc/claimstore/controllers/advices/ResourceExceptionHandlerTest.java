@@ -14,7 +14,6 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsExceptionLogger;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantResponseAlreadySubmittedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
@@ -253,28 +252,6 @@ public class ResourceExceptionHandlerTest {
             SocketTimeoutException::new,
             handler::handleFeignExceptionGatewayTimeout,
             HttpStatus.GATEWAY_TIMEOUT,
-            AppInsightsExceptionLogger::error
-        );
-    }
-
-    @Test
-    public void testIllegalStateException() {
-        testTemplate(
-            "expected exception for notification exception",
-            IllegalStateException::new,
-            handler::handleIllegalStateException,
-            HttpStatus.UNPROCESSABLE_ENTITY,
-            AppInsightsExceptionLogger::error
-        );
-    }
-
-    @Test
-    public void testClaimantResponseAlreadySubmittedException() {
-        testTemplate(
-            "expected exception for notification exception",
-            ClaimantResponseAlreadySubmittedException::new,
-            handler::handleClaimantResponseAlreadySubmittedException,
-            HttpStatus.ALREADY_REPORTED,
             AppInsightsExceptionLogger::error
         );
     }
