@@ -38,13 +38,13 @@ class TransferCaseStayedServiceTest {
         .withRoles(Role.CASEWORKER.getRole()).build());
 
     private static final Map<String, String> TRUE_SORT_DIRECTION_MAP = Map.of(
-        "sortDirection", "desc",
+        "sortDirection", "asc",
         "page", "1",
         "state", "open"
     );
 
     private static final Map<String, String> SORT_DIRECTION_MAP =  Map.of(
-        "sortDirection", "desc",
+        "sortDirection", "asc",
         "state", "open"
     );
 

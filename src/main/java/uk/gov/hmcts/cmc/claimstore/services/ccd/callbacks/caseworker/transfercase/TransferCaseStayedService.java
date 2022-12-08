@@ -36,16 +36,16 @@ public class TransferCaseStayedService {
         String userId = idamApi.retrieveUserDetails(authorisation).getId();
 
         Integer pageNumber = caseStayedIncrementConfiguration.getPageIncrement();
-        compareCases(authorisation, userId, pageNumber);
 
         log.info("Comparing cases to update into ccd");
 
         if (pageNumber < getNumberOfPages(authorisation, userId)) {
+            compareCases(authorisation, userId, pageNumber);
             caseStayedIncrementConfiguration.setPageIncrement(pageNumber + 1);
-        } else
-            if (pageNumber.equals(caseStayedIncrementConfiguration.getPageIncrement())) {
-                caseStayedIncrementConfiguration.setPageIncrement(1);
-            }
+        } else if (pageNumber.equals(getNumberOfPages(authorisation, userId))) {
+            compareCases(authorisation, userId, pageNumber);
+            caseStayedIncrementConfiguration.setPageIncrement(1);
+        }
     }
 
     public void compareCases(String authorisation, String userId, Integer pageNumber) {
@@ -115,7 +115,7 @@ public class TransferCaseStayedService {
             searchCriteria.put("page", pageNumber.toString());
         }
 
-        searchCriteria.put("sortDirection", "desc");
+        searchCriteria.put("sortDirection", "asc");
         searchCriteria.put("state", ClaimState.OPEN.getValue());
 
         return searchCriteria;
