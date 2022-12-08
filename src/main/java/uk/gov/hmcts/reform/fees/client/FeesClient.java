@@ -30,7 +30,9 @@ public class FeesClient {
     }
 
     public FeeLookupResponseDto lookupFee(String channel, String event, BigDecimal amount) {
-        String keyword = event.equalsIgnoreCase("issue") ? ClaimIssueFeeKeyword.getKeywordIssueEvent(amount) : null;
+        String keyword = event.equalsIgnoreCase("issue")
+            ? "MoneyClaim"
+            : "HearingSmallClaims";
         return this.feesApi.lookupFee(service, jurisdiction1, jurisdiction2, channel, event, keyword, amount);
     }
 }
