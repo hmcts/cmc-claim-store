@@ -552,4 +552,8 @@
         <vulnerabilityName>CVE-2022-38751</vulnerabilityName>
     </suppress>
 
+    <suppress>
+        <notes>Temporary Suppression CVE-2021-37533 refer [CIV-6399]</notes>
+        <cve>CVE-2021-37533</cve>
+    </suppress>
 </suppressions>
