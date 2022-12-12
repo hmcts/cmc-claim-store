@@ -96,10 +96,7 @@ public class HwfClaimNotificationService {
     private Map<String, String> aggregateParams(Claim claim,
                                                 String submitterName) {
         ImmutableMap.Builder<String, String> parameters = new ImmutableMap.Builder<>();
-
-        if (claim.getReferenceNumber() != null) {
-            parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
-        }
+        parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
 
         if (Boolean.FALSE.equals(claim.getClaimData().isClaimantRepresented())) {
             parameters.put(CLAIMANT_NAME, getNameWithTitle(claim.getClaimData().getClaimant()));

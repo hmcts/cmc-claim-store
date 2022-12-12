@@ -552,4 +552,12 @@
         <vulnerabilityName>CVE-2022-38751</vulnerabilityName>
     </suppress>
 
+    <suppress>
+        <gav regex="true">^.*$</gav>
+        <cve>CVE-2021-37533</cve>
+        <cve>CVE-2022-1471</cve>
+        <cve>CVE-2022-31690</cve>
+        <cve>CVE-2022-41946</cve>
+    </suppress>
+
 </suppressions>
