@@ -26,6 +26,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.UnprocessableEntityException;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.exceptions.IllegalSettlementStatementException;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
+import uk.gov.service.notify.NotificationClientException;
 
 import java.net.SocketTimeoutException;
 import java.util.function.BiConsumer;
@@ -251,6 +252,20 @@ public class ResourceExceptionHandlerTest {
             SocketTimeoutException::new,
             handler::handleFeignExceptionGatewayTimeout,
             HttpStatus.GATEWAY_TIMEOUT,
+            AppInsightsExceptionLogger::error
+        );
+    }
+
+    @Test
+    public void testNotificationClientException() {
+        testTemplate(
+            "Error occurred during handling notification",
+            m -> new NotificationClientException(
+                "Error occurred during handling notification",
+                null
+            ),
+            handler::handleNotificationClientException,
+            HttpStatus.BAD_REQUEST,
             AppInsightsExceptionLogger::error
         );
     }
