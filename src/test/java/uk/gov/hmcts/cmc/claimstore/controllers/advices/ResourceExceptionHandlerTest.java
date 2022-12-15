@@ -10,6 +10,7 @@ import org.postgresql.util.PSQLState;
 import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsExceptionLogger;
@@ -252,6 +253,61 @@ public class ResourceExceptionHandlerTest {
             SocketTimeoutException::new,
             handler::handleFeignExceptionGatewayTimeout,
             HttpStatus.GATEWAY_TIMEOUT,
+            AppInsightsExceptionLogger::error
+        );
+    }
+
+    @Test
+    public void testNestedServletExceptionBadRequest() {
+        testTemplate(
+            "expected exception for notification exception",
+            SocketTimeoutException::new,
+            handler::handleNestedServletExceptionBadRequest,
+            HttpStatus.BAD_REQUEST,
+            AppInsightsExceptionLogger::error
+        );
+    }
+
+    @Test
+    public void testHttpMediaTypeNotAcceptableException() {
+        testTemplate(
+            "expected exception for notification exception",
+            SocketTimeoutException::new,
+            handler::handleHttpMediaTypeNotAcceptableException,
+            HttpStatus.UNPROCESSABLE_ENTITY,
+            AppInsightsExceptionLogger::error
+        );
+    }
+
+    @Test
+    public void testHttpUnsupportedMediaTypeException() {
+        testTemplate(
+            "expected exception for notification exception",
+            HttpMediaTypeNotAcceptableException::new,
+            handler::handleHttpUnsupportedMediaTypeException,
+            HttpStatus.UNSUPPORTED_MEDIA_TYPE,
+            AppInsightsExceptionLogger::error
+        );
+    }
+
+    @Test
+    public void testIllegalArgumentExceptionException() {
+        testTemplate(
+            "expected exception for notification exception",
+            SocketTimeoutException::new,
+            handler::handleIllegalArgumentExceptionException,
+            HttpStatus.FORBIDDEN,
+            AppInsightsExceptionLogger::error
+        );
+    }
+
+    @Test
+    public void testDocumentManagementException() {
+        testTemplate(
+            "expected exception for notification exception",
+            HttpMediaTypeNotAcceptableException::new,
+            handler::handleDocumentManagementException,
+            HttpStatus.UNPROCESSABLE_ENTITY,
             AppInsightsExceptionLogger::error
         );
     }
