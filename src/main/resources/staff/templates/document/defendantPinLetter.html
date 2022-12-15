@@ -52,6 +52,15 @@
       margin-bottom: 60px;
     }
 
+    .info-text-box {
+      margin-top: -20px;
+      background-color: #4d4d4d;
+      min-width: 250px;
+      width: auto;
+      padding: 50px;
+      color: white;
+    }
+
     .vertical-line {
       border-left: 6px solid #4d4d4d;
       height: 400px;
@@ -85,14 +94,85 @@
 
   .claim-details-line-space {
       position: relative;
-      left: 0px;
-      top: 35px;
+      left: 10px;
+      top: 40px;
       display: inline-block;
     }
 
   .respond-deadline-text {
     position: relative;
     top: 5px;
+    left: 3%;
+  }
+
+  /* Calender */
+
+  .date {
+      display: block;
+      width: 100px;
+      height: 110px;
+      margin: 30px auto;
+      background: #fff;
+      text-align: center;
+      font-family: 'Helvetica', sans-serif;
+      position: relative;
+    }
+
+.date .binds {
+      position: absolute;
+      height: 15px;
+      width: 60px;
+      background: transparent;
+      border: 2px solid #999;
+      border-width: 0 5px;
+      top: -6px;
+      left: 0;
+      right: 0;
+      margin: auto;
+    }
+
+.date .month {
+      background: #555;
+      display: block;
+      padding: 8px 0;
+      color: #fff;
+      font-size: 12px;
+      font-weight: bold;
+      border-bottom: 2px solid #333;
+      box-shadow: inset 0 -1px 0 0 #666;
+    }
+
+.date .day {
+      display: block;
+      margin: 0;
+      padding: 10px 0;
+      font-size: 48px;
+      box-shadow: 0 0 3px #ccc;
+      position: relative;
+    }
+
+.date .day::after {
+      content: '';
+      display: block;
+      height: 100%;
+      width: 96%;
+      position: absolute;
+      top: 3px;
+      left: 2%;
+      z-index: -1;
+      box-shadow: 0 0 3px #ccc;
+    }
+
+.date .day::before {
+      content: '';
+      display: block;
+      height: 100%;
+      width: 90%;
+      position: absolute;
+      top: 6px;
+      left: 5%;
+      z-index: -1;
+      box-shadow: 0 0 3px #ccc;
   }
   </style>
 </head>
@@ -129,19 +209,23 @@
   </section>
 
   <section class="letter-content">
+    <p class="info-text-box" style="float: right">
+      <b class="info-text-18px">Claim Number:</b> <br/>
+      <b class="info-text-18px">{{ claimReferenceNumber }}</b> <br/>
+      <b class="info-text-18px">Security code:</b> <br/>
+      <b class="info-text-18px">{{ defendantPin }}</b>
+    </p>
     <p class="address defendant-address">
       {{ defendantFullName }} <br/>
       {{ defendantAddress.line1 }} <br/>
+      {% if defendantAddress.line2 is defined and defendantAddress.line2 is not empty %}
+        {{ defendantAddress.line2 }} <br/>
+      {% endif %}
+      {% if defendantAddress.line3 is defined and defendantAddress.line3 is not empty %}
+      {{ defendantAddress.line3 }} <br/>
+      {% endif %}
       {{ defendantAddress.city }} <br/>
       {{ defendantAddress.postcode }}
-    </p>
-
-    <p style="margin-top: 4rem">
-      {{ pinLetterIssueDate }}
-    </p>
-
-    <p style="margin-top: 4rem">
-      Claim number: {{ claimReferenceNumber }}
     </p>
 
     <p style="margin-top: 4rem">
@@ -160,43 +244,53 @@
     </p>
     {% endif %}
 
-    <p class="small-spacing">
-    <span><strong>What you need to do</strong></span> <br/>
-    <span>Tell us whether you agree with the claim or not. This is called responding to the claim. </span><br/>
+    <p class="vertical-line small-spacing">
+    <span><strong class="left-width-3perc">What you need to do</strong></span> <br/>
+    <span class="left-width-3perc">Tell us whether you agree with the claim or not. This is called responding to the claim. </span><br/>
     <br/>
-    <span><strong>How to respond </strong></span> <br/>
-    <span>You must create, or sign-in to, a money claims account. You cannot use any account<span/><br/>
-    <span>details you may already have from another government service.</span>
-    <br/>
-    <br/>
-    <span> Go to: {{ respondToClaimUrl }} </span><br/>
+    <span><strong class="left-width-3perc">How to respond </strong></span> <br/>
+    <span class="left-width-3perc">You must create, or sign-in to, a money claims account. You cannot use any account<span/><br/> <span class="left-width-3perc">details you may already have from another government service.</span><br/>
+    <span class="left-width-3perc"> Go to: {{ respondToClaimUrl }} </span><br/>
     <br/>
     <span>
-      <span>1. Enter the claim number: {{ claimReferenceNumber }}</span><br/>
-    </span>
-    <br/>
-    </br>
-    <span>
-      <span>2. Enter the security code: {{ defendantPin }} (this code can only be used once) </span>
+      <span class="number-bullet-points left-width-3perc"><span class="number-text">1</span></span> &nbsp;
+      <span class="claim-details-claim-ref"><strong>Enter the claim number: {{ claimReferenceNumber }}</strong></span><br/>
     </span>
     <br/>
     <br/>
+    <span>
+      <span class="number-bullet-points left-width-3perc"><span class="number-text">2</span></span> &nbsp;
+      <span class="claim-details-claim-ref"><strong>Enter the security code:</strong> {{ defendantPin }} (this code can only be used once) </span>
+    </span>
+    <br/>
+    <br/>
     <br/>
     <span>
-      <span>3. Select: Respond to a claim </span>
+      <span class="number-bullet-points left-width-3perc"><span class="number-text">3</span></span> &nbsp;
+      <span class="claim-details-claim-ref"><strong>Select:</strong> Respond to a claim </span>
     </span>
     <br/>
     <span>
-      4. <span class="claim-details-line-space">Create an account - after creating an account you’ll be sent an email with
+      <span class="number-bullet-points left-width-3perc"><span class="number-text">4</span></span> &nbsp;
+      <span class="claim-details-line-space "><strong>Create an account -</strong> after creating an account you’ll be sent an email with
       <br>  a link to verify your account, or
       <br>
-      sign-in to your existing account – do not create a new account
+      <strong>sign-in to your existing account –</strong> do not create a new account
       </span>
     </span>
     </br>
     </p>
 
     <br/>
+    <br/>
+
+    <span style="display:inline-block">
+    <div class="date" style="float:left">
+      <span class="binds"></span>
+      <span class="month">{{ responseDeadlineMonth }}</span>
+      <h1 class="day">{{ responseDeadlineDay }}</h1>
+    </div>
+
     <br/>
 
     <p class="small-spacing respond-deadline-text">

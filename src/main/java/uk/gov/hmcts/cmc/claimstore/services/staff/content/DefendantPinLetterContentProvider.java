@@ -90,7 +90,8 @@ public class DefendantPinLetterContentProvider {
         content.put("claimReferenceNumber", claim.getReferenceNumber());
         content.put("defendantPin", defendantPin);
         content.put("responseDeadline", formatDate(claim.getResponseDeadline()));
-        content.put("pinLetterIssueDate", formatDate(LocalDate.now()));
+        content.put("responseDeadlineDay", claim.getResponseDeadline().getDayOfMonth());
+        content.put("responseDeadlineMonth", (claim.getResponseDeadline().getMonth().toString()));
         content.put("defendantAddress", claim.getClaimData()
             .getDefendant()
             .getAddress()
