@@ -15,6 +15,8 @@ import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.documents.questionnaire.ClaimantDirectionsQuestionnairePdfService;
+import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentDownloadForbiddenException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
@@ -35,6 +37,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
 import java.time.LocalDate;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -400,6 +403,27 @@ public class DocumentManagementBackedDocumentsServiceTest {
             AUTHORISATION
         );
         verify(legacyDocumentManagementService, once()).downloadDocument(any(), any());
+    }
+
+    @Test(expected = DocumentDownloadForbiddenException.class)
+    public void generateDocumentShouldThrowExceptionWhenExceptionIsThrown() {
+        final ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
+        Claim claim = Claim.builder()
+            .externalId("externalID")
+            .submitterId(CLAIMANT.getUserDetails().getId())
+            .claimDocumentCollection(claimDocumentCollection)
+            .build();
+
+        when(documentManagementBackendDocumentsService.generateDocument(claim.getExternalId(), SEALED_CLAIM, AUTHORISATION))
+            .thenThrow(DocumentManagementException.class);
+
+        assertThrows(DocumentManagementException.class, () -> {
+            documentManagementBackendDocumentsService.generateDocument(
+                claim.getExternalId(),
+                ORDER_DIRECTIONS,
+                AUTHORISATION
+            );
+        });
     }
 
     private void verifyCommon(byte[] pdf) {
