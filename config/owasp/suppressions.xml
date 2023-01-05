@@ -356,19 +356,6 @@
     </suppress>
     <suppress until="2023-03-01">
         <notes><![CDATA[
-            apache tomcat version
-        ]]></notes>
-        <cve>CVE-2020-13943</cve>
-        <cve>CVE-2020-17527</cve>
-        <cve>CVE-2021-24122</cve>
-        <cve>CVE-2021-25122</cve>
-        <cve>CVE-2021-25329</cve>
-        <cve>CVE-2021-30639</cve>
-        <cve>CVE-2021-33037</cve>
-        <cve>CVE-2021-30640</cve>
-    </suppress>
-    <suppress until="2023-03-01">
-        <notes><![CDATA[
             httpclient
         ]]></notes>
         <cve>CVE-2020-13956</cve>
