@@ -1,3 +1,5 @@
+postgresql:
+  enabled: false
 ccd:
   enabled: false
 
