@@ -559,5 +559,12 @@
         <cve>CVE-2022-31690</cve>
         <cve>CVE-2022-41946</cve>
     </suppress>
-
+    <suppress until = "2023-06-01">
+        <notes><![CDATA[
+     LatencyUtils is being mistaken as utils_project:utils
+     Ticket: CIV-6657
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.latencyutils/LatencyUtils@.*$</packageUrl>
+        <cve>CVE-2021-4277</cve>
+    </suppress>
 </suppressions>
