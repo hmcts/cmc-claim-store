@@ -15,11 +15,6 @@ dependencies:
     version: 4.0.5
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
 
-  - name: postgresql
-    version: 10.16.2
-    repository: https://charts.bitnami.com/bitnami
-    condition: postgresql.enabled
-
   - name: ccd
     version: 8.0.18
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
