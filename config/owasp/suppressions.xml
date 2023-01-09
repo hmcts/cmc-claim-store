@@ -567,4 +567,11 @@
         <packageUrl regex="true">^pkg:maven/org\.latencyutils/LatencyUtils@.*$</packageUrl>
         <cve>CVE-2021-4277</cve>
     </suppress>
+
+    <suppress>
+        <notes><![CDATA[filename: launchdarkly-java-server-sdk-5.10.1.jar ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.yaml/snakeyaml@.*$</packageUrl>
+        <vulnerabilityName>CVE-2021-4235</vulnerabilityName>
+        <vulnerabilityName>CVE-2022-3064</vulnerabilityName>
+    </suppress>
 </suppressions>
