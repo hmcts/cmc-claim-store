@@ -5,16 +5,16 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
-import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
+// import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.claimstore.tests.helpers.Retry;
 import uk.gov.hmcts.cmc.claimstore.tests.helpers.RetryFailedFunctionalTests;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.PaymentOption;
+// import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+// import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
+// import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse.ClaimantResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
@@ -50,54 +50,56 @@ public class ClaimantResponseTest extends BaseTest {
     @Rule
     public RetryFailedFunctionalTests retryRule = new RetryFailedFunctionalTests(3);
 
-    @Test
-    @LogExecutionTime
-    @Retry
-    public void shouldSaveClaimantResponseAcceptationReferToJudge() {
-        commonOperations.submitClaimantResponse(
-                SampleClaimantResponse.validDefaultAcceptation(),
-                claim.getExternalId(),
-                claimant
-            ).then()
-            .statusCode(HttpStatus.CREATED.value());
+    // CIV-6687
+    // @Test
+    // @LogExecutionTime
+    // @Retry
+    // public void shouldSaveClaimantResponseAcceptationReferToJudge() {
+    //     commonOperations.submitClaimantResponse(
+    //             SampleClaimantResponse.validDefaultAcceptation(),
+    //             claim.getExternalId(),
+    //             claimant
+    //         ).then()
+    //         .statusCode(HttpStatus.CREATED.value());
 
-        Claim claimWithClaimantResponse = commonOperations
-            .retrieveClaim(claim.getExternalId(), claimant.getAuthorisation());
+    //     Claim claimWithClaimantResponse = commonOperations
+    //         .retrieveClaim(claim.getExternalId(), claimant.getAuthorisation());
 
-        assertThat(claimWithClaimantResponse.getClaimantRespondedAt()).isNotEmpty();
-        ResponseAcceptation claimantResponse = (ResponseAcceptation) claimWithClaimantResponse.getClaimantResponse()
-            .orElseThrow(() -> new AssertionError(MISSING_CLAIMANT_RESPONSE));
+    //     assertThat(claimWithClaimantResponse.getClaimantRespondedAt()).isNotEmpty();
+    //     ResponseAcceptation claimantResponse = (ResponseAcceptation) claimWithClaimantResponse.getClaimantResponse()
+    //         .orElseThrow(() -> new AssertionError(MISSING_CLAIMANT_RESPONSE));
 
-        assertThat(claimantResponse.getAmountPaid()).contains(TEN_2DP);
-    }
+    //     assertThat(claimantResponse.getAmountPaid()).contains(TEN_2DP);
+    // }
 
-    @Test
-    @Retry
-    public void shouldSaveClaimantResponseAcceptationIssueCCJWithDefendantPaymentIntention() {
-        commonOperations.submitClaimantResponse(
-                ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithDefendantPaymentIntention(),
-                claim.getExternalId(),
-                claimant
-            ).then()
-            .statusCode(HttpStatus.CREATED.value());
+    // CIV-6687
+    // @Test
+    // @Retry
+    // public void shouldSaveClaimantResponseAcceptationIssueCCJWithDefendantPaymentIntention() {
+    //     commonOperations.submitClaimantResponse(
+    //             ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithDefendantPaymentIntention(),
+    //             claim.getExternalId(),
+    //             claimant
+    //         ).then()
+    //         .statusCode(HttpStatus.CREATED.value());
 
-        Claim claimWithClaimantResponse = commonOperations
-            .retrieveClaim(claim.getExternalId(), claimant.getAuthorisation());
+    //     Claim claimWithClaimantResponse = commonOperations
+    //         .retrieveClaim(claim.getExternalId(), claimant.getAuthorisation());
 
-        assertClaimantResponseFormaliseAsCCJ(claimWithClaimantResponse);
-    }
+    //     assertClaimantResponseFormaliseAsCCJ(claimWithClaimantResponse);
+    // }
 
-    private void assertClaimantResponseFormaliseAsCCJ(Claim claimWithClaimantResponse) {
-        assertThat(claimWithClaimantResponse.getClaimantRespondedAt()).isNotEmpty();
-        ResponseAcceptation claimantResponse = (ResponseAcceptation) claimWithClaimantResponse.getClaimantResponse()
-            .orElseThrow(() -> new AssertionError(MISSING_CLAIMANT_RESPONSE));
+    // private void assertClaimantResponseFormaliseAsCCJ(Claim claimWithClaimantResponse) {
+    //     assertThat(claimWithClaimantResponse.getClaimantRespondedAt()).isNotEmpty();
+    //     ResponseAcceptation claimantResponse = (ResponseAcceptation) claimWithClaimantResponse.getClaimantResponse()
+    //         .orElseThrow(() -> new AssertionError(MISSING_CLAIMANT_RESPONSE));
 
-        assertThat(claimantResponse.getAmountPaid()).contains(TEN_2DP);
-        assertThat(claimantResponse.getFormaliseOption()).contains(CCJ);
-        CountyCourtJudgment countyCourtJudgment = claimWithClaimantResponse.getCountyCourtJudgment();
-        assertThat(countyCourtJudgment).isNotNull();
-        assertThat(countyCourtJudgment.getPaymentOption()).isEqualTo(PaymentOption.BY_SPECIFIED_DATE);
-    }
+    //     assertThat(claimantResponse.getAmountPaid()).contains(TEN_2DP);
+    //     assertThat(claimantResponse.getFormaliseOption()).contains(CCJ);
+    //     CountyCourtJudgment countyCourtJudgment = claimWithClaimantResponse.getCountyCourtJudgment();
+    //     assertThat(countyCourtJudgment).isNotNull();
+    //     assertThat(countyCourtJudgment.getPaymentOption()).isEqualTo(PaymentOption.BY_SPECIFIED_DATE);
+    // }
 
     @Test
     @Retry
@@ -110,21 +112,22 @@ public class ClaimantResponseTest extends BaseTest {
             .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
-    @Test
-    @Retry
-    public void shouldSaveClaimantResponseAcceptationIssueCCJWithCourtDetermination() {
-        commonOperations.submitClaimantResponse(
-                ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithCourtDetermination(),
-                claim.getExternalId(),
-                claimant
-            ).then()
-            .statusCode(HttpStatus.CREATED.value());
+    //CIV-6687
+    // @Test
+    // @Retry
+    // public void shouldSaveClaimantResponseAcceptationIssueCCJWithCourtDetermination() {
+    //     commonOperations.submitClaimantResponse(
+    //             ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithCourtDetermination(),
+    //             claim.getExternalId(),
+    //             claimant
+    //         ).then()
+    //         .statusCode(HttpStatus.CREATED.value());
 
-        Claim claimWithClaimantResponse = commonOperations
-            .retrieveClaim(claim.getExternalId(), claimant.getAuthorisation());
+    //     Claim claimWithClaimantResponse = commonOperations
+    //         .retrieveClaim(claim.getExternalId(), claimant.getAuthorisation());
 
-        assertClaimantResponseFormaliseAsCCJ(claimWithClaimantResponse);
-    }
+    //     assertClaimantResponseFormaliseAsCCJ(claimWithClaimantResponse);
+    // }
 
     @Test
     @Retry

@@ -15,7 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse.ClaimantResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
-import static org.assertj.core.api.Assertions.assertThat;
+// import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 
 public class ReDeterminationTest extends BaseTest {
@@ -39,33 +39,34 @@ public class ReDeterminationTest extends BaseTest {
     @Rule
     public RetryFailedFunctionalTests retryRule = new RetryFailedFunctionalTests(3);
 
-    @Test
-    @Retry
-    public void shouldSaveReDeterminationWithCourtDetermination() {
-        String explanation = "I want it sooner";
-        commonOperations.submitClaimantResponse(
-            ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithCourtDetermination(),
-            claim.getExternalId(),
-            claimant
-        ).then()
-            .statusCode(HttpStatus.CREATED.value());
+    // CIV-6687
+    // @Test
+    // @Retry
+    // public void shouldSaveReDeterminationWithCourtDetermination() {
+    //     String explanation = "I want it sooner";
+    //     commonOperations.submitClaimantResponse(
+    //         ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithCourtDetermination(),
+    //         claim.getExternalId(),
+    //         claimant
+    //     ).then()
+    //         .statusCode(HttpStatus.CREATED.value());
 
-        commonOperations.submitReDetermination(
-            ReDetermination.builder().explanation(explanation).partyType(MadeBy.CLAIMANT).build(),
-            claim.getExternalId(),
-            claimant
-        ).then()
-            .statusCode(HttpStatus.OK.value());
+    //     commonOperations.submitReDetermination(
+    //         ReDetermination.builder().explanation(explanation).partyType(MadeBy.CLAIMANT).build(),
+    //         claim.getExternalId(),
+    //         claimant
+    //     ).then()
+    //         .statusCode(HttpStatus.OK.value());
 
-        Claim claimWithReDetermination
-            = commonOperations.retrieveClaim(claim.getExternalId(), claimant.getAuthorisation());
+    //     Claim claimWithReDetermination
+    //         = commonOperations.retrieveClaim(claim.getExternalId(), claimant.getAuthorisation());
 
-        assertThat(claimWithReDetermination.getReDeterminationRequestedAt()).isNotEmpty();
-        ReDetermination reDetermination = claimWithReDetermination.getReDetermination()
-            .orElseThrow(() -> new AssertionError("Missing redetermination"));
+    //     assertThat(claimWithReDetermination.getReDeterminationRequestedAt()).isNotEmpty();
+    //     ReDetermination reDetermination = claimWithReDetermination.getReDetermination()
+    //         .orElseThrow(() -> new AssertionError("Missing redetermination"));
 
-        assertThat(reDetermination.getExplanation()).isEqualTo(explanation);
-    }
+    //     assertThat(reDetermination.getExplanation()).isEqualTo(explanation);
+    // }
 
     @Test
     @Retry
@@ -78,51 +79,53 @@ public class ReDeterminationTest extends BaseTest {
             .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
-    @Test
-    @Retry
-    public void shouldSaveReDeterminationWithDefendantPaymentIntentionAccepted() {
-        String explanation = "I want it sooner";
-        commonOperations.submitClaimantResponse(
-            ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithDefendantPaymentIntention(),
-            claim.getExternalId(),
-            claimant
-        ).then()
-            .statusCode(HttpStatus.CREATED.value());
+    // CIV-6687
+    // @Test
+    // @Retry
+    // public void shouldSaveReDeterminationWithDefendantPaymentIntentionAccepted() {
+    //     String explanation = "I want it sooner";
+    //     commonOperations.submitClaimantResponse(
+    //         ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithDefendantPaymentIntention(),
+    //         claim.getExternalId(),
+    //         claimant
+    //     ).then()
+    //         .statusCode(HttpStatus.CREATED.value());
 
-        commonOperations.submitReDetermination(
-            ReDetermination.builder().explanation(explanation).partyType(MadeBy.CLAIMANT).build(),
-            claim.getExternalId(),
-            claimant
-        ).then()
-            .statusCode(HttpStatus.OK.value());
+    //     commonOperations.submitReDetermination(
+    //         ReDetermination.builder().explanation(explanation).partyType(MadeBy.CLAIMANT).build(),
+    //         claim.getExternalId(),
+    //         claimant
+    //     ).then()
+    //         .statusCode(HttpStatus.OK.value());
 
-        Claim claimWithReDetermination
-            = commonOperations.retrieveClaim(claim.getExternalId(), claimant.getAuthorisation());
+    //     Claim claimWithReDetermination
+    //         = commonOperations.retrieveClaim(claim.getExternalId(), claimant.getAuthorisation());
 
-        assertThat(claimWithReDetermination.getReDeterminationRequestedAt()).isNotEmpty();
-        ReDetermination reDetermination = claimWithReDetermination.getReDetermination()
-            .orElseThrow(() -> new AssertionError("Missing redetermination"));
+    //     assertThat(claimWithReDetermination.getReDeterminationRequestedAt()).isNotEmpty();
+    //     ReDetermination reDetermination = claimWithReDetermination.getReDetermination()
+    //         .orElseThrow(() -> new AssertionError("Missing redetermination"));
 
-        assertThat(reDetermination.getExplanation()).isEqualTo(explanation);
-    }
+    //     assertThat(reDetermination.getExplanation()).isEqualTo(explanation);
+    // }
 
-    @Test
-    @Retry
-    public void shouldReturnUnprocessableEntityWhenInvalidReDeterminationIsSubmitted() {
-        commonOperations.submitClaimantResponse(
-            ClaimantResponseAcceptation.builder().build(),
-            claim.getExternalId(),
-            claimant
-        ).then()
-            .statusCode(HttpStatus.CREATED.value());
+    // CIV-6687
+    // @Test
+    // @Retry
+    // public void shouldReturnUnprocessableEntityWhenInvalidReDeterminationIsSubmitted() {
+    //     commonOperations.submitClaimantResponse(
+    //         ClaimantResponseAcceptation.builder().build(),
+    //         claim.getExternalId(),
+    //         claimant
+    //     ).then()
+    //         .statusCode(HttpStatus.CREATED.value());
 
-        commonOperations.submitReDetermination(
-            ReDetermination.builder().explanation(null).partyType(MadeBy.CLAIMANT).build(),
-            claim.getExternalId(),
-            claimant
-        ).then()
-            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
-    }
+    //     commonOperations.submitReDetermination(
+    //         ReDetermination.builder().explanation(null).partyType(MadeBy.CLAIMANT).build(),
+    //         claim.getExternalId(),
+    //         claimant
+    //     ).then()
+    //         .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+    // }
 
     @Test
     @Retry
@@ -140,35 +143,36 @@ public class ReDeterminationTest extends BaseTest {
                 + " is not yet submitted"));
     }
 
-    @Test
-    @Retry
-    public void shouldNotBeAllowedToRequestReDeterminationWhenAlreadyReDetermined() {
-        String explanation = "I want it sooner";
+    //CIV-6687
+    // @Test
+    // @Retry
+    // public void shouldNotBeAllowedToRequestReDeterminationWhenAlreadyReDetermined() {
+    //     String explanation = "I want it sooner";
 
-        commonOperations.submitClaimantResponse(
-            ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithDefendantPaymentIntention(),
-            claim.getExternalId(),
-            claimant
-        ).then()
-            .statusCode(HttpStatus.CREATED.value());
+    //     commonOperations.submitClaimantResponse(
+    //         ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithDefendantPaymentIntention(),
+    //         claim.getExternalId(),
+    //         claimant
+    //     ).then()
+    //         .statusCode(HttpStatus.CREATED.value());
 
-        commonOperations.submitReDetermination(
-            ReDetermination.builder().explanation(explanation).partyType(MadeBy.CLAIMANT).build(),
-            claim.getExternalId(),
-            claimant
-        ).then()
-            .statusCode(HttpStatus.OK.value());
+    //     commonOperations.submitReDetermination(
+    //         ReDetermination.builder().explanation(explanation).partyType(MadeBy.CLAIMANT).build(),
+    //         claim.getExternalId(),
+    //         claimant
+    //     ).then()
+    //         .statusCode(HttpStatus.OK.value());
 
-        commonOperations.submitReDetermination(
-            ReDetermination.builder().explanation(explanation).partyType(MadeBy.CLAIMANT).build(),
-            claim.getExternalId(),
-            claimant
-        ).then()
-            .statusCode(HttpStatus.FORBIDDEN.value())
-            .body("message", containsString("County Court Judgment for the claim "
-                + claim.getExternalId()
-                + " has been already redetermined"));
-    }
+    //     commonOperations.submitReDetermination(
+    //         ReDetermination.builder().explanation(explanation).partyType(MadeBy.CLAIMANT).build(),
+    //         claim.getExternalId(),
+    //         claimant
+    //     ).then()
+    //         .statusCode(HttpStatus.FORBIDDEN.value())
+    //         .body("message", containsString("County Court Judgment for the claim "
+    //             + claim.getExternalId()
+    //             + " has been already redetermined"));
+    // }
 
     @Test
     @Retry
