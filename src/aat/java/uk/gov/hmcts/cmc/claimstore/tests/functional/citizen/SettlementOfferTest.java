@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
@@ -160,20 +161,20 @@ public class SettlementOfferTest extends BaseTest {
             .statusCode(HttpStatus.CONFLICT.value());
     }
 
-    // CIV-6687
-    // @Test
-    // @Retry
-    // public void shouldBeAbleToSuccessfullyCountersignOffer() {
-    //     Claim createdCase = submitClaimSynchronized();
+    @Ignore("CIV-6687")
+    @Test
+    @Retry
+    public void shouldBeAbleToSuccessfullyCountersignOffer() {
+        Claim createdCase = submitClaimSynchronized();
 
-    //     User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
+        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
 
-    //     Claim caseWithCounterSign = countersignAnOffer(createdCase, defendant);
+        Claim caseWithCounterSign = countersignAnOffer(createdCase, defendant);
 
-    //     assertThat(caseWithCounterSign.getSettlement().isPresent()).isTrue();
-    //     assertThat(caseWithCounterSign.getSettlement().get().getPartyStatements().size()).isEqualTo(3);
-    //     assertThat(caseWithCounterSign.getSettlementReachedAt()).isNotNull();
-    // }
+        assertThat(caseWithCounterSign.getSettlement().isPresent()).isTrue();
+        assertThat(caseWithCounterSign.getSettlement().get().getPartyStatements().size()).isEqualTo(3);
+        assertThat(caseWithCounterSign.getSettlementReachedAt()).isNotNull();
+    }
 
     private Claim countersignAnOffer(Claim createdCase, User defendant) {
 
@@ -203,40 +204,40 @@ public class SettlementOfferTest extends BaseTest {
             .extract().body().as(Claim.class);
     }
 
-    // CIV-6687
-    // @Test
-    // @Retry
-    // public void shouldFailRejectOfferWhenAlreadySettled() {
-    //     Claim createdCase = submitClaimSynchronized();
+    @Ignore("CIV-6687")
+    @Test
+    @Retry
+    public void shouldFailRejectOfferWhenAlreadySettled() {
+        Claim createdCase = submitClaimSynchronized();
 
-    //     User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
+        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
 
-    //     Claim updatedCase = countersignAnOffer(createdCase, defendant);
+        Claim updatedCase = countersignAnOffer(createdCase, defendant);
 
-    //     commonOperations
-    //         .rejectOffer(updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.CLAIMANT)
-    //         .then()
-    //         .statusCode(HttpStatus.CONFLICT.value());
-    // }
+        commonOperations
+            .rejectOffer(updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.CLAIMANT)
+            .then()
+            .statusCode(HttpStatus.CONFLICT.value());
+    }
 
-    // CIV-6687
-    // @Test
-    // @Retry
-    // public void shouldFailAcceptOfferWhenAlreadySettled() {
-    //     Claim createdCase = submitClaimSynchronized();
+    @Ignore("CIV-6687")
+    @Test
+    @Retry
+    public void shouldFailAcceptOfferWhenAlreadySettled() {
+        Claim createdCase = submitClaimSynchronized();
 
-    //     User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
-    //     commonOperations.linkDefendant(
-    //         defendant.getAuthorisation(), createdCase.getLetterHolderId()
-    //     );
+        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
+        commonOperations.linkDefendant(
+            defendant.getAuthorisation(), createdCase.getLetterHolderId()
+        );
 
-    //     Claim updatedCase = countersignAnOffer(createdCase, defendant);
+        Claim updatedCase = countersignAnOffer(createdCase, defendant);
 
-    //     commonOperations
-    //         .acceptOffer(updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.CLAIMANT)
-    //         .then()
-    //         .statusCode(HttpStatus.CONFLICT.value());
-    // }
+        commonOperations
+            .acceptOffer(updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.CLAIMANT)
+            .then()
+            .statusCode(HttpStatus.CONFLICT.value());
+    }
 
     private Claim createClaimWithDisputeResponse(Claim createdCase, User defendant) {
 
@@ -255,23 +256,23 @@ public class SettlementOfferTest extends BaseTest {
             .extract().body().as(Claim.class);
     }
 
-    // CIV-6687
-    // private Claim createClaimWithFullAdmissionResponse() {
-    //     Claim createdCase = submitClaimSynchronized();
+    @Ignore("CIV-6687")
+    private Claim createClaimWithFullAdmissionResponse() {
+        Claim createdCase = submitClaimSynchronized();
 
-    //     User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
-    //     commonOperations.linkDefendant(
-    //         defendant.getAuthorisation(), createdCase.getLetterHolderId()
-    //     );
+        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
+        commonOperations.linkDefendant(
+            defendant.getAuthorisation(), createdCase.getLetterHolderId()
+        );
 
-    //     Response response = SampleResponse.FullAdmission.builder().build();
+        Response response = SampleResponse.FullAdmission.builder().build();
 
-    //     return commonOperations.submitResponse(response, createdCase.getExternalId(), defendant)
-    //         .then()
-    //         .statusCode(HttpStatus.OK.value())
-    //         .and()
-    //         .extract().body().as(Claim.class);
-    // }
+        return commonOperations.submitResponse(response, createdCase.getExternalId(), defendant)
+            .then()
+            .statusCode(HttpStatus.OK.value())
+            .and()
+            .extract().body().as(Claim.class);
+    }
 
     private Claim submitClaimSynchronized() {
         Claim synchronizedClaim = null;
