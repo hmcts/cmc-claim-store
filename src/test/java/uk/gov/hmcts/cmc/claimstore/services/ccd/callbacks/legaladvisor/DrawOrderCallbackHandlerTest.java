@@ -60,6 +60,7 @@ public class DrawOrderCallbackHandlerTest {
     private static final String DOCUMENT_URL = "http://bla.test";
     private static final String DOCUMENT_BINARY_URL = "http://bla.binary.test";
     private static final String DOCUMENT_FILE_NAME = "sealed_claim.pdf";
+    private static final boolean secureDocumentManagement = false;
 
     private final CaseDetails caseDetails = CaseDetails.builder().id(3L).data(Collections.emptyMap()).build();
 
@@ -94,7 +95,11 @@ public class DrawOrderCallbackHandlerTest {
     private DirectionOrderService directionOrderService;
 
     @Mock
-    private DocumentManagementService documentManagementService;
+    private DocumentManagementService<uk.gov.hmcts.reform
+        .document.domain.Document> documentManagementService;
+    @Mock
+    private DocumentManagementService<uk.gov.hmcts.reform
+        .ccd.document.am.model.Document> secureDocumentManagementService;
 
     private CallbackParams callbackParams;
 
@@ -111,8 +116,8 @@ public class DrawOrderCallbackHandlerTest {
     @Before
     public void setUp() {
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
-            caseDetailsConverter, legalOrderService, appInsights, directionOrderService,
-            documentManagementService, claimService);
+            caseDetailsConverter, legalOrderService, secureDocumentManagement, appInsights, directionOrderService,
+            documentManagementService, secureDocumentManagementService, claimService);
 
         drawOrderCallbackHandler = new DrawOrderCallbackHandler(orderPostProcessor, caseDetailsConverter,
             orderRenderer);

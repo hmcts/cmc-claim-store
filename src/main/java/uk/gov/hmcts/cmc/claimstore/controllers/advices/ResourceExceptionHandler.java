@@ -279,17 +279,17 @@ public class ResourceExceptionHandler {
             new HttpHeaders(), HttpStatus.UNSUPPORTED_MEDIA_TYPE);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentExceptionException(Exception exception) {
-        logger.error(exception);
-        return new ResponseEntity<>(exception.getMessage(),
-            new HttpHeaders(), HttpStatus.FORBIDDEN);
-    }
-
     @ExceptionHandler(DocumentManagementException.class)
     public ResponseEntity<String> handleDocumentManagementException(Exception exception) {
         logger.error(exception);
         return new ResponseEntity<>(exception.getMessage(),
             new HttpHeaders(), HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException exception) {
+        logger.error(exception);
+        return new ResponseEntity<>(exception.getMessage(),
+            new HttpHeaders(), HttpStatus.PRECONDITION_FAILED);
     }
 }
