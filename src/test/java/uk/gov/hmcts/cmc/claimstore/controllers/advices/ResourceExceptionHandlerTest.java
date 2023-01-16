@@ -313,6 +313,17 @@ public class ResourceExceptionHandlerTest {
     }
 
     @Test
+    public void testHandleIllegalArgumentException() {
+        testTemplate(
+            "require non null object passed in mapper's arguments",
+            IllegalArgumentException::new,
+            handler::handleIllegalArgumentException,
+            HttpStatus.PRECONDITION_FAILED,
+            AppInsightsExceptionLogger::error
+        );
+    }
+
+    @Test
     public void testNotificationClientException() {
         testTemplate(
             "Error occurred during handling notification",
