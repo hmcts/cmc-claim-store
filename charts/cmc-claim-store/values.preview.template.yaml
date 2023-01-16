@@ -9,6 +9,7 @@ java:
       resourceGroup: cmc
       secrets:
         - AppInsightsInstrumentationKey
+        - cmc-db-password-v11
         - citizen-oauth-client-secret
         - claim-store-s2s-secret
         - anonymous-caseworker-username
@@ -31,37 +32,13 @@ java:
         - staff-email-legal-rep
   environment:
     LOG_LEVEL: DEBUG
-    CMC_DB_HOST: "{{ .Values.postgresql.releaseNameOverride}}"
-    CMC_DB_USERNAME: "{{ .Values.postgresql.auth.username}}"
-    CMC_DB_PASSWORD: "{{ .Values.postgresql.auth.password}}"
+    CMC_DB_USERNAME: cmc@cmc-db-v11-aat
+    CMC_DB_HOST: cmc-db-v11-aat.postgres.database.azure.com
+    CMC_DB_PASSWORD: cmc-db-password-v11
     CMC_DB_CONNECTION_OPTIONS: '?sslmode=allow'
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-ccd-data-store-api
     OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/realms/root/realms/hmcts
     RPA_NOTIFICATIONS_LEGALSEALEDCLAIMRECIPIENT: civilmoneyclaims+rpa-legal-sealedclaim-issued@gmail.com
-  postgresql:
-    enabled: true
-    releaseNameOverride: ${SERVICE_NAME}-postgresql
-    image:
-      tag: '11.6.0'
-      registry: hmctspublic.azurecr.io
-      repository: imported/bitnami/postgresql
-    primary:
-      persistence:
-        enabled: false
-      resources:
-        requests:
-          cpu: 25m
-      initdb:
-        scripts:
-          init.sql: |
-            CREATE DATABASE cmc WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "data-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "definition-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "user-profile" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "role_assignment" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-    auth:
-      username: hmcts
-      password: hmcts
 
 ccd:
   enabled: true
