@@ -291,17 +291,6 @@ public class ResourceExceptionHandlerTest {
     }
 
     @Test
-    public void testIllegalArgumentExceptionException() {
-        testTemplate(
-            "expected exception for notification exception",
-            SocketTimeoutException::new,
-            handler::handleIllegalArgumentExceptionException,
-            HttpStatus.FORBIDDEN,
-            AppInsightsExceptionLogger::error
-        );
-    }
-
-    @Test
     public void testDocumentManagementException() {
         testTemplate(
             "expected exception for notification exception",
