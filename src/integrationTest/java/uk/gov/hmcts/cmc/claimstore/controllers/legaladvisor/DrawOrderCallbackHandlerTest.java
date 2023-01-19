@@ -82,21 +82,32 @@ public class DrawOrderCallbackHandlerTest extends BaseMockSpringTest {
                 .documentLink(DOCUMENT)
                 .createdDatetime(DATE)
                 .documentType(CCDClaimDocumentType.ORDER_DIRECTIONS)
+                .size(1000L)
                 .build())
             .build();
     private UserDetails userDetails;
 
     @Before
     public void setUp() {
-        given(documentManagementService
+        given(legacyDocumentManagementService
             .downloadDocument(
                 eq(AUTHORISATION_TOKEN),
                 any(ClaimDocument.class))).willReturn("template".getBytes());
 
-        given(documentManagementService
+        given(securedDocumentManagementService
+            .downloadDocument(
+                eq(AUTHORISATION_TOKEN),
+                any(ClaimDocument.class))).willReturn("template".getBytes());
+
+        given(legacyDocumentManagementService
             .getDocumentMetaData(
                 eq(AUTHORISATION_TOKEN),
                 any(String.class))).willReturn(ResourceLoader.successfulDocumentManagementDownloadResponse());
+
+        given(securedDocumentManagementService
+            .getDocumentMetaData(
+                eq(AUTHORISATION_TOKEN),
+                any(String.class))).willReturn(ResourceLoader.secureSuccessfulDocumentManagementDownloadResponse());
 
         userDetails = SampleUserDetails.builder().withRoles("caseworker-cmc-legaladvisor", "caseworker-cmc").build();
         given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);

@@ -5,6 +5,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.DraftClaimReceiptService;
@@ -75,7 +77,11 @@ public class DocumentManagementBackedDocumentsServiceTest {
     @Mock
     private DraftClaimReceiptService draftClaimReceiptService;
     @Mock
-    private DocumentManagementService documentManagementService;
+    private DocumentManagementService<uk.gov.hmcts.reform
+        .document.domain.Document> legacyDocumentManagementService;
+    @Mock
+    private DocumentManagementService<uk.gov.hmcts.reform
+        .ccd.document.am.model.Document> securedDocumentManagementService;
     @Mock
     private SealedClaimPdfService sealedClaimPdfService;
     @Mock
@@ -90,12 +96,12 @@ public class DocumentManagementBackedDocumentsServiceTest {
     private ClaimantDirectionsQuestionnairePdfService claimantDirectionsQuestionnairePdfService;
     @Mock
     private UserService userService;
+    private boolean secureDocumentManagement = false;
 
     @Before
     public void setUp() {
         documentManagementBackendDocumentsService = new DocumentManagementBackedDocumentsService(
             claimService,
-            documentManagementService,
             draftClaimReceiptService,
             sealedClaimPdfService,
             claimIssueReceiptService,
@@ -103,9 +109,14 @@ public class DocumentManagementBackedDocumentsServiceTest {
             settlementAgreementCopyService,
             reviewOrderService,
             claimantDirectionsQuestionnairePdfService,
-            userService
+            userService,
+            securedDocumentManagementService,
+            legacyDocumentManagementService,
+            secureDocumentManagement
         );
         when(userService.getUser(AUTHORISATION)).thenReturn(CLAIMANT);
+        setSecuredDocumentManagementService(securedDocumentManagementService);
+        setLegacyDocumentManagementService(legacyDocumentManagementService);
     }
 
     @Test
@@ -122,7 +133,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
         when(userService.getUser(AUTHORISATION)).thenReturn(DEFENDANT);
         when(claimService.getClaimByExternalId(claim.getExternalId(), DEFENDANT)).thenReturn(claim);
 
-        when(documentManagementService.downloadScannedDocument(AUTHORISATION, oconDocument))
+        when(legacyDocumentManagementService.downloadScannedDocument(AUTHORISATION, oconDocument))
             .thenReturn(PDF_BYTES);
 
         byte[] pdf = documentManagementBackendDocumentsService.generateScannedDocument(claim.getExternalId(),
@@ -172,7 +183,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
         when(userService.getUser(AUTHORISATION)).thenReturn(DEFENDANT);
         Claim claim = getClaimWithDocuments();
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(DEFENDANT))).thenReturn(claim);
-        when(documentManagementService.downloadDocument(eq(AUTHORISATION), any(ClaimDocument.class)))
+        when(legacyDocumentManagementService.downloadDocument(eq(AUTHORISATION), any(ClaimDocument.class)))
             .thenReturn(PDF_BYTES);
         byte[] pdf = documentManagementBackendDocumentsService.generateDocument(claim.getExternalId(), GENERAL_LETTER,
             "12345", AUTHORISATION);
@@ -290,17 +301,17 @@ public class DocumentManagementBackedDocumentsServiceTest {
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(DEFENDANT)))
             .thenReturn(claim);
 
-        when(documentManagementService.downloadDocument(eq(AUTHORISATION), any(ClaimDocument.class)))
+        when(legacyDocumentManagementService.downloadDocument(eq(AUTHORISATION), any(ClaimDocument.class)))
             .thenReturn(PDF_BYTES);
 
         documentManagementBackendDocumentsService.generateDocument(
             claim.getExternalId(),
             SEALED_CLAIM,
             AUTHORISATION);
-        verify(documentManagementService, atLeastOnce()).downloadDocument(
+        verify(legacyDocumentManagementService, atLeastOnce()).downloadDocument(
             eq(AUTHORISATION),
             any(ClaimDocument.class));
-        verify(documentManagementService, never()).uploadDocument(anyString(), any(PDF.class));
+        verify(legacyDocumentManagementService, never()).uploadDocument(anyString(), any(PDF.class));
         verify(claimService, never()).saveClaimDocuments(
             eq(AUTHORISATION),
             eq(claim.getId()),
@@ -339,13 +350,13 @@ public class DocumentManagementBackedDocumentsServiceTest {
             .build();
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(CLAIMANT)))
             .thenReturn(claim);
-        when(documentManagementService.downloadDocument(eq(AUTHORISATION), eq(claimDocument))).thenReturn(new byte[1]);
+        when(legacyDocumentManagementService.downloadDocument(eq(AUTHORISATION), eq(claimDocument))).thenReturn(new byte[1]);
         documentManagementBackendDocumentsService.generateDocument(
             claim.getExternalId(),
             documentType,
             AUTHORISATION
         );
-        verify(documentManagementService, once()).downloadDocument(any(), any());
+        verify(legacyDocumentManagementService, once()).downloadDocument(any(), any());
     }
 
     @Test
@@ -362,13 +373,13 @@ public class DocumentManagementBackedDocumentsServiceTest {
             .build();
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(CLAIMANT)))
             .thenReturn(claim);
-        when(documentManagementService.downloadDocument(eq(AUTHORISATION), eq(claimDocument))).thenReturn(new byte[1]);
+        when(legacyDocumentManagementService.downloadDocument(eq(AUTHORISATION), eq(claimDocument))).thenReturn(new byte[1]);
         documentManagementBackendDocumentsService.generateDocument(
             claim.getExternalId(),
             documentType,
             AUTHORISATION
         );
-        verify(documentManagementService, once()).downloadDocument(any(), any());
+        verify(legacyDocumentManagementService, once()).downloadDocument(any(), any());
     }
 
     @Test
@@ -385,13 +396,13 @@ public class DocumentManagementBackedDocumentsServiceTest {
             .build();
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(CLAIMANT)))
             .thenReturn(claim);
-        when(documentManagementService.downloadDocument(eq(AUTHORISATION), eq(claimDocument))).thenReturn(new byte[1]);
+        when(legacyDocumentManagementService.downloadDocument(eq(AUTHORISATION), eq(claimDocument))).thenReturn(new byte[1]);
         documentManagementBackendDocumentsService.generateDocument(
             claim.getExternalId(),
             documentType,
             AUTHORISATION
         );
-        verify(documentManagementService, once()).downloadDocument(any(), any());
+        verify(legacyDocumentManagementService, once()).downloadDocument(any(), any());
     }
 
     @Test(expected = DocumentDownloadForbiddenException.class)
@@ -417,6 +428,21 @@ public class DocumentManagementBackedDocumentsServiceTest {
 
     private void verifyCommon(byte[] pdf) {
         assertArrayEquals(PDF_BYTES, pdf);
-        verify(documentManagementService).uploadDocument(anyString(), any(PDF.class));
+        verify(legacyDocumentManagementService).uploadDocument(anyString(), any(PDF.class));
+    }
+
+    @Autowired
+    @Qualifier("legacyDocumentManagementService")
+    private void setLegacyDocumentManagementService(DocumentManagementService<uk.gov.hmcts.reform
+        .document.domain.Document> documentManagementService) {
+        this.legacyDocumentManagementService = documentManagementService;
+    }
+
+    @Autowired
+    @Qualifier("securedDocumentManagementService")
+    private void setSecuredDocumentManagementService(DocumentManagementService<uk.gov.hmcts.reform
+        .ccd.document.am.model.Document> securedDocumentManagementService) {
+        this.securedDocumentManagementService = securedDocumentManagementService;
+
     }
 }

@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
@@ -30,19 +32,31 @@ public class LegalOrderService {
     private final DocumentTemplates documentTemplates;
     private final LegalOrderCoverSheetContentProvider legalOrderCoverSheetContentProvider;
     private final BulkPrintHandler bulkPrintHandler;
-    private final DocumentManagementService documentManagementService;
+    private final DocumentManagementService<uk.gov.hmcts.reform
+        .ccd.document.am.model.Document> securedDocumentManagementService;
+    private final DocumentManagementService<uk.gov.hmcts.reform
+        .document.domain.Document> legacyDocumentManagementService;
+    private final boolean secureDocumentManagement;
 
     @Autowired
     public LegalOrderService(
         DocumentTemplates documentTemplates,
         LegalOrderCoverSheetContentProvider legalOrderCoverSheetContentProvider,
-        DocumentManagementService documentManagementService,
+        @Qualifier("securedDocumentManagementService")
+            DocumentManagementService<uk.gov.hmcts.reform.ccd.document.am.model.Document>
+            securedDocumentManagementService,
+        @Qualifier("legacyDocumentManagementService")
+            DocumentManagementService<uk.gov.hmcts.reform.document.domain.Document>
+            legacyDocumentManagementService,
+        @Value("${document_management.secured}") boolean secureDocumentManagement,
         BulkPrintHandler bulkPrintHandler
     ) {
         this.documentTemplates = documentTemplates;
         this.bulkPrintHandler = bulkPrintHandler;
         this.legalOrderCoverSheetContentProvider = legalOrderCoverSheetContentProvider;
-        this.documentManagementService = documentManagementService;
+        this.legacyDocumentManagementService = legacyDocumentManagementService;
+        this.securedDocumentManagementService = securedDocumentManagementService;
+        this.secureDocumentManagement = secureDocumentManagement;
     }
 
     public List<BulkPrintDetails> print(String authorisation, Claim claim, CCDDocument ccdLegalOrder) {
@@ -79,13 +93,21 @@ public class LegalOrderService {
 
     private Document downloadLegalOrder(String authorisation, CCDDocument ccdLegalOrder) throws URISyntaxException {
         return new Document(Base64.getEncoder().encodeToString(
-            documentManagementService.downloadDocument(
+            !secureDocumentManagement
+                ? legacyDocumentManagementService.downloadDocument(
                 authorisation,
                 ClaimDocument.builder()
                     .documentName(ccdLegalOrder.getDocumentFileName())
                     .documentType(ClaimDocumentType.ORDER_DIRECTIONS)
                     .documentManagementUrl(new URI(ccdLegalOrder.getDocumentUrl()))
-                    .build())),
+                    .build()) :
+                securedDocumentManagementService.downloadDocument(
+                    authorisation,
+                    ClaimDocument.builder()
+                        .documentName(ccdLegalOrder.getDocumentFileName())
+                        .documentType(ClaimDocumentType.ORDER_DIRECTIONS)
+                        .documentManagementUrl(new URI(ccdLegalOrder.getDocumentUrl()))
+                        .build())),
             Collections.emptyMap());
     }
 }

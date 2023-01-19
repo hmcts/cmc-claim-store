@@ -30,7 +30,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 import uk.gov.hmcts.reform.docassembly.exception.DocumentGenerationFailedException;
-import uk.gov.hmcts.reform.document.domain.Document;
 
 import java.net.URI;
 import java.time.Clock;
@@ -59,6 +58,7 @@ class GeneralLetterServiceTest {
     private static final String DOC_NAME = "doc-name";
     private static final String CASE_TYPE_ID = "MoneyClaimCase";
     private static final String JURISDICTION_ID = "CMC";
+    private static final boolean secureDocumentManagement = false;
     private static final CCDDocument DRAFT_LETTER_DOC = CCDDocument.builder()
         .documentFileName(DOC_NAME)
         .documentBinaryUrl(DOC_URL_BINARY)
@@ -89,7 +89,11 @@ class GeneralLetterServiceTest {
     @Mock
     private DocAssemblyService docAssemblyService;
     @Mock
-    private DocumentManagementService documentManagementService;
+    private DocumentManagementService<uk.gov.hmcts.reform
+        .document.domain.Document> documentManagementService;
+    @Mock
+    private DocumentManagementService<uk.gov.hmcts.reform
+        .ccd.document.am.model.Document> secureDocumentManagementService;
     @Mock
     private DocAssemblyResponse docAssemblyResponse;
     @Mock
@@ -103,19 +107,21 @@ class GeneralLetterServiceTest {
 
     private GeneralLetterService generalLetterService;
     private UserDetails userDetails;
-    private BulkPrintDetailsMapper bulkPrintDetailsMapper = new BulkPrintDetailsMapper();
+    private final BulkPrintDetailsMapper bulkPrintDetailsMapper = new BulkPrintDetailsMapper();
 
     @BeforeEach
     void setUp() {
         generalLetterService = new GeneralLetterService(
             docAssemblyService,
             bulkPrintHandler,
-            new PrintableDocumentService(documentManagementService),
+            new PrintableDocumentService(secureDocumentManagementService, documentManagementService, false),
             clock,
             userService,
             docAssemblyTemplateBodyMapper,
             documentManagementService,
+            secureDocumentManagementService,
             bulkPrintDetailsMapper,
+            secureDocumentManagement,
             CASE_TYPE_ID,
             JURISDICTION_ID);
 
@@ -218,10 +224,18 @@ class GeneralLetterServiceTest {
     }
 
     @NotNull
-    private Document getLinks() {
-        Document document = new Document();
-        Document.Links links = new Document.Links();
-        links.binary = new Document.Link();
+    private uk.gov.hmcts.reform.document.domain.Document getLinks() {
+        uk.gov.hmcts.reform
+            .document.domain
+            .Document document = new uk.gov.hmcts
+            .reform.document
+            .domain.Document();
+        uk.gov.hmcts.reform
+            .document.domain
+            .Document.Links links = new uk.gov.hmcts
+            .reform.document.domain.Document.Links();
+        links.binary = new uk.gov.hmcts.reform
+            .document.domain.Document.Link();
         links.binary.href = DOC_URL_BINARY;
         document.links = links;
         return document;

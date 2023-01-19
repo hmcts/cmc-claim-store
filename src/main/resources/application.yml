@@ -12,6 +12,8 @@ management:
   endpoint:
     health:
       show-details: "always"
+      case-document-am-api:
+        enabled: true
 async:
   max:
     threadPool:
@@ -102,7 +104,7 @@ fees:
 ocmc:
   caseTypeId: "MoneyClaimCase"
   jurisdictionId: "CMC"
-  secureDocStoreEnabled: ${FEATURE_TOGGLES_SECURE_DOC_STORE_ENABLED:false}
+  secureDocStoreEnabled: ${FEATURE_TOGGLES_SECURE_DOC_STORE_ENABLED:true}
 
 payments:
   api:
@@ -118,10 +120,18 @@ pdf-service:
 document_management:
   url: "${DOCUMENT_MANAGEMENT_URL:}"
   userRoles: ${DOCUMENT_MANAGEMENT_USERROLES}
+  secured: ${ocmc.secureDocStoreEnabled}
 
 core_case_data:
   api:
     url: "http://localhost:4452"
+
+case_document_am:
+  url: ${CASE_DOCUMENT_AM_URL:http://localhost:4455}
+reference:
+  database:
+    enabled: true
+    migration: false
 
 bankHolidays:
   api:
@@ -289,8 +299,20 @@ feature_toggles:
   breathing_space: true
 
 feign:
-  httpclient:
-    enabled: true
+  client:
+    config:
+      remoteRuntimeService:
+        url: http://localhost:9404/engine-rest/
+        remoteRepositoryService:
+          url: http://localhost:9404/engine-rest/
+        remoteExternalTaskService:
+          url: http://localhost:9404/engine-rest/
+      idam-api:
+        loggerLevel: full
+        core-case-data-api:
+          loggerLevel: full
+        document-management-metadata-download-api:
+          loggerLevel: full
 
 claim-store:
   test-support:

@@ -6,6 +6,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
 import uk.gov.hmcts.cmc.claimstore.documents.BulkPrintHandler;
@@ -39,7 +41,13 @@ public class LegalOrderServiceTest {
         .build();
 
     @Mock
-    private DocumentManagementService documentManagementService;
+    private DocumentManagementService<uk.gov.hmcts.reform
+        .document.domain.Document> legacyDocumentManagementService;
+    @Mock
+    private DocumentManagementService<uk.gov.hmcts.reform
+        .ccd.document.am.model.Document> securedDocumentManagementService;
+
+    private boolean secureDocumentManagement = false;
     @Mock
     private DocumentTemplates documentTemplates;
     @Mock
@@ -59,7 +67,9 @@ public class LegalOrderServiceTest {
         legalOrderService = new LegalOrderService(
             documentTemplates,
             legalOrderCoverSheetContentProvider,
-            documentManagementService,
+            securedDocumentManagementService,
+            legacyDocumentManagementService,
+            secureDocumentManagement,
             bulkPrintHandler
         );
         claim = SampleClaim.builder().build();
@@ -68,12 +78,13 @@ public class LegalOrderServiceTest {
             .thenReturn(ImmutableMap.of("content", "CLAIMANT"));
         when(legalOrderCoverSheetContentProvider.createContentForDefendant(claim))
             .thenReturn(ImmutableMap.of("content", "DEFENDANT"));
-
+        setLegacyDocumentManagementService(legacyDocumentManagementService);
+        setSecuredDocumentManagementService(securedDocumentManagementService);
     }
 
     @Test
     public void shouldSendPrintEventForOrderAndCoverSheetIfOrderIsInDocStore() {
-        when(documentManagementService.downloadDocument(
+        when(legacyDocumentManagementService.downloadDocument(
             eq(BEARER_TOKEN),
             any(ClaimDocument.class))).thenReturn("legalOrder".getBytes());
 
@@ -117,7 +128,7 @@ public class LegalOrderServiceTest {
 
     @Test(expected = Exception.class)
     public void shouldThrowExceptionIfDocumentUrlIsWrong() {
-        when(documentManagementService.downloadDocument(
+        when(legacyDocumentManagementService.downloadDocument(
             BEARER_TOKEN,
             null)).thenThrow(new URISyntaxException("nope", "nope"));
         legalOrderService.print(
@@ -136,4 +147,17 @@ public class LegalOrderServiceTest {
         );
     }
 
+    @Autowired
+    @Qualifier("legacyDocumentManagementService")
+    private void setLegacyDocumentManagementService(DocumentManagementService<uk.gov.hmcts.reform
+        .document.domain.Document> documentManagementService) {
+        this.legacyDocumentManagementService = documentManagementService;
+    }
+
+    @Autowired
+    @Qualifier("securedDocumentManagementService")
+    private void setSecuredDocumentManagementService(DocumentManagementService<uk.gov.hmcts.reform
+        .ccd.document.am.model.Document> securedDocumentManagementService) {
+        this.securedDocumentManagementService = securedDocumentManagementService;
+    }
 }
