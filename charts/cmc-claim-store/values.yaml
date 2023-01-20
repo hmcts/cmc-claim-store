@@ -79,4 +79,4 @@ java:
     COURT_FINDER_API_URL: http://fact-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     MANAGEMENT_HEALTH_MAIL_ENABLED: false
     SPRING_CLOUD_BOOTSTRAP_ENABLED: true
-    SECURED_DOCUMENT_MANAGEMENT_ENABLED: true
+    SECURED_DOCUMENT_MANAGEMENT_ENABLED: false
