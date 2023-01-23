@@ -46,20 +46,25 @@ public class CaseDetailsConverter {
     }
 
     public Claim extractClaim(CaseDetails caseDetails) {
-        CCDCase ccdCase = extractCCDCase(caseDetails);
-        Claim claim = caseMapper.from(ccdCase);
+        try {
+            CCDCase ccdCase = extractCCDCase(caseDetails);
+            Claim claim = caseMapper.from(ccdCase);
 
-        if (claim.getRespondedAt() == null) {
-            return claim;
+            if (claim.getRespondedAt() == null) {
+                return claim;
+            }
+
+            // Calculating the intention to proceed here rather than in the mapper as we have access
+            // to the WorkingDayIndicator here
+            LocalDate intendsToProceedDeadline = calculateIntentionToProceedDeadline(claim.getRespondedAt());
+            return claim.toBuilder()
+                .intentionToProceedDeadline(intendsToProceedDeadline)
+                .response(updateResponseMethod(claim.getResponse().orElse(null), ccdCase))
+                .build();
+        } catch (NullPointerException exception) {
+            // These exceptions are thrown by requireNonNull constraints in mapper's arguments.
+            throw new IllegalArgumentException(exception);
         }
-
-        // Calculating the intention to proceed here rather than in the mapper as we have access
-        // to the WorkingDayIndicator here
-        LocalDate intendsToProceedDeadline = calculateIntentionToProceedDeadline(claim.getRespondedAt());
-        return claim.toBuilder()
-            .intentionToProceedDeadline(intendsToProceedDeadline)
-            .response(updateResponseMethod(claim.getResponse().orElse(null), ccdCase))
-            .build();
     }
 
     private Response updateResponseMethod(Response response, CCDCase ccdCase) {
