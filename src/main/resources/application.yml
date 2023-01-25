@@ -125,7 +125,7 @@ core_case_data:
     url: "http://localhost:4452"
 
 case_document_am:
-  url: ${CASE_DOCUMENT_AM_URL:http://localhost:4455}
+  url: ${CASE_DOCUMENT_AM_URL:http://ccd-case-document-am-api:4455}
 reference:
   database:
     enabled: true
@@ -136,7 +136,7 @@ bankHolidays:
     url: "https://www.gov.uk"
 
 doc_assembly:
-  url: ${DOC_ASSEMBLY_URL:false}
+  url: ${DOC_ASSEMBLY_URL:http://doc-assembly-api:8080}
   templateId: "CV-CMC-GOR-ENG-0004-1.docx"
   judgeTemplateId: "CV-CMC-GOR-ENG-00219-1.docx"
   bespokeTemplateId: "CV-CMC-GOR-ENG-00643.docx"
