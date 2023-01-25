@@ -136,7 +136,7 @@ bankHolidays:
     url: "https://www.gov.uk"
 
 doc_assembly:
-  url: ${DOC_ASSEMBLY_URL:http://doc-assembly-api:8080}
+  url: ${DOC_ASSEMBLY_URL:http://doc-assembly-api:4666}
   templateId: "CV-CMC-GOR-ENG-0004-1.docx"
   judgeTemplateId: "CV-CMC-GOR-ENG-00219-1.docx"
   bespokeTemplateId: "CV-CMC-GOR-ENG-00643.docx"
