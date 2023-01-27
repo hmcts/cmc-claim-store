@@ -3,39 +3,6 @@
 
     <suppress until="2023-03-01">
         <notes><![CDATA[
-   file name: log4j-api-2.13.3.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.logging\.log4j/log4j\-api@.*$</packageUrl>
-        <cve>CVE-2021-45046</cve>
-    </suppress>
-
-
-    <suppress until="2023-03-01">
-        <notes><![CDATA[
-   file name: log4j-api-2.13.3.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.logging\.log4j/log4j\-api@.*$</packageUrl>
-        <cve>CVE-2021-45105</cve>
-    </suppress>
-
-    <suppress until="2023-03-01">
-        <notes><![CDATA[
-   file name: log4j-to-slf4j-2.13.3.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.logging\.log4j/log4j\-to\-slf4j@.*$</packageUrl>
-        <cve>CVE-2021-45046</cve>
-    </suppress>
-
-    <suppress until="2023-03-01">
-        <notes><![CDATA[
-   file name: log4j-to-slf4j-2.13.3.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.logging\.log4j/log4j\-to\-slf4j@.*$</packageUrl>
-        <cve>CVE-2021-45105</cve>
-    </suppress>
-
-    <suppress until="2023-03-01">
-        <notes><![CDATA[
    file name: logback-classic-1.2.3.jar
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/ch\.qos\.logback/logback\-classic@.*$</packageUrl>
@@ -439,16 +406,6 @@
         <cve>CVE-2021-22060</cve>
         <cve>CVE-2022-42003</cve>
         <cve>CVE-2022-41854</cve>
-    </suppress>
-
-    <suppress>
-        <packageUrl regex="true">^pkg:maven/org.apache.logging.log4j/log4j-api@.*$</packageUrl>
-        <cve>CVE-2022-33915</cve>
-    </suppress>
-
-    <suppress>
-        <packageUrl regex="true">^pkg:maven/org.apache.logging.log4j/log4j-to-slf4j@.*$</packageUrl>
-        <cve>CVE-2022-33915</cve>
     </suppress>
 
     <!-- Bug in plugin https://github.com/jeremylong/DependencyCheck/issues/4671 -->
