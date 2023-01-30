@@ -166,6 +166,7 @@ allprojects {
         entry 'snakeyaml'
       }
       dependencySet(group: 'ch.qos.logback', version: '1.2.10') {
+        entry 'logback-core'
         entry 'logback-classic'
       }
       // solves CVE-2019-14900
