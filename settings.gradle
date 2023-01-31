@@ -1,11 +1,4 @@
 rootProject.name = 'claim-store'
-pluginManagement {
-  repositories {
-    maven { url 'https://repo.spring.io/release' }
-    mavenCentral()
-    gradlePluginPortal()
-  }
-}
 include 'email-client'
 include 'domain-model'
 include 'domain-sample-data'
