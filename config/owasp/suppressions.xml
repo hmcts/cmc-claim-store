@@ -179,13 +179,6 @@
     </suppress>
     <suppress until="2023-03-01">
         <notes><![CDATA[
-   Unauthorized Access with Spring Security Method Security
-   ]]></notes>
-        <gav regex="true">.*</gav>
-        <cve>CVE-2018-1258</cve>
-    </suppress>
-    <suppress until="2023-03-01">
-        <notes><![CDATA[
    ReDoS Attack with spring-messaging
    ]]></notes>
         <gav regex="true">.*</gav>
@@ -224,13 +217,6 @@
 			]]></notes>
         <gav regex="true">.*</gav>
         <cve>CVE-2019-16869</cve>
-    </suppress>
-    <suppress until="2023-03-01">
-        <notes><![CDATA[
-			Improper validation of certificate with host mismatch in Apache Log4j SMTP appender
-			]]></notes>
-        <gav regex="true">.*</gav>
-        <cve>CVE-2020-9488</cve>
     </suppress>
     <suppress until="2023-03-01">
         <cve>CVE-2020-5407</cve>
@@ -434,6 +420,9 @@
         <cve>CVE-2022-1471</cve>
         <cve>CVE-2022-31690</cve>
         <cve>CVE-2022-41946</cve>
+        <cve>CVE-2022-22965</cve>
+        <cve>CVE-2022-22971</cve>
+        <cve>CVE-2022-22970</cve>
     </suppress>
     <suppress until = "2023-06-01">
         <notes><![CDATA[
