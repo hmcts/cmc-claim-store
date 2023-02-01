@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
@@ -40,23 +39,22 @@ public class ReDeterminationTest extends BaseTest {
     @Rule
     public RetryFailedFunctionalTests retryRule = new RetryFailedFunctionalTests(3);
 
-    @Ignore("CIV-6687")
     @Test
     @Retry
     public void shouldSaveReDeterminationWithCourtDetermination() {
         String explanation = "I want it sooner";
         commonOperations.submitClaimantResponse(
-                ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithCourtDetermination(),
-                claim.getExternalId(),
-                claimant
-            ).then()
+            ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithCourtDetermination(),
+            claim.getExternalId(),
+            claimant
+        ).then()
             .statusCode(HttpStatus.CREATED.value());
 
         commonOperations.submitReDetermination(
-                ReDetermination.builder().explanation(explanation).partyType(MadeBy.CLAIMANT).build(),
-                claim.getExternalId(),
-                claimant
-            ).then()
+            ReDetermination.builder().explanation(explanation).partyType(MadeBy.CLAIMANT).build(),
+            claim.getExternalId(),
+            claimant
+        ).then()
             .statusCode(HttpStatus.OK.value());
 
         Claim claimWithReDetermination
@@ -73,30 +71,29 @@ public class ReDeterminationTest extends BaseTest {
     @Retry
     public void shouldNotSaveReDeterminationByClaimantPaymentIntentionWithoutCourtDetermination() {
         commonOperations.submitClaimantResponse(
-                ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithClaimantPaymentIntentionBySetDate(),
-                claim.getExternalId(),
-                claimant
-            ).then()
+            ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithClaimantPaymentIntentionBySetDate(),
+            claim.getExternalId(),
+            claimant
+        ).then()
             .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
-    @Ignore("CIV-6687")
     @Test
     @Retry
     public void shouldSaveReDeterminationWithDefendantPaymentIntentionAccepted() {
         String explanation = "I want it sooner";
         commonOperations.submitClaimantResponse(
-                ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithDefendantPaymentIntention(),
-                claim.getExternalId(),
-                claimant
-            ).then()
+            ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithDefendantPaymentIntention(),
+            claim.getExternalId(),
+            claimant
+        ).then()
             .statusCode(HttpStatus.CREATED.value());
 
         commonOperations.submitReDetermination(
-                ReDetermination.builder().explanation(explanation).partyType(MadeBy.CLAIMANT).build(),
-                claim.getExternalId(),
-                claimant
-            ).then()
+            ReDetermination.builder().explanation(explanation).partyType(MadeBy.CLAIMANT).build(),
+            claim.getExternalId(),
+            claimant
+        ).then()
             .statusCode(HttpStatus.OK.value());
 
         Claim claimWithReDetermination
@@ -109,22 +106,21 @@ public class ReDeterminationTest extends BaseTest {
         assertThat(reDetermination.getExplanation()).isEqualTo(explanation);
     }
 
-    @Ignore("CIV-6687")
     @Test
     @Retry
     public void shouldReturnUnprocessableEntityWhenInvalidReDeterminationIsSubmitted() {
         commonOperations.submitClaimantResponse(
-                ClaimantResponseAcceptation.builder().build(),
-                claim.getExternalId(),
-                claimant
-            ).then()
+            ClaimantResponseAcceptation.builder().build(),
+            claim.getExternalId(),
+            claimant
+        ).then()
             .statusCode(HttpStatus.CREATED.value());
 
         commonOperations.submitReDetermination(
-                ReDetermination.builder().explanation(null).partyType(MadeBy.CLAIMANT).build(),
-                claim.getExternalId(),
-                claimant
-            ).then()
+            ReDetermination.builder().explanation(null).partyType(MadeBy.CLAIMANT).build(),
+            claim.getExternalId(),
+            claimant
+        ).then()
             .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
     }
 
@@ -134,41 +130,40 @@ public class ReDeterminationTest extends BaseTest {
         String explanation = "I want it sooner";
 
         commonOperations.submitReDetermination(
-                ReDetermination.builder().explanation(explanation).partyType(MadeBy.CLAIMANT).build(),
-                claim.getExternalId(),
-                claimant
-            ).then()
+            ReDetermination.builder().explanation(explanation).partyType(MadeBy.CLAIMANT).build(),
+            claim.getExternalId(),
+            claimant
+        ).then()
             .statusCode(HttpStatus.FORBIDDEN.value())
             .body("message", containsString("County Court Judgment for the claim "
                 + claim.getExternalId()
                 + " is not yet submitted"));
     }
 
-    @Ignore("CIV-6687")
     @Test
     @Retry
     public void shouldNotBeAllowedToRequestReDeterminationWhenAlreadyReDetermined() {
         String explanation = "I want it sooner";
 
         commonOperations.submitClaimantResponse(
-                ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithDefendantPaymentIntention(),
-                claim.getExternalId(),
-                claimant
-            ).then()
+            ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithDefendantPaymentIntention(),
+            claim.getExternalId(),
+            claimant
+        ).then()
             .statusCode(HttpStatus.CREATED.value());
 
         commonOperations.submitReDetermination(
-                ReDetermination.builder().explanation(explanation).partyType(MadeBy.CLAIMANT).build(),
-                claim.getExternalId(),
-                claimant
-            ).then()
+            ReDetermination.builder().explanation(explanation).partyType(MadeBy.CLAIMANT).build(),
+            claim.getExternalId(),
+            claimant
+        ).then()
             .statusCode(HttpStatus.OK.value());
 
         commonOperations.submitReDetermination(
-                ReDetermination.builder().explanation(explanation).partyType(MadeBy.CLAIMANT).build(),
-                claim.getExternalId(),
-                claimant
-            ).then()
+            ReDetermination.builder().explanation(explanation).partyType(MadeBy.CLAIMANT).build(),
+            claim.getExternalId(),
+            claimant
+        ).then()
             .statusCode(HttpStatus.FORBIDDEN.value())
             .body("message", containsString("County Court Judgment for the claim "
                 + claim.getExternalId()
@@ -181,17 +176,17 @@ public class ReDeterminationTest extends BaseTest {
         String explanation = "I want it sooner";
 
         commonOperations.submitClaimantResponse(
-                ClaimantResponseAcceptation.builder().buildAcceptationIssueSettlementWithCourtDetermination(),
-                claim.getExternalId(),
-                claimant
-            ).then()
+            ClaimantResponseAcceptation.builder().buildAcceptationIssueSettlementWithCourtDetermination(),
+            claim.getExternalId(),
+            claimant
+        ).then()
             .statusCode(HttpStatus.CREATED.value());
 
         commonOperations.submitReDetermination(
-                ReDetermination.builder().explanation(explanation).partyType(MadeBy.CLAIMANT).build(),
-                claim.getExternalId(),
-                claimant
-            ).then()
+            ReDetermination.builder().explanation(explanation).partyType(MadeBy.CLAIMANT).build(),
+            claim.getExternalId(),
+            claimant
+        ).then()
             .statusCode(HttpStatus.FORBIDDEN.value())
             .body("message", containsString("County Court Judgment for the claim "
                 + claim.getExternalId()
