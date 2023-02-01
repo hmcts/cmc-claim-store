@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
