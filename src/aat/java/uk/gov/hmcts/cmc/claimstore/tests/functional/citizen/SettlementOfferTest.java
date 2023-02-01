@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
@@ -161,7 +160,6 @@ public class SettlementOfferTest extends BaseTest {
             .statusCode(HttpStatus.CONFLICT.value());
     }
 
-    @Ignore("CIV-6687")
     @Test
     @Retry
     public void shouldBeAbleToSuccessfullyCountersignOffer() {
@@ -204,7 +202,6 @@ public class SettlementOfferTest extends BaseTest {
             .extract().body().as(Claim.class);
     }
 
-    @Ignore("CIV-6687")
     @Test
     @Retry
     public void shouldFailRejectOfferWhenAlreadySettled() {
@@ -220,7 +217,6 @@ public class SettlementOfferTest extends BaseTest {
             .statusCode(HttpStatus.CONFLICT.value());
     }
 
-    @Ignore("CIV-6687")
     @Test
     @Retry
     public void shouldFailAcceptOfferWhenAlreadySettled() {
@@ -256,7 +252,6 @@ public class SettlementOfferTest extends BaseTest {
             .extract().body().as(Claim.class);
     }
 
-    @Ignore("CIV-6687")
     private Claim createClaimWithFullAdmissionResponse() {
         Claim createdCase = submitClaimSynchronized();
 
