@@ -118,7 +118,7 @@ pdf-service:
 document_management:
   url: "${DOCUMENT_MANAGEMENT_URL:}"
   userRoles: ${DOCUMENT_MANAGEMENT_USERROLES}
-  secured: ${ocmc.secureDocStoreEnabled}
+  secured: true
 
 core_case_data:
   api:
