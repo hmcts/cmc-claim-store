@@ -9,7 +9,7 @@ The two main responsibilities of this application are:
  - executing business logic of the CMC service e.g. calculating response deadline.
 
 Internally state is persisted to a relational database.
-The service also delegates some responsibilities to other RESTful services e.g. idam-api or pdf-service. 
+The service also delegates some responsibilities to other RESTful services e.g. idam-api or pdf-service.
 
 ## Getting started
 
@@ -149,5 +149,4 @@ This is because we use a feature of jackson for automatically deserialising base
 For more info see: https://github.com/FasterXML/jackson-modules-java8/blob/a0d102fa0aea5c2fc327250868e1c1f6d523856d/parameter-names/README.md
 
 ## License
-
 This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
