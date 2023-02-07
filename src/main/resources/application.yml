@@ -125,7 +125,7 @@ core_case_data:
     url: "http://localhost:4452"
 
 case_document_am:
-  url: ${CASE_DOCUMENT_AM_URL:http://ccd-case-document-am-api:4455}
+  url: ${DOCUMENT_MANAGEMENT_URL:http://ccd-case-document-am-api:4455}
 reference:
   database:
     enabled: true
