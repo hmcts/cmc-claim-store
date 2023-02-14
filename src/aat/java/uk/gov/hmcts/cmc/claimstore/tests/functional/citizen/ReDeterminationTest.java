@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
@@ -40,7 +39,6 @@ public class ReDeterminationTest extends BaseTest {
     @Rule
     public RetryFailedFunctionalTests retryRule = new RetryFailedFunctionalTests(3);
 
-    @Ignore("CIV-6687")
     @Test
     @Retry
     public void shouldSaveReDeterminationWithCourtDetermination() {
@@ -80,7 +78,6 @@ public class ReDeterminationTest extends BaseTest {
             .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
-    @Ignore("CIV-6687")
     @Test
     @Retry
     public void shouldSaveReDeterminationWithDefendantPaymentIntentionAccepted() {
@@ -109,7 +106,6 @@ public class ReDeterminationTest extends BaseTest {
         assertThat(reDetermination.getExplanation()).isEqualTo(explanation);
     }
 
-    @Ignore("CIV-6687")
     @Test
     @Retry
     public void shouldReturnUnprocessableEntityWhenInvalidReDeterminationIsSubmitted() {
@@ -144,7 +140,6 @@ public class ReDeterminationTest extends BaseTest {
                 + " is not yet submitted"));
     }
 
-    @Ignore("CIV-6687")
     @Test
     @Retry
     public void shouldNotBeAllowedToRequestReDeterminationWhenAlreadyReDetermined() {
