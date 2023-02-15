@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
@@ -51,7 +50,6 @@ public class ClaimantResponseTest extends BaseTest {
     @Rule
     public RetryFailedFunctionalTests retryRule = new RetryFailedFunctionalTests(3);
 
-    @Ignore("CIV-6687")
     @Test
     @LogExecutionTime
     @Retry
@@ -73,7 +71,6 @@ public class ClaimantResponseTest extends BaseTest {
         assertThat(claimantResponse.getAmountPaid()).contains(TEN_2DP);
     }
 
-    @Ignore("CIV-6687")
     @Test
     @Retry
     public void shouldSaveClaimantResponseAcceptationIssueCCJWithDefendantPaymentIntention() {
@@ -113,7 +110,6 @@ public class ClaimantResponseTest extends BaseTest {
             .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
-    @Ignore("CIV-6687")
     @Test
     @Retry
     public void shouldSaveClaimantResponseAcceptationIssueCCJWithCourtDetermination() {
