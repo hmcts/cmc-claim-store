@@ -31,4 +31,22 @@ public interface FeesApi {
         @PathVariable("keyword") String keyword,
         @PathVariable("amount") BigDecimal amount
     );
+
+    @GetMapping("/fees-register/fees/lookup"
+        + "?service={service}"
+        + "&jurisdiction1={jurisdiction1}"
+        + "&jurisdiction2={jurisdiction2}"
+        + "&channel={channel}"
+        + "&event={eventType}"
+        + "&keyword={keyword}"
+        + "&amount_or_volume={amount}"
+    )
+    FeeLookupResponseDto lookupFee(
+        @PathVariable("service") String service,
+        @PathVariable("jurisdiction1") String jurisdiction1,
+        @PathVariable("jurisdiction2") String jurisdiction2,
+        @PathVariable("channel") String channel,
+        @PathVariable("eventType") String eventType,
+        @PathVariable("amount") BigDecimal amount
+    );
 }
