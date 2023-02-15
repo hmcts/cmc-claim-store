@@ -40,7 +40,6 @@ public class FeesClient {
             return this.feesApi.lookupFee(service, jurisdiction1, jurisdiction2, channel, event, keyword, amount);
         } else {
             return this.feesApi.lookupFee(service, jurisdiction1, jurisdiction2, channel, event, amount);
-
         }
     }
 }
