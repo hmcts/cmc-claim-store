@@ -88,12 +88,12 @@ public class DrawOrderCallbackHandlerTest extends BaseMockSpringTest {
 
     @Before
     public void setUp() {
-        given(documentManagementService
+        given(securedDocumentManagementService
             .downloadDocument(
                 eq(AUTHORISATION_TOKEN),
                 any(ClaimDocument.class))).willReturn("template".getBytes());
 
-        given(documentManagementService
+        given(securedDocumentManagementService
             .getDocumentMetaData(
                 eq(AUTHORISATION_TOKEN),
                 any(String.class))).willReturn(ResourceLoader.successfulDocumentManagementDownloadResponse());
