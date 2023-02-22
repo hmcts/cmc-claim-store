@@ -7,16 +7,16 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static uk.gov.hmcts.cmc.claimstore.utils.CaseDataContentConverter.caseDataContentFromStartEventResponse;
+import static uk.gov.hmcts.cmc.claimstore.utils.CaseDataContentBuilder.build;
 
-class CaseDataContentConverterTest {
+class CaseDataContentBuilderTest {
 
     @Test
     public void shouldReturnUpdatedCaseDetails() {
 
-        StartEventResponse startEventResponse = StartEventResponse.builder()
+        StartEventResponse eventResponse = StartEventResponse.builder()
             .token("Some token")
-            .eventId("Some Event")
+            .eventId("Event")
             .caseDetails(CaseDetails.builder()
                 .id(123l)
                 .state("open")
@@ -25,9 +25,9 @@ class CaseDataContentConverterTest {
             .build();
         Map<String, Object> newData = Map.of("gender", "male");
 
-        var result = caseDataContentFromStartEventResponse(startEventResponse, newData);
+        var result = build(eventResponse, "Event", "Description", newData);
 
-        assertEquals("Some Event", result.getEvent().getId());
+        assertEquals("Event", result.getEvent().getId());
         assertEquals("Some token", result.getEventToken());
         assertEquals(Map.of("name", "My Name", "gender", "male"), result.getData());
     }
