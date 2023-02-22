@@ -18,7 +18,7 @@ class CaseDataContentBuilderTest {
             .token("Some token")
             .eventId("Event")
             .caseDetails(CaseDetails.builder()
-                .id(123l)
+                .id(123L)
                 .state("open")
                 .data(Map.of("name", "My Name"))
                 .build())

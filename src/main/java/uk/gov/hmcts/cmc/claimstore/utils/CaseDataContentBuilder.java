@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.utils;
 
-
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
@@ -21,7 +20,7 @@ public class CaseDataContentBuilder {
         String eventDescription,
         Map<String, Object> contentModified) {
 
-        var payload = new HashMap<>(startEventResponse.getCaseDetails().getData());
+        var payload = initHashMap(startEventResponse);
         payload.putAll(contentModified);
 
         return CaseDataContent.builder()
@@ -33,5 +32,15 @@ public class CaseDataContentBuilder {
                 .build())
             .data(payload)
             .build();
+    }
+
+    private static HashMap<String, Object> initHashMap(StartEventResponse startEventResponse) {
+        return hasCaseData(startEventResponse)
+            ? new HashMap<>(startEventResponse.getCaseDetails().getData())
+            : new HashMap<String, Object>();
+    }
+
+    private static boolean hasCaseData(StartEventResponse startEventResponse) {
+        return startEventResponse.getCaseDetails() != null && startEventResponse.getCaseDetails().getData() != null;
     }
 }
