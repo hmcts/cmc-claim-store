@@ -179,12 +179,6 @@ public class CoreCaseDataServiceTest {
             directionsQuestionnaireService,
             pilotCourtService
         );
-
-        /*this.pilotCourtService = new PilotCourtService(
-            anyString(),
-            courtFinderApi,
-            hearingCourtMapper,
-            appInsights);*/
     }
 
     @Test
