@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.util.Optional.ofNullable;
+
 @Service
 public class CourtFinderService {
 
@@ -27,12 +29,13 @@ public class CourtFinderService {
         SearchCourtByPostcodeResponse searchByPostcodeResponse = courtFinderApi.findMoneyClaimCourtByPostcode(postcode);
 
         List<Court> courtList = new ArrayList<>();
-
-        for (CourtDetails courtDetails: searchByPostcodeResponse.getCourts()) {
+        if (ofNullable(searchByPostcodeResponse).isEmpty()) {
+            return courtList;
+        }
+        for (CourtDetails courtDetails : searchByPostcodeResponse.getCourts()) {
             Court court = getCourtDetailsFromSlug(courtDetails.getSlug());
             courtList.add(court);
         }
-
         return courtList;
     }
 

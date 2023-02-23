@@ -27,7 +27,7 @@ class TheirDetailsTest {
 
         assertThat(validationErrors)
             .hasSize(1)
-            .contains("address : may not be null");
+            .contains("address : must not be null");
     }
 
     @Test
@@ -80,7 +80,7 @@ class TheirDetailsTest {
 
         assertThat(validationErrors)
             .hasSize(1)
-            .contains("email : not a well-formed email address");
+            .contains("email : must be a well-formed email address");
     }
 
     @Test

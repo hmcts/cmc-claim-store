@@ -260,7 +260,35 @@
   </tr>
   </thead>
   <tbody>
+  {% if hearingContent.determinationWithoutHearingQuestions is not empty  %}
+  <tr>
+    <td>
+      <div>
+        Do you consider that this claim is suitable for determination without a hearing, i.e. by a judge reading and
+        considering the case papers, witness statements and other documents filed by the parties, making a decision,
+        and giving a note of reasons for that decision?
+      </div>
+    </td>
+    <td>
+      <div>{{ hearingContent.determinationWithoutHearingQuestions.determinationWithoutHearingQuestions.toString | capitalize }}</div>
+    </td>
+  </tr>
 
+  <tr>
+    <td>
+      <div>
+        If not, please state why not
+      </div>
+    </td>
+    <td>
+      {% if hearingContent.determinationWithoutHearingQuestions.determinationWithoutHearingQuestionsDetails is not empty  %}
+      <div>{{ hearingContent.determinationWithoutHearingQuestions.determinationWithoutHearingQuestionsDetails.toString }}</div>
+      {% else %}
+      <div>None</div>
+      {% endif %}
+    </td>
+  </tr>
+  {% endif %}
   <tr>
     <td>
       <div>
@@ -488,6 +516,29 @@
     </td>
   </tr>
 
+  {% if hearingContent.vulnerabilityQuestions is not empty  %}
+  <tr>
+    <td>
+      <div>Do you believe you, or a witness who will give evidence on your behalf, are vulnerable in any way which the Court needs to consider?</div>
+    </td>
+    <td>
+      <div>{{ hearingContent.vulnerabilityQuestions.vulnerabilityQuestions.toString | capitalize }}</div>
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <div>In what way/s are you/the witness vulnerable and what steps, support or adjustments do you wish the Court to consider?</div>
+    </td>
+    <td>
+      {% if hearingContent.vulnerabilityQuestions.vulnerabilityDetails is not empty  %}
+      <div>{{ hearingContent.vulnerabilityQuestions.vulnerabilityDetails }}</div>
+      {% else %}
+      <div>None</div>
+      {% endif %}
+    </td>
+  </tr>
+  {% endif %}
   </tbody>
 </table>
 

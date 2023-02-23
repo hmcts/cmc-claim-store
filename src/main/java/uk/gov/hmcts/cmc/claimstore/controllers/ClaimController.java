@@ -30,6 +30,7 @@ import uk.gov.hmcts.cmc.domain.models.response.DefendantLinkStatus;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -161,7 +162,9 @@ public class ClaimController {
         @Valid @NotNull @RequestBody ClaimData claimData,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        return claimService.initiatePayment(authorisation, claimData);
+        return Optional.ofNullable(claimService.initiatePayment(authorisation, claimData))
+            .orElseThrow(() ->
+                new NotFoundException("Payment response not generated " + claimData.getExternalId()));
     }
 
     @PutMapping(value = "/resume-citizen-payment", consumes = MediaType.APPLICATION_JSON_VALUE)

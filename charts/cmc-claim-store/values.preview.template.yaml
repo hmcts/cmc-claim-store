@@ -1,23 +1,3 @@
-
-postgresql:
-  enabled: true
-  image:
-    tag: '11.3.0'
-  resources:
-    requests:
-      cpu: 25m
-  initdbScripts:
-    init.sql: |-
-      CREATE DATABASE cmc WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-      CREATE DATABASE "data-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-      CREATE DATABASE "definition-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-      CREATE DATABASE "user-profile" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-      CREATE DATABASE "role_assignment" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-  postgresqlUsername: hmcts
-  postgresqlPassword: hmcts
-  persistence:
-    enabled: false
-
 java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
@@ -51,13 +31,37 @@ java:
         - staff-email-legal-rep
   environment:
     LOG_LEVEL: DEBUG
-    CMC_DB_HOST: ${SERVICE_NAME}-postgresql
-    CMC_DB_USERNAME: hmcts
-    CMC_DB_PASSWORD: hmcts
+    CMC_DB_HOST: "{{ .Values.postgresql.releaseNameOverride}}"
+    CMC_DB_USERNAME: "{{ .Values.postgresql.auth.username}}"
+    CMC_DB_PASSWORD: "{{ .Values.postgresql.auth.password}}"
     CMC_DB_CONNECTION_OPTIONS: '?sslmode=allow'
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-ccd-data-store-api
     OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/realms/root/realms/hmcts
     RPA_NOTIFICATIONS_LEGALSEALEDCLAIMRECIPIENT: civilmoneyclaims+rpa-legal-sealedclaim-issued@gmail.com
+  postgresql:
+    enabled: true
+    releaseNameOverride: ${SERVICE_NAME}-postgresql
+    image:
+      tag: '11.6.0'
+      registry: hmctspublic.azurecr.io
+      repository: imported/bitnami/postgresql
+    primary:
+      persistence:
+        enabled: false
+      resources:
+        requests:
+          cpu: 25m
+      initdb:
+        scripts:
+          init.sql: |
+            CREATE DATABASE cmc WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+            CREATE DATABASE "data-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+            CREATE DATABASE "definition-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+            CREATE DATABASE "user-profile" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+            CREATE DATABASE "role_assignment" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+    auth:
+      username: hmcts
+      password: hmcts
 
 ccd:
   enabled: true
@@ -142,7 +146,7 @@ ccd:
       - civilmoneyclaims+la@gmail.com|CMC|MoneyClaimCase|readyForDirections
 
   ccd-definition-importer:
-    image: hmctspublic.azurecr.io/cmc/ccd-definition-importer:1.10.27
+    image: hmctspublic.azurecr.io/cmc/ccd-definition-importer:1.10.30
     environment:
       CCD_DEF_CLAIM_STORE_BASE_URL: http://${SERVICE_NAME}-java
       OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/hmcts
