@@ -48,6 +48,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 
@@ -851,12 +852,15 @@ public class CoreCaseDataService {
     }
 
     private CaseDataContent caseDataContent(StartEventResponse startEventResponse, CCDCase ccdCase) {
-        return CaseDataContentBuilder.build(
-            startEventResponse,
-            CMC_CASE_UPDATE_SUMMARY,
-            SUBMITTING_CMC_CASE_UPDATE_DESCRIPTION,
-            caseDetailsConverter.convertToMap(ccdCase)
-        );
+        return CaseDataContent.builder()
+            .eventToken(startEventResponse.getToken())
+            .event(Event.builder()
+                .id(startEventResponse.getEventId())
+                .summary(CMC_CASE_UPDATE_SUMMARY)
+                .description(SUBMITTING_CMC_CASE_UPDATE_DESCRIPTION)
+                .build())
+            .data(ccdCase)
+            .build();
     }
 
     private EventRequestData eventRequest(CaseEvent caseEvent, String userId) {
