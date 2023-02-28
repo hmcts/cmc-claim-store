@@ -352,12 +352,7 @@ public class CoreCaseDataService {
                 .build();
             CCDCase ccdCase = caseMapper.to(updatedClaim);
 
-            CaseDataContent caseDataContent = CaseDataContentBuilder.build(
-                startEventResponse,
-                MORE_TIME_DEFENDANT_MSG,
-                MORE_TIME_DEFENDANT_MSG,
-                caseDetailsConverter.convertToMap(ccdCase)
-            );
+            CaseDataContent caseDataContent = caseDataContent(startEventResponse, ccdCase, MORE_TIME_DEFENDANT_MSG);
 
             CaseDetails caseDetails = submitUpdate(
                 authorisation,
@@ -858,6 +853,21 @@ public class CoreCaseDataService {
                 .id(startEventResponse.getEventId())
                 .summary(CMC_CASE_UPDATE_SUMMARY)
                 .description(SUBMITTING_CMC_CASE_UPDATE_DESCRIPTION)
+                .build())
+            .data(ccdCase)
+            .build();
+    }
+
+    private CaseDataContent caseDataContent(
+        StartEventResponse startEventResponse,
+        CCDCase ccdCase,
+        String eventSummary) {
+        return CaseDataContent.builder()
+            .eventToken(startEventResponse.getToken())
+            .event(Event.builder()
+                .id(startEventResponse.getEventId())
+                .summary(eventSummary)
+                .description(eventSummary)
                 .build())
             .data(ccdCase)
             .build();
