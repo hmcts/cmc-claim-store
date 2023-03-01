@@ -4,7 +4,7 @@ plugins {
   id 'checkstyle'
   id 'io.spring.dependency-management' version '1.0.11.RELEASE'
   id 'org.springframework.boot' version '2.4.3'
-  id 'org.owasp.dependencycheck' version '6.1.1'
+  id 'org.owasp.dependencycheck' version '8.0.1'
   id 'org.sonarqube' version '2.8'
   id 'com.github.ben-manes.versions' version '0.36.0'
   id 'jacoco'
@@ -29,10 +29,11 @@ def springBootVersion = plugins.getPlugin('org.springframework.boot').class.pack
 def springCloudVersion = '2020.0.3'
 
 def versions = [
-  logback           : '1.2.3',
+  logback           : '1.2.10',
   springBoot        : springBootVersion,
   springfoxSwagger  : '2.9.2',
-  reformJavaLogging : '5.1.1',
+  reformJavaLogging : '5.1.7',
+  loggingAppinsights : '5.1.7',
   restAssuredVersion: '4.2.0',
   jackson           : '2.14.0-rc1',
   junit             : '5.7.1',
@@ -164,7 +165,10 @@ allprojects {
       ) {
         entry 'snakeyaml'
       }
-
+      dependencySet(group: 'ch.qos.logback', version: '1.2.10') {
+        entry 'logback-core'
+        entry 'logback-classic'
+      }
       // solves CVE-2019-14900
       dependency 'org.hibernate:hibernate-validator:6.2.4.Final'
 
@@ -180,6 +184,10 @@ allprojects {
         version: '6.2.4.Final'
       ) {
         entry 'hibernate-validator'
+      }
+      dependencySet(group: 'org.apache.logging.log4j', version: '2.18.0') {
+        entry 'log4j-api'
+        entry 'log4j-to-slf4j'
       }
     }
   }
@@ -222,12 +230,12 @@ dependencies {
   compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
 
   compile group: 'org.elasticsearch', name: 'elasticsearch', version: '7.13.4'
-  compile group: 'org.postgresql', name: 'postgresql', version: '42.2.14'
+  compile group: 'org.postgresql', name: 'postgresql', version: '42.3.3'
 
   compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.2-RELEASE'
 
   compile group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformJavaLogging
-  compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformJavaLogging
+  compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.loggingAppinsights
   compile group: 'com.github.hmcts', name: 'cmc-pdf-service-client', version: '7.0.0'
   compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
 

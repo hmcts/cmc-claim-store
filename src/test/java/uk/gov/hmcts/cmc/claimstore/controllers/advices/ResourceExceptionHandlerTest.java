@@ -291,23 +291,23 @@ public class ResourceExceptionHandlerTest {
     }
 
     @Test
-    public void testIllegalArgumentExceptionException() {
-        testTemplate(
-            "expected exception for notification exception",
-            SocketTimeoutException::new,
-            handler::handleIllegalArgumentExceptionException,
-            HttpStatus.FORBIDDEN,
-            AppInsightsExceptionLogger::error
-        );
-    }
-
-    @Test
     public void testDocumentManagementException() {
         testTemplate(
             "expected exception for notification exception",
             HttpMediaTypeNotAcceptableException::new,
             handler::handleDocumentManagementException,
             HttpStatus.UNPROCESSABLE_ENTITY,
+            AppInsightsExceptionLogger::error
+        );
+    }
+
+    @Test
+    public void testHandleIllegalArgumentException() {
+        testTemplate(
+            "require non null object passed in mapper's arguments",
+            IllegalArgumentException::new,
+            handler::handleIllegalArgumentException,
+            HttpStatus.PRECONDITION_FAILED,
             AppInsightsExceptionLogger::error
         );
     }

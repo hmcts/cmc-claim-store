@@ -1,5 +1,4 @@
 rootProject.name = 'claim-store'
-
 include 'email-client'
 include 'domain-model'
 include 'domain-sample-data'

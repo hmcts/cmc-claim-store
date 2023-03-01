@@ -181,12 +181,6 @@ public class CoreCaseDataServiceTest {
             directionsQuestionnaireService,
             pilotCourtService
         );
-
-        /*this.pilotCourtService = new PilotCourtService(
-            anyString(),
-            courtFinderApi,
-            hearingCourtMapper,
-            appInsights);*/
     }
 
     @Test
@@ -200,7 +194,7 @@ public class CoreCaseDataServiceTest {
             eq(false)
         ))
             .thenReturn(StartEventResponse.builder()
-                .caseDetails(CaseDetails.builder().build())
+                .caseDetails(CaseDetails.builder().data(Map.of()).build())
                 .eventId("eventId")
                 .token("token")
                 .build());
