@@ -57,6 +57,7 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static java.time.LocalDate.now;
@@ -179,12 +180,6 @@ public class CoreCaseDataServiceTest {
             directionsQuestionnaireService,
             pilotCourtService
         );
-
-        /*this.pilotCourtService = new PilotCourtService(
-            anyString(),
-            courtFinderApi,
-            hearingCourtMapper,
-            appInsights);*/
     }
 
     @Test
@@ -198,7 +193,7 @@ public class CoreCaseDataServiceTest {
             eq(false)
         ))
             .thenReturn(StartEventResponse.builder()
-                .caseDetails(CaseDetails.builder().build())
+                .caseDetails(CaseDetails.builder().data(Map.of()).build())
                 .eventId("eventId")
                 .token("token")
                 .build());
