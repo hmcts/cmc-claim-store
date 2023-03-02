@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
-import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.SecuredDocumentManagementService;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
@@ -15,17 +15,17 @@ import java.util.Collections;
 @Service
 public class PrintableDocumentService {
 
-    private final DocumentManagementService documentManagementService;
+    private final SecuredDocumentManagementService securedDocumentManagementService;
 
     @Autowired
-    public PrintableDocumentService(DocumentManagementService documentManagementService) {
-        this.documentManagementService = documentManagementService;
+    public PrintableDocumentService(SecuredDocumentManagementService securedDocumentManagementService) {
+        this.securedDocumentManagementService = securedDocumentManagementService;
     }
 
     public Document process(CCDDocument document, String authorisation) {
         try {
             return new Document(Base64.getEncoder().encodeToString(
-                documentManagementService.downloadDocument(
+                securedDocumentManagementService.downloadDocument(
                     authorisation,
                     ClaimDocument.builder()
                         .documentName(document.getDocumentFileName())
@@ -39,7 +39,7 @@ public class PrintableDocumentService {
 
     public byte[] pdf(CCDDocument document, String authorisation) {
         try {
-            return documentManagementService.downloadDocument(
+            return securedDocumentManagementService.downloadDocument(
                 authorisation,
                 ClaimDocument.builder()
                     .documentName(document.getDocumentFileName())

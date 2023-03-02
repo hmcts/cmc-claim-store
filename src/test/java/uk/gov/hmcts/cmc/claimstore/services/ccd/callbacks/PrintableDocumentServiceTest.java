@@ -7,7 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
-import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.SecuredDocumentManagementService;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -25,22 +25,22 @@ class PrintableDocumentServiceTest {
         .documentUrl("http://www.cnn.com").build();
     private PrintableDocumentService printableDocumentService;
     @Mock
-    private DocumentManagementService documentManagementService;
+    private SecuredDocumentManagementService securedDocumentManagementService;
 
     @BeforeEach
     void setUp() {
-        printableDocumentService = new PrintableDocumentService(documentManagementService);
+        printableDocumentService = new PrintableDocumentService(securedDocumentManagementService);
     }
 
     @Test
     void shouldDownloadDocumentFromDocumentManagement() {
 
-        when(documentManagementService.downloadDocument(anyString(), any(ClaimDocument.class)))
+        when(securedDocumentManagementService.downloadDocument(anyString(), any(ClaimDocument.class)))
             .thenReturn(new byte[]{1, 2, 3, 4});
 
         printableDocumentService.pdf(document, AUTHORISATION);
 
-        verify(documentManagementService, times(1)).downloadDocument(
+        verify(securedDocumentManagementService, times(1)).downloadDocument(
             anyString(),
             any(ClaimDocument.class));
     }
@@ -48,7 +48,7 @@ class PrintableDocumentServiceTest {
     @Test
     void shouldThrowExceptionIfDownloadUrlIsWrong() {
 
-        when(documentManagementService.downloadDocument(
+        when(securedDocumentManagementService.downloadDocument(
             anyString(),
             any(ClaimDocument.class))).thenThrow(new IllegalArgumentException("Exception"));
 
@@ -60,7 +60,7 @@ class PrintableDocumentServiceTest {
     @Test
     void shouldThrowExceptionIfUrlIsWrong() {
 
-        when(documentManagementService.downloadDocument(
+        when(securedDocumentManagementService.downloadDocument(
             anyString(),
             any(ClaimDocument.class))).thenThrow(new IllegalArgumentException("Exception"));
 
