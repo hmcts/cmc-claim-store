@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
 import uk.gov.hmcts.cmc.claimstore.documents.BulkPrintHandler;
-import uk.gov.hmcts.cmc.claimstore.services.document.SecuredDocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
@@ -30,19 +30,19 @@ public class LegalOrderService {
     private final DocumentTemplates documentTemplates;
     private final LegalOrderCoverSheetContentProvider legalOrderCoverSheetContentProvider;
     private final BulkPrintHandler bulkPrintHandler;
-    private final SecuredDocumentManagementService securedDocumentManagementService;
+    private final DocumentManagementService documentManagementService;
 
     @Autowired
     public LegalOrderService(
         DocumentTemplates documentTemplates,
         LegalOrderCoverSheetContentProvider legalOrderCoverSheetContentProvider,
-        SecuredDocumentManagementService securedDocumentManagementService,
+        DocumentManagementService documentManagementService,
         BulkPrintHandler bulkPrintHandler
     ) {
         this.documentTemplates = documentTemplates;
         this.bulkPrintHandler = bulkPrintHandler;
         this.legalOrderCoverSheetContentProvider = legalOrderCoverSheetContentProvider;
-        this.securedDocumentManagementService = securedDocumentManagementService;
+        this.documentManagementService = documentManagementService;
     }
 
     public List<BulkPrintDetails> print(String authorisation, Claim claim, CCDDocument ccdLegalOrder) {
@@ -79,7 +79,7 @@ public class LegalOrderService {
 
     private Document downloadLegalOrder(String authorisation, CCDDocument ccdLegalOrder) throws URISyntaxException {
         return new Document(Base64.getEncoder().encodeToString(
-            securedDocumentManagementService.downloadDocument(
+            documentManagementService.downloadDocument(
                 authorisation,
                 ClaimDocument.builder()
                     .documentName(ccdLegalOrder.getDocumentFileName())

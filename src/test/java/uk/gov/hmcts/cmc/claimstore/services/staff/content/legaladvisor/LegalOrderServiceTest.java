@@ -9,7 +9,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
 import uk.gov.hmcts.cmc.claimstore.documents.BulkPrintHandler;
-import uk.gov.hmcts.cmc.claimstore.services.document.SecuredDocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
@@ -39,7 +39,7 @@ public class LegalOrderServiceTest {
         .build();
 
     @Mock
-    private SecuredDocumentManagementService securedDocumentManagementService;
+    private DocumentManagementService documentManagementService;
     @Mock
     private DocumentTemplates documentTemplates;
     @Mock
@@ -59,7 +59,7 @@ public class LegalOrderServiceTest {
         legalOrderService = new LegalOrderService(
             documentTemplates,
             legalOrderCoverSheetContentProvider,
-            securedDocumentManagementService,
+            documentManagementService,
             bulkPrintHandler
         );
         claim = SampleClaim.builder().build();
@@ -73,7 +73,7 @@ public class LegalOrderServiceTest {
 
     @Test
     public void shouldSendPrintEventForOrderAndCoverSheetIfOrderIsInDocStore() {
-        when(securedDocumentManagementService.downloadDocument(
+        when(documentManagementService.downloadDocument(
             eq(BEARER_TOKEN),
             any(ClaimDocument.class))).thenReturn("legalOrder".getBytes());
 
@@ -117,7 +117,7 @@ public class LegalOrderServiceTest {
 
     @Test(expected = Exception.class)
     public void shouldThrowExceptionIfDocumentUrlIsWrong() {
-        when(securedDocumentManagementService.downloadDocument(
+        when(documentManagementService.downloadDocument(
             BEARER_TOKEN,
             null)).thenThrow(new URISyntaxException("nope", "nope"));
         legalOrderService.print(

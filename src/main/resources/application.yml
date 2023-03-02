@@ -11,7 +11,7 @@ management:
       base-path: "/"
   endpoint:
     health:
-      show-details: ALWAYS
+      show-details: "always"
 async:
   max:
     threadPool:
@@ -102,7 +102,7 @@ fees:
 ocmc:
   caseTypeId: "MoneyClaimCase"
   jurisdictionId: "CMC"
-  secureDocStoreEnabled: ${FEATURE_TOGGLES_SECURE_DOC_STORE_ENABLED:true}
+  secureDocStoreEnabled: ${FEATURE_TOGGLES_SECURE_DOC_STORE_ENABLED:false}
 
 payments:
   api:
@@ -118,25 +118,17 @@ pdf-service:
 document_management:
   url: "${DOCUMENT_MANAGEMENT_URL:}"
   userRoles: ${DOCUMENT_MANAGEMENT_USERROLES}
-  secured: true
 
 core_case_data:
   api:
     url: "http://localhost:4452"
-
-case_document_am:
-  url: ${DOCUMENT_MANAGEMENT_URL:http://ccd-case-document-am-api:4455}
-reference:
-  database:
-    enabled: true
-    migration: false
 
 bankHolidays:
   api:
     url: "https://www.gov.uk"
 
 doc_assembly:
-  url: ${DOC_ASSEMBLY_URL:http://doc-assembly-api:4666}
+  url: ${DOC_ASSEMBLY_URL:false}
   templateId: "CV-CMC-GOR-ENG-0004-1.docx"
   judgeTemplateId: "CV-CMC-GOR-ENG-00219-1.docx"
   bespokeTemplateId: "CV-CMC-GOR-ENG-00643.docx"
@@ -297,20 +289,8 @@ feature_toggles:
   breathing_space: true
 
 feign:
-  client:
-    config:
-      remoteRuntimeService:
-        url: http://localhost:9404/engine-rest/
-        remoteRepositoryService:
-          url: http://localhost:9404/engine-rest/
-        remoteExternalTaskService:
-          url: http://localhost:9404/engine-rest/
-      idam-api:
-        loggerLevel: full
-        core-case-data-api:
-          loggerLevel: full
-        document-management-metadata-download-api:
-          loggerLevel: full
+  httpclient:
+    enabled: true
 
 claim-store:
   test-support:

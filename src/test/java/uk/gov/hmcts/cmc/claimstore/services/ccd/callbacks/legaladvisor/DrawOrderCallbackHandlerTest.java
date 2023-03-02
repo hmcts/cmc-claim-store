@@ -24,7 +24,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
-import uk.gov.hmcts.cmc.claimstore.services.document.SecuredDocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -94,7 +94,7 @@ public class DrawOrderCallbackHandlerTest {
     private DirectionOrderService directionOrderService;
 
     @Mock
-    private SecuredDocumentManagementService securedDocumentManagementService;
+    private DocumentManagementService documentManagementService;
 
     private CallbackParams callbackParams;
 
@@ -112,7 +112,7 @@ public class DrawOrderCallbackHandlerTest {
     public void setUp() {
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
             caseDetailsConverter, legalOrderService, appInsights, directionOrderService,
-            securedDocumentManagementService, claimService);
+            documentManagementService, claimService);
 
         drawOrderCallbackHandler = new DrawOrderCallbackHandler(orderPostProcessor, caseDetailsConverter,
             orderRenderer);
@@ -195,7 +195,7 @@ public class DrawOrderCallbackHandlerTest {
         when(directionOrderService.getHearingCourt(any())).thenReturn(HearingCourt.builder().build());
 
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-        when(securedDocumentManagementService.getDocumentMetaData(any(), any()))
+        when(documentManagementService.getDocumentMetaData(any(), any()))
             .thenReturn(ResourceLoader.successfulDocumentManagementDownloadResponse());
 
         when(caseDetailsConverter.convertToMap(any(CCDCase.class)))
