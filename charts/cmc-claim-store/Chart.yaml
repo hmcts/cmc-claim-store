@@ -12,7 +12,7 @@ maintainers:
     email: cmc-developers@HMCTS.NET
 dependencies:
   - name: java
-    version: 4.0.5
+    version: 4.0.13
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
 
   - name: ccd
