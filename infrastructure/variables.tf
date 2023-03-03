@@ -34,7 +34,9 @@ variable "common_tags" {
   type = map(string)
 }
 
-variable "ilbIp" {}
+variable "ilbIp" {
+  default = ""
+}
 
 variable "tenant_id" {
   description = "(Required) The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. This is usually sourced from environemnt variables and not normally required to be specified."
