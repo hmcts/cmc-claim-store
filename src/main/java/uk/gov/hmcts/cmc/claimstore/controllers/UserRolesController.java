@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,7 +20,7 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-@Api
+@Tag(name = "User Roles Controller")
 @RestController
 @Validated
 @RequestMapping(
@@ -35,13 +35,13 @@ public class UserRolesController {
     }
 
     @GetMapping
-    @ApiOperation("Fetch user roles")
+    @Operation(summary = "Fetch user roles")
     public List<String> getByUserId(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
         return userRolesService.retrieveUserRoles(authorisation);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Creates a new User Role")
+    @Operation(summary = "Creates a new User Role")
     @ResponseStatus(value = HttpStatus.CREATED)
     public void save(
         @Valid @NotNull @RequestBody UserRoleRequest userRoleRequest,

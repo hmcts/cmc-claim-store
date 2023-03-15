@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.InterestAmount;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Api
+@Tag(name = "Interest Rates Controller")
 @RestController
 @RequestMapping(
     path = "/interest",
@@ -23,7 +23,7 @@ import java.time.LocalDate;
 public class InterestRatesController {
 
     @GetMapping("/calculate")
-    @ApiOperation("Calculates the interest amount accrued between provided dates")
+    @Operation(summary = "Calculates the interest amount accrued between provided dates")
     public InterestAmount calculateInterest(
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam("from_date") LocalDate from,
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam("to_date") LocalDate to,
