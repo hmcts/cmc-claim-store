@@ -120,6 +120,8 @@ public class CoreCaseDataServiceTest {
     private WorkingDayIndicator workingDayIndicator;
 
     private final int intentionToProceedDeadlineDays = 33;
+    private boolean isDqPilotCourt;
+
     @Mock
     private feign.Request request;
     @Mock
@@ -178,8 +180,8 @@ public class CoreCaseDataServiceTest {
             intentionToProceedDeadlineDays,
             workingDayIndicator,
             directionsQuestionnaireService,
-            pilotCourtService
-        );
+            pilotCourtService,
+            isDqPilotCourt);
     }
 
     @Test
@@ -505,6 +507,27 @@ public class CoreCaseDataServiceTest {
         Response providedResponse = SampleResponse.validDefaults();
         Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
         ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultAcceptation();
+        setDqPilotCourt(true);
+
+        when(caseDetailsConverter.extractClaim(any((CaseDetails.class)))).thenReturn(getWithClaimantResponse());
+
+        Claim claim = service.saveClaimantResponse(providedClaim.getId(),
+            claimantResponse,
+            AUTHORISATION
+        );
+
+        assertThat(claim).isNotNull();
+        assertThat(claim.getClaimantResponse()).isPresent();
+        verify(coreCaseDataApi, atLeastOnce()).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
+            anyString(), anyString(), eq(CLAIMANT_RESPONSE_ACCEPTATION.getValue()));
+    }
+
+    @Test
+    public void saveClaimantAcceptationResponseShouldReturnClaimWhenDQPilotIsDisabled() {
+        Response providedResponse = SampleResponse.validDefaults();
+        Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
+        ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultAcceptation();
+        setDqPilotCourt(false);
 
         when(caseDetailsConverter.extractClaim(any((CaseDetails.class)))).thenReturn(getWithClaimantResponse());
 
@@ -525,6 +548,7 @@ public class CoreCaseDataServiceTest {
         Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
         ClaimantResponse claimantResponse = SampleClaimantResponse.ClaimantResponseAcceptation
             .builder().buildAcceptationIssueCCJWithDefendantPaymentIntention();
+        setDqPilotCourt(true);
 
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
             .thenReturn(getWithClaimantResponse());
@@ -546,6 +570,7 @@ public class CoreCaseDataServiceTest {
         Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
         ClaimantResponse claimantResponse = SampleClaimantResponse.ClaimantResponseAcceptation
             .builder().buildAcceptationIssueSettlementWithClaimantPaymentIntention();
+        setDqPilotCourt(true);
 
         when(caseDetailsConverter.extractClaim(any((CaseDetails.class)))).thenReturn(getWithClaimantResponse());
 
@@ -562,6 +587,7 @@ public class CoreCaseDataServiceTest {
         Response providedResponse = SampleResponse.validDefaults();
         Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
         ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultRejection();
+        setDqPilotCourt(true);
 
         when(caseDetailsConverter.extractClaim(any((CaseDetails.class)))).thenReturn(getWithClaimantResponse());
 
@@ -585,6 +611,7 @@ public class CoreCaseDataServiceTest {
         ClaimantResponse claimantResponse = SampleClaimantResponse.validRejectionWithDirectionsQuestionnaire();
 
         when(caseDetailsConverter.extractClaim(any((CaseDetails.class)))).thenReturn(getWithClaimantResponse());
+        setDqPilotCourt(true);
 
         Claim claim = service.saveClaimantResponse(providedClaim.getId(),
             claimantResponse,
@@ -604,6 +631,7 @@ public class CoreCaseDataServiceTest {
         Claim extractedClaim = getWithClaimantResponse();
         when(caseDetailsConverter.extractClaim(any((CaseDetails.class)))).thenReturn(extractedClaim);
         ClaimantResponse claimantResponse = SampleClaimantResponse.validRejectionWithDirectionsQuestionnaire();
+        setDqPilotCourt(true);
 
         Claim claim = service.saveClaimantResponse(providedClaim.getId(),
             claimantResponse,
@@ -944,5 +972,9 @@ public class CoreCaseDataServiceTest {
         } catch (Exception e) {
             assertThatExceptionOfType(CoreCaseDataStoreException.class);
         }
+    }
+
+    public void setDqPilotCourt(boolean dqPilotCourt) {
+        isDqPilotCourt = dqPilotCourt;
     }
 }
