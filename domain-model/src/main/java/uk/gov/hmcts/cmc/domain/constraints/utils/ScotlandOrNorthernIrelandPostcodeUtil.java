@@ -38,11 +38,17 @@ public class ScotlandOrNorthernIrelandPostcodeUtil {
         return postcodeDistricts;
     }
 
-    public boolean postcodeInScotlandOrNorthernIreland(List<PostcodeDistrict> postcodeDistricts, String postcode) {
+    public boolean postcodeInScotlandOrNorthernIreland(String postcode) {
+
+        List<PostcodeDistrict> postcodeDistricts = readPostcodes();
+
+        // only match with districts in Scotland or Northern Ireland
+        String[] postCodeDistrictSplit = postcode.split(" ");
+
         return postcodeDistricts
             .stream()
-            .anyMatch(postcodeDistrict -> postcodeDistrict.getScotlandPostcode().equals(postcode)
-                || postcodeDistrict.getNorthernIrelandPostcode().equals(postcode));
+            .anyMatch(postcodeDistrict -> postcodeDistrict.getScotlandPostcode().equals(postCodeDistrictSplit[0])
+                || postcodeDistrict.getNorthernIrelandPostcode().equals(postCodeDistrictSplit[0]));
     }
 }
 
