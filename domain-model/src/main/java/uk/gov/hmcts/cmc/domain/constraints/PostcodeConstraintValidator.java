@@ -17,6 +17,10 @@ public class PostcodeConstraintValidator implements ConstraintValidator<Postcode
         if (value == null) {
             return true;
         }
+
+        // check if Scottish or Irish
+
+
         String normalised = value.replaceAll("\\s", "");
         return pattern.matcher(normalised).matches();
     }
