@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAddress;
 
@@ -127,7 +126,6 @@ class AddressTest {
 
     @ParameterizedTest
     @NullAndEmptySource
-    @ValueSource(strings = {"SW123456"})
     void shouldBeInvalidForNullPostcode(String input) {
         //given
         Address address = SampleAddress.builder()
@@ -137,9 +135,75 @@ class AddressTest {
         Set<String> errors = validate(address);
         //then
         assertThat(errors)
-            .hasSize(1)
+            .hasSize(2)
             .containsAnyOf("postcode : must not be null", "postcode : Postcode is not of valid format",
-                "postcode : Postcode is not of valid format");
+                "postcode : Postcode is not of valid format", "postcode : Postcode is not of UK or Wales format");
     }
 
+    @Test
+    void shouldBeInvalidForPostcode() {
+        //given
+        Address address = SampleAddress.builder()
+            .postcode("SW123456")
+            .build();
+        //when
+        Set<String> errors = validate(address);
+        //then
+        assertThat(errors)
+            .hasSize(1)
+            .containsAnyOf("postcode : must not be null", "postcode : Postcode is not of valid format",
+                "postcode : Postcode is not of valid format", "postcode : Postcode is not of England or Wales format");
+    }
+
+    @Test
+    void shouldBeValidForEnglandPostcode() {
+        //given
+        Address address = SampleAddress.builder()
+            .postcode("SW1H 9AJ")
+            .build();
+        //when
+        Set<String> errors = validate(address);
+        //then
+        assertThat(errors).hasSize(0);
+    }
+
+    @Test
+    void shouldBeValidForWalesPostcode() {
+        //given
+        Address address = SampleAddress.builder()
+            .postcode("CF10 2BJ")
+            .build();
+        //when
+        Set<String> errors = validate(address);
+        //then
+        assertThat(errors).hasSize(0);
+    }
+
+    @Test
+    void shouldBeInvalidForScotlandPostcode() {
+        //given
+        Address address = SampleAddress.builder()
+            .postcode("AB10 1QT")
+            .build();
+        //when
+        Set<String> errors = validate(address);
+        //then
+        assertThat(errors)
+            .hasSize(1)
+            .contains("postcode : Postcode is not of England or Wales format");
+    }
+
+    @Test
+    void shouldBeInvalidForNorthernIrelandPostcode() {
+        //given
+        Address address = SampleAddress.builder()
+            .postcode("BT1 5AA")
+            .build();
+        //when
+        Set<String> errors = validate(address);
+        //then
+        assertThat(errors)
+            .hasSize(1)
+            .contains("postcode : Postcode is not of England or Wales format");
+    }
 }

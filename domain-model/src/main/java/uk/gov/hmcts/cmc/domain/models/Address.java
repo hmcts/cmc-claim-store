@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.domain.models;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.cmc.domain.constraints.Postcode;
+import uk.gov.hmcts.cmc.domain.constraints.ScotlandOrNorthernIrelandPostcode;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -31,6 +32,7 @@ public class Address {
 
     @NotNull
     @Postcode
+    @ScotlandOrNorthernIrelandPostcode
     private final String postcode;
 
     public Address(String line1,

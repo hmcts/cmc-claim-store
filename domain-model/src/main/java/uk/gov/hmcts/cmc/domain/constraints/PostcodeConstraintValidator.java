@@ -1,8 +1,6 @@
 
 package uk.gov.hmcts.cmc.domain.constraints;
 
-import uk.gov.hmcts.cmc.domain.constraints.utils.ScotlandOrNorthernIrelandPostcodeUtil;
-
 import java.util.regex.Pattern;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -14,19 +12,10 @@ public class PostcodeConstraintValidator implements ConstraintValidator<Postcode
 
     private static final Pattern pattern = Pattern.compile(REGEX);
 
-    private final ScotlandOrNorthernIrelandPostcodeUtil scotlandOrNorthernIrelandPostcodeUtil = new
-        ScotlandOrNorthernIrelandPostcodeUtil();
-
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
         if (value == null) {
             return true;
-        }
-
-        // check if Scottish or Irish
-        boolean isScottishOrIrish = scotlandOrNorthernIrelandPostcodeUtil.postcodeInScotlandOrNorthernIreland(value);
-        if (isScottishOrIrish) {
-            return false;
         }
 
         String normalised = value.replaceAll("\\s", "");

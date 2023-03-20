@@ -41,8 +41,9 @@ class TheirDetailsTest {
         Set<String> validationErrors = validate(theirDetails);
 
         assertThat(validationErrors)
-            .hasSize(1)
-            .contains("address.postcode : Postcode is not of valid format");
+            .hasSize(2)
+            .contains("address.postcode : Postcode is not of valid format")
+            .contains("address.postcode : Postcode is not of England or Wales format");
     }
 
     @Test
@@ -105,7 +106,8 @@ class TheirDetailsTest {
         Set<String> validationErrors = validate(theirDetails);
 
         assertThat(validationErrors)
-            .hasSize(1)
-            .contains("serviceAddress.postcode : Postcode is not of valid format");
+            .hasSize(2)
+            .contains("serviceAddress.postcode : Postcode is not of valid format")
+            .contains("serviceAddress.postcode : Postcode is not of England or Wales format");
     }
 }
