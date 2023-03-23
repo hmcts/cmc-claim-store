@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -21,7 +21,7 @@ import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
 
-@Api
+@Tag(name = "County Court Judgment Controller")
 @RestController
 @RequestMapping(
     path = "/claims",
@@ -36,7 +36,7 @@ public class CountyCourtJudgmentController {
     }
 
     @PostMapping("/{externalId:" + UUID_PATTERN + "}/county-court-judgment")
-    @ApiOperation("Save County Court Judgment")
+    @Operation(summary = "Save County Court Judgment")
     public Claim save(
         @PathVariable("externalId") String externalId,
         @NotNull @RequestBody @Valid CountyCourtJudgment countyCourtJudgment,
@@ -46,7 +46,7 @@ public class CountyCourtJudgmentController {
     }
 
     @PostMapping("/{externalId:" + UUID_PATTERN + "}/re-determination")
-    @ApiOperation("ReDetermination Request to Judge")
+    @Operation(summary = "ReDetermination Request to Judge")
     public Claim reDetermination(
         @PathVariable("externalId") String externalId,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,

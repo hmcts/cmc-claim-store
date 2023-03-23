@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,7 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 
 import java.time.LocalDate;
 
-@Api
+@Tag(name = "Response Deadline Controller")
 @RestController
 @RequestMapping(
     path = "/deadline",
