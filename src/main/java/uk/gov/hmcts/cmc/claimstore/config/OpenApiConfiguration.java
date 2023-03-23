@@ -16,7 +16,7 @@ public class OpenApiConfiguration {
     @Bean
     public GroupedOpenApi publicApi(OperationCustomizer customGlobalHeaders) {
         return GroupedOpenApi.builder()
-            .pathsToMatch("/**")
+            .pathsToMatch( "**/controllers/**")
             .addOperationCustomizer(customGlobalHeaders)
             .build();
     }
