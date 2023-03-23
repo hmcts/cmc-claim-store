@@ -158,10 +158,10 @@ allprojects {
       ) {
         entry 'spring-security-crypto'
       }
-      // solves CVE-2022-25857
+      // solves CVE-2022-1471
       dependencySet(
         group: 'org.yaml',
-        version: '1.33'
+        version: '2.0'
       ) {
         entry 'snakeyaml'
       }
