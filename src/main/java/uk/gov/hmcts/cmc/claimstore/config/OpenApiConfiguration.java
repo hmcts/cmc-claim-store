@@ -16,6 +16,7 @@ public class OpenApiConfiguration {
     @Bean
     public GroupedOpenApi publicApi(OperationCustomizer customGlobalHeaders) {
         return GroupedOpenApi.builder()
+            .group("claim-store-api")
             .pathsToMatch("**/controllers/**")
             .addOperationCustomizer(customGlobalHeaders)
             .build();
