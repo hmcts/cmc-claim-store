@@ -226,8 +226,7 @@ dependencies {
 
   compile group: 'commons-io', name: 'commons-io', version: '2.11.0'
 
-  compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
-  compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
+  compile group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.15'
 
   compile group: 'org.elasticsearch', name: 'elasticsearch', version: '7.13.4'
   compile group: 'org.postgresql', name: 'postgresql', version: '42.3.3'
