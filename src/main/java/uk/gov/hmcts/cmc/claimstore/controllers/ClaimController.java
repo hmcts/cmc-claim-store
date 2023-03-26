@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.http.HttpException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -37,7 +37,7 @@ import javax.validation.constraints.NotNull;
 import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.CLAIM_REFERENCE_PATTERN;
 import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
 
-@Api
+@Tag(name = "Claim Controller")
 @RestController
 @RequestMapping(
     path = ClaimController.CLAIMS,
@@ -53,7 +53,7 @@ public class ClaimController {
     }
 
     @GetMapping("/claimant/{submitterId}")
-    @ApiOperation("Fetch user claims for given submitter id")
+    @Operation(summary = "Fetch user claims for given submitter id")
     public List<Claim> getBySubmitterId(@PathVariable("submitterId") String submitterId,
                                         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
                                         @RequestParam(value = "pageNo", required = false) Integer pageNumber) {
@@ -61,7 +61,7 @@ public class ClaimController {
     }
 
     @GetMapping("/letter/{letterHolderId}")
-    @ApiOperation("Fetch user claim for given letter holder id")
+    @Operation(summary = "Fetch user claim for given letter holder id")
     public Claim getByLetterHolderId(
         @PathVariable("letterHolderId") String letterHolderId,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
@@ -70,14 +70,14 @@ public class ClaimController {
     }
 
     @GetMapping("/{externalId:" + UUID_PATTERN + "}")
-    @ApiOperation("Fetch claim for given external id")
+    @Operation(summary = "Fetch claim for given external id")
     public Claim getByExternalId(@PathVariable("externalId") String externalId,
                                  @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
         return claimService.getFilteredClaimByExternalId(externalId, authorisation);
     }
 
     @GetMapping("/{claimReference:" + CLAIM_REFERENCE_PATTERN + "}")
-    @ApiOperation("Fetch claim for given claim reference")
+    @Operation(summary = "Fetch claim for given claim reference")
     public Claim getByClaimReference(@PathVariable("claimReference") String claimReference,
                                      @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
 
@@ -86,7 +86,7 @@ public class ClaimController {
     }
 
     @GetMapping("/representative/{externalReference}")
-    @ApiOperation("Fetch user claims for given external reference number")
+    @Operation(summary = "Fetch user claims for given external reference number")
     public List<Claim> getClaimByExternalReference(
         @PathVariable("externalReference") String externalReference,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
@@ -95,7 +95,7 @@ public class ClaimController {
     }
 
     @GetMapping("/defendant/{defendantId}")
-    @ApiOperation("Fetch claims linked to given defendant id")
+    @Operation(summary = "Fetch claims linked to given defendant id")
     public List<Claim> getByDefendantId(
         @PathVariable("defendantId") String defendantId,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
@@ -104,7 +104,7 @@ public class ClaimController {
     }
 
     @PostMapping(value = "/{submitterId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Creates a new claim")
+    @Operation(summary = "Creates a new claim")
     public Claim save(
         @Valid @NotNull @RequestBody ClaimData claimData,
         @PathVariable("submitterId") String submitterId,
@@ -115,7 +115,7 @@ public class ClaimController {
     }
 
     @PostMapping(value = "/{submitterId}/hwf", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Creates a new Help With Fees claim")
+    @Operation(summary = "Creates a new Help With Fees claim")
     public Claim saveHelpWithFeesClaim(
         @Valid @NotNull @RequestBody ClaimData claimData,
         @PathVariable("submitterId") String submitterId,
@@ -126,7 +126,7 @@ public class ClaimController {
     }
 
     @PutMapping(value = "/resume-hwf", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Resume the claim with hwf submission")
+    @Operation(summary = "Resume the claim with hwf submission")
     public Claim updateHelpWithFeesClaim(
         @Valid @NotNull @RequestBody ClaimData claimData,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
@@ -136,7 +136,7 @@ public class ClaimController {
     }
 
     @PostMapping(value = "/{submitterId}/create-legal-rep-claim", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Creates a new legal rep claim")
+    @Operation(summary = "Creates a new legal rep claim")
     public Claim saveLegalRepresentedClaim(
         @Valid @NotNull @RequestBody ClaimData claimData,
         @PathVariable("submitterId") String submitterId,
@@ -146,7 +146,7 @@ public class ClaimController {
     }
 
     @PostMapping(value = "/{submitterId}/update-legal-rep-claim", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Updates legal rep claim")
+    @Operation(summary = "Updates legal rep claim")
     public Claim updateLegalRepresentedClaim(
         @Valid @NotNull @RequestBody LegalRepUpdate legalRepUpdate,
         @PathVariable("submitterId") String submitterId,
@@ -157,7 +157,7 @@ public class ClaimController {
     }
 
     @PostMapping(value = "/initiate-citizen-payment", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Initiates a citizen payment")
+    @Operation(summary = "Initiates a citizen payment")
     public CreatePaymentResponse initiatePayment(
         @Valid @NotNull @RequestBody ClaimData claimData,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
@@ -168,7 +168,7 @@ public class ClaimController {
     }
 
     @PutMapping(value = "/resume-citizen-payment", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Resumes a citizen payment")
+    @Operation(summary = "Resumes a citizen payment")
     public CreatePaymentResponse resumePayment(
         @Valid @NotNull @RequestBody ClaimData claimData,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
@@ -177,7 +177,7 @@ public class ClaimController {
     }
 
     @PutMapping(value = "/create-citizen-claim", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Creates a citizen claim")
+    @Operation(summary = "Creates a citizen claim")
     public Claim createClaim(
         @Valid @NotNull @RequestBody ClaimData claimData,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
@@ -190,21 +190,21 @@ public class ClaimController {
     }
 
     @PutMapping("/defendant/link")
-    @ApiOperation("Links defendant to all unlinked letter-holder cases")
+    @Operation(summary = "Links defendant to all unlinked letter-holder cases")
     public void linkDefendantToClaim(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
                                      @RequestHeader(value = "LetterHolderID", required = false) String letterholderId) {
         claimService.linkDefendantToClaim(authorisation, letterholderId);
     }
 
     @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/request-more-time")
-    @ApiOperation("Updates response deadline. Can be called only once per each claim")
+    @Operation(summary = "Updates response deadline. Can be called only once per each claim")
     public Claim requestMoreTimeToRespond(@PathVariable("externalId") String externalId,
                                           @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
         return claimService.requestMoreTimeForResponse(externalId, authorisation);
     }
 
     @GetMapping("/{caseReference}/defendant-link-status")
-    @ApiOperation("Check whether a claim is linked to a defendant")
+    @Operation(summary = "Check whether a claim is linked to a defendant")
     public DefendantLinkStatus isDefendantLinked(@PathVariable("caseReference") String caseReference) {
         boolean linked = claimService.getClaimByReferenceAnonymous(caseReference)
             .filter(claim -> claim.getDefendantId() != null)
@@ -229,7 +229,7 @@ public class ClaimController {
     }
 
     @GetMapping(value = "/pagination-metadata")
-    @ApiOperation("Get the total claim number for an user")
+    @Operation(summary = "Get the total claim number for an user")
     public Map<String, String> fetchPaginationInfo(
         @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation,
         @RequestParam(value = "userType", required = false) String userType) {
@@ -237,7 +237,7 @@ public class ClaimController {
     }
 
     @PostMapping(value = "/{externalId}/breathingSpace", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Creates a new Help With Fees claim")
+    @Operation(summary = "Creates a new Help With Fees claim")
     public ResponseEntity<String> saveBreathingSpaceDetails(
         @Valid @NotNull @RequestBody BreathingSpace breathingSpace,
         @PathVariable("externalId") String externalId,
