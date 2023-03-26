@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +49,7 @@ public class IntegrationTestSupportController {
     }
 
     @GetMapping("/claims/{claimReferenceNumber}")
-    @ApiOperation("Fetch user claim for given reference number")
+    @Operation(summary = "Fetch user claim for given reference number")
     public Claim getByClaimReferenceNumber(
         @PathVariable("claimReferenceNumber") String claimReferenceNumber,
         @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation
@@ -58,7 +58,7 @@ public class IntegrationTestSupportController {
     }
 
     @PutMapping("/claims/{claimReferenceNumber}/response-deadline/{newDeadline}")
-    @ApiOperation("Manipulate the respond by date of a claim")
+    @Operation(summary = "Manipulate the respond by date of a claim")
     public Claim updateRespondByDate(
         @PathVariable("claimReferenceNumber") String claimReferenceNumber,
         @PathVariable("newDeadline") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate newDeadline,
@@ -81,7 +81,7 @@ public class IntegrationTestSupportController {
     }
 
     @PutMapping("/claims/{claimReferenceNumber}/defendant")
-    @ApiOperation("Link a claim to a defendant")
+    @Operation(summary = "Link a claim to a defendant")
     public void linkDefendantToClaim(
         @PathVariable("claimReferenceNumber") String claimReferenceNumber,
         @RequestBody AuthenticationDetails authenticationDetails
