@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.support;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +23,7 @@ import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
 import static uk.gov.hmcts.cmc.domain.models.metadata.CaseMetadata.fromClaim;
 
-@Api
+@Tag(name = "Case Metadata Controller")
 @RestController
 @RequestMapping(
     path = "/claims",
@@ -43,7 +43,7 @@ public class CaseMetadataController {
     }
 
     @GetMapping("/claimant/{submitterId}/metadata")
-    @ApiOperation("Fetch user case metadata for given submitter id")
+    @Operation(summary = "Fetch user case metadata for given submitter id")
     public List<CaseMetadata> getBySubmitterId(@PathVariable("submitterId") String submitterId) {
         return claimService.getClaimBySubmitterId(
             submitterId,
@@ -54,7 +54,7 @@ public class CaseMetadataController {
     }
 
     @GetMapping("/defendant/{defendantId}/metadata")
-    @ApiOperation("Fetch case metadata for given defendant id")
+    @Operation(summary = "Fetch case metadata for given defendant id")
     public List<CaseMetadata> getByDefendantId(
         @PathVariable("defendantId") String defendantId
     ) {
@@ -67,7 +67,7 @@ public class CaseMetadataController {
     }
 
     @GetMapping("/{externalId:" + UUID_PATTERN + "}/metadata")
-    @ApiOperation("Fetch case metadata for given external id")
+    @Operation(summary = "Fetch case metadata for given external id")
     public CaseMetadata getByExternalId(@PathVariable("externalId") String externalId) {
         return fromClaim(claimService.getClaimByExternalId(
             externalId,
@@ -77,7 +77,7 @@ public class CaseMetadataController {
     }
 
     @GetMapping("/{claimReference:" + CLAIM_REFERENCE_PATTERN + "}/metadata")
-    @ApiOperation("Fetch claim metadata for given claim reference")
+    @Operation(summary = "Fetch claim metadata for given claim reference")
     public CaseMetadata getByClaimReference(@PathVariable("claimReference") String claimReference) {
         return claimService.getClaimByReferenceAnonymous(
             claimReference

@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -20,7 +20,7 @@ import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
 
-@Api
+@Tag(name = "Defendant Response Controller")
 @RestController
 @RequestMapping(
     path = "/responses",
@@ -36,7 +36,7 @@ public class DefendantResponseController {
     @PostMapping(
         value = "/claim/{externalId:" + UUID_PATTERN + "}/defendant/{defendantId}",
         consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Creates a new defendant response")
+    @Operation(summary = "Creates a new defendant response")
     public Claim save(
         @Valid @NotNull @RequestBody Response response,
         @PathVariable("defendantId") String defendantId,
