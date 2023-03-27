@@ -31,7 +31,6 @@ def springCloudVersion = '2021.0.0'
 def versions = [
   logback           : '1.2.10',
   springBoot        : springBootVersion,
-  springfoxSwagger  : '2.9.2',
   reformJavaLogging : '5.1.7',
   loggingAppinsights : '5.1.7',
   restAssuredVersion: '4.2.0',
