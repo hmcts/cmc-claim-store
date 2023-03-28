@@ -458,7 +458,12 @@ public class CoreCaseDataServiceTest {
         Claim providedClaim = SampleClaim.getDefault();
 
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
-            .thenThrow(new FeignException.UnprocessableEntity("Status 422 from CCD", request, null));
+            .thenThrow(new FeignException.UnprocessableEntity(
+                "Status 422 from CCD",
+                request,
+                new byte[]{},
+                Map.of())
+            );
 
         CaseDetails caseDetails = service.updatePreferredCourtByClaimReference(USER,
             providedClaim.getId(),
@@ -806,7 +811,12 @@ public class CoreCaseDataServiceTest {
             anyBoolean(),
             any()
         ))
-            .thenThrow(new FeignException.UnprocessableEntity("Status 422 from CCD", request, null));
+            .thenThrow(new FeignException.UnprocessableEntity(
+                "Status 422 from CCD",
+                request,
+                new byte[]{},
+                Map.of())
+            );
 
         Claim returnedClaim = service.saveCaseEventIOC(USER, providedClaim, CREATE_CITIZEN_CLAIM);
         Claim hwfClaim = service.saveCaseEventIOC(USER, providedClaim, UPDATE_HELP_WITH_FEE_CLAIM);
