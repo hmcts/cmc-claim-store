@@ -593,16 +593,20 @@ public class CoreCaseDataService {
             Claim existingClaim = toClaim(startEventResponse);
             Claim.ClaimBuilder claimBuilder = existingClaim.toBuilder();
 
-            claimBuilder.claimantResponse(response)
-                .claimantRespondedAt(nowInUTC())
-                .dateReferredForDirections(nowInUTC())
-                .preferredDQCourt(getPreferredCourt(claimBuilder.build()));
-
             if ((pilotCourtService.isPilotCourt(getPreferredCourt(claimBuilder.build()), LA,
                 existingClaim.getCreatedAt()) || pilotCourtService.isPilotCourt(getPreferredCourt(claimBuilder.build()),
-                JDDO, existingClaim.getCreatedAt()) && isDqPilotCourt)
+                JDDO, existingClaim.getCreatedAt())) && isDqPilotCourt
             ) {
-                claimBuilder.preferredDQPilotCourt(getPreferredCourt(claimBuilder.build()));
+                claimBuilder.claimantResponse(response)
+                    .claimantRespondedAt(nowInUTC())
+                    .dateReferredForDirections(nowInUTC())
+                    .preferredDQCourt(getPreferredCourt(claimBuilder.build()))
+                    .preferredDQPilotCourt(getPreferredCourt(claimBuilder.build()));
+            } else {
+                claimBuilder.claimantResponse(response)
+                    .claimantRespondedAt(nowInUTC())
+                    .dateReferredForDirections(nowInUTC())
+                    .preferredDQCourt(getPreferredCourt(claimBuilder.build()));
             }
 
             CaseDataContent caseDataContent = caseDataContent(startEventResponse, claimBuilder.build());

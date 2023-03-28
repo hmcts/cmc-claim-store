@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.support;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -84,11 +84,11 @@ public class DeadlineSupportController {
     }
 
     @PutMapping("/{deadlineType}/claim/{referenceNumber}")
-    @ApiOperation("Calculate and define a deadline for a claim")
+    @Operation(summary = "Calculate and define a deadline for a claim")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "Deadline already defined"),
-        @ApiResponse(code = 201, message = "Deadline calculated and defined"),
-        @ApiResponse(code = 403, message = "Claim is in an invalid state for this deadline")
+        @ApiResponse(responseCode = "200", description = "Deadline already defined"),
+        @ApiResponse(responseCode = "201", description = "Deadline calculated and defined"),
+        @ApiResponse(responseCode = "403", description = "Claim is in an invalid state for this deadline")
     })
     public ResponseEntity<String> defineDeadline(
         @PathVariable String deadlineType,
