@@ -50,6 +50,7 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static java.time.LocalDate.now;
@@ -192,7 +193,12 @@ public class CoreCaseDataServiceFailureTest {
             any(CaseDataContent.class),
             eq(solicitorUser.isRepresented())
         ))
-            .thenThrow(new FeignException.Conflict("Status 409 while creating the case", request, null));
+            .thenThrow(new FeignException.Conflict(
+                "Status 409 while creating the case",
+                request,
+                new byte[]{},
+                Map.of())
+            );
 
         service.createRepresentedClaim(solicitorUser, providedClaim);
     }
@@ -300,7 +306,7 @@ public class CoreCaseDataServiceFailureTest {
             anyBoolean(),
             any()
         ))
-            .thenThrow(new FeignException.UnprocessableEntity("422 from CCD", request, null));
+            .thenThrow(new FeignException.UnprocessableEntity("422 from CCD", request, new byte[]{}, Map.of()));
 
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(providedClaim);
 
