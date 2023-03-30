@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -26,7 +26,7 @@ import javax.validation.Valid;
 
 import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
 
-@Api
+@Tag(name = "Offers Controller")
 @RestController
 @RequestMapping(
     path = "/claims",
@@ -53,7 +53,7 @@ public class OffersController {
     @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/offers/{party}",
         consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation("Makes an offer as a party")
+    @Operation(summary = "Makes an offer as a party")
     public Claim makeOffer(
         @PathVariable("externalId") String externalId,
         @PathVariable("party") MadeBy party,
@@ -67,7 +67,7 @@ public class OffersController {
     @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/offers/{party}/accept",
         consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation("Accepts an offer as a party")
+    @Operation(summary = "Accepts an offer as a party")
     public Claim accept(
         @PathVariable("externalId") String externalId,
         @PathVariable("party") MadeBy party,
@@ -80,7 +80,7 @@ public class OffersController {
     @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/offers/{party}/reject",
         consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation("Rejects an offer as a party")
+    @Operation(summary = "Rejects an offer as a party")
     public Claim reject(
         @PathVariable("externalId") String externalId,
         @PathVariable("party") MadeBy party,
@@ -93,7 +93,7 @@ public class OffersController {
     @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/offers/{party}/countersign",
         consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation("Counter sign an offer as a party")
+    @Operation(summary = "Counter sign an offer as a party")
     public Claim countersign(
         @PathVariable("externalId") String externalId,
         @PathVariable("party") MadeBy party,

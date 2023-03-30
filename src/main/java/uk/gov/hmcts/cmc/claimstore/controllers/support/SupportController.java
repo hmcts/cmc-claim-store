@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.support;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -138,7 +138,7 @@ public class SupportController {
     }
 
     @PutMapping("/claim/{referenceNumber}/event/{event}/resend-staff-notifications")
-    @ApiOperation("Resend staff notifications associated with provided event")
+    @Operation(summary = "Resend staff notifications associated with provided event")
     public void resendStaffNotifications(
         @PathVariable("referenceNumber") String referenceNumber,
         @PathVariable("event") String event
@@ -180,12 +180,12 @@ public class SupportController {
     }
 
     @PutMapping("/documents/{referenceNumber}/{documentType}")
-    @ApiOperation("Ensure a document is available on CCD")
+    @Operation(summary = "Ensure a document is available on CCD")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "OK"),
-        @ApiResponse(code = 201, message = "Created"),
-        @ApiResponse(code = 404, message = "Claim not found"),
-        @ApiResponse(code = 500, message = "Unable to upload document")
+        @ApiResponse(responseCode = "200", description = "OK"),
+        @ApiResponse(responseCode = "201", description = "Created"),
+        @ApiResponse(responseCode = "404", description = "Claim not found"),
+        @ApiResponse(responseCode = "500", description = "Unable to upload document")
     })
     @SuppressWarnings("squid:S2201") // orElseThrow does not ignore the result
     public ResponseEntity<String> uploadDocumentToDocumentManagement(
@@ -216,7 +216,7 @@ public class SupportController {
     }
 
     @PutMapping("/claim/{referenceNumber}/reset-operation")
-    @ApiOperation("Redo any failed operation. Use the claim submission indicators to indicate the operation to redo.")
+    @Operation(summary = "Redo any failed operation. Use the claim submission indicators to indicate the operation to redo.")
     public void resetOperation(
         @PathVariable("referenceNumber") String referenceNumber,
         @RequestBody ClaimSubmissionOperationIndicators indicators,
@@ -239,7 +239,7 @@ public class SupportController {
     }
 
     @PutMapping("/claims/{referenceNumber}/recover-operations")
-    @ApiOperation("Recovers the failed operations which are mandatory to issue a claim.")
+    @Operation(summary = "Recovers the failed operations which are mandatory to issue a claim.")
     public void recoverClaimIssueOperations(@PathVariable("referenceNumber") String referenceNumber) {
         User user = userService.authenticateAnonymousCaseWorker();
         String authorisation = user.getAuthorisation();
@@ -268,7 +268,7 @@ public class SupportController {
     }
 
     @PostMapping(value = "/sendMediation", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Generate and Send Mediation Report for Telephone Mediation Service")
+    @Operation(summary = "Generate and Send Mediation Report for Telephone Mediation Service")
     public void sendMediation(
         @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation,
         @RequestBody MediationRequest mediationRequest
@@ -283,7 +283,7 @@ public class SupportController {
      * MILO report(in case of failure) for specific date
      * */
     @PostMapping(value = "/reSendMediation", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Re-Generate and Send Mediation Report for Telephone Mediation Service")
+    @Operation(summary = "Re-Generate and Send Mediation Report for Telephone Mediation Service")
     public void reSendMediation(
         @RequestBody MediationRequest mediationRequest
     ) {
@@ -299,7 +299,7 @@ public class SupportController {
     }
 
     @PutMapping(value = "/claims/transitionClaimState")
-    @ApiOperation("Trigger scheduled state transition")
+    @Operation(summary = "Trigger scheduled state transition")
     public void transitionClaimState(
         @Valid @NotNull @RequestBody StateTransitionInput stateTransitionInput
     ) {
@@ -314,7 +314,7 @@ public class SupportController {
     }
 
     @PutMapping(value = "/claim/{claimNumber}/preferredDQCourt")
-    @ApiOperation("Set preferred DQ pilot court for a claim")
+    @Operation(summary = "Set preferred DQ pilot court for a claim")
     public void setPreferredDQPilotCourt(@PathVariable("claimNumber") String claimNumber) {
         claimService.updatePreferredCourtByClaimReference(claimNumber);
     }
