@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
@@ -15,7 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.NextWorkingDay;
 
 import java.time.LocalDate;
 
-@Api
+@Tag(name = "Calendar Controller")
 @RestController
 @RequestMapping(
     path = "/calendar",
@@ -31,7 +31,7 @@ public class CalendarController {
     }
 
     @GetMapping(path = "/next-working-day")
-    @ApiOperation("Returns next working day from date given")
+    @Operation(summary = "Returns next working day from date given")
     public NextWorkingDay getNextWorkingDay(
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam("date") LocalDate date
     ) {
