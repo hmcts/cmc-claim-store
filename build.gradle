@@ -8,7 +8,6 @@ plugins {
   id 'org.sonarqube' version '2.8'
   id 'com.github.ben-manes.versions' version '0.36.0'
   id 'jacoco'
-  id 'net.ltgt.apt' version '0.21'
   id 'idea'
 }
 
@@ -34,7 +33,7 @@ def versions = [
   reformJavaLogging : '5.1.7',
   loggingAppinsights : '5.1.7',
   restAssuredVersion: '4.2.0',
-  jackson           : '2.14.0-rc1',
+  jackson           : '2.14.2',
   junit             : '5.7.1',
   junitPlatform     : '1.7.1',
 ]
@@ -56,10 +55,8 @@ allprojects {
 
   checkstyle {
     maxWarnings = 0
-
     toolVersion = '8.29'
-    // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
-    configDir = new File(rootDir, 'config/checkstyle')
+    getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
   }
 
   // https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/configuration.html
@@ -201,106 +198,108 @@ configurations {
 
 dependencies {
 
-  compile project(':email-client')
-  compile project(':domain-model')
-  compile project(':ccd-adapter')
-  compile project(':rpa-mapper')
-  compile project(':domain-sample-data')
-  compile project(':job-scheduler')
-  compile project(':launch-darkly-client')
+  implementation project(':email-client')
+  implementation project(':domain-model')
+  implementation project(':ccd-adapter')
+  implementation project(':rpa-mapper')
+  implementation project(':domain-sample-data')
+  implementation project(':job-scheduler')
+  implementation project(':launch-darkly-client')
 
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-json'
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-quartz'
 
-  compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
 
-  compile group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
-  compile group: 'ch.qos.logback', name: 'logback-core', version: versions.logback
+  implementation group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
+  implementation group: 'ch.qos.logback', name: 'logback-core', version: versions.logback
+//  implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: versions.jackson
 
-  compile group: 'com.mitchellbosecke', name: 'pebble', version: '2.4.0'
+  implementation group: 'com.mitchellbosecke', name: 'pebble', version: '2.4.0'
 
-  compile group: 'commons-io', name: 'commons-io', version: '2.11.0'
+  implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
 
-  compile group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.15'
+  implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.15'
 
-  compile group: 'org.elasticsearch', name: 'elasticsearch', version: '7.13.4'
-  compile group: 'org.postgresql', name: 'postgresql', version: '42.3.3'
+  implementation group: 'org.elasticsearch', name: 'elasticsearch', version: '7.13.4'
+  implementation group: 'org.postgresql', name: 'postgresql', version: '42.3.3'
 
-  compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.2-RELEASE'
+  implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.2-RELEASE'
 
-  compile group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformJavaLogging
-  compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.loggingAppinsights
-  compile group: 'com.github.hmcts', name: 'cmc-pdf-service-client', version: '7.0.0'
-  compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
+  implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformJavaLogging
+  implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.loggingAppinsights
+  implementation group: 'com.github.hmcts', name: 'cmc-pdf-service-client', version: '7.0.0'
+  implementation group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
 
-  compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.6'
-  compile group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.7.1'
-  compile group: 'com.github.hmcts', name: 'doc-assembly-client', version: '1.2.2'
-  compile group: 'com.github.hmcts', name: 'fees-java-client', version: '0.0.6'
-  compile group: 'com.github.hmcts', name: 'payments-java-client', version: '0.0.7'
-  compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '4.0.0'
-  compile group: 'com.github.hmcts', name: 'send-letter-client', version: '3.0.16'
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
-  compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.1.0'
+  implementation group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.6'
+  implementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.7.1'
+  implementation group: 'com.github.hmcts', name: 'doc-assembly-client', version: '1.2.2'
+  implementation group: 'com.github.hmcts', name: 'fees-java-client', version: '0.0.6'
+  implementation group: 'com.github.hmcts', name: 'payments-java-client', version: '0.0.7'
+  implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '4.0.0'
+  implementation group: 'com.github.hmcts', name: 'send-letter-client', version: '3.0.16'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
+  implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.1.0'
 
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
-  compile group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '2.7.0'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
+  implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '2.7.0'
 
-  compile group: 'org.springframework.security', name: 'spring-security-web'
-  compile group: 'org.springframework.security', name: 'spring-security-config'
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client'
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
-  compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.25'
-  compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
+  implementation group: 'org.springframework.security', name: 'spring-security-web'
+  implementation group: 'org.springframework.security', name: 'spring-security-config'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
+  implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.25'
+  implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
 
-  compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
-  compile group: 'org.apache.commons', name: 'commons-csv', version: '1.8'
+  implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
+  implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.8'
 
-  compile group: 'org.jdbi', name: 'jdbi', version: '2.78'
+  implementation group: 'org.jdbi', name: 'jdbi', version: '2.78'
 
-  compile group: 'org.springframework', name: 'spring-context-support'
-  compile group: 'org.springframework.retry', name: 'spring-retry'
-  compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign'
+  implementation group: 'org.springframework', name: 'spring-context-support'
+  implementation group: 'org.springframework.retry', name: 'spring-retry'
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign'
 
-  compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '11.2'
+  implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '11.2'
 
-  compile group: 'org.springframework.cloud',name : 'spring-cloud-starter-bootstrap'
+  implementation group: 'org.springframework.cloud',name : 'spring-cloud-starter-bootstrap'
 
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.18'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.18'
 
-  testCompile project(':domain-sample-data')
-  testCompile project(path: ":ccd-adapter", configuration: 'testArtifacts')
-  testCompile group: 'io.rest-assured', name: 'rest-assured', version: versions.restAssuredVersion
-  testCompile group: 'io.rest-assured', name: 'json-path', version: versions.restAssuredVersion
-  testCompile group: 'io.rest-assured', name: 'rest-assured-common', version: versions.restAssuredVersion
-  testCompile group: 'io.rest-assured', name: 'xml-path', version: versions.restAssuredVersion
+  testImplementation project(':domain-sample-data')
+  testImplementation project(path: ":ccd-adapter", configuration: 'testArtifacts')
+  testImplementation group: 'io.rest-assured', name: 'rest-assured', version: versions.restAssuredVersion
+  testImplementation group: 'io.rest-assured', name: 'json-path', version: versions.restAssuredVersion
+  testImplementation group: 'io.rest-assured', name: 'rest-assured-common', version: versions.restAssuredVersion
+  testImplementation group: 'io.rest-assured', name: 'xml-path', version: versions.restAssuredVersion
 
-  testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
-  testCompile group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock'
+  testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+  testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock'
 
-  testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit
-  testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit
-  testCompile group: 'org.junit.vintage', name: 'junit-vintage-engine', version: versions.junit
-  testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: versions.junit
-  testCompile group: 'org.junit.platform', name: 'junit-platform-commons', version: versions.junitPlatform
-  testCompile group: 'org.junit.platform', name: 'junit-platform-engine', version: versions.junitPlatform
-  testCompile group: 'org.assertj', name: 'assertj-core', version: '3.20.2'
-  testCompile group: 'org.mockito', name: 'mockito-core', version: '3.11.2'
-  testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.8.0'
-  testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.2'
-  testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.17.6'
+  testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit
+  testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit
+  testImplementation group: 'org.junit.vintage', name: 'junit-vintage-engine', version: versions.junit
+  testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: versions.junit
+  testImplementation group: 'org.junit.platform', name: 'junit-platform-commons', version: versions.junitPlatform
+  testImplementation group: 'org.junit.platform', name: 'junit-platform-engine', version: versions.junitPlatform
+  testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.20.2'
+  testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.11.2'
+  testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.8.0'
+  testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.2'
+  testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.17.6'
 
-  testCompile group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
-  testCompile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: '2.5.0'
-  testCompile group: 'net.jodah', name: 'failsafe', version: '2.4.0'
-  testCompile group: 'org.xmlunit', name: 'xmlunit-core', version: '2.8.2'
-  testCompile group: 'org.xmlunit', name: 'xmlunit-matchers', version: '2.8.2'
-  testCompile 'com.github.hmcts:fortify-client:1.2.1:all'
+  testImplementation group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
+  testImplementation group: 'com.jayway.jsonpath', name: 'json-path-assert', version: '2.5.0'
+  testImplementation group: 'net.jodah', name: 'failsafe', version: '2.4.0'
+  testImplementation group: 'org.xmlunit', name: 'xmlunit-core', version: '2.8.2'
+  testImplementation group: 'org.xmlunit', name: 'xmlunit-matchers', version: '2.8.2'
+  testImplementation 'com.github.hmcts:fortify-client:1.2.1:all'
 }
 
 sourceSets {
@@ -338,7 +337,7 @@ test {
 }
 
 task fortifyScan(type: JavaExec)  {
-  main = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
+  mainClass.set("uk.gov.hmcts.fortifyclient.FortifyClientMainApp")
   classpath += sourceSets.test.runtimeClasspath
   jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
 }

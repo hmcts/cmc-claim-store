@@ -7,5 +7,5 @@ repositories {
 }
 
 dependencies {
-  compile project(':ccd-adapter')
+  implementation project(':ccd-adapter')
 }
