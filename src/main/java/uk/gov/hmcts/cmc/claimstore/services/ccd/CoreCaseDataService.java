@@ -119,6 +119,7 @@ public class CoreCaseDataService {
     private final int intentionToProceedDeadlineDays;
     private final DirectionsQuestionnaireService directionsQuestionnaireService;
     private final PilotCourtService pilotCourtService;
+    private final boolean isDqPilotCourt;
 
     @SuppressWarnings("squid:S00107") // All parameters are required here
     @Autowired
@@ -134,7 +135,8 @@ public class CoreCaseDataService {
         Integer intentionToProceedDeadlineDays,
         WorkingDayIndicator workingDayIndicator,
         DirectionsQuestionnaireService directionsQuestionnaireService,
-        PilotCourtService pilotCourtService
+        PilotCourtService pilotCourtService,
+        @Value("${feature_toggles.dq_pilot_court_enabled}") boolean isDqPilotCourt
     ) {
         this.caseMapper = caseMapper;
         this.userService = userService;
@@ -147,6 +149,7 @@ public class CoreCaseDataService {
         this.intentionToProceedDeadlineDays = intentionToProceedDeadlineDays;
         this.directionsQuestionnaireService = directionsQuestionnaireService;
         this.pilotCourtService = pilotCourtService;
+        this.isDqPilotCourt = isDqPilotCourt;
     }
 
     @LogExecutionTime
@@ -591,16 +594,20 @@ public class CoreCaseDataService {
             Claim existingClaim = toClaim(startEventResponse);
             Claim.ClaimBuilder claimBuilder = existingClaim.toBuilder();
 
-            claimBuilder.claimantResponse(response)
-                .claimantRespondedAt(nowInUTC())
-                .dateReferredForDirections(nowInUTC())
-                .preferredDQCourt(getPreferredCourt(claimBuilder.build()));
-
             if ((pilotCourtService.isPilotCourt(getPreferredCourt(claimBuilder.build()), LA,
                 existingClaim.getCreatedAt()) || pilotCourtService.isPilotCourt(getPreferredCourt(claimBuilder.build()),
-                JDDO, existingClaim.getCreatedAt()))
+                JDDO, existingClaim.getCreatedAt())) && isDqPilotCourt
             ) {
-                claimBuilder.preferredDQPilotCourt(getPreferredCourt(claimBuilder.build()));
+                claimBuilder.claimantResponse(response)
+                    .claimantRespondedAt(nowInUTC())
+                    .dateReferredForDirections(nowInUTC())
+                    .preferredDQCourt(getPreferredCourt(claimBuilder.build()))
+                    .preferredDQPilotCourt(getPreferredCourt(claimBuilder.build()));
+            } else {
+                claimBuilder.claimantResponse(response)
+                    .claimantRespondedAt(nowInUTC())
+                    .dateReferredForDirections(nowInUTC())
+                    .preferredDQCourt(getPreferredCourt(claimBuilder.build()));
             }
 
             CaseDataContent caseDataContent = caseDataContent(startEventResponse, claimBuilder.build());
