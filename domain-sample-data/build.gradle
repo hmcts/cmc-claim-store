@@ -8,4 +8,5 @@ repositories {
 
 dependencies {
   implementation project(':domain-model')
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
 }
