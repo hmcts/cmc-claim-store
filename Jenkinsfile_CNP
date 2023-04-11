@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure")
+@Library("Infrastructure@deprecate-java-11")
 
 def product = "cmc"
 def component = "claim-store"
