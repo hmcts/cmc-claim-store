@@ -42,7 +42,7 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.bankholidays.BankHolidays;
 import uk.gov.hmcts.cmc.claimstore.services.bankholidays.BankHolidaysApi;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.PaymentsService;
-import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.SecuredDocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
@@ -109,7 +109,7 @@ public abstract class BaseMockSpringTest {
     @MockBean
     protected OrderDrawnNotificationService orderDrawnNotificationService;
     @MockBean
-    protected DocumentManagementService documentManagementService;
+    protected SecuredDocumentManagementService securedDocumentManagementService;
     @MockBean
     protected LegalOrderService legalOrderService;
     @MockBean
