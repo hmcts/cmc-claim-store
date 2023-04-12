@@ -8,7 +8,7 @@ java:
     cmc:
       resourceGroup: cmc
       secrets:
-        - AppInsightsInstrumentationKey
+        - appinsights-connection-string
         - citizen-oauth-client-secret
         - claim-store-s2s-secret
         - anonymous-caseworker-username
