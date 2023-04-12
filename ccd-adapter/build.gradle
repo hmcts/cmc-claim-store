@@ -25,7 +25,7 @@ configurations {
 }
 
 task testJar (type: Jar) {
-  classifier "test"
+  archiveClassifier = "test"
   from sourceSets.test.output
 }
 

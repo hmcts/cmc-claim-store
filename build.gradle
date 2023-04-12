@@ -49,8 +49,8 @@ allprojects {
   version '1.1.0'
 
   jacoco {
-    toolVersion = '0.8.5' // jacocoMavenPluginVersion
-    reportsDir = file("$buildDir/reports/jacoco")
+    toolVersion = '0.8.8' // jacocoMavenPluginVersion
+    reportsDirectory = file("$buildDir/reports/jacoco")
   }
 
   tasks.withType(Copy).all {
@@ -406,9 +406,9 @@ compileIntegrationTestJava {
 jacocoTestReport {
   executionData(test, apiTest)
   reports {
-    xml.enabled = true
-    csv.enabled = false
-    xml.destination = file("${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
+    xml.required = true
+    csv.required = false
+    xml.outputLocation = file("${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
   }
 }
 
@@ -480,7 +480,7 @@ sonarqube {
 }
 
 bootJar {
-  archiveName = 'claim-store.jar'
+  archiveFileName.set('claim-store.jar')
   manifest {
     attributes 'Implementation-Title': project.name,
       'Implementation-Version': project.version
