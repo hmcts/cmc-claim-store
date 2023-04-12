@@ -1,6 +1,4 @@
-plugins {
-  id 'jacoco'
-}
+apply plugin: 'jacoco'
 
 dependencies {
   implementation project(':domain-model')
