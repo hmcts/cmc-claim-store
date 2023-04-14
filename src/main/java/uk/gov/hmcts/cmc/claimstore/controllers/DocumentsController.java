@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ import javax.validation.constraints.NotBlank;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.GENERAL_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.fromValue;
 
-@Api
+@Tag(name = "Documents Controller")
 @RestController
 @RequestMapping("/documents")
 public class DocumentsController {
@@ -35,15 +35,15 @@ public class DocumentsController {
         this.documentsService = documentsService;
     }
 
-    @ApiOperation("Returns a specific pdf for a given claim external id")
+    @Operation(summary = "Returns a specific pdf for a given claim external id")
     @GetMapping(
         value = "/{documentType}/{externalId}",
         produces = MediaType.APPLICATION_PDF_VALUE
     )
     public ResponseEntity<ByteArrayResource> document(
-        @ApiParam("Claim document type")
+        @Parameter(name = "Claim document type")
         @PathVariable("documentType") @NotBlank String documentType,
-        @ApiParam("Claim external id")
+        @Parameter(name = "Claim external id")
         @PathVariable("externalId") @NotBlank String externalId,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {

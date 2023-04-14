@@ -7,5 +7,9 @@ repositories {
 }
 
 dependencies {
-  compile project(':ccd-adapter')
+  implementation project(':ccd-adapter')
+  implementation project(':domain-model')
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
+
+  implementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
 }
