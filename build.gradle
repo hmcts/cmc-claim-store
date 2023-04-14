@@ -240,7 +240,7 @@ dependencies {
   implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.15'
 
   implementation group: 'org.elasticsearch', name: 'elasticsearch', version: '7.13.4'
-  implementation group: 'org.postgresql', name: 'postgresql', version: '42.3.3'
+  implementation group: 'org.postgresql', name: 'postgresql', version: '42.3.7'
 
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.2-RELEASE'
 
@@ -307,7 +307,7 @@ dependencies {
   testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.11.2'
   testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.8.0'
   testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.2'
-  testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.17.6'
+  testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.18.0'
 
   testImplementation group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
   testImplementation group: 'com.jayway.jsonpath', name: 'json-path-assert', version: '2.5.0'
