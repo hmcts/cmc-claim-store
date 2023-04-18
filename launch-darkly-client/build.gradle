@@ -3,7 +3,7 @@ apply plugin: 'jacoco'
 sourceCompatibility = 11
 
 dependencies {
-  implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.10.1'
+  implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '6.1.0'
   implementation group: 'org.springframework', name: 'spring-context-support'
 
   testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api'
