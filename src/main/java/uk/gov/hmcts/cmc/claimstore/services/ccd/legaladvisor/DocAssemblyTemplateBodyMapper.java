@@ -60,6 +60,9 @@ public class DocAssemblyTemplateBodyMapper {
 
         LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
 
+        String respondentPartyName = getRespondentPartyName(ccdCase.getRespondents().get(0)
+            .getValue());
+
         return DocAssemblyTemplateBody.builder()
             .claimant(Party.builder()
                 .partyName(ccdCase.getApplicants()
@@ -68,10 +71,7 @@ public class DocAssemblyTemplateBodyMapper {
                     .getPartyName())
                 .build())
             .defendant(Party.builder()
-                .partyName(ccdCase.getRespondents()
-                    .get(0)
-                    .getValue()
-                    .getPartyName())
+                .partyName(respondentPartyName)
                 .build())
             .judicial(Judicial.builder()
                 .firstName(userDetails.getForename())
@@ -125,6 +125,12 @@ public class DocAssemblyTemplateBodyMapper {
             .build();
     }
 
+    private String getRespondentPartyName(CCDRespondent ccdRespondent) {
+        return ccdRespondent.getPartyName() != null
+            ? ccdRespondent.getPartyName() :
+            ccdRespondent.getClaimantProvidedPartyName();
+    }
+
     public DocAssemblyTemplateBody generalLetterBody(CCDCase ccdCase) {
         LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
         GeneralLetterContent generalLetterContent = ccdCase.getGeneralLetterContent();
@@ -135,10 +141,8 @@ public class DocAssemblyTemplateBodyMapper {
             partyAddress = ccdCase.getApplicants().get(0)
                 .getValue().getPartyDetail().getPrimaryAddress();
         } else {
-            partyName = ccdCase.getRespondents().get(0)
-                .getValue().getPartyName() != null
-                ? ccdCase.getRespondents().get(0).getValue().getPartyName() :
-                ccdCase.getRespondents().get(0).getValue().getClaimantProvidedPartyName();
+            partyName = getRespondentPartyName(ccdCase.getRespondents().get(0)
+                .getValue());
             partyAddress = getDefendantAddress(ccdCase.getRespondents().get(0).getValue());
         }
         return DocAssemblyTemplateBody.builder()
@@ -215,10 +219,8 @@ public class DocAssemblyTemplateBodyMapper {
 
     public DocAssemblyTemplateBody paperResponseAdmissionLetter(CCDCase ccdCase, String caseworkerName) {
         LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
-        CCDRespondent defendant =  ccdCase.getRespondents().get(0).getValue();
-        String partyName = defendant.getPartyName() != null
-            ? defendant.getPartyName()
-            :  defendant.getClaimantProvidedPartyName();
+        CCDRespondent defendant = ccdCase.getRespondents().get(0).getValue();
+        String partyName = getRespondentPartyName(defendant);
         CCDAddress partyAddress = getDefendantAddress(ccdCase.getRespondents().get(0).getValue());
 
         return DocAssemblyTemplateBody.builder()
@@ -236,11 +238,11 @@ public class DocAssemblyTemplateBodyMapper {
 
         return DocAssemblyTemplateBody.builder()
             .claimant(Party.builder()
-            .partyName(ccdCase.getApplicants()
-                .get(0)
-                .getValue()
-                .getPartyName())
-            .build())
+                .partyName(ccdCase.getApplicants()
+                    .get(0)
+                    .getValue()
+                    .getPartyName())
+                .build())
             .defendant(Party.builder()
                 .partyName(ccdCase.getRespondents()
                     .get(0)
@@ -271,9 +273,7 @@ public class DocAssemblyTemplateBodyMapper {
 
     public DocAssemblyTemplateBody breathingSpaceLetter(CCDCase ccdCase) {
         CCDRespondent defendant = ccdCase.getRespondents().get(0).getValue();
-        String partyName = defendant.getPartyName() != null
-            ? defendant.getPartyName()
-            : defendant.getClaimantProvidedPartyName();
+        String partyName = getRespondentPartyName(defendant);
         CCDAddress partyAddress = getDefendantAddress(ccdCase.getRespondents().get(0).getValue());
         CCDApplicant claimant = ccdCase.getApplicants().get(0).getValue();
 
