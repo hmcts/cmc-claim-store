@@ -195,8 +195,8 @@ class DocAssemblyTemplateBodyMapperTest {
                 .paperDetermination(false)
                 .hasFirstOrderDirections(true)
                 .hasSecondOrderDirections(true)
-                .docUploadDeadline(LocalDate.parse("2023-10-11"))
-                .eyewitnessUploadDeadline(LocalDate.parse("2023-10-11"))
+                .docUploadDeadline(LocalDate.parse("2022-10-11"))
+                .eyewitnessUploadDeadline(LocalDate.parse("2022-10-11"))
                 .currentDate(LocalDate.parse("2019-04-24"))
                 .claimant(Party.builder().partyName("Individual").build())
                 .defendant(Party.builder().partyName("Mary Richards").build())
@@ -400,6 +400,26 @@ class DocAssemblyTemplateBodyMapperTest {
             docAssemblyTemplateBodyBuilder.oconResponse(false);
             DocAssemblyTemplateBody expectedBody = docAssemblyTemplateBodyBuilder.build();
             assertThat(requestBody).isEqualTo(expectedBody);
+        }
+
+        @Test
+        void getDefendantPartyNameFromClaimantIfMissingFromDefendantResponse() {
+
+            ccdCase.setRespondents(
+                ImmutableList.of(
+                    CCDCollectionElement.<CCDRespondent>builder()
+                        .value(SampleData.withRespondentPartyNameAsNull())
+                        .build()
+                ));
+
+            DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
+                ccdCase,
+                userDetails
+            );
+
+            assertThat(ccdCase.getRespondents().get(0).getValue().getPartyName()).isNull();
+            assertThat(requestBody.getDefendant().getPartyName())
+                .isEqualTo(ccdCase.getRespondents().get(0).getValue().getClaimantProvidedPartyName());
         }
 
     }
@@ -799,6 +819,5 @@ class DocAssemblyTemplateBodyMapperTest {
                 .build();
             assertThat(requestBody).isEqualTo(expectedBody);
         }
-
     }
 }
