@@ -1,6 +1,6 @@
 java:
   image: ${IMAGE_NAME}
-  ingressHost: ${SERVICE_NAME}
+  ingressHost: ${SERVICE_NAME}.preview.platform.hmcts.net
   livenessFailureThreshold: 6
   livenessDelay: 75
   readinessDelay: 75
