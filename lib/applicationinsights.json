@@ -1,5 +1,5 @@
 {
-  "connectionString": "${file:/mnt/secrets/cmc/appinsights-connection-string}",
+  "connectionString": "${file:/mnt/secrets/cmc/AppInsightsInstrumentationKey}",
   "role": {
     "name": "HMCTS Claim Store Service"
   }
