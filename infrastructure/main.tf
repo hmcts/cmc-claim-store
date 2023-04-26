@@ -137,7 +137,7 @@ resource "azurerm_key_vault_secret" "sendgrid_api_key-2" {
   name         = "sendgrid-api-key-2"
   value        = data.azurerm_key_vault_secret.send_grid_api_key.value
 }
-  
+
 module "database" {
   source = "git@github.com:hmcts/cnp-module-postgres?ref=master"
   product = var.product
@@ -173,5 +173,16 @@ module "database-v11" {
 resource "azurerm_key_vault_secret" "cmc-db-password-v11" {
   name      = "cmc-db-password-v11"
   value     = module.database-v11.postgresql_password
+  key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
+}
+
+data "azurerm_application_insights" "cmc" {
+  name                = "${var.product}-${var.env}"
+  resource_group_name = "${var.product}-${var.env}"
+}
+
+resource "azurerm_key_vault_secret" "appinsights_connection_string" {
+  name         = "appinsights-connection-string"
+  value        = data.azurerm_application_insights.cmc.connection_string
   key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
 }
