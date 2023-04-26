@@ -12,7 +12,7 @@ java:
     cmc:
       resourceGroup: cmc
       secrets:
-        - appinsights-connection-string
+        - AppInsightsInstrumentationKey
         - cmc-db-password-v11
         - citizen-oauth-client-secret
         - claim-store-s2s-secret
