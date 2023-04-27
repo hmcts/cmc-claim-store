@@ -4,9 +4,7 @@
         <cve>CVE-2021-28170</cve>
         <cve>CVE-2021-27568</cve>
         <cve>CVE-2022-38752</cve>
-        <cve>CVE-2022-41854</cve>
         <cve>CVE-2022-41946</cve>
-        <cve>CVE-2022-31197</cve>
         <cve>CVE-2021-22044</cve>
         <cve>CVE-2022-22978</cve>
         <cve>CVE-2022-22976</cve>
@@ -17,5 +15,10 @@
         <cve>CVE-2022-31692</cve>
         <cve>CVE-2023-28708</cve>
         <cve>CVE-2023-20861</cve>
+        <cve>CVE-2023-20860</cve>
+        <cve>CVE-2023-20863</cve>
+    </suppress>
+    <suppress until="2023-04-18">
+        <cve>CVE-2023-20860</cve>
     </suppress>
 </suppressions>
