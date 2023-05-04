@@ -1,15 +1,14 @@
 apply plugin: 'jacoco'
-apply plugin: 'net.ltgt.apt'
 
 sourceCompatibility = 11
 
 dependencies {
-  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.10.1'
-  compile group: 'org.springframework', name: 'spring-context-support'
+  implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '6.1.0'
+  implementation group: 'org.springframework', name: 'spring-context-support'
 
-  testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api'
-  testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine'
-  testCompile group: 'org.mockito', name: 'mockito-junit-jupiter'
+  testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api'
+  testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine'
+  testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter'
 }
 
 test {

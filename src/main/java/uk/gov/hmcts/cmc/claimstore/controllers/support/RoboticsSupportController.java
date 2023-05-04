@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.support;
 
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -79,7 +79,7 @@ public class RoboticsSupportController {
     }
 
     @PutMapping("/claim")
-    @ApiOperation("Send RPA notifications for multiple claims")
+    @Operation(summary = "Send RPA notifications for multiple claims")
     public Map<String, String> rpaClaimNotifications(@RequestBody List<String> referenceNumbers) {
         if (referenceNumbers == null || referenceNumbers.isEmpty()) {
             throw new IllegalArgumentException(REF_NUMBER_NOT_SUPPLIED);
@@ -109,7 +109,7 @@ public class RoboticsSupportController {
     }
 
     @PutMapping("/legal-claim")
-    @ApiOperation("Send RPA notifications for multiple claims")
+    @Operation(summary = "Send RPA notifications for multiple claims")
     public Map<String, String> rpaLegalClaimNotifications(@RequestBody List<String> referenceNumbers) {
         if (referenceNumbers == null || referenceNumbers.isEmpty()) {
             throw new IllegalArgumentException(REF_NUMBER_NOT_SUPPLIED);
@@ -133,7 +133,7 @@ public class RoboticsSupportController {
     }
 
     @PutMapping("/more-time")
-    @ApiOperation("Send RPA notifications for multiple more-time requests")
+    @Operation(summary = "Send RPA notifications for multiple more-time requests")
     public Map<String, String> rpaMoreTimeNotifications(@RequestBody List<String> referenceNumbers) {
         if (referenceNumbers == null || referenceNumbers.isEmpty()) {
             throw new IllegalArgumentException(REF_NUMBER_NOT_SUPPLIED);
@@ -153,7 +153,7 @@ public class RoboticsSupportController {
     }
 
     @PutMapping("/response")
-    @ApiOperation("Send RPA notifications for multiple responses")
+    @Operation(summary = "Send RPA notifications for multiple responses")
     public Map<String, String> rpaResponseNotifications(@RequestBody List<String> referenceNumbers) {
         if (referenceNumbers == null || referenceNumbers.isEmpty()) {
             throw new IllegalArgumentException(REF_NUMBER_NOT_SUPPLIED);
@@ -172,7 +172,7 @@ public class RoboticsSupportController {
     }
 
     @PutMapping("/ccj")
-    @ApiOperation("Send RPA notifications for multiple CCJ requests")
+    @Operation(summary = "Send RPA notifications for multiple CCJ requests")
     public Map<String, String> rpaCCJNotifications(@RequestBody List<String> referenceNumbers) {
         if (referenceNumbers == null || referenceNumbers.isEmpty()) {
             throw new IllegalArgumentException(REF_NUMBER_NOT_SUPPLIED);
@@ -190,7 +190,7 @@ public class RoboticsSupportController {
     }
 
     @PutMapping("/paid-in-full")
-    @ApiOperation("Send RPA notifications for multiple paid-in-full events")
+    @Operation(summary = "Send RPA notifications for multiple paid-in-full events")
     public Map<String, String> rpaPIFNotifications(@RequestBody List<String> referenceNumbers) {
         if (referenceNumbers == null || referenceNumbers.isEmpty()) {
             throw new IllegalArgumentException(REF_NUMBER_NOT_SUPPLIED);

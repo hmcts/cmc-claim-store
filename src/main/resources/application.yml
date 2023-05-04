@@ -11,7 +11,7 @@ management:
       base-path: "/"
   endpoint:
     health:
-      show-details: "always"
+      show-details: ALWAYS
 async:
   max:
     threadPool:
@@ -70,7 +70,7 @@ quartzProperties:
       instanceId: AUTO
     jobStore:
       isClustered: true
-      class: org.quartz.impl.jdbcjobstore.JobStoreTX
+      class: org.springframework.scheduling.quartz.LocalDataSourceJobStore
       driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
       dataSource: dataSource
       clusterCheckinInterval: 2000
@@ -95,6 +95,8 @@ courtfinder:
 fees:
   api:
     url: ${FEES_URL:}
+    keywords:
+      enable: ${FEES_API_KEYWORDS_ENABLE:false}
     service: "civil money claims"
     jurisdiction1: "civil"
     jurisdiction2: "county court"
@@ -102,7 +104,7 @@ fees:
 ocmc:
   caseTypeId: "MoneyClaimCase"
   jurisdictionId: "CMC"
-  secureDocStoreEnabled: ${FEATURE_TOGGLES_SECURE_DOC_STORE_ENABLED:false}
+  secureDocStoreEnabled: ${FEATURE_TOGGLES_SECURE_DOC_STORE_ENABLED:true}
 
 payments:
   api:
@@ -118,17 +120,25 @@ pdf-service:
 document_management:
   url: "${DOCUMENT_MANAGEMENT_URL:}"
   userRoles: ${DOCUMENT_MANAGEMENT_USERROLES}
+  secured: true
 
 core_case_data:
   api:
     url: "http://localhost:4452"
+
+case_document_am:
+  url: ${DOCUMENT_MANAGEMENT_URL:http://ccd-case-document-am-api:4455}
+reference:
+  database:
+    enabled: true
+    migration: false
 
 bankHolidays:
   api:
     url: "https://www.gov.uk"
 
 doc_assembly:
-  url: ${DOC_ASSEMBLY_URL:false}
+  url: ${DOC_ASSEMBLY_URL:http://doc-assembly-api:4666}
   templateId: "CV-CMC-GOR-ENG-0004-1.docx"
   judgeTemplateId: "CV-CMC-GOR-ENG-00219-1.docx"
   bespokeTemplateId: "CV-CMC-GOR-ENG-00643.docx"
@@ -287,10 +297,23 @@ feature_toggles:
   bulk_print_transfer_enabled: false
   staff_emails_enabled_for_legal_rep: true
   breathing_space: true
+  dq_pilot_court_enabled: true
 
 feign:
-  httpclient:
-    enabled: true
+  client:
+    config:
+      remoteRuntimeService:
+        url: http://localhost:9404/engine-rest/
+        remoteRepositoryService:
+          url: http://localhost:9404/engine-rest/
+        remoteExternalTaskService:
+          url: http://localhost:9404/engine-rest/
+      idam-api:
+        loggerLevel: full
+        core-case-data-api:
+          loggerLevel: full
+        document-management-metadata-download-api:
+          loggerLevel: full
 
 claim-store:
   test-support:
