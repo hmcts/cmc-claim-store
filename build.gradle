@@ -3,7 +3,7 @@ import java.util.stream.Collectors
 plugins {
   id 'checkstyle'
   id 'io.spring.dependency-management' version '1.1.0'
-  id 'org.springframework.boot' version '2.7.7'
+  id 'org.springframework.boot' version '2.7.11'
   id 'org.owasp.dependencycheck' version '8.0.1'
   id 'org.sonarqube' version '2.8'
   id 'com.github.ben-manes.versions' version '0.36.0'
@@ -150,13 +150,6 @@ allprojects {
         version: '2.3.2'
       ) {
         entry 'quartz'
-      }
-      // solves CVE-2020-5407
-      dependencySet(
-        group: 'org.springframework.security',
-        version: '5.5.1'
-      ) {
-        entry 'spring-security-crypto'
       }
       // solves CVE-2022-25857
       dependencySet(
