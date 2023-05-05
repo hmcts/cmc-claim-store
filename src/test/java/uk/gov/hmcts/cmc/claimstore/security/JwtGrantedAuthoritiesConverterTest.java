@@ -48,7 +48,7 @@ class JwtGrantedAuthoritiesConverterTest {
     @DisplayName("No Claims should return empty authorities")
     void shouldReturnEmptyAuthoritiesWhenClaimNotAvailable() {
         Jwt jwt = Mockito.mock(Jwt.class);
-        when(jwt.containsClaim(anyString())).thenReturn(false);
+        when(jwt.hasClaim(anyString())).thenReturn(false);
         Collection<GrantedAuthority> authorities = converter.convert(jwt);
         assertNotNull(authorities);
         assertEquals(0, authorities.size());
@@ -58,7 +58,7 @@ class JwtGrantedAuthoritiesConverterTest {
     @DisplayName("Should return empty authorities when token value is not matching with expected")
     void shouldReturnEmptyAuthoritiesWhenClaimValueNotEquals() {
         Jwt jwt = Mockito.mock(Jwt.class);
-        when(jwt.containsClaim(anyString())).thenReturn(true);
+        when(jwt.hasClaim(anyString())).thenReturn(true);
         when(jwt.getClaim(anyString())).thenReturn("Test");
         Collection<GrantedAuthority> authorities = converter.convert(jwt);
         assertNotNull(authorities);
@@ -69,7 +69,7 @@ class JwtGrantedAuthoritiesConverterTest {
     @DisplayName("Should return empty authorities when token value is not matching with expected")
     void shouldReturnEmptyAuthoritiesWhenIdamReturnsNoUsers() {
         Jwt jwt = Mockito.mock(Jwt.class);
-        when(jwt.containsClaim(anyString())).thenReturn(true);
+        when(jwt.hasClaim(anyString())).thenReturn(true);
         when(jwt.getClaim(anyString())).thenReturn("access_token");
         when(jwt.getTokenValue()).thenReturn("access_token");
         UserInfo userInfo = mock(UserInfo.class);
@@ -85,7 +85,7 @@ class JwtGrantedAuthoritiesConverterTest {
     @DisplayName("Should return empty authorities when token value is not matching with expected")
     void shouldReturnAuthoritiesWhenIdamReturnsUserRoles() {
         Jwt jwt = Mockito.mock(Jwt.class);
-        when(jwt.containsClaim(anyString())).thenReturn(true);
+        when(jwt.hasClaim(anyString())).thenReturn(true);
         when(jwt.getClaim(anyString())).thenReturn("access_token");
         when(jwt.getTokenValue()).thenReturn("access_token");
         UserInfo userInfo = mock(UserInfo.class);
