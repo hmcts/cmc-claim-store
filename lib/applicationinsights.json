@@ -1,0 +1,6 @@
+{
+  "connectionString": "${file:/mnt/secrets/cmc/appinsights-connection-string}",
+  "role": {
+    "name": "HMCTS Claim Store Service"
+  }
+}
