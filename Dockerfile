@@ -8,7 +8,6 @@ FROM hmctspublic.azurecr.io/base/java:17-distroless
 USER hmcts
 LABEL maintainer="https://github.com/hmcts/cmc-claim-store"
 
-COPY lib/AI-Agent.xml /opt/app/
 COPY lib/applicationinsights.json /opt/app/
 COPY build/libs/claim-store.jar /opt/app/
 
