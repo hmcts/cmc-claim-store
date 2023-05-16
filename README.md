@@ -15,7 +15,7 @@ The service also delegates some responsibilities to other RESTful services e.g. 
 
 ### Prerequisites
 
-- [JDK 11](https://www.oracle.com/java)
+- [JDK 17](https://www.oracle.com/java)
 - [Docker](https://www.docker.com)
 
 ### Environment variables

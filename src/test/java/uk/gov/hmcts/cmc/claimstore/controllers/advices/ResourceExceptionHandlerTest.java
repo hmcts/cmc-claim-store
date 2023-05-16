@@ -1,9 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.advices;
 
+import feign.FeignException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.postgresql.util.PSQLException;
 import org.postgresql.util.PSQLState;
@@ -175,6 +177,22 @@ public class ResourceExceptionHandlerTest {
             "expected exception for core case data api",
             CoreCaseDataStoreException::new,
             handler::handleCoreCaseDataStoreException,
+            HttpStatus.FAILED_DEPENDENCY,
+            AppInsightsExceptionLogger::error
+        );
+    }
+
+    @Test
+    public void testHandleFeignExceptionInternalServerError() {
+        testTemplate(
+            "expected exception for feign",
+            str -> new FeignException.InternalServerError(
+                "expected exception for feign",
+                Mockito.mock(feign.Request.class),
+                new byte[]{},
+                null
+            ),
+            handler::handleFeignExceptionInternalServerError,
             HttpStatus.FAILED_DEPENDENCY,
             AppInsightsExceptionLogger::error
         );
