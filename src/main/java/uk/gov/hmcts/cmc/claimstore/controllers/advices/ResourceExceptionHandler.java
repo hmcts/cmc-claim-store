@@ -233,6 +233,16 @@ public class ResourceExceptionHandler {
             .body(new ExceptionForClient(FAILED_DEPENDENCY.value(), exception.getMessage()));
     }
 
+    @ExceptionHandler(FeignException.InternalServerError.class)
+    public ResponseEntity<Object> handleFeignExceptionInternalServerError(
+        FeignException.InternalServerError exception
+    ) {
+        logger.error(exception);
+        return ResponseEntity
+            .status(FAILED_DEPENDENCY)
+            .body(new ExceptionForClient(FAILED_DEPENDENCY.value(), exception.getMessage()));
+    }
+
     @ExceptionHandler({FeignException.UnprocessableEntity.class, UnprocessableEntityException.class})
     public ResponseEntity<Object> handleUnprocessableEntity(Exception exception) {
         logger.error(exception);
