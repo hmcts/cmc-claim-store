@@ -12,6 +12,6 @@
     }
   },
   "extends": [
-    "github>hmcts/.github//renovate/global"
+    "local>hmcts/.github:renovate-config"
   ]
 }
