@@ -6,6 +6,7 @@ import org.json.JSONArray;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.claimstore.config.CaseStayedIncrementConfiguration;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.requests.idam.IdamApi;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -26,8 +27,7 @@ public class TransferCaseStayedService {
     private final CoreCaseDataService coreCaseDataService;
     private final UserService userService;
     private final IdamApi idamApi;
-
-    private static final int MAX_ALLOWED_PAGE_PROCESS = 1000;
+    private final CaseStayedIncrementConfiguration caseStayedIncrementConfiguration;
 
     public void findCasesForTransfer() {
 
@@ -35,18 +35,17 @@ public class TransferCaseStayedService {
         String authorisation = user.getAuthorisation();
         String userId = idamApi.retrieveUserDetails(authorisation).getId();
 
-        Integer numberOfPages = getNumberOfPages(authorisation, userId);
-        int pageNumber = 1;
+        Integer pageNumber = caseStayedIncrementConfiguration.getPageIncrement();
 
         log.info("Comparing cases to update into ccd");
 
-        do {
+        if (pageNumber < getNumberOfPages(authorisation, userId)) {
             compareCases(authorisation, userId, pageNumber);
-            pageNumber++;
-            if (pageNumber == (MAX_ALLOWED_PAGE_PROCESS + 1)) {
-                break;
-            }
-        } while (pageNumber <= numberOfPages);
+            caseStayedIncrementConfiguration.setPageIncrement(pageNumber + 1);
+        } else if (pageNumber.equals(getNumberOfPages(authorisation, userId))) {
+            compareCases(authorisation, userId, pageNumber);
+            caseStayedIncrementConfiguration.setPageIncrement(1);
+        }
     }
 
     public void compareCases(String authorisation, String userId, Integer pageNumber) {
@@ -59,7 +58,7 @@ public class TransferCaseStayedService {
                 ? pageNumber : 1
         );
 
-        LocalDate currentDate = LocalDate.now().plusDays(34L);
+        LocalDate currentDate = LocalDate.parse("2023-01-11");
 
         JSONArray listOfCasesJson = !listOfCases.isEmpty()
             ? new JSONArray(listOfCases) : null;
