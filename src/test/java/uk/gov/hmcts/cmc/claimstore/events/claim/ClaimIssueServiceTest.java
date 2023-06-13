@@ -54,16 +54,13 @@ public class ClaimIssueServiceTest {
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(user);
         when(claimService.getClaimsByState(ClaimState.CREATE, user)).thenReturn(asList(citizenClaim, representedClaim));
         doNothing().when(postClaimOrchestrator).citizenIssueHandler(any(CitizenClaimCreatedEvent.class));
-        doNothing().when(postClaimOrchestrator).representativeIssueHandler(any(RepresentedClaimCreatedEvent.class));
     }
 
     @Test
     public void shouldIssueCreatedClaims() {
         claimIssueService.issueCreatedClaims();
         verify(postClaimOrchestrator).citizenIssueHandler(citizenClaimCreatedEventCaptor.capture());
-        verify(postClaimOrchestrator).representativeIssueHandler(representedClaimCreatedEventCaptor.capture());
         verifyEvent(citizenClaimCreatedEventCaptor.getValue(), "John Rambo", "123", citizenClaim);
-        verifyEvent(representedClaimCreatedEventCaptor.getValue(), "Trading ltd", "123", representedClaim);
     }
 
     private void verifyEvent(ClaimCreationEvent claimCreationEvent, String name, String authorization, Claim claim) {

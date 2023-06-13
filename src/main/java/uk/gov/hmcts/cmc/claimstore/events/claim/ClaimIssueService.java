@@ -4,20 +4,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimCreatedEvent;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
-import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
-import uk.gov.hmcts.cmc.domain.models.party.Party;
 
 import java.util.List;
-import java.util.Optional;
-
-import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_REPRESENTATIVE;
 
 @Service
 public class ClaimIssueService {
@@ -54,8 +48,8 @@ public class ClaimIssueService {
 
     private void issueClaimsPendingInCreatedState(Claim claim, String authorisation) {
         if (claim.getClaimData().isClaimantRepresented()) {
-            logger.info("Automated Claim Issue should not been triggered " +
-                "as this is Legal Rep case which is deprecated. {}", claim.getReferenceNumber());
+            logger.info("Automated Claim Issue should not been triggered "
+                + "as this is Legal Rep case which is deprecated. {}", claim.getReferenceNumber());
         } else {
             logger.info("Automated Claim Issue for citizen claim ref no: {}", claim.getReferenceNumber());
             String submitterName = claim.getClaimData().getClaimant().getName();
