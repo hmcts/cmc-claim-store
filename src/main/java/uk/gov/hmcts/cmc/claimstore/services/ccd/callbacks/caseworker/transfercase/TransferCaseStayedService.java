@@ -43,7 +43,7 @@ public class TransferCaseStayedService {
         do {
             compareCases(authorisation, userId, pageNumber);
             pageNumber++;
-            if (pageNumber == (MAX_ALLOWED_PAGE_PROCESS + 1)) { 
+            if (pageNumber == (MAX_ALLOWED_PAGE_PROCESS + 1)) {
                 break;
             }
         } while (pageNumber <= numberOfPages);
@@ -59,7 +59,7 @@ public class TransferCaseStayedService {
                 ? pageNumber : 1
         );
 
-        LocalDate currentDate = LocalDate.now();
+        LocalDate currentDate = LocalDate.now().plusDays(34L);
 
         JSONArray listOfCasesJson = !listOfCases.isEmpty()
             ? new JSONArray(listOfCases) : null;
