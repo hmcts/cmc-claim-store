@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
@@ -159,6 +160,10 @@ public class CCDCaseApi {
 
     public List<Claim> getClaimsByState(ClaimState claimState, User user) {
         return extractClaims(searchAll(user, claimState));
+    }
+
+    public List<CCDCase> getCCDCaseByState(ClaimState claimState, User user) {
+        return extractCCDCases(searchAll(user, claimState));
     }
 
     /**
@@ -468,6 +473,12 @@ public class CCDCaseApi {
     private List<Claim> extractClaims(List<CaseDetails> result) {
         return asStream(result)
             .map(ccdCaseDataToClaim::extractClaim)
+            .collect(Collectors.toList());
+    }
+
+    private List<CCDCase> extractCCDCases(List<CaseDetails> result) {
+        return asStream(result)
+            .map(ccdCaseDataToClaim::extractCCDCase)
             .collect(Collectors.toList());
     }
 }
