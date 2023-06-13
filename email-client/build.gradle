@@ -1,5 +1,4 @@
 apply plugin: 'jacoco'
-apply plugin: 'net.ltgt.apt'
 
 buildscript {
   repositories {
@@ -11,24 +10,25 @@ buildscript {
 }
 
 dependencies {
-  compile project(':launch-darkly-client')
+  implementation project(':launch-darkly-client')
 
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter'
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-json'
-  compile group: 'org.springframework.retry', name: 'spring-retry', version: '1.2.5.RELEASE'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
+  implementation group: 'org.springframework.retry', name: 'spring-retry', version: '1.2.5.RELEASE'
 
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.18'
-  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.18'
-  compile group: 'uk.gov.hmcts.reform', name: 'logging', version: '5.1.7'
-  compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: '5.1.7'
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.26'
+  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.26'
 
-  compile group: 'com.sendgrid', name: 'sendgrid-java', version: '4.7.2'
+  implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: '5.1.7'
+  implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: '5.1.7'
 
-  testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
-  testCompile group: 'commons-io', name: 'commons-io', version: '2.11.0'
+  implementation group: 'com.sendgrid', name: 'sendgrid-java', version: '4.7.2'
 
-  testCompile group: 'org.mockito', name: 'mockito-core', version: '3.11.2'
-  testCompile group: 'junit', name: 'junit', version: '4.13.1'
+  testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+  testImplementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
+
+  testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.11.2'
+  testImplementation group: 'junit', name: 'junit', version: '4.13.1'
 }
 
