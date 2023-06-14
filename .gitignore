@@ -20,3 +20,6 @@ java-rpm-packaging/
 .scannerwork
 .testcontainers*
 
+lib/applicationinsights-agent-*.jar
+lib/applicationinsights.log
+

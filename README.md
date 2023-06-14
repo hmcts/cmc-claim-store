@@ -15,7 +15,7 @@ The service also delegates some responsibilities to other RESTful services e.g. 
 
 ### Prerequisites
 
-- [JDK 11](https://www.oracle.com/java)
+- [JDK 17](https://www.oracle.com/java)
 - [Docker](https://www.docker.com)
 
 ### Environment variables
@@ -133,7 +133,6 @@ info see: https://tools.hmcts.net/confluence/display/ROC/AKS+-+Azure+Managed+Kub
 
 #### Project Lombok Plugin
 When building the project in your IDE (eclipse or IntelliJ), Lombok plugin will be required to compile.
-
 For IntelliJ IDEA, please add the Lombok IntelliJ plugin:
 * Go to `File > Settings > Plugins`
 * Click on `Browse repositories...`
