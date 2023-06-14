@@ -155,7 +155,7 @@ doc_assembly:
   oconFormOrganisationWithoutDQs: "CV-CMC-GOR-ENG-0015.docx"
   noticeOfTransferToCcbcSentToDefendantTemplateId: "CV-CMC-GOR-ENG-0016.docx"
   paperResponseAdmissionTemplateId: "CV-CMC-GOR-ENG-0016.docx"
-  defendantPinLetterTemplateID: "CV-CMC-LET-ENG-00630-1.odt" # TODO change to docx format
+  defendantPinLetterTemplateID: "CV-CMC-LET-ENG-00630-1.odt" # TODO change to docx format [CIV-7013]
   breathingSpaceEnteredTemplateID: "CV-CMC-LET-ENG-00635.docx"
   breathingSpaceLiftedTemplateID: "CV-CMC-LET-ENG-00636.docx"
   oconN9FormTemplateID: "CV-CMC-LET-ENG-00637.docx"
