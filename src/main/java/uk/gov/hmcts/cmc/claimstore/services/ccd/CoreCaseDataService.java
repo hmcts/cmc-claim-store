@@ -55,6 +55,7 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
@@ -1383,4 +1384,33 @@ public class CoreCaseDataService {
         }
         return caseDetailsConverter.extractClaim(update(authorisation, ccdCase, CaseEvent.BREATHING_SPACE_LIFTED));
     }
+
+    public List<CaseDetails> searchCases(String authorisation,
+                                         String userId,
+                                         Map<String, String> searchCriteria) {
+
+        return coreCaseDataApi.searchForCaseworker(
+            authorisation,
+            authTokenGenerator.generate(),
+            userId,
+            JURISDICTION_ID,
+            CASE_TYPE_ID,
+            searchCriteria
+        );
+    }
+
+    public Integer getPaginationInfo(String authorisation,
+                                     String userId,
+                                     Map<String, String> searchCriteria
+    ) {
+        return coreCaseDataApi.getPaginationInfoForSearchForCaseworkers(
+            authorisation,
+            authTokenGenerator.generate(),
+            userId,
+            JURISDICTION_ID,
+            CASE_TYPE_ID,
+            searchCriteria
+        ).getTotalPagesCount();
+    }
+
 }

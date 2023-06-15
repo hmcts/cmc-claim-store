@@ -50,6 +50,7 @@ import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
+import uk.gov.hmcts.reform.ccd.client.model.PaginatedSearchMetadata;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 
 import java.math.BigInteger;
@@ -976,5 +977,84 @@ public class CoreCaseDataServiceTest {
         } catch (Exception e) {
             assertThatExceptionOfType(CoreCaseDataStoreException.class);
         }
+    }
+
+    @Test
+    public void coreCaseDataApiShouldReturnPaginationInfoWhenInvoked() {
+        var pagination = new PaginatedSearchMetadata();
+        pagination.setTotalPagesCount(1);
+        pagination.getTotalPagesCount();
+
+        when(coreCaseDataApi.getPaginationInfoForSearchForCaseworkers(
+            eq(AUTHORISATION),
+            eq(AUTH_TOKEN),
+            eq(USER_DETAILS.getId()),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(
+                Map.of("key", "value")
+            )
+        )).thenReturn(pagination);
+
+        Integer expected = 1;
+
+        var actual = service.getPaginationInfo(
+            AUTHORISATION,
+            USER_DETAILS.getId(),
+            Map.of(
+            "key", "value"
+        ));
+
+        verify(coreCaseDataApi, atLeastOnce()).getPaginationInfoForSearchForCaseworkers(
+            AUTHORISATION,
+            AUTH_TOKEN,
+            USER_DETAILS.getId(),
+            JURISDICTION_ID,
+            CASE_TYPE_ID,
+            Map.of("key", "value")
+        );
+        assertEquals(expected, actual);
+
+    }
+
+    @Test
+    public void coreCaseDataApiShouldGetSearchedCasesWhenInvoked() {
+        when(coreCaseDataApi.searchForCaseworker(
+            eq(AUTHORISATION),
+            eq(AUTH_TOKEN),
+            eq(USER_DETAILS.getId()),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(
+                Map.of("key", "value"))
+            )
+        ).thenReturn(
+            List.of(CaseDetails.builder()
+                .caseTypeId(CASE_TYPE_ID)
+                .jurisdiction(JURISDICTION_ID)
+                .build())
+        );
+
+        var expected = List.of(CaseDetails.builder()
+            .caseTypeId(CASE_TYPE_ID)
+            .jurisdiction(JURISDICTION_ID)
+            .build());
+
+        var actual = service.searchCases(
+            AUTHORISATION,
+            USER_DETAILS.getId(),
+            Map.of("key", "value")
+        );
+
+        verify(coreCaseDataApi, atLeastOnce()).searchForCaseworker(
+            AUTHORISATION,
+            AUTH_TOKEN,
+            USER_DETAILS.getId(),
+            JURISDICTION_ID,
+            CASE_TYPE_ID,
+            Map.of("key", "value")
+        );
+
+        assertEquals(expected, actual);
     }
 }
