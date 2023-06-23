@@ -153,6 +153,7 @@ public class CitizenServiceDocumentsService {
             .responseDeadline(claim.getResponseDeadline())
             .staffEmail(staffEmailProperties.getRecipient())
             .defendantPin(defendantPin)
+            .currentDate(LocalDate.now())
             .respondToClaimUrl(notificationsProperties.getRespondToClaimUrl())
             .responseDashboardUrl(String.format("%s/response/dashboard",
                 notificationsProperties.getFrontendBaseUrl()))
