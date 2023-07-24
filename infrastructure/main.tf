@@ -2,6 +2,13 @@ provider "azurerm" {
   features {}
 }
 
+provider "azurerm" {
+  features {}
+  skip_provider_registration = true
+  alias                      = "postgres_network"
+  subscription_id            = var.aks_subscription_id
+}
+
 locals {
   vaultName = "${var.raw_product}-${var.env}"
 }
@@ -162,11 +169,12 @@ module "postgresql" {
   env    = var.env
   product       = var.product
   component     = var.component
-  business_area = "sds"
-  name          = "cmc-v14"
+  business_area = "cft"
+  name          = "cmc-db-v14"
+  pgsql_admin_username = "cmc"
   pgsql_databases = [
     {
-      name : "application"
+      name : "cmc"
     }
   ]
   pgsql_version = "14"
