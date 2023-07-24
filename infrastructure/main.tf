@@ -207,7 +207,7 @@ module "database-v14" {
 
 resource "azurerm_key_vault_secret" "cmc-db-password-v14" {
   name      = "cmc-db-password-v14"
-  value     = module.postgresql.password
+  value     = module.database-v14.password
   key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
 }
 
