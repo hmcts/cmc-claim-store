@@ -153,26 +153,30 @@ module "database" {
   subscription = var.subscription
 }
 
-// DB version 11
-module "database-v11" {
-  source = "git@github.com:hmcts/cnp-module-postgres?ref=master"
-  product = "${var.product}-db-v11"
-  name  = "cmc-db-v11"
-  location = var.location
-  env = var.env
-  postgresql_user = "cmc"
-  database_name = var.database-name
-  postgresql_version = "11"
-  sku_name = var.database_sku_name
-  sku_tier = "GeneralPurpose"
-  storage_mb = var.database_storage_mb
+# Postgres Flexible Server
+module "postgresql" {
+  providers = {
+    azurerm.postgres_network = azurerm.postgres_network
+  }
+  source = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
+  env    = var.env
+  product       = var.product
+  component     = var.component
+  business_area = "sds"
+  name          = "cmc-v14"
+  pgsql_databases = [
+    {
+      name : "application"
+    }
+  ]
+  pgsql_version = "14"
+  admin_user_object_id = var.jenkins_AAD_objectId
   common_tags = var.common_tags
-  subscription = var.subscription
 }
 
-resource "azurerm_key_vault_secret" "cmc-db-password-v11" {
-  name      = "cmc-db-password-v11"
-  value     = module.database-v11.postgresql_password
+resource "azurerm_key_vault_secret" "cmc-db-password-v14" {
+  name      = "cmc-db-password-v14"
+  value     = module.postgresql.password
   key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
 }
 
