@@ -58,7 +58,7 @@ public class TransferCaseStayedService {
                 ? pageNumber : 1
         );
 
-        LocalDate currentDate = LocalDate.now().plusDays(50);
+        LocalDate currentDate = LocalDate.parse("2023-10-20");
 
         JSONArray listOfCasesJson = !listOfCases.isEmpty()
             ? new JSONArray(listOfCases) : null;
