@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestion
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
 import uk.gov.hmcts.cmc.domain.models.otherparty.CompanyDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.IndividualDetails;
+import uk.gov.hmcts.cmc.domain.models.otherparty.SoleTraderDetails;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
@@ -485,5 +486,65 @@ public class DirectionsQuestionnaireServiceTest {
 
         String directionsCaseState = directionsQuestionnaireService.getDirectionsCaseState(claim);
         assertThat(directionsCaseState).isEqualTo(READY_FOR_TRANSFER.getValue());
+    }
+
+    @Test
+    public void shouldPreferDefendantCourtIfDefendantIsIndividual() {
+        Claim claim = SampleClaim.builder()
+            .withFeatures(ImmutableList.of(DQ_FLAG.getValue()))
+            .withClaimantResponse(CLAIMANT_REJECTION_PILOT)
+            .withResponse(DEFENDANT_PART_ADMISSION_PILOT)
+            .withClaimData(SampleClaimData
+                .builder()
+                .withDefendant(IndividualDetails.builder().build())
+                .build())
+            .build();
+        assertThat(directionsQuestionnaireService.getPreferredIndieSolCourt(claim)).isEqualTo(PILOT_COURT_NAME);
+    }
+
+    @Test
+    public void shouldPreferDefendantCourtIfSoleTrader() {
+        Claim claim = SampleClaim.builder()
+            .withFeatures(ImmutableList.of(DQ_FLAG.getValue()))
+            .withClaimantResponse(CLAIMANT_REJECTION_PILOT)
+            .withResponse(DEFENDANT_PART_ADMISSION_PILOT)
+            .withClaimData(SampleClaimData
+                .builder()
+                .withDefendant(SoleTraderDetails.builder().build())
+                .build())
+            .build();
+        assertThat(directionsQuestionnaireService.getPreferredIndieSolCourt(claim)).isEqualTo(PILOT_COURT_NAME);
+    }
+
+    @Test
+    public void shouldPreferClaimantCourtIfDefendantIsCompany() {
+        Claim claim = SampleClaim.builder()
+            .withFeatures(ImmutableList.of(DQ_FLAG.getValue()))
+            .withClaimantResponse(CLAIMANT_REJECTION_PILOT)
+            .withClaimData(SampleClaimData
+                .builder()
+                .withDefendant(CompanyDetails.builder().build())
+                .build())
+            .build();
+        assertThat(directionsQuestionnaireService.getPreferredIndieSolCourt(claim)).isEqualTo(PILOT_COURT_NAME);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldReturnNullIfDQNotPresent() {
+        FullDefenceResponse defenceResponse = FullDefenceResponse.builder()
+            .freeMediation(NO)
+            .directionsQuestionnaire(null)
+            .build();
+
+        Claim claim = SampleClaim.builder()
+            .withFeatures(ImmutableList.of(null))
+            .withResponse(defenceResponse)
+            .withClaimData(SampleClaimData
+                .builder()
+                .withDefendant(IndividualDetails.builder().build())
+                .build())
+            .build();
+
+        assertThat(directionsQuestionnaireService.getPreferredIndieSolCourt(claim)).isEqualTo(null);
     }
 }

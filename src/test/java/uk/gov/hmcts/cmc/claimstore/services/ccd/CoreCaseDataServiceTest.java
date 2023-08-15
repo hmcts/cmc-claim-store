@@ -121,7 +121,6 @@ public class CoreCaseDataServiceTest {
     private WorkingDayIndicator workingDayIndicator;
 
     private final int intentionToProceedDeadlineDays = 33;
-    private boolean isDqPilotCourt = true;
 
     @Mock
     private feign.Request request;
@@ -181,8 +180,7 @@ public class CoreCaseDataServiceTest {
             intentionToProceedDeadlineDays,
             workingDayIndicator,
             directionsQuestionnaireService,
-            pilotCourtService,
-            isDqPilotCourt);
+            pilotCourtService);
     }
 
     @Test
@@ -532,7 +530,6 @@ public class CoreCaseDataServiceTest {
         Response providedResponse = SampleResponse.validDefaults();
         Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
         ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultAcceptation();
-        when(pilotCourtService.isPilotCourt(any(), any(), any())).thenReturn(true);
 
         when(caseDetailsConverter.extractClaim(any((CaseDetails.class)))).thenReturn(getWithClaimantResponse());
 
@@ -600,7 +597,7 @@ public class CoreCaseDataServiceTest {
 
         assertThat(claim).isNotNull();
         assertThat(claim.getClaimantResponse()).isPresent();
-        verify(directionsQuestionnaireService, atLeastOnce()).getPreferredCourt(claimArgumentCaptor.capture());
+        verify(directionsQuestionnaireService, atLeastOnce()).getPreferredIndieSolCourt(claimArgumentCaptor.capture());
         assertThat(claimArgumentCaptor.getValue().getClaimantResponse()).isPresent();
         verify(coreCaseDataApi, atLeastOnce()).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
             anyString(), anyString(), eq(CLAIMANT_RESPONSE_REJECTION.getValue()));
