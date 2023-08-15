@@ -22,6 +22,8 @@ import static uk.gov.hmcts.cmc.claimstore.services.pilotcourt.Pilot.JDDO;
 import static uk.gov.hmcts.cmc.claimstore.services.pilotcourt.Pilot.LA;
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isOptedForMediation;
 import static uk.gov.hmcts.cmc.claimstore.utils.TheirDetailsHelper.isDefendantBusiness;
+import static uk.gov.hmcts.cmc.claimstore.utils.TheirDetailsHelper.isDefendantIndividual;
+import static uk.gov.hmcts.cmc.claimstore.utils.TheirDetailsHelper.isDefendantSoleTrader;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_JUDGE_DIRECTIONS;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_LEGAL_ADVISOR_DIRECTIONS;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_TRANSFER;
@@ -88,6 +90,21 @@ public class DirectionsQuestionnaireService {
         } else {
             Response defendantResponse = claim.getResponse().orElseThrow(IllegalStateException::new);
             return getDefendantHearingCourt(defendantResponse);
+        }
+    }
+
+    public String getPreferredIndieSolCourt(Claim claim) {
+        if (!FeaturesUtils.isOnlineDQ(claim)) {
+            return null;
+        }
+
+        if (isDefendantSoleTrader(claim.getClaimData().getDefendant())
+            || isDefendantIndividual(claim.getClaimData().getDefendant())) {
+            Response defendantResponse = claim.getResponse().orElseThrow(IllegalStateException::new);
+            return getDefendantHearingCourt(defendantResponse);
+        }  else {
+            ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
+            return getClaimantHearingCourt(claimantResponse);
         }
     }
 
