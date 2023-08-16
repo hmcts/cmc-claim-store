@@ -1015,6 +1015,15 @@ public class CoreCaseDataServiceTest {
     }
 
     @Test
+    public void caseTransferUpdateShouldReturnCaseDetails() {
+        CCDCase providedCCDCase = CCDCase.builder().id(SampleClaim.CLAIM_ID).build();
+
+        CaseDetails caseDetails = service.caseTransferUpdate(AUTHORISATION, providedCCDCase, CaseEvent.PART_ADMISSION);
+
+        assertNotNull(caseDetails);
+    }
+
+    @Test
     public void coreCaseDataApiShouldGetSearchedCasesWhenInvoked() {
         when(coreCaseDataApi.searchForCaseworker(
             eq(AUTHORISATION),
