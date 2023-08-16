@@ -935,15 +935,12 @@ public class CoreCaseDataService {
                 isRepresented(userDetails)
             );
 
-            CaseDataContent caseDataContent = CaseDataContent.builder()
-                .eventToken(startEventResponse.getToken())
-                .event(Event.builder()
-                    .id(startEventResponse.getEventId())
-                    .summary(CMC_CASE_UPDATE_SUMMARY)
-                    .description(SUBMITTING_CMC_CASE_UPDATE_DESCRIPTION)
-                    .build())
-                .data(ccdCase)
-                .build();
+            CaseDataContent caseDataContent = CaseDataContentBuilder.build(
+                startEventResponse,
+                CMC_CASE_UPDATE_SUMMARY,
+                SUBMITTING_CMC_CASE_UPDATE_DESCRIPTION,
+                ccdCase
+            );
 
             return submitUpdate(authorisation, eventRequestData, caseDataContent, caseId,
                 isRepresented(userDetails));

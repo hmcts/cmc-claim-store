@@ -116,6 +116,10 @@ public class HWFFullAndPartRemissionCallbackHandler extends CallbackHandler {
                     BigDecimal.class);
                 BigDecimal feeAmountAfterRemission = outstandingFeeAmountInPennies.subtract(feeRemitted);
                 ccdCase.setOutstandingFeeAmountInPennies(valueOf(feeAmountAfterRemission));
+<<<<<<< HEAD
+                ccdCase.setFeeRemitted(null);
+=======
+>>>>>>> 0738908f (remove unnecessary files)
                 ccdCase.setFeeRemitted(valueOf(feeAmountInPennies.subtract(feeAmountAfterRemission)));
             } else {
                 BigDecimal feeAmountAfterRemission = feeAmountInPennies.subtract(feeRemitted);

@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.claimstore.config.CaseStayedIncrementConfiguration;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.requests.idam.IdamApi;
@@ -60,9 +59,6 @@ class TransferCaseStayedServiceTest {
     private UserService userService;
 
     @Mock
-    private CaseStayedIncrementConfiguration caseStayedIncrementConfiguration;
-
-    @Mock
     private CoreCaseDataService coreCaseDataService;
 
     @InjectMocks
@@ -73,7 +69,6 @@ class TransferCaseStayedServiceTest {
 
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(CASEWORKER);
         when(idamApi.retrieveUserDetails(BEARER_TOKEN)).thenReturn(USER_DETAILS);
-        when(caseStayedIncrementConfiguration.getPageIncrement()).thenReturn(1);
 
         when(coreCaseDataService.getPaginationInfo(
             BEARER_TOKEN,
@@ -86,7 +81,6 @@ class TransferCaseStayedServiceTest {
 
         verify(userService, atLeastOnce()).authenticateAnonymousCaseWorker();
         verify(idamApi, atLeastOnce()).retrieveUserDetails(BEARER_TOKEN);
-        verify(caseStayedIncrementConfiguration, atLeastOnce()).getPageIncrement();
 
     }
 

@@ -6,7 +6,6 @@ import org.json.JSONArray;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.claimstore.config.CaseStayedIncrementConfiguration;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.requests.idam.IdamApi;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -27,7 +26,8 @@ public class TransferCaseStayedService {
     private final CoreCaseDataService coreCaseDataService;
     private final UserService userService;
     private final IdamApi idamApi;
-    private final CaseStayedIncrementConfiguration caseStayedIncrementConfiguration;
+
+    private static final int MAX_ALLOWED_PAGE_PROCESS = 1000;
 
     public void findCasesForTransfer() {
 
@@ -35,17 +35,18 @@ public class TransferCaseStayedService {
         String authorisation = user.getAuthorisation();
         String userId = idamApi.retrieveUserDetails(authorisation).getId();
 
-        Integer pageNumber = caseStayedIncrementConfiguration.getPageIncrement();
+        Integer numberOfPages = getNumberOfPages(authorisation, userId);
+        int pageNumber = 1;
 
         log.info("Comparing cases to update into ccd");
 
-        if (pageNumber < getNumberOfPages(authorisation, userId)) {
+        do {
             compareCases(authorisation, userId, pageNumber);
-            caseStayedIncrementConfiguration.setPageIncrement(pageNumber + 1);
-        } else if (pageNumber.equals(getNumberOfPages(authorisation, userId))) {
-            compareCases(authorisation, userId, pageNumber);
-            caseStayedIncrementConfiguration.setPageIncrement(1);
-        }
+            pageNumber++;
+            if (pageNumber == (MAX_ALLOWED_PAGE_PROCESS + 1)) {
+                break;
+            }
+        } while (pageNumber <= numberOfPages);
     }
 
     public void compareCases(String authorisation, String userId, Integer pageNumber) {
