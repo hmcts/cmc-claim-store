@@ -91,7 +91,7 @@ public class TransferCaseStayedService {
                 .build() : null;
 
             if (currentDateAfter && ccdStayClaim != null) {
-                coreCaseDataService.update(
+                coreCaseDataService.caseTransferUpdate(
                     authorisation,
                     ccdStayClaim,
                     CaseEvent.STAY_CLAIM
