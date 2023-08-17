@@ -144,6 +144,20 @@ public class DefendantPinLetterContentProviderTest {
     }
 
     @Test
+    public void shouldProvideResponseDeadlineDay() {
+        Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
+
+        assertThat(content).containsEntry("responseDeadlineDay", RESPONSE_DEADLINE.getDayOfMonth());
+    }
+
+    @Test
+    public void shouldProvideResponseDeadlineMonth() {
+        Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
+
+        assertThat(content).containsEntry("responseDeadlineMonth", RESPONSE_DEADLINE.getMonth().toString());
+    }
+
+    @Test
     public void shouldProvideHmctsEmail() {
         Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
 

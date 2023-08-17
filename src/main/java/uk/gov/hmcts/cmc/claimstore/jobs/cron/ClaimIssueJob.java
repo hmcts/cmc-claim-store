@@ -33,7 +33,10 @@ public class ClaimIssueJob implements CronJob {
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
             if (launchDarklyClient.isFeatureEnabled("automated-claim-issue")) {
+                logger.info("Claim Issue Scheduler is enabled, and going to unstuck claims.");
                 claimIssueService.issueCreatedClaims();
+            } else {
+                logger.info("Claim Issue Scheduler is disabled!");
             }
         } catch (Exception e) {
             logger.error("Automated Claim Issue - Failed: ", e);

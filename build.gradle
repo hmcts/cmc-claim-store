@@ -3,7 +3,7 @@ import java.util.stream.Collectors
 plugins {
   id 'checkstyle'
   id 'io.spring.dependency-management' version '1.1.0'
-  id 'org.springframework.boot' version '2.7.7'
+  id 'org.springframework.boot' version '2.7.11'
   id 'org.owasp.dependencycheck' version '8.0.1'
   id 'org.sonarqube' version '2.8'
   id 'com.github.ben-manes.versions' version '0.36.0'
@@ -48,6 +48,17 @@ allprojects {
   group 'uk.gov.hmcts.cmc'
   version '1.1.0'
 
+  java {
+    toolchain {
+      languageVersion = JavaLanguageVersion.of(17)
+    }
+  }
+
+  // https://github.com/gradle/gradle/issues/16791
+  tasks.withType(JavaExec).configureEach {
+    javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
+  }
+
   jacoco {
     toolVersion = '0.8.8' // jacocoMavenPluginVersion
     reportsDirectory = file("$buildDir/reports/jacoco")
@@ -75,8 +86,6 @@ allprojects {
     }
   }
 
-  sourceCompatibility = 11
-  targetCompatibility = 11
   compileJava {
     options.compilerArgs << '-parameters' << '-Xlint:deprecation'
   }
@@ -150,13 +159,6 @@ allprojects {
         version: '2.3.2'
       ) {
         entry 'quartz'
-      }
-      // solves CVE-2020-5407
-      dependencySet(
-        group: 'org.springframework.security',
-        version: '5.5.1'
-      ) {
-        entry 'spring-security-crypto'
       }
       // solves CVE-2022-25857
       dependencySet(
@@ -237,6 +239,8 @@ dependencies {
 
   implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformJavaLogging
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.loggingAppinsights
+  implementation group: 'com.microsoft.azure', name: 'applicationinsights-web', version: '2.6.4'
+
   implementation group: 'com.github.hmcts', name: 'cmc-pdf-service-client', version: '7.0.0'
   implementation group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
   implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '6.1.0'
@@ -275,8 +279,8 @@ dependencies {
   implementation group: 'javax.json', name: 'javax.json-api', version: '1.1.4'
   implementation group: 'javax.inject', name: 'javax.inject', version: '1'
 
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.18'
-  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.18'
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.26'
+  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.26'
 
   testImplementation project(':domain-sample-data')
   testImplementation project(path: ":ccd-adapter", configuration: 'testArtifacts')
@@ -461,6 +465,7 @@ sonarqube {
         "**/DBCaseRepository.java",
         "**/MapperUtil.java",
         "**/CCDCaseApi.java",
+        "**/ClaimIssueService.java",
         "launch-darkly-client/**",
         "email-client/**",
         "rpa-mapper/**",
