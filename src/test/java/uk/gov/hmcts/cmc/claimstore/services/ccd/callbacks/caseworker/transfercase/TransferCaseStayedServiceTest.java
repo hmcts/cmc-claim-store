@@ -104,7 +104,7 @@ class TransferCaseStayedServiceTest {
                         caseDetails
                 ));
 
-        when(coreCaseDataService.update(
+        when(coreCaseDataService.caseTransferUpdate(
             BEARER_TOKEN,
             ccdStayClaim,
             CaseEvent.STAY_CLAIM
@@ -115,7 +115,7 @@ class TransferCaseStayedServiceTest {
         service.compareCases(BEARER_TOKEN, USER_DETAILS.getId(), 1);
 
         verify(coreCaseDataService, atLeastOnce())
-            .update(
+            .caseTransferUpdate(
                 BEARER_TOKEN,
                 ccdStayClaim,
                 CaseEvent.STAY_CLAIM

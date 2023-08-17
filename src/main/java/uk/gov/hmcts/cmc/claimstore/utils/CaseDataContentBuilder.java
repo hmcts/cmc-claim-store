@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.utils;
 
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
@@ -31,6 +32,23 @@ public class CaseDataContentBuilder {
                 .description(eventDescription)
                 .build())
             .data(payload)
+            .build();
+    }
+
+    public static CaseDataContent build(
+        StartEventResponse startEventResponse,
+        String eventSummary,
+        String eventDescription,
+        CCDCase ccdCase) {
+
+        return CaseDataContent.builder()
+            .eventToken(startEventResponse.getToken())
+            .event(Event.builder()
+                .id(startEventResponse.getEventId())
+                .summary(eventSummary)
+                .description(eventDescription)
+                .build())
+            .data(ccdCase)
             .build();
     }
 

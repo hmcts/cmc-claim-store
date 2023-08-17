@@ -916,6 +916,46 @@ public class CoreCaseDataService {
         }
     }
 
+    public CaseDetails caseTransferUpdate(String authorisation, CCDCase ccdCase, CaseEvent caseEvent) {
+        try {
+            UserDetails userDetails = userService.getUserDetails(authorisation);
+            Long caseId = ccdCase.getId();
+            EventRequestData eventRequestData = EventRequestData.builder()
+                .userId(userDetails.getId())
+                .jurisdictionId(JURISDICTION_ID)
+                .caseTypeId(CASE_TYPE_ID)
+                .eventId(caseEvent.getValue())
+                .ignoreWarning(true)
+                .build();
+
+            StartEventResponse startEventResponse = startUpdate(
+                authorisation,
+                eventRequestData,
+                caseId,
+                isRepresented(userDetails)
+            );
+
+            CaseDataContent caseDataContent = CaseDataContentBuilder.build(
+                startEventResponse,
+                CMC_CASE_UPDATE_SUMMARY,
+                SUBMITTING_CMC_CASE_UPDATE_DESCRIPTION,
+                ccdCase
+            );
+
+            return submitUpdate(authorisation, eventRequestData, caseDataContent, caseId,
+                isRepresented(userDetails));
+        } catch (Exception exception) {
+            logger.error("Error communicating with CCD API");
+            throw new CoreCaseDataStoreException(
+                String.format(
+                    "Failed updating claim in CCD store for claim %s on event %s",
+                    ccdCase.getPreviousServiceCaseReference(),
+                    caseEvent
+                ), exception
+            );
+        }
+    }
+
     private StartEventResponse startUpdate(
         String authorisation,
         EventRequestData eventRequestData,
