@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +47,7 @@ public class HWFFullAndPartRemissionCallbackHandler extends CallbackHandler {
 
     private final UserService userService;
 
+    @Getter @Setter
     private String validationMessage;
 
     @Autowired
@@ -78,7 +81,6 @@ public class HWFFullAndPartRemissionCallbackHandler extends CallbackHandler {
         final var responseBuilder = AboutToStartOrSubmitCallbackResponse.builder();
         final CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
-        validationMessage = null;
 
         if (callbackParams.getRequest().getEventId().equals(CaseEvent.HWF_FULL_REMISSION_GRANTED.getValue())) {
             validationResultForRemittedFee(ccdCase, CaseEvent.HWF_FULL_REMISSION_GRANTED.getValue());
@@ -86,8 +88,8 @@ public class HWFFullAndPartRemissionCallbackHandler extends CallbackHandler {
             validationResultForRemittedFee(ccdCase, CaseEvent.HWF_PART_REMISSION_GRANTED.getValue());
         }
         List<String> errors = new ArrayList<>();
-        if (null != validationMessage) {
-            errors.add(validationMessage);
+        if (null != getValidationMessage()) {
+            errors.add(getValidationMessage());
             responseBuilder.errors(errors);
         } else {
             ccdCase.setLastEventTriggeredForHwfCase(callbackParams.getRequest().getEventId());
@@ -105,9 +107,9 @@ public class HWFFullAndPartRemissionCallbackHandler extends CallbackHandler {
             BigDecimal totalAmount = NumberUtils.parseNumber(ccdCase.getTotalAmount(), BigDecimal.class);
             int value = feeAmountInPennies.compareTo(feeRemitted);
             if (value == 0) {
-                validationMessage = PART_REMISSION_EQUAL_ERROR_MESSAGE;
+                setValidationMessage(PART_REMISSION_EQUAL_ERROR_MESSAGE);
             } else if (value < 0) {
-                validationMessage = PART_REMISSION_IS_MORE_ERROR_MESSAGE;
+                setValidationMessage(PART_REMISSION_IS_MORE_ERROR_MESSAGE);
             }
             totalAmount = totalAmount.subtract(feeRemitted);
             if (ccdCase.getOutstandingFeeAmountInPennies() != null) {
