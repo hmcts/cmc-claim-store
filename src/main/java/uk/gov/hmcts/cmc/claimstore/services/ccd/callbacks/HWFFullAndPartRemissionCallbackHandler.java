@@ -106,7 +106,13 @@ public class HWFFullAndPartRemissionCallbackHandler extends CallbackHandler {
 
             BigDecimal currentFeeRemitted = NumberUtils.parseNumber(caseDetailsConverter.extractCCDCase(caseDetails)
                 .getFeeRemitted(), BigDecimal.class);
+
+            logger.info("Current fee remitted {} for case id {}", currentFeeRemitted, ccdCase.getId());
+
             BigDecimal feeRemitted = NumberUtils.parseNumber(ccdCase.getFeeRemitted(), BigDecimal.class);
+
+            logger.info("Fee remitted {} for case id {}", feeRemitted, ccdCase.getId());
+
             BigDecimal totalAmount = NumberUtils.parseNumber(ccdCase.getTotalAmount(), BigDecimal.class);
             int value = feeAmountInPennies.compareTo(feeRemitted);
             if (value == 0) {
@@ -119,6 +125,7 @@ public class HWFFullAndPartRemissionCallbackHandler extends CallbackHandler {
                 BigDecimal outstandingFeeAmountInPennies = NumberUtils.parseNumber(
                     ccdCase.getOutstandingFeeAmountInPennies(),
                     BigDecimal.class);
+                logger.info("Updating fee amount with current fee remitted {} for case id {}", currentFeeRemitted, ccdCase.getId());
                 BigDecimal feeAmountAfterRemission = outstandingFeeAmountInPennies.subtract(currentFeeRemitted);
                 ccdCase.setOutstandingFeeAmountInPennies(valueOf(feeAmountAfterRemission));
                 ccdCase.setFeeRemitted(valueOf(feeAmountInPennies.subtract(feeAmountAfterRemission)));
