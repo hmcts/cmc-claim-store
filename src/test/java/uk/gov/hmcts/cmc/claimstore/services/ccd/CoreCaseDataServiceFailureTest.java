@@ -96,7 +96,6 @@ public class CoreCaseDataServiceFailureTest {
     private WorkingDayIndicator workingDayIndicator;
 
     private final int intentionToProceedDeadlineDays = 33;
-    private final boolean isDqPilotCourt = false;
 
     @Mock
     private feign.Request request;
@@ -150,8 +149,7 @@ public class CoreCaseDataServiceFailureTest {
             intentionToProceedDeadlineDays,
             workingDayIndicator,
             directionsQuestionnaireService,
-            pilotCourtService,
-            isDqPilotCourt);
+            pilotCourtService);
     }
 
     @Test(expected = CoreCaseDataStoreException.class)
