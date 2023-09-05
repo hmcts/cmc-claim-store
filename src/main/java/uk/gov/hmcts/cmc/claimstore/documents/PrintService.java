@@ -8,8 +8,9 @@ import java.util.List;
 
 public interface PrintService {
     BulkPrintDetails printHtmlLetter(Claim claim, List<Printable> documents,
-                                     BulkPrintRequestType letterType, String authorisation);
+                                     BulkPrintRequestType letterType, String authorisation, List<String> personList);
 
     BulkPrintDetails printPdf(Claim claim, List<Printable> documents,
-                              BulkPrintRequestType letterType, String authorisation);
+                              BulkPrintRequestType letterType, String authorisation, List<String> personList);
+
 }
