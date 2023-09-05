@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.PrintableDocumentServi
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
 import uk.gov.hmcts.cmc.claimstore.services.document.SecuredDocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.utils.CaseDataExtractorUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
@@ -89,7 +90,8 @@ public class BreathingSpaceLetterService {
                     bsLetterDoc,
                     buildDefendantLetterFileBaseName(claim.getReferenceNumber()))),
             BulkPrintRequestType.GENERAL_LETTER_TYPE,
-            authorisation
+            authorisation,
+            CaseDataExtractorUtils.getDefendant(claim)
         );
 
         ImmutableList<BulkPrintDetails> printDetails = ImmutableList.<BulkPrintDetails>builder()

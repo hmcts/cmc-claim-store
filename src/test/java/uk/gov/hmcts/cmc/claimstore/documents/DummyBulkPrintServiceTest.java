@@ -19,6 +19,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,6 +29,7 @@ import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.FIRST_C
 @RunWith(MockitoJUnitRunner.class)
 public class DummyBulkPrintServiceTest {
     private static final String AUTHORISATION = "Bearer: let me in";
+    private static final List<String> USER_LIST = List.of("user1");
     private final Logger log = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
     @Mock
@@ -60,7 +62,8 @@ public class DummyBulkPrintServiceTest {
                 new PrintableTemplate(sealedClaimDocument, "filename")
             ),
             FIRST_CONTACT_LETTER_TYPE,
-            AUTHORISATION
+            AUTHORISATION,
+            USER_LIST
         );
         assertWasLogged("No bulk print operation need to be performed as 'Bulk print url' is switched off.");
     }

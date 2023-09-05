@@ -49,6 +49,7 @@ public class PinOrchestrationServiceTest {
     private static final String AUTHORISATION = "AUTHORISATION";
     private static final String SUBMITTER_NAME = "submitter-name";
     private static final String PIN = "PIN";
+    private static final List<String> USER_LIST = List.of("Dr. John Smith");
 
     private static final PDF defendantPinLetter = new PDF("0000-pin", "test".getBytes(), DEFENDANT_PIN_LETTER);
     private static final PDF sealedClaim = new PDF("0000-sealed-claim", "test".getBytes(), SEALED_CLAIM);
@@ -124,10 +125,10 @@ public class PinOrchestrationServiceTest {
         given(emailTemplates.getDefendantClaimIssued()).willReturn(DEFENDANT_EMAIL_TEMPLATE);
 
         given(bulkPrintService
-            .printPdf(eq(CLAIM), eq(printAbles), eq(FIRST_CONTACT_LETTER_TYPE), eq(AUTHORISATION)))
+            .printPdf(eq(CLAIM), eq(printAbles), eq(FIRST_CONTACT_LETTER_TYPE), eq(AUTHORISATION), eq(USER_LIST)))
             .willReturn(bulkPrintDetails);
         given(bulkPrintService
-            .printHtmlLetter(eq(CLAIM), eq(printAbles), eq(FIRST_CONTACT_LETTER_TYPE), eq(AUTHORISATION)))
+            .printHtmlLetter(eq(CLAIM), eq(printAbles), eq(FIRST_CONTACT_LETTER_TYPE), eq(AUTHORISATION), eq(USER_LIST)))
             .willReturn(bulkPrintDetails);
         given(claimService.addBulkPrintDetails(eq(AUTHORISATION), eq(printDetails),
             eq(ADD_BULK_PRINT_DETAILS), eq(CLAIM)))
@@ -149,7 +150,8 @@ public class PinOrchestrationServiceTest {
             eq(CLAIM),
             eq(printAbles),
             eq(FIRST_CONTACT_LETTER_TYPE),
-            eq(AUTHORISATION));
+            eq(AUTHORISATION),
+            eq(USER_LIST));
 
         verify(claimIssuedStaffNotificationService).notifyStaffOfClaimIssue(eq(claimWithBulkPrintDetails),
             eq(ImmutableList.of(sealedClaim, defendantPinLetter)));
@@ -180,7 +182,7 @@ public class PinOrchestrationServiceTest {
             .willReturn(generatedDocuments);
 
         doThrow(new RuntimeException("bulk print failed")).when(bulkPrintService).printPdf(
-            any(), anyList(), eq(FIRST_CONTACT_LETTER_TYPE), anyString());
+            any(), anyList(), eq(FIRST_CONTACT_LETTER_TYPE), anyString(), USER_LIST);
 
         //when
         try {
@@ -251,7 +253,8 @@ public class PinOrchestrationServiceTest {
             eq(CLAIM),
             eq(printAbles),
             eq(FIRST_CONTACT_LETTER_TYPE),
-            eq(AUTHORISATION));
+            eq(AUTHORISATION),
+            eq(USER_LIST));
 
         verify(claimIssuedStaffNotificationService).notifyStaffOfClaimIssue(eq(claimWithBulkPrintDetails),
             eq(ImmutableList.of(sealedClaim, defendantPinLetter)));
@@ -283,7 +286,7 @@ public class PinOrchestrationServiceTest {
         given(launchDarklyClient.isFeatureEnabled(eq("new-defendant-pin-letter"), any(LDUser.class))).willReturn(false);
 
         doThrow(new RuntimeException("bulk print failed")).when(bulkPrintService).printHtmlLetter(
-            any(), anyList(), eq(FIRST_CONTACT_LETTER_TYPE), anyString());
+            any(), anyList(), eq(FIRST_CONTACT_LETTER_TYPE), anyString(), USER_LIST);
 
         //when
         try {
