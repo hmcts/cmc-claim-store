@@ -37,6 +37,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -127,7 +128,8 @@ class BreathingSpaceLetterServiceTest {
         when(bulkPrintService
             .printPdf(any(Claim.class), any(),
                 any(BulkPrintRequestType.class),
-                any(String.class)))
+                any(String.class),
+                anyList()))
             .thenReturn(bulkPrintDetails);
 
         when(claimService.addBulkPrintDetails(any(String.class), any(), any(CaseEvent.class), any(Claim.class)))
@@ -156,7 +158,8 @@ class BreathingSpaceLetterServiceTest {
         when(bulkPrintService
             .printPdf(any(Claim.class), any(),
                 any(BulkPrintRequestType.class),
-                any(String.class)))
+                any(String.class),
+                anyList()))
             .thenReturn(bulkPrintDetails);
 
         when(claimService.addBulkPrintDetails(any(String.class), any(), any(CaseEvent.class), any(Claim.class)))
@@ -167,7 +170,8 @@ class BreathingSpaceLetterServiceTest {
 
         verify(bulkPrintService, once()).printPdf(any(Claim.class), any(),
             any(BulkPrintRequestType.class),
-            any(String.class));
+            any(String.class),
+            anyList());
 
         verify(claimService, once()).addBulkPrintDetails(any(String.class), any(), any(CaseEvent.class),
             any(Claim.class));
@@ -190,7 +194,8 @@ class BreathingSpaceLetterServiceTest {
         when(bulkPrintService
             .printPdf(any(Claim.class), any(),
                 any(BulkPrintRequestType.class),
-                any(String.class)))
+                any(String.class),
+                anyList()))
             .thenReturn(bulkPrintDetails);
 
         when(claimService.addBulkPrintDetails(any(String.class), any(), any(CaseEvent.class), any(Claim.class)))
