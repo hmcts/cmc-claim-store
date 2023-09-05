@@ -200,8 +200,6 @@ configurations {
   aatRuntime.extendsFrom(testRuntime)
   integrationTestImplementation.extendsFrom(testCompile)
   integrationTestRuntime.extendsFrom(testRuntime)
-  runtime.exclude group: "com.github.hmcts", module: "payments-java-client"
-  runtime.exclude group: "com.github.hmcts", module: "cmc-pdf-service-client"
 }
 
 dependencies {
