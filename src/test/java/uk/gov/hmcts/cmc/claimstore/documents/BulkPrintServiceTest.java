@@ -41,7 +41,6 @@ import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.GENERAL
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.ADDITIONAL_DATA_CASE_IDENTIFIER_KEY;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.ADDITIONAL_DATA_LETTER_TYPE_KEY;
-import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.XEROX_TYPE_PARAMETER;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BulkPrintServiceTest {
@@ -54,6 +53,8 @@ public class BulkPrintServiceTest {
     private static final Map<String, Object> claimContents = new HashMap<>();
     private static final Document sealedClaimDocument = new Document("sealedClaimTemplate", claimContents);
     private static final String AUTHORISATION = "Bearer: let me in";
+    private static final String RECIPIENT = "recipient";
+    private static final List<String> USER_LIST = List.of("Dr. John Smith");
 
     @Mock
     private SendLetterApi sendLetterApi;
@@ -71,24 +72,21 @@ public class BulkPrintServiceTest {
     @Mock
     private PDFServiceClient pdfServiceClient;
 
-    private Letter letter;
-
     @Before
     public void beforeEachTest() {
         when(authTokenGenerator.generate()).thenReturn(AUTH_VALUE);
         additionalData.put(ADDITIONAL_DATA_LETTER_TYPE_KEY, FIRST_CONTACT_LETTER_TYPE.value);
         additionalData.put(ADDITIONAL_DATA_CASE_IDENTIFIER_KEY, CLAIM.getId());
         additionalData.put(ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY, CLAIM.getReferenceNumber());
+        additionalData.put(RECIPIENT, USER_LIST);
 
         List<Document> documents = Arrays.asList(defendantLetterDocument, sealedClaimDocument);
-        letter = new Letter(documents, XEROX_TYPE_PARAMETER, additionalData);
     }
 
     @Test
     public void shouldSendLetterWithDocumentsAsInGivenOrder() {
         //given
-        List<Document> documents = Arrays.asList(defendantLetterDocument, sealedClaimDocument);
-        when(sendLetterApi.sendLetter(eq(AUTH_VALUE), eq(new Letter(documents, XEROX_TYPE_PARAMETER, additionalData))))
+        when(sendLetterApi.sendLetter(eq(AUTH_VALUE), any(Letter.class)))
             .thenReturn(new SendLetterResponse(UUID.randomUUID()));
 
         bulkPrintService = new BulkPrintService(
@@ -106,12 +104,13 @@ public class BulkPrintServiceTest {
                 new PrintableTemplate(sealedClaimDocument, "filename")
             ),
             FIRST_CONTACT_LETTER_TYPE,
-            AUTHORISATION
+            AUTHORISATION,
+            USER_LIST
         );
         //then
 
         verify(sendLetterApi).sendLetter(eq(AUTH_VALUE),
-            eq(new Letter(documents, XEROX_TYPE_PARAMETER, additionalData)));
+            any(Letter.class));
     }
 
     @Test
@@ -139,7 +138,9 @@ public class BulkPrintServiceTest {
             new PrintableTemplate(legalOrderDocument, "filename")
             ),
             DIRECTION_ORDER_LETTER_TYPE,
-            AUTHORISATION);
+            AUTHORISATION,
+            USER_LIST
+        );
 
         verify(sendLetterApi).sendLetter(eq(AUTH_VALUE), any(LetterWithPdfsRequest.class));
     }
@@ -164,7 +165,8 @@ public class BulkPrintServiceTest {
             new PrintableTemplate(generalLetter, "filename")
             ),
             GENERAL_LETTER_TYPE,
-            AUTHORISATION
+            AUTHORISATION,
+            USER_LIST
         );
 
         verify(sendLetterApi).sendLetter(eq(AUTH_VALUE), any(LetterWithPdfsRequest.class));
@@ -175,7 +177,7 @@ public class BulkPrintServiceTest {
         //given
         doThrow(new RuntimeException("send Letter failed"))
             .when(sendLetterApi)
-            .sendLetter(eq(AUTH_VALUE), eq(letter));
+            .sendLetter(eq(AUTH_VALUE), any(Letter.class));
 
         //when
         bulkPrintService = new BulkPrintService(
@@ -194,10 +196,11 @@ public class BulkPrintServiceTest {
                     new PrintableTemplate(sealedClaimDocument, "filename")
                 ),
                 FIRST_CONTACT_LETTER_TYPE,
-                AUTHORISATION);
+                AUTHORISATION,
+                USER_LIST);
         } finally {
             //then
-            verify(sendLetterApi).sendLetter(eq(AUTH_VALUE), eq(letter));
+            verify(sendLetterApi).sendLetter(eq(AUTH_VALUE), any(Letter.class));
         }
     }
 

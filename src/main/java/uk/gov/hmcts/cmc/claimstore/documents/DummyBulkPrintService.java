@@ -17,14 +17,14 @@ public class DummyBulkPrintService implements PrintService {
 
     @Override
     public BulkPrintDetails printHtmlLetter(Claim claim, List<Printable> documents,
-                                            BulkPrintRequestType type, String authorisation) {
+                                            BulkPrintRequestType type, String authorisation, List<String> personList) {
         logger.info("No bulk print operation need to be performed as 'Bulk print url' is switched off.");
         return BulkPrintDetails.builder().build();
     }
 
     @Override
     public BulkPrintDetails printPdf(Claim claim, List<Printable> documents,
-                                     BulkPrintRequestType type, String authorisation) {
+                                     BulkPrintRequestType type, String authorisation, List<String> personList) {
         logger.info("No bulk print operation need to be performed as 'Bulk print url' is switched off.");
         return BulkPrintDetails.builder().build();
     }
