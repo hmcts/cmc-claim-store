@@ -202,6 +202,11 @@ configurations {
   integrationTestRuntime.extendsFrom(testRuntime)
 }
 
+configurations.all {
+  runtime.exclude group: "com.github.hmcts", module: "payments-java-client"
+  runtime.exclude group: "com.github.hmcts", module: "cmc-pdf-service-client"
+}
+
 dependencies {
 
   implementation project(':email-client')
