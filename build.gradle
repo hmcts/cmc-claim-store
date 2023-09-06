@@ -240,6 +240,8 @@ dependencies {
   implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformJavaLogging
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.loggingAppinsights
   implementation group: 'com.microsoft.azure', name: 'applicationinsights-web', version: '2.6.4'
+  
+  implementation group: 'com.github.hmcts', name: 'java-logging', version: '6.0.1'
 
   implementation('com.github.hmcts:cmc-pdf-service-client:7.0.0') {
     exclude group: 'java-logging', module: ' java-logging'
