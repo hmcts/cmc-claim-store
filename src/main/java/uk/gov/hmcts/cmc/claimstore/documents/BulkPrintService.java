@@ -46,6 +46,7 @@ public class BulkPrintService implements PrintService {
     protected static final String ADDITIONAL_DATA_LETTER_TYPE_KEY = "letterType";
     protected static final String ADDITIONAL_DATA_CASE_IDENTIFIER_KEY = "caseIdentifier";
     protected static final String ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY = "caseReferenceNumber";
+    protected static final String RECIPIENTS = "recipients";
     private final Logger logger = LoggerFactory.getLogger(BulkPrintService.class);
     private final SendLetterApi sendLetterApi;
     private final AuthTokenGenerator authTokenGenerator;
@@ -68,11 +69,12 @@ public class BulkPrintService implements PrintService {
         this.pdfServiceClient = pdfServiceClient;
     }
 
-    private static Map<String, Object> wrapInDetailsInMap(Claim claim, BulkPrintRequestType letterType) {
+    private static Map<String, Object> wrapInDetailsInMap(Claim claim, BulkPrintRequestType letterType, List<String> personList) {
         Map<String, Object> additionalData = new HashMap<>();
         additionalData.put(ADDITIONAL_DATA_LETTER_TYPE_KEY, letterType.value);
         additionalData.put(ADDITIONAL_DATA_CASE_IDENTIFIER_KEY, claim.getId());
         additionalData.put(ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY, claim.getReferenceNumber());
+        additionalData.put(RECIPIENTS, personList);
         return additionalData;
     }
 
@@ -86,7 +88,8 @@ public class BulkPrintService implements PrintService {
         Claim claim,
         List<Printable> documents,
         BulkPrintRequestType letterType,
-        String authorisation
+        String authorisation,
+        List<String> personList
     ) {
         requireNonNull(claim);
         List<Document> docs = documents.stream()
@@ -99,7 +102,7 @@ public class BulkPrintService implements PrintService {
             new Letter(
                 docs,
                 XEROX_TYPE_PARAMETER,
-                wrapInDetailsInMap(claim, letterType)
+                wrapInDetailsInMap(claim, letterType, personList)
             )
         );
 
@@ -139,7 +142,8 @@ public class BulkPrintService implements PrintService {
         Claim claim,
         List<Printable> documents,
         BulkPrintRequestType letterType,
-        String authorisation
+        String authorisation,
+        List<String> personList
     ) {
         requireNonNull(claim);
         String info = "";
@@ -164,7 +168,7 @@ public class BulkPrintService implements PrintService {
             new LetterWithPdfsRequest(
                 docs,
                 XEROX_TYPE_PARAMETER,
-                wrapInDetailsInMap(claim, letterType)
+                wrapInDetailsInMap(claim, letterType, personList)
             )
         );
 
