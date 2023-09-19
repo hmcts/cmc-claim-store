@@ -43,8 +43,8 @@ public class ClaimantResponseActionsHandlerTest {
     public void setUp() {
         handler = new ClaimantResponseActionsHandler(
             notificationService,
-            claimantRejectOrgPaymentPlanStaffNotificationService
-        );
+            claimantRejectOrgPaymentPlanStaffNotificationService,
+            ocon9xResponseUtil);
     }
 
     @Test
