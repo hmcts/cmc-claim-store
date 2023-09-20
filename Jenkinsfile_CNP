@@ -52,7 +52,4 @@ withPipeline("java", product, component) {
   disableLegacyDeployment()
   syncBranchesWithMaster(branchesToSync)
   
-  onPR {
-    enableCleanupOfHelmReleaseOnSuccess()
-  }
 }
