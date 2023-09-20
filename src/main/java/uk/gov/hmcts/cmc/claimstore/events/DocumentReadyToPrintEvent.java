@@ -9,17 +9,20 @@ public class DocumentReadyToPrintEvent {
     private final Claim claim;
     private final Document defendantLetterDocument;
     private final Document sealedClaimDocument;
+    private final Document claimantRefusedDefendantDocument;
     private final String authorisation;
 
     public DocumentReadyToPrintEvent(
         Claim claim,
         Document defendantLetterDocument,
         Document sealedClaimDocument,
+        Document claimantRefusedDefendantDocument,
         String authorisation
     ) {
         this.claim = claim;
         this.defendantLetterDocument = defendantLetterDocument;
         this.sealedClaimDocument = sealedClaimDocument;
+        this.claimantRefusedDefendantDocument = claimantRefusedDefendantDocument;
         this.authorisation = authorisation;
     }
 
@@ -33,6 +36,10 @@ public class DocumentReadyToPrintEvent {
 
     public Document getSealedClaimDocument() {
         return sealedClaimDocument;
+    }
+
+    public Document getClaimantRefusedDefendantDocument() {
+        return claimantRefusedDefendantDocument;
     }
 
     public String getAuthorisation() {

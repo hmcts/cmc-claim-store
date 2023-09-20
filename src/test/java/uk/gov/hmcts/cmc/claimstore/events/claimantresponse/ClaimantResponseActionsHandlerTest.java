@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimantRejectionDefendantNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationToDefendantService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimantRejectOrgPaymentPlanStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -38,12 +39,16 @@ public class ClaimantResponseActionsHandlerTest {
     private NotificationToDefendantService notificationService;
     @Mock
     private ClaimantRejectOrgPaymentPlanStaffNotificationService claimantRejectOrgPaymentPlanStaffNotificationService;
+    @Mock
+    private ClaimantRejectionDefendantNotificationService claimantRejectionDefendantNotificationService;
 
     @Before
     public void setUp() {
         handler = new ClaimantResponseActionsHandler(
             notificationService,
-            claimantRejectOrgPaymentPlanStaffNotificationService);
+            claimantRejectOrgPaymentPlanStaffNotificationService,
+            claimantRejectionDefendantNotificationService
+            );
     }
 
     @Test

@@ -2,7 +2,9 @@ package uk.gov.hmcts.cmc.claimstore.events.claimantresponse;
 
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.InterlocutoryJudgmentEvent;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimantRejectionDefendantNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationToDefendantService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimantRejectOrgPaymentPlanStaffNotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper;
@@ -12,7 +14,6 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
-import uk.gov.hmcts.cmc.domain.utils.OCON9xResponseUtil;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isOptedForMediation;
 import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_CLAIMANT_RESPONSE;
@@ -31,14 +32,19 @@ public class ClaimantResponseActionsHandler {
     private final NotificationToDefendantService notificationService;
     private final ClaimantRejectOrgPaymentPlanStaffNotificationService
         claimantRejectOrgPaymentPlanStaffNotificationService;
+    private final ClaimantRejectionDefendantNotificationService
+        claimantRejectionDefendantNotificationService;
 
     public ClaimantResponseActionsHandler(
         NotificationToDefendantService notificationService,
-        ClaimantRejectOrgPaymentPlanStaffNotificationService claimantRejectOrgPaymentPlanStaffNotificationService
+        ClaimantRejectOrgPaymentPlanStaffNotificationService claimantRejectOrgPaymentPlanStaffNotificationService,
+        ClaimantRejectionDefendantNotificationService claimantRejectionDefendantNotificationService
     ) {
         this.notificationService = notificationService;
         this.claimantRejectOrgPaymentPlanStaffNotificationService =
             claimantRejectOrgPaymentPlanStaffNotificationService;
+        this.claimantRejectionDefendantNotificationService =
+            claimantRejectionDefendantNotificationService;
     }
 
     @EventListener
@@ -54,7 +60,7 @@ public class ClaimantResponseActionsHandler {
         } else if (hasIntentionToProceedAndIsOnlineDq(event.getClaim())) {
             this.notificationService.notifyDefendantOfClaimantIntentionToProceedForOnlineDq(event.getClaim());
         } else if (isRejectedStatesPaid(event.getClaim()) || isRejectedDisputesAll(event.getClaim())) {
-            // add send paper letter
+            this.claimantRejectionDefendantNotificationService.print(event.getClaim())
         } else {
             this.notificationService.notifyDefendant(event.getClaim());
         }
