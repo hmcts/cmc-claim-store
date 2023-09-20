@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.support.orders;
 
 import com.google.common.collect.ImmutableList;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,7 +47,7 @@ public class BulkPrintSupportController {
     }
 
     @PutMapping("/claim/{referenceNumber}/resend-order-for-print")
-    @ApiOperation("Resend failed legal orders for bulk print")
+    @Operation(summary = "Resend failed legal orders for bulk print")
     public void resendLegalAdvisorOrderToPrint(@PathVariable("referenceNumber") String referenceNumber) {
         Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
             .orElseThrow(claimNotFoundException(referenceNumber));

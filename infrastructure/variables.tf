@@ -1,5 +1,7 @@
 variable "product" {}
 
+variable "component" {}
+
 variable "raw_product" {
   default = "cmc" // jenkins-library overrides product for PRs and adds e.g. pr-118-cmc
 }
@@ -34,7 +36,9 @@ variable "common_tags" {
   type = map(string)
 }
 
-variable "ilbIp" {}
+variable "ilbIp" {
+  default = ""
+}
 
 variable "tenant_id" {
   description = "(Required) The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. This is usually sourced from environemnt variables and not normally required to be specified."
@@ -54,4 +58,9 @@ variable "appinsights_instrumentation_key" {
 
 variable "send_grid_subscription" {
   default = "1c4f0704-a29e-403d-b719-b90c34ef14c9"
+}
+
+variable "appinsights_location" {
+  default     = "West Europe"
+  description = "Location for Application Insights"
 }

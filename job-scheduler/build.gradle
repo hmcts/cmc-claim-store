@@ -1,29 +1,28 @@
-apply plugin: 'net.ltgt.apt'
 apply plugin: 'jacoco'
 
 def versions = [
-  logback          : '1.2.3',
-  reformJavaLogging: '3.0.2'
+  logback          : '1.2.10',
+  reformJavaLogging: '4.0.0'
 ]
 
 dependencies {
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-quartz'
-  compile group: 'org.springframework.retry', name: 'spring-retry'
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
-  compile group: 'org.postgresql', name: 'postgresql', version: '42.2.14'
-  compile group: 'com.google.guava', name: 'guava', version: '30.1.1-jre'
-  compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-quartz'
+  implementation group: 'org.springframework.retry', name: 'spring-retry'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
+  implementation group: 'org.postgresql', name: 'postgresql', version: '42.3.7'
+  implementation group: 'com.google.guava', name: 'guava', version: '30.1.1-jre'
+  implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
 
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.18'
-  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.18'
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.26'
+  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.26'
 
-  compile group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
-  compile group: 'ch.qos.logback', name: 'logback-core', version: versions.logback
-  compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformJavaLogging
+  implementation group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
+  implementation group: 'ch.qos.logback', name: 'logback-core', version: versions.logback
+  implementation group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformJavaLogging
 
-  testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
-  testCompile group: 'org.assertj', name: 'assertj-core', version: '3.20.2'
+  testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+  testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.20.2'
 
-  testCompile group: 'junit', name: 'junit', version: '4.13.1'
+  testImplementation group: 'junit', name: 'junit', version: '4.13.1'
 }

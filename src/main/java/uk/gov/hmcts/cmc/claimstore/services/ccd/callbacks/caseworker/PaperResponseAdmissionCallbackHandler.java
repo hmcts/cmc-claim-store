@@ -23,7 +23,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
-import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.SecuredDocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.DefendantResponseNotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -65,7 +65,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
     private final DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
     private final String paperResponseAdmissionTemplateId;
     private final UserService userService;
-    private final DocumentManagementService documentManagementService;
+    private final SecuredDocumentManagementService securedDocumentManagementService;
     private final Clock clock;
     private final GeneralLetterService generalLetterService;
     private final CaseEventService caseEventService;
@@ -91,7 +91,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
              @Value("${ocmc.jurisdictionId}")
                  String jurisdictionId,
              UserService userService,
-             DocumentManagementService documentManagementService,
+             SecuredDocumentManagementService securedDocumentManagementService,
              Clock clock,
              GeneralLetterService generalLetterService,
              CaseEventService caseEventService,
@@ -103,7 +103,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
         this.docAssemblyTemplateBodyMapper = docAssemblyTemplateBodyMapper;
         this.paperResponseAdmissionTemplateId = paperResponseAdmissionTemplateId;
         this.userService = userService;
-        this.documentManagementService = documentManagementService;
+        this.securedDocumentManagementService = securedDocumentManagementService;
         this.clock = clock;
         this.generalLetterService = generalLetterService;
         this.caseEventService = caseEventService;
@@ -198,7 +198,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
             docAssemblyTemplateBodyMapper.paperResponseAdmissionLetter(updatedCCDCase,
                 userService.getUserDetails(authorisation).getFullName()));
 
-        var documentMetadata = documentManagementService.getDocumentMetaData(
+        var documentMetadata = securedDocumentManagementService.getDocumentMetaData(
             authorisation,
             URI.create(docAssemblyResponse.getRenditionOutputLocation()).getPath()
         );

@@ -57,6 +57,7 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static java.time.LocalDate.now;
@@ -119,6 +120,7 @@ public class CoreCaseDataServiceTest {
     private WorkingDayIndicator workingDayIndicator;
 
     private final int intentionToProceedDeadlineDays = 33;
+
     @Mock
     private feign.Request request;
     @Mock
@@ -177,14 +179,7 @@ public class CoreCaseDataServiceTest {
             intentionToProceedDeadlineDays,
             workingDayIndicator,
             directionsQuestionnaireService,
-            pilotCourtService
-        );
-
-        /*this.pilotCourtService = new PilotCourtService(
-            anyString(),
-            courtFinderApi,
-            hearingCourtMapper,
-            appInsights);*/
+            pilotCourtService);
     }
 
     @Test
@@ -198,7 +193,7 @@ public class CoreCaseDataServiceTest {
             eq(false)
         ))
             .thenReturn(StartEventResponse.builder()
-                .caseDetails(CaseDetails.builder().build())
+                .caseDetails(CaseDetails.builder().data(Map.of()).build())
                 .eventId("eventId")
                 .token("token")
                 .build());
@@ -463,7 +458,12 @@ public class CoreCaseDataServiceTest {
         Claim providedClaim = SampleClaim.getDefault();
 
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
-            .thenThrow(new FeignException.UnprocessableEntity("Status 422 from CCD", request, null));
+            .thenThrow(new FeignException.UnprocessableEntity(
+                "Status 422 from CCD",
+                request,
+                new byte[]{},
+                Map.of())
+            );
 
         CaseDetails caseDetails = service.updatePreferredCourtByClaimReference(USER,
             providedClaim.getId(),
@@ -507,6 +507,25 @@ public class CoreCaseDataServiceTest {
 
     @Test
     public void saveClaimantAcceptationResponseShouldReturnClaim() {
+        Response providedResponse = SampleResponse.validDefaults();
+        Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
+        ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultAcceptation();
+
+        when(caseDetailsConverter.extractClaim(any((CaseDetails.class)))).thenReturn(getWithClaimantResponse());
+
+        Claim claim = service.saveClaimantResponse(providedClaim.getId(),
+            claimantResponse,
+            AUTHORISATION
+        );
+
+        assertThat(claim).isNotNull();
+        assertThat(claim.getClaimantResponse()).isPresent();
+        verify(coreCaseDataApi, atLeastOnce()).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
+            anyString(), anyString(), eq(CLAIMANT_RESPONSE_ACCEPTATION.getValue()));
+    }
+
+    @Test
+    public void saveClaimantAcceptationResponseShouldLAFeatureIsEnabled() {
         Response providedResponse = SampleResponse.validDefaults();
         Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
         ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultAcceptation();
@@ -577,7 +596,7 @@ public class CoreCaseDataServiceTest {
 
         assertThat(claim).isNotNull();
         assertThat(claim.getClaimantResponse()).isPresent();
-        verify(directionsQuestionnaireService, atLeastOnce()).getPreferredCourt(claimArgumentCaptor.capture());
+        verify(directionsQuestionnaireService, atLeastOnce()).getPreferredIndieSolCourt(claimArgumentCaptor.capture());
         assertThat(claimArgumentCaptor.getValue().getClaimantResponse()).isPresent();
         verify(coreCaseDataApi, atLeastOnce()).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
             anyString(), anyString(), eq(CLAIMANT_RESPONSE_REJECTION.getValue()));
@@ -811,7 +830,12 @@ public class CoreCaseDataServiceTest {
             anyBoolean(),
             any()
         ))
-            .thenThrow(new FeignException.UnprocessableEntity("Status 422 from CCD", request, null));
+            .thenThrow(new FeignException.UnprocessableEntity(
+                "Status 422 from CCD",
+                request,
+                new byte[]{},
+                Map.of())
+            );
 
         Claim returnedClaim = service.saveCaseEventIOC(USER, providedClaim, CREATE_CITIZEN_CLAIM);
         Claim hwfClaim = service.saveCaseEventIOC(USER, providedClaim, UPDATE_HELP_WITH_FEE_CLAIM);

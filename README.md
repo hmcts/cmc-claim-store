@@ -9,13 +9,13 @@ The two main responsibilities of this application are:
  - executing business logic of the CMC service e.g. calculating response deadline.
 
 Internally state is persisted to a relational database.
-The service also delegates some responsibilities to other RESTful services e.g. idam-api or pdf-service. 
+The service also delegates some responsibilities to other RESTful services e.g. idam-api or pdf-service.
 
 ## Getting started
 
 ### Prerequisites
 
-- [JDK 11](https://www.oracle.com/java)
+- [JDK 17](https://www.oracle.com/java)
 - [Docker](https://www.docker.com)
 
 ### Environment variables
@@ -133,7 +133,6 @@ info see: https://tools.hmcts.net/confluence/display/ROC/AKS+-+Azure+Managed+Kub
 
 #### Project Lombok Plugin
 When building the project in your IDE (eclipse or IntelliJ), Lombok plugin will be required to compile.
-
 For IntelliJ IDEA, please add the Lombok IntelliJ plugin:
 * Go to `File > Settings > Plugins`
 * Click on `Browse repositories...`
@@ -149,5 +148,4 @@ This is because we use a feature of jackson for automatically deserialising base
 For more info see: https://github.com/FasterXML/jackson-modules-java8/blob/a0d102fa0aea5c2fc327250868e1c1f6d523856d/parameter-names/README.md
 
 ## License
-
 This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.

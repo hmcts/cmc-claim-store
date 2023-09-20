@@ -3,7 +3,7 @@
   <meta charset="UTF-8" />
   <title>Claim PIN Letter</title>
   <style>
-    @page {
+        @page {
       size: 8.5in 11in;
       margin: 2% 10% 10%;
     }
@@ -16,7 +16,7 @@
     table.hmcts-header {
       width: 100%;
       text-align: left;
-      border-bottom: 1px solid black;
+      border-bottom: 1px none black;
       font-size: 23px
     }
 
@@ -34,11 +34,146 @@
       font-size: 12px;
     }
 
+    .tribunals-service {
+      font-size: 21px;
+    }
+
+    .info-text-18px {
+      font-size: 18px;
+    }
+
+    .left-width-3perc {
+      margin-left: 3%;
+    }
+
     .defendant-address {
       margin-top: 47px;
       margin-left: 10px;
       margin-bottom: 60px;
     }
+
+    .info-text-box {
+      margin-top: -20px;
+      background-color: #4d4d4d;
+      min-width: 250px;
+      width: auto;
+      padding: 50px;
+      color: white;
+    }
+
+    .vertical-line {
+      border-left: 6px solid #4d4d4d;
+      height: 400px;
+      position: relative;
+      left: 0%;
+      margin-left: 0%;
+      top: 0;
+    }
+
+    .number-bullet-points {
+      height: 35px;
+      width: 35px;
+      background-color: #4d4d4d;
+      border-radius: 50%;
+      display: inline-block;
+      color: white;
+      margin-top: 0%;
+   }
+
+   .number-text {
+      position: relative;
+      top: 7px;
+      left: 12px;
+    }
+
+  .claim-details-claim-ref {
+      position: relative;
+      left: 10px;
+      top: 10px;
+    }
+
+  .claim-details-line-space {
+      position: relative;
+      left: 10px;
+      top: 40px;
+      display: inline-block;
+    }
+
+  .respond-deadline-text {
+    position: relative;
+    top: 5px;
+    left: 3%;
+  }
+
+  /* Calender */
+
+  .date {
+      display: block;
+      width: 100px;
+      height: 110px;
+      margin: 30px auto;
+      background: #fff;
+      text-align: center;
+      font-family: 'Helvetica', sans-serif;
+      position: relative;
+    }
+
+.date .binds {
+      position: absolute;
+      height: 15px;
+      width: 60px;
+      background: transparent;
+      border: 2px solid #999;
+      border-width: 0 5px;
+      top: -6px;
+      left: 0;
+      right: 0;
+      margin: auto;
+    }
+
+.date .month {
+      background: #555;
+      display: block;
+      padding: 8px 0;
+      color: #fff;
+      font-size: 12px;
+      font-weight: bold;
+      border-bottom: 2px solid #333;
+      box-shadow: inset 0 -1px 0 0 #666;
+    }
+
+.date .day {
+      display: block;
+      margin: 0;
+      padding: 10px 0;
+      font-size: 48px;
+      box-shadow: 0 0 3px #ccc;
+      position: relative;
+    }
+
+.date .day::after {
+      content: '';
+      display: block;
+      height: 100%;
+      width: 96%;
+      position: absolute;
+      top: 3px;
+      left: 2%;
+      z-index: -1;
+      box-shadow: 0 0 3px #ccc;
+    }
+
+.date .day::before {
+      content: '';
+      display: block;
+      height: 100%;
+      width: 90%;
+      position: absolute;
+      top: 6px;
+      left: 5%;
+      z-index: -1;
+      box-shadow: 0 0 3px #ccc;
+  }
   </style>
 </head>
 
@@ -58,15 +193,15 @@
             CM20 9RA
           </p>
           {% else %}
-          <p class="address" style="float:right">
-            County Court Business Centre<br/>
-            Online Civil Money Claims<br/>
-            St. Katharine's House<br/>
-            21-27 St. Katharine's Street<br/>
-            Northampton<br/>
-            Northamptonshire<br/>
-            NN1 2LH
-          </p>
+            <div>
+            <p class="address" style="float:right">
+              <b class="tribunals-service"> Courts and Tribunals Service Centre </b><br/>
+              <b class="info-text-18px">Email:  contactocmc@justice.gov.uk </b><br/>
+              <b class="info-text-18px">Telephone: 0300 123 7050</b><br/>
+              <b class="info-text-18px">(Monday to Friday, 8:30am to 5pm)</b><br/>
+              <b class="info-text-18px">Call charges: www.gov.uk/call-charges</b><br/>
+              </div>
+            </p>
           {% endif %}
         </td>
       </tr>
@@ -74,6 +209,12 @@
   </section>
 
   <section class="letter-content">
+    <p class="info-text-box" style="float: right">
+      <b class="info-text-18px">Claim Number:</b> <br/>
+      <b class="info-text-18px">{{ claimReferenceNumber }}</b> <br/>
+      <b class="info-text-18px">Security code:</b> <br/>
+      <b class="info-text-18px">{{ defendantPin }}</b>
+    </p>
     <p class="address defendant-address">
       {{ defendantFullName }} <br/>
       {{ defendantAddress.line1 }} <br/>
@@ -94,48 +235,89 @@
       We are contacting you because {{ claimantFullName }} has made a money claim against you for {{ claimTotalAmount }},
       including interest and claim fee. The claim is attached to this letter.
     </p>
+    <p class="no-spacing">
+    A money claim is when someone says you owe them money and takes legal action against you to get it back.
+    </p>
     {% if newFeatures %}
     <p class="small-spacing">
       The claimant has been selected to use new features which apply to this claim.
     </p>
     {% endif %}
-    <p class="small-spacing">
-      <strong>Respond to this claim</strong>
+
+    <p class="vertical-line small-spacing">
+    <span><strong class="left-width-3perc">What you need to do</strong></span> <br/>
+    <span class="left-width-3perc">Tell us whether you agree with the claim or not. This is called responding to the claim. </span><br/>
+    <br/>
+    <span><strong class="left-width-3perc">How to respond </strong></span> <br/>
+    <span class="left-width-3perc">You must create, or sign in to, a money claims account. You cannot use any account<span/><br/> <span class="left-width-3perc">details you may already have from another government service.</span><br/>
+    <span class="left-width-3perc"> Go to: {{ respondToClaimUrl }} </span><br/>
+    <br/>
+    <span>
+      <span class="number-bullet-points left-width-3perc"><span class="number-text">1</span></span> &nbsp;
+      <span class="claim-details-claim-ref"><strong>Enter the claim number: {{ claimReferenceNumber }}</strong></span><br/>
+    </span>
+    <br/>
+    <br/>
+    <span>
+      <span class="number-bullet-points left-width-3perc"><span class="number-text">2</span></span> &nbsp;
+      <span class="claim-details-claim-ref"><strong>Enter the security code:</strong> {{ defendantPin }} (this code can only be used once) </span>
+    </span>
+    <br/>
+    <br/>
+    <br/>
+    <span>
+      <span class="number-bullet-points left-width-3perc"><span class="number-text">3</span></span> &nbsp;
+      <span class="claim-details-claim-ref"><strong>Select:</strong> Respond to a claim </span>
+    </span>
+    <br/>
+    <span>
+      <span class="number-bullet-points left-width-3perc"><span class="number-text">4</span></span> &nbsp;
+      <span class="claim-details-line-space "><strong>Create an account -</strong> after creating an account you’ll be sent an email with
+      <br>  a link to verify your account, or
+      <br>
+      <strong>sign in to your existing account –</strong> do not create a new account
+      </span>
+    </span>
+    </br>
     </p>
 
-    <p class="no-spacing">The Civil Money Claims service is run by Her Majesty&#8217;s Courts &amp; Tribunal Service (HMCTS):</p>
+    <br/>
+    <br/>
 
-    <ol style="margin-top: 6px">
-      <li>Go to {{ respondToClaimUrl }}</li>
-      <li>Enter this claim number: {{ claimReferenceNumber }}</li>
-      <li>Enter this security code: {{ defendantPin }}</li>
-    </ol>
-    <p class="no-spacing">
-      If you don't respond before <strong>4pm, {{ responseDeadline }}</strong> the claimant could request a
-      County Court Judgment (CCJ) against you. A CCJ may make it harder to get credit, for example credit cards,
-      mobile phone contracts or mortgages.
-    </p>
+    <span style="display:inline-block">
+    <div class="date" style="float:left">
+      <span class="binds"></span>
+      <span class="month">{{ responseDeadlineMonth }}</span>
+      <h1 class="day">{{ responseDeadlineDay }}</h1>
+    </div>
 
-    <p class="small-spacing">
-      <strong>Get advice</strong>
+    <br/>
+
+    <p class="small-spacing respond-deadline-text">
+      <strong>Response deadline</strong>
+      <br/>
+      <br/>
+      <span>Create a money claims account to respond or request more time. You must do this </span>
+      <br/>
+      <span>by <strong>{{ responseDeadline }}</strong></span>
     </p>
-    <p class="no-spacing">
-      Citizens Advice can help you respond to this claim. They can also help if you have debt or other money worries.
-      Call Citizens Advice on 03444 111 444.
-    </p>
-  </section>
-  <section>
-    <p class="small-spacing">
-      <strong>Help and support</strong>
-    </p>
-    <p class="no-spacing">
-      Telephone: 0300 123 7050<br/>
-      Monday to Friday, 9am to 5pm<br/>
-      Find out about call charges: https://www.gov.uk/call-charges<br/>
-      Email: {{ hmctsEmail }}
-    </p>
+    </span>
+
     <p>
-      <strong>HM Courts &amp; Tribunals Service</strong>
+      <span><strong>What happens after you respond</strong></span>
+      <br/><br/>
+      <span>You can check the progress of this claim by signing in to your money claims</span>
+      <br/>
+      <span>account. You’ll be notified by email when there is an update to the claim.</span>
+    </p>
+    <br/>
+    <br/>
+    <p>Yours sincerely</p>
+
+    <p>
+      <span>Courts and Tribunals Service Centre team</span>
+      <br/>
+      <span><strong>HM Courts and Tribunals Service</strong></span>
     </p>
   </section>
 </body>

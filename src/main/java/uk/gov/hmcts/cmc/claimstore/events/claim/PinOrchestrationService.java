@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimIssuedStaffNotificationService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
+import uk.gov.hmcts.cmc.claimstore.utils.CaseDataExtractorUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
@@ -83,7 +84,8 @@ public class PinOrchestrationService {
                             documents.getSealedClaimDoc(),
                             buildSealedClaimFileBaseName(claim.getReferenceNumber()))),
                     BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE,
-                    authorisation
+                    authorisation,
+                    CaseDataExtractorUtils.getDefendant(claim)
                 );
             } else {
                 bulkPrintDetails = bulkPrintService.printHtmlLetter(
@@ -96,7 +98,8 @@ public class PinOrchestrationService {
                             documents.getSealedClaimDoc(),
                             buildSealedClaimFileBaseName(claim.getReferenceNumber()))),
                     BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE,
-                    authorisation
+                    authorisation,
+                    CaseDataExtractorUtils.getDefendant(claim)
                 );
 
             }

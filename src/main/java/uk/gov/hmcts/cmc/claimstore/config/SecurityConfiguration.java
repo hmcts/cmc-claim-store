@@ -4,9 +4,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -16,6 +15,7 @@ import org.springframework.security.oauth2.jwt.JwtIssuerValidator;
 import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.web.SecurityFilterChain;
 import uk.gov.hmcts.cmc.claimstore.security.JwtGrantedAuthoritiesConverter;
 
 import javax.inject.Inject;
@@ -24,8 +24,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfiguration
-    extends WebSecurityConfigurerAdapter {
+public class SecurityConfiguration {
 
     private static final String[] AUTHORITIES = {
         "citizen",
@@ -48,11 +47,11 @@ public class SecurityConfiguration
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
     }
 
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/swagger-ui.html",
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().antMatchers("/swagger-ui.html",
             "/webjars/springfox-swagger-ui/**",
-            "/v2/api-docs/**",
+            "/v3/api-docs/**",
             "/swagger-resources/**",
             "/health",
             "/env",
@@ -74,8 +73,8 @@ public class SecurityConfiguration
             "/loggers/**");
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .sessionManagement().sessionCreationPolicy(STATELESS).and()
             .csrf().disable()
@@ -93,6 +92,7 @@ public class SecurityConfiguration
             .and()
             .and()
             .oauth2Client();
+        return http.build();
     }
 
     @Bean

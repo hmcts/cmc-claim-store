@@ -21,7 +21,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.breathingspace.Breathi
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
-import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.SecuredDocumentManagementService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
@@ -37,6 +37,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -71,7 +72,7 @@ class BreathingSpaceLetterServiceTest {
         = claim.toBuilder().bulkPrintDetails(List.of(bulkPrintDetails)).build();
 
     @Mock
-    DocumentManagementService documentManagementService;
+    SecuredDocumentManagementService securedDocumentManagementService;
     private CCDCase ccdCase;
     @Mock
     private DocAssemblyService docAssemblyService;
@@ -94,7 +95,7 @@ class BreathingSpaceLetterServiceTest {
         breathingSpaceLetterService = new BreathingSpaceLetterService(
             docAssemblyService,
             docAssemblyTemplateBodyMapper, printableDocumentService, bulkPrintService, claimService,
-            documentManagementService, generalLetterService, CASE_TYPE_ID, JURISDICTION_ID);
+            securedDocumentManagementService, generalLetterService, CASE_TYPE_ID, JURISDICTION_ID);
 
         String documentUrl = DOCUMENT_URI.toString();
         CCDDocument document = new CCDDocument(documentUrl, documentUrl, GENERAL_LETTER_PDF);
@@ -127,7 +128,8 @@ class BreathingSpaceLetterServiceTest {
         when(bulkPrintService
             .printPdf(any(Claim.class), any(),
                 any(BulkPrintRequestType.class),
-                any(String.class)))
+                any(String.class),
+                anyList()))
             .thenReturn(bulkPrintDetails);
 
         when(claimService.addBulkPrintDetails(any(String.class), any(), any(CaseEvent.class), any(Claim.class)))
@@ -156,7 +158,8 @@ class BreathingSpaceLetterServiceTest {
         when(bulkPrintService
             .printPdf(any(Claim.class), any(),
                 any(BulkPrintRequestType.class),
-                any(String.class)))
+                any(String.class),
+                anyList()))
             .thenReturn(bulkPrintDetails);
 
         when(claimService.addBulkPrintDetails(any(String.class), any(), any(CaseEvent.class), any(Claim.class)))
@@ -167,7 +170,8 @@ class BreathingSpaceLetterServiceTest {
 
         verify(bulkPrintService, once()).printPdf(any(Claim.class), any(),
             any(BulkPrintRequestType.class),
-            any(String.class));
+            any(String.class),
+            anyList());
 
         verify(claimService, once()).addBulkPrintDetails(any(String.class), any(), any(CaseEvent.class),
             any(Claim.class));
@@ -190,7 +194,8 @@ class BreathingSpaceLetterServiceTest {
         when(bulkPrintService
             .printPdf(any(Claim.class), any(),
                 any(BulkPrintRequestType.class),
-                any(String.class)))
+                any(String.class),
+                anyList()))
             .thenReturn(bulkPrintDetails);
 
         when(claimService.addBulkPrintDetails(any(String.class), any(), any(CaseEvent.class), any(Claim.class)))
@@ -199,7 +204,7 @@ class BreathingSpaceLetterServiceTest {
         breathingSpaceLetterService.sendLetterToDefendant(ccdCase, claim, BEARER_TOKEN.name(),
             BREATHING_SPACE_LETTER_TEMPLATE_ID, FILE_NAME);
 
-        verify(documentManagementService, once()).uploadDocument(any(String.class), any());
+        verify(securedDocumentManagementService, once()).uploadDocument(any(String.class), any());
 
         verify(claimService, once()).saveClaimDocuments(any(String.class), any(), any(), any(ClaimDocumentType.class));
 
