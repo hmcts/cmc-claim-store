@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintablePdf;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintableTemplate;
 import uk.gov.hmcts.cmc.claimstore.events.BulkPrintTransferEvent;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
+import uk.gov.hmcts.cmc.claimstore.utils.CaseDataExtractorUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
@@ -60,17 +61,22 @@ public class BulkPrintHandler {
                     buildSealedClaimFileBaseName(claim.getReferenceNumber()))
                 ),
                 BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE,
-                event.getAuthorisation()
+                event.getAuthorisation(),
+                CaseDataExtractorUtils.getDefendant(claim)
             );
         } else {
             bulkPrintDetails = bulkPrintService.printHtmlLetter(claim, List.of(
                 new PrintableTemplate(
                     event.getDefendantLetterDocument(),
-                    buildDefendantLetterFileBaseName(claim.getReferenceNumber())),
+                    buildDefendantLetterFileBaseName(claim.getReferenceNumber())
+                ),
                 new PrintableTemplate(
                     event.getSealedClaimDocument(),
                     buildSealedClaimFileBaseName(claim.getReferenceNumber()))
-            ), BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE, event.getAuthorisation());
+                ),
+                BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE,
+                event.getAuthorisation(),
+                CaseDataExtractorUtils.getDefendant(claim));
         }
         return bulkPrintDetails;
     }
@@ -91,8 +97,7 @@ public class BulkPrintHandler {
                     directionsOrder,
                     buildDirectionsOrderFileBaseName(claim.getReferenceNumber()))
             ),
-            BulkPrintRequestType.DIRECTION_ORDER_LETTER_TYPE,
-            authorisation
+            BulkPrintRequestType.DIRECTION_ORDER_LETTER_TYPE, authorisation, CaseDataExtractorUtils.getDefendant(claim)
         );
     }
 
@@ -110,7 +115,8 @@ public class BulkPrintHandler {
                         String.valueOf(LocalDate.now())))
             ),
             BulkPrintRequestType.GENERAL_LETTER_TYPE,
-            authorisation
+            authorisation,
+            CaseDataExtractorUtils.getDefendant(claim)
         );
     }
 
@@ -135,7 +141,7 @@ public class BulkPrintHandler {
         );
 
         return bulkPrintService.printPdf(claim, Collections.unmodifiableList(printableDocs),
-            BulkPrintRequestType.BULK_PRINT_TRANSFER_TYPE, authorisation);
+            BulkPrintRequestType.BULK_PRINT_TRANSFER_TYPE, authorisation, CaseDataExtractorUtils.getDefendant(claim));
     }
 
     public BulkPrintDetails printPaperDefence(Claim claim, Document coverLetter, Document oconForm,
@@ -155,7 +161,8 @@ public class BulkPrintHandler {
                     buildOconFormFileBaseName(claim.getReferenceNumber())))
                 .build(),
             BulkPrintRequestType.GENERAL_LETTER_TYPE,
-            authorisation);
+            authorisation,
+            CaseDataExtractorUtils.getDefendant(claim));
     }
 
     public BulkPrintDetails printPaperDefence(Claim claim, Document coverLetter, Document oconForm, Document ocon9Form,
@@ -169,7 +176,8 @@ public class BulkPrintHandler {
         return bulkPrintService.printPdf(claim,
             documents,
             BulkPrintRequestType.GENERAL_LETTER_TYPE,
-            authorisation);
+            authorisation,
+            CaseDataExtractorUtils.getDefendant(claim));
     }
 
     private ImmutableList<Printable> getPrintables(Claim claim, Document coverLetter, Document oconForm,
