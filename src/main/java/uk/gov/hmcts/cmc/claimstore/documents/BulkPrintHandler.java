@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildCoverSheetFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterClaimantMediationRefusedFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDirectionsOrderFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildLetterFileBaseName;
@@ -64,6 +65,15 @@ public class BulkPrintHandler {
                 event.getAuthorisation(),
                 CaseDataExtractorUtils.getDefendant(claim)
             );
+        } else if (launchDarklyClient.isFeatureEnabled("ocon-enhancements", LaunchDarklyClient.CLAIM_STORE_USER)) {
+            bulkPrintDetails = bulkPrintService.printPdf(claim, List.of(
+                    new PrintableTemplate(
+                        event.getDefendantLetterDocument(),
+                        buildDefendantLetterClaimantMediationRefusedFileBaseName(claim.getReferenceNumber()))
+                ),
+                BulkPrintRequestType.CLAIMANT_MEDIATION_REFUSED_TYPE,
+                event.getAuthorisation(),
+                CaseDataExtractorUtils.getDefendant(claim));
         } else {
             bulkPrintDetails = bulkPrintService.printHtmlLetter(claim, List.of(
                 new PrintableTemplate(
