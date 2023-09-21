@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.events.claimantresponse;
 
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
+import uk.gov.hmcts.cmc.claimstore.documents.ClaimantRejectionDefendantDocumentService;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.InterlocutoryJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimantRejectionDefendantNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationToDefendantService;
@@ -33,18 +33,23 @@ public class ClaimantResponseActionsHandler {
     private final ClaimantRejectOrgPaymentPlanStaffNotificationService
         claimantRejectOrgPaymentPlanStaffNotificationService;
     private final ClaimantRejectionDefendantNotificationService
-        claimantRejectionDefendantNotificationService;
+        defendantNotificationService;
+    private final ClaimantRejectionDefendantDocumentService
+        claimantRejectionDefendantDocumentService;
 
     public ClaimantResponseActionsHandler(
         NotificationToDefendantService notificationService,
         ClaimantRejectOrgPaymentPlanStaffNotificationService claimantRejectOrgPaymentPlanStaffNotificationService,
-        ClaimantRejectionDefendantNotificationService claimantRejectionDefendantNotificationService
+        ClaimantRejectionDefendantNotificationService claimantRejectionDefendantNotificationService,
+        ClaimantRejectionDefendantDocumentService claimantRejectionDefendantDocumentService
     ) {
         this.notificationService = notificationService;
         this.claimantRejectOrgPaymentPlanStaffNotificationService =
             claimantRejectOrgPaymentPlanStaffNotificationService;
-        this.claimantRejectionDefendantNotificationService =
+        this.defendantNotificationService =
             claimantRejectionDefendantNotificationService;
+        this.claimantRejectionDefendantDocumentService =
+            claimantRejectionDefendantDocumentService;
     }
 
     @EventListener
@@ -60,7 +65,8 @@ public class ClaimantResponseActionsHandler {
         } else if (hasIntentionToProceedAndIsOnlineDq(event.getClaim())) {
             this.notificationService.notifyDefendantOfClaimantIntentionToProceedForOnlineDq(event.getClaim());
         } else if (isRejectedStatesPaid(event.getClaim()) || isRejectedDisputesAll(event.getClaim())) {
-            this.claimantRejectionDefendantNotificationService.print(event.getClaim())
+            this.defendantNotificationService.printClaimantMediationDefendantPinLetter(event.getClaim(),
+                claimantRejectionDefendantDocumentService.createClaimantRejectionDocument(event.getClaim(),event.getAuthorisation()));
         } else {
             this.notificationService.notifyDefendant(event.getClaim());
         }

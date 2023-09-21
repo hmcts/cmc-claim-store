@@ -1,13 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.services.notifications;
 
-import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.documents.BulkPrintHandler;
-import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.document.SecuredDocumentManagementService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -42,10 +40,9 @@ public class ClaimantRejectionDefendantNotificationService {
         this.userService = userService;
     }
 
-    public BulkPrintDetails print(Claim claim, CCDDocument ccdDocument) {
+    public BulkPrintDetails printClaimantMediationDefendantPinLetter(Claim claim, CCDDocument ccdDocument) {
         requireNonNull(claim);
         BulkPrintDetails bulkPrintDetails = null;
-        DocumentReadyToPrintEvent dodocumentReadyToPrintEvent
         String authorisation = userService.authenticateAnonymousCaseWorker().getAuthorisation();
 
         try {
