@@ -78,7 +78,7 @@ public class SecuredDocumentManagementService {
         this.caseDocumentClient = caseDocumentClient;
     }
 
-    @Retryable(value = {DocumentManagementException.class}, backoff = @Backoff(delay = 200))
+    @Retryable(value = {DocumentManagementException.class}, maxAttempts = 5, backoff = @Backoff(delay = 500))
     public ClaimDocument uploadDocument(String authorisation, PDF pdf) {
 
         String originalFileName = pdf.getFilename();
