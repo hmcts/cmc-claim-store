@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 
 import java.util.Map;
 
@@ -45,12 +46,16 @@ public class PaidInFullCitizenNotificationHandler {
         );
     }
 
-    private Map<String, String> aggregateParams(Claim claim) {
-        return ImmutableMap.<String, String>builder()
-            .put("claimReferenceNumber", claim.getReferenceNumber())
-            .put("claimantName", claim.getClaimData().getClaimant().getName())
-            .put("defendantName", claim.getClaimData().getDefendant().getName())
-            .put("frontendBaseUrl", notificationsProperties.getFrontendBaseUrl())
-            .build();
+    private Map<String, String> aggregateParams(Claim claim) throws NotFoundException.class {
+        if (claim.getReferenceNumber() != null) {
+            return ImmutableMap.<String, String>builder()
+                .put("claimReferenceNumber", claim.getReferenceNumber())
+                .put("claimantName", claim.getClaimData().getClaimant().getName())
+                .put("defendantName", claim.getClaimData().getDefendant().getName())
+                .put("frontendBaseUrl", notificationsProperties.getFrontendBaseUrl())
+                .build();
+        } else {
+          throw new NotFoundException(format("Claim %s does not exist", claim));
+        }
     }
 }

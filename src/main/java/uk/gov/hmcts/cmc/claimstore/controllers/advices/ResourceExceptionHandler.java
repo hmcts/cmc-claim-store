@@ -302,11 +302,4 @@ public class ResourceExceptionHandler {
         return new ResponseEntity<>(exception.getMessage(),
             new HttpHeaders(), HttpStatus.PRECONDITION_FAILED);
     }
-
-    @ExceptionHandler(NullPonterException.class)
-    public ResponseEntity<String> handleNullPointerException(NullPointerException exception) {
-        logger.error(exception);
-        return new ResponseEntity<>(exception.getMessage(),
-            new HttpHeaders(), HttpStatus.NOT_FOUND);
-    }
 }
