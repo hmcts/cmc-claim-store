@@ -46,7 +46,7 @@ public class PaidInFullCitizenNotificationHandler {
         );
     }
 
-    private Map<String, String> aggregateParams(Claim claim) throws NotFoundException.class {
+    private Map<String, String> aggregateParams(Claim claim) throws NotFoundException {
         if (claim.getReferenceNumber() != null) {
             return ImmutableMap.<String, String>builder()
                 .put("claimReferenceNumber", claim.getReferenceNumber())
@@ -55,7 +55,7 @@ public class PaidInFullCitizenNotificationHandler {
                 .put("frontendBaseUrl", notificationsProperties.getFrontendBaseUrl())
                 .build();
         } else {
-          throw new NotFoundException(format("Claim %s does not exist", claim));
+          throw new NotFoundException("Claim does not exist " + claim);
         }
     }
 }
