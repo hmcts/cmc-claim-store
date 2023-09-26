@@ -650,8 +650,7 @@ public final class SampleClaimForHwF {
             LocalDateTime.now(),
             null,
             null,
-            null,
-            respondedAtTest
+            null
         );
     }
 

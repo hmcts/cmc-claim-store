@@ -85,8 +85,7 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             null,
             null,
             null,
-            toNullableLocalDateFromUTC(result.getTimestamp("paper_form_issue_date")),
-            toNullableLocalDateTimeFromUTC(result.getTimestamp("responded_at"))
+            toNullableLocalDateFromUTC(result.getTimestamp("paper_form_issue_date"))
         );
     }
 

@@ -96,7 +96,6 @@ public final class SampleClaim {
     private String submitterEmail = SUBMITTER_EMAIL;
     private LocalDateTime createdAt = NOW_IN_LOCAL_ZONE;
     private LocalDateTime respondedAt = NOT_RESPONDED;
-    private LocalDateTime respondedAtTest = NOT_RESPONDED;
     private LocalDate paperFormIssueDate = CURRENT_TIME;
     private LocalDate issuedOn = ISSUE_DATE;
     private LocalDate serviceDate = ISSUE_DATE;
@@ -688,7 +687,6 @@ public final class SampleClaim {
     public static Claim getSampleClaimantMediationRefusal() {
 
         var test = builder()
-            .withSomeTestFunction(LocalDate.parse("2023-05-05"))
             .withClaimData(SampleClaimData.submittedByClaimantBuilder().withExternalId(RAND_UUID).build())
             .withCountyCourtJudgment(
                 SampleCountyCourtJudgment.builder()
@@ -704,14 +702,14 @@ public final class SampleClaim {
                 .validClaimantRejectionWithDefendantHasOCON9x()
             )
             .withRespondedAt(LocalDateTime.now())
-            .withRespondedAtTest(LocalDateTime.now())
+            .withIssuedPaperFormIssueDate(LocalDate.now())
             .withDefendantEmail(DEFENDANT_EMAIL)
             .withClaimantRespondedAt(LocalDateTime.now())
             .withClaimantResponse(SampleClaimantResponse.validDefaultRejection())
             .withState(ClaimState.OPEN)
             .build();
 
-        System.out.println("*******************8Paper form issue date*******************"+test.getRespondedAtTest()+"*******************************************88");
+        System.out.println("*******************8Paper form issue date*******************"+test.getPaperFormIssueDate()+"*******************************************88");
 
         return test;
     }
@@ -785,8 +783,7 @@ public final class SampleClaim {
             LocalDateTime.now(),
             lastEventTriggeredForHwfCase,
             null,
-            null,
-            respondedAtTest
+            paperFormIssueDate
         );
     }
 
@@ -877,11 +874,6 @@ public final class SampleClaim {
 
     public SampleClaim withRespondedAt(LocalDateTime respondedAt) {
         this.respondedAt = respondedAt;
-        return this;
-    }
-
-    public SampleClaim withRespondedAtTest(LocalDateTime respondedAtTest) {
-        this.respondedAtTest = respondedAtTest;
         return this;
     }
 
@@ -1039,11 +1031,6 @@ public final class SampleClaim {
 
     public SampleClaim withDirectionsQuestionnaireDeadline(LocalDate dqDeadline) {
         this.directionsQuestionnaireDeadline = dqDeadline;
-        return this;
-    }
-
-    public SampleClaim withSomeTestFunction(LocalDate paperFormIssueDate) {
-        this.paperFormIssueDate = paperFormIssueDate;
         return this;
     }
 
