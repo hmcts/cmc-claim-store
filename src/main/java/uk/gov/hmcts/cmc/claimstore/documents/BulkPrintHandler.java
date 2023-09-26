@@ -91,7 +91,7 @@ public class BulkPrintHandler {
         BulkPrintDetails bulkPrintDetails = null;
         if (defendantFullDefenceMediationOCON9x(claim)) {
             bulkPrintDetails = bulkPrintService.printPdf(claim, List.of(
-                    new PrintableTemplate(
+                    new PrintablePdf(
                         document,
                         buildDefendantLetterClaimantMediationRefusedFileBaseName
                             (claim.getReferenceNumber()))
