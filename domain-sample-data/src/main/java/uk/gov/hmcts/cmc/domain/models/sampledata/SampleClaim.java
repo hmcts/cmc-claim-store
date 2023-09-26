@@ -709,8 +709,6 @@ public final class SampleClaim {
             .withState(ClaimState.OPEN)
             .build();
 
-        System.out.println("*******************8Paper form issue date*******************"+test.getPaperFormIssueDate()+"*******************************************88");
-
         return test;
     }
 
