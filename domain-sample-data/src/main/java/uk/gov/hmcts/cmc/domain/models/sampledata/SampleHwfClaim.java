@@ -91,6 +91,7 @@ public final class SampleHwfClaim {
     private String submitterEmail = SUBMITTER_EMAIL;
     private LocalDateTime createdAt = NOW_IN_LOCAL_ZONE;
     private LocalDateTime respondedAt = NOT_RESPONDED;
+    private LocalDateTime respondedAtTest = NOT_RESPONDED;
     private LocalDate issuedOn = ISSUE_DATE;
     private CountyCourtJudgment countyCourtJudgment = null;
     private LocalDateTime countyCourtJudgmentRequestedAt = null;
@@ -648,7 +649,8 @@ public final class SampleHwfClaim {
             LocalDateTime.now(),
             null,
             null,
-            null
+            null,
+            respondedAtTest
         );
     }
 

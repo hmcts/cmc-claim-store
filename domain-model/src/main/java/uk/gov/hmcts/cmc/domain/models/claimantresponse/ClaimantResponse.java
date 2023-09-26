@@ -32,6 +32,8 @@ public abstract class ClaimantResponse {
 
     protected final YesNoOption paymentReceived;
 
+    protected final YesNoOption freeMediation;
+
     protected final YesNoOption settleForAmount;
 
     public Optional<BigDecimal> getAmountPaid() {
@@ -45,6 +47,8 @@ public abstract class ClaimantResponse {
     public Optional<YesNoOption> getSettleForAmount() {
         return Optional.ofNullable(settleForAmount);
     }
+
+    public Optional<YesNoOption> getFreeMediation() { return Optional.ofNullable(freeMediation);}
 
     @Override
     public String toString() {

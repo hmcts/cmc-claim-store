@@ -36,6 +36,10 @@ public abstract class SampleClaimantResponse {
         return ClaimantResponseRejection.builder().buildRejectionWithDirectionsQuestionnaire();
     }
 
+    public static ResponseRejection validClaimantRejectionWithDefendantHasOCON9x() {
+        return ClaimantResponseRejection.builder().buildRejectionWithByClaimantAndDefendantHasFormIssued();
+    }
+
     public static class ClaimantResponseAcceptation extends SampleClaimantResponse {
 
         private BigDecimal amountPaid = TEN;
@@ -190,6 +194,13 @@ public abstract class SampleClaimantResponse {
                 .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder()
                     .withHearingLocation(pilotHearingLocation)
                     .build())
+                .build();
+        }
+
+        public ResponseRejection buildRejectionWithByClaimantAndDefendantHasFormIssued() {
+            return ResponseRejection.builder()
+                .amountPaid(TEN)
+                .freeMediation(NO)
                 .build();
         }
     }

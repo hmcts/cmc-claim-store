@@ -49,7 +49,7 @@ public class ResponseRejection extends ClaimantResponse {
         String reason,
         DirectionsQuestionnaire directionsQuestionnaire
     ) {
-        super(ClaimantResponseType.REJECTION, amountPaid, paymentReceived, settleForAmount);
+        super(ClaimantResponseType.REJECTION, amountPaid, freeMediation, paymentReceived, settleForAmount);
         this.freeMediation = freeMediation;
         this.mediationPhoneNumber = mediationPhoneNumber;
         this.mediationContactPerson = mediationContactPerson;

@@ -28,9 +28,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.BULK_PRINT_TRANSFER_TYPE;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.CLAIMANT_MEDIATION_REFUSED_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.DIRECTION_ORDER_LETTER_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.GENERAL_LETTER_TYPE;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterClaimantMediationRefusedFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildOcon9FormFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildOconFormFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildPaperDefenceCoverLetterFileBaseName;
@@ -285,6 +287,31 @@ public class BulkPrintHandlerTest {
                     buildOconFormFileBaseName(claim.getReferenceNumber())))
                 .build(),
             GENERAL_LETTER_TYPE,
+            AUTHORISATION,
+            USER_LIST
+        );
+    }
+
+
+    @Test
+    public void notifyPaperDefenceLetterForClaimantRefusalOCON9x() {
+        //given
+        BulkPrintHandler bulkPrintHandler = new BulkPrintHandler(bulkPrintService, launchDarklyClient);
+        Claim claim = SampleClaim.getSampleClaimantMediationRefusal();
+        Document letter = new Document("letter", new HashMap<>());
+
+        //when
+        bulkPrintHandler.printClaimantMediationRefusedLetter(claim, AUTHORISATION, letter);
+
+        //verify
+        verify(bulkPrintService).printPdf(
+            claim,
+            ImmutableList.<Printable>builder()
+                .add(new PrintablePdf(
+                    letter,
+                    buildDefendantLetterClaimantMediationRefusedFileBaseName(claim.getReferenceNumber())))
+                .build(),
+            CLAIMANT_MEDIATION_REFUSED_TYPE,
             AUTHORISATION,
             USER_LIST
         );

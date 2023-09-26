@@ -93,6 +93,7 @@ public class Claim {
     private String lastEventTriggeredForHwfCase;
     private LocalDate paperFormServedDate;
     private LocalDate paperFormIssueDate;
+    private final LocalDateTime respondedAtTest;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -127,7 +128,7 @@ public class Claim {
         ClaimDocumentCollection claimDocumentCollection,
         LocalDate claimantResponseDeadline,
         ClaimState state,
-         ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators,
+        ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators,
         Long ccdCaseId,
         ReviewOrder reviewOrder,
         DirectionOrder directionOrder,
@@ -150,8 +151,9 @@ public class Claim {
         LocalDateTime lastModified,
         String lastEventTriggeredForHwfCase,
         LocalDate paperFormServedDate,
-        LocalDate paperFormIssueDate
-    ) {
+        LocalDate paperFormIssueDate,
+        LocalDateTime respondedAtTest
+        ) {
         this.id = id;
         this.submitterId = submitterId;
         this.letterHolderId = letterHolderId;
@@ -206,6 +208,7 @@ public class Claim {
         this.lastEventTriggeredForHwfCase = lastEventTriggeredForHwfCase;
         this.paperFormServedDate = paperFormServedDate;
         this.paperFormIssueDate = paperFormIssueDate;
+        this.respondedAtTest = respondedAtTest;
     }
 
     public Optional<LocalDate> getIssuedOn() {
