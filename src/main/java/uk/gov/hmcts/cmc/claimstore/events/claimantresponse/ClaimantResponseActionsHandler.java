@@ -66,7 +66,7 @@ public class ClaimantResponseActionsHandler {
             this.notificationService.notifyDefendantOfClaimantIntentionToProceedForOnlineDq(event.getClaim());
         } else if (isRejectedStatesPaid(event.getClaim()) || isRejectedDisputesAll(event.getClaim())) {
             this.defendantNotificationService.printClaimantMediationDefendantPinLetter(event.getClaim(),
-                claimantRejectionDefendantDocumentService.createClaimantRejectionDocument(event.getClaim(),event.getAuthorisation()));
+                claimantRejectionDefendantDocumentService.createClaimantRejectionDocument(event.getClaim(), event.getAuthorisation()));
         } else {
             this.notificationService.notifyDefendant(event.getClaim());
         }
@@ -137,9 +137,9 @@ public class ClaimantResponseActionsHandler {
         Response response = claim.getResponse()
             .orElseThrow(() -> new IllegalArgumentException(MISSING_RESPONSE));
 
-        return claimantResponse.getType() == ClaimantResponseType.REJECTION &&
-            defendantFullDefenceMediationOCON9x(claim) &&
-            isResponseFullDefenceStatesPaid(response);
+        return claimantResponse.getType() == ClaimantResponseType.REJECTION 
+            && defendantFullDefenceMediationOCON9x(claim) 
+            && isResponseFullDefenceStatesPaid(response);
     }
 
     private boolean isRejectedDisputesAll(Claim claim) {
@@ -148,8 +148,8 @@ public class ClaimantResponseActionsHandler {
         Response response = claim.getResponse()
             .orElseThrow(() -> new IllegalArgumentException(MISSING_RESPONSE));
 
-        return claimantResponse.getType() == ClaimantResponseType.REJECTION &&
-            defendantFullDefenceMediationOCON9x(claim) &&
-            isFullDefenceDisputeAndNoMediation(response);
+        return claimantResponse.getType() == ClaimantResponseType.REJECTION 
+            &&  defendantFullDefenceMediationOCON9x(claim) 
+            &&  isFullDefenceDisputeAndNoMediation(response);
     }
 }

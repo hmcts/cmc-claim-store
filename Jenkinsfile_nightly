@@ -51,7 +51,7 @@ withNightlyPipeline(type, product, component) {
 
     env.Rules = params.SecurityRules
     loadVaultSecrets(secrets)
-    enableSlackNotifications(channel)
+    // enableSlackNotifications(channel)
     enableFortifyScan()
     enableSecurityScan()
     enableFullFunctionalTest(200)

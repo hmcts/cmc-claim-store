@@ -34,7 +34,7 @@ public class ClaimantRejectionDefendantNotificationService {
     public ClaimantRejectionDefendantNotificationService(BulkPrintHandler bulkPrintHandler,
                                                          SecuredDocumentManagementService securedDocumentManagementService,
                                                          UserService userService
-    ){
+    ) {
         this.bulkPrintHandler = bulkPrintHandler;
         this.securedDocumentManagementService = securedDocumentManagementService;
         this.userService = userService;
@@ -58,7 +58,6 @@ public class ClaimantRejectionDefendantNotificationService {
         }
         return bulkPrintDetails;
     }
-
 
     private Document downloadClaimantRejectionDocument(String authorisation, CCDDocument ccdDocument) throws URISyntaxException {
         return new Document(Base64.getEncoder().encodeToString(

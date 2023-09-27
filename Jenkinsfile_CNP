@@ -46,7 +46,7 @@ env.PDF_SERVICE_URL = 'http://cmc-pdf-service-aat.service.core-compute-aat.inter
 String notificationsChannel = '#cmc-tech-notification'
 
 withPipeline("java", product, component) {
-  enableSlackNotifications(notificationsChannel)
+  // enableSlackNotifications(notificationsChannel)
   enableAksStagingDeployment()
   disableLegacyDeployment()
   syncBranchesWithMaster(branchesToSync)

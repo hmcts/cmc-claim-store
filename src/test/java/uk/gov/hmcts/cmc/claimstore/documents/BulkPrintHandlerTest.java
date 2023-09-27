@@ -292,7 +292,6 @@ public class BulkPrintHandlerTest {
         );
     }
 
-
     @Test
     public void notifyPaperDefenceLetterForClaimantRefusalOCON9x() {
         //given

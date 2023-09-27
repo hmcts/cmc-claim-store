@@ -83,7 +83,7 @@ public class BulkPrintHandler {
         return bulkPrintDetails;
     }
 
-    public BulkPrintDetails printClaimantMediationRefusedLetter(Claim claim, String authorisation, Document document){
+    public BulkPrintDetails printClaimantMediationRefusedLetter(Claim claim, String authorisation, Document document) {
         requireNonNull(authorisation);
         requireNonNull(claim);
         requireNonNull(document);
@@ -93,8 +93,8 @@ public class BulkPrintHandler {
             bulkPrintDetails = bulkPrintService.printPdf(claim, List.of(
                     new PrintablePdf(
                         document,
-                        buildDefendantLetterClaimantMediationRefusedFileBaseName
-                            (claim.getReferenceNumber()))
+                        buildDefendantLetterClaimantMediationRefusedFileBaseName(
+                            claim.getReferenceNumber()))
                 ),
                 BulkPrintRequestType.CLAIMANT_MEDIATION_REFUSED_TYPE,
                 authorisation,
