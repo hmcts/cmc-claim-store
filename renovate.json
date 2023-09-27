@@ -1,10 +1,10 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "enabledManagers": [
-    "helm-requirements",
-    "gradle-wrapper"
-  ],
+  "gradle-wrapper": {
+    "enabled": true
+  },
   "helm-requirements": {
+    "enabled": true,
     "fileMatch": [
       "\\Chart.yaml$"
     ],
