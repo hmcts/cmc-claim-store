@@ -174,7 +174,7 @@ public class ClaimantResponseMapperTest {
 
     @Test
     public void shouldMapCCDResponseRejectionToResponseRejection() {
-        CCDResponseRejection ccdResponse = SampleData.getResponseRejection();
+        CCDResponseRejection ccdResponse = SampleData.getResponseRejectionWithPaymentReceived();
         Claim.ClaimBuilder claimBuilder = Claim.builder();
 
         mapper.from(ccdResponse, claimBuilder);
@@ -222,11 +222,7 @@ public class ClaimantResponseMapperTest {
 
     @Test
     public void shouldMapCCDResponseRejectionForRejectSettlePreJudgementToResponseRejection() {
-        CCDResponseRejection ccdResponse = CCDResponseRejection.builder()
-            .settleForAmount(NO)
-            .paymentReceived(YES)
-            .submittedOn(now())
-            .build();
+        CCDResponseRejection ccdResponse = SampleData.getResponseRejectionWithPaymentReceived();
         Claim.ClaimBuilder claimBuilder = Claim.builder();
 
         mapper.from(ccdResponse, claimBuilder);

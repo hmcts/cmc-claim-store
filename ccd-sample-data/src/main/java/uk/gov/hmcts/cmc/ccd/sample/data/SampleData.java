@@ -49,6 +49,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import static java.time.LocalDateTime.now;
 import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.BREAK_DOWN;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.RANGE;
@@ -198,6 +199,19 @@ public class SampleData {
     public static CCDResponseRejection getResponseRejection() {
         return CCDResponseRejection.builder()
             .amountPaid(AMOUNT)
+            .submittedOn(LocalDateTimeFactory.nowInLocalZone())
+            .freeMediationOption(YES)
+            .mediationPhoneNumber(CCDTelephone.builder().telephoneNumber("07999999999").build())
+            .mediationContactPerson("Mediation Contact Person")
+            .noMediationReason("Not interested")
+            .reason("Rejection Reason")
+            .build();
+    }
+
+    public static CCDResponseRejection getResponseRejectionWithPaymentReceived() {
+        return CCDResponseRejection.builder()
+            .amountPaid(AMOUNT)
+            .paymentReceived(YES)
             .submittedOn(LocalDateTimeFactory.nowInLocalZone())
             .freeMediationOption(YES)
             .mediationPhoneNumber(CCDTelephone.builder().telephoneNumber("07999999999").build())
