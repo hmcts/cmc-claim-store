@@ -151,7 +151,7 @@ public class Claim {
         String lastEventTriggeredForHwfCase,
         LocalDate paperFormServedDate,
         LocalDate paperFormIssueDate
-        ) {
+    ) {
         this.id = id;
         this.submitterId = submitterId;
         this.letterHolderId = letterHolderId;

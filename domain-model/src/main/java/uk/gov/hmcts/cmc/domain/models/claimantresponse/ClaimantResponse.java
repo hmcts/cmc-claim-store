@@ -48,7 +48,9 @@ public abstract class ClaimantResponse {
         return Optional.ofNullable(settleForAmount);
     }
 
-    public Optional<YesNoOption> getFreeMediation() { return Optional.ofNullable(freeMediation);}
+    public Optional<YesNoOption> getFreeMediation() {
+        return Optional.ofNullable(freeMediation);
+    }
 
     @Override
     public String toString() {

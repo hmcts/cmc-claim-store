@@ -683,9 +683,7 @@ public final class SampleClaim {
             .build();
     }
 
-
     public static Claim getSampleClaimantMediationRefusal() {
-
         var test = builder()
             .withClaimData(SampleClaimData.submittedByClaimantBuilder().withExternalId(RAND_UUID).build())
             .withCountyCourtJudgment(
