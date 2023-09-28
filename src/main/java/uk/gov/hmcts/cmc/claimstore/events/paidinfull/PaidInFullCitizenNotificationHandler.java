@@ -54,8 +54,6 @@ public class PaidInFullCitizenNotificationHandler {
                 .put("defendantName", claim.getClaimData().getDefendant().getName())
                 .put("frontendBaseUrl", notificationsProperties.getFrontendBaseUrl())
                 .build();
-        } else {
-          throw new NotFoundException("Claim does not exist " + claim);
-        }
+        } else throw new NotFoundException("Claim does not exist " + claim);
     }
 }
