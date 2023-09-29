@@ -40,7 +40,7 @@ public class ResponseUtils {
         }
     }
 
-    public static boolean isResponseStatesPaidButNotDisputes(Response response){
+    public static boolean isResponseStatesPaidButNotDisputes(Response response) {
         return isResponseStatesPaid(response)
             && ((FullDefenceResponse) response).getDefenceType() != DefenceType.DISPUTE;
     }
@@ -95,8 +95,8 @@ public class ResponseUtils {
     }
 
     public static boolean isFullDefenceDisputeAndNoMediationAndNotStatesPaid(Response response) {
-           return isFullDefenceDisputeAndNoMediation(response) &&
-                ((FullDefenceResponse) response).getDefenceType() != DefenceType.ALREADY_PAID;
+        return isFullDefenceDisputeAndNoMediation(response) 
+            &&  ((FullDefenceResponse) response).getDefenceType() != DefenceType.ALREADY_PAID;
 
     }
 
