@@ -22,9 +22,10 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper.isOptedForMediati
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.REJECTION;
 import static uk.gov.hmcts.cmc.domain.utils.OCON9xResponseUtil.defendantFullDefenceMediationOCON9x;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isFullDefenceDispute;
-import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isFullDefenceDisputeAndNoMediation;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isFullDefenceDisputeAndNoMediationAndNotStatesPaid;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseFullDefenceStatesPaid;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseStatesPaid;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseStatesPaidButNotDisputes;
 
 @Component
 public class ClaimantResponseActionsHandler {
@@ -64,11 +65,12 @@ public class ClaimantResponseActionsHandler {
             this.notificationService.notifyDefendantOfClaimantIntentionToProceedForPaperDq(event.getClaim());
         } else if (hasIntentionToProceedAndIsOnlineDq(event.getClaim())) {
             this.notificationService.notifyDefendantOfClaimantIntentionToProceedForOnlineDq(event.getClaim());
-        } else if (isRejectedStatesPaid(event.getClaim()) || isRejectedDisputesAll(event.getClaim())) {
-            this.defendantNotificationService.printClaimantMediationDefendantPinLetter(event.getClaim(),
-                claimantRejectionDefendantDocumentService.createClaimantRejectionDocument(event.getClaim(), event.getAuthorisation()));
         } else {
             this.notificationService.notifyDefendant(event.getClaim());
+        }
+        if (isRejectedStatesPaid(event.getClaim()) || isRejectedDisputesAll(event.getClaim())) {
+            this.defendantNotificationService.printClaimantMediationRejection(event.getClaim(),
+                claimantRejectionDefendantDocumentService.createClaimantRejectionDocument(event.getClaim(), event.getAuthorisation()));
         }
     }
 
@@ -137,9 +139,9 @@ public class ClaimantResponseActionsHandler {
         Response response = claim.getResponse()
             .orElseThrow(() -> new IllegalArgumentException(MISSING_RESPONSE));
 
-        return claimantResponse.getType() == ClaimantResponseType.REJECTION 
-            && defendantFullDefenceMediationOCON9x(claim) 
-            && isResponseFullDefenceStatesPaid(response);
+        return claimantResponse.getType() == ClaimantResponseType.REJECTION
+            && defendantFullDefenceMediationOCON9x(claim)
+            && isResponseStatesPaidButNotDisputes(response);
     }
 
     private boolean isRejectedDisputesAll(Claim claim) {
@@ -148,8 +150,8 @@ public class ClaimantResponseActionsHandler {
         Response response = claim.getResponse()
             .orElseThrow(() -> new IllegalArgumentException(MISSING_RESPONSE));
 
-        return claimantResponse.getType() == ClaimantResponseType.REJECTION 
-            &&  defendantFullDefenceMediationOCON9x(claim) 
-            &&  isFullDefenceDisputeAndNoMediation(response);
+        return claimantResponse.getType() == ClaimantResponseType.REJECTION
+            &&  defendantFullDefenceMediationOCON9x(claim)
+            &&  isFullDefenceDisputeAndNoMediationAndNotStatesPaid(response);
     }
 }

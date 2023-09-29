@@ -11,6 +11,8 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
+import java.time.LocalDate;
+
 import static java.util.Objects.requireNonNull;
 
 @Service
@@ -57,6 +59,7 @@ public class ClaimantRejectionDefendantDocumentService {
             .partyAddress(addressMapper.to(claim.getClaimData().getDefendant().getAddress()))
             .referenceNumber(claim.getReferenceNumber())
             .claimantName(claim.getClaimData().getClaimant().getName())
+            .currentDate(LocalDate.now())
             .build();
     }
 }

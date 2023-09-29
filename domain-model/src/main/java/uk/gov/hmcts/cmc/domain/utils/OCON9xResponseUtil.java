@@ -40,8 +40,8 @@ public class OCON9xResponseUtil {
     public static boolean defendantFullDefenceMediationOCON9x(Claim claim) {
 
         return
-            FULL_DEFENCE_RESPONSE.test(claim) 
-                && DEFENDANT_MEDIATION.test(claim) 
+            FULL_DEFENCE_RESPONSE.test(claim)
+                && DEFENDANT_MEDIATION.test(claim)
                 && CLAIMANT_REJECTION.test(claim)
                 && CLAIMANT_MEDIATION_REJECTION.test(claim)
                 && IS_PAPER_DEFENCE_FORM_ISSUED.test(claim);

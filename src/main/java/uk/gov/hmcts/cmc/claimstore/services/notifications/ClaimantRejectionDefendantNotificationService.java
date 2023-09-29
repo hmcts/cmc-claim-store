@@ -40,7 +40,7 @@ public class ClaimantRejectionDefendantNotificationService {
         this.userService = userService;
     }
 
-    public BulkPrintDetails printClaimantMediationDefendantPinLetter(Claim claim, CCDDocument ccdDocument) {
+    public BulkPrintDetails printClaimantMediationRejection(Claim claim, CCDDocument ccdDocument) {
         requireNonNull(claim);
         BulkPrintDetails bulkPrintDetails = null;
         String authorisation = userService.authenticateAnonymousCaseWorker().getAuthorisation();

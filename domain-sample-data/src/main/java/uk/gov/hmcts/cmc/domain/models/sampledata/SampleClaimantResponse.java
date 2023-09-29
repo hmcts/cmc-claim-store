@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
@@ -38,6 +39,10 @@ public abstract class SampleClaimantResponse {
 
     public static ResponseRejection validClaimantRejectionWithDefendantHasOCON9x() {
         return ClaimantResponseRejection.builder().buildRejectionWithByClaimantAndDefendantHasFormIssued();
+    }
+
+    public static ResponseRejection validRejectionWithRejectedFreeMediationOCON9x() {
+        return ClaimantResponseRejection.builder().buildRejectionWithFreeMediationRejectionOCON9x();
     }
 
     public static class ClaimantResponseAcceptation extends SampleClaimantResponse {
@@ -180,6 +185,13 @@ public abstract class SampleClaimantResponse {
                 .mediationContactPerson("Mediation Contact Person")
                 .noMediationReason("Not interested")
                 .reason("Some valid reason")
+                .build();
+        }
+
+        public ResponseRejection buildRejectionWithFreeMediationRejectionOCON9x() {
+            return ResponseRejection.builder()
+                .freeMediation(NO)
+                .claimantResponseType(ClaimantResponseType.REJECTION)
                 .build();
         }
 
