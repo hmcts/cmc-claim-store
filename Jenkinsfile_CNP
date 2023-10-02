@@ -46,13 +46,19 @@ env.PDF_SERVICE_URL = 'http://cmc-pdf-service-aat.service.core-compute-aat.inter
 String notificationsChannel = '#cmc-tech-notification'
 
 withPipeline("java", product, component) {
-  loadVaultSecrets(secrets)
   enableSlackNotifications(notificationsChannel)
   enableAksStagingDeployment()
   disableLegacyDeployment()
   syncBranchesWithMaster(branchesToSync)
-  
-  onPR {
-    enableCleanupOfHelmReleaseOnSuccess()
+
+  onMaster {
+    loadVaultSecrets(secrets)
   }
+
+  onPR {
+    env.ENVIRONMENT = "preview"
+    env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+    loadVaultSecrets(secrets)
+  }
+
 }
