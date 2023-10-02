@@ -1,9 +1,10 @@
 {
-  "enabledManagers": [
-    "helm-requirements",
-    "gradle-wrapper"
-  ],
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "gradle-wrapper": {
+    "enabled": true
+  },
   "helm-requirements": {
+    "enabled": true,
     "fileMatch": [
       "\\Chart.yaml$"
     ],
