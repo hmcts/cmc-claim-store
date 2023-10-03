@@ -13,6 +13,8 @@ import uk.gov.hmcts.cmc.claimstore.events.BulkPrintTransferEvent;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
@@ -37,6 +39,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildPaperDefe
 public class BulkPrintHandlerTest {
 
     private static final String AUTHORISATION = "Bearer: let me in";
+    private static final List<String> USER_LIST = List.of("Dr. John Smith");
     @Mock
     private BulkPrintService bulkPrintService;
     @Mock
@@ -69,7 +72,8 @@ public class BulkPrintHandlerTest {
                     claim.getReferenceNumber() + "-claim-form")
             ),
             FIRST_CONTACT_LETTER_TYPE,
-            AUTHORISATION
+            AUTHORISATION,
+            USER_LIST
         );
     }
 
@@ -100,7 +104,8 @@ public class BulkPrintHandlerTest {
                     claim.getReferenceNumber() + "-claim-form")
             ),
             FIRST_CONTACT_LETTER_TYPE,
-            AUTHORISATION
+            AUTHORISATION,
+            USER_LIST
         );
     }
 
@@ -127,7 +132,8 @@ public class BulkPrintHandlerTest {
                     claim.getReferenceNumber() + "-directions-order")
             ),
             DIRECTION_ORDER_LETTER_TYPE,
-            AUTHORISATION);
+            AUTHORISATION,
+            USER_LIST);
     }
 
     @Test
@@ -150,7 +156,8 @@ public class BulkPrintHandlerTest {
                         + LocalDate.now())
             ),
             GENERAL_LETTER_TYPE,
-            AUTHORISATION
+            AUTHORISATION,
+            USER_LIST
         );
     }
 
@@ -160,6 +167,16 @@ public class BulkPrintHandlerTest {
         BulkPrintHandler bulkPrintHandler = new BulkPrintHandler(bulkPrintService, launchDarklyClient);
         Claim claim = mock(Claim.class);
         when(claim.getReferenceNumber()).thenReturn("AAA");
+        when(claim.getClaimData())
+            .thenReturn(
+                SampleClaimData
+                    .builder()
+                    .withDefendant(
+                        SampleTheirDetails
+                            .builder()
+                            .withName("Dr. John Smith")
+                            .partyDetails())
+                    .build());
 
         Document coverLetter = new Document("letter", new HashMap<>());
         Document caseDocument = mock(Document.class);
@@ -185,7 +202,8 @@ public class BulkPrintHandlerTest {
                 )
             ),
             BULK_PRINT_TRANSFER_TYPE,
-            AUTHORISATION);
+            AUTHORISATION,
+            USER_LIST);
     }
 
     @Test
@@ -210,7 +228,8 @@ public class BulkPrintHandlerTest {
                     buildOconFormFileBaseName(claim.getReferenceNumber())))
                 .build(),
             GENERAL_LETTER_TYPE,
-            AUTHORISATION
+            AUTHORISATION,
+            USER_LIST
         );
     }
 
@@ -236,7 +255,8 @@ public class BulkPrintHandlerTest {
                     buildOconFormFileBaseName(claim.getReferenceNumber())))
                 .build(),
             GENERAL_LETTER_TYPE,
-            AUTHORISATION
+            AUTHORISATION,
+            USER_LIST
         );
     }
 
@@ -265,7 +285,8 @@ public class BulkPrintHandlerTest {
                     buildOconFormFileBaseName(claim.getReferenceNumber())))
                 .build(),
             GENERAL_LETTER_TYPE,
-            AUTHORISATION
+            AUTHORISATION,
+            USER_LIST
         );
     }
 }
