@@ -28,6 +28,7 @@ import java.net.URI;
 import java.time.LocalDate;
 
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
@@ -170,10 +171,9 @@ public class ClaimantResponseActionsHandlerTest {
     }
 
     @Test
-    public void sendNotificationLetterToDefendantIfClaimantRejectsMediationStatesPaid() {
+    public void sendNotificationLetterToDefendantIfClaimantRejectsMediation() {
         //given
         ClaimantResponse claimantResponse = ClaimantResponseRejection.validRejectionWithRejectedFreeMediationOCON9x();
-        CCDDocument ccdDocument = null;
         Response response = FullDefenceResponse.builder()
             .freeMediation(YES)
             .defenceType(DefenceType.ALREADY_PAID)
@@ -183,14 +183,24 @@ public class ClaimantResponseActionsHandlerTest {
             .withResponse(response).withClaimantResponse(claimantResponse).build();
         ClaimantResponseEvent event = new ClaimantResponseEvent(claim, authorisation);
 
+        ClaimantResponse claimantResponseDisputesAll = ClaimantResponseRejection.validRejectionWithRejectedFreeMediationOCON9x();
+        Response responseDisputesAll = FullDefenceResponse.builder()
+            .freeMediation(YES)
+            .defenceType(DefenceType.DISPUTE)
+            .build();
+        Claim claimDisputesAll = SampleClaim.builder()
+            .withIssuedPaperFormIssueDate(LocalDate.parse(DATE))
+            .withResponse(responseDisputesAll).withClaimantResponse(claimantResponseDisputesAll).build();
+        ClaimantResponseEvent eventDisputesAll = new ClaimantResponseEvent(claimDisputesAll, authorisation);
+
         //when
         handler.sendNotificationToDefendant(event);
+        handler.sendNotificationToDefendant(eventDisputesAll);
         //then
-        verify(claimantRejectionDefendantNotificationService)
+        verify(claimantRejectionDefendantNotificationService, atLeastOnce())
             .printClaimantMediationRejection(
                 eq(claim),
-                eq(ccdDocument),
+                eq(null),
                 eq(authorisation));
-
     }
 }

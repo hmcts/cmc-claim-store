@@ -485,6 +485,8 @@ sonarqube {
         "**/ValidExpenseConstraintValidator.java",
         "**/ValidResidenceConstraintValidator.java",
         "**/PaperResponseFullDefenceCallbackHandler.java",
+        "**/OCON9xResponseUtil.java",
+        "**/ResponseUtils.java",
         "**/cmc/claimstore/services/ccd/callbacks/roboticssupport/RoboticsNotificationServiceImpl.java"
     ].join(",")
   }
