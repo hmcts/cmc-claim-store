@@ -175,6 +175,7 @@ schedule:
   transfer-claims: ""
   issue-created-claims: "0 0 8,17,23 ? * * *"
   close-hwf-claims-in-awaiting-state: "${SCHEDULE_CLOSE_HWF_CLAIMS_IN_AWAITING_STATE:}"
+  transfer-stayed-claims: "0 0 23,2,5 ? * * *"
   state-transition:
     waiting-transfer: ""
     stay-claim: ""
