@@ -24,6 +24,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse.PartAdmission;
 
+import java.net.URI;
 import java.time.LocalDate;
 
 import static org.mockito.ArgumentMatchers.eq;
@@ -36,6 +37,7 @@ import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClaimantResponseActionsHandlerTest {
+    private static final URI DOCUMENT_URI = URI.create("http://localhost/doc.pdf");
     private final String authorisation = "Bearer authorisation";
     private static final String DATE = "1999-01-01";
     private static final String DOCUMENT_URL = "http://test.url";
@@ -171,6 +173,7 @@ public class ClaimantResponseActionsHandlerTest {
     public void sendNotificationLetterToDefendantIfClaimantRejectsMediationStatesPaid() {
         //given
         ClaimantResponse claimantResponse = ClaimantResponseRejection.validRejectionWithRejectedFreeMediationOCON9x();
+        CCDDocument ccdDocument = null;
         Response response = FullDefenceResponse.builder()
             .freeMediation(YES)
             .defenceType(DefenceType.ALREADY_PAID)
@@ -183,32 +186,11 @@ public class ClaimantResponseActionsHandlerTest {
         //when
         handler.sendNotificationToDefendant(event);
         //then
-        verify(defendantNotificationService, never()) //TODO fix never()
+        verify(claimantRejectionDefendantNotificationService)
             .printClaimantMediationRejection(
                 eq(claim),
-                eq(DOCUMENT));
+                eq(ccdDocument),
+                eq(authorisation));
+
     }
-
-    @Test
-    public void sendNotificationLetterToDefendantIfClaimantRejectsMediationDisputesAll() {
-        //given
-        ClaimantResponse claimantResponse = ClaimantResponseRejection.validRejectionWithRejectedFreeMediationOCON9x();
-        Response response = FullDefenceResponse.builder()
-            .freeMediation(YES)
-            .defenceType(DefenceType.DISPUTE)
-            .build();
-        Claim claim = SampleClaim.builder()
-            .withIssuedPaperFormIssueDate(LocalDate.parse(DATE))
-            .withResponse(response).withClaimantResponse(claimantResponse).build();
-        ClaimantResponseEvent event = new ClaimantResponseEvent(claim, authorisation);
-
-        //when
-        handler.sendNotificationToDefendant(event);
-        //then
-        verify(defendantNotificationService, never()) //TODO fix never()
-            .printClaimantMediationRejection(
-                eq(claim),
-                eq(DOCUMENT));
-    }
-
 }

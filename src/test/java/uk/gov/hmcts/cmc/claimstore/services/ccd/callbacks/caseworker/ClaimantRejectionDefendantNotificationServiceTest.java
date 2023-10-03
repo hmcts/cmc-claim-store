@@ -56,9 +56,11 @@ public class ClaimantRejectionDefendantNotificationServiceTest {
         when(securedDocumentManagementService.downloadDocument(anyString(), any(ClaimDocument.class)))
             .thenReturn(new byte[]{1, 2, 3, 4});
         when(bulkPrintHandler.printClaimantMediationRefusedLetter(any(Claim.class), anyString(), any(Document.class))).thenReturn(detail);
-        when(userService.authenticateAnonymousCaseWorker()).thenReturn(CASEWORKER);
 
-        service = new ClaimantRejectionDefendantNotificationService(bulkPrintHandler, securedDocumentManagementService, userService);
+        service = new ClaimantRejectionDefendantNotificationService(
+            bulkPrintHandler,
+            securedDocumentManagementService
+        );
     }
 
     @Test
@@ -67,7 +69,7 @@ public class ClaimantRejectionDefendantNotificationServiceTest {
         Claim claim = SampleClaim.builder().build();
         CCDDocument doc =  CCDDocument.builder().documentUrl(DOC_URL).documentFileName(DOC_NAME).build();
 
-        service.printClaimantMediationRejection(claim, doc);
+        service.printClaimantMediationRejection(claim, doc, CASEWORKER.getAuthorisation());
 
         verify(bulkPrintHandler)
             .printClaimantMediationRefusedLetter(

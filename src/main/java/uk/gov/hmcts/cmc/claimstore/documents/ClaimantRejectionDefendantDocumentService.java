@@ -51,6 +51,14 @@ public class ClaimantRejectionDefendantDocumentService {
             caseTypeId, jurisdictionId);
     }
 
+    public String createPaperResponseLetterLocation(Claim claim, String authorisation) {
+        CCDCase ccdCase = caseMapper.to(claim);
+        var docAssemblyResponse = docAssemblyService.renderTemplate(ccdCase, authorisation,
+            defendantOconN9xClaimantMediation, caseTypeId, jurisdictionId, defendantDetailsTemplateMapper(claim));
+
+        return docAssemblyResponse.getRenditionOutputLocation();
+    }
+
     public DocAssemblyTemplateBody defendantDetailsTemplateMapper(Claim claim
     ) {
         requireNonNull(claim);

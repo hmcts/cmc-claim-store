@@ -70,7 +70,8 @@ public class ClaimantResponseActionsHandler {
         }
         if (isRejectedStatesPaid(event.getClaim()) || isRejectedDisputesAll(event.getClaim())) {
             this.defendantNotificationService.printClaimantMediationRejection(event.getClaim(),
-                claimantRejectionDefendantDocumentService.createClaimantRejectionDocument(event.getClaim(), event.getAuthorisation()));
+                claimantRejectionDefendantDocumentService.createClaimantRejectionDocument(
+                    event.getClaim(), event.getAuthorisation()), event.getAuthorisation());
         }
     }
 

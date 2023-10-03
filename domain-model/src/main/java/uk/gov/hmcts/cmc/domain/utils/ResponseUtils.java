@@ -95,7 +95,7 @@ public class ResponseUtils {
     }
 
     public static boolean isFullDefenceDisputeAndNoMediationAndNotStatesPaid(Response response) {
-        return isFullDefenceDisputeAndNoMediation(response) 
+        return isFullDefenceDisputeAndNoMediation(response)
             &&  ((FullDefenceResponse) response).getDefenceType() != DefenceType.ALREADY_PAID;
 
     }
