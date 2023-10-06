@@ -21,11 +21,11 @@ import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper.isOptedForMediation;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.REJECTION;
 import static uk.gov.hmcts.cmc.domain.utils.OCON9xResponseUtil.defendantFullDefenceMediationOCON9x;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.hasDefendantOptedForMediation;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isFullDefenceDispute;
-import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isFullDefenceDisputeAndNoMediationAndNotStatesPaid;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isFullDefenceDisputeAndWithMediation;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseFullDefenceStatesPaid;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseStatesPaid;
-import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseStatesPaidButNotDisputes;
 
 @Component
 public class ClaimantResponseActionsHandler {
@@ -142,7 +142,8 @@ public class ClaimantResponseActionsHandler {
 
         return claimantResponse.getType() == ClaimantResponseType.REJECTION
             && defendantFullDefenceMediationOCON9x(claim)
-            && isResponseStatesPaidButNotDisputes(response);
+            && isResponseStatesPaid(response)
+            && hasDefendantOptedForMediation(response);
     }
 
     private boolean isRejectedDisputesAll(Claim claim) {
@@ -153,6 +154,6 @@ public class ClaimantResponseActionsHandler {
 
         return claimantResponse.getType() == ClaimantResponseType.REJECTION
             &&  defendantFullDefenceMediationOCON9x(claim)
-            &&  isFullDefenceDisputeAndNoMediationAndNotStatesPaid(response);
+            &&  isFullDefenceDisputeAndWithMediation(response);
     }
 }
