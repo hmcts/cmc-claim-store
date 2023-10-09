@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerErrorException;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimCreatedEvent;
@@ -46,6 +47,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.MediationReportService;
 import uk.gov.hmcts.cmc.claimstore.services.ScheduledStateTransitionService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase.TransferCaseStateService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.claimstore.services.statetransition.StateTransitionInput;
 import uk.gov.hmcts.cmc.claimstore.services.statetransition.StateTransitions;
@@ -103,6 +105,7 @@ public class SupportController {
     private final MediationReportService mediationReportService;
     private final ClaimSubmissionOperationIndicatorRule claimSubmissionOperationIndicatorRule;
     private final ScheduledStateTransitionService scheduledStateTransitionService;
+    private final TransferCaseStateService transferCaseStateService;
 
     @SuppressWarnings("squid:S00107")
     public SupportController(
@@ -119,7 +122,8 @@ public class SupportController {
         PostClaimOrchestrationHandler postClaimOrchestrationHandler,
         MediationReportService mediationReportService,
         ClaimSubmissionOperationIndicatorRule claimSubmissionOperationIndicatorRule,
-        ScheduledStateTransitionService scheduledStateTransitionService
+        ScheduledStateTransitionService scheduledStateTransitionService,
+        TransferCaseStateService transferCaseStateService
     ) {
         this.claimService = claimService;
         this.userService = userService;
@@ -135,6 +139,7 @@ public class SupportController {
         this.mediationReportService = mediationReportService;
         this.claimSubmissionOperationIndicatorRule = claimSubmissionOperationIndicatorRule;
         this.scheduledStateTransitionService = scheduledStateTransitionService;
+        this.transferCaseStateService = transferCaseStateService;
     }
 
     @PutMapping("/claim/{referenceNumber}/event/{event}/resend-staff-notifications")
@@ -312,6 +317,15 @@ public class SupportController {
             format);
         scheduledStateTransitionService.stateChangeTriggered(runDateTime, stateTransition);
     }
+
+    @PutMapping(value = "/claim/{ccdCaseId}/transferClaimState/{event}")
+    @Operation(summary = "Transfer claim to a given state")
+    public void setPreferredStateForClaim(
+        @PathVariable("event") CaseEvent caseEvent,
+        @PathVariable("ccdCaseId") Long ccdCaseId) {
+        transferCaseStateService.transferGivenCaseState(caseEvent, ccdCaseId);
+    }
+
 
     @PutMapping(value = "/claim/{claimNumber}/preferredDQCourt")
     @Operation(summary = "Set preferred DQ pilot court for a claim")
