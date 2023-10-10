@@ -22,7 +22,7 @@ public class TransferCaseStateService {
         this.coreCaseDataService = coreCaseDataService;
     }
 
-    public void transferGivenCaseState(CaseEvent caseEvent, Long caseId) {
+    public void transferCaseToGivenCaseState(CaseEvent caseEvent, Long caseId) {
 
         CCDCase ccdCaseId = caseId != null ? CCDCase.builder()
             .id(caseId)

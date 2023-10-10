@@ -323,7 +323,7 @@ public class SupportController {
     public void setPreferredStateForClaim(
         @PathVariable("event") CaseEvent caseEvent,
         @PathVariable("ccdCaseId") Long ccdCaseId) {
-        transferCaseStateService.transferGivenCaseState(caseEvent, ccdCaseId);
+        transferCaseStateService.transferCaseToGivenCaseState(caseEvent, ccdCaseId);
     }
 
 
