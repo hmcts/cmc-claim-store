@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.server.ServerErrorException;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimCreatedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentGenerator;
@@ -524,6 +525,12 @@ class SupportControllerTest {
 
             verify(scheduledStateTransitionService).stateChangeTriggered(localDateTime,
                 STAY_CLAIM);
+        }
+
+        @Test
+        void shouldSetPreferredClaimStateWhenGivenState() {
+            controller.setPreferredStateForClaim(CaseEvent.TRANSFER,1L);
+            verify(transferCaseStateService).transferCaseToGivenCaseState(CaseEvent.TRANSFER,1L);
         }
 
         @Test
