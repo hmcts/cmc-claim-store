@@ -28,10 +28,10 @@ public class TransferCaseStateService {
             .id(caseId)
             .build() : null;
 
-            coreCaseDataService.caseTransferUpdate(
+        coreCaseDataService.caseTransferUpdate(
                 userService.authenticateAnonymousCaseWorker().getAuthorisation(),
                 ccdCaseId,
                 caseEvent
-            );
-        }
+        );
     }
+}

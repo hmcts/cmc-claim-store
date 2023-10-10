@@ -529,8 +529,8 @@ class SupportControllerTest {
 
         @Test
         void shouldSetPreferredClaimStateWhenGivenState() {
-            controller.setPreferredStateForClaim(CaseEvent.TRANSFER,1L);
-            verify(transferCaseStateService).transferCaseToGivenCaseState(CaseEvent.TRANSFER,1L);
+            controller.setPreferredStateForClaim(CaseEvent.TRANSFER, 1L);
+            verify(transferCaseStateService).transferCaseToGivenCaseState(CaseEvent.TRANSFER, 1L);
         }
 
         @Test

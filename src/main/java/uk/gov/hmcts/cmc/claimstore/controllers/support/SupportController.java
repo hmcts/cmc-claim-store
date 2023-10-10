@@ -326,7 +326,6 @@ public class SupportController {
         transferCaseStateService.transferCaseToGivenCaseState(caseEvent, ccdCaseId);
     }
 
-
     @PutMapping(value = "/claim/{claimNumber}/preferredDQCourt")
     @Operation(summary = "Set preferred DQ pilot court for a claim")
     public void setPreferredDQPilotCourt(@PathVariable("claimNumber") String claimNumber) {
