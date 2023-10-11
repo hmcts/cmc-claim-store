@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.server.ServerErrorException;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimCreatedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentGenerator;
@@ -30,6 +31,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.MediationReportService;
 import uk.gov.hmcts.cmc.claimstore.services.ScheduledStateTransitionService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase.TransferCaseStateService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.statetransition.StateTransitionInput;
@@ -121,6 +123,9 @@ class SupportControllerTest {
     @Mock
     private ScheduledStateTransitionService scheduledStateTransitionService;
 
+    @Mock
+    private TransferCaseStateService transferCaseStateService;
+
     private SupportController controller;
 
     private Claim sampleClaim;
@@ -141,7 +146,8 @@ class SupportControllerTest {
             postClaimOrchestrationHandler,
             mediationReportService,
             new ClaimSubmissionOperationIndicatorRule(),
-            scheduledStateTransitionService
+            scheduledStateTransitionService,
+            transferCaseStateService
         );
         sampleClaim = SampleClaim.getDefault();
     }
@@ -195,7 +201,7 @@ class SupportControllerTest {
                     ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
                     claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
                     postClaimOrchestrationHandler, mediationReportService, new ClaimSubmissionOperationIndicatorRule(),
-                    scheduledStateTransitionService
+                    scheduledStateTransitionService, transferCaseStateService
                 );
 
                 when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE)))
@@ -438,7 +444,7 @@ class SupportControllerTest {
                     ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
                     claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
                     postClaimOrchestrationHandler, mediationReportService, new ClaimSubmissionOperationIndicatorRule(),
-                    scheduledStateTransitionService
+                    scheduledStateTransitionService, transferCaseStateService
                 );
 
                 when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE)))
@@ -519,6 +525,12 @@ class SupportControllerTest {
 
             verify(scheduledStateTransitionService).stateChangeTriggered(localDateTime,
                 STAY_CLAIM);
+        }
+
+        @Test
+        void shouldSetPreferredClaimStateWhenGivenState() {
+            controller.setPreferredStateForClaim(CaseEvent.TRANSFER, 1L);
+            verify(transferCaseStateService).transferCaseToGivenCaseState(CaseEvent.TRANSFER, 1L);
         }
 
         @Test
