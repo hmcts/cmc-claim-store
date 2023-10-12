@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.sendletter.api.Document;
 import java.net.URISyntaxException;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -37,6 +38,7 @@ public class LegalOrderServiceTest {
         .documentUrl(DOCUMENT_URL)
         .documentBinaryUrl(DOCUMENT_URL)
         .build();
+    private static final List<String> USER_LIST = List.of("Dr. John Smith");
 
     @Mock
     private SecuredDocumentManagementService securedDocumentManagementService;
@@ -85,7 +87,7 @@ public class LegalOrderServiceTest {
             ImmutableMap.of("content", "CLAIMANT"));
 
         given(bulkPrintHandler
-            .printDirectionOrder(eq(claim), eq(coverSheetForClaimant), eq(legalOrder), eq(BEARER_TOKEN)))
+            .printDirectionOrder(eq(claim), eq(coverSheetForClaimant), eq(legalOrder), eq(BEARER_TOKEN), eq(USER_LIST)))
             .willReturn(bulkPrintDetails);
 
         Document coverSheetForDefendant = new Document(
@@ -93,7 +95,7 @@ public class LegalOrderServiceTest {
             ImmutableMap.of("content", "DEFENDANT"));
 
         given(bulkPrintHandler
-            .printDirectionOrder(eq(claim), eq(coverSheetForDefendant), eq(legalOrder), eq(BEARER_TOKEN)))
+            .printDirectionOrder(eq(claim), eq(coverSheetForDefendant), eq(legalOrder), eq(BEARER_TOKEN), USER_LIST))
             .willReturn(bulkPrintDetails);
 
         legalOrderService.print(
@@ -106,13 +108,15 @@ public class LegalOrderServiceTest {
             claim,
             coverSheetForClaimant,
             legalOrder,
-            BEARER_TOKEN);
+            BEARER_TOKEN,
+            USER_LIST);
 
         verify(bulkPrintHandler).printDirectionOrder(
             claim,
             coverSheetForDefendant,
             legalOrder,
-            BEARER_TOKEN);
+            BEARER_TOKEN,
+            USER_LIST);
     }
 
     @Test(expected = Exception.class)

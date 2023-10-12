@@ -118,7 +118,7 @@ public class BulkPrintHandlerTest {
         Document legalOrder = new Document("legalOrder", new HashMap<>());
 
         //when
-        bulkPrintHandler.printDirectionOrder(claim, coverSheet, legalOrder, AUTHORISATION);
+        bulkPrintHandler.printDirectionOrder(claim, coverSheet, legalOrder, AUTHORISATION, USER_LIST);
 
         //verify
         verify(bulkPrintService).printPdf(
