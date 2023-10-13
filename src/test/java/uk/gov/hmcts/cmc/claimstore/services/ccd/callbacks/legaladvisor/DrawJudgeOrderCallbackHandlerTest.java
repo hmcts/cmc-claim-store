@@ -175,6 +175,7 @@ class DrawJudgeOrderCallbackHandlerTest {
         @Test
         void shouldGenerateDocumentOnMidEvent() {
             CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
+            ccdCase.setDirectionOrderType("BESPOKE");
             ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
                 .thenReturn(ccdCase);
@@ -283,6 +284,7 @@ class DrawJudgeOrderCallbackHandlerTest {
             CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
 
             ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
+            ccdCase.setDirectionOrderType("BESPOKE");
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
                 .thenReturn(ccdCase);
             when(launchDarklyClient.isFeatureEnabled(eq("bespoke-order"), any(LDUser.class))).thenReturn(true);
