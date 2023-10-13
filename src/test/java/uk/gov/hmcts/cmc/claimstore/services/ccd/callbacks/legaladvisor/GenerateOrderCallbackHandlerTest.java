@@ -177,6 +177,7 @@ public class GenerateOrderCallbackHandlerTest {
         @Test
         void shouldGenerateDocumentOnMidEvent() {
             CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
+            ccdCase.setDirectionOrderType("BESPOKE");
             ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
                 .thenReturn(ccdCase);
