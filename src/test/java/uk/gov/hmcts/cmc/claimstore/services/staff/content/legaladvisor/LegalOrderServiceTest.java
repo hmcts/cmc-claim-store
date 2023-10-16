@@ -87,17 +87,24 @@ public class LegalOrderServiceTest {
             ImmutableMap.of("content", "CLAIMANT"));
 
         given(bulkPrintHandler
+<<<<<<< HEAD
             .printDirectionOrder(eq(claim), eq(coverSheetForClaimant), eq(legalOrder), eq(BEARER_TOKEN), eq(USER_LIST)))
+=======
+            .printDirectionOrder(any(Claim.class), any(Document.class), any(Document.class), any(String.class)))
+>>>>>>> feat/CIV-11026
             .willReturn(bulkPrintDetails);
 
         Document coverSheetForDefendant = new Document(
             "coverSheet",
             ImmutableMap.of("content", "DEFENDANT"));
 
+<<<<<<< HEAD
         given(bulkPrintHandler
             .printDirectionOrder(eq(claim), eq(coverSheetForDefendant), eq(legalOrder), eq(BEARER_TOKEN), USER_LIST))
             .willReturn(bulkPrintDetails);
 
+=======
+>>>>>>> feat/CIV-11026
         legalOrderService.print(
             BEARER_TOKEN,
             claim,
