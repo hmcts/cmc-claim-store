@@ -207,6 +207,19 @@ public class SampleData {
             .build();
     }
 
+    public static CCDResponseRejection getResponseRejectionWithPaymentReceived() {
+        return CCDResponseRejection.builder()
+            .amountPaid(AMOUNT)
+            .paymentReceived(YES)
+            .submittedOn(LocalDateTimeFactory.nowInLocalZone())
+            .freeMediationOption(YES)
+            .mediationPhoneNumber(CCDTelephone.builder().telephoneNumber("07999999999").build())
+            .mediationContactPerson("Mediation Contact Person")
+            .noMediationReason("Not interested")
+            .reason("Rejection Reason")
+            .build();
+    }
+
     public static CCDCourtDetermination getCCDCourtDetermination() {
         return CCDCourtDetermination.builder()
             .rejectionReason("Rejection reason")

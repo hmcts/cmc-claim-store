@@ -2,7 +2,9 @@ package uk.gov.hmcts.cmc.claimstore.events.claimantresponse;
 
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.claimstore.documents.ClaimantRejectionDefendantDocumentService;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.InterlocutoryJudgmentEvent;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimantRejectionDefendantNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationToDefendantService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimantRejectOrgPaymentPlanStaffNotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper;
@@ -18,7 +20,10 @@ import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_CLAIMANT_RE
 import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_RESPONSE;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper.isOptedForMediation;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.REJECTION;
+import static uk.gov.hmcts.cmc.domain.utils.OCON9xResponseUtil.defendantFullDefenceMediationOCON9x;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.hasDefendantOptedForMediation;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isFullDefenceDispute;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isFullDefenceDisputeAndWithMediation;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseFullDefenceStatesPaid;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseStatesPaid;
 
@@ -28,14 +33,24 @@ public class ClaimantResponseActionsHandler {
     private final NotificationToDefendantService notificationService;
     private final ClaimantRejectOrgPaymentPlanStaffNotificationService
         claimantRejectOrgPaymentPlanStaffNotificationService;
+    private final ClaimantRejectionDefendantNotificationService
+        defendantNotificationService;
+    private final ClaimantRejectionDefendantDocumentService
+        claimantRejectionDefendantDocumentService;
 
     public ClaimantResponseActionsHandler(
         NotificationToDefendantService notificationService,
-        ClaimantRejectOrgPaymentPlanStaffNotificationService claimantRejectOrgPaymentPlanStaffNotificationService
+        ClaimantRejectOrgPaymentPlanStaffNotificationService claimantRejectOrgPaymentPlanStaffNotificationService,
+        ClaimantRejectionDefendantNotificationService claimantRejectionDefendantNotificationService,
+        ClaimantRejectionDefendantDocumentService claimantRejectionDefendantDocumentService
     ) {
         this.notificationService = notificationService;
         this.claimantRejectOrgPaymentPlanStaffNotificationService =
             claimantRejectOrgPaymentPlanStaffNotificationService;
+        this.defendantNotificationService =
+            claimantRejectionDefendantNotificationService;
+        this.claimantRejectionDefendantDocumentService =
+            claimantRejectionDefendantDocumentService;
     }
 
     @EventListener
@@ -52,6 +67,11 @@ public class ClaimantResponseActionsHandler {
             this.notificationService.notifyDefendantOfClaimantIntentionToProceedForOnlineDq(event.getClaim());
         } else {
             this.notificationService.notifyDefendant(event.getClaim());
+        }
+        if (isRejectedStatesPaid(event.getClaim()) || isRejectedDisputesAll(event.getClaim())) {
+            this.defendantNotificationService.printClaimantMediationRejection(event.getClaim(),
+                claimantRejectionDefendantDocumentService.createClaimantRejectionDocument(
+                    event.getClaim(), event.getAuthorisation()), event.getAuthorisation());
         }
     }
 
@@ -112,5 +132,28 @@ public class ClaimantResponseActionsHandler {
 
         return claimantResponse.getType() == ClaimantResponseType.REJECTION
             && (isResponseStatesPaid(response) || response.getResponseType() == ResponseType.PART_ADMISSION);
+    }
+
+    private boolean isRejectedStatesPaid(Claim claim) {
+        ClaimantResponse claimantResponse = claim.getClaimantResponse()
+            .orElseThrow(() -> new IllegalStateException(MISSING_CLAIMANT_RESPONSE));
+        Response response = claim.getResponse()
+            .orElseThrow(() -> new IllegalArgumentException(MISSING_RESPONSE));
+
+        return claimantResponse.getType() == ClaimantResponseType.REJECTION
+            && defendantFullDefenceMediationOCON9x(claim)
+            && isResponseStatesPaid(response)
+            && hasDefendantOptedForMediation(response);
+    }
+
+    private boolean isRejectedDisputesAll(Claim claim) {
+        ClaimantResponse claimantResponse = claim.getClaimantResponse()
+            .orElseThrow(() -> new IllegalStateException(MISSING_CLAIMANT_RESPONSE));
+        Response response = claim.getResponse()
+            .orElseThrow(() -> new IllegalArgumentException(MISSING_RESPONSE));
+
+        return claimantResponse.getType() == ClaimantResponseType.REJECTION
+            &&  defendantFullDefenceMediationOCON9x(claim)
+            &&  isFullDefenceDisputeAndWithMediation(response);
     }
 }
