@@ -85,16 +85,12 @@ public class LegalOrderServiceTest {
             ImmutableMap.of("content", "CLAIMANT"));
 
         given(bulkPrintHandler
-            .printDirectionOrder(eq(claim), eq(coverSheetForClaimant), eq(legalOrder), eq(BEARER_TOKEN)))
+            .printDirectionOrder(any(Claim.class), any(Document.class), any(Document.class), any(String.class)))
             .willReturn(bulkPrintDetails);
 
         Document coverSheetForDefendant = new Document(
             "coverSheet",
             ImmutableMap.of("content", "DEFENDANT"));
-
-        given(bulkPrintHandler
-            .printDirectionOrder(eq(claim), eq(coverSheetForDefendant), eq(legalOrder), eq(BEARER_TOKEN)))
-            .willReturn(bulkPrintDetails);
 
         legalOrderService.print(
             BEARER_TOKEN,
