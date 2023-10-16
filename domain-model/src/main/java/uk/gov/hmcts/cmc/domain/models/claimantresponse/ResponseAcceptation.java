@@ -31,12 +31,13 @@ public class ResponseAcceptation extends ClaimantResponse {
     public ResponseAcceptation(
         BigDecimal amountPaid,
         YesNoOption paymentReceived,
+        YesNoOption freeMediation,
         YesNoOption settleForAmount,
         CourtDetermination courtDetermination,
         PaymentIntention claimantPaymentIntention,
         FormaliseOption formaliseOption
     ) {
-        super(ClaimantResponseType.ACCEPTATION, amountPaid, paymentReceived, settleForAmount);
+        super(ClaimantResponseType.ACCEPTATION, amountPaid, paymentReceived, freeMediation, settleForAmount);
         this.courtDetermination = courtDetermination;
         this.claimantPaymentIntention = claimantPaymentIntention;
         this.formaliseOption = formaliseOption;
