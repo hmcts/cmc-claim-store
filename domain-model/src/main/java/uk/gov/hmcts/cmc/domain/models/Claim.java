@@ -92,7 +92,7 @@ public class Claim {
     private LocalDateTime lastModified;
     private String lastEventTriggeredForHwfCase;
     private LocalDate paperFormServedDate;
-    private LocalDate paperFormIssueDate;
+    private final LocalDate paperFormIssueDate;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -127,7 +127,7 @@ public class Claim {
         ClaimDocumentCollection claimDocumentCollection,
         LocalDate claimantResponseDeadline,
         ClaimState state,
-         ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators,
+        ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators,
         Long ccdCaseId,
         ReviewOrder reviewOrder,
         DirectionOrder directionOrder,
