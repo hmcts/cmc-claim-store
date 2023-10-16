@@ -159,6 +159,7 @@ doc_assembly:
   breathingSpaceEnteredTemplateID: "CV-CMC-LET-ENG-00635.docx"
   breathingSpaceLiftedTemplateID: "CV-CMC-LET-ENG-00636.docx"
   oconN9FormTemplateID: "CV-CMC-LET-ENG-00637.docx"
+  defendantOconN9xClaimantMediation: "CV-CMC-LET-ENG-00638.docx"
 
 nonworking-days:
   datafile: ${NONWORKINGDAYS_DATAFILE:/data/non-working_days.dat}
