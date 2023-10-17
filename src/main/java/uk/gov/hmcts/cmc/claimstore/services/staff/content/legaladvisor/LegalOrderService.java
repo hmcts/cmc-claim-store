@@ -64,17 +64,17 @@ public class LegalOrderService {
                 getClaimant(claim)
             ));
 
-            Document coverSheetForDefendant = new Document(
-                new String(documentTemplates.getLegalOrderCoverSheet()),
-                legalOrderCoverSheetContentProvider.createContentForDefendant(claim));
+//            Document coverSheetForDefendant = new Document(
+//                new String(documentTemplates.getLegalOrderCoverSheet()),
+//                legalOrderCoverSheetContentProvider.createContentForDefendant(claim));
 
-            bulkPrintDetails.add(bulkPrintHandler.printDirectionOrder(
-                claim,
-                coverSheetForDefendant,
-                legalOrder,
-                authorisation,
-                getDefendant(claim)
-            ));
+//            bulkPrintDetails.add(bulkPrintHandler.printDirectionOrder(
+//                claim,
+//                coverSheetForDefendant,
+//                legalOrder,
+//                authorisation,
+//                getDefendant(claim)
+//            ));
         } catch (URISyntaxException e) {
             logger.warn("Problem download legal advisor document from doc store, won't print");
         }

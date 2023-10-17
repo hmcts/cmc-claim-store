@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
@@ -38,7 +39,7 @@ public class LegalOrderServiceTest {
         .documentUrl(DOCUMENT_URL)
         .documentBinaryUrl(DOCUMENT_URL)
         .build();
-    private static final List<String> USER_LIST = List.of("Dr. John Smith");
+    private static final List<String> USER_LIST = List.of("John Rambo");
 
     @Mock
     private SecuredDocumentManagementService securedDocumentManagementService;
@@ -70,14 +71,17 @@ public class LegalOrderServiceTest {
             .thenReturn(ImmutableMap.of("content", "CLAIMANT"));
         when(legalOrderCoverSheetContentProvider.createContentForDefendant(claim))
             .thenReturn(ImmutableMap.of("content", "DEFENDANT"));
+        when(securedDocumentManagementService.downloadDocument(
+            eq(BEARER_TOKEN),
+            any(ClaimDocument.class))).thenReturn("legalOrder".getBytes());
 
     }
 
     @Test
-    public void shouldSendPrintEventForOrderAndCoverSheetIfOrderIsInDocStore() {
-        when(securedDocumentManagementService.downloadDocument(
-            eq(BEARER_TOKEN),
-            any(ClaimDocument.class))).thenReturn("legalOrder".getBytes());
+    public void shouldSendPrint() {
+
+        List<String> userList = List.of("John Rambo");
+
 
         Document legalOrder = new Document(
             Base64.getEncoder().encodeToString("legalOrder".getBytes()),
@@ -86,13 +90,18 @@ public class LegalOrderServiceTest {
             "coverSheet",
             ImmutableMap.of("content", "CLAIMANT"));
 
+
+//        Document coverSheetForDefendant = new Document(
+//            "coverSheet",
+//            ImmutableMap.of("content", "DEFENDANT"));
+
         given(bulkPrintHandler
-            .printDirectionOrder(any(Claim.class), any(Document.class), any(Document.class), any(String.class)))
+            .printDirectionOrder(eq(claim), eq(coverSheetForClaimant), eq(legalOrder), eq(BEARER_TOKEN), eq(userList)))
             .willReturn(bulkPrintDetails);
 
-        Document coverSheetForDefendant = new Document(
-            "coverSheet",
-            ImmutableMap.of("content", "DEFENDANT"));
+//        given(bulkPrintHandler
+//            .printDirectionOrder(eq(claim), eq(coverSheetForDefendant), eq(legalOrder), eq(BEARER_TOKEN), eq(userList)))
+//            .willReturn(bulkPrintDetails);
 
         legalOrderService.print(
             BEARER_TOKEN,
@@ -105,14 +114,63 @@ public class LegalOrderServiceTest {
             coverSheetForClaimant,
             legalOrder,
             BEARER_TOKEN,
-            USER_LIST);
+            userList);
+
+//        verify(bulkPrintHandler).printDirectionOrder(
+//            claim,
+//            coverSheetForDefendant,
+//            legalOrder,
+//            BEARER_TOKEN,
+//            userList);
+    }
+
+
+    @Test
+    public void shouldSendPrintEventForOrderAndCoverSheetIfOrderIsInDocStore() {
+
+        List<String> userList = List.of("John Rambo");
+        when(securedDocumentManagementService.downloadDocument(
+            eq(BEARER_TOKEN),
+            any(ClaimDocument.class))).thenReturn("legalOrder".getBytes());
+
+        Document legalOrder = new Document(
+            Base64.getEncoder().encodeToString("legalOrder".getBytes()),
+            Collections.emptyMap());
+        Document coverSheetForClaimant = new Document(
+            "coverSheet",
+            ImmutableMap.of("content", "CLAIMANT"));
+
+        given(bulkPrintHandler
+            .printDirectionOrder(eq(claim), eq(coverSheetForClaimant), eq(legalOrder), eq(BEARER_TOKEN), eq(userList)))
+            .willReturn(bulkPrintDetails);
+
+        Document coverSheetForDefendant = new Document(
+            "coverSheet",
+            ImmutableMap.of("content", "DEFENDANT"));
+
+        given(bulkPrintHandler
+            .printDirectionOrder(eq(claim), eq(coverSheetForDefendant), eq(legalOrder), eq(BEARER_TOKEN), eq(userList)))
+            .willReturn(bulkPrintDetails);
+
+        legalOrderService.print(
+            BEARER_TOKEN,
+            claim,
+            DOCUMENT
+        );
+
+        verify(bulkPrintHandler).printDirectionOrder(
+            claim,
+            coverSheetForClaimant,
+            legalOrder,
+            BEARER_TOKEN,
+            userList);
 
         verify(bulkPrintHandler).printDirectionOrder(
             claim,
             coverSheetForDefendant,
             legalOrder,
             BEARER_TOKEN,
-            USER_LIST);
+            userList);
     }
 
     @Test(expected = Exception.class)
