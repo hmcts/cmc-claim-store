@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildCoverSheetFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterClaimantMediationRefusedFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDirectionsOrderFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildLetterFileBaseName;
@@ -31,6 +32,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildOcon9Form
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildOconFormFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildPaperDefenceCoverLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
+import static uk.gov.hmcts.cmc.domain.utils.OCON9xResponseUtil.defendantFullDefenceMediationOCON9x;
 
 @Component
 @ConditionalOnProperty(prefix = "send-letter", name = "url")
@@ -76,6 +78,26 @@ public class BulkPrintHandler {
                 ),
                 BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE,
                 event.getAuthorisation(),
+                CaseDataExtractorUtils.getDefendant(claim));
+        }
+        return bulkPrintDetails;
+    }
+
+    public BulkPrintDetails printClaimantMediationRefusedLetter(Claim claim, String authorisation, Document document) {
+        requireNonNull(authorisation);
+        requireNonNull(claim);
+        requireNonNull(document);
+
+        BulkPrintDetails bulkPrintDetails = null;
+        if (defendantFullDefenceMediationOCON9x(claim)) {
+            bulkPrintDetails = bulkPrintService.printPdf(claim, List.of(
+                    new PrintablePdf(
+                        document,
+                        buildDefendantLetterClaimantMediationRefusedFileBaseName(
+                            claim.getReferenceNumber()))
+                ),
+                BulkPrintRequestType.CLAIMANT_MEDIATION_REFUSED_TYPE,
+                authorisation,
                 CaseDataExtractorUtils.getDefendant(claim));
         }
         return bulkPrintDetails;
