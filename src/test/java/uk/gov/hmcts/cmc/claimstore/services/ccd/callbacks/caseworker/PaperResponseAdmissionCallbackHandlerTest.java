@@ -36,6 +36,7 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDet
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -206,6 +207,7 @@ class PaperResponseAdmissionCallbackHandlerTest {
 
         Claim claim = Claim.builder()
             .referenceNumber("XXXXX")
+            .claimData(SampleClaim.getCitizenClaim().getClaimData())
             .build();
         when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
         when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetails);
@@ -315,10 +317,10 @@ class PaperResponseAdmissionCallbackHandlerTest {
         void setUp() {
 
             Claim claim = Claim.builder()
-                .referenceNumber("XXXXX")
-                .build();
+                .claimData(
+                    SampleClaim
+                        .getClaimWithFullAdmissionWithTheirDetails().getClaimData()).build();
             when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
-
             when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetails);
             when(docAssemblyService
                 .renderTemplate(any(CCDCase.class), anyString(), anyString(), anyString(), anyString(),

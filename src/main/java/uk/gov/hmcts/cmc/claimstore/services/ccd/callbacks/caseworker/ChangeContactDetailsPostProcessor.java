@@ -32,6 +32,7 @@ import static java.lang.String.format;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType.CLAIMANT;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.Params.BEARER_TOKEN;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildLetterFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.CaseDataExtractorUtils.getDefendant;
 
 @Service
 @ConditionalOnProperty(prefix = "doc_assembly", name = "url")
@@ -131,7 +132,7 @@ public class ChangeContactDetailsPostProcessor {
                         String.valueOf(LocalDate.now())))
                     .build();
 
-                updatedCase = changeContactLetterService.publishLetter(updatedCase, claim, authorisation, letterDoc);
+                updatedCase = changeContactLetterService.publishLetter(updatedCase, claim, authorisation, letterDoc, getDefendant(claim));
                 logger.info("Change Contact Details: Letter is sent to defendant");
             } else {
                 changeContactDetailsNotificationService.sendEmailToRightRecipient(updatedCase, claim);

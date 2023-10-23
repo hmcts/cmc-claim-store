@@ -213,6 +213,8 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
             .documentUrl(docAssemblyResponse.getRenditionOutputLocation())
             .build();
 
+        System.out.println("*************************************************************Claim now *************************************************************************************"+ claim);
+
         printLetter(claim, authorisation, ccdDocument, getDefendant(claim));
 
         CCDCollectionElement<CCDClaimDocument> claimDocument = CCDCollectionElement.<CCDClaimDocument>builder()
