@@ -58,6 +58,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -220,7 +221,7 @@ class PaperResponseAdmissionCallbackHandlerTest {
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
         when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-        when(generalLetterService.printLetter(anyString(), any(CCDDocument.class), any(Claim.class)))
+        when(generalLetterService.printLetter(anyString(), any(CCDDocument.class), any(Claim.class), anyList()))
             .thenReturn(BulkPrintDetails.builder().build());
         ArgumentCaptor<CCDCase> ccdDataArgumentCaptor = ArgumentCaptor.forClass(CCDCase.class);
         handler.handle(callbackParams);
@@ -330,7 +331,7 @@ class PaperResponseAdmissionCallbackHandlerTest {
             when(clock.instant()).thenReturn(LocalDate.parse("2020-06-22").atStartOfDay().toInstant(ZoneOffset.UTC));
             when(clock.getZone()).thenReturn(ZoneOffset.UTC);
             when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);
-            when(generalLetterService.printLetter(anyString(), any(CCDDocument.class), any(Claim.class)))
+            when(generalLetterService.printLetter(anyString(), any(CCDDocument.class), any(Claim.class), anyList()))
                 .thenReturn(BulkPrintDetails.builder().build());
         }
 
@@ -377,7 +378,7 @@ class PaperResponseAdmissionCallbackHandlerTest {
             CCDCase ccdCase = getCCDCase(PART_ADMISSION, CCDRespondent.builder(), "OCON9x");
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
             handler.handle(callbackParams);
-            verify(generalLetterService).printLetter(anyString(), any(CCDDocument.class), any(Claim.class));
+            verify(generalLetterService).printLetter(anyString(), any(CCDDocument.class), any(Claim.class), anyList());
         }
     }
 

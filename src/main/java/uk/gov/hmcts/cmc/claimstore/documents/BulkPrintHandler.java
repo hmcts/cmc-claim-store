@@ -124,7 +124,7 @@ public class BulkPrintHandler {
         );
     }
 
-    public BulkPrintDetails printGeneralLetter(Claim claim, Document generalLetterDocument, String authorisation) {
+    public BulkPrintDetails printGeneralLetter(Claim claim, Document generalLetterDocument, String authorisation, List<String> personList) {
         requireNonNull(claim);
         requireNonNull(generalLetterDocument);
         requireNonNull(authorisation);
@@ -139,7 +139,7 @@ public class BulkPrintHandler {
             ),
             BulkPrintRequestType.GENERAL_LETTER_TYPE,
             authorisation,
-            CaseDataExtractorUtils.getDefendant(claim)
+            personList
         );
     }
 
