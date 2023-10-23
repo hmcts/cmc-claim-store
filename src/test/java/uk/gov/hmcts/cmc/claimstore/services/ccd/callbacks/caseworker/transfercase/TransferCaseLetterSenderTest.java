@@ -25,7 +25,6 @@ import static org.mockito.Mockito.when;
 class TransferCaseLetterSenderTest {
 
     private static final String AUTHORISATION = "Bearer: abcd";
-    private static final List<String> USER_LIST = List.of("Dr Bruce Lee");
 
     @InjectMocks
     private TransferCaseLetterSender transferCaseLetterSender;
@@ -56,8 +55,7 @@ class TransferCaseLetterSenderTest {
         verify(generalLetterService).printLetter(
             AUTHORISATION,
             noticeForDefendant,
-            claim,
-            USER_LIST
+            claim
         );
     }
 

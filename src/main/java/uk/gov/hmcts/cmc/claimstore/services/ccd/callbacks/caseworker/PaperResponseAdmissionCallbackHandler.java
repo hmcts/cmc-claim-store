@@ -47,7 +47,6 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.Params.BEARER_TOKEN;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.ResponseSubmitted.referenceForClaimant;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.ResponseSubmitted.referenceForDefendant;
-import static uk.gov.hmcts.cmc.claimstore.utils.CaseDataExtractorUtils.getDefendant;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 
 @Service
@@ -213,7 +212,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
             .documentUrl(docAssemblyResponse.getRenditionOutputLocation())
             .build();
 
-        printLetter(claim, authorisation, ccdDocument, getDefendant(claim));
+        printLetter(claim, authorisation, ccdDocument);
 
         CCDCollectionElement<CCDClaimDocument> claimDocument = CCDCollectionElement.<CCDClaimDocument>builder()
             .value(CCDClaimDocument.builder()
@@ -233,8 +232,8 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
             .build();
     }
 
-    private void printLetter(Claim claim, String authorisation, CCDDocument ccdDocument, List<String> personList) {
-        generalLetterService.printLetter(authorisation, ccdDocument, claim, personList);
+    private void printLetter(Claim claim, String authorisation, CCDDocument ccdDocument) {
+        generalLetterService.printLetter(authorisation, ccdDocument, claim);
     }
 
     private void sendDefendantEmail(CCDCase updatedCCDCase, Claim claim) {

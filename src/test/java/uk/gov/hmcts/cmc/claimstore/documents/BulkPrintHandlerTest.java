@@ -146,7 +146,7 @@ public class BulkPrintHandlerTest {
         Document generalLetter = new Document("letter", new HashMap<>());
 
         //when
-        bulkPrintHandler.printGeneralLetter(claim, generalLetter, AUTHORISATION, USER_LIST);
+        bulkPrintHandler.printGeneralLetter(claim, generalLetter, AUTHORISATION);
 
         //verify
         verify(bulkPrintService).printPdf(

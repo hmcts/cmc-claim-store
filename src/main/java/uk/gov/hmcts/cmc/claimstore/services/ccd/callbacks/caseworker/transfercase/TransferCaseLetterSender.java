@@ -19,8 +19,6 @@ import uk.gov.hmcts.reform.sendletter.api.Document;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static uk.gov.hmcts.cmc.claimstore.utils.CaseDataExtractorUtils.getDefendant;
-
 @Component
 public class TransferCaseLetterSender {
 
@@ -41,7 +39,7 @@ public class TransferCaseLetterSender {
         CCDDocument ccdDocument,
         Claim claim
     ) {
-        return generalLetterService.printLetter(authorisation, ccdDocument, claim, getDefendant(claim));
+        return generalLetterService.printLetter(authorisation, ccdDocument, claim);
     }
 
     public BulkPrintDetails sendAllCaseDocumentsToCourt(
