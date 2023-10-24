@@ -34,6 +34,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType.CLAIMANT;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.Params.BEARER_TOKEN;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.GENERAL_LETTER_PDF;
@@ -56,7 +57,7 @@ class GeneralLetterCallbackHandlerTest {
 
     private static final String EXISTING_DATA = "existingData";
     private static final String DATA = "data";
-    private static final List<String> USER_LIST = List.of("Dr. John Smith");
+    private static final List<String> USER_LIST = List.of("John Rambo");
     private CaseDetails caseDetails;
     private Map<String, Object> data;
     private static final String LETTER_CONTENT = "letterContent";
@@ -103,6 +104,7 @@ class GeneralLetterCallbackHandlerTest {
         String documentUrl = DOCUMENT_URI.toString();
         CCDDocument document = new CCDDocument(documentUrl, documentUrl, GENERAL_LETTER_PDF);
         ccdCase = CCDCase.builder()
+            .contactChangeParty(CLAIMANT)
             .previousServiceCaseReference("000MC001")
             .caseDocuments(ImmutableList.of(CCDCollectionElement.<CCDClaimDocument>builder()
                 .value(CCDClaimDocument.builder()
