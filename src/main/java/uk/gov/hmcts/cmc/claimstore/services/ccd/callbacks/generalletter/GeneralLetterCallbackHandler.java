@@ -107,7 +107,7 @@ public class GeneralLetterCallbackHandler extends CallbackHandler {
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackParams.getRequest().getCaseDetails());
         Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
-        System.out.println("CCD case: "+ccdCase);
+        System.out.println("CCD case: " + ccdCase);
         boolean errors = false;
         CCDCase updatedCcdCase = ccdCase;
         try {
