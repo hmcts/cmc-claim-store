@@ -11,8 +11,8 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.domain.GeneralLetterContent;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -104,6 +104,7 @@ class GeneralLetterCallbackHandlerTest {
         String documentUrl = DOCUMENT_URI.toString();
         CCDDocument document = new CCDDocument(documentUrl, documentUrl, GENERAL_LETTER_PDF);
         ccdCase = CCDCase.builder()
+            .generalLetterContent(GeneralLetterContent.builder().issueLetterContact(CLAIMANT).build())
             .contactChangeParty(CLAIMANT)
             .previousServiceCaseReference("000MC001")
             .caseDocuments(ImmutableList.of(CCDCollectionElement.<CCDClaimDocument>builder()
@@ -165,7 +166,8 @@ class GeneralLetterCallbackHandlerTest {
             .put(DATA, EXISTING_DATA)
             .build();
         CCDCase updateCCDCase = ccdCase.toBuilder()
-            .contactChangeParty(CCDContactPartyType.CLAIMANT)
+            .generalLetterContent(GeneralLetterContent.builder()
+                .issueLetterContact(CLAIMANT).build())
             .caseDocuments(ImmutableList.<CCDCollectionElement<CCDClaimDocument>>builder()
                 .addAll(ccdCase.getCaseDocuments())
                 .add(CLAIM_DOCUMENT)
