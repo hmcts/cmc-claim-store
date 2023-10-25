@@ -28,7 +28,6 @@ import java.util.Map;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.GENERAL_LETTER;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType.CLAIMANT;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType.DEFENDANT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ISSUE_GENERAL_LETTER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService.DRAFT_LETTER_DOC;
@@ -108,13 +107,6 @@ public class GeneralLetterCallbackHandler extends CallbackHandler {
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackParams.getRequest().getCaseDetails());
         Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
-        List<String> userList = null;
-
-        if (ccdCase.getGeneralLetterContent().getIssueLetterContact().equals(CLAIMANT)) {
-            userList = getClaimant(claim);
-        } else if (ccdCase.getGeneralLetterContent().getIssueLetterContact().equals(DEFENDANT)) {
-            userList = getDefendant(claim);
-        }
         boolean errors = false;
         CCDCase updatedCcdCase = ccdCase;
         try {
@@ -124,7 +116,7 @@ public class GeneralLetterCallbackHandler extends CallbackHandler {
                 caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails()),
                 authorisation,
                 getDocumentName(ccdCase),
-                userList
+                ccdCase.getGeneralLetterContent().getIssueLetterContact().equals(CLAIMANT) ? getClaimant(claim) : getDefendant(claim)
             );
         } catch (Exception e) {
             logger.info("General Letter printing and case documents update failed", e);
