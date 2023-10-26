@@ -186,3 +186,34 @@ resource "azurerm_key_vault_secret" "appinsights_connection_string" {
   value        = data.azurerm_application_insights.cmc.connection_string
   key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
 }
+
+# FlexiServer v15
+module "judicial-booking-database-v15" {
+  source             = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
+
+  providers = {
+      azurerm.postgres_network = azurerm.postgres_network
+      }
+
+  admin_user_object_id = var.jenkins_AAD_objectId
+  business_area        = "cmc" //TO DO CHECK VALUE
+  name               = "cmc-db-v15"
+  product            = ${var.product}-db-v15
+  env                = var.env
+  component          = var.component-V15
+  common_tags        = var.common_tags
+  pgsql_version      = "15"
+
+
+  pgsql_databases = [
+      {
+        name    = var.database_name
+      }
+    ]
+}
+
+resource "azurerm_key_vault_secret" "cmc-db-password-v15" {
+  name          = "cmc-db-password-v15"
+  value         = module.database-v15.postgresql_password
+  key_vault_id  = data.azurerm_key_vault.cmc_key_vault.id
+}
