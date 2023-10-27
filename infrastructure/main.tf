@@ -187,6 +187,7 @@ resource "azurerm_key_vault_secret" "appinsights_connection_string" {
   key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
 }
 
+
 # FlexiServer v15
 module "judicial-booking-database-v15" {
   source             = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
@@ -196,7 +197,7 @@ module "judicial-booking-database-v15" {
       }
 
   admin_user_object_id = var.jenkins_AAD_objectId
-  business_area        = "cmc" //TO DO CHECK VALUE
+  business_area      = "cmc" //TO DO CHECK VALUE
   name               = "cmc-db-v15"
   product            = ${var.product}-db-v15
   env                = var.env
@@ -210,6 +211,17 @@ module "judicial-booking-database-v15" {
         name    = var.database_name
       }
     ]
+  pgsql_server_configuration = [
+      {
+        name  = "azure.extensions"
+        value = "plpgsql,pg_stat_statements,pg_buffercache"
+      }
+    ]
+
+    //Below attributes needs to be overridden for Perftest & Prod TO DO check if we need this
+    pgsql_sku            = var.pgsql_sku
+    pgsql_storage_mb     = var.pgsql_storage_mb
+
 }
 
 resource "azurerm_key_vault_secret" "cmc-db-password-v15" {
