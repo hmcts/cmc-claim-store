@@ -201,7 +201,7 @@ module "judicial-booking-database-v15" {
   name               = "cmc-db-v15"
   product            = ${var.product}-db-v15
   env                = var.env
-  component          = var.component-V15
+  component          = var.component
   common_tags        = var.common_tags
   pgsql_version      = "15"
 
@@ -219,13 +219,19 @@ module "judicial-booking-database-v15" {
     ]
 
     //Below attributes needs to be overridden for Perftest & Prod TO DO check if we need this
-    pgsql_sku            = var.pgsql_sku
-    pgsql_storage_mb     = var.pgsql_storage_mb
+    pgsql_sku            = var.database_sku_name
+    pgsql_storage_mb     = var.database_storage_mb
 
 }
 
 resource "azurerm_key_vault_secret" "cmc-db-password-v15" {
   name          = "cmc-db-password-v15"
   value         = module.database-v15.postgresql_password
+  key_vault_id  = data.azurerm_key_vault.cmc_key_vault.id
+}
+
+resource "azurerm_key_vault_secret" "cmc-db-username-v15" {
+  name          = "cmc-db-username-v15"
+  value         = module.database-v15.user_name
   key_vault_id  = data.azurerm_key_vault.cmc_key_vault.id
 }
