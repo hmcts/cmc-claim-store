@@ -28,6 +28,10 @@
         <cve>CVE-2020-5408</cve>
         <cve>CVE-2016-1000027</cve>
         <cve>CVE-2023-41080</cve>
+        <cve>CVE-2023-5072</cve>
+        <cve>CVE-2023-44487</cve>
+        <cve>CVE-2023-42795</cve>
+        <cve>CVE-2023-45648</cve>
     </suppress>
     <suppress until="2023-04-18">
         <cve>CVE-2023-20860</cve>
