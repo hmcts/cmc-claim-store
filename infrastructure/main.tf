@@ -190,25 +190,26 @@ resource "azurerm_key_vault_secret" "appinsights_connection_string" {
 
 # FlexiServer v15
 module "judicial-booking-database-v15" {
-  source             = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
+
 
   providers = {
       azurerm.postgres_network = azurerm.cft_vnet
     }
 
+  source               = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
   admin_user_object_id = var.jenkins_AAD_objectId
-  business_area      = "cft"
-  name               = "cmc-db-v15"
-  product            = "${var.product}-db-v15"
-  env                = var.env
-  component          = var.component
-  common_tags        = var.common_tags
-  pgsql_version      = "15"
+  business_area        = "CFT"
+  name                 = "cmc-db-v15"
+  product              = "${var.product}-db-v15"
+  env                  = var.env
+  component            = var.component
+  common_tags          = var.common_tags
+  pgsql_version        = "15"
 
 
   pgsql_databases = [
       {
-        name    = var.database_name
+        name    = var.database-name
       }
     ]
   pgsql_server_configuration = [
