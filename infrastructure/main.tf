@@ -196,7 +196,7 @@ resource "azurerm_key_vault_secret" "appinsights_connection_string" {
 
 
 # FlexiServer v15
-module "database-v15" {
+module "db-v15" {
 providers = {
     azurerm.postgres_network = azurerm.cft_vnet
   }
@@ -206,6 +206,7 @@ providers = {
   business_area        = "CFT"
   name                 = "cmc-db-v15"
   product              = "${var.product}-db-v15"
+  username             = "cmc"
   env                  = var.env
   component            = var.component
   common_tags          = var.common_tags
@@ -231,8 +232,8 @@ providers = {
 }
 
 resource "azurerm_key_vault_secret" "cmc-db-password-v15" {
-  name          = "cmc-db-password-v15"
-  value         = module.database-v15.postgresql_password
-  key_vault_id  = data.azurerm_key_vault.cmc_key_vault.id
+  name         = "cmc-db-password-v15"
+  value        = module.db-v15.password
+  key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
 }
 
