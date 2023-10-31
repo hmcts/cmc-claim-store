@@ -2,6 +2,13 @@ provider "azurerm" {
   features {}
 }
 
+provider "azurerm" {
+  features {}
+  skip_provider_registration = true
+  alias                      = "cft_vnet"
+  subscription_id            = var.aks_subscription_id
+}
+
 locals {
   vaultName = "${var.raw_product}-${var.env}"
 }
@@ -190,11 +197,9 @@ resource "azurerm_key_vault_secret" "appinsights_connection_string" {
 
 # FlexiServer v15
 module "judicial-booking-database-v15" {
-
-
-  providers = {
-      azurerm.postgres_network = azurerm.cft_vnet
-    }
+providers = {
+    azurerm.postgres_network = azurerm.cft_vnet
+  }
 
   source               = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
   admin_user_object_id = var.jenkins_AAD_objectId
