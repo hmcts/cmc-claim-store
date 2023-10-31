@@ -196,7 +196,7 @@ resource "azurerm_key_vault_secret" "appinsights_connection_string" {
 
 
 # FlexiServer v15
-module "judicial-booking-database-v15" {
+module "database-v15" {
 providers = {
     azurerm.postgres_network = azurerm.cft_vnet
   }
