@@ -23,7 +23,6 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
-import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -50,8 +49,6 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.PAPER_RESPONSE_FULL_DEFENCE;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.Params.BEARER_TOKEN;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.PaperResponseOCON9xFormCallbackHandler.OCON9X_SUBTYPE;
-import static uk.gov.hmcts.cmc.claimstore.services.pilotcourt.Pilot.JDDO;
-import static uk.gov.hmcts.cmc.claimstore.services.pilotcourt.Pilot.LA;
 
 @Service
 public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
@@ -68,7 +65,6 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
     private final CaseEventService caseEventService;
     private final LaunchDarklyClient launchDarklyClient;
     private final DefenceResponseNotificationService defenceResponseNotificationService;
-    private final PilotCourtService pilotCourtService;
 
     public PaperResponseFullDefenceCallbackHandler(CaseDetailsConverter caseDetailsConverter, Clock clock,
                                                    EventProducer eventProducer, CaseMapper caseMapper,
@@ -77,8 +73,7 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
                                                    CaseEventService caseEventService,
                                                    LaunchDarklyClient launchDarklyClient,
                                                    DefenceResponseNotificationService
-                                                       defenceResponseNotificationService,
-                                                   PilotCourtService pilotCourtService) {
+                                                       defenceResponseNotificationService) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.clock = clock;
         this.eventProducer = eventProducer;
@@ -88,7 +83,6 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
         this.caseEventService = caseEventService;
         this.launchDarklyClient = launchDarklyClient;
         this.defenceResponseNotificationService = defenceResponseNotificationService;
-        this.pilotCourtService = pilotCourtService;
     }
 
     protected Map<CallbackType, Callback> callbacks() {
@@ -149,7 +143,7 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
             caseDetailsConverter.calculateIntentionToProceedDeadline(LocalDateTime.now(clock));
 
         if (!StringUtils.isBlank(ccdCase.getPreferredDQCourt())) {
-            preferredDQPilotCourt = getpreferredDQPilotCourt(ccdCase.getPreferredDQCourt(), ccdCase.getSubmittedOn());
+            preferredDQPilotCourt = ccdCase.getPreferredDQCourt();
         }
 
         CCDCase updatedCcdCase = ccdCase.toBuilder()
@@ -368,12 +362,4 @@ public class PaperResponseFullDefenceCallbackHandler extends CallbackHandler {
         return ROLES;
     }
 
-    private String getpreferredDQPilotCourt(String courtName, LocalDateTime createdOn) {
-        if (pilotCourtService.isPilotCourt(courtName, LA, createdOn)
-            || pilotCourtService.isPilotCourt(courtName, JDDO, createdOn)) {
-            return courtName;
-        } else {
-            return null;
-        }
-    }
 }
