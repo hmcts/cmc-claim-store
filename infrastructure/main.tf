@@ -196,7 +196,7 @@ resource "azurerm_key_vault_secret" "appinsights_connection_string" {
 
 
 # FlexiServer v15
-module "db-v15" {
+module "database-v15" {
 providers = {
     azurerm.postgres_network = azurerm.cft_vnet
   }
@@ -230,32 +230,9 @@ providers = {
 
 }
 
-resource "azurerm_key_vault_secret" "POSTGRES-USER-V15" {
-  name         = "${var.component}-POSTGRES-USER-V15"
-  value        = module.db-v15.username
-  key_vault_id = data.azurerm_key_vault.local_key_vault.id
+resource "azurerm_key_vault_secret" "cmc-db-password-v15" {
+  name          = "cmc-db-password-v15"
+  value         = module.database-v15.postgresql_password
+  key_vault_id  = data.azurerm_key_vault.cmc_key_vault.id
 }
 
-resource "azurerm_key_vault_secret" "POSTGRES-PASS-V15" {
-  name         = "${var.component}-POSTGRES-PASS-V15"
-  value        = module.db-v15.password
-  key_vault_id = data.azurerm_key_vault.local_key_vault.id
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES_HOST-V15" {
-  name         = "${var.component}-POSTGRES-HOST-V15"
-  value        = module.db-v15.fqdn
-  key_vault_id = data.azurerm_key_vault.local_key_vault.id
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES_PORT-V15" {
-  name         = "${var.component}-POSTGRES-PORT-V15"
-  value        = "5432"
-  key_vault_id = data.azurerm_key_vault.local_key_vault.id
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES_DATABASE-V15" {
-  name         = "${var.component}-POSTGRES-DATABASE-V15"
-  value        = "cmc"
-  key_vault_id = data.azurerm_key_vault.local_key_vault.id
-}
