@@ -197,7 +197,7 @@ module "judicial-booking-database-v15" {
       }
 
   admin_user_object_id = var.jenkins_AAD_objectId
-  business_area      = "cmc" //TO DO CHECK VALUE
+  business_area      = "cft"
   name               = "cmc-db-v15"
   product            = "${var.product}-db-v15"
   env                = var.env
