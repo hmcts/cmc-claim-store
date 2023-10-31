@@ -209,7 +209,7 @@ providers = {
   env                  = var.env
   component            = var.component
   common_tags          = var.common_tags
-  pgsql_version        = "15"
+  pgsql_version        = "14"
 
 
   pgsql_databases = [
@@ -224,8 +224,8 @@ providers = {
       }
     ]
 
-    pgsql_sku            = var.database_sku_name
-    pgsql_storage_mb     = var.database_storage_mb
+    pgsql_sku            = var.pgsql_sku
+    pgsql_storage_mb     = var.pgsql_storage_mb
 
 }
 

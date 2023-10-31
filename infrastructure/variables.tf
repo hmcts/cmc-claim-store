@@ -66,3 +66,15 @@ variable "appinsights_location" {
   default     = "West Europe"
   description = "Location for Application Insights"
 }
+
+
+variable "pgsql_sku" {
+  description = "The PGSql flexible server instance sku"
+  default     = "GP_Standard_D2s_v3"
+}
+
+variable "pgsql_storage_mb" {
+  description = "Max storage allowed for the PGSql Flexibile instance"
+  type        = number
+  default     = 65536
+}
