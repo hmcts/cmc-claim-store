@@ -193,11 +193,11 @@ module "judicial-booking-database-v15" {
   source             = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
 
   providers = {
-      azurerm.postgres_network = azurerm.postgres_network
-      }
+      azurerm.postgres_network = azurerm.cft_vnet
+    }
 
   admin_user_object_id = var.jenkins_AAD_objectId
-  business_area      = "cmc" //TO DO CHECK VALUE
+  business_area      = "cmc"
   name               = "cmc-db-v15"
   product            = ${var.product}-db-v15
   env                = var.env
