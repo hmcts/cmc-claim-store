@@ -206,7 +206,6 @@ providers = {
   business_area        = "CFT"
   name                 = "cmc-db-v15"
   product              = "${var.product}-db-v15"
-  username             = "cmc"
   env                  = var.env
   component            = var.component
   common_tags          = var.common_tags
@@ -225,7 +224,6 @@ providers = {
       }
     ]
 
-    //Below attributes needs to be overridden for Perftest & Prod TO DO check if we need this
     pgsql_sku            = var.database_sku_name
     pgsql_storage_mb     = var.database_storage_mb
 
@@ -237,3 +235,8 @@ resource "azurerm_key_vault_secret" "cmc-db-password-v15" {
   key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
 }
 
+resource "azurerm_key_vault_secret" "cmc-db-username-v15" {
+  name         = "cmc-db-username-v15"
+  value        = module.db-v15.username
+  key_vault_id = data.azurerm_key_vault.local_key_vault.id
+}
