@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
@@ -18,8 +17,6 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_LEGAL_ADVISOR_
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFERRED_TO_MEDIATION;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.WAITING_TRANSFER;
-import static uk.gov.hmcts.cmc.claimstore.services.pilotcourt.Pilot.JDDO;
-import static uk.gov.hmcts.cmc.claimstore.services.pilotcourt.Pilot.LA;
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isOptedForMediation;
 import static uk.gov.hmcts.cmc.claimstore.utils.TheirDetailsHelper.isDefendantBusiness;
 import static uk.gov.hmcts.cmc.claimstore.utils.TheirDetailsHelper.isDefendantIndividual;
@@ -36,10 +33,8 @@ import static uk.gov.hmcts.cmc.domain.utils.FeaturesUtils.isOnlineDQ;
 
 @Service
 public class DirectionsQuestionnaireService {
-    private final PilotCourtService pilotCourtService;
 
-    public DirectionsQuestionnaireService(PilotCourtService pilotCourtService) {
-        this.pilotCourtService = pilotCourtService;
+    public DirectionsQuestionnaireService() {
     }
 
     public CaseEvent prepareCaseEvent(ResponseRejection responseRejection, Claim claim) {
@@ -51,13 +46,11 @@ public class DirectionsQuestionnaireService {
             return DIRECTIONS_QUESTIONNAIRE_DEADLINE;
         }
 
-        String preferredCourt = getPreferredCourt(claim);
-
-        if (isLegalAdvisorPilot(claim) && pilotCourtService.isPilotCourt(preferredCourt, LA, claim.getCreatedAt())) {
+        if (isLegalAdvisorPilot(claim)) {
             return ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS;
         }
 
-        if (isJudgePilot(claim) && pilotCourtService.isPilotCourt(preferredCourt, JDDO, claim.getCreatedAt())) {
+        if (isJudgePilot(claim)) {
             return ASSIGNING_FOR_JUDGE_DIRECTIONS;
         }
 
@@ -66,13 +59,11 @@ public class DirectionsQuestionnaireService {
 
     public String getDirectionsCaseState(Claim claim) {
 
-        String preferredCourt = getPreferredCourt(claim);
-
-        if (isLegalAdvisorPilot(claim) && pilotCourtService.isPilotCourt(preferredCourt, LA, claim.getCreatedAt())) {
+        if (isLegalAdvisorPilot(claim)) {
             return READY_FOR_LEGAL_ADVISOR_DIRECTIONS.getValue();
         }
 
-        if (isJudgePilot(claim) && pilotCourtService.isPilotCourt(preferredCourt, JDDO, claim.getCreatedAt())) {
+        if (isJudgePilot(claim)) {
             return READY_FOR_JUDGE_DIRECTIONS.getValue();
         }
 
