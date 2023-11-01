@@ -198,7 +198,7 @@ resource "azurerm_key_vault_secret" "appinsights_connection_string" {
 # FlexiServer v15
 module "db-v15" {
   providers = {
-    azurerm.postgres_network = azurerm.postgres_network
+    azurerm.postgres_network = azurerm.cft_vnet
   }
 
   source               = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
