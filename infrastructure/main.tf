@@ -197,8 +197,8 @@ resource "azurerm_key_vault_secret" "appinsights_connection_string" {
 
 # FlexiServer v15
 module "db-v15" {
-providers = {
-    azurerm.postgres_network = azurerm.cft_vnet
+  providers = {
+    azurerm.postgres_network = azurerm.postgres_network
   }
 
   source               = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
@@ -208,8 +208,8 @@ providers = {
   product              = "${var.product}-db-v15"
   env                  = var.env
   component            = var.component
-  common_tags          = var.common_tags
-  pgsql_version        = "15"
+  common_tags          = merge(var.common_tags, tomap({ "lastUpdated" = timestamp() }))
+  pgsql_version        = 15
 
 
   pgsql_databases = [
