@@ -208,7 +208,7 @@ module "db-v15" {
   product              = "${var.product}-db-v15"
   env                  = var.env
   component            = var.component
-  common_tags          = merge(var.common_tags, tomap({ "lastUpdated" = timestamp() }))
+  common_tags          = var.common_tags
   pgsql_version        = 15
 
 

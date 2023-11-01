@@ -42,8 +42,6 @@ java:
     REFORM_SERVICE_NAME: claim-store
     REFORM_ENVIRONMENT: preview
     CLAIM_STORE_TEST_SUPPORT_ENABLED: true
-#    CMC_DB_USERNAME: 'cmc@cmc-db-v15-{{ .Values.global.environment }}'
-#    CMC_DB_HOST: cmc-db-v15-{{ .Values.global.environment }}.postgres.database.azure.com
     CMC_DB_CONNECTION_OPTIONS: '?sslmode=require'
     CMC_DB_NAME: cmc
     CMC_DB_PORT: 5432
