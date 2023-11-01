@@ -241,12 +241,6 @@ resource "azurerm_key_vault_secret" "cmc-db-username-v15" {
   key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
 }
 
-resource "azurerm_key_vault_secret" "cmc-db-username-v15" {
-  name         = "cmc-db-username-v15"
-  value        = module.db-v15.username
-  key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
-}
-
 resource "azurerm_key_vault_secret" "cmc-db-host-v15" {
   name         = "cmc-db-host-v15"
   value        = module.db-v15.fqdn
