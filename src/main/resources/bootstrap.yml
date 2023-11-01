@@ -7,6 +7,7 @@ spring:
         claim-store-db-password: CLAIM_STORE_DB_PASSWORD
 #        cmc-db-password-v11: CMC_DB_PASSWORD
         cmc-db-password-v15: CMC_DB_PASSWORD
+        cmc-db-host-v15: CMC_DB_HOST
         cmc-db-username-v15: CMC_DB_USERNAME
         notify-api-key: GOV_NOTIFY_API_KEY
         citizen-oauth-client-secret: oauth2.client.secret
