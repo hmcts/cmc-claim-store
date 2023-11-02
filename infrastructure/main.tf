@@ -2,6 +2,13 @@ provider "azurerm" {
   features {}
 }
 
+provider "azurerm" {
+  features {}
+  skip_provider_registration = true
+  alias                      = "cft_vnet"
+  subscription_id            = var.aks_subscription_id
+}
+
 locals {
   vaultName = "${var.raw_product}-${var.env}"
 }
@@ -184,5 +191,58 @@ data "azurerm_application_insights" "cmc" {
 resource "azurerm_key_vault_secret" "appinsights_connection_string" {
   name         = "appinsights-connection-string"
   value        = data.azurerm_application_insights.cmc.connection_string
+  key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
+}
+
+
+# FlexiServer v15
+module "db-v15" {
+  providers = {
+    azurerm.postgres_network = azurerm.cft_vnet
+  }
+
+  source               = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
+  admin_user_object_id = var.jenkins_AAD_objectId
+  business_area        = "CFT"
+  name                 = "cmc-db-v15"
+  product              = "${var.product}-db-v15"
+  env                  = var.env
+  component            = var.component
+  common_tags          = var.common_tags
+  pgsql_version        = 15
+
+
+  pgsql_databases = [
+      {
+        name    = var.database-name
+      }
+    ]
+  pgsql_server_configuration = [
+      {
+        name  = "azure.extensions"
+        value = "plpgsql,pg_stat_statements,pg_buffercache"
+      }
+    ]
+
+    pgsql_sku            = var.pgsql_sku
+    pgsql_storage_mb     = var.pgsql_storage_mb
+
+}
+
+resource "azurerm_key_vault_secret" "cmc-db-password-v15" {
+  name         = "cmc-db-password-v15"
+  value        = module.db-v15.password
+  key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
+}
+
+resource "azurerm_key_vault_secret" "cmc-db-username-v15" {
+  name         = "cmc-db-username-v15"
+  value        = module.db-v15.username
+  key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
+}
+
+resource "azurerm_key_vault_secret" "cmc-db-host-v15" {
+  name         = "cmc-db-host-v15"
+  value        = module.db-v15.fqdn
   key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
 }
