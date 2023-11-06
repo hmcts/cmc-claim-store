@@ -5,5 +5,5 @@ public enum CCDPrintRequestType {
     LEGAL_ORDER,
     GENERAL_LETTER,
     BULK_PRINT_TRANSFER,
-    PAPER_DEFENCE_PACK_TYPE
+    PAPER_DEFENCE
 }
