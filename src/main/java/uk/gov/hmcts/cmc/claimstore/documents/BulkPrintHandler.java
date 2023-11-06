@@ -182,7 +182,7 @@ public class BulkPrintHandler {
                     oconForm,
                     buildOconFormFileBaseName(claim.getReferenceNumber())))
                 .build(),
-            BulkPrintRequestType.PAPER_DEFENCE_TYPE,
+            BulkPrintRequestType.PAPER_DEFENCE_PACK_TYPE,
             authorisation,
             CaseDataExtractorUtils.getDefendant(claim));
     }
@@ -197,7 +197,7 @@ public class BulkPrintHandler {
         documents = getPrintables(claim, coverLetter, oconForm, ocon9Form, disableN9Form);
         return bulkPrintService.printPdf(claim,
             documents,
-            BulkPrintRequestType.PAPER_DEFENCE_TYPE,
+            BulkPrintRequestType.PAPER_DEFENCE_PACK_TYPE,
             authorisation,
             CaseDataExtractorUtils.getDefendant(claim));
     }

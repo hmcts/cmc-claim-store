@@ -33,7 +33,7 @@ import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.CLAIMAN
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.DIRECTION_ORDER_LETTER_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.GENERAL_LETTER_TYPE;
-import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.PAPER_DEFENCE_TYPE;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintRequestType.PAPER_DEFENCE_PACK_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterClaimantMediationRefusedFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildOcon9FormFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildOconFormFileBaseName;
@@ -209,7 +209,7 @@ public class BulkPrintHandlerTest {
             AUTHORISATION,
             USER_LIST);
     }
-    
+
     @Test
     public void shouldNotifyForBulkPrintTransferEventWhenLetterTypeNotBulkPrintTransferType() {
         //given
@@ -276,7 +276,7 @@ public class BulkPrintHandlerTest {
                     letter,
                     buildOconFormFileBaseName(claim.getReferenceNumber())))
                 .build(),
-            PAPER_DEFENCE_TYPE,
+            PAPER_DEFENCE_PACK_TYPE,
             AUTHORISATION,
             USER_LIST
         );
@@ -330,7 +330,7 @@ public class BulkPrintHandlerTest {
                     letter,
                     buildOconFormFileBaseName(claim.getReferenceNumber())))
                 .build(),
-            PAPER_DEFENCE_TYPE,
+            PAPER_DEFENCE_PACK_TYPE,
             AUTHORISATION,
             USER_LIST
         );
@@ -360,7 +360,7 @@ public class BulkPrintHandlerTest {
                     letter,
                     buildOconFormFileBaseName(claim.getReferenceNumber())))
                 .build(),
-            PAPER_DEFENCE_TYPE,
+            PAPER_DEFENCE_PACK_TYPE,
             AUTHORISATION,
             USER_LIST
         );
