@@ -10,8 +10,6 @@ management:
     web:
       base-path: "/"
   endpoint:
-    env:
-      enabled: true
     health:
       show-details: ALWAYS
 async:
