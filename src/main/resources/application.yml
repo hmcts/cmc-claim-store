@@ -4,9 +4,6 @@ server:
 
 management:
   endpoints:
-    web:
-      exposure:
-        include: env
     jmx:
       exposure:
         include: 'health'
