@@ -33,6 +33,8 @@ public class ResponseRejection extends ClaimantResponse {
     @Size(max = 99000)
     private final String reason;
 
+    private ClaimantResponseType claimantResponseType;
+
     @Valid
     private final DirectionsQuestionnaire directionsQuestionnaire;
 
@@ -47,15 +49,17 @@ public class ResponseRejection extends ClaimantResponse {
         String mediationContactPerson,
         String noMediationReason,
         String reason,
-        DirectionsQuestionnaire directionsQuestionnaire
+        DirectionsQuestionnaire directionsQuestionnaire,
+        ClaimantResponseType claimantResponseType
     ) {
-        super(ClaimantResponseType.REJECTION, amountPaid, paymentReceived, settleForAmount);
+        super(ClaimantResponseType.REJECTION, amountPaid, freeMediation, paymentReceived, settleForAmount);
         this.freeMediation = freeMediation;
         this.mediationPhoneNumber = mediationPhoneNumber;
         this.mediationContactPerson = mediationContactPerson;
         this.noMediationReason = noMediationReason;
         this.reason = reason;
         this.directionsQuestionnaire = directionsQuestionnaire;
+        this.claimantResponseType = claimantResponseType;
     }
 
     public Optional<YesNoOption> getFreeMediation() {

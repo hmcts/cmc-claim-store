@@ -26,7 +26,8 @@ public enum ClaimDocumentType {
     PAPER_RESPONSE_COUNTER_CLAIM,
     GENERAL_LETTER,
     OTHER,
-    CORRESPONDENCE;
+    CORRESPONDENCE,
+    CLAIMANT_MEDIATION_REFUSED;
 
     private final List<String> values;
 

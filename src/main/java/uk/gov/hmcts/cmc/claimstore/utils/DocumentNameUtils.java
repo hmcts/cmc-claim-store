@@ -216,4 +216,10 @@ public class DocumentNameUtils {
             return format("%s-breathing-space-lifted", caseRef);
         }
     }
+
+    public static String buildDefendantLetterClaimantMediationRefusedFileBaseName(String number) {
+        requireNonBlank(number);
+
+        return format("%s-defendant-letter-claimant-mediation-refused", number);
+    }
 }
