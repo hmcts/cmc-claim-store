@@ -15,9 +15,9 @@ public enum BulkPrintRequestType {
     BULK_PRINT_TRANSFER_TYPE("bulk-print-transfer-pack",
         "Bulk print transfer to court {} created for letter type {} claim reference {}",
         PrintRequestType.BULK_PRINT_TRANSFER),
-    PAPER_DEFENCE_PACK_TYPE("paper-defence-pack",
+    PAPER_DEFENCE_TYPE("paper-defence-pack",
         "paper-defence-pack letter {} created for letter type {} claim reference {}",
-        PrintRequestType.PAPER_DEFENCE),
+        PrintRequestType.PAPER_DEFENCE_TYPE),
     CLAIMANT_MEDIATION_REFUSED_TYPE("mediation-refused-pack",
         "mediation-refused-pack letter {} created for letter type {} claim reference {}",
         PrintRequestType.CLAIMANT_MEDIATION_REFUSED);
