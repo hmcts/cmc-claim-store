@@ -205,7 +205,7 @@ module "db-v15" {
   admin_user_object_id = var.jenkins_AAD_objectId
   business_area        = "CFT"
   name                 = "cmc-db-v15"
-  product              = "var.product"
+  product              = var.product
   env                  = var.env
   component            = var.component
   common_tags          = var.common_tags
