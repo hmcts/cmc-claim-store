@@ -39,7 +39,7 @@ public class TransferCaseLetterSender {
         CCDDocument ccdDocument,
         Claim claim
     ) {
-        return generalLetterService.printLetter(authorisation, ccdDocument, claim);
+        return bulkPrintHandler.printDefendantNoticeOfTransferLetter(claim, ccdDocument, authorisation);
     }
 
     public BulkPrintDetails sendAllCaseDocumentsToCourt(
