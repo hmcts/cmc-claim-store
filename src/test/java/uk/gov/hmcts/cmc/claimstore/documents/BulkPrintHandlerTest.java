@@ -221,7 +221,7 @@ public class BulkPrintHandlerTest {
     @Test
     public void shouldNotifyForBulkPrintTransferEventWhenLetterTypeNotBulkPrintTransferType() {
         //given
-        BulkPrintHandler bulkPrintHandler = new BulkPrintHandler(bulkPrintService, launchDarklyClient);
+        BulkPrintHandler bulkPrintHandler = new BulkPrintHandler(bulkPrintService, launchDarklyClient, printableDocumentService);
         Claim claim = mock(Claim.class);
         when(claim.getReferenceNumber()).thenReturn("AAA");
         when(claim.getClaimData())
@@ -293,7 +293,7 @@ public class BulkPrintHandlerTest {
     @Test
     public void shouldNotNotifyPaperDefenceLetterWhenGeneralLetterType() {
         //given
-        BulkPrintHandler bulkPrintHandler = new BulkPrintHandler(bulkPrintService, launchDarklyClient);
+        BulkPrintHandler bulkPrintHandler = new BulkPrintHandler(bulkPrintService, launchDarklyClient, printableDocumentService);
         Claim claim = SampleClaim.getDefault();
         Document letter = new Document("letter", new HashMap<>());
 
