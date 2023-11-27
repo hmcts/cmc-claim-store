@@ -18,6 +18,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -45,6 +46,21 @@ class TransferCaseLetterSenderTest {
     private Claim claim;
 
     @Test
+    void shouldNotSendNoticeOfTransferForDefendantWithGeneralLetter() {
+
+        CCDDocument noticeForDefendant = mock(CCDDocument.class);
+
+        transferCaseLetterSender.sendNoticeOfTransferForDefendant(AUTHORISATION,
+            noticeForDefendant, claim);
+
+        verify(generalLetterService, never()).printLetter(
+            AUTHORISATION,
+            noticeForDefendant,
+            claim
+        );
+    }
+
+    @Test
     void shouldSendNoticeOfTransferForDefendant() {
 
         CCDDocument noticeForDefendant = mock(CCDDocument.class);
@@ -52,10 +68,10 @@ class TransferCaseLetterSenderTest {
         transferCaseLetterSender.sendNoticeOfTransferForDefendant(AUTHORISATION,
             noticeForDefendant, claim);
 
-        verify(generalLetterService).printLetter(
-            AUTHORISATION,
+        verify(bulkPrintHandler).printDefendantNoticeOfTransferLetter(
+            claim,
             noticeForDefendant,
-            claim
+            AUTHORISATION
         );
     }
 
