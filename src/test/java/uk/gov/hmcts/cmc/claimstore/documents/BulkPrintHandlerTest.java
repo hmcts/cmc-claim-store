@@ -120,7 +120,7 @@ public class BulkPrintHandlerTest {
         Document legalOrder = new Document("legalOrder", new HashMap<>());
 
         //when
-        bulkPrintHandler.printDirectionOrder(claim, coverSheet, legalOrder, AUTHORISATION);
+        bulkPrintHandler.printDirectionOrder(claim, coverSheet, legalOrder, AUTHORISATION, USER_LIST);
 
         //verify
         verify(bulkPrintService).printPdf(
@@ -146,7 +146,7 @@ public class BulkPrintHandlerTest {
         Document generalLetter = new Document("letter", new HashMap<>());
 
         //when
-        bulkPrintHandler.printGeneralLetter(claim, generalLetter, AUTHORISATION);
+        bulkPrintHandler.printGeneralLetter(claim, generalLetter, AUTHORISATION, USER_LIST);
 
         //verify
         verify(bulkPrintService).printPdf(

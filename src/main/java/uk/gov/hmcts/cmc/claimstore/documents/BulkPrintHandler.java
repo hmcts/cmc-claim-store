@@ -104,7 +104,8 @@ public class BulkPrintHandler {
     }
 
     public BulkPrintDetails printDirectionOrder(Claim claim, Document coverSheet,
-                                                Document directionsOrder, String authorisation) {
+                                                Document directionsOrder, String authorisation,
+                                                List<String> userList) {
         requireNonNull(claim);
         requireNonNull(coverSheet);
         requireNonNull(directionsOrder);
@@ -119,11 +120,11 @@ public class BulkPrintHandler {
                     directionsOrder,
                     buildDirectionsOrderFileBaseName(claim.getReferenceNumber()))
             ),
-            BulkPrintRequestType.DIRECTION_ORDER_LETTER_TYPE, authorisation, CaseDataExtractorUtils.getDefendant(claim)
+            BulkPrintRequestType.DIRECTION_ORDER_LETTER_TYPE, authorisation, userList
         );
     }
 
-    public BulkPrintDetails printGeneralLetter(Claim claim, Document generalLetterDocument, String authorisation) {
+    public BulkPrintDetails printGeneralLetter(Claim claim, Document generalLetterDocument, String authorisation, List<String> personList) {
         requireNonNull(claim);
         requireNonNull(generalLetterDocument);
         requireNonNull(authorisation);
@@ -138,7 +139,7 @@ public class BulkPrintHandler {
             ),
             BulkPrintRequestType.GENERAL_LETTER_TYPE,
             authorisation,
-            CaseDataExtractorUtils.getDefendant(claim)
+            personList
         );
     }
 

@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.docassembly.exception.DocumentGenerationFailedException;
@@ -26,9 +27,12 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.GENERAL_LETTER;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType.CLAIMANT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ISSUE_GENERAL_LETTER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService.DRAFT_LETTER_DOC;
+import static uk.gov.hmcts.cmc.claimstore.utils.CaseDataExtractorUtils.getClaimant;
+import static uk.gov.hmcts.cmc.claimstore.utils.CaseDataExtractorUtils.getDefendant;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildLetterFileBaseName;
 
 @Service
@@ -101,15 +105,18 @@ public class GeneralLetterCallbackHandler extends CallbackHandler {
 
     public CallbackResponse printAndUpdateCaseDocuments(CallbackParams callbackParams) {
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackParams.getRequest().getCaseDetails());
+        Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
         boolean errors = false;
         CCDCase updatedCcdCase = ccdCase;
         try {
+
             updatedCcdCase = generalLetterService.publishLetter(
                 ccdCase,
                 caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails()),
                 authorisation,
-                getDocumentName(ccdCase)
+                getDocumentName(ccdCase),
+                ccdCase.getGeneralLetterContent().getIssueLetterContact().equals(CLAIMANT) ? getClaimant(claim) : getDefendant(claim)
             );
         } catch (Exception e) {
             logger.info("General Letter printing and case documents update failed", e);
