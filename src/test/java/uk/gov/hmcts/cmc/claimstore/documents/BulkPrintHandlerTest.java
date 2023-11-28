@@ -293,11 +293,7 @@ public class BulkPrintHandlerTest {
     @Test
     public void shouldNotNotifyPaperDefenceLetterWhenGeneralLetterType() {
         //given
-<<<<<<< HEAD
-        BulkPrintHandler bulkPrintHandler = new BulkPrintHandler(bulkPrintService, launchDarklyClient);
-=======
         BulkPrintHandler bulkPrintHandler = new BulkPrintHandler(bulkPrintService, launchDarklyClient, printableDocumentService);
->>>>>>> origin/feat/CIV-11627_1
         Claim claim = SampleClaim.getDefault();
         Document letter = new Document("letter", new HashMap<>());
 

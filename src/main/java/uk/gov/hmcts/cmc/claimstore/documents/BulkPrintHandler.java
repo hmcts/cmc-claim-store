@@ -152,7 +152,7 @@ public class BulkPrintHandler {
         );
     }
 
-    public BulkPrintDetails printGeneralLetter(Claim claim, Document generalLetterDocument, String authorisation) {
+    public BulkPrintDetails printGeneralLetter(Claim claim, Document generalLetterDocument, String authorisation, List<String> personList) {
         requireNonNull(claim);
         requireNonNull(generalLetterDocument);
         requireNonNull(authorisation);
