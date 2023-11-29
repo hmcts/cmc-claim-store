@@ -42,7 +42,7 @@ java:
     enabled: true
     releaseNameOverride: ${SERVICE_NAME}-postgresql
     image:
-      tag: '11.6.0'
+      tag: '15.5.0'
       registry: hmctspublic.azurecr.io
       repository: imported/bitnami/postgresql
     primary:
