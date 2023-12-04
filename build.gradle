@@ -192,7 +192,7 @@ allprojects {
         entry 'log4j-to-slf4j'
       }
       dependencySet(group: 'org.bouncycastle', version: '1.77') {
-        entry 'bcprov-jdk18on'
+        entry 'bcprov-jdk15on'
         entry 'bouncy-castle-crypto-package'
         entry 'bouncy_castle_for_java'
         entry 'legion-of-the-bouncy-castle'
