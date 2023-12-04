@@ -58,8 +58,8 @@ java:
           alias: SENDGRID_API_KEY
         - name: staff-email-legal-rep
           alias: staff-notifications.legalRecipient
-       - name: appinsights-connection-string
-       alias: appinsights-connection-string
+        - name: appinsights-connection-string
+          alias: appinsights-connection-string
   environment:
     REFORM_TEAM: cmc
     REFORM_SERVICE_NAME: claim-store
