@@ -12,6 +12,8 @@ java:
     cmc:
       resourceGroup: cmc
       secrets:
+        - name: claim-store-db-password
+          alias: CLAIM_STORE_DB_PASSWORD
         - name: AppInsightsInstrumentationKey
           alias: azure.application-insights.instrumentation-key
         - name: cmc-db-password-v11
@@ -28,7 +30,7 @@ java:
           alias: IDAM_CASEWORKER_SYSTEM_USERNAME
         - name: system-update-password
           alias: IDAM_CASEWORKER_SYSTEM_PASSWORD
-        - name: notifications-govNotifyApiKey
+        - name: notify-api-key
           alias: GOV_NOTIFY_API_KEY
         - name: milo-recipient
           alias: MILO_CSV_RECIPIENT
@@ -56,13 +58,13 @@ java:
           alias: SENDGRID_API_KEY
         - name: staff-email-legal-rep
           alias: staff-notifications.legalRecipient
+       - name: appinsights-connection-string
+       alias: appinsights-connection-string
   environment:
     REFORM_TEAM: cmc
     REFORM_SERVICE_NAME: claim-store
     REFORM_ENVIRONMENT: preview
     CLAIM_STORE_TEST_SUPPORT_ENABLED: true
-    CMC_DB_USERNAME: 'cmc@cmc-db-v11-{{ .Values.global.environment }}'
-    CMC_DB_HOST: cmc-db-v11-{{ .Values.global.environment }}.postgres.database.azure.com
     CMC_DB_CONNECTION_OPTIONS: '?sslmode=require'
     CMC_DB_NAME: cmc
     CMC_DB_PORT: 5432
