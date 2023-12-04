@@ -19,17 +19,17 @@ java:
         - name: cmc-db-password-v11
           alias: CMC_DB_PASSWORD
         - name: citizen-oauth-client-secret
-          alias: OAUTH2_CLIENT_SECRET
+          alias: oauth2.client.secret
         - name: claim-store-s2s-secret
           alias: idam.s2s-auth.totp_secret
         - name: anonymous-caseworker-username
-          alias: IDAM_CASEWORKER_ANONYMOUS_USERNAME
+          alias: idam.caseworker.anonymous.username
         - name: anonymous-caseworker-password
-          alias: IDAM_CASEWORKER_ANONYMOUS_PASSWORD
+          alias: idam.caseworker.anonymous.password
         - name: system-update-username
-          alias: IDAM_CASEWORKER_SYSTEM_USERNAME
+          alias: idam.caseworker.system.username
         - name: system-update-password
-          alias: IDAM_CASEWORKER_SYSTEM_PASSWORD
+          alias: idam.caseworker.system.password
         - name: notify-api-key
           alias: GOV_NOTIFY_API_KEY
         - name: milo-recipient
@@ -39,19 +39,19 @@ java:
         - name: live-support-email
           alias: live-support.recipient
         - name: rpa-email-sealed-claim
-          alias: RPA_NOTIFICATIONS_SEALEDCLAIMRECIPIENT
+          alias: rpa.notifications.sealedClaimRecipient
         - name: rpa-email-breathing-space
-          alias: RPA_NOTIFICATIONS_BREATHINGSPACERECIPIENT
+          alias: rpa.notifications.breathingSpaceRecipient
         - name: rpa-email-legal-sealed-claim
-          alias: RPA_NOTIFICATIONS_LEGALSEALEDCLAIMRECIPIENT
+          alias: rpa.notifications.legalSealedClaimRecipient
         - name: rpa-email-more-time-requested
-          alias: RPA_NOTIFICATIONS_MORETIMEREQUESTEDRECIPIENT
+          alias: rpa.notifications.moreTimeRequestedRecipient
         - name: rpa-email-response
-          alias: RPA_NOTIFICATIONS_RESPONSERECIPIENT
+          alias: rpa.notifications.responseRecipient
         - name: rpa-email-ccj
-          alias: RPA_NOTIFICATIONS_COUNTYCOURTJUDGEMENTRECIPIENT
+          alias: rpa.notifications.countyCourtJudgementRecipient
         - name: rpa-email-paid-in-full
-          alias: RPA_NOTIFICATIONS_PAIDINFULLRECIPIENT
+          alias: rpa.notifications.paidInFullRecipient
         - name: launchDarkly-sdk-key
           alias: LAUNCH_DARKLY_SDK_KEY
         - name: sendgrid-api-key
