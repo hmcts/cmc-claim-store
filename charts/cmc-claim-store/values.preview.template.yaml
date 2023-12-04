@@ -24,7 +24,7 @@ java:
           alias: IDAM_CASEWORKER_SYSTEM_USERNAME
         - name: system-update-password
           alias: IDAM_CASEWORKER_SYSTEM_PASSWORD
-        - name: notify-api-key
+        - name: notifications-govNotifyApiKey
           alias: GOV_NOTIFY_API_KEY
         - name: milo-recipient
           alias: MILO_CSV_RECIPIENT
