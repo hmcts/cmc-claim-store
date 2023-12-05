@@ -39,5 +39,6 @@
     </suppress>
     <suppress until="2024-04-18">
         <cve>CVE-2023-20860</cve>
+        <cve>CVE-2023-33202</cve>
     </suppress>
 </suppressions>
