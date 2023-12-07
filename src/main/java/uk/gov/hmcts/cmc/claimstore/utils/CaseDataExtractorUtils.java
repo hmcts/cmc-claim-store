@@ -20,4 +20,14 @@ public class CaseDataExtractorUtils {
                 .getName()
             ));
     }
+
+    public static List<String> getClaimant(Claim claim) {
+        return List
+            .of(requireNonNull(claim
+                .getClaimData()
+                .getClaimant()
+                .getName()
+            ));
+    }
+
 }

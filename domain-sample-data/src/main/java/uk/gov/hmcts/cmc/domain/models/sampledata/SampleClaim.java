@@ -70,6 +70,7 @@ public final class SampleClaim {
     public static final String USER_ID = "1";
     public static final String LETTER_HOLDER_ID = "2";
     public static final String DEFENDANT_ID = "4";
+    public static final String DEFENDANT_NAME = "Dr. John Smith";
     public static final Long CLAIM_ID = 3L;
     public static final String REFERENCE_NUMBER = "000MC001";
     public static final UUID RAND_UUID = UUID.randomUUID();
@@ -353,6 +354,19 @@ public final class SampleClaim {
             .withResponse(SampleResponse.FullAdmission.builder()
                 .buildWithFreeMediation()
             )
+            .withRespondedAt(LocalDateTime.now())
+            .withDirectionsQuestionnaireDeadline(LocalDate.now())
+            .build();
+    }
+
+    public static Claim getClaimWithFullAdmissionWithTheirDetails() {
+        return builder()
+            .withClaimData(SampleClaimData.builder()
+                .withDefendant(SampleTheirDetails.builder()
+                    .withName(DEFENDANT_NAME)
+                    .withRepresentative(SampleRepresentative.builder().build())
+                    .individualDetails())
+                .build())
             .withRespondedAt(LocalDateTime.now())
             .withDirectionsQuestionnaireDeadline(LocalDate.now())
             .build();
