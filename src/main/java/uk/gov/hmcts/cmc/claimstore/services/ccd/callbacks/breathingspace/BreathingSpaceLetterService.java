@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.sendletter.api.Document;
 import java.util.List;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ADD_BULK_PRINT_DETAILS;
+import static uk.gov.hmcts.cmc.claimstore.utils.CaseDataExtractorUtils.getDefendant;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.GENERAL_LETTER;
 
@@ -120,10 +121,11 @@ public class BreathingSpaceLetterService {
         return claimDocumentCollection;
     }
 
-    private CCDCase publishLetterFromCCD(CCDCase ccdCase, Claim claim, String authorisation, CCDDocument letterDoc) {
+    private CCDCase publishLetterFromCCD(CCDCase ccdCase, Claim claim, String authorisation, CCDDocument letterDoc, List<String> userList) {
         return generalLetterService.publishLetter(ccdCase.toBuilder().draftLetterDoc(letterDoc).build(),
             claim, authorisation,
-            letterDoc.getDocumentFileName());
+            letterDoc.getDocumentFileName(),
+            userList);
     }
 
     public CCDCase sendLetterToDefendantFomCCD(CCDCase ccdCase, Claim claim, String authorisation,
@@ -132,6 +134,6 @@ public class BreathingSpaceLetterService {
         CCDDocument letterDoc = CCDDocument.builder().documentUrl(letter)
             .documentFileName(fileName)
             .build();
-        return publishLetterFromCCD(ccdCase, claim, authorisation, letterDoc);
+        return publishLetterFromCCD(ccdCase, claim, authorisation, letterDoc, getDefendant(claim));
     }
 }
