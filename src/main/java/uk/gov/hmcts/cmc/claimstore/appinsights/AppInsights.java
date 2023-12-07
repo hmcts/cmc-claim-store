@@ -33,6 +33,7 @@ public class AppInsights {
 
     public void trackEvent(AppInsightsEvent appInsightsEvent, String referenceType, String value) {
         trackEvent(appInsightsEvent, singletonMap(referenceType, value));
+
     }
 
     public void trackEvent(AppInsightsEvent appInsightsEvent, Map<String, String> properties) {
