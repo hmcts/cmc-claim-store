@@ -35,11 +35,13 @@ import java.net.URI;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 import javax.validation.constraints.NotNull;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -59,6 +61,7 @@ class GeneralLetterServiceTest {
     private static final String DOC_NAME = "doc-name";
     private static final String CASE_TYPE_ID = "MoneyClaimCase";
     private static final String JURISDICTION_ID = "CMC";
+    private static final List<String> USER_LIST = List.of("Dr John Smith");
     private static final CCDDocument DRAFT_LETTER_DOC = CCDDocument.builder()
         .documentFileName(DOC_NAME)
         .documentBinaryUrl(DOC_URL_BINARY)
@@ -187,7 +190,7 @@ class GeneralLetterServiceTest {
             .build();
 
         when(bulkPrintHandler
-            .printGeneralLetter(eq(claim), any(uk.gov.hmcts.reform.sendletter.api.Document.class), anyString()))
+            .printGeneralLetter(eq(claim), any(uk.gov.hmcts.reform.sendletter.api.Document.class), anyString(), anyList()))
             .thenReturn(bulkPrintDetails);
         CCDCase expected = ccdCase.toBuilder()
             .caseDocuments(ImmutableList.<CCDCollectionElement<CCDClaimDocument>>builder()
@@ -211,7 +214,7 @@ class GeneralLetterServiceTest {
             .thenReturn(getLinks());
 
         CCDCase updatedCase = generalLetterService
-            .publishLetter(ccdCase, claim, BEARER_TOKEN.name(), GENERAL_DOCUMENT_NAME);
+            .publishLetter(ccdCase, claim, BEARER_TOKEN.name(), GENERAL_DOCUMENT_NAME, USER_LIST);
 
         verify(securedDocumentManagementService, once()).downloadDocument(eq(BEARER_TOKEN.name()), any(ClaimDocument.class));
         assertThat(updatedCase).isEqualTo(expected);

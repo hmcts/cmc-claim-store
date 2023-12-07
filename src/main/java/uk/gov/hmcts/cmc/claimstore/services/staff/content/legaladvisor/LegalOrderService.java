@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.utils.CaseDataExtractorUtils.getClaimant;
+import static uk.gov.hmcts.cmc.claimstore.utils.CaseDataExtractorUtils.getDefendant;
 
 @Service
 public class LegalOrderService {
@@ -58,7 +60,8 @@ public class LegalOrderService {
                 claim,
                 coverSheetForClaimant,
                 legalOrder,
-                authorisation
+                authorisation,
+                getClaimant(claim)
             ));
 
             Document coverSheetForDefendant = new Document(
@@ -69,7 +72,8 @@ public class LegalOrderService {
                 claim,
                 coverSheetForDefendant,
                 legalOrder,
-                authorisation
+                authorisation,
+                getDefendant(claim)
             ));
         } catch (URISyntaxException e) {
             logger.warn("Problem download legal advisor document from doc store, won't print");
