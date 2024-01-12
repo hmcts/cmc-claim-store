@@ -68,6 +68,7 @@ public class ClaimantResponseMapper {
 
     private CCDClaimantResponse toRejection(Claim claim, ResponseRejection responseRejection) {
         CCDResponseRejection.CCDResponseRejectionBuilder rejection = CCDResponseRejection.builder();
+
         responseRejection.getFreeMediation()
             .map(YesNoOption::name)
             .map(CCDYesNoOption::valueOf)
