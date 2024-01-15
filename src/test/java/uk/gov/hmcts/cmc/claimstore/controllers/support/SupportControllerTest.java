@@ -26,6 +26,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.models.idam.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimSubmissionOperationIndicatorRule;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.MediationReportService;
@@ -126,6 +127,9 @@ class SupportControllerTest {
     @Mock
     private TransferCaseStateService transferCaseStateService;
 
+    @Mock
+    private CCDCaseApi ccdCaseApi;
+
     private SupportController controller;
 
     private Claim sampleClaim;
@@ -147,7 +151,8 @@ class SupportControllerTest {
             mediationReportService,
             new ClaimSubmissionOperationIndicatorRule(),
             scheduledStateTransitionService,
-            transferCaseStateService
+            transferCaseStateService,
+            ccdCaseApi
         );
         sampleClaim = SampleClaim.getDefault();
     }
@@ -201,7 +206,7 @@ class SupportControllerTest {
                     ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
                     claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
                     postClaimOrchestrationHandler, mediationReportService, new ClaimSubmissionOperationIndicatorRule(),
-                    scheduledStateTransitionService, transferCaseStateService
+                    scheduledStateTransitionService, transferCaseStateService, ccdCaseApi
                 );
 
                 when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE)))
@@ -444,7 +449,7 @@ class SupportControllerTest {
                     ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
                     claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
                     postClaimOrchestrationHandler, mediationReportService, new ClaimSubmissionOperationIndicatorRule(),
-                    scheduledStateTransitionService, transferCaseStateService
+                    scheduledStateTransitionService, transferCaseStateService, ccdCaseApi
                 );
 
                 when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE)))

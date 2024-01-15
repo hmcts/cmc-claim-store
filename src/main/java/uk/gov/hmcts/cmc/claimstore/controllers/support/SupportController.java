@@ -42,6 +42,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.models.idam.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimSubmissionOperationIndicatorRule;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.MediationReportService;
@@ -106,6 +107,7 @@ public class SupportController {
     private final ClaimSubmissionOperationIndicatorRule claimSubmissionOperationIndicatorRule;
     private final ScheduledStateTransitionService scheduledStateTransitionService;
     private final TransferCaseStateService transferCaseStateService;
+    private final CCDCaseApi ccdCaseApi;
 
     @SuppressWarnings("squid:S00107")
     public SupportController(
@@ -123,7 +125,8 @@ public class SupportController {
         MediationReportService mediationReportService,
         ClaimSubmissionOperationIndicatorRule claimSubmissionOperationIndicatorRule,
         ScheduledStateTransitionService scheduledStateTransitionService,
-        TransferCaseStateService transferCaseStateService
+        TransferCaseStateService transferCaseStateService,
+        CCDCaseApi ccdCaseApi
     ) {
         this.claimService = claimService;
         this.userService = userService;
@@ -140,6 +143,7 @@ public class SupportController {
         this.claimSubmissionOperationIndicatorRule = claimSubmissionOperationIndicatorRule;
         this.scheduledStateTransitionService = scheduledStateTransitionService;
         this.transferCaseStateService = transferCaseStateService;
+        this.ccdCaseApi = ccdCaseApi;
     }
 
     @PutMapping("/claim/{referenceNumber}/event/{event}/resend-staff-notifications")
@@ -324,6 +328,16 @@ public class SupportController {
         @PathVariable("event") CaseEvent caseEvent,
         @PathVariable("ccdCaseId") Long ccdCaseId) {
         transferCaseStateService.transferCaseToGivenCaseState(caseEvent, ccdCaseId);
+    }
+
+    @PutMapping(value = "/responses/claim/{ccdCaseId}/defendant/{defendantId}/email/{defendantEmail}")
+    @Operation(summary = "Transfer claim to a given state")
+    public void linkDefendant(
+        @PathVariable("ccdCaseId") String ccdCaseId,
+        @PathVariable("defendantId") String defendantId,
+        @PathVariable("defendantEmail") String defendantEmail) {
+
+        ccdCaseApi.linkDefendant(ccdCaseId, defendantId, defendantEmail);
     }
 
     @PutMapping(value = "/claim/{claimNumber}/preferredDQCourt")
