@@ -95,9 +95,9 @@ public class GeneralLetterService {
         return docAssemblyResponse.getRenditionOutputLocation();
     }
 
-    public CCDCase publishLetter(CCDCase ccdCase, Claim claim, String authorisation, String documentName) {
+    public CCDCase publishLetter(CCDCase ccdCase, Claim claim, String authorisation, String documentName, List<String> userList) {
         var draftLetterDoc = ccdCase.getDraftLetterDoc();
-        BulkPrintDetails bulkPrintDetails = printLetter(authorisation, draftLetterDoc, claim);
+        BulkPrintDetails bulkPrintDetails = printLetter(authorisation, draftLetterDoc, claim, userList);
 
         return ccdCase.toBuilder()
             .caseDocuments(updateCaseDocumentsWithGeneralLetter(ccdCase, draftLetterDoc, documentName, authorisation))
@@ -165,8 +165,8 @@ public class GeneralLetterService {
             .build();
     }
 
-    public BulkPrintDetails printLetter(String authorisation, CCDDocument document, Claim claim) {
+    public BulkPrintDetails printLetter(String authorisation, CCDDocument document, Claim claim, List<String> personList) {
         Document downloadedLetter = printableDocumentService.process(document, authorisation);
-        return bulkPrintHandler.printGeneralLetter(claim, downloadedLetter, authorisation);
+        return bulkPrintHandler.printGeneralLetter(claim, downloadedLetter, authorisation, personList);
     }
 }

@@ -52,6 +52,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -84,6 +85,7 @@ class MoreTimeRequestedCallbackHandlerTest {
         .documentBinaryUrl(DOC_URL_BINARY)
         .documentUrl(DOC_URL).build();
     private static final URI DOCUMENT_URI = URI.create("http://localhost/doc.pdf");
+    private static final List<String> USER_LIST = List.of("DR John Smith");
     private static final String ERROR_MESSAGE = "There was a technical problem. Nothing has been sent."
         + " You need to try again.";
     private static final String DEADLINE_WARNING_MSG =
@@ -582,18 +584,18 @@ class MoreTimeRequestedCallbackHandlerTest {
 
         @Test
         void sendLetterToNotLinkedDefendant() {
-            when(generalLetterService.publishLetter(ccdCase, claim, AUTHORISATION, DOC_NAME)).thenReturn(ccdCase);
+            when(generalLetterService.publishLetter(ccdCase, claim, AUTHORISATION, DOC_NAME, USER_LIST)).thenReturn(ccdCase);
 
             moreTimeRequestedCallbackHandler.handle(callbackParams);
 
             verify(generalLetterService)
-                .publishLetter(any(CCDCase.class), any(Claim.class), anyString(), anyString());
+                .publishLetter(any(CCDCase.class), any(Claim.class), anyString(), anyString(), anyList());
 
         }
 
         @Test
         void shouldReturnWithErrorsWhenFailsToCreateDoc() {
-            when(generalLetterService.publishLetter(ccdCase, claim, AUTHORISATION, DOC_NAME))
+            when(generalLetterService.publishLetter(ccdCase, claim, AUTHORISATION, DOC_NAME, USER_LIST))
                 .thenThrow(new RuntimeException("error occurred"));
 
             var response = (AboutToStartOrSubmitCallbackResponse)
