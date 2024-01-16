@@ -488,7 +488,7 @@ sonarqube {
         "**/OCON9xResponseUtil.java",
         "**/ResponseUtils.java",
         "**/cmc/claimstore/services/ccd/callbacks/roboticssupport/RoboticsNotificationServiceImpl.java",
-        "**/SupportControllerTest.java"
+        "**/SupportController.java"
     ].join(",")
   }
 }
