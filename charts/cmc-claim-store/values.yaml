@@ -16,8 +16,12 @@ java:
           alias: CLAIM_STORE_DB_PASSWORD
         - name: AppInsightsInstrumentationKey
           alias: azure.application-insights.instrumentation-key
-        - name: cmc-db-password-v11
+        - name: cmc-db-password-v15
           alias: CMC_DB_PASSWORD
+        - name: cmc-db-username-v15
+          alias: CMC_DB_USERNAME
+        - name: cmc-db-host-v15
+          alias: CMC_DB_HOST
         - name: citizen-oauth-client-secret
           alias: oauth2.client.secret
         - name: claim-store-s2s-secret
