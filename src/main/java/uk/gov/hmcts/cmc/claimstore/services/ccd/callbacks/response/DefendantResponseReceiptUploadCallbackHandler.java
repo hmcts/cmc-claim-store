@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
-import uk.gov.hmcts.cmc.claimstore.services.DefendantResponseService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
@@ -13,6 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
@@ -57,10 +57,21 @@ public class DefendantResponseReceiptUploadCallbackHandler extends CallbackHandl
     private CallbackResponse uploadDefendantResponseReceipt(CallbackParams callbackParams) {
         Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails())
             .toBuilder().lastEventTriggeredForHwfCase(callbackParams.getRequest().getEventId()).build();
-        defendantResponseReceiptService.createPdf(claim);
+        if (!hasDocumentAttached(claim)) {
+            defendantResponseReceiptService.createPdf(claim);
+        }
         return
             AboutToStartOrSubmitCallbackResponse
             .builder()
             .build();
+    }
+
+    private boolean hasDocumentAttached(Claim claim) {
+        return claim.getClaimDocumentCollection()
+            .flatMap(claimDocumentCollection ->
+                claimDocumentCollection
+                    .getDocument(
+                        ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT))
+                        .isPresent();
     }
 }

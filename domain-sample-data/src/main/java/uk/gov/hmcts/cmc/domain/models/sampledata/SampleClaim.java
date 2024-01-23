@@ -114,7 +114,7 @@ public final class SampleClaim {
     private LocalDate moneyReceivedOn;
     private LocalDateTime reDeterminationRequestedAt;
     private ReDetermination reDetermination = new ReDetermination("I feel defendant can pay", CLAIMANT);
-    private final ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
+    private ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
     private LocalDate claimantResponseDeadline;
     private ClaimState state = ClaimState.OPEN;
     private ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators
@@ -1078,6 +1078,16 @@ public final class SampleClaim {
 
     public SampleClaim withTransferContent(TransferContent transferContent) {
         this.transferContent = transferContent;
+        return this;
+    }
+
+    public SampleClaim withLastEventTriggered(String lastEventTriggeredForHwfCase) {
+        this.lastEventTriggeredForHwfCase = lastEventTriggeredForHwfCase;
+        return this;
+    }
+
+    public SampleClaim withClaimDocumentCollection(ClaimDocumentCollection claimDocumentCollection) {
+        this.claimDocumentCollection = claimDocumentCollection;
         return this;
     }
 }
