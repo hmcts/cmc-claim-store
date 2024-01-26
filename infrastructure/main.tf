@@ -118,12 +118,6 @@ data "azurerm_key_vault_secret" "sendgrid_api_key" {
   key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
 }
 
-resource "azurerm_key_vault_secret" "cmc-db-password" {
-  name      = "cmc-db-password"
-  value     = module.database.postgresql_password
-  key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
-}
-
 data "azurerm_key_vault" "send_grid" {
   provider = azurerm.send-grid
 
@@ -143,21 +137,6 @@ resource "azurerm_key_vault_secret" "sendgrid_api_key-2" {
   key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
   name         = "sendgrid-api-key-2"
   value        = data.azurerm_key_vault_secret.send_grid_api_key.value
-}
-
-module "database" {
-  source = "git@github.com:hmcts/cnp-module-postgres?ref=master"
-  product = var.product
-  location = var.location
-  env = var.env
-  postgresql_user = "cmc"
-  database_name = var.database-name
-  postgresql_version = var.postgresql_version
-  sku_name = var.database_sku_name
-  sku_tier = "GeneralPurpose"
-  storage_mb = var.database_storage_mb
-  common_tags = var.common_tags
-  subscription = var.subscription
 }
 
 // DB version 11
@@ -193,7 +172,6 @@ resource "azurerm_key_vault_secret" "appinsights_connection_string" {
   value        = data.azurerm_application_insights.cmc.connection_string
   key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
 }
-
 
 # FlexiServer v15
 module "db-v15" {
