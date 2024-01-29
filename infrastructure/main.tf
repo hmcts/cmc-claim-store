@@ -118,7 +118,7 @@ data "azurerm_key_vault_secret" "sendgrid_api_key" {
   key_vault_id = data.azurerm_key_vault.cmc_key_vault.id
 }
 
-data "azurerm_key_vault" "send_grid" {
+data "azurerm_key_vault_secret" "send_grid" {
   provider = azurerm.send-grid
 
   name                = var.env != "prod" ? "sendgridnonprod" : "sendgridprod"
