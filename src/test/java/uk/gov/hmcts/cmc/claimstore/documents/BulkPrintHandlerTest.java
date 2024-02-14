@@ -177,7 +177,7 @@ public class BulkPrintHandlerTest {
     public void notifyForBulkPrintTransferEvent() {
         //given
         BulkPrintHandler bulkPrintHandler = new BulkPrintHandler(bulkPrintService, launchDarklyClient, printableDocumentService);
-        List<String> userListForBulkPrint = List.of("Dr. John Smith (BP)");
+        final List<String> userListForBulkPrint = List.of("Dr. John Smith (BP)");
         Claim claim = mock(Claim.class);
         when(claim.getReferenceNumber()).thenReturn("AAA");
         when(claim.getClaimData())
@@ -403,7 +403,7 @@ public class BulkPrintHandlerTest {
     public void notifyDefendantForBulkPrintNoticeOfTransfer() {
         //given
         BulkPrintHandler bulkPrintHandler = new BulkPrintHandler(bulkPrintService, launchDarklyClient, printableDocumentService);
-        List<String> userListForBulkPrint = List.of("Dr. John Smith (BP)");
+        final List<String> userListForBulkPrint = List.of("Dr. John Smith (BP)");
         Claim claim = SampleClaim.getSampleClaimantMediationRefusal();
         CCDDocument ccdDocument = CCDDocument.builder().documentUrl(DOCUMENT_URL)
             .documentBinaryUrl(DOCUMENT_BINARY_URL)
