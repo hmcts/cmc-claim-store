@@ -1,10 +1,12 @@
 package uk.gov.hmcts.cmc.claimstore.utils;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 import java.util.List;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import org.junit.Assert;
-import org.junit.Test;
+
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
