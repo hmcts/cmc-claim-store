@@ -155,9 +155,6 @@ public class BulkPrintService implements PrintService {
         }
         if (letterType.equals(BULK_PRINT_TRANSFER_TYPE)) {
             info = "Bulk print request {} created for request    type {} claim reference {}";
-            if (!personList.isEmpty()) {
-                personList.replaceAll(x -> x + " (BP)");
-            }
         }
 
         List<String> docs = documents.stream()
