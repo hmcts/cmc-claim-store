@@ -21,6 +21,15 @@ public class CaseDataExtractorUtils {
             ));
     }
 
+    public  static List<String> getDefendantForBulkPrint(Claim claim) {
+        return List
+            .of(requireNonNull(claim
+                .getClaimData()
+                .getDefendant()
+                .getName() + " (BP)"
+            ));
+    }
+
     public static List<String> getClaimant(Claim claim) {
         return List
             .of(requireNonNull(claim
