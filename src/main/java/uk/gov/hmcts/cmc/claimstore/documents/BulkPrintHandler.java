@@ -148,7 +148,7 @@ public class BulkPrintHandler {
             ),
             BulkPrintRequestType.BULK_PRINT_TRANSFER_TYPE,
             authorisation,
-            CaseDataExtractorUtils.getDefendant(claim)
+            CaseDataExtractorUtils.getDefendantForBulkPrint(claim)
         );
     }
 
@@ -192,7 +192,7 @@ public class BulkPrintHandler {
         );
 
         return bulkPrintService.printPdf(claim, Collections.unmodifiableList(printableDocs),
-            BulkPrintRequestType.BULK_PRINT_TRANSFER_TYPE, authorisation, CaseDataExtractorUtils.getDefendant(claim));
+            BulkPrintRequestType.BULK_PRINT_TRANSFER_TYPE, authorisation, CaseDataExtractorUtils.getDefendantForBulkPrint(claim));
     }
 
     public BulkPrintDetails printPaperDefence(Claim claim, Document coverLetter, Document oconForm,
