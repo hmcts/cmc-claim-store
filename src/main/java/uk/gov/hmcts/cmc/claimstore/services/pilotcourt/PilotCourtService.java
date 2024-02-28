@@ -27,6 +27,7 @@ import javax.annotation.PostConstruct;
 
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 
+@Slf4j
 @Service
 public class PilotCourtService {
 
@@ -67,6 +68,7 @@ public class PilotCourtService {
     }
 
     public Set<String> getAllPilotCourtIds() {
+        log.debug("getAllPilotCourtIds: %s", pilotCourts.keySet());
         return pilotCourts.keySet();
     }
 
@@ -88,7 +90,7 @@ public class PilotCourtService {
         }
 
         PilotCourt pilotCourt = pilotCourts.get(pilotCourtId);
-
+        log.debug("getPilotHearingCourt", pilotCourt);
         if (pilotCourt.getHearingCourt().isEmpty()) {
             Optional<HearingCourt> court = getCourt(pilotCourt.getPostcode());
             pilotCourt.setHearingCourt(court.orElse(null));
@@ -185,8 +187,9 @@ public class PilotCourtService {
     }
 
     private Optional<HearingCourt> getCourt(String postcode) {
+        log.debug("getCourt - Postcode: %s", postcode);
         List<Court> courtList = courtFinderService.getCourtDetailsListFromPostcode(postcode);
-
+        log.debug("getCourt - Court List: %s", courtList);
         return courtList
             .stream()
             .findFirst()
@@ -194,7 +197,7 @@ public class PilotCourtService {
     }
 
     public String getPilotCourtId(HearingCourt hearingCourt) {
-
+        log.debug("getPilotCourtId - Hearing Court: %s", hearingCourt);
         return pilotCourts.keySet()
             .stream()
             .filter(pilotCourtId ->  getPilotHearingCourt(pilotCourtId).filter(hearingCourt::equals).isPresent())
