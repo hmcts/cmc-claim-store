@@ -114,7 +114,7 @@ public class OrderCreator {
         logger.info("Order creator: pre populating order fields");
         CallbackRequest callbackRequest = callbackParams.getRequest();
         if (callbackRequest.getCaseDetails().getData().containsKey(HEARING_COURT)) {
-            log.debug("Callback Request Data contains Key: %s", HEARING_COURT)
+            log.debug("Callback Request Data contains Key: %s", HEARING_COURT);
             callbackRequest.getCaseDetails().getData().remove(HEARING_COURT);
         }
         Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
@@ -213,10 +213,10 @@ public class OrderCreator {
         }
 
         if (populateOrder) {
-            log.debug("Prepopulating Order")
+            log.debug("Prepopulating Order");
             return prepopulateOrder(callbackParams);
         } else {
-            log.debug("Generating Order")
+            log.debug("Generating Order");
             return generateOrder(callbackParams);
         }
     }
@@ -348,10 +348,10 @@ public class OrderCreator {
             listItems.stream().filter(s -> s.get(DYNAMIC_LIST_LABEL).equals(hearingCourtName)).findFirst();
 
         if (selectedCourt.isPresent()) {
-            log.debug("Selected court present")
+            log.debug("Selected court present");
             hearingCourtListDefinition.put(DYNAMIC_LIST_SELECTED_VALUE, selectedCourt.get());
         } else if (pilot == Pilot.JDDO) {
-            log.debug("Pilot is JDDO -  adding Other item")
+            log.debug("Pilot is JDDO -  adding Other item");
             hearingCourtListDefinition.put(DYNAMIC_LIST_SELECTED_VALUE, otherCourtItem);
         }
 

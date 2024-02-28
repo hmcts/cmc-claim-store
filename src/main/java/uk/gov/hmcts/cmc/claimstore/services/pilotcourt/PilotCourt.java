@@ -21,8 +21,8 @@ public class PilotCourt {
     private Map<Pilot, LocalDateTime> pilots;
 
     public Optional<HearingCourt> getHearingCourt() {
-        log.debug("Got HearingCourt: %s", hearingCourt)
-        return Optional.ofNullable(hearingCourt)
+        log.debug("Got HearingCourt: %s", hearingCourt);
+        return Optional.ofNullable(hearingCourt);
     }
 
     public boolean isActivePilotCourt(Pilot pilot, LocalDateTime claimCreatedDate) {
