@@ -21,7 +21,8 @@ public class PilotCourt {
     private Map<Pilot, LocalDateTime> pilots;
 
     public Optional<HearingCourt> getHearingCourt() {
-        log.debug("Got HearingCourt: %s", hearingCourt);
+        log.info("Got HearingCourt: %s", hearingCourt);
+        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAa"+hearingCourt);
         return Optional.ofNullable(hearingCourt);
     }
 

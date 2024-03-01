@@ -118,7 +118,7 @@ public class ResourceExceptionHandler {
 
     @ExceptionHandler(value = NotFoundException.class)
     public ResponseEntity<Object> notFoundClaim(Exception exception) {
-        logger.debug(exception);
+        logger.info(exception);
         return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.NOT_FOUND);
     }
 
@@ -187,19 +187,19 @@ public class ResourceExceptionHandler {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<String> methodArgumentConversionFailure(MethodArgumentTypeMismatchException exception) {
-        logger.debug(exception);
+        logger.info(exception);
         return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(IllegalSettlementStatementException.class)
     public ResponseEntity<String> illegalSettlementStatement(IllegalSettlementStatementException exception) {
-        logger.debug(exception);
+        logger.info(exception);
         return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<String> badRequestException(BadRequestException exception) {
-        logger.debug(exception);
+        logger.info(exception);
         return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
@@ -215,13 +215,13 @@ public class ResourceExceptionHandler {
 
     @ExceptionHandler(DuplicateKeyException.class)
     public ResponseEntity<String> duplicateKeyException(DuplicateKeyException exception) {
-        logger.debug(exception);
+        logger.info(exception);
         return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(NotificationException.class)
     public ResponseEntity<String> notificationException(NotificationException exception) {
-        logger.debug(exception);
+        logger.info(exception);
         return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 

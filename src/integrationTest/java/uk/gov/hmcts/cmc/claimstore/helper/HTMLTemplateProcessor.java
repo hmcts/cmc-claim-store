@@ -42,13 +42,13 @@ public class HTMLTemplateProcessor {
      * @return a String containing processed HTML output
      */
     public String process(String template, Map<String, Object> context) {
-        log.debug("Processing the template file");
+        log.info("Processing the template file");
         log.trace("Template: {}", template);
         log.trace("Context: {}", context);
         try (Writer writer = new StringWriter()) {
             PebbleTemplate pebbleTemplate = pebble.getTemplate(template);
             pebbleTemplate.evaluate(writer, context);
-            log.debug("Template processing finished successfully");
+            log.info("Template processing finished successfully");
             return writer.toString();
         } catch (PebbleException | IOException e) {
             throw new RuntimeException((e));

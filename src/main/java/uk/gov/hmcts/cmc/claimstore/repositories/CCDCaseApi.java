@@ -235,7 +235,7 @@ public class CCDCaseApi {
         User anonymousCaseWorker,
         String caseId
     ) {
-        LOGGER.debug("Granting access to case {} for defendant {}", caseId, defendantId);
+        LOGGER.info("Granting access to case {} for defendant {}", caseId, defendantId);
         this.grantAccessToCase(anonymousCaseWorker, caseId, defendantId);
 
         this.updateDefendantIdAndEmail(anonymousCaseWorker, caseId, defendantId, defendantEmail);
@@ -274,10 +274,10 @@ public class CCDCaseApi {
     private void linkToCase(User defendantUser, User anonymousCaseWorker, String letterHolderId, String caseId) {
         String defendantId = defendantUser.getUserDetails().getId();
         LOGGER.info("<--linkToCase-> Linking the case " + letterHolderId);
-        LOGGER.debug("Granting access to case {} for defendant {} with letter {}", caseId, defendantId, letterHolderId);
+        LOGGER.info("Granting access to case {} for defendant {} with letter {}", caseId, defendantId, letterHolderId);
         this.grantAccessToCase(anonymousCaseWorker, caseId, defendantId);
 
-        LOGGER.debug("Revoking access to case {} for letter holder {}", caseId, letterHolderId);
+        LOGGER.info("Revoking access to case {} for letter holder {}", caseId, letterHolderId);
         this.revokeAccessToCase(anonymousCaseWorker, letterHolderId, caseId);
 
         String defendantEmail = defendantUser.getUserDetails().getEmail();
@@ -299,7 +299,7 @@ public class CCDCaseApi {
     }
 
     private void revokeAccessToCase(User anonymousCaseWorker, String letterHolderId, String caseId) {
-        LOGGER.debug("Revoking access to case {} for letter holder {}", caseId, letterHolderId);
+        LOGGER.info("Revoking access to case {} for letter holder {}", caseId, letterHolderId);
         caseAccessApi.revokeAccessToCase(anonymousCaseWorker.getAuthorisation(),
             authTokenGenerator.generate(),
             anonymousCaseWorker.getUserDetails().getId(),

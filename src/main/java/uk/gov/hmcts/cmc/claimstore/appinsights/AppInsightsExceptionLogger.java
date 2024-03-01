@@ -26,7 +26,7 @@ public class AppInsightsExceptionLogger {
     }
 
     public void debug(Exception exception) {
-        logger.debug(exception.getMessage(), exception);
+        logger.info(exception.getMessage(), exception);
         appInsights.trackException(exception);
     }
 

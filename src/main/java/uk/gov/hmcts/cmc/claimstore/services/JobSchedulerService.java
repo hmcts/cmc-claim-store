@@ -42,7 +42,7 @@ public class JobSchedulerService {
         ZonedDateTime lastReminderDate = calculateReminderDate(responseDeadline, lastReminderDay);
 
         if (!enabled) {
-            logger.debug("Reminder emails disabled. Skipping reminders for claim {} at {} and {}",
+            logger.info("Reminder emails disabled. Skipping reminders for claim {} at {} and {}",
                 claim.getReferenceNumber(), firstReminderDate, lastReminderDate);
             return;
         }
@@ -69,7 +69,7 @@ public class JobSchedulerService {
         ZonedDateTime lastReminderDate = calculateReminderDate(responseDeadline, lastReminderDay);
 
         if (!enabled) {
-            logger.debug("Reminder emails disabled. Skipping rescheduled reminders for claim {} at {} and {}",
+            logger.info("Reminder emails disabled. Skipping rescheduled reminders for claim {} at {} and {}",
                 claim.getReferenceNumber(), firstReminderDate, lastReminderDate);
             return;
         }
