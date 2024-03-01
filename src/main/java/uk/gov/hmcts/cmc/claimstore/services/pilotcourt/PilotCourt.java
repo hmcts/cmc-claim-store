@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.pilotcourt;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 
 import java.time.LocalDateTime;
@@ -19,6 +20,8 @@ public class PilotCourt {
     private Map<Pilot, LocalDateTime> pilots;
 
     public Optional<HearingCourt> getHearingCourt() {
+        log.trace("Got HearingCourt: %s", hearingCourt);
+        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAa"+hearingCourt);
         return Optional.ofNullable(hearingCourt);
     }
 

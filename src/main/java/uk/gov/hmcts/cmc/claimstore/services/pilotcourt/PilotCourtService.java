@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.pilotcourt;
 
 import feign.FeignException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -27,6 +28,7 @@ import javax.annotation.PostConstruct;
 
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 
+@Slf4j
 @Service
 public class PilotCourtService {
 
@@ -67,6 +69,7 @@ public class PilotCourtService {
     }
 
     public Set<String> getAllPilotCourtIds() {
+        log.trace("getAllPilotCourtIds: %s", pilotCourts.keySet());
         return pilotCourts.keySet();
     }
 
@@ -88,7 +91,7 @@ public class PilotCourtService {
         }
 
         PilotCourt pilotCourt = pilotCourts.get(pilotCourtId);
-
+        log.trace("getPilotHearingCourt", pilotCourt);
         if (pilotCourt.getHearingCourt().isEmpty()) {
             Optional<HearingCourt> court = getCourt(pilotCourt.getPostcode());
             pilotCourt.setHearingCourt(court.orElse(null));

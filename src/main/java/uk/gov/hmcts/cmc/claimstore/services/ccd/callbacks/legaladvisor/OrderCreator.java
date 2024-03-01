@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legaladvisor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +48,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.BOT
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.DOCUMENTS;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EYEWITNESS;
 
+@Slf4j
 @Service
 @ConditionalOnProperty(prefix = "doc_assembly", name = "url")
 public class OrderCreator {
@@ -109,9 +111,10 @@ public class OrderCreator {
     }
 
     public CallbackResponse prepopulateOrder(CallbackParams callbackParams) {
-        logger.info("Order creator: pre populating order fields");
+        logger.trace("Order creator: pre populating order fields");
         CallbackRequest callbackRequest = callbackParams.getRequest();
         if (callbackRequest.getCaseDetails().getData().containsKey(HEARING_COURT)) {
+            log.trace("Callback Request Data contains Key: %s", HEARING_COURT);
             callbackRequest.getCaseDetails().getData().remove(HEARING_COURT);
         }
         Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
@@ -189,7 +192,7 @@ public class OrderCreator {
     }
 
     public CallbackResponse generateOrPrepopulateOrder(CallbackParams callbackParams) {
-        logger.info("Order creator: mid event to handle generate or prepopulate the claim for direction type");
+        logger.trace("Order creator: mid event to handle generate or prepopulate the claim for direction type");
         CallbackRequest callbackRequest = callbackParams.getRequest();
         Map<String, Object> tempData = new HashMap<>(callbackRequest.getCaseDetails().getData());
         boolean populateOrder = true;
@@ -210,14 +213,16 @@ public class OrderCreator {
         }
 
         if (populateOrder) {
+            log.trace("Prepopulating Order");
             return prepopulateOrder(callbackParams);
         } else {
+            log.trace("Generating Order");
             return generateOrder(callbackParams);
         }
     }
 
     public CallbackResponse generateOrder(CallbackParams callbackParams) {
-        logger.info("Order creator: creating order document");
+        logger.trace("Order creator: creating order document");
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
 
@@ -236,7 +241,7 @@ public class OrderCreator {
 
         var docAssemblyResponse = orderRenderer.renderOrder(ccdCase, authorisation);
 
-        logger.info("Order creator: received response from doc assembly");
+        logger.trace("Order creator: received response from doc assembly");
 
         return AboutToStartOrSubmitCallbackResponse
             .builder()
@@ -313,6 +318,7 @@ public class OrderCreator {
     }
 
     private Map<String, Object> buildCourtsList(Pilot pilot, LocalDateTime claimCreatedDate, String hearingCourtName) {
+        log.trace("BUILDING COURTS LIST");
         List<Map<String, String>> listItems = pilotCourtService.getPilotHearingCourts(pilot, claimCreatedDate).stream()
             .sorted(Comparator.comparing(HearingCourt::getName))
             .map(hearingCourt -> {
@@ -321,15 +327,25 @@ public class OrderCreator {
             })
             .collect(Collectors.toList());
 
+        listItems.forEach(p-> {
+            p.forEach((k,v)->  System.out.println("D}ADADADA "+k + " bababababa "+ v));
+          });
+
+        log.trace("ADDING %s ITEM", listItems);
+
         Map<String, String> otherCourtItem = Map.of(DYNAMIC_LIST_CODE,
             PilotCourtService.OTHER_COURT_ID, DYNAMIC_LIST_LABEL, "Other Court");
 
         if (pilot == Pilot.JDDO) {
             listItems.add(otherCourtItem);
+            log.trace("ADDING OTHER ITEM");
         }
 
         Map<String, Object> hearingCourtListDefinition = new HashMap<>();
         hearingCourtListDefinition.put(DYNAMIC_LIST_ITEMS, listItems);
+        log.trace("hearingCourtListDefinition: %s", hearingCourtListDefinition);
+        hearingCourtListDefinition.forEach((k,v)-> System.out.println(k+ " LOL "+ v));
+        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAa123 "+hearingCourtListDefinition);
 
         if (StringUtils.isBlank(hearingCourtName)) {
             return hearingCourtListDefinition;
@@ -339,8 +355,10 @@ public class OrderCreator {
             listItems.stream().filter(s -> s.get(DYNAMIC_LIST_LABEL).equals(hearingCourtName)).findFirst();
 
         if (selectedCourt.isPresent()) {
+            log.trace("Selected court present");
             hearingCourtListDefinition.put(DYNAMIC_LIST_SELECTED_VALUE, selectedCourt.get());
         } else if (pilot == Pilot.JDDO) {
+            log.trace("Pilot is JDDO -  adding Other item");
             hearingCourtListDefinition.put(DYNAMIC_LIST_SELECTED_VALUE, otherCourtItem);
         }
 
