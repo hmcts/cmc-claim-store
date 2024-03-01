@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
+@Slf4j
 @Getter
 @Setter
 @AllArgsConstructor
@@ -21,7 +22,7 @@ public class PilotCourt {
 
     public Optional<HearingCourt> getHearingCourt() {
         log.trace("Got HearingCourt: %s", hearingCourt);
-        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAa"+hearingCourt);
+        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAa "+hearingCourt);
         return Optional.ofNullable(hearingCourt);
     }
 
