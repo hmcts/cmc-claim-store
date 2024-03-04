@@ -22,7 +22,7 @@ public class PilotCourt {
 
     public Optional<HearingCourt> getHearingCourt() {
         log.trace("Got HearingCourt: %s", hearingCourt);
-        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAa " + hearingCourt);
+        log.trace("AAAAAAAAAAAAAAAAAAAAAAAAa " + hearingCourt);
         return Optional.ofNullable(hearingCourt);
     }
 
