@@ -327,9 +327,9 @@ public class OrderCreator {
             })
             .collect(Collectors.toList());
 
-        listItems.forEach(p-> {
-            p.forEach((k,v)->  System.out.println("D}ADADADA "+k + " bababababa "+ v));
-          });
+        listItems.forEach(p -> {
+            p.forEach((k, v) ->  System.out.println("D}ADADADA " + k + " bababababa " + v));
+        });
 
         log.trace("ADDING %s ITEM", listItems);
 
@@ -344,8 +344,8 @@ public class OrderCreator {
         Map<String, Object> hearingCourtListDefinition = new HashMap<>();
         hearingCourtListDefinition.put(DYNAMIC_LIST_ITEMS, listItems);
         log.trace("hearingCourtListDefinition: %s", hearingCourtListDefinition);
-        hearingCourtListDefinition.forEach((k,v)-> System.out.println(k+ " LOL "+ v));
-        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAa123 "+hearingCourtListDefinition);
+        hearingCourtListDefinition.forEach((k, v) -> System.out.println(k + " LOL " + v));
+        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAa123 " + hearingCourtListDefinition);
 
         if (StringUtils.isBlank(hearingCourtName)) {
             return hearingCourtListDefinition;
