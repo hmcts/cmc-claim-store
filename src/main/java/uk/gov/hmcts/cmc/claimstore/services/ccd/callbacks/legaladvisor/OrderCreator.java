@@ -328,7 +328,7 @@ public class OrderCreator {
             .collect(Collectors.toList());
 
         listItems.forEach(p ->
-            p.forEach((k, v) ->  logger.trace("D}ADADADA " + k + " bababababa " + v));
+            p.forEach((k, v) ->  logger.trace("D}ADADADA " + k + " bababababa " + v))
         );
 
         log.trace("ADDING %s ITEM", listItems);
