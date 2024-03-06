@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.util.NestedServletException;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsExceptionLogger;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantLinkException;
@@ -26,6 +28,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentDownloadForbiddenException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DuplicateKeyException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.InvalidApplicationException;
@@ -35,11 +38,13 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.UnprocessableEntityException;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.exceptions.IllegalSettlementStatementException;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
+import uk.gov.service.notify.NotificationClientException;
 
 import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.Optional;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.FAILED_DEPENDENCY;
 import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 
@@ -47,6 +52,7 @@ import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 public class ResourceExceptionHandler {
     private static final CharSequence UNIQUE_CONSTRAINT_MESSAGE = "duplicate key value violates unique constraint";
     private static final String INTERNAL_SERVER_ERROR = "Internal server error";
+    private static final String NOTIFICATION_CLIENT_EX_MESSAGE = "Error occurred during handling notification";
     private final AppInsightsExceptionLogger logger;
 
     @Autowired
@@ -227,6 +233,16 @@ public class ResourceExceptionHandler {
             .body(new ExceptionForClient(FAILED_DEPENDENCY.value(), exception.getMessage()));
     }
 
+    @ExceptionHandler(FeignException.InternalServerError.class)
+    public ResponseEntity<Object> handleFeignExceptionInternalServerError(
+        FeignException.InternalServerError exception
+    ) {
+        logger.error(exception);
+        return ResponseEntity
+            .status(FAILED_DEPENDENCY)
+            .body(new ExceptionForClient(FAILED_DEPENDENCY.value(), exception.getMessage()));
+    }
+
     @ExceptionHandler({FeignException.UnprocessableEntity.class, UnprocessableEntityException.class})
     public ResponseEntity<Object> handleUnprocessableEntity(Exception exception) {
         logger.error(exception);
@@ -240,5 +256,50 @@ public class ResourceExceptionHandler {
         logger.error(exception);
         return new ResponseEntity<>(exception.getMessage(),
             new HttpHeaders(), HttpStatus.GATEWAY_TIMEOUT);
+    }
+
+    @ExceptionHandler(NotificationClientException.class)
+    public ResponseEntity<Object> handleNotificationClientException(Exception exception) {
+        logger.error(exception);
+        return ResponseEntity.status(BAD_REQUEST).body(
+            new NotificationClientException(
+                NOTIFICATION_CLIENT_EX_MESSAGE,
+                exception
+            ));
+    }
+
+    @ExceptionHandler({NestedServletException.class, FeignException.BadRequest.class})
+    public ResponseEntity<String> handleNestedServletExceptionBadRequest(Exception exception) {
+        logger.error(exception);
+        return new ResponseEntity<>(exception.getMessage(),
+            new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
+    public ResponseEntity<String> handleHttpMediaTypeNotAcceptableException(Exception exception) {
+        logger.error(exception);
+        return new ResponseEntity<>(exception.getMessage(),
+            new HttpHeaders(), HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    @ExceptionHandler(FeignException.UnsupportedMediaType.class)
+    public ResponseEntity<String> handleHttpUnsupportedMediaTypeException(Exception exception) {
+        logger.error(exception);
+        return new ResponseEntity<>(exception.getMessage(),
+            new HttpHeaders(), HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+    }
+
+    @ExceptionHandler(DocumentManagementException.class)
+    public ResponseEntity<String> handleDocumentManagementException(Exception exception) {
+        logger.error(exception);
+        return new ResponseEntity<>(exception.getMessage(),
+            new HttpHeaders(), HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException exception) {
+        logger.error(exception);
+        return new ResponseEntity<>(exception.getMessage(),
+            new HttpHeaders(), HttpStatus.PRECONDITION_FAILED);
     }
 }

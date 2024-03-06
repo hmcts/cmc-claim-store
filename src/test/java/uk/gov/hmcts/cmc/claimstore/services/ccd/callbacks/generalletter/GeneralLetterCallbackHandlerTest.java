@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.domain.GeneralLetterContent;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -25,6 +26,7 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,6 +34,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDContactPartyType.CLAIMANT;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.Params.BEARER_TOKEN;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.GENERAL_LETTER_PDF;
@@ -54,6 +57,7 @@ class GeneralLetterCallbackHandlerTest {
 
     private static final String EXISTING_DATA = "existingData";
     private static final String DATA = "data";
+    private static final List<String> USER_LIST = List.of("John Rambo");
     private CaseDetails caseDetails;
     private Map<String, Object> data;
     private static final String LETTER_CONTENT = "letterContent";
@@ -100,6 +104,8 @@ class GeneralLetterCallbackHandlerTest {
         String documentUrl = DOCUMENT_URI.toString();
         CCDDocument document = new CCDDocument(documentUrl, documentUrl, GENERAL_LETTER_PDF);
         ccdCase = CCDCase.builder()
+            .generalLetterContent(GeneralLetterContent.builder().issueLetterContact(CLAIMANT).build())
+            .contactChangeParty(CLAIMANT)
             .previousServiceCaseReference("000MC001")
             .caseDocuments(ImmutableList.of(CCDCollectionElement.<CCDClaimDocument>builder()
                 .value(CCDClaimDocument.builder()
@@ -160,6 +166,8 @@ class GeneralLetterCallbackHandlerTest {
             .put(DATA, EXISTING_DATA)
             .build();
         CCDCase updateCCDCase = ccdCase.toBuilder()
+            .generalLetterContent(GeneralLetterContent.builder()
+                .issueLetterContact(CLAIMANT).build())
             .caseDocuments(ImmutableList.<CCDCollectionElement<CCDClaimDocument>>builder()
                 .addAll(ccdCase.getCaseDocuments())
                 .add(CLAIM_DOCUMENT)
@@ -171,12 +179,13 @@ class GeneralLetterCallbackHandlerTest {
         when(generalLetterService.publishLetter(eq(ccdCase),
             eq(claim),
             eq(BEARER_TOKEN.name()),
-            eq(GENERAL_DOCUMENT_NAME)
+            eq(GENERAL_DOCUMENT_NAME),
+            eq(USER_LIST)
         )).thenReturn(updateCCDCase);
         AboutToStartOrSubmitCallbackResponse actualResponse = (AboutToStartOrSubmitCallbackResponse)
             handler.printAndUpdateCaseDocuments(callbackParams);
         verify(generalLetterService, once())
-            .publishLetter(ccdCase, claim, BEARER_TOKEN.name(), GENERAL_DOCUMENT_NAME);
+            .publishLetter(ccdCase, claim, BEARER_TOKEN.name(), GENERAL_DOCUMENT_NAME, USER_LIST);
         assertThat(actualResponse.getData()).isEqualTo(dataMap);
     }
 
@@ -186,12 +195,13 @@ class GeneralLetterCallbackHandlerTest {
         when(generalLetterService.publishLetter(eq(ccdCase),
             eq(claim),
             eq(BEARER_TOKEN.name()),
-            eq(GENERAL_DOCUMENT_NAME)
+            eq(GENERAL_DOCUMENT_NAME),
+            eq(USER_LIST)
         )).thenThrow(RuntimeException.class);
         AboutToStartOrSubmitCallbackResponse actualResponse = (AboutToStartOrSubmitCallbackResponse)
             handler.printAndUpdateCaseDocuments(callbackParams);
         verify(generalLetterService, once())
-            .publishLetter(ccdCase, claim, BEARER_TOKEN.name(), GENERAL_DOCUMENT_NAME);
+            .publishLetter(ccdCase, claim, BEARER_TOKEN.name(), GENERAL_DOCUMENT_NAME, USER_LIST);
         assertThat(actualResponse.getErrors().get(0)).isEqualTo(ERROR_MESSAGE);
     }
 }

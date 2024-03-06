@@ -18,7 +18,7 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.PrintableDocumentService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
-import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.SecuredDocumentManagementService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -47,7 +47,7 @@ public class GeneralLetterService {
     private final Clock clock;
     private final UserService userService;
     private final DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
-    private final DocumentManagementService documentManagementService;
+    private final SecuredDocumentManagementService securedDocumentManagementService;
     private final BulkPrintDetailsMapper bulkPrintDetailsMapper;
     private final String caseTypeId;
     private final String jurisdictionId;
@@ -59,7 +59,7 @@ public class GeneralLetterService {
         Clock clock,
         UserService userService,
         DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper,
-        DocumentManagementService documentManagementService,
+        SecuredDocumentManagementService securedDocumentManagementService,
         BulkPrintDetailsMapper bulkPrintDetailsMapper,
         @Value("${ocmc.caseTypeId}") String caseTypeId,
         @Value("${ocmc.jurisdictionId}") String jurisdictionId
@@ -70,7 +70,7 @@ public class GeneralLetterService {
         this.clock = clock;
         this.userService = userService;
         this.docAssemblyTemplateBodyMapper = docAssemblyTemplateBodyMapper;
-        this.documentManagementService = documentManagementService;
+        this.securedDocumentManagementService = securedDocumentManagementService;
         this.bulkPrintDetailsMapper = bulkPrintDetailsMapper;
         this.caseTypeId = caseTypeId;
         this.jurisdictionId = jurisdictionId;
@@ -95,9 +95,9 @@ public class GeneralLetterService {
         return docAssemblyResponse.getRenditionOutputLocation();
     }
 
-    public CCDCase publishLetter(CCDCase ccdCase, Claim claim, String authorisation, String documentName) {
+    public CCDCase publishLetter(CCDCase ccdCase, Claim claim, String authorisation, String documentName, List<String> userList) {
         var draftLetterDoc = ccdCase.getDraftLetterDoc();
-        BulkPrintDetails bulkPrintDetails = printLetter(authorisation, draftLetterDoc, claim);
+        BulkPrintDetails bulkPrintDetails = printLetter(authorisation, draftLetterDoc, claim, userList);
 
         return ccdCase.toBuilder()
             .caseDocuments(updateCaseDocumentsWithGeneralLetter(ccdCase, draftLetterDoc, documentName, authorisation))
@@ -141,7 +141,7 @@ public class GeneralLetterService {
         String documentName,
         String authorisation) {
 
-        var documentMetadata = documentManagementService.getDocumentMetaData(
+        var documentMetadata = securedDocumentManagementService.getDocumentMetaData(
             authorisation,
             URI.create(ccdDocument.getDocumentUrl()).getPath()
         );
@@ -165,8 +165,8 @@ public class GeneralLetterService {
             .build();
     }
 
-    public BulkPrintDetails printLetter(String authorisation, CCDDocument document, Claim claim) {
+    public BulkPrintDetails printLetter(String authorisation, CCDDocument document, Claim claim, List<String> personList) {
         Document downloadedLetter = printableDocumentService.process(document, authorisation);
-        return bulkPrintHandler.printGeneralLetter(claim, downloadedLetter, authorisation);
+        return bulkPrintHandler.printGeneralLetter(claim, downloadedLetter, authorisation, personList);
     }
 }

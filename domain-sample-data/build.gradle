@@ -1,11 +1,10 @@
 apply plugin: 'java'
 
-sourceCompatibility = 11
-
 repositories {
   mavenCentral()
 }
 
 dependencies {
-  compile project(':domain-model')
+  implementation project(':domain-model')
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
 }

@@ -10,6 +10,8 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralL
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
+import java.util.List;
+
 @Service
 @ConditionalOnProperty(prefix = "doc_assembly", name = "url")
 public class ChangeContactLetterService {
@@ -43,10 +45,10 @@ public class ChangeContactLetterService {
         return docAssemblyResponse.getRenditionOutputLocation();
     }
 
-    public CCDCase publishLetter(CCDCase ccdCase, Claim claim, String authorisation, CCDDocument letterDoc) {
+    public CCDCase publishLetter(CCDCase ccdCase, Claim claim, String authorisation, CCDDocument letterDoc, List<String> userList) {
         return generalLetterService.publishLetter(ccdCase.toBuilder().draftLetterDoc(letterDoc).build(),
             claim, authorisation,
-            letterDoc.getDocumentFileName());
+            letterDoc.getDocumentFileName(), userList);
 
     }
 }

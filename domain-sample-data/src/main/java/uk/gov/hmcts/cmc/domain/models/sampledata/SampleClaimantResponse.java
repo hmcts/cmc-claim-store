@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
@@ -34,6 +35,14 @@ public abstract class SampleClaimantResponse {
 
     public static ResponseRejection validRejectionWithDirectionsQuestionnaire() {
         return ClaimantResponseRejection.builder().buildRejectionWithDirectionsQuestionnaire();
+    }
+
+    public static ResponseRejection validClaimantRejectionWithDefendantHasOCON9x() {
+        return ClaimantResponseRejection.builder().buildRejectionWithByClaimantAndDefendantHasFormIssued();
+    }
+
+    public static ResponseRejection validRejectionWithRejectedFreeMediationOCON9x() {
+        return ClaimantResponseRejection.builder().buildRejectionWithFreeMediationRejectionOCON9x();
     }
 
     public static class ClaimantResponseAcceptation extends SampleClaimantResponse {
@@ -179,6 +188,13 @@ public abstract class SampleClaimantResponse {
                 .build();
         }
 
+        public ResponseRejection buildRejectionWithFreeMediationRejectionOCON9x() {
+            return ResponseRejection.builder()
+                .freeMediation(NO)
+                .claimantResponseType(ClaimantResponseType.REJECTION)
+                .build();
+        }
+
         public ResponseRejection buildRejectionWithDirectionsQuestionnaire() {
             return ResponseRejection.builder()
                 .amountPaid(TEN)
@@ -190,6 +206,13 @@ public abstract class SampleClaimantResponse {
                 .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder()
                     .withHearingLocation(pilotHearingLocation)
                     .build())
+                .build();
+        }
+
+        public ResponseRejection buildRejectionWithByClaimantAndDefendantHasFormIssued() {
+            return ResponseRejection.builder()
+                .amountPaid(TEN)
+                .freeMediation(NO)
                 .build();
         }
     }

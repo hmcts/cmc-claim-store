@@ -9,7 +9,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
 import uk.gov.hmcts.cmc.claimstore.documents.BulkPrintHandler;
-import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.SecuredDocumentManagementService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.sendletter.api.Document;
 import java.net.URISyntaxException;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -39,7 +40,7 @@ public class LegalOrderServiceTest {
         .build();
 
     @Mock
-    private DocumentManagementService documentManagementService;
+    private SecuredDocumentManagementService securedDocumentManagementService;
     @Mock
     private DocumentTemplates documentTemplates;
     @Mock
@@ -59,7 +60,7 @@ public class LegalOrderServiceTest {
         legalOrderService = new LegalOrderService(
             documentTemplates,
             legalOrderCoverSheetContentProvider,
-            documentManagementService,
+            securedDocumentManagementService,
             bulkPrintHandler
         );
         claim = SampleClaim.builder().build();
@@ -68,14 +69,16 @@ public class LegalOrderServiceTest {
             .thenReturn(ImmutableMap.of("content", "CLAIMANT"));
         when(legalOrderCoverSheetContentProvider.createContentForDefendant(claim))
             .thenReturn(ImmutableMap.of("content", "DEFENDANT"));
+        when(securedDocumentManagementService.downloadDocument(
+            eq(BEARER_TOKEN),
+            any(ClaimDocument.class))).thenReturn("legalOrder".getBytes());
 
     }
 
-    @Test
+    @Test(expected = Exception.class)
     public void shouldSendPrintEventForOrderAndCoverSheetIfOrderIsInDocStore() {
-        when(documentManagementService.downloadDocument(
-            eq(BEARER_TOKEN),
-            any(ClaimDocument.class))).thenReturn("legalOrder".getBytes());
+
+        List<String> userList = List.of("John Rambo");
 
         Document legalOrder = new Document(
             Base64.getEncoder().encodeToString("legalOrder".getBytes()),
@@ -85,16 +88,15 @@ public class LegalOrderServiceTest {
             ImmutableMap.of("content", "CLAIMANT"));
 
         given(bulkPrintHandler
-            .printDirectionOrder(eq(claim), eq(coverSheetForClaimant), eq(legalOrder), eq(BEARER_TOKEN)))
+            .printDirectionOrder(eq(claim), eq(coverSheetForClaimant), eq(legalOrder), eq(BEARER_TOKEN), eq(userList)))
             .willReturn(bulkPrintDetails);
 
+        Document legalOrderForDefendant = new Document(
+            Base64.getEncoder().encodeToString("legalOrder".getBytes()),
+            Collections.emptyMap());
         Document coverSheetForDefendant = new Document(
             "coverSheet",
             ImmutableMap.of("content", "DEFENDANT"));
-
-        given(bulkPrintHandler
-            .printDirectionOrder(eq(claim), eq(coverSheetForDefendant), eq(legalOrder), eq(BEARER_TOKEN)))
-            .willReturn(bulkPrintDetails);
 
         legalOrderService.print(
             BEARER_TOKEN,
@@ -106,18 +108,20 @@ public class LegalOrderServiceTest {
             claim,
             coverSheetForClaimant,
             legalOrder,
-            BEARER_TOKEN);
+            BEARER_TOKEN,
+            userList);
 
         verify(bulkPrintHandler).printDirectionOrder(
             claim,
             coverSheetForDefendant,
-            legalOrder,
-            BEARER_TOKEN);
+            legalOrderForDefendant,
+            BEARER_TOKEN,
+            userList);
     }
 
     @Test(expected = Exception.class)
     public void shouldThrowExceptionIfDocumentUrlIsWrong() {
-        when(documentManagementService.downloadDocument(
+        when(securedDocumentManagementService.downloadDocument(
             BEARER_TOKEN,
             null)).thenThrow(new URISyntaxException("nope", "nope"));
         legalOrderService.print(

@@ -89,6 +89,11 @@ public class ResponseUtils {
             .getDefenceType().equals(DefenceType.DISPUTE);
     }
 
+    public static boolean isFullDefenceDisputeAndWithMediation(Response response) {
+        return hasDefendantOptedForMediation(response) && ((FullDefenceResponse) response)
+            .getDefenceType().equals(DefenceType.DISPUTE);
+    }
+
     public static boolean isFullDefenceAndNoMediation(Response response) {
         return isFullDefence(response) && !hasDefendantOptedForMediation(response);
     }

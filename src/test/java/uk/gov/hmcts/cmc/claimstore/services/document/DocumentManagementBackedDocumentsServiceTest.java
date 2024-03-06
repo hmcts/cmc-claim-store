@@ -13,6 +13,8 @@ import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.documents.questionnaire.ClaimantDirectionsQuestionnairePdfService;
+import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentDownloadForbiddenException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
@@ -33,6 +35,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
 import java.time.LocalDate;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -72,7 +75,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
     @Mock
     private DraftClaimReceiptService draftClaimReceiptService;
     @Mock
-    private DocumentManagementService documentManagementService;
+    private SecuredDocumentManagementService securedDocumentManagementService;
     @Mock
     private SealedClaimPdfService sealedClaimPdfService;
     @Mock
@@ -92,7 +95,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
     public void setUp() {
         documentManagementBackendDocumentsService = new DocumentManagementBackedDocumentsService(
             claimService,
-            documentManagementService,
+            securedDocumentManagementService,
             draftClaimReceiptService,
             sealedClaimPdfService,
             claimIssueReceiptService,
@@ -119,7 +122,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
         when(userService.getUser(AUTHORISATION)).thenReturn(DEFENDANT);
         when(claimService.getClaimByExternalId(claim.getExternalId(), DEFENDANT)).thenReturn(claim);
 
-        when(documentManagementService.downloadScannedDocument(AUTHORISATION, oconDocument))
+        when(securedDocumentManagementService.downloadScannedDocument(AUTHORISATION, oconDocument))
             .thenReturn(PDF_BYTES);
 
         byte[] pdf = documentManagementBackendDocumentsService.generateScannedDocument(claim.getExternalId(),
@@ -169,7 +172,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
         when(userService.getUser(AUTHORISATION)).thenReturn(DEFENDANT);
         Claim claim = getClaimWithDocuments();
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(DEFENDANT))).thenReturn(claim);
-        when(documentManagementService.downloadDocument(eq(AUTHORISATION), any(ClaimDocument.class)))
+        when(securedDocumentManagementService.downloadDocument(eq(AUTHORISATION), any(ClaimDocument.class)))
             .thenReturn(PDF_BYTES);
         byte[] pdf = documentManagementBackendDocumentsService.generateDocument(claim.getExternalId(), GENERAL_LETTER,
             "12345", AUTHORISATION);
@@ -287,17 +290,17 @@ public class DocumentManagementBackedDocumentsServiceTest {
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(DEFENDANT)))
             .thenReturn(claim);
 
-        when(documentManagementService.downloadDocument(eq(AUTHORISATION), any(ClaimDocument.class)))
+        when(securedDocumentManagementService.downloadDocument(eq(AUTHORISATION), any(ClaimDocument.class)))
             .thenReturn(PDF_BYTES);
 
         documentManagementBackendDocumentsService.generateDocument(
             claim.getExternalId(),
             SEALED_CLAIM,
             AUTHORISATION);
-        verify(documentManagementService, atLeastOnce()).downloadDocument(
+        verify(securedDocumentManagementService, atLeastOnce()).downloadDocument(
             eq(AUTHORISATION),
             any(ClaimDocument.class));
-        verify(documentManagementService, never()).uploadDocument(anyString(), any(PDF.class));
+        verify(securedDocumentManagementService, never()).uploadDocument(anyString(), any(PDF.class));
         verify(claimService, never()).saveClaimDocuments(
             eq(AUTHORISATION),
             eq(claim.getId()),
@@ -336,13 +339,13 @@ public class DocumentManagementBackedDocumentsServiceTest {
             .build();
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(CLAIMANT)))
             .thenReturn(claim);
-        when(documentManagementService.downloadDocument(eq(AUTHORISATION), eq(claimDocument))).thenReturn(new byte[1]);
+        when(securedDocumentManagementService.downloadDocument(eq(AUTHORISATION), eq(claimDocument))).thenReturn(new byte[1]);
         documentManagementBackendDocumentsService.generateDocument(
             claim.getExternalId(),
             documentType,
             AUTHORISATION
         );
-        verify(documentManagementService, once()).downloadDocument(any(), any());
+        verify(securedDocumentManagementService, once()).downloadDocument(any(), any());
     }
 
     @Test
@@ -359,13 +362,13 @@ public class DocumentManagementBackedDocumentsServiceTest {
             .build();
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(CLAIMANT)))
             .thenReturn(claim);
-        when(documentManagementService.downloadDocument(eq(AUTHORISATION), eq(claimDocument))).thenReturn(new byte[1]);
+        when(securedDocumentManagementService.downloadDocument(eq(AUTHORISATION), eq(claimDocument))).thenReturn(new byte[1]);
         documentManagementBackendDocumentsService.generateDocument(
             claim.getExternalId(),
             documentType,
             AUTHORISATION
         );
-        verify(documentManagementService, once()).downloadDocument(any(), any());
+        verify(securedDocumentManagementService, once()).downloadDocument(any(), any());
     }
 
     @Test
@@ -382,17 +385,38 @@ public class DocumentManagementBackedDocumentsServiceTest {
             .build();
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(CLAIMANT)))
             .thenReturn(claim);
-        when(documentManagementService.downloadDocument(eq(AUTHORISATION), eq(claimDocument))).thenReturn(new byte[1]);
+        when(securedDocumentManagementService.downloadDocument(eq(AUTHORISATION), eq(claimDocument))).thenReturn(new byte[1]);
         documentManagementBackendDocumentsService.generateDocument(
             claim.getExternalId(),
             documentType,
             AUTHORISATION
         );
-        verify(documentManagementService, once()).downloadDocument(any(), any());
+        verify(securedDocumentManagementService, once()).downloadDocument(any(), any());
+    }
+
+    @Test(expected = DocumentDownloadForbiddenException.class)
+    public void generateDocumentShouldThrowExceptionWhenExceptionIsThrown() {
+        final ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
+        Claim claim = Claim.builder()
+            .externalId("externalID")
+            .submitterId(CLAIMANT.getUserDetails().getId())
+            .claimDocumentCollection(claimDocumentCollection)
+            .build();
+
+        when(documentManagementBackendDocumentsService.generateDocument(claim.getExternalId(), SEALED_CLAIM, AUTHORISATION))
+            .thenThrow(DocumentManagementException.class);
+
+        assertThrows(DocumentManagementException.class, () -> {
+            documentManagementBackendDocumentsService.generateDocument(
+                claim.getExternalId(),
+                ORDER_DIRECTIONS,
+                AUTHORISATION
+            );
+        });
     }
 
     private void verifyCommon(byte[] pdf) {
         assertArrayEquals(PDF_BYTES, pdf);
-        verify(documentManagementService).uploadDocument(anyString(), any(PDF.class));
+        verify(securedDocumentManagementService).uploadDocument(anyString(), any(PDF.class));
     }
 }

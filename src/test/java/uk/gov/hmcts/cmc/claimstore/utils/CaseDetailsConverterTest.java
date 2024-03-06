@@ -21,6 +21,7 @@ import uk.gov.hmcts.cmc.domain.models.response.ResponseMethod;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponseWithDQ;
 
@@ -66,6 +67,14 @@ class CaseDetailsConverterTest {
             Claim claim = caseDetailsConverter.extractClaim(caseDetails);
             assertThat(claim.getId()).isEqualTo(caseDetails.getId());
             assertThat(claim.getState().getValue()).isEqualTo(caseDetails.getState());
+        }
+
+        @Test
+        public void shouldThrowIllegalArgumentExceptionWhenGivenNullCaseDetails() {
+            assertThrows(
+                IllegalArgumentException.class,
+                () -> caseDetailsConverter.extractClaim(null)
+            );
         }
 
         @Test

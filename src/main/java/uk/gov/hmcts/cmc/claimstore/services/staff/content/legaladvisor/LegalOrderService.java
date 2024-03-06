@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
 import uk.gov.hmcts.cmc.claimstore.documents.BulkPrintHandler;
-import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.SecuredDocumentManagementService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.utils.CaseDataExtractorUtils.getClaimant;
+import static uk.gov.hmcts.cmc.claimstore.utils.CaseDataExtractorUtils.getDefendant;
 
 @Service
 public class LegalOrderService {
@@ -30,19 +32,19 @@ public class LegalOrderService {
     private final DocumentTemplates documentTemplates;
     private final LegalOrderCoverSheetContentProvider legalOrderCoverSheetContentProvider;
     private final BulkPrintHandler bulkPrintHandler;
-    private final DocumentManagementService documentManagementService;
+    private final SecuredDocumentManagementService securedDocumentManagementService;
 
     @Autowired
     public LegalOrderService(
         DocumentTemplates documentTemplates,
         LegalOrderCoverSheetContentProvider legalOrderCoverSheetContentProvider,
-        DocumentManagementService documentManagementService,
+        SecuredDocumentManagementService securedDocumentManagementService,
         BulkPrintHandler bulkPrintHandler
     ) {
         this.documentTemplates = documentTemplates;
         this.bulkPrintHandler = bulkPrintHandler;
         this.legalOrderCoverSheetContentProvider = legalOrderCoverSheetContentProvider;
-        this.documentManagementService = documentManagementService;
+        this.securedDocumentManagementService = securedDocumentManagementService;
     }
 
     public List<BulkPrintDetails> print(String authorisation, Claim claim, CCDDocument ccdLegalOrder) {
@@ -58,7 +60,8 @@ public class LegalOrderService {
                 claim,
                 coverSheetForClaimant,
                 legalOrder,
-                authorisation
+                authorisation,
+                getClaimant(claim)
             ));
 
             Document coverSheetForDefendant = new Document(
@@ -69,7 +72,8 @@ public class LegalOrderService {
                 claim,
                 coverSheetForDefendant,
                 legalOrder,
-                authorisation
+                authorisation,
+                getDefendant(claim)
             ));
         } catch (URISyntaxException e) {
             logger.warn("Problem download legal advisor document from doc store, won't print");
@@ -79,7 +83,7 @@ public class LegalOrderService {
 
     private Document downloadLegalOrder(String authorisation, CCDDocument ccdLegalOrder) throws URISyntaxException {
         return new Document(Base64.getEncoder().encodeToString(
-            documentManagementService.downloadDocument(
+            securedDocumentManagementService.downloadDocument(
                 authorisation,
                 ClaimDocument.builder()
                     .documentName(ccdLegalOrder.getDocumentFileName())

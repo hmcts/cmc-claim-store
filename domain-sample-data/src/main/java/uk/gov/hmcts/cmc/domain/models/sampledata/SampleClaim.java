@@ -70,12 +70,14 @@ public final class SampleClaim {
     public static final String USER_ID = "1";
     public static final String LETTER_HOLDER_ID = "2";
     public static final String DEFENDANT_ID = "4";
+    public static final String DEFENDANT_NAME = "Dr. John Smith";
     public static final Long CLAIM_ID = 3L;
     public static final String REFERENCE_NUMBER = "000MC001";
     public static final UUID RAND_UUID = UUID.randomUUID();
     public static final String EXTERNAL_ID = RAND_UUID.toString();
     public static final boolean NOT_REQUESTED_FOR_MORE_TIME = false;
     public static final LocalDateTime NOT_RESPONDED = null;
+    public static final LocalDate CURRENT_TIME = LocalDate.now();
     public static final String SUBMITTER_EMAIL = "claimant@mail.com";
     public static final String DEFENDANT_EMAIL = SampleTheirDetails.DEFENDANT_EMAIL;
     public static final String DEFENDANT_EMAIL_VERIFIED = "defendant@mail.com";
@@ -95,6 +97,7 @@ public final class SampleClaim {
     private String submitterEmail = SUBMITTER_EMAIL;
     private LocalDateTime createdAt = NOW_IN_LOCAL_ZONE;
     private LocalDateTime respondedAt = NOT_RESPONDED;
+    private LocalDate paperFormIssueDate = CURRENT_TIME;
     private LocalDate issuedOn = ISSUE_DATE;
     private LocalDate serviceDate = ISSUE_DATE;
     private CountyCourtJudgment countyCourtJudgment = null;
@@ -111,7 +114,7 @@ public final class SampleClaim {
     private LocalDate moneyReceivedOn;
     private LocalDateTime reDeterminationRequestedAt;
     private ReDetermination reDetermination = new ReDetermination("I feel defendant can pay", CLAIMANT);
-    private final ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
+    private ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
     private LocalDate claimantResponseDeadline;
     private ClaimState state = ClaimState.OPEN;
     private ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators
@@ -351,6 +354,19 @@ public final class SampleClaim {
             .withResponse(SampleResponse.FullAdmission.builder()
                 .buildWithFreeMediation()
             )
+            .withRespondedAt(LocalDateTime.now())
+            .withDirectionsQuestionnaireDeadline(LocalDate.now())
+            .build();
+    }
+
+    public static Claim getClaimWithFullAdmissionWithTheirDetails() {
+        return builder()
+            .withClaimData(SampleClaimData.builder()
+                .withDefendant(SampleTheirDetails.builder()
+                    .withName(DEFENDANT_NAME)
+                    .withRepresentative(SampleRepresentative.builder().build())
+                    .individualDetails())
+                .build())
             .withRespondedAt(LocalDateTime.now())
             .withDirectionsQuestionnaireDeadline(LocalDate.now())
             .build();
@@ -681,6 +697,33 @@ public final class SampleClaim {
             .build();
     }
 
+    public static Claim getSampleClaimantMediationRefusal() {
+        var test = builder()
+            .withClaimData(SampleClaimData.submittedByClaimantBuilder().withExternalId(RAND_UUID).build())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .ccjType(CountyCourtJudgmentType.ADMISSIONS)
+                    .paymentOption(IMMEDIATELY)
+                    .build()
+            ).withResponse(SampleResponse.FullDefence
+                .builder()
+                .withDefenceType(DefenceType.DISPUTE)
+                .withMediation(YES)
+                .build()
+            ).withClaimantResponse(SampleClaimantResponse
+                .validClaimantRejectionWithDefendantHasOCON9x()
+            )
+            .withRespondedAt(LocalDateTime.now())
+            .withIssuedPaperFormIssueDate(LocalDate.now())
+            .withDefendantEmail(DEFENDANT_EMAIL)
+            .withClaimantRespondedAt(LocalDateTime.now())
+            .withClaimantResponse(SampleClaimantResponse.validDefaultRejection())
+            .withState(ClaimState.OPEN)
+            .build();
+
+        return test;
+    }
+
     public static Claim getWithSettlementAgreementDocument() {
         return builder().withSettlement(
             SampleSettlement.validDefaults())
@@ -750,7 +793,7 @@ public final class SampleClaim {
             LocalDateTime.now(),
             lastEventTriggeredForHwfCase,
             null,
-            null
+            paperFormIssueDate
         );
     }
 
@@ -841,6 +884,11 @@ public final class SampleClaim {
 
     public SampleClaim withRespondedAt(LocalDateTime respondedAt) {
         this.respondedAt = respondedAt;
+        return this;
+    }
+
+    public SampleClaim withIssuedPaperFormIssueDate(LocalDate paperFormIssueDate) {
+        this.paperFormIssueDate = paperFormIssueDate;
         return this;
     }
 
@@ -1030,6 +1078,16 @@ public final class SampleClaim {
 
     public SampleClaim withTransferContent(TransferContent transferContent) {
         this.transferContent = transferContent;
+        return this;
+    }
+
+    public SampleClaim withLastEventTriggered(String lastEventTriggeredForHwfCase) {
+        this.lastEventTriggeredForHwfCase = lastEventTriggeredForHwfCase;
+        return this;
+    }
+
+    public SampleClaim withClaimDocumentCollection(ClaimDocumentCollection claimDocumentCollection) {
+        this.claimDocumentCollection = claimDocumentCollection;
         return this;
     }
 }

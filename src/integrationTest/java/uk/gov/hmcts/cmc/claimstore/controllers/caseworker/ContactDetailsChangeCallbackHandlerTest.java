@@ -38,7 +38,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
-import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
@@ -49,6 +48,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
@@ -154,15 +154,13 @@ public class ContactDetailsChangeCallbackHandlerTest extends BaseMockSpringTest 
                 .build())
             .build();
 
-        given(documentManagementService.downloadDocument(anyString(), any(ClaimDocument.class)))
+        given(securedDocumentManagementService.downloadDocument(anyString(), any(ClaimDocument.class)))
             .willReturn(new byte[] {1, 2, 3, 4});
-
-        given(documentManagementService.getDocumentMetaData(anyString(), anyString())).willReturn(getLinks());
 
         given(sendLetterApi.sendLetter(anyString(), any(LetterWithPdfsRequest.class))).willReturn(sendLetterResponse);
 
         given(changeContactLetterService.publishLetter(any(CCDCase.class), any(Claim.class), any(String.class),
-            any(CCDDocument.class))).willReturn(expected);
+            any(CCDDocument.class), anyList())).willReturn(expected);
 
         MvcResult mvcResult = makeRequest(ABOUT_TO_SUBMIT.getValue())
             .andExpect(status().isOk())
@@ -313,15 +311,4 @@ public class ContactDetailsChangeCallbackHandlerTest extends BaseMockSpringTest 
                 .build())
             .build());
     }
-
-    @NotNull
-    private Document getLinks() {
-        Document document = new Document();
-        Document.Links links = new Document.Links();
-        links.binary = new Document.Link();
-        links.binary.href = DOCUMENT_BINARY_URL;
-        document.links = links;
-        return document;
-    }
-
 }

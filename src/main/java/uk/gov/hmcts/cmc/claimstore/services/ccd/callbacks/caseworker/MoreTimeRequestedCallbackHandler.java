@@ -53,6 +53,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.DEFENDANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.RESPONSE_DEADLINE;
+import static uk.gov.hmcts.cmc.claimstore.utils.CaseDataExtractorUtils.getDefendant;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
@@ -237,7 +238,7 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
             } else {
                 String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
                 String filename = String.format(LETTER_NAME, updatedClaim.getReferenceNumber());
-                updatedCase = generalLetterService.publishLetter(updatedCase, updatedClaim, authorisation, filename);
+                updatedCase = generalLetterService.publishLetter(updatedCase, updatedClaim, authorisation, filename, getDefendant(claim));
             }
             return builder.data(caseDetailsConverter.convertToMap(updatedCase)).build();
         } catch (Exception e) {

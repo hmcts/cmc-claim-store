@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.support;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerErrorException;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimCreatedEvent;
@@ -46,6 +47,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.MediationReportService;
 import uk.gov.hmcts.cmc.claimstore.services.ScheduledStateTransitionService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.transfercase.TransferCaseStateService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.claimstore.services.statetransition.StateTransitionInput;
 import uk.gov.hmcts.cmc.claimstore.services.statetransition.StateTransitions;
@@ -103,6 +105,7 @@ public class SupportController {
     private final MediationReportService mediationReportService;
     private final ClaimSubmissionOperationIndicatorRule claimSubmissionOperationIndicatorRule;
     private final ScheduledStateTransitionService scheduledStateTransitionService;
+    private final TransferCaseStateService transferCaseStateService;
 
     @SuppressWarnings("squid:S00107")
     public SupportController(
@@ -119,7 +122,8 @@ public class SupportController {
         PostClaimOrchestrationHandler postClaimOrchestrationHandler,
         MediationReportService mediationReportService,
         ClaimSubmissionOperationIndicatorRule claimSubmissionOperationIndicatorRule,
-        ScheduledStateTransitionService scheduledStateTransitionService
+        ScheduledStateTransitionService scheduledStateTransitionService,
+        TransferCaseStateService transferCaseStateService
     ) {
         this.claimService = claimService;
         this.userService = userService;
@@ -135,10 +139,11 @@ public class SupportController {
         this.mediationReportService = mediationReportService;
         this.claimSubmissionOperationIndicatorRule = claimSubmissionOperationIndicatorRule;
         this.scheduledStateTransitionService = scheduledStateTransitionService;
+        this.transferCaseStateService = transferCaseStateService;
     }
 
     @PutMapping("/claim/{referenceNumber}/event/{event}/resend-staff-notifications")
-    @ApiOperation("Resend staff notifications associated with provided event")
+    @Operation(summary = "Resend staff notifications associated with provided event")
     public void resendStaffNotifications(
         @PathVariable("referenceNumber") String referenceNumber,
         @PathVariable("event") String event
@@ -180,12 +185,12 @@ public class SupportController {
     }
 
     @PutMapping("/documents/{referenceNumber}/{documentType}")
-    @ApiOperation("Ensure a document is available on CCD")
+    @Operation(summary = "Ensure a document is available on CCD")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "OK"),
-        @ApiResponse(code = 201, message = "Created"),
-        @ApiResponse(code = 404, message = "Claim not found"),
-        @ApiResponse(code = 500, message = "Unable to upload document")
+        @ApiResponse(responseCode = "200", description = "OK"),
+        @ApiResponse(responseCode = "201", description = "Created"),
+        @ApiResponse(responseCode = "404", description = "Claim not found"),
+        @ApiResponse(responseCode = "500", description = "Unable to upload document")
     })
     @SuppressWarnings("squid:S2201") // orElseThrow does not ignore the result
     public ResponseEntity<String> uploadDocumentToDocumentManagement(
@@ -216,7 +221,7 @@ public class SupportController {
     }
 
     @PutMapping("/claim/{referenceNumber}/reset-operation")
-    @ApiOperation("Redo any failed operation. Use the claim submission indicators to indicate the operation to redo.")
+    @Operation(summary = "Redo any failed operation. Use the claim submission indicators to indicate the operation to redo.")
     public void resetOperation(
         @PathVariable("referenceNumber") String referenceNumber,
         @RequestBody ClaimSubmissionOperationIndicators indicators,
@@ -239,7 +244,7 @@ public class SupportController {
     }
 
     @PutMapping("/claims/{referenceNumber}/recover-operations")
-    @ApiOperation("Recovers the failed operations which are mandatory to issue a claim.")
+    @Operation(summary = "Recovers the failed operations which are mandatory to issue a claim.")
     public void recoverClaimIssueOperations(@PathVariable("referenceNumber") String referenceNumber) {
         User user = userService.authenticateAnonymousCaseWorker();
         String authorisation = user.getAuthorisation();
@@ -268,7 +273,7 @@ public class SupportController {
     }
 
     @PostMapping(value = "/sendMediation", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Generate and Send Mediation Report for Telephone Mediation Service")
+    @Operation(summary = "Generate and Send Mediation Report for Telephone Mediation Service")
     public void sendMediation(
         @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation,
         @RequestBody MediationRequest mediationRequest
@@ -283,7 +288,7 @@ public class SupportController {
      * MILO report(in case of failure) for specific date
      * */
     @PostMapping(value = "/reSendMediation", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Re-Generate and Send Mediation Report for Telephone Mediation Service")
+    @Operation(summary = "Re-Generate and Send Mediation Report for Telephone Mediation Service")
     public void reSendMediation(
         @RequestBody MediationRequest mediationRequest
     ) {
@@ -299,7 +304,7 @@ public class SupportController {
     }
 
     @PutMapping(value = "/claims/transitionClaimState")
-    @ApiOperation("Trigger scheduled state transition")
+    @Operation(summary = "Trigger scheduled state transition")
     public void transitionClaimState(
         @Valid @NotNull @RequestBody StateTransitionInput stateTransitionInput
     ) {
@@ -313,8 +318,16 @@ public class SupportController {
         scheduledStateTransitionService.stateChangeTriggered(runDateTime, stateTransition);
     }
 
+    @PutMapping(value = "/claim/{ccdCaseId}/transferClaimState/{event}")
+    @Operation(summary = "Transfer claim to a given state")
+    public void setPreferredStateForClaim(
+        @PathVariable("event") CaseEvent caseEvent,
+        @PathVariable("ccdCaseId") Long ccdCaseId) {
+        transferCaseStateService.transferCaseToGivenCaseState(caseEvent, ccdCaseId);
+    }
+
     @PutMapping(value = "/claim/{claimNumber}/preferredDQCourt")
-    @ApiOperation("Set preferred DQ pilot court for a claim")
+    @Operation(summary = "Set preferred DQ pilot court for a claim")
     public void setPreferredDQPilotCourt(@PathVariable("claimNumber") String claimNumber) {
         claimService.updatePreferredCourtByClaimReference(claimNumber);
     }

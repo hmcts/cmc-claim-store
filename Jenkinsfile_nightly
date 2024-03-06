@@ -1,7 +1,7 @@
 #!groovy
 
 properties([
-        pipelineTriggers([cron('H 05 * * *')]),
+        pipelineTriggers([cron('H 8 * * 1-5')]),
         parameters([
                 string(name: 'URL_TO_TEST', defaultValue: 'http://cmc-claim-store-aat.service.core-compute-aat.internal/', description: 'The URL you want to run these tests against'),
                 string(name: 'SecurityRules',
@@ -55,7 +55,7 @@ withNightlyPipeline(type, product, component) {
     enableFortifyScan()
     enableSecurityScan()
     enableFullFunctionalTest(200)
-    after('fortify-scan') {
+  afterAlways('fortify-scan') {
       steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
     }
 

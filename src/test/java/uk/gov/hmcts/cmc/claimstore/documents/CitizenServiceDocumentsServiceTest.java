@@ -44,6 +44,7 @@ public class CitizenServiceDocumentsServiceTest {
     private static final String CASE_TYPE_ID = "MoneyClaimCase";
     private static final String JURISDICTION_ID = "CMC";
     private static final LocalDate RESPONSE_DEADLINE = LocalDate.now().plusDays(15);
+    private static final LocalDate CURRENT_DATE = LocalDate.now();
 
     private String defendantPinLetterTemplateID;
     private CitizenServiceDocumentsService citizenServiceDocumentsService;
@@ -160,6 +161,7 @@ public class CitizenServiceDocumentsServiceTest {
             .pinLetterTemplateMapper(claim, PIN);
         DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
             .partyName(partyName)
+            .currentDate(CURRENT_DATE)
             .claimAmount(claimAmount)
             .referenceNumber(refernceNumber)
             .partyAddress(null)

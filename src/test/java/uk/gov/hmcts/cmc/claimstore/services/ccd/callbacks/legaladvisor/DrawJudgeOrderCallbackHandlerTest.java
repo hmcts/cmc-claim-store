@@ -45,7 +45,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackVersion;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.rules.GenerateOrderRule;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
-import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.SecuredDocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
@@ -134,7 +134,7 @@ class DrawJudgeOrderCallbackHandlerTest {
     @Mock
     private DirectionOrderService directionOrderService;
     @Mock
-    private DocumentManagementService documentManagementService;
+    private SecuredDocumentManagementService securedDocumentManagementService;
     @Mock
     private OrderRenderer orderRenderer;
     @Mock
@@ -157,7 +157,7 @@ class DrawJudgeOrderCallbackHandlerTest {
 
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
             caseDetailsConverter, legalOrderService, appInsights, directionOrderService,
-            documentManagementService, claimService);
+            securedDocumentManagementService, claimService);
 
         drawJudgeOrderCallbackHandler = new DrawJudgeOrderCallbackHandler(orderCreator, orderPostProcessor);
 
@@ -175,6 +175,7 @@ class DrawJudgeOrderCallbackHandlerTest {
         @Test
         void shouldGenerateDocumentOnMidEvent() {
             CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
+            ccdCase.setDirectionOrderType("BESPOKE");
             ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
                 .thenReturn(ccdCase);
@@ -283,6 +284,7 @@ class DrawJudgeOrderCallbackHandlerTest {
             CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
 
             ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
+            ccdCase.setDirectionOrderType("BESPOKE");
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
                 .thenReturn(ccdCase);
             when(launchDarklyClient.isFeatureEnabled(eq("bespoke-order"), any(LDUser.class))).thenReturn(true);
@@ -667,7 +669,7 @@ class DrawJudgeOrderCallbackHandlerTest {
 
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
                 .thenReturn(ccdCase);
-            when(documentManagementService.getDocumentMetaData(any(), any()))
+            when(securedDocumentManagementService.getDocumentMetaData(any(), any()))
                 .thenReturn(ResourceLoader.successfulDocumentManagementDownloadResponse());
 
             when(caseDetailsConverter.convertToMap(any(CCDCase.class)))
@@ -711,7 +713,7 @@ class DrawJudgeOrderCallbackHandlerTest {
                 .build();
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
                 .thenReturn(ccdCase);
-            when(documentManagementService.getDocumentMetaData(any(), any()))
+            when(securedDocumentManagementService.getDocumentMetaData(any(), any()))
                 .thenReturn(ResourceLoader.successfulDocumentManagementDownloadResponse());
 
             when(directionOrderService.getHearingCourt(any())).thenReturn(hearingCourt);
@@ -743,7 +745,7 @@ class DrawJudgeOrderCallbackHandlerTest {
             when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
             when(clock.getZone()).thenReturn(ZoneOffset.UTC);
             when(clock.withZone(LocalDateTimeFactory.UTC_ZONE)).thenReturn(clock);
-            when(documentManagementService.getDocumentMetaData(any(), any()))
+            when(securedDocumentManagementService.getDocumentMetaData(any(), any()))
                 .thenReturn(ResourceLoader.successfulDocumentManagementDownloadResponse());
 
             when(directionOrderService.getHearingCourt(any())).thenReturn(hearingCourt);

@@ -12,35 +12,63 @@ java:
     cmc:
       resourceGroup: cmc
       secrets:
-        - AppInsightsInstrumentationKey
-        - cmc-db-password-v11
-        - citizen-oauth-client-secret
-        - claim-store-s2s-secret
-        - anonymous-caseworker-username
-        - anonymous-caseworker-password
-        - system-update-username
-        - system-update-password
-        - notify-api-key
-        - milo-recipient
-        - staff-email
-        - live-support-email
-        - rpa-email-sealed-claim
-        - rpa-email-breathing-space
-        - rpa-email-legal-sealed-claim
-        - rpa-email-more-time-requested
-        - rpa-email-response
-        - rpa-email-ccj
-        - rpa-email-paid-in-full
-        - launchDarkly-sdk-key
-        - sendgrid-api-key
-        - staff-email-legal-rep
+        - name: claim-store-db-password
+          alias: CLAIM_STORE_DB_PASSWORD
+        - name: AppInsightsInstrumentationKey
+          alias: azure.application-insights.instrumentation-key
+        - name: cmc-db-password-v15
+          alias: CMC_DB_PASSWORD
+        - name: cmc-db-username-v15
+          alias: CMC_DB_USERNAME
+        - name: cmc-db-host-v15
+          alias: CMC_DB_HOST
+        - name: citizen-oauth-client-secret
+          alias: oauth2.client.secret
+        - name: claim-store-s2s-secret
+          alias: idam.s2s-auth.totp_secret
+        - name: anonymous-caseworker-username
+          alias: idam.caseworker.anonymous.username
+        - name: anonymous-caseworker-password
+          alias: idam.caseworker.anonymous.password
+        - name: system-update-username
+          alias: idam.caseworker.system.username
+        - name: system-update-password
+          alias: idam.caseworker.system.password
+        - name: notify-api-key
+          alias: GOV_NOTIFY_API_KEY
+        - name: milo-recipient
+          alias: MILO_CSV_RECIPIENT
+        - name: staff-email
+          alias: staff-notifications.recipient
+        - name: live-support-email
+          alias: live-support.recipient
+        - name: rpa-email-sealed-claim
+          alias: rpa.notifications.sealedClaimRecipient
+        - name: rpa-email-breathing-space
+          alias: rpa.notifications.breathingSpaceRecipient
+        - name: rpa-email-legal-sealed-claim
+          alias: rpa.notifications.legalSealedClaimRecipient
+        - name: rpa-email-more-time-requested
+          alias: rpa.notifications.moreTimeRequestedRecipient
+        - name: rpa-email-response
+          alias: rpa.notifications.responseRecipient
+        - name: rpa-email-ccj
+          alias: rpa.notifications.countyCourtJudgementRecipient
+        - name: rpa-email-paid-in-full
+          alias: rpa.notifications.paidInFullRecipient
+        - name: launchDarkly-sdk-key
+          alias: LAUNCH_DARKLY_SDK_KEY
+        - name: sendgrid-api-key
+          alias: SENDGRID_API_KEY
+        - name: staff-email-legal-rep
+          alias: staff-notifications.legalRecipient
+        - name: appinsights-connection-string
+          alias: appinsights-connection-string
   environment:
     REFORM_TEAM: cmc
     REFORM_SERVICE_NAME: claim-store
     REFORM_ENVIRONMENT: preview
     CLAIM_STORE_TEST_SUPPORT_ENABLED: true
-    CMC_DB_USERNAME: 'cmc@cmc-db-v11-{{ .Values.global.environment }}'
-    CMC_DB_HOST: cmc-db-v11-{{ .Values.global.environment }}.postgres.database.azure.com
     CMC_DB_CONNECTION_OPTIONS: '?sslmode=require'
     CMC_DB_NAME: cmc
     CMC_DB_PORT: 5432
@@ -50,8 +78,9 @@ java:
     FEATURE_TOGGLES_STAFF_EMAILS_ENABLED: true
     FEATURE_TOGGLES_STAFF_EMAILS_ENABLED_FOR_LEGAL_REP: true
     FEATURE_TOGGLES_BREATHING_SPACE: false
-    FEATURE_TOGGLES_SECURE_DOC_STORE_ENABLED: false
+    FEATURE_TOGGLES_SECURE_DOC_STORE_ENABLED: true
     FEATURE_AUTO_CANCEL_PAYMENTS: false
+    FEES_API_KEYWORDS_ENABLE: true
     STAFF_NOTIFICATIONS_SENDER: noreply@reform.hmcts.net
     RPA_NOTIFICATIONS_SENDER: noreply@reform.hmcts.net
     DOCUMENT_MANAGEMENT_USERROLES: caseworker-cmc,citizen
@@ -67,7 +96,8 @@ java:
     IDAM_WEB_URL: https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net
     PDF_SERVICE_URL: http://cmc-pdf-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     SEND_LETTER_URL: http://rpe-send-letter-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
-    DOCUMENT_MANAGEMENT_URL: http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    DOCUMENT_MANAGEMENT_URL: http://ccd-case-document-am-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    CASE_DOCUMENT_AM_URL: http://ccd-case-document-am-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     PAY_URL: http://payment-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     FEES_URL: http://fees-register-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     FRONTEND_BASE_URL: https://moneyclaims.{{ .Values.global.environment }}.platform.hmcts.net
@@ -78,3 +108,4 @@ java:
     COURT_FINDER_API_URL: http://fact-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     MANAGEMENT_HEALTH_MAIL_ENABLED: false
     SPRING_CLOUD_BOOTSTRAP_ENABLED: true
+    DOCUMENT_MANAGEMENT_SECURED: true

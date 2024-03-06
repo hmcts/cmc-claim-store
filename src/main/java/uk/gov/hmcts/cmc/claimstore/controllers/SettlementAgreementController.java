@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,7 +18,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
 
-@Api
+@Tag(name = "Settlement Agreement Controller")
 @RestController
 @RequestMapping(
     path = "/claims",
@@ -40,7 +40,7 @@ public class SettlementAgreementController {
     @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/settlement-agreement/reject",
         consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation("Rejects a settlement agreement as a defendant")
+    @Operation(summary = "Rejects a settlement agreement as a defendant")
     public Claim reject(
         @PathVariable("externalId") String externalId,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
@@ -52,7 +52,7 @@ public class SettlementAgreementController {
     @PostMapping(value = "{externalId:" + UUID_PATTERN + "}/settlement-agreement/countersign",
         consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation("Countersigns a settlement agreement as a defendant")
+    @Operation(summary = "Countersigns a settlement agreement as a defendant")
     public Claim counterSign(
         @PathVariable("externalId") String externalId,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation

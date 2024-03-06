@@ -23,7 +23,6 @@ import static java.time.LocalDateTime.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDFormaliseOption.CCJ;
 
@@ -174,7 +173,7 @@ public class ClaimantResponseMapperTest {
 
     @Test
     public void shouldMapCCDResponseRejectionToResponseRejection() {
-        CCDResponseRejection ccdResponse = SampleData.getResponseRejection();
+        CCDResponseRejection ccdResponse = SampleData.getResponseRejectionWithPaymentReceived();
         Claim.ClaimBuilder claimBuilder = Claim.builder();
 
         mapper.from(ccdResponse, claimBuilder);
@@ -222,11 +221,7 @@ public class ClaimantResponseMapperTest {
 
     @Test
     public void shouldMapCCDResponseRejectionForRejectSettlePreJudgementToResponseRejection() {
-        CCDResponseRejection ccdResponse = CCDResponseRejection.builder()
-            .settleForAmount(NO)
-            .paymentReceived(YES)
-            .submittedOn(now())
-            .build();
+        CCDResponseRejection ccdResponse = SampleData.getResponseRejectionWithPaymentReceived();
         Claim.ClaimBuilder claimBuilder = Claim.builder();
 
         mapper.from(ccdResponse, claimBuilder);

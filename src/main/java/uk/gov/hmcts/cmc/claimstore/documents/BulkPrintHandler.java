@@ -5,11 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.Printable;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintablePdf;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintableTemplate;
 import uk.gov.hmcts.cmc.claimstore.events.BulkPrintTransferEvent;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.PrintableDocumentService;
+import uk.gov.hmcts.cmc.claimstore.utils.CaseDataExtractorUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
@@ -23,6 +26,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildCoverSheetFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterClaimantMediationRefusedFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDirectionsOrderFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildLetterFileBaseName;
@@ -30,6 +34,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildOcon9Form
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildOconFormFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildPaperDefenceCoverLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
+import static uk.gov.hmcts.cmc.domain.utils.OCON9xResponseUtil.defendantFullDefenceMediationOCON9x;
 
 @Component
 @ConditionalOnProperty(prefix = "send-letter", name = "url")
@@ -37,12 +42,15 @@ public class BulkPrintHandler {
 
     private final PrintService bulkPrintService;
     private final LaunchDarklyClient launchDarklyClient;
+    private final PrintableDocumentService printableDocumentService;
 
     @Autowired
     public BulkPrintHandler(PrintService bulkPrintService,
-                            LaunchDarklyClient launchDarklyClient) {
+                            LaunchDarklyClient launchDarklyClient,
+                            PrintableDocumentService printableDocumentService) {
         this.bulkPrintService = bulkPrintService;
         this.launchDarklyClient = launchDarklyClient;
+        this.printableDocumentService = printableDocumentService;
     }
 
     @EventListener
@@ -60,23 +68,49 @@ public class BulkPrintHandler {
                     buildSealedClaimFileBaseName(claim.getReferenceNumber()))
                 ),
                 BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE,
-                event.getAuthorisation()
+                event.getAuthorisation(),
+                CaseDataExtractorUtils.getDefendant(claim)
             );
         } else {
             bulkPrintDetails = bulkPrintService.printHtmlLetter(claim, List.of(
                 new PrintableTemplate(
                     event.getDefendantLetterDocument(),
-                    buildDefendantLetterFileBaseName(claim.getReferenceNumber())),
+                    buildDefendantLetterFileBaseName(claim.getReferenceNumber())
+                ),
                 new PrintableTemplate(
                     event.getSealedClaimDocument(),
                     buildSealedClaimFileBaseName(claim.getReferenceNumber()))
-            ), BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE, event.getAuthorisation());
+                ),
+                BulkPrintRequestType.FIRST_CONTACT_LETTER_TYPE,
+                event.getAuthorisation(),
+                CaseDataExtractorUtils.getDefendant(claim));
+        }
+        return bulkPrintDetails;
+    }
+
+    public BulkPrintDetails printClaimantMediationRefusedLetter(Claim claim, String authorisation, Document document) {
+        requireNonNull(authorisation);
+        requireNonNull(claim);
+        requireNonNull(document);
+
+        BulkPrintDetails bulkPrintDetails = null;
+        if (defendantFullDefenceMediationOCON9x(claim)) {
+            bulkPrintDetails = bulkPrintService.printPdf(claim, List.of(
+                    new PrintablePdf(
+                        document,
+                        buildDefendantLetterClaimantMediationRefusedFileBaseName(
+                            claim.getReferenceNumber()))
+                ),
+                BulkPrintRequestType.CLAIMANT_MEDIATION_REFUSED_TYPE,
+                authorisation,
+                CaseDataExtractorUtils.getDefendant(claim));
         }
         return bulkPrintDetails;
     }
 
     public BulkPrintDetails printDirectionOrder(Claim claim, Document coverSheet,
-                                                Document directionsOrder, String authorisation) {
+                                                Document directionsOrder, String authorisation,
+                                                List<String> userList) {
         requireNonNull(claim);
         requireNonNull(coverSheet);
         requireNonNull(directionsOrder);
@@ -91,12 +125,34 @@ public class BulkPrintHandler {
                     directionsOrder,
                     buildDirectionsOrderFileBaseName(claim.getReferenceNumber()))
             ),
-            BulkPrintRequestType.DIRECTION_ORDER_LETTER_TYPE,
-            authorisation
+            BulkPrintRequestType.DIRECTION_ORDER_LETTER_TYPE, authorisation, userList
         );
     }
 
-    public BulkPrintDetails printGeneralLetter(Claim claim, Document generalLetterDocument, String authorisation) {
+    public BulkPrintDetails printDefendantNoticeOfTransferLetter(Claim claim,
+                                                                 CCDDocument ccdDocument,
+                                                                 String authorisation) {
+        requireNonNull(claim);
+        requireNonNull(ccdDocument);
+        requireNonNull(authorisation);
+
+        Document downloadedLetter = printableDocumentService.process(ccdDocument, authorisation);
+
+        return bulkPrintService.printPdf(
+            claim,
+            List.of(
+                new PrintablePdf(
+                    downloadedLetter,
+                    buildLetterFileBaseName(claim.getReferenceNumber(),
+                        String.valueOf(LocalDate.now())))
+            ),
+            BulkPrintRequestType.BULK_PRINT_TRANSFER_TYPE,
+            authorisation,
+            CaseDataExtractorUtils.getDefendantForBulkPrint(claim)
+        );
+    }
+
+    public BulkPrintDetails printGeneralLetter(Claim claim, Document generalLetterDocument, String authorisation, List<String> personList) {
         requireNonNull(claim);
         requireNonNull(generalLetterDocument);
         requireNonNull(authorisation);
@@ -110,7 +166,8 @@ public class BulkPrintHandler {
                         String.valueOf(LocalDate.now())))
             ),
             BulkPrintRequestType.GENERAL_LETTER_TYPE,
-            authorisation
+            authorisation,
+            personList
         );
     }
 
@@ -135,7 +192,7 @@ public class BulkPrintHandler {
         );
 
         return bulkPrintService.printPdf(claim, Collections.unmodifiableList(printableDocs),
-            BulkPrintRequestType.BULK_PRINT_TRANSFER_TYPE, authorisation);
+            BulkPrintRequestType.BULK_PRINT_TRANSFER_TYPE, authorisation, CaseDataExtractorUtils.getDefendantForBulkPrint(claim));
     }
 
     public BulkPrintDetails printPaperDefence(Claim claim, Document coverLetter, Document oconForm,
@@ -154,8 +211,9 @@ public class BulkPrintHandler {
                     oconForm,
                     buildOconFormFileBaseName(claim.getReferenceNumber())))
                 .build(),
-            BulkPrintRequestType.GENERAL_LETTER_TYPE,
-            authorisation);
+            BulkPrintRequestType.PAPER_DEFENCE_TYPE,
+            authorisation,
+            CaseDataExtractorUtils.getDefendant(claim));
     }
 
     public BulkPrintDetails printPaperDefence(Claim claim, Document coverLetter, Document oconForm, Document ocon9Form,
@@ -168,8 +226,9 @@ public class BulkPrintHandler {
         documents = getPrintables(claim, coverLetter, oconForm, ocon9Form, disableN9Form);
         return bulkPrintService.printPdf(claim,
             documents,
-            BulkPrintRequestType.GENERAL_LETTER_TYPE,
-            authorisation);
+            BulkPrintRequestType.PAPER_DEFENCE_TYPE,
+            authorisation,
+            CaseDataExtractorUtils.getDefendant(claim));
     }
 
     private ImmutableList<Printable> getPrintables(Claim claim, Document coverLetter, Document oconForm,

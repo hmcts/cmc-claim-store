@@ -14,7 +14,8 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.PrintableDocumentService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
-import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.SecuredDocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.utils.CaseDataExtractorUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.reform.sendletter.api.Document;
 import java.util.List;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ADD_BULK_PRINT_DETAILS;
+import static uk.gov.hmcts.cmc.claimstore.utils.CaseDataExtractorUtils.getDefendant;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.GENERAL_LETTER;
 
@@ -34,7 +36,7 @@ public class BreathingSpaceLetterService {
     private final PrintableDocumentService printableDocumentService;
     private final PrintService bulkPrintService;
     private final ClaimService claimService;
-    private final DocumentManagementService documentManagementService;
+    private final SecuredDocumentManagementService securedDocumentManagementService;
     private final GeneralLetterService generalLetterService;
     private final String caseTypeId;
     private final String jurisdictionId;
@@ -45,7 +47,7 @@ public class BreathingSpaceLetterService {
         PrintableDocumentService printableDocumentService,
         PrintService bulkPrintService,
         ClaimService claimService,
-        DocumentManagementService documentManagementService,
+        SecuredDocumentManagementService securedDocumentManagementService,
         GeneralLetterService generalLetterService,
         @Value("${ocmc.caseTypeId}") String caseTypeId,
         @Value("${ocmc.jurisdictionId}") String jurisdictionId
@@ -55,7 +57,7 @@ public class BreathingSpaceLetterService {
         this.printableDocumentService = printableDocumentService;
         this.bulkPrintService = bulkPrintService;
         this.claimService = claimService;
-        this.documentManagementService = documentManagementService;
+        this.securedDocumentManagementService = securedDocumentManagementService;
         this.generalLetterService = generalLetterService;
         this.caseTypeId = caseTypeId;
         this.jurisdictionId = jurisdictionId;
@@ -89,7 +91,8 @@ public class BreathingSpaceLetterService {
                     bsLetterDoc,
                     buildDefendantLetterFileBaseName(claim.getReferenceNumber()))),
             BulkPrintRequestType.GENERAL_LETTER_TYPE,
-            authorisation
+            authorisation,
+            CaseDataExtractorUtils.getDefendant(claim)
         );
 
         ImmutableList<BulkPrintDetails> printDetails = ImmutableList.<BulkPrintDetails>builder()
@@ -102,7 +105,7 @@ public class BreathingSpaceLetterService {
     }
 
     public Claim uploadToDocumentManagement(PDF document, String authorisation, Claim claim) {
-        ClaimDocument claimDocument = documentManagementService.uploadDocument(authorisation, document);
+        ClaimDocument claimDocument = securedDocumentManagementService.uploadDocument(authorisation, document);
         ClaimDocumentCollection claimDocumentCollection = getClaimDocumentCollection(claim, claimDocument);
 
         return claimService.saveClaimDocuments(authorisation,
@@ -118,10 +121,11 @@ public class BreathingSpaceLetterService {
         return claimDocumentCollection;
     }
 
-    private CCDCase publishLetterFromCCD(CCDCase ccdCase, Claim claim, String authorisation, CCDDocument letterDoc) {
+    private CCDCase publishLetterFromCCD(CCDCase ccdCase, Claim claim, String authorisation, CCDDocument letterDoc, List<String> userList) {
         return generalLetterService.publishLetter(ccdCase.toBuilder().draftLetterDoc(letterDoc).build(),
             claim, authorisation,
-            letterDoc.getDocumentFileName());
+            letterDoc.getDocumentFileName(),
+            userList);
     }
 
     public CCDCase sendLetterToDefendantFomCCD(CCDCase ccdCase, Claim claim, String authorisation,
@@ -130,6 +134,6 @@ public class BreathingSpaceLetterService {
         CCDDocument letterDoc = CCDDocument.builder().documentUrl(letter)
             .documentFileName(fileName)
             .build();
-        return publishLetterFromCCD(ccdCase, claim, authorisation, letterDoc);
+        return publishLetterFromCCD(ccdCase, claim, authorisation, letterDoc, getDefendant(claim));
     }
 }

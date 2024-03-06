@@ -23,7 +23,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
-import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.document.SecuredDocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.DefendantResponseNotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -47,6 +47,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.Params.BEARER_TOKEN;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.ResponseSubmitted.referenceForClaimant;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.ResponseSubmitted.referenceForDefendant;
+import static uk.gov.hmcts.cmc.claimstore.utils.CaseDataExtractorUtils.getDefendant;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 
 @Service
@@ -65,7 +66,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
     private final DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
     private final String paperResponseAdmissionTemplateId;
     private final UserService userService;
-    private final DocumentManagementService documentManagementService;
+    private final SecuredDocumentManagementService securedDocumentManagementService;
     private final Clock clock;
     private final GeneralLetterService generalLetterService;
     private final CaseEventService caseEventService;
@@ -91,7 +92,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
              @Value("${ocmc.jurisdictionId}")
                  String jurisdictionId,
              UserService userService,
-             DocumentManagementService documentManagementService,
+             SecuredDocumentManagementService securedDocumentManagementService,
              Clock clock,
              GeneralLetterService generalLetterService,
              CaseEventService caseEventService,
@@ -103,7 +104,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
         this.docAssemblyTemplateBodyMapper = docAssemblyTemplateBodyMapper;
         this.paperResponseAdmissionTemplateId = paperResponseAdmissionTemplateId;
         this.userService = userService;
-        this.documentManagementService = documentManagementService;
+        this.securedDocumentManagementService = securedDocumentManagementService;
         this.clock = clock;
         this.generalLetterService = generalLetterService;
         this.caseEventService = caseEventService;
@@ -198,7 +199,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
             docAssemblyTemplateBodyMapper.paperResponseAdmissionLetter(updatedCCDCase,
                 userService.getUserDetails(authorisation).getFullName()));
 
-        var documentMetadata = documentManagementService.getDocumentMetaData(
+        var documentMetadata = securedDocumentManagementService.getDocumentMetaData(
             authorisation,
             URI.create(docAssemblyResponse.getRenditionOutputLocation()).getPath()
         );
@@ -212,7 +213,7 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
             .documentUrl(docAssemblyResponse.getRenditionOutputLocation())
             .build();
 
-        printLetter(claim, authorisation, ccdDocument);
+        printLetter(claim, authorisation, ccdDocument, getDefendant(claim));
 
         CCDCollectionElement<CCDClaimDocument> claimDocument = CCDCollectionElement.<CCDClaimDocument>builder()
             .value(CCDClaimDocument.builder()
@@ -232,8 +233,8 @@ public class PaperResponseAdmissionCallbackHandler extends CallbackHandler {
             .build();
     }
 
-    private void printLetter(Claim claim, String authorisation, CCDDocument ccdDocument) {
-        generalLetterService.printLetter(authorisation, ccdDocument, claim);
+    private void printLetter(Claim claim, String authorisation, CCDDocument ccdDocument, List<String> personList) {
+        generalLetterService.printLetter(authorisation, ccdDocument, claim, personList);
     }
 
     private void sendDefendantEmail(CCDCase updatedCCDCase, Claim claim) {

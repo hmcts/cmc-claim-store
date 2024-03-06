@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -19,7 +19,7 @@ import uk.gov.hmcts.cmc.domain.models.ScannedDocumentType;
 
 import javax.validation.constraints.NotBlank;
 
-@Api
+@Tag(name = "Scanned Documents Controller")
 @RestController
 @RequestMapping("/scanned-documents")
 public class ScannedDocumentsController {
@@ -32,17 +32,17 @@ public class ScannedDocumentsController {
         this.documentsService = documentsService;
     }
 
-    @ApiOperation("Returns a scanned pdf for a given claim external id")
+    @Operation(summary = "Returns a scanned pdf for a given claim external id")
     @GetMapping(
         value = "/{externalId}/{documentType}/{documentSubtype}",
         produces = MediaType.APPLICATION_PDF_VALUE
     )
     public ResponseEntity<ByteArrayResource> scannedDocument(
-        @ApiParam("Claim external id")
+        @Parameter(name = "Claim external id")
         @PathVariable("externalId") @NotBlank String externalId,
-        @ApiParam("Claim document type")
+        @Parameter(name = "Claim document type")
         @PathVariable("documentType") @NotBlank String documentType,
-        @ApiParam("Claim document subtype")
+        @Parameter(name = "Claim document subtype")
         @PathVariable("documentSubtype") @NotBlank String documentSubtype,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
