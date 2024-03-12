@@ -4,38 +4,20 @@
         <cve>CVE-2021-28170</cve>
         <cve>CVE-2021-27568</cve>
         <cve>CVE-2022-38752</cve>
-        <cve>CVE-2022-41946</cve>
         <cve>CVE-2021-22044</cve>
         <cve>CVE-2022-22978</cve>
         <cve>CVE-2022-22976</cve>
         <cve>CVE-2021-22119</cve>
-        <cve>CVE-2022-45688</cve>
-        <cve>CVE-2023-24998</cve>
-        <cve>CVE-2022-1471</cve>
         <cve>CVE-2022-31692</cve>
-        <cve>CVE-2023-28708</cve>
         <cve>CVE-2023-20861</cve>
         <cve>CVE-2023-20863</cve>
         <cve>CVE-2023-20873</cve>
         <cve>CVE-2023-20862</cve>
-        <cve>CVE-2023-20883</cve>
-        <cve>CVE-2020-8908</cve>
-        <cve>CVE-2023-2976</cve>
-        <cve>CVE-2023-35116</cve>
-        <cve>CVE-2023-39017</cve>
-        <cve>CVE-2023-34034</cve>
         <cve>CVE-2023-33201</cve>
         <cve>CVE-2020-5408</cve>
         <cve>CVE-2016-1000027</cve>
-        <cve>CVE-2023-41080</cve>
         <cve>CVE-2023-31419</cve>
         <cve>CVE-2023-31418</cve>
-        <cve>CVE-2023-5072</cve>
-        <cve>CVE-2023-42795</cve>
-        <cve>CVE-2023-45648</cve>
-        <cve>CVE-2023-31582</cve>
-        <cve>CVE-2023-44487</cve>
-        <cve>CVE-2023-6378</cve>
     </suppress>
     <suppress until="2024-04-18">
         <cve>CVE-2023-20860</cve>
@@ -43,5 +25,22 @@
         <cve>CVE-2023-34055</cve>
         <cve>CVE-2023-46589</cve>
         <cve>CVE-2023-6378</cve>
+        <cve>CVE-2023-5072</cve>
+        <cve>CVE-2022-45688</cve>
+        <cve>CVE-2023-24998</cve>
+        <cve>CVE-2020-8908</cve>
+        <cve>CVE-2023-2976</cve>
+        <cve>CVE-2023-35116</cve>
+        <cve>CVE-2023-31582</cve>
+        <cve>CVE-2022-41946</cve>
+        <cve>CVE-2023-39017</cve>
+        <cve>CVE-2022-1471</cve>
+        <cve>CVE-2023-20883</cve>
+        <cve>CVE-2023-34034</cve>
+        <cve>CVE-2023-44487</cve>
+        <cve>CVE-2023-42795</cve>
+        <cve>CVE-2023-41080</cve>
+        <cve>CVE-2023-45648</cve>
+        <cve>CVE-2023-28708</cve>
     </suppress>
 </suppressions>
