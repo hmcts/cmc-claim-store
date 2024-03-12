@@ -313,17 +313,20 @@ public class OrderCreator {
     }
 
     private Map<String, Object> buildCourtsList(Pilot pilot, LocalDateTime claimCreatedDate, String hearingCourtName) {
+        logger.info("hearingCourtName {}", hearingCourtName);
         List<Map<String, String>> listItems = pilotCourtService.getPilotHearingCourts(pilot, claimCreatedDate).stream()
             .sorted(Comparator.comparing(HearingCourt::getName))
             .map(hearingCourt -> {
                 String id = pilotCourtService.getPilotCourtId(hearingCourt);
+                logger.info("Court id {}", id);
                 return Map.of(DYNAMIC_LIST_CODE, id, DYNAMIC_LIST_LABEL, hearingCourt.getName());
             })
             .collect(Collectors.toList());
 
         Map<String, String> otherCourtItem = Map.of(DYNAMIC_LIST_CODE,
             PilotCourtService.OTHER_COURT_ID, DYNAMIC_LIST_LABEL, "Other Court");
-
+        logger.info("Court otherCourtItem {}", otherCourtItem);
+        logger.info("Court pilot {}", pilot);
         if (pilot == Pilot.JDDO) {
             listItems.add(otherCourtItem);
         }
@@ -337,13 +340,15 @@ public class OrderCreator {
 
         Optional<Map<String, String>> selectedCourt =
             listItems.stream().filter(s -> s.get(DYNAMIC_LIST_LABEL).equals(hearingCourtName)).findFirst();
-
+        logger.info("Court selectedCourt {}", selectedCourt);
         if (selectedCourt.isPresent()) {
+            logger.info("Court selectedCourt if {}", selectedCourt.get());
             hearingCourtListDefinition.put(DYNAMIC_LIST_SELECTED_VALUE, selectedCourt.get());
         } else if (pilot == Pilot.JDDO) {
+            logger.info("Court pilot {} and selectedCourt else {}", pilot, otherCourtItem);
             hearingCourtListDefinition.put(DYNAMIC_LIST_SELECTED_VALUE, otherCourtItem);
         }
-
+        logger.info("Court hearingCourtListDefinition {}", hearingCourtListDefinition);
         return hearingCourtListDefinition;
     }
 
