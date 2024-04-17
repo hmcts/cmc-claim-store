@@ -25,7 +25,7 @@ dependencyUpdates.resolutionStrategy = {
 }
 
 def springBootVersion = plugins.getPlugin('org.springframework.boot').class.package.implementationVersion
-def springCloudVersion = '2021.0.3'
+def springCloudVersion = '2021.0.9'
 
 def versions = [
   logback           : '1.2.13',
@@ -33,7 +33,7 @@ def versions = [
   reformJavaLogging : '5.1.7',
   loggingAppinsights : '5.1.7',
   restAssuredVersion: '4.2.0',
-  jackson           : '2.16.1',
+  jackson           : '2.17.0',
   junit             : '5.7.1',
   junitPlatform     : '1.7.1',
   elasticSearch     : '7.17.18'
@@ -115,7 +115,10 @@ allprojects {
       dependencySet(group: 'com.google.guava', version: '32.0.1-jre') {
         entry 'guava'
       }
-
+      //Solves CVE-2023-35116
+      dependency group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
+      dependency group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.jackson
+      dependency group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: versions.jackso
 
       // solves CVE-2022-25857
       dependencySet(
@@ -125,6 +128,11 @@ allprojects {
         entry 'snakeyaml'
       }
 
+      //Solves CVE-2023-6481, CVE-2023-6378
+      dependencySet(group: 'ch.qos.logback', version: '1.2.13') {
+        entry 'logback-core'
+        entry 'logback-classic'
+      }
 
 
       dependencySet(
@@ -168,6 +176,8 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-quartz'
 
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
+
+  implementation group: 'org.json', name: 'json', version: '20240303'
 
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
   implementation group: 'ch.qos.logback', name: 'logback-core', version: versions.logback
