@@ -118,10 +118,11 @@ allprojects {
       //Solves CVE-2023-35116
       dependency group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
       dependency group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.jackson
-      dependency group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: versions.jackso
+      dependency group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: versions.jackson
 
-      //Solves CVE-2022-45688, CVE-2023-5072
-      dependency group: 'org.json', name: 'json', version: '20240303'
+      //Solves CVE-2023-39017
+      dependency group: 'org.quartz-scheduler', name: 'quartz', version: '2.3.2'
+
 
       // solves CVE-2022-25857
       dependencySet(
@@ -192,7 +193,7 @@ dependencies {
   implementation group: 'org.elasticsearch', name: 'elasticsearch', version: versions.elasticSearch
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.2'
 
-  implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.2-RELEASE'
+  implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.0.1-RELEASE'
 
   implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformJavaLogging
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.loggingAppinsights
