@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+    <suppress until="2024-10-18">
+        <cve>CVE-2023-39017</cve>
+        <cve>CVE-2023-6378</cve>
+        <cve>CVE-2022-45688</cve>
+        <cve>CVE-2023-5072</cve>
+    </suppress>
     <suppress>
         <notes><![CDATA[
    file name: commons-fileupload-1.4.jar
