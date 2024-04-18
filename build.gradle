@@ -25,7 +25,7 @@ dependencyUpdates.resolutionStrategy = {
 }
 
 def springBootVersion = plugins.getPlugin('org.springframework.boot').class.package.implementationVersion
-def springCloudVersion = '2021.0.3'
+def springCloudVersion = '2021.0.9'
 
 def versions = [
   logback           : '1.2.13',
@@ -33,7 +33,7 @@ def versions = [
   reformJavaLogging : '5.1.7',
   loggingAppinsights : '5.1.7',
   restAssuredVersion: '4.2.0',
-  jackson           : '2.16.1',
+  jackson           : '2.17.0',
   junit             : '5.7.1',
   junitPlatform     : '1.7.1',
   elasticSearch     : '7.17.18'
@@ -110,57 +110,17 @@ allprojects {
       mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
     dependencies {
-      // CVE-2020-13935
-      dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.86') {
-        entry 'tomcat-embed-core'
-        entry 'tomcat-embed-el'
-        entry 'tomcat-embed-websocket'
-      }
       // checkstyle needs a certain version and so does spring fox swagger, so can't use latest
       // fun times...
       dependencySet(group: 'com.google.guava', version: '32.0.1-jre') {
         entry 'guava'
       }
-      // solves CVE-2019-12086
-      // remove once spring manager incorporates this changes
-      dependencySet(
-        group: 'com.fasterxml.jackson.core',
-        version: versions.jackson
-      ) {
-        entry 'jackson-core'
-      }
-      dependencySet(
-        group: 'com.fasterxml.jackson.core',
-        version: versions.jackson
-      ) {
-        entry 'jackson-databind'
-      }
-      dependencySet(
-        group: 'com.fasterxml.jackson.datatype',
-        version: versions.jackson
-      ) {
-        entry 'jackson-datatype-jdk8'
-        entry 'jackson-datatype-jsr310'
-      }
-      dependencySet(
-        group: 'com.fasterxml.jackson.module',
-        version: versions.jackson
-      ) {
-        entry 'jackson-module-parameter-names'
-      }
-      dependencySet(
-        group: 'com.fasterxml.jackson.core',
-        version: versions.jackson
-      ) {
-        entry 'jackson-annotations'
-      }
-      // solves CVE-2019-13990
-      dependencySet(
-        group: 'org.quartz-scheduler',
-        version: '2.3.2'
-      ) {
-        entry 'quartz'
-      }
+      //Solves CVE-2023-35116
+      dependency group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
+      dependency group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.jackson
+      dependency group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: versions.jackson
+
+
       // solves CVE-2022-25857
       dependencySet(
         group: 'org.yaml',
@@ -168,20 +128,13 @@ allprojects {
       ) {
         entry 'snakeyaml'
       }
+
+      //Solves CVE-2023-6481,
       dependencySet(group: 'ch.qos.logback', version: '1.2.13') {
         entry 'logback-core'
         entry 'logback-classic'
       }
-      // solves CVE-2019-14900
-      dependency 'org.hibernate:hibernate-validator:6.2.4.Final'
 
-      // solves CVE-2020-25638
-      dependencySet(
-        group: 'org.hibernate',
-        version: '5.4.24.Final'
-      ) {
-        entry 'hibernate-core'
-      }
       dependencySet(
         group: 'org.hibernate',
         version: '6.2.4.Final'
@@ -236,7 +189,7 @@ dependencies {
   implementation group: 'org.elasticsearch', name: 'elasticsearch', version: versions.elasticSearch
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.2'
 
-  implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.2-RELEASE'
+  implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.0.1-RELEASE'
 
   implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformJavaLogging
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.loggingAppinsights
