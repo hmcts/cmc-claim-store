@@ -1,5 +1,11 @@
 postgresql:
   enabled: false
+idam-pr:
+  enabled: false
+xui-webapp:
+  enabled: false
+aac-manage-case-assignment:
+  enabled: false
 ccd:
   enabled: false
 

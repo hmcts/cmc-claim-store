@@ -38,6 +38,35 @@ java:
       username: hmcts
       password: hmcts
 
+idam-pr:
+  releaseNameOverride: ${SERVICE_NAME}-xui-idam-pr
+  enabled: true
+  redirect_uris:
+    XUI:
+      - https://xui-${SERVICE_NAME}.preview.platform.hmcts.net/oauth2/callback
+
+xui-webapp:
+  enabled: true
+  nodejs:
+    imagePullPolicy: Always
+    releaseNameOverride: ${SERVICE_NAME}-xui-webapp
+    image: hmctspublic.azurecr.io/xui/webapp:latest
+    ingressHost: xui-${SERVICE_FQDN}
+    devcpuRequests: 500m
+    devmemoryRequests: 512Mi
+    devcpuLimits: 1
+    devmemoryLimits: 1Gi
+    environment:
+      HEALTH_CCD_COMPONENT_API: http://${SERVICE_NAME}-ccd-api-gw/health
+      HEALTH_CCD_DATA_API: http://${SERVICE_NAME}-ccd-data-store-api/health
+      HEALTH_TERMS_AND_CONDITIONS_API: http://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal/health
+      SERVICES_CCD_COMPONENT_API: http://${SERVICE_NAME}-ccd-api-gw
+      SERVICES_CCD_DATA_STORE_API: http://${SERVICE_NAME}-ccd-data-store-api
+      SERVICES_TERMS_AND_CONDITIONS: http://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal
+      JURISDICTIONS: CIVIL
+      LAUNCH_DARKLY_CLIENT_ID: ~
+      SERVICES_CCD_CASE_ASSIGNMENT_API: http://${SERVICE_NAME}-aac-manage-case-assignment
+
 ccd:
   enabled: true
   ccd:
@@ -150,3 +179,32 @@ ccd:
     - caseworker-cmc-pcqextractor
     - payments
     - TTL-admin
+
+aac-manage-case-assignment:
+  enabled: true
+  java:
+    disableKeyVaults: true
+    imagePullPolicy: Always
+    releaseNameOverride: ${SERVICE_NAME}-aac-manage-case-assignment
+    image: hmctspublic.azurecr.io/aac/manage-case-assignment:latest
+    ingressHost: manage-case-assignment-${SERVICE_NAME}.preview.platform.hmcts.net
+    environment:
+      IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
+      IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
+      OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts
+      S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      MCA_DS_PROXY_URLS_ALLOWED_LIST: /searchCases.*,/internal/searchCases.*,/internal/cases.*
+      MCA_DEF_STORE_PROXY_URLS_ALLOWED_LIST: /api/display/challenge-questions.*
+      MANAGE_CASE_S2S_AUTHORISED_SERVICES: xui_webapp,ccd_data,fpl_case_service,divorce_frontend,divorce_ccd_submission,finrem_case_orchestration,civil_service
+      CCD_DATA_STORE_API_BASE_URL: http://${SERVICE_NAME}-ccd-data-store-api
+      CCD_DEFINITION_STORE_API_BASE_URL: http://${SERVICE_NAME}-ccd-definition-store
+      PRD_HOST: http://rd-professional-api-aat.service.core-compute-aat.internal
+      IDAM_CAA_USERNAME: ${IDAM_CAA_USERNAME}
+      IDAM_CAA_PASSWORD: ${IDAM_CAA_PASSWORD}
+      IDAM_CLIENT_SECRET: ${IDAM_MCA_CLIENT_SECRET}
+      MANAGE_CASE_S2S_KEY: ${MANAGE_CASE_S2S_KEY}
+      IDAM_NOC_APPROVER_USERNAME: ${IDAM_NOC_APPROVER_USERNAME}
+      IDAM_NOC_APPROVER_PASSWORD: ${IDAM_NOC_APPROVER_PASSWORD}
+      NOTIFY_MCA_API_KEY: ${NOTIFY_MCA_API_KEY}
+    autoscaling:
+      enabled: false

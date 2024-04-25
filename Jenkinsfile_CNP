@@ -24,6 +24,15 @@ def secrets = [
     secret('idam-data-store-client-secret','IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET'),
     secret('idam-data-store-system-user-username','IDAM_DATA_STORE_SYSTEM_USER_USERNAME'),
     secret('idam-data-store-system-user-password','IDAM_DATA_STORE_SYSTEM_USER_PASSWORD')
+  ],
+  'aac-${env}': [
+    secret('idam-mca-client-secret', 'IDAM_MCA_CLIENT_SECRET'),
+    secret('idam-mca-system-user-username', 'IDAM_CAA_USERNAME'),
+    secret('idam-mca-system-user-password', 'IDAM_CAA_PASSWORD'),
+    secret('idam-noc-approver-username', 'IDAM_NOC_APPROVER_USERNAME'),
+    secret('idam-noc-approver-password', 'IDAM_NOC_APPROVER_PASSWORD'),
+    secret('aac-manage-case-s2s-secret', 'MANAGE_CASE_S2S_KEY'),
+    secret('notify-mca-api-key-secret', 'NOTIFY_MCA_API_KEY')
   ]
 ]
 
