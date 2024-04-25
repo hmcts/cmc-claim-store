@@ -12,10 +12,10 @@ maintainers:
     email: cmc-developers@HMCTS.NET
 dependencies:
   - name: java
-    version: 5.2.0
+    version: ~5.2.0
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
   - name: ccd
-    version: 8.0.29
+    version: ~8.0.29
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ccd.enabled
   - name: xui-webapp
