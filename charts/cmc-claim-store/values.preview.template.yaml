@@ -92,52 +92,6 @@ ccd:
     postgresPassword: hmcts
     devMode: true
 
-  ccd-admin-web:
-    nodejs:
-      image: hmctspublic.azurecr.io/ccd/admin-web:latest
-      ingressHost: ccd-admin-web-${SERVICE_FQDN}
-      keyVaults: []
-      environment:
-        IDAM_OAUTH2_AW_CLIENT_SECRET: ${ADMIN_WEB_IDAM_SECRET}
-    idam-pr:
-      enabled: true
-
-  ccd-user-profile-api:
-    java:
-      image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
-      keyVaults: []
-      environment:
-        USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin,cmc_claim_store
-
-  ccd-definition-store-api:
-    java:
-      image: hmctspublic.azurecr.io/ccd/definition-store-api:latest
-      imagePullPolicy: Always
-      keyVaults: []
-      environment:
-        DEFINITION_STORE_IDAM_KEY: ${DEFINITION_STORE_S2S_KEY}
-        DEFINITION_STORE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_gw,ccd_admin,cmc_claim_store
-        IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
-        OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/hmcts
-
-  am-role-assignment-service:
-    java:
-      environment:
-        CCD_DATA_STORE_URL: http://${SERVICE_NAME}-ccd-data-store-api
-      keyVaults:
-        am:
-          secrets:
-            - name: am-role-assignment-service-s2s-secret
-              alias: AM_ROLE_ASSIGNMENT_SERVICE_SECRET
-            - name: app-insights-connection-string
-              alias: app-insights-connection-string
-            - name: role-assignment-service-IDAM-CLIENT-SECRET
-              alias: ROLE_ASSIGNMENT_IDAM_CLIENT_SECRET
-            - name: role-assignment-service-IDAM-ADMIN-SECRET
-              alias: ROLE_ASSIGNMENT_IDAM_ADMIN_PASSWORD
-            - name: role-assignment-service-LD-SDK-KEY
-              alias: LD_SDK_KEY
-
   ccd-data-store-api:
     java:
       image: hmctspublic.azurecr.io/ccd/data-store-api:latest
