@@ -116,15 +116,14 @@ allprojects {
         entry 'guava'
       }
 
-
       //Solves CVE-2023-35116
       dependency group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
       dependency group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.jackson
       dependency group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: versions.jackson
 
+
       //Solves CVE-2022-45688, CVE-2023-5072
       dependency group: 'org.json', name: 'json', version: '20231013'
-
 
       // solves CVE-2022-25857
       dependencySet(
