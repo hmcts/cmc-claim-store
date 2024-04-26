@@ -157,7 +157,8 @@ ccd:
     environment:
       IMPORTER_USERNAME: ${IMPORTER_USERNAME}
       IMPORTER_PASSWORD: ${IMPORTER_PASSWORD}
-    definitionFilename: cmc-ccd.xlsx
+    definitions:
+      - https://build.hmcts.net/view/CMC/job/HMCTS_a_to_c/job/cmc-ccd-domain/job/master/lastSuccessfulBuild/artifact/definition/xlsx/cmc-ccd-aat.xlsx
     disableKeyVaults: true
     userRoles:
     - citizen
