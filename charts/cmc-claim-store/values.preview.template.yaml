@@ -115,10 +115,7 @@ ccd:
       releaseNameOverride: ${SERVICE_NAME}-am-role-assignment-service
       environment:
         RELEASE_REVISION: "{{ .Release.Revision }}"
-      keyVaults:
-        am:
-          secrets:
-            - role-assignment-service-LD-SDK-KEY
+      keyVaults: []
 
   ccd-definition-store-api:
     java:
