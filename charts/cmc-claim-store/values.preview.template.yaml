@@ -75,7 +75,11 @@ ccd:
     postgresql:
       enabled: false
     adminWeb:
-      enabled: true
+      enabled: false
+    managementWeb:
+      enabled: false
+    ras:
+      enabled: false
 
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
