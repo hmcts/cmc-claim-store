@@ -110,6 +110,40 @@ ccd:
         IDAM_DATA_STORE_SYSTEM_USER_PASSWORD: ${IDAM_DATA_STORE_SYSTEM_USER_PASSWORD}
         ROLE_ASSIGNMENT_URL: http://am-role-assignment-service-aat.service.core-compute-aat.internal
 
+  am-role-assignment-service:
+    java:
+      releaseNameOverride: ${SERVICE_NAME}-am-role-assignment-service
+      environment:
+        RELEASE_REVISION: "{{ .Release.Revision }}"
+      keyVaults:
+        am:
+          secrets:
+            - role-assignment-service-LD-SDK-KEY
+
+  ccd-definition-store-api:
+    java:
+      releaseNameOverride: ${SERVICE_NAME}-ccd-definition-store-api
+      imagePullPolicy: Always
+      devcpuRequests: 500m
+      devmemoryRequests: 512Mi
+      devcpuLimits: 2
+      devmemoryLimits: 1Gi
+      environment:
+        DEFINITION_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
+        DEFINITION_STORE_IDAM_KEY: ${CCD_DEFINITION_STORE_S2S_SECRET}
+        IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
+        RELEASE_REVISION: "{{ .Release.Revision }}"
+      disableKeyVaults: true
+
+  ccd-user-profile-api:
+    java:
+      releaseNameOverride: ${SERVICE_NAME}-ccd-user-profile-api
+      imagePullPolicy: Always
+      enviroment:
+        USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
+        RELEASE_REVISION: "{{ .Release.Revision }}"
+      disableKeyVaults: true
+
   ccd-user-profile-importer:
     image: hmctspublic.azurecr.io/ccd/user-profile-importer:db2r9a
     users:
