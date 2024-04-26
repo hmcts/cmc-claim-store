@@ -155,10 +155,10 @@ ccd:
   ccd-definition-importer:
     image: hmctspublic.azurecr.io/ccd/definition-importer:latest
     environment:
-      CCD_DEF_CLAIM_STORE_BASE_URL: http://${SERVICE_NAME}-java
-      OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/hmcts
+      IMPORTER_USERNAME: ${IMPORTER_USERNAME}
+      IMPORTER_PASSWORD: ${IMPORTER_PASSWORD}
     definitionFilename: cmc-ccd.xlsx
-    disableKeyVaults: true
+    secrets: []
     userRoles:
     - citizen
     - caseworker-cmc
