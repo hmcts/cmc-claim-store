@@ -38,12 +38,12 @@ java:
       username: hmcts
       password: hmcts
 
-#idam-pr:
-#  releaseNameOverride: ${SERVICE_NAME}-xui-idam-pr
-#  enabled: true
-#  redirect_uris:
-#    XUI:
-#      - https://xui-${SERVICE_NAME}.preview.platform.hmcts.net/oauth2/callback
+idam-pr:
+  releaseNameOverride: ${SERVICE_NAME}-xui-idam-pr
+  enabled: true
+  redirect_uris:
+    XUI:
+      - https://xui-${SERVICE_NAME}.preview.platform.hmcts.net/oauth2/callback
 
 xui-webapp:
   enabled: true
