@@ -61,7 +61,7 @@ allprojects {
   }
 
   jacoco {
-    toolVersion = '0.8.8' // jacocoMavenPluginVersion
+    toolVersion = '0.8.12' // jacocoMavenPluginVersion
     reportsDirectory = file("$buildDir/reports/jacoco")
   }
 
