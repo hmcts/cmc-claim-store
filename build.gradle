@@ -265,7 +265,7 @@ dependencies {
   testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.20.2'
   testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.11.2'
   testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.8.0'
-  testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.2'
+  testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.9'
   testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.18.0'
 
   testImplementation group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
