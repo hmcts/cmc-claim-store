@@ -141,7 +141,7 @@ allprojects {
 
       dependencySet(
         group: 'org.hibernate',
-        version: '6.2.4.Final'
+        version: '6.2.5.Final'
       ) {
         entry 'hibernate-validator'
       }
