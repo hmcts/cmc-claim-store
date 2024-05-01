@@ -8,7 +8,7 @@ import uk.gov.hmcts.cmc.domain.constraints.ValidEmployment;
 
 import java.util.List;
 import java.util.Optional;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;

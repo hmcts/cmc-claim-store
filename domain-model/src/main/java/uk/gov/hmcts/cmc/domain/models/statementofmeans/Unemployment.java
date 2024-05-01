@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import java.util.Optional;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 

@@ -8,7 +8,7 @@ import uk.gov.hmcts.cmc.rpa.DateFormatter;
 import uk.gov.hmcts.cmc.rpa.mapper.json.NullAwareJsonObjectBuilder;
 
 import java.time.LocalDate;
-import javax.json.JsonObject;
+import jakarta.json.JsonObject;
 
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseStatesPaidAccepted;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.statesPaidPaymentDeclarationDate;
