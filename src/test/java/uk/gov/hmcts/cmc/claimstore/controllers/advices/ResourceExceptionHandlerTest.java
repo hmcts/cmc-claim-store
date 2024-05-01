@@ -32,6 +32,7 @@ import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.net.SocketTimeoutException;
+import java.util.Collections;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -142,7 +143,7 @@ public class ResourceExceptionHandlerTest {
     public void testMethodNotSupported() {
         testTemplate(
             "expected exception for method not supported",
-            m -> new HttpRequestMethodNotSupportedException("method", m),
+            m -> new HttpRequestMethodNotSupportedException("method", Collections.singleton(m)),
             handler::methodNotSupported,
             HttpStatus.NOT_IMPLEMENTED,
             AppInsightsExceptionLogger::trace

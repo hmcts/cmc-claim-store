@@ -5,8 +5,8 @@ import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 import static uk.gov.hmcts.cmc.domain.constraints.ValidPartAdmissionConstraintValidator.Fields.PAYMENT_DECLARATION;
 import static uk.gov.hmcts.cmc.domain.constraints.ValidPartAdmissionConstraintValidator.Fields.PAYMENT_INTENTION;
@@ -72,6 +72,9 @@ public class ValidPartAdmissionConstraintValidator
         }
 
         return valid;
+    }
+
+    private void setValidationErrors(ConstraintValidatorContext context, String paymentDeclaration, String s) {
     }
 
     private static boolean isDefendantIndividual(Party defendant) {
