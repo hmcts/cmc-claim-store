@@ -13,7 +13,7 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Unemployment;
 
 import java.math.BigDecimal;
 import java.util.Collections;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidatorContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.rules;
 
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
@@ -12,7 +13,6 @@ import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 
 import java.time.LocalDate;
 import java.util.Optional;
-import javax.validation.constraints.NotNull;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;

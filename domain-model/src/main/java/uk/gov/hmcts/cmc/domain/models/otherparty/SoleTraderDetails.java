@@ -11,7 +11,7 @@ import uk.gov.hmcts.cmc.domain.models.party.TitledParty;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 
 import java.util.Optional;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 
 @SplitName
 @EqualsAndHashCode(callSuper = true)

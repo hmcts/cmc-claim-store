@@ -13,7 +13,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 
 import java.time.LocalDate;
-import javax.json.JsonObject;
+import jakarta.json.JsonObject;
 
 import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;

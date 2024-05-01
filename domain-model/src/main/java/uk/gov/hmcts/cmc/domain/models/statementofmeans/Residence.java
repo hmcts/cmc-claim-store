@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.cmc.domain.constraints.ValidResidence;
 
 import java.util.Optional;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 @Builder
 @EqualsAndHashCode

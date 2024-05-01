@@ -4,8 +4,8 @@ import uk.gov.hmcts.cmc.domain.models.AmountRow;
 
 import java.math.BigDecimal;
 import java.util.List;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class MinTotalAmountValidator implements ConstraintValidator<MinTotalAmount, List<AmountRow>> {
 

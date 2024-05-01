@@ -2,6 +2,8 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,8 +19,6 @@ import uk.gov.hmcts.cmc.claimstore.services.UserRolesService;
 import uk.gov.hmcts.cmc.domain.models.UserRoleRequest;
 
 import java.util.List;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 @Tag(name = "User Roles Controller")
 @RestController

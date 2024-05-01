@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.config;
 
 import feign.Client;
 import feign.httpclient.ApacheHttpClient;
+import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -21,7 +22,7 @@ public class HttpClientConfiguration {
     @Bean
     public RestTemplate restTemplate() {
         RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory(getHttpClient()));
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory((HttpClient) getHttpClient()));
         return restTemplate;
     }
 
