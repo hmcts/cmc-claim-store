@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.constraints;
 
+import jakarta.validation.ConstraintValidatorContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,8 +11,6 @@ import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
-
-import jakarta.validation.ConstraintValidatorContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
