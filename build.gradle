@@ -34,8 +34,8 @@ def versions = [
   loggingAppinsights : '5.1.7',
   restAssuredVersion: '4.2.0',
   jackson           : '2.17.0',
-  junit             : '5.7.1',
-  junitPlatform     : '1.7.1',
+  junit             : '5.10.1',
+  junitPlatform     : '1.10.2',
   elasticSearch     : '7.17.20'
 ]
 
@@ -262,8 +262,8 @@ dependencies {
   testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: versions.junit
   testImplementation group: 'org.junit.platform', name: 'junit-platform-commons', version: versions.junitPlatform
   testImplementation group: 'org.junit.platform', name: 'junit-platform-engine', version: versions.junitPlatform
-  testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.20.2'
-  testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.11.2'
+  testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.25.3'
+  testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.11.0'
   testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.8.0'
   testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.2'
   testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.18.0'
