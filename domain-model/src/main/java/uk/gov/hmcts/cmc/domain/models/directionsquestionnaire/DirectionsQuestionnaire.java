@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models.directionsquestionnaire;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -8,8 +10,6 @@ import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.util.List;
 import java.util.Optional;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Size;
 
 import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;

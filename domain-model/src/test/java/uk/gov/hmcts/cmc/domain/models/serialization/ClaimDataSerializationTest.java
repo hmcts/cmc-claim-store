@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models.serialization;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.config.JacksonConfiguration;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
@@ -27,7 +27,7 @@ public class ClaimDataSerializationTest {
         ObjectMapper mapper = new JacksonConfiguration().objectMapper();
 
         //when
-        ClaimData claimData = mapper.readValue(input, ClaimData.class);
+                ClaimData claimData = mapper.readValue(input, ClaimData.class);
 
         //then
         ClaimData other;

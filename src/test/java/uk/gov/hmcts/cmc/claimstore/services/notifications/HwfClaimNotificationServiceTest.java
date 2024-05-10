@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.services.notifications;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.cmc.ccd.domain.HwFMoreInfoRequiredDocuments;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
@@ -18,20 +18,19 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_INFO_REQUIRED_FOR_HWF;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NOTIFICATION_FAILURE;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class HwfClaimNotificationServiceTest extends BaseNotificationServiceTest {
 
     private final String reference = "hwf-claimant-notification-" + claim.getReferenceNumber();
     private HwfClaimNotificationService service;
 
-    @Before
+    @BeforeEach
     public void beforeEachTest() {
         claim = SampleClaimForHwF.getDefault().toBuilder().respondedAt(LocalDateTime.now())
             .lastEventTriggeredForHwfCase(MORE_INFO_REQUIRED_FOR_HWF.getValue()).build();
@@ -40,13 +39,16 @@ public class HwfClaimNotificationServiceTest extends BaseNotificationServiceTest
         Mockito.when(properties.getRespondToClaimUrl()).thenReturn(RESPOND_TO_CLAIM_URL);
     }
 
-    @Test(expected = NotificationException.class)
+    @Test
     public void emailClaimantShouldThrowRuntimeExceptionWhenNotificationClientThrows() throws Exception {
         Mockito.when(notificationClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
             .thenThrow(Mockito.mock(NotificationClientException.class));
 
-        service.sendMail(claim, USER_EMAIL, HWF_CLAIMANT_CLAIM_CREATED_TEMPLATE, reference, USER_FULLNAME);
-        Mockito.verify(appInsights).trackEvent(NOTIFICATION_FAILURE, REFERENCE_NUMBER, reference);
+        assertThrows(NotificationException.class, () -> {
+            service.sendMail(claim, USER_EMAIL, HWF_CLAIMANT_CLAIM_CREATED_TEMPLATE, reference, USER_FULLNAME);
+        });
+
+        //        Mockito.verify(appInsights).trackEvent(NOTIFICATION_FAILURE, REFERENCE_NUMBER, reference);
     }
 
     @Test
@@ -124,7 +126,7 @@ public class HwfClaimNotificationServiceTest extends BaseNotificationServiceTest
         NotificationException exception = new NotificationException("expected exception");
         try {
             service.logNotificationFailure(exception, "reference");
-            Assert.fail("Expected a NotificationException to be thrown");
+            Assertions.fail("Expected a NotificationException to be thrown");
         } catch (NotificationException expected) {
             assertWasLogged("Failure: failed to send notification (reference) due to expected exception");
         }

@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.services.notifications;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -15,6 +15,7 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDateTime;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -23,7 +24,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NOTIFICATION_FAILURE;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class CCJNotificationServiceTest extends BaseNotificationServiceTest {
 
     @Mock
@@ -34,7 +35,7 @@ public class CCJNotificationServiceTest extends BaseNotificationServiceTest {
 
     private CCJNotificationService ccjNotificationService;
 
-    @Before
+    @BeforeEach
     public void setup() {
         ccjNotificationService = new CCJNotificationService(
             new NotificationService(notificationClient, appInsights),
@@ -64,7 +65,7 @@ public class CCJNotificationServiceTest extends BaseNotificationServiceTest {
             );
     }
 
-    @Test(expected = NotificationException.class)
+    @Test
     public void shouldThrowExceptionWhenNotificationFails() throws Exception {
         when(emailTemplates.getClaimantCCJRequested()).thenReturn(CLAIMANT_CCJ_REQUESTED_TEMPLATE);
 
@@ -76,11 +77,13 @@ public class CCJNotificationServiceTest extends BaseNotificationServiceTest {
             .sendEmail(anyString(), anyString(), anyMap(), anyString()))
             .thenThrow(new NotificationClientException("Some problem"));
 
-        ccjNotificationService.notifyClaimantForCCJRequest(claim);
+        assertThrows(NotificationException.class, () -> {
+            ccjNotificationService.notifyClaimantForCCJRequest(claim);
+        });
 
         verify(notificationClient).sendEmail(anyString(), anyString(), anyMap(), anyString());
-        verify(appInsights)
-            .trackEvent(eq(NOTIFICATION_FAILURE), eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+                verify(appInsights)
+                    .trackEvent(eq(NOTIFICATION_FAILURE), eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 
     @Test
@@ -106,7 +109,7 @@ public class CCJNotificationServiceTest extends BaseNotificationServiceTest {
             );
     }
 
-    @Test(expected = NotificationException.class)
+    @Test
     public void shouldThrowExceptionWhenNotificationFailsCCJByAdmission() throws Exception {
         when(emailTemplates.getResponseByClaimantEmailToDefendant())
             .thenReturn(RESPONSE_BY_CLAIMANT_EMAIL_TO_DEFENDANT);
@@ -122,11 +125,13 @@ public class CCJNotificationServiceTest extends BaseNotificationServiceTest {
             .sendEmail(anyString(), anyString(), anyMap(), anyString()))
             .thenThrow(new NotificationClientException("Some problem"));
 
-        ccjNotificationService.notifyDefendantForCCJRequested(claim);
+        assertThrows(NotificationException.class, () -> {
+            ccjNotificationService.notifyDefendantForCCJRequested(claim);
+        });
 
         verify(notificationClient).sendEmail(anyString(), anyString(), anyMap(), anyString());
-        verify(appInsights)
-            .trackEvent(eq(NOTIFICATION_FAILURE), eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+                verify(appInsights)
+                    .trackEvent(eq(NOTIFICATION_FAILURE), eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 
     @Test

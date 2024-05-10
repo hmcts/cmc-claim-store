@@ -1,14 +1,14 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
-import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.Test;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
-
-import java.util.Set;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+
+import java.util.Set;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,7 +42,7 @@ public class ResponseTest {
         assertThat(errors)
             .hasSize(1)
             .contains(
-                "defenceType : may not be null"
+                "defenceType : must not be null"
             );
     }
 

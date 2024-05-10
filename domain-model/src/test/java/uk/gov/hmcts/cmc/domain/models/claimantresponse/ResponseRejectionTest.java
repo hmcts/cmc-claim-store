@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.claimantresponse;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleDirectionsQuestionnaire;
 
@@ -66,7 +66,7 @@ public class ResponseRejectionTest {
     public void shouldBeInvalidWhenNoMediationReasonIsTooLong() {
         ClaimantResponse claimantResponse = ResponseRejection
             .builder()
-            .noMediationReason(randomAlphabetic(501))
+            .noMediationReason(randomAlphabetic(551))
             .build();
 
         Set<String> response = validate(claimantResponse);

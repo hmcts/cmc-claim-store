@@ -1,8 +1,9 @@
 package uk.gov.hmcts.cmc.domain.constraints;
 
-import java.time.LocalDate;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+
+import java.time.LocalDate;
 
 public class DateNotInThePastConstraintValidator implements ConstraintValidator<DateNotInThePast, LocalDate> {
 

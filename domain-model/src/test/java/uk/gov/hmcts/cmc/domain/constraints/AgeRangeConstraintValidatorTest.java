@@ -1,18 +1,18 @@
 package uk.gov.hmcts.cmc.domain.constraints;
 
 import jakarta.validation.ConstraintValidatorContext;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class AgeRangeConstraintValidatorTest {
 
     @Mock
@@ -23,7 +23,7 @@ public class AgeRangeConstraintValidatorTest {
 
     private final AgeRangeConstraintValidator validator = new AgeRangeConstraintValidator();
 
-    @Before
+    @BeforeEach
     public void beforeEachTest() {
         validator.initialize(with(18, 150));
     }

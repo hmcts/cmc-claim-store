@@ -3,11 +3,11 @@ package uk.gov.hmcts.cmc.claimstore.rpa;
 import com.google.common.collect.ImmutableMap;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -54,7 +55,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class ResetRpaCallbackHandlerTest {
     private static final String AUTHORISATION = "Bearer: aaa";
     private static final String EXTERNAL_ID = "external id";
@@ -85,7 +86,7 @@ public class ResetRpaCallbackHandlerTest {
 
     private ResetRpaCallbackHandler resetRpaCallbackHandler;
 
-    @Before
+    @BeforeEach
     public void setup() {
         resetRpaCallbackHandler = new ResetRpaCallbackHandler(caseDetailsConverter, roboticsNotificationService);
         when(caseDetailsConverter.convertToMap(any(CCDCase.class))).thenReturn(getCcdCaseMap());
@@ -195,10 +196,12 @@ public class ResetRpaCallbackHandlerTest {
         assertTrue(response.getErrors().get(0).contains("This claim is still not lifted its Breathing space"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowBadRequestExceptionWhenInvalidEventSent() {
         callbackRequest = getCallbackRequest(INVALID);
-        resetRpaCallbackHandler.handle(getCallbackParams(callbackRequest));
+        assertThrows(IllegalArgumentException.class, () -> {
+            resetRpaCallbackHandler.handle(getCallbackParams(callbackRequest));
+        });
     }
 
     @Test

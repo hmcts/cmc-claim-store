@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.email;
 
+import ch.qos.logback.classic.Logger;
 import com.microsoft.applicationinsights.TelemetryClient;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +20,7 @@ public class EmailService {
 
     public static final String NOTIFICATION_FAILURE = "Notification - failure";
     public static final String EMAIL_SUBJECT = "EmailSubject";
-    private final Logger logger = LoggerFactory.getLogger(EmailService.class);
+    private final Logger logger = (Logger) LoggerFactory.getLogger(EmailService.class);
 
     private final TelemetryClient telemetryClient;
     private final boolean asyncEventOperationEnabled;

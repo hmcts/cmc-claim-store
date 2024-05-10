@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 
@@ -58,6 +58,6 @@ public class NameTest {
         //then
         assertThat(messages)
             .hasSize(1)
-            .contains("claimants[0].name : may not be empty");
+            .contains("claimants[0].name : must not be blank");
     }
 }

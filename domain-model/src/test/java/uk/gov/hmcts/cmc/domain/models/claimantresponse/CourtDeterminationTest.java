@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.claimantresponse;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 
@@ -78,7 +78,7 @@ public class CourtDeterminationTest {
         Set<String> response = validate(courtDetermination);
 
         assertThat(response).hasSize(1)
-            .containsOnly("courtDecision : may not be null");
+            .containsOnly("courtDecision : must not be null");
     }
 
     @Test
@@ -93,7 +93,7 @@ public class CourtDeterminationTest {
         Set<String> response = validate(courtDetermination);
 
         assertThat(response).hasSize(1)
-            .containsOnly("courtPaymentIntention : may not be null");
+            .containsOnly("courtPaymentIntention : must not be null");
     }
 
     @Test
@@ -111,7 +111,7 @@ public class CourtDeterminationTest {
         Set<String> response = validate(courtDetermination);
 
         assertThat(response).hasSize(1)
-            .containsOnly("disposableIncome : may not be null");
+            .containsOnly("disposableIncome : must not be null");
     }
 
     @Test
