@@ -1,9 +1,10 @@
 
 package uk.gov.hmcts.cmc.domain.constraints;
 
-import java.util.regex.Pattern;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+
+import java.util.regex.Pattern;
 
 public class PostcodeConstraintValidator implements ConstraintValidator<Postcode, String> {
 

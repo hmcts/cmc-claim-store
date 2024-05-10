@@ -1,12 +1,11 @@
 package uk.gov.hmcts.cmc.domain.constraints;
 
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
-
-import jakarta.validation.ConstraintValidator;
-import jakarta.validation.ConstraintValidatorContext;
 
 import static uk.gov.hmcts.cmc.domain.constraints.ValidPartAdmissionConstraintValidator.Fields.PAYMENT_DECLARATION;
 import static uk.gov.hmcts.cmc.domain.constraints.ValidPartAdmissionConstraintValidator.Fields.PAYMENT_INTENTION;
@@ -14,7 +13,6 @@ import static uk.gov.hmcts.cmc.domain.constraints.ValidPartAdmissionConstraintVa
 import static uk.gov.hmcts.cmc.domain.constraints.ValidPartAdmissionConstraintValidator.Fields.STATEMENT_OF_MEANS;
 import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.mayNotBeNullError;
 import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.mayNotBeProvidedError;
-import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.setValidationErrors;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
 
 public class ValidPartAdmissionConstraintValidator

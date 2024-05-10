@@ -1,21 +1,21 @@
 package uk.gov.hmcts.cmc.domain.constraints;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import jakarta.validation.ConstraintValidatorContext;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepaymentPlan;
 
 import java.time.LocalDate;
-import jakarta.validation.ConstraintValidatorContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ValidCountyCourtJudgmentValidatorTest {
 
     @Mock
@@ -26,7 +26,7 @@ public class ValidCountyCourtJudgmentValidatorTest {
 
     private final ValidCountyCourtJudgmentValidator validator = new ValidCountyCourtJudgmentValidator();
 
-    @Before
+    @BeforeEach
     public void beforeEachTest() {
         validator.initialize(annotation);
     }

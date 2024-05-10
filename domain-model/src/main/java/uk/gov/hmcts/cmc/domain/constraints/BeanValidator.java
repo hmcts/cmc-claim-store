@@ -1,12 +1,12 @@
 package uk.gov.hmcts.cmc.domain.constraints;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.ValidatorFactory;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Set;
 import java.util.stream.Collectors;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.ValidatorFactory;
 
 public class BeanValidator {
 

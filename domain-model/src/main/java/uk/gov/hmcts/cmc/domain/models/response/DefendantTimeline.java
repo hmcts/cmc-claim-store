@@ -1,6 +1,8 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
@@ -8,8 +10,6 @@ import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Size;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 

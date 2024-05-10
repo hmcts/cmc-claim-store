@@ -1,11 +1,10 @@
 package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.CollectionId;
-
-import jakarta.validation.constraints.NotBlank;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 

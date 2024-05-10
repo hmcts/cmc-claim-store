@@ -1,9 +1,10 @@
 package uk.gov.hmcts.cmc.domain.constraints;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 public class AgeRangeConstraintValidator implements ConstraintValidator<AgeRangeValidator, LocalDate> {
 
