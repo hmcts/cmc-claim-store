@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MvcResult;
