@@ -22,7 +22,9 @@ dependencies {
 
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.1.4'
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: '6.1.2'
-  implementation group: 'com.sendgrid', name: 'sendgrid-java', version: '4.10.1'
+  implementation (group: 'com.sendgrid', name: 'sendgrid-java', version: '4.10.1'){
+    exclude group: 'org.bouncycastle', module: 'bcprov-jdk15on'
+  }
 
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
   testImplementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
