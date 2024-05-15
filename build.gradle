@@ -102,6 +102,9 @@ allprojects {
     }
     jcenter()
   }
+  configurations.all {
+    exclude group: 'com.vaadin.external.google', module: 'android-json'
+  }
 
   dependencyManagement {
     imports {
@@ -161,6 +164,8 @@ dependencies {
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.1.4'
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: '6.1.2'
   implementation group: 'com.microsoft.azure', name: 'applicationinsights-web', version: '3.5.1'
+  implementation group: 'org.apiguardian', name: 'apiguardian-api', version: '1.1.2'
+
 
   implementation group: 'com.github.hmcts', name: 'java-logging', version: '6.1.4'
 
