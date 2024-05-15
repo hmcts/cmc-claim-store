@@ -1,82 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
-    <suppress until="2024-04-01">
-        <cve>CVE-2023-24998</cve>
-        <cve>CVE-2022-1471</cve>
-        <cve>CVE-2020-8908</cve>
-        <cve>CVE-2023-2976</cve>
-        <cve>CVE-2023-33201</cve>
-        <cve>CVE-2020-5408</cve>
-        <cve>CVE-2016-1000027</cve>
-        <cve>CVE-2023-31582</cve>
-    </suppress>
-    <suppress until="2024-04-18">
-        <cve>CVE-2022-45688</cve>
-        <cve>CVE-2023-5072</cve>
+    <suppress>
         <cve>CVE-2023-39017</cve>
-        <cve>CVE-2023-20860</cve>
-        <cve>CVE-2023-33202</cve>
-        <cve>CVE-2023-34055</cve>
-        <cve>CVE-2023-46589</cve>
-        <cve>CVE-2023-6378</cve>
-        <cve>CVE-2023-51775</cve>
+        <cve>CVE-2022-45688</cve>
         <cve>CVE-2024-23446</cve>
-        <cve>CVE-2024-22243</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: commons-fileupload-1.4.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/commons\-fileupload/commons\-fileupload@.*$</packageUrl>
-        <cve>CVE-2023-24998</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: guava-30.1.1-jre.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.google\.guava/guava@.*$</packageUrl>
-        <cve>CVE-2023-2976</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: guava-30.1.1-jre.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.google\.guava/guava@.*$</packageUrl>
-        <cve>CVE-2020-8908</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: guava-31.1-jre.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.google\.guava/guava@.*$</packageUrl>
-        <cve>CVE-2023-2976</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: guava-31.1-jre.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.google\.guava/guava@.*$</packageUrl>
-        <cve>CVE-2020-8908</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: jose4j-0.7.7.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.bitbucket\.b_c/jose4j@.*$</packageUrl>
-        <cve>CVE-2023-31582</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: launchdarkly-java-server-sdk-6.1.0.jar (shaded: com.google.guava:guava:30.1-jre)
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.google\.guava/guava@.*$</packageUrl>
-        <cve>CVE-2023-2976</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: snakeyaml-1.33.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.yaml/snakeyaml@.*$</packageUrl>
-        <cve>CVE-2022-1471</cve>
+        <cve>CVE-2024-22257</cve>
+        <cve>CVE-2023-5072</cve>
+        <cve>CVE-2023-33202</cve>
     </suppress>
 </suppressions>
