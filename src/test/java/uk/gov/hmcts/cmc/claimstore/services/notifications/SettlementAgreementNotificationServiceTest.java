@@ -38,8 +38,6 @@ public class SettlementAgreementNotificationServiceTest extends BaseNotification
                 new HashMap<>(),
                 REFERENCE);
         });
-
-        // verify(appInsights).trackEvent(eq(NOTIFICATION_FAILURE), eq(REFERENCE_NUMBER), eq(REFERENCE));
     }
 
     @Test

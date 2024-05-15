@@ -27,7 +27,7 @@ public class ClaimDataSerializationTest {
         ObjectMapper mapper = new JacksonConfiguration().objectMapper();
 
         //when
-                ClaimData claimData = mapper.readValue(input, ClaimData.class);
+        ClaimData claimData = mapper.readValue(input, ClaimData.class);
 
         //then
         ClaimData other;
@@ -60,7 +60,7 @@ public class ClaimDataSerializationTest {
             .withHwfMandatoryDetails("Details")
             .withHwfMoreInfoNeededDocuments(asList("BANK_STATEMENTS", "PRISONERS_INCOME"))
             .withHwfProvideDocumentName("Sample document name")
-            .withHwfDocumentsToBeSentBefore(LocalDate.now())
+            .withHwfDocumentsToBeSentBefore(LocalDate.of(2020, 1, 1))
             .build();
 
         assertThat(claimData).isEqualTo(other);

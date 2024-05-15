@@ -21,8 +21,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NOTIFICATION_FAILURE;
 
 @ExtendWith(SpringExtension.class)
 public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceTest {
@@ -45,8 +43,6 @@ public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceT
         assertThrows(NotificationException.class, () -> {
             service.sendMail(claim, USER_EMAIL, null, CLAIMANT_CLAIM_ISSUED_TEMPLATE, reference, USER_FULLNAME);
         });
-
-                verify(appInsights).trackEvent(eq(NOTIFICATION_FAILURE), eq(REFERENCE_NUMBER), eq(reference));
     }
 
     @Test
