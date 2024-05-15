@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import org.springframework.web.util.NestedServletException;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsExceptionLogger;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantLinkException;
@@ -43,6 +42,7 @@ import uk.gov.service.notify.NotificationClientException;
 import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.Optional;
+import javax.servlet.ServletException;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.FAILED_DEPENDENCY;
@@ -268,7 +268,7 @@ public class ResourceExceptionHandler {
             ));
     }
 
-    @ExceptionHandler({NestedServletException.class, FeignException.BadRequest.class})
+    @ExceptionHandler({ServletException.class, FeignException.BadRequest.class})
     public ResponseEntity<String> handleNestedServletExceptionBadRequest(Exception exception) {
         logger.error(exception);
         return new ResponseEntity<>(exception.getMessage(),

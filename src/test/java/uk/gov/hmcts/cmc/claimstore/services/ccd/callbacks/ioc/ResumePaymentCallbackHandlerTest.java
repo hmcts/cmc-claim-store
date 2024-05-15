@@ -73,12 +73,9 @@ public class ResumePaymentCallbackHandlerTest {
 
     @BeforeEach
     public void setUp() {
-        Claim claim = SampleClaim.getDefault();
         CCDCase ccdCase = SampleData.getCCDCitizenCase(getAmountBreakDown()).toBuilder()
             .feeAmountInPennies("1000")
             .build();
-        when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
-        when(caseMapper.to(any(Claim.class))).thenReturn(ccdCase);
         JsonMapper jsonMapper = new JsonMapper(new JacksonConfiguration().objectMapper());
         caseDetailsConverter
             = new CaseDetailsConverter(caseMapper, jsonMapper, workingDayIndicator, 12, false);
@@ -101,6 +98,8 @@ public class ResumePaymentCallbackHandlerTest {
 
     @Test
     public void shouldUseExistingPaymentIfPaymentIsSuccessful() {
+        Claim claim = SampleClaim.getDefault();
+
         Payment originalPayment = Payment.builder()
             .reference("reference")
             .status(SUCCESS)
@@ -112,6 +111,8 @@ public class ResumePaymentCallbackHandlerTest {
             eq(BEARER_TOKEN),
             any(ClaimData.class)))
             .thenReturn(Optional.of(originalPayment));
+
+        when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
 
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_SUBMIT)
@@ -129,6 +130,13 @@ public class ResumePaymentCallbackHandlerTest {
 
     @Test
     public void shouldCreateNewPaymentIfPaymentIsInitiated() {
+        Claim claim = SampleClaim.getDefault();
+        CCDCase ccdCase = SampleData.getCCDCitizenCase(getAmountBreakDown()).toBuilder()
+            .feeAmountInPennies("1000")
+            .build();
+        when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
+        when(caseMapper.to(any(Claim.class))).thenReturn(ccdCase);
+
         Payment originalPayment = Payment.builder()
             .reference("reference")
             .status(INITIATED)
@@ -174,6 +182,13 @@ public class ResumePaymentCallbackHandlerTest {
 
     @Test
     public void shouldCancelPaymentIfPaymentIsPending() {
+        Claim claim = SampleClaim.getDefault();
+        CCDCase ccdCase = SampleData.getCCDCitizenCase(getAmountBreakDown()).toBuilder()
+            .feeAmountInPennies("1000")
+            .build();
+        when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
+        when(caseMapper.to(any(Claim.class))).thenReturn(ccdCase);
+
         Payment originalPayment = Payment.builder()
             .reference("reference")
             .status(PENDING)

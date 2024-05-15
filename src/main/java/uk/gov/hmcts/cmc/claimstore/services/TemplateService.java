@@ -11,8 +11,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Map;
-
-import static org.apache.commons.lang3.Validate.notNull;
+import java.util.Objects;
 
 @Service
 public class TemplateService {
@@ -25,8 +24,8 @@ public class TemplateService {
     }
 
     public String evaluate(String template, Map<String, Object> values) {
-        notNull(template);
-        notNull(values);
+        Objects.requireNonNull(template);
+        Objects.requireNonNull(values);
         try (Writer writer = new StringWriter()) {
             PebbleTemplate pebbleTemplate = pebbleEngine.getTemplate(template);
             pebbleTemplate.evaluate(writer, values);
