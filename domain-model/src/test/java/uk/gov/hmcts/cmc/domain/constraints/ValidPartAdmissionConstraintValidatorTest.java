@@ -13,12 +13,19 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class ValidPartAdmissionConstraintValidatorTest {
 
     @Mock
     private ConstraintValidatorContext validatorContext;
+
+    @Mock
+    private ConstraintValidatorContext.ConstraintViolationBuilder violationBuilder;
 
     private final ValidPartAdmissionConstraintValidator validator = new ValidPartAdmissionConstraintValidator();
 
@@ -55,6 +62,13 @@ public class ValidPartAdmissionConstraintValidatorTest {
             .statementOfMeans(StatementOfMeans.builder().build())
             .build();
 
+        when(violationBuilder.addPropertyNode(anyString()))
+            .thenReturn(
+                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
+            );
+
+        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(violationBuilder);
+
         assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isFalse();
     }
 
@@ -65,6 +79,13 @@ public class ValidPartAdmissionConstraintValidatorTest {
             .paymentIntention(SamplePaymentIntention.immediately())
             .statementOfMeans(StatementOfMeans.builder().build())
             .build();
+
+        when(violationBuilder.addPropertyNode(anyString()))
+            .thenReturn(
+                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
+            );
+
+        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(violationBuilder);
 
         assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isFalse();
     }
@@ -98,6 +119,13 @@ public class ValidPartAdmissionConstraintValidatorTest {
             .paymentIntention(SamplePaymentIntention.instalments())
             .build();
 
+        when(violationBuilder.addPropertyNode(anyString()))
+            .thenReturn(
+                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
+            );
+
+        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(violationBuilder);
+
         assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isFalse();
     }
 
@@ -105,6 +133,13 @@ public class ValidPartAdmissionConstraintValidatorTest {
     public void shouldBeInvalidWhenBothPaymentDeclarationAndPaymentIntentionAreNotPopulated() {
         PartAdmissionResponse partAdmissionResponse = builder()
             .build();
+
+        when(violationBuilder.addPropertyNode(anyString()))
+            .thenReturn(
+                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
+            );
+
+        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(violationBuilder);
 
         assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isFalse();
     }
@@ -115,6 +150,13 @@ public class ValidPartAdmissionConstraintValidatorTest {
             .paymentDeclaration(SamplePaymentDeclaration.builder().build())
             .paymentIntention(SamplePaymentIntention.immediately())
             .build();
+
+        when(violationBuilder.addPropertyNode(anyString()))
+            .thenReturn(
+                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
+            );
+
+        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(violationBuilder);
 
         assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isFalse();
     }
