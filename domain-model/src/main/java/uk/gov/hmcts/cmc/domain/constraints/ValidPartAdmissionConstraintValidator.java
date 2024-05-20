@@ -13,6 +13,7 @@ import static uk.gov.hmcts.cmc.domain.constraints.ValidPartAdmissionConstraintVa
 import static uk.gov.hmcts.cmc.domain.constraints.ValidPartAdmissionConstraintValidator.Fields.STATEMENT_OF_MEANS;
 import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.mayNotBeNullError;
 import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.mayNotBeProvidedError;
+import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.setValidationErrors;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
 
 public class ValidPartAdmissionConstraintValidator
@@ -70,9 +71,6 @@ public class ValidPartAdmissionConstraintValidator
         }
 
         return valid;
-    }
-
-    private void setValidationErrors(ConstraintValidatorContext context, String paymentDeclaration, String s) {
     }
 
     private static boolean isDefendantIndividual(Party defendant) {
