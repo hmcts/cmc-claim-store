@@ -12,7 +12,7 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.2'
   implementation group: 'com.google.guava', name: 'guava', version: '32.0.1-jre'
-  implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
+  implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.14.0'
 
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.26'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.26'
