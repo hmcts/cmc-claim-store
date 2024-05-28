@@ -11,7 +11,7 @@ dependencies {
   implementation group: 'org.glassfish', name: 'javax.json', version: '1.1.4'
 
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
-  testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.20.2'
+  testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.26.0'
   testImplementation project(':domain-sample-data')
   testImplementation group: 'junit', name: 'junit', version: '4.13.1'
 }
