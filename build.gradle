@@ -221,9 +221,10 @@ dependencies {
 
   implementation group: 'org.springframework', name: 'spring-context-support'
   implementation group: 'org.springframework.retry', name: 'spring-retry'
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign'
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.0.1'
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-openfeign-core', version: '4.0.1'
 
-  implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '13.2.1'
+  implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '12.1'
 
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '3.1.8'
 
