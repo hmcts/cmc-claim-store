@@ -216,7 +216,8 @@ dependencies {
 
   implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.14.0'
   implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.8'
-
+  implementation group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
+  implementation group: 'ch.qos.logback', name: 'logback-core', version: versions.logback
   implementation group: 'org.jdbi', name: 'jdbi', version: '2.78'
 
   implementation group: 'org.springframework', name: 'spring-context-support'
