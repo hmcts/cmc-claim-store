@@ -220,7 +220,7 @@ dependencies {
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
   implementation group: 'ch.qos.logback', name: 'logback-core', version: versions.logback
   implementation group: 'org.jdbi', name: 'jdbi', version: '2.78'
-  implementation group : 'org.springframework.boot', name : 'spring-boot-starter-data-jpa', version : '3.1.5'
+  implementation group : 'org.springframework.boot', name : 'spring-boot-starter-data-jpa', version : '3.3.0'
 
   implementation group: 'org.springframework', name: 'spring-context-support'
   implementation group: 'org.springframework.retry', name: 'spring-retry'
