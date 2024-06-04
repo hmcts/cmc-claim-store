@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.config;
 
-
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
@@ -13,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 
 @Configuration
 public class HttpClientConfiguration {
-
 
     @Bean
     public RestTemplate restTemplate() {
