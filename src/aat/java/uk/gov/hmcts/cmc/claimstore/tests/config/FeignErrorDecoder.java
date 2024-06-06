@@ -2,6 +2,8 @@ package uk.gov.hmcts.cmc.claimstore.tests.config;
 
 import feign.Response;
 import feign.codec.ErrorDecoder;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import uk.gov.hmcts.cmc.claimstore.tests.exception.ForbiddenException;
 
 public class FeignErrorDecoder implements ErrorDecoder {
@@ -15,6 +17,8 @@ public class FeignErrorDecoder implements ErrorDecoder {
             // IDAM returns when creating with users that already exist
             // this could be the case with retry logic - so ignore and just authenticate
             return new ForbiddenException("Already Exists");
+        }else if(response.status() == 404) {
+            return new ResponseStatusException(HttpStatus.NOT_FOUND, "Requested resource not found");
         }
         return delegate.decode(methodKey, response);
     }
