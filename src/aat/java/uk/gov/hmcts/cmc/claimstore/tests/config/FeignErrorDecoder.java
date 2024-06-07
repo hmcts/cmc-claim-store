@@ -17,7 +17,7 @@ public class FeignErrorDecoder implements ErrorDecoder {
             // IDAM returns when creating with users that already exist
             // this could be the case with retry logic - so ignore and just authenticate
             return new ForbiddenException("Already Exists");
-        }else if(response.status() == 404) {
+        } else if (response.status() == 404) {
             return new ResponseStatusException(HttpStatus.NOT_FOUND, "Requested resource not found");
         }
         return delegate.decode(methodKey, response);
