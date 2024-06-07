@@ -592,8 +592,7 @@ public class CoreCaseDataService {
             claimBuilder.claimantResponse(response)
                 .claimantRespondedAt(nowInUTC())
                 .dateReferredForDirections(nowInUTC())
-                .preferredDQCourt(getPreferredCourt(claimBuilder.build()))
-                .preferredDQPilotCourt(getPreferredCourt(claimBuilder.build()));
+                .preferredDQCourt(getPreferredCourt(claimBuilder.build()));
 
             CaseDataContent caseDataContent = caseDataContent(startEventResponse, claimBuilder.build());
 
