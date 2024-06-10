@@ -110,9 +110,7 @@ allprojects {
     dependencies {
       // checkstyle needs a certain version and so does spring fox swagger, so can't use latest
       // fun times...
-      dependencySet(group: 'com.google.guava', version: '32.0.1-jre') {
-        entry 'guava'
-      }
+      dependency group: 'com.google.guava', name: 'guava', version: '33.1.0-jre'
 
       //Solves CVE-2023-35116
       dependency group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
@@ -120,8 +118,9 @@ allprojects {
       dependency group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: versions.jackson
 
 
-      //Solves CVE-2022-45688, CVE-2023-5072
-      dependency group: 'org.json', name: 'json', version: '20231013'
+
+      //Solves  CVE-2023-33201
+      dependency group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.77'
 
       // solves CVE-2022-25857
       dependencySet(
@@ -177,7 +176,8 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-quartz'
 
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.14.0'
+  runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.14.0'
 
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
   implementation group: 'ch.qos.logback', name: 'logback-core', version: versions.logback
@@ -234,9 +234,11 @@ dependencies {
   implementation group: 'org.springframework.retry', name: 'spring-retry'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign'
 
-  implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '11.2'
+  implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '12.1'
 
   implementation group: 'org.springframework.cloud',name : 'spring-cloud-starter-bootstrap'
+
+  implementation group: 'org.json', name: 'json', version: '20240303'
 
   implementation group: 'javax.json', name: 'javax.json-api', version: '1.1.4'
   implementation group: 'javax.inject', name: 'javax.inject', version: '1'
