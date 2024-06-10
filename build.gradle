@@ -34,8 +34,8 @@ def versions = [
   loggingAppinsights : '5.1.7',
   restAssuredVersion: '4.2.0',
   jackson           : '2.17.0',
-  junit             : '5.7.1',
-  junitPlatform     : '1.7.1',
+  junit             : '5.10.2',
+  junitPlatform     : '1.10.2',
   elasticSearch     : '7.17.20'
 ]
 
