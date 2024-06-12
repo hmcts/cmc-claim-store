@@ -1,12 +1,12 @@
 package uk.gov.hmcts.cmc.domain.constraints;
 
+import jakarta.validation.ConstraintValidatorContext;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDate;
-import jakarta.validation.ConstraintValidatorContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -1,9 +1,8 @@
 package uk.gov.hmcts.cmc.domain.constraints;
 
-import uk.gov.hmcts.cmc.domain.models.InterestDate;
-
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import uk.gov.hmcts.cmc.domain.models.InterestDate;
 
 public class ValidInterestDateConstraintValidator implements ConstraintValidator<ValidInterestDate, InterestDate> {
 

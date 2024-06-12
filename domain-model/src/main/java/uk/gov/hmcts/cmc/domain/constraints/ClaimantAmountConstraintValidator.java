@@ -1,9 +1,8 @@
 package uk.gov.hmcts.cmc.domain.constraints;
 
-import uk.gov.hmcts.cmc.domain.models.AmountRow;
-
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import uk.gov.hmcts.cmc.domain.models.AmountRow;
 
 public class ClaimantAmountConstraintValidator implements ConstraintValidator<ClaimantAmount, AmountRow> {
 

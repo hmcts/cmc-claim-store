@@ -1,9 +1,10 @@
 package uk.gov.hmcts.cmc.domain.constraints;
 
-import java.util.Arrays;
-import java.util.List;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class UserRoleConstraintValidator implements ConstraintValidator<UserRoleValidator, String> {
 

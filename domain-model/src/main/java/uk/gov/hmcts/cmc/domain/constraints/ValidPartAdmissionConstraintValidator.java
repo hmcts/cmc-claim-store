@@ -1,12 +1,11 @@
 package uk.gov.hmcts.cmc.domain.constraints;
 
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
-
-import jakarta.validation.ConstraintValidator;
-import jakarta.validation.ConstraintValidatorContext;
 
 import static uk.gov.hmcts.cmc.domain.constraints.ValidPartAdmissionConstraintValidator.Fields.PAYMENT_DECLARATION;
 import static uk.gov.hmcts.cmc.domain.constraints.ValidPartAdmissionConstraintValidator.Fields.PAYMENT_INTENTION;
@@ -73,7 +72,6 @@ public class ValidPartAdmissionConstraintValidator
 
         return valid;
     }
-
 
     private static boolean isDefendantIndividual(Party defendant) {
         return defendant instanceof Individual || defendant instanceof SoleTrader;

@@ -1,5 +1,8 @@
 package uk.gov.hmcts.cmc.rpa.mapper;
 
+import jakarta.json.JsonArray;
+import jakarta.json.JsonObject;
+import jakarta.json.stream.JsonCollectors;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -18,12 +21,9 @@ import uk.gov.hmcts.cmc.rpa.mapper.json.NullAwareJsonObjectBuilder;
 
 import java.util.List;
 import java.util.Optional;
-import jakarta.json.JsonArray;
-import jakarta.json.JsonObject;
-import jakarta.json.stream.JsonCollectors;
 
-import static java.math.BigInteger.ZERO;
 import static jakarta.json.JsonValue.NULL;
+import static java.math.BigInteger.ZERO;
 import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractFromSubclass;
 import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractOptionalFromSubclass;
 

@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.rpa.mapper;
 
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -18,8 +20,6 @@ import uk.gov.hmcts.cmc.rpa.mapper.helper.RPAMapperHelper;
 import uk.gov.hmcts.cmc.rpa.mapper.json.NullAwareJsonObjectBuilder;
 
 import java.math.BigDecimal;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonObjectBuilder;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractFromSubclass;

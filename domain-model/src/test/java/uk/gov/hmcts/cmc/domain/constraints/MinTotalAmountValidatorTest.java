@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.constraints;
 
+import jakarta.validation.ConstraintValidatorContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,7 +10,6 @@ import uk.gov.hmcts.cmc.domain.models.AmountRow;
 
 import java.math.BigDecimal;
 import java.util.List;
-import jakarta.validation.ConstraintValidatorContext;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;

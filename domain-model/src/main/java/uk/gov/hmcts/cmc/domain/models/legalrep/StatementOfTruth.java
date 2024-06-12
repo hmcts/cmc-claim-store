@@ -1,10 +1,9 @@
 package uk.gov.hmcts.cmc.domain.models.legalrep;
 
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
 
 @Builder
 @EqualsAndHashCode

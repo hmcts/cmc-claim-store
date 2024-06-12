@@ -1,12 +1,11 @@
 package uk.gov.hmcts.cmc.domain.constraints;
 
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
-
-import jakarta.validation.ConstraintValidator;
-import jakarta.validation.ConstraintValidatorContext;
 
 import static uk.gov.hmcts.cmc.domain.constraints.ValidFullAdmissionConstraintValidator.Fields.PAYMENT_OPTION;
 import static uk.gov.hmcts.cmc.domain.constraints.ValidFullAdmissionConstraintValidator.Fields.STATEMENT_OF_MEANS;

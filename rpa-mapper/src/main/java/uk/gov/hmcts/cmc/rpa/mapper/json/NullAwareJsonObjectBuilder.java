@@ -1,13 +1,14 @@
 package uk.gov.hmcts.cmc.rpa.mapper.json;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
 import jakarta.json.spi.JsonProvider;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 /**
  * A {@link JsonObjectBuilder} implementation that accepts null values in builder methods.

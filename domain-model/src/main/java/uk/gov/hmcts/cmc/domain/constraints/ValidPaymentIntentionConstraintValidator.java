@@ -1,9 +1,8 @@
 package uk.gov.hmcts.cmc.domain.constraints;
 
-import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
-
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 
 import static uk.gov.hmcts.cmc.domain.constraints.ValidPaymentIntentionConstraintValidator.Fields.PAYMENT_DATE;
 import static uk.gov.hmcts.cmc.domain.constraints.ValidPaymentIntentionConstraintValidator.Fields.PAYMENT_OPTION;

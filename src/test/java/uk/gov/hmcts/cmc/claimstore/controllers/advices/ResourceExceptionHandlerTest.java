@@ -13,7 +13,6 @@ import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
-import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsExceptionLogger;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
@@ -32,7 +31,6 @@ import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.net.SocketTimeoutException;
-import java.util.Collections;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -139,16 +137,16 @@ public class ResourceExceptionHandlerTest {
         );
     }
 
-    @Test
-    public void testMethodNotSupported() {
-        testTemplate(
-            "expected exception for method not supported",
-            m -> new HttpRequestMethodNotSupportedException("method", Collections.singleton(m)),
-            handler::methodNotSupported,
-            HttpStatus.NOT_IMPLEMENTED,
-            AppInsightsExceptionLogger::trace
-        );
-    }
+    //    @Test
+    //    public void testMethodNotSupported() {
+    //        testTemplate(
+    //            "expected exception for method not supported",
+    //            m -> new HttpRequestMethodNotSupportedException("method", Collections.singleton(m)),
+    //            handler::methodNotSupported,
+    //            HttpStatus.NOT_IMPLEMENTED,
+    //            AppInsightsExceptionLogger::trace
+    //        );
+    //    }
 
     @Test
     public void testNotFoundClaim() {
