@@ -68,6 +68,10 @@ allprojects {
     duplicatesStrategy 'include'
   }
 
+  tasks.withType(Test) {
+    useJUnitPlatform()
+  }
+
   checkstyle {
     maxWarnings = 0
     toolVersion = '8.29'
@@ -155,6 +159,7 @@ dependencies {
   implementation project(':launch-darkly-client')
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
@@ -312,10 +317,6 @@ dependencies {
   integrationTestImplementation(sourceSets.main.output)
   integrationTestImplementation project(':email-client')
   integrationTestImplementation project(':domain-model')
-}
-
-test {
-  useJUnitPlatform()
 }
 
 task fortifyScan(type: JavaExec)  {
