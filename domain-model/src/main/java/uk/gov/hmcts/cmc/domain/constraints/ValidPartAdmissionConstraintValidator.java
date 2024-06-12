@@ -74,8 +74,6 @@ public class ValidPartAdmissionConstraintValidator
         return valid;
     }
 
-    private void setValidationErrors(ConstraintValidatorContext context, String paymentDeclaration, String s) {
-    }
 
     private static boolean isDefendantIndividual(Party defendant) {
         return defendant instanceof Individual || defendant instanceof SoleTrader;
