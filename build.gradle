@@ -398,7 +398,7 @@ def listFiles(String pattern) {
 sonarqube {
   properties {
     property "sonar.projectName", "CMC :: Claim Store"
-    property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+    property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
     property "sonar.exclusions", [
         "**/ccd/domain/**",
         "**/cmc/domain/models/**",
