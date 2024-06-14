@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.sendletter.api.Document;
 import java.util.HashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.verify;
@@ -51,7 +52,7 @@ public class BulkPrintStaffNotificationServiceTest extends BaseMockSpringTest {
     private Claim claim;
     private static final String AUTHORISATION = "Bearer: let me in";
 
-    @Before
+    @BeforeEach
     public void setUp() {
         defendantLetterDocument =
             new PrintableTemplate(
@@ -70,27 +71,33 @@ public class BulkPrintStaffNotificationServiceTest extends BaseMockSpringTest {
             .thenReturn(PDF_CONTENT);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerWhenGivenNullClaim() {
-        service.notifyFailedBulkPrint(
-            ImmutableList.of(defendantLetterDocument, sealedClaimDocument),
-            null);
+        assertThrows(NullPointerException.class, () -> {
+            service.notifyFailedBulkPrint(
+                ImmutableList.of(defendantLetterDocument, sealedClaimDocument),
+                null);
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerWhenGivenNullDefendantLetterDocument() {
         //noinspection ConstantConditions
-        service.notifyFailedBulkPrint(
-            ImmutableList.of(null, sealedClaimDocument),
-            claim);
+        assertThrows(NullPointerException.class, () -> {
+            service.notifyFailedBulkPrint(
+                ImmutableList.of(null, sealedClaimDocument),
+                claim);
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerWhenGivenNullSealedClaimDocument() {
         //noinspection ConstantConditions
-        service.notifyFailedBulkPrint(
-            ImmutableList.of(defendantLetterDocument, null),
-            claim);
+        assertThrows(NullPointerException.class, () -> {
+            service.notifyFailedBulkPrint(
+                ImmutableList.of(defendantLetterDocument, null),
+                claim);
+        });
     }
 
     @Test

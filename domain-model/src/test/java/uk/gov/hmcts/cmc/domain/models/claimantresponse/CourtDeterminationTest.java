@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.claimantresponse;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 
