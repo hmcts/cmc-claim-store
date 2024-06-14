@@ -25,21 +25,10 @@ public class ValidPartAdmissionConstraintValidatorTest {
     @Mock
     private ConstraintValidatorContext validatorContext;
 
+    @Mock
+    private ConstraintValidatorContext.ConstraintViolationBuilder violationBuilder;
+
     private final ValidPartAdmissionConstraintValidator validator = new ValidPartAdmissionConstraintValidator();
-
-    @Before
-    public void setUp() {
-        ConstraintValidatorContext.ConstraintViolationBuilder builder = mock(
-            ConstraintValidatorContext.ConstraintViolationBuilder.class
-        );
-
-        when(builder.addPropertyNode(anyString()))
-            .thenReturn(
-                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
-            );
-
-        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(builder);
-    }
 
     @Test
     public void shouldBeValidWhenInputIsNull() {
@@ -74,6 +63,13 @@ public class ValidPartAdmissionConstraintValidatorTest {
             .statementOfMeans(StatementOfMeans.builder().build())
             .build();
 
+        when(violationBuilder.addPropertyNode(anyString()))
+            .thenReturn(
+                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
+            );
+
+        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(violationBuilder);
+
         assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isFalse();
     }
 
@@ -84,6 +80,13 @@ public class ValidPartAdmissionConstraintValidatorTest {
             .paymentIntention(SamplePaymentIntention.immediately())
             .statementOfMeans(StatementOfMeans.builder().build())
             .build();
+
+        when(violationBuilder.addPropertyNode(anyString()))
+            .thenReturn(
+                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
+            );
+
+        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(violationBuilder);
 
         assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isFalse();
     }
@@ -117,6 +120,13 @@ public class ValidPartAdmissionConstraintValidatorTest {
             .paymentIntention(SamplePaymentIntention.instalments())
             .build();
 
+        when(violationBuilder.addPropertyNode(anyString()))
+            .thenReturn(
+                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
+            );
+
+        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(violationBuilder);
+
         assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isFalse();
     }
 
@@ -124,6 +134,13 @@ public class ValidPartAdmissionConstraintValidatorTest {
     public void shouldBeInvalidWhenBothPaymentDeclarationAndPaymentIntentionAreNotPopulated() {
         PartAdmissionResponse partAdmissionResponse = builder()
             .build();
+
+        when(violationBuilder.addPropertyNode(anyString()))
+            .thenReturn(
+                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
+            );
+
+        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(violationBuilder);
 
         assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isFalse();
     }
@@ -134,6 +151,13 @@ public class ValidPartAdmissionConstraintValidatorTest {
             .paymentDeclaration(SamplePaymentDeclaration.builder().build())
             .paymentIntention(SamplePaymentIntention.immediately())
             .build();
+
+        when(violationBuilder.addPropertyNode(anyString()))
+            .thenReturn(
+                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
+            );
+
+        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(violationBuilder);
 
         assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isFalse();
     }

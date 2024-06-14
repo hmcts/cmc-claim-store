@@ -20,21 +20,10 @@ public class ValidResidenceConstraintValidatorTest {
     @Mock
     private ConstraintValidatorContext validatorContext;
 
+    @Mock
+    private ConstraintValidatorContext.ConstraintViolationBuilder violationBuilder;
+
     private final ValidResidenceConstraintValidator validator = new ValidResidenceConstraintValidator();
-
-    @Before
-    public void setUp() {
-        ConstraintValidatorContext.ConstraintViolationBuilder builder = mock(
-            ConstraintValidatorContext.ConstraintViolationBuilder.class
-        );
-
-        when(builder.addPropertyNode(anyString()))
-            .thenReturn(
-                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
-            );
-
-        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(builder);
-    }
 
     @Test
     public void shouldBeValidWhenNull() {
@@ -104,6 +93,14 @@ public class ValidResidenceConstraintValidatorTest {
     }
 
     private void assertIsInvalid(Residence residence) {
+
+        when(violationBuilder.addPropertyNode(anyString()))
+            .thenReturn(
+                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
+            );
+
+        when(validatorContext.buildConstraintViolationWithTemplate(any()))
+            .thenReturn(violationBuilder);
         assertThat(validator.isValid(residence, validatorContext)).isFalse();
     }
 }

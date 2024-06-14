@@ -21,21 +21,10 @@ public class ValidExpenseConstraintValidatorTest {
     @Mock
     private ConstraintValidatorContext validatorContext;
 
+    @Mock
+    private ConstraintValidatorContext.ConstraintViolationBuilder violationBuilder;
+
     private final ValidExpenseConstraintValidator validator = new ValidExpenseConstraintValidator();
-
-    @Before
-    public void setUp() {
-        ConstraintValidatorContext.ConstraintViolationBuilder builder = mock(
-            ConstraintValidatorContext.ConstraintViolationBuilder.class
-        );
-
-        when(builder.addPropertyNode(anyString()))
-            .thenReturn(
-                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
-            );
-
-        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(builder);
-    }
 
     @Test
     public void shouldBeValidWhenPayemtnFrequencyIsPopulated() {
@@ -56,6 +45,14 @@ public class ValidExpenseConstraintValidatorTest {
     public void shouldBeInValidWhenExpenseTypeOtherIsNotPopulated() {
         Expense model = Expense.builder()
             .type(Expense.ExpenseType.OTHER).build();
+
+        when(violationBuilder.addPropertyNode(anyString()))
+            .thenReturn(
+                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
+            );
+
+        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(violationBuilder);
+
         assertThat(validator.isValid(model, validatorContext)).isFalse();
     }
 
@@ -63,6 +60,14 @@ public class ValidExpenseConstraintValidatorTest {
     public void shouldBeInValidWhenOtherExpenseTypeWithOtherNameIsNotPopulated() {
         Expense model = Expense.builder()
             .type(Expense.ExpenseType.COUNCIL_TAX).otherName("abc").build();
+
+        when(violationBuilder.addPropertyNode(anyString()))
+            .thenReturn(
+                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
+            );
+
+        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(violationBuilder);
+
         assertThat(validator.isValid(model, validatorContext)).isFalse();
     }
 

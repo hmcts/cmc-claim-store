@@ -21,21 +21,9 @@ public class ValidIncomeConstraintValidatorTest {
     @Mock
     private ConstraintValidatorContext validatorContext;
 
+    @Mock ConstraintValidatorContext.ConstraintViolationBuilder violationBuilder;
+
     private final ValidIncomeConstraintValidator validator = new ValidIncomeConstraintValidator();
-
-    @Before
-    public void setUp() {
-        ConstraintValidatorContext.ConstraintViolationBuilder builder = mock(
-            ConstraintValidatorContext.ConstraintViolationBuilder.class
-        );
-
-        when(builder.addPropertyNode(anyString()))
-            .thenReturn(
-                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
-            );
-
-        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(builder);
-    }
 
     @Test
     public void shouldBeValidWhenNull() {
@@ -61,6 +49,14 @@ public class ValidIncomeConstraintValidatorTest {
     public void shouldBeInValidWhenIncomeTypeOtherWithoutOtherSourcePopulated() {
         Income model = Income.builder()
             .type(Income.IncomeType.OTHER).build();
+
+        when(violationBuilder.addPropertyNode(anyString()))
+            .thenReturn(
+                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
+            );
+
+        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(violationBuilder);
+
         assertThat(validator.isValid(model, validatorContext)).isFalse();
     }
 
@@ -68,6 +64,14 @@ public class ValidIncomeConstraintValidatorTest {
     public void shouldBeInValidWhenDifferentIncomeTypeWithOtherNameIsPopulated() {
         Income model = Income.builder()
             .type(Income.IncomeType.JOB).otherSource("abc").build();
+
+        when(violationBuilder.addPropertyNode(anyString()))
+            .thenReturn(
+                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
+            );
+
+        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(violationBuilder);
+
         assertThat(validator.isValid(model, validatorContext)).isFalse();
     }
 }

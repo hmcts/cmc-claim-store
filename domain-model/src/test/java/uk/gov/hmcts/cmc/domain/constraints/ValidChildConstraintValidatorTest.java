@@ -20,21 +20,9 @@ public class ValidChildConstraintValidatorTest {
     @Mock
     private ConstraintValidatorContext validatorContext;
 
+    @Mock
+    private ConstraintValidatorContext.ConstraintViolationBuilder violationBuilder;
     private final ValidChildConstraintValidator validator = new ValidChildConstraintValidator();
-
-    @Before
-    public void setUp() {
-        ConstraintValidatorContext.ConstraintViolationBuilder builder = mock(
-            ConstraintValidatorContext.ConstraintViolationBuilder.class
-        );
-
-        when(builder.addPropertyNode(anyString()))
-            .thenReturn(
-                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
-            );
-
-        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(builder);
-    }
 
     @Test
     public void shouldBeValidWhenModelIsNull() {
@@ -69,6 +57,13 @@ public class ValidChildConstraintValidatorTest {
             .numberOfChildrenLivingWithYou(0)
             .build();
 
+        when(violationBuilder.addPropertyNode(anyString()))
+            .thenReturn(
+                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
+            );
+
+        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(violationBuilder);
+
         assertThat(validator.isValid(child, validatorContext)).isFalse();
     }
 
@@ -79,6 +74,13 @@ public class ValidChildConstraintValidatorTest {
             .numberOfChildren(2)
             .numberOfChildrenLivingWithYou(1)
             .build();
+
+        when(violationBuilder.addPropertyNode(anyString()))
+            .thenReturn(
+                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
+            );
+
+        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(violationBuilder);
 
         assertThat(validator.isValid(child, validatorContext)).isFalse();
     }
@@ -91,6 +93,13 @@ public class ValidChildConstraintValidatorTest {
             .numberOfChildrenLivingWithYou(0)
             .build();
 
+        when(violationBuilder.addPropertyNode(anyString()))
+            .thenReturn(
+                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
+            );
+
+        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(violationBuilder);
+
         assertThat(validator.isValid(child, validatorContext)).isFalse();
     }
 
@@ -101,6 +110,13 @@ public class ValidChildConstraintValidatorTest {
             .numberOfChildren(2)
             .numberOfChildrenLivingWithYou(3)
             .build();
+
+        when(violationBuilder.addPropertyNode(anyString()))
+            .thenReturn(
+                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
+            );
+
+        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(violationBuilder);
 
         assertThat(validator.isValid(child, validatorContext)).isFalse();
     }
@@ -156,6 +172,13 @@ public class ValidChildConstraintValidatorTest {
             .numberOfChildren(1)
             .build();
 
+        when(violationBuilder.addPropertyNode(anyString()))
+            .thenReturn(
+                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
+            );
+
+        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(violationBuilder);
+
         assertThat(validator.isValid(child, validatorContext)).isFalse();
     }
 
@@ -166,6 +189,13 @@ public class ValidChildConstraintValidatorTest {
             .numberOfChildren(2)
             .numberOfChildrenLivingWithYou(3)
             .build();
+
+        when(violationBuilder.addPropertyNode(anyString()))
+            .thenReturn(
+                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
+            );
+
+        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(violationBuilder);
 
         assertThat(validator.isValid(child, validatorContext)).isFalse();
     }

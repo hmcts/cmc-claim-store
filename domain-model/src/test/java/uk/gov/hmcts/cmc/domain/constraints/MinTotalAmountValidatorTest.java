@@ -49,7 +49,6 @@ public class MinTotalAmountValidatorTest {
 
     private MinTotalAmount with(String value, boolean inclusive) {
         when(annotation.value()).thenReturn(value);
-        when(annotation.inclusive()).thenReturn(inclusive);
         return annotation;
     }
 
@@ -119,6 +118,8 @@ public class MinTotalAmountValidatorTest {
 
     @Test
     public void shouldReturnTrueWhenAtLeastOneIsRequiredAndGivenRowWithOne() {
+        when(annotation.inclusive()).thenReturn(true);
+
         validator.initialize(with("1", true));
         List<AmountRow> rows = singletonList(
             rowWithAmount("1")

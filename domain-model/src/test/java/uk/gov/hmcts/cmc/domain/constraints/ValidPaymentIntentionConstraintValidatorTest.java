@@ -23,21 +23,9 @@ public class ValidPaymentIntentionConstraintValidatorTest {
     @Mock
     private ConstraintValidatorContext validatorContext;
 
+    @Mock
+    private ConstraintValidatorContext.ConstraintViolationBuilder violationBuilder;
     private final ValidPaymentIntentionConstraintValidator validator = new ValidPaymentIntentionConstraintValidator();
-
-    @Before
-    public void setUp() {
-        ConstraintValidatorContext.ConstraintViolationBuilder builder = mock(
-            ConstraintValidatorContext.ConstraintViolationBuilder.class
-        );
-
-        when(builder.addPropertyNode(anyString()))
-            .thenReturn(
-                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
-            );
-
-        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(builder);
-    }
 
     @Test
     public void shouldBeValidWhenInputIsNull() {
@@ -60,6 +48,13 @@ public class ValidPaymentIntentionConstraintValidatorTest {
             .paymentOption(PaymentOption.IMMEDIATELY)
             .build();
 
+        when(violationBuilder.addPropertyNode(anyString()))
+            .thenReturn(
+                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
+            );
+
+        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(violationBuilder);
+
         assertThat(validator.isValid(instance, validatorContext)).isFalse();
     }
 
@@ -71,6 +66,12 @@ public class ValidPaymentIntentionConstraintValidatorTest {
             .repaymentPlan(SampleRepaymentPlan.builder().build())
             .build();
 
+        when(violationBuilder.addPropertyNode(anyString()))
+            .thenReturn(
+                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
+            );
+
+        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(violationBuilder);
         assertThat(validator.isValid(instance, validatorContext)).isFalse();
     }
 
@@ -90,6 +91,12 @@ public class ValidPaymentIntentionConstraintValidatorTest {
             .paymentOption(PaymentOption.BY_SPECIFIED_DATE)
             .build();
 
+        when(violationBuilder.addPropertyNode(anyString()))
+            .thenReturn(
+                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
+            );
+
+        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(violationBuilder);
         assertThat(validator.isValid(instance, validatorContext)).isFalse();
     }
 
@@ -101,6 +108,12 @@ public class ValidPaymentIntentionConstraintValidatorTest {
             .repaymentPlan(SampleRepaymentPlan.builder().build())
             .build();
 
+        when(violationBuilder.addPropertyNode(anyString()))
+            .thenReturn(
+                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
+            );
+
+        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(violationBuilder);
         assertThat(validator.isValid(instance, validatorContext)).isFalse();
     }
 
@@ -120,6 +133,13 @@ public class ValidPaymentIntentionConstraintValidatorTest {
             .paymentOption(PaymentOption.INSTALMENTS)
             .build();
 
+        when(violationBuilder.addPropertyNode(anyString()))
+            .thenReturn(
+                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
+            );
+
+        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(violationBuilder);
+
         assertThat(validator.isValid(instance, validatorContext)).isFalse();
     }
 
@@ -130,6 +150,13 @@ public class ValidPaymentIntentionConstraintValidatorTest {
             .paymentDate(LocalDate.now().plusDays(1))
             .repaymentPlan(SampleRepaymentPlan.builder().build())
             .build();
+
+        when(violationBuilder.addPropertyNode(anyString()))
+            .thenReturn(
+                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
+            );
+
+        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(violationBuilder);
 
         assertThat(validator.isValid(instance, validatorContext)).isFalse();
     }

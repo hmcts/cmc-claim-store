@@ -26,21 +26,10 @@ public class ValidEmploymentConstraintValidatorTest {
     @Mock
     private ConstraintValidatorContext validatorContext;
 
+    @Mock
+    private ConstraintValidatorContext.ConstraintViolationBuilder violationBuilder;
+
     private final ValidEmploymentConstraintValidator validator = new ValidEmploymentConstraintValidator();
-
-    @Before
-    public void setUp() {
-        ConstraintValidatorContext.ConstraintViolationBuilder builder = mock(
-            ConstraintValidatorContext.ConstraintViolationBuilder.class
-        );
-
-        when(builder.addPropertyNode(anyString()))
-            .thenReturn(
-                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
-            );
-
-        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(builder);
-    }
 
     @Test
     public void shouldBeValidWhenNull() {
@@ -91,6 +80,11 @@ public class ValidEmploymentConstraintValidatorTest {
             .employers(Collections.singletonList(Employer.builder().jobTitle("job").name("company").build()))
             .unemployment(Unemployment.builder().retired(true).build())
             .build();
+
+        when(violationBuilder.addPropertyNode(anyString()))
+            .thenReturn(mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class));
+
+        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(violationBuilder);
 
         assertThat(validator.isValid(model, validatorContext)).isFalse();
     }
