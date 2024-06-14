@@ -50,7 +50,7 @@ public class EvidenceRowTest {
 
         assertThat(response)
             .hasSize(1)
-            .contains("type : may not be null");
+            .contains("type : must not be null");
     }
 
     @Test

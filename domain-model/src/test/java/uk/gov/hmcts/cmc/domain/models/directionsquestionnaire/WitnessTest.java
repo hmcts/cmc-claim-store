@@ -35,7 +35,7 @@ public class WitnessTest {
 
         assertThat(response)
             .hasSize(1)
-            .contains("selfWitness : may not be null");
+            .contains("selfWitness : must not be null");
     }
 
     @Test

@@ -58,6 +58,6 @@ public class NameTest {
         //then
         assertThat(messages)
             .hasSize(1)
-            .contains("claimants[0].name : may not be empty");
+            .contains("claimants[0].name : must not be blank");
     }
 }

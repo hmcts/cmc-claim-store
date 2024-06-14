@@ -46,7 +46,7 @@ public class UnemployedTest {
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("numberOfYears : may not be null");
+            .contains("numberOfYears : must not be null");
     }
 
     @Test
@@ -60,6 +60,6 @@ public class UnemployedTest {
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("numberOfMonths : may not be null");
+            .contains("numberOfMonths : must not be null");
     }
 }

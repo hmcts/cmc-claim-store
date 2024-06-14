@@ -42,7 +42,7 @@ public class ResponseTest {
         assertThat(errors)
             .hasSize(1)
             .contains(
-                "defenceType : may not be null"
+                "defenceType : must not be null"
             );
     }
 

@@ -113,7 +113,7 @@ public class IncomeTest {
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("type : may not be null");
+            .contains("type : must not be null");
     }
 
     @Test
@@ -128,7 +128,7 @@ public class IncomeTest {
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("frequency : may not be null");
+            .contains("frequency : must not be null");
     }
 
     @Test
@@ -143,7 +143,7 @@ public class IncomeTest {
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("amount : may not be null");
+            .contains("amount : must not be null");
     }
 
     @Test

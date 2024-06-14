@@ -75,7 +75,7 @@ public class ClaimDataTest {
 
         Set<String> errors = validate(claimData);
 
-        assertThat(errors).containsOnly("defendants : may not be empty");
+        assertThat(errors).containsOnly("defendants : must not be empty");
     }
 
     @Test
@@ -86,7 +86,7 @@ public class ClaimDataTest {
 
         Set<String> errors = validate(claimData);
 
-        assertThat(errors).containsOnly("defendants : may not be empty");
+        assertThat(errors).containsOnly("defendants : must not be empty");
     }
 
     @Test
@@ -166,7 +166,7 @@ public class ClaimDataTest {
 
         Set<String> errors = validate(claimData);
 
-        assertThat(errors).containsOnly("claimants : may not be empty");
+        assertThat(errors).containsOnly("claimants : must not be empty");
     }
 
     @Test
@@ -177,7 +177,7 @@ public class ClaimDataTest {
 
         Set<String> errors = validate(claimData);
 
-        assertThat(errors).containsOnly("claimants : may not be empty");
+        assertThat(errors).containsOnly("claimants : must not be empty");
     }
 
     @Test
@@ -201,7 +201,7 @@ public class ClaimDataTest {
 
         Set<String> errors = validate(claimData);
 
-        assertThat(errors).containsOnly("claimants[0].name : may not be empty");
+        assertThat(errors).containsOnly("claimants[0].name : must not be blank");
     }
 
     @Test
@@ -214,7 +214,7 @@ public class ClaimDataTest {
 
         Set<String> errors = validate(claimData);
 
-        assertThat(errors).containsOnly("claimants[0].address : may not be null");
+        assertThat(errors).containsOnly("claimants[0].address : must not be null");
     }
 
     @Test

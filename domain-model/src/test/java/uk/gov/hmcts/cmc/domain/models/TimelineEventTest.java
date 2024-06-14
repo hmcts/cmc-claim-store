@@ -27,7 +27,7 @@ public class TimelineEventTest {
 
         assertThat(response)
             .hasSize(1)
-            .contains("date : may not be empty");
+            .contains("date : must not be blank");
     }
 
     @Test
@@ -38,7 +38,7 @@ public class TimelineEventTest {
 
         assertThat(response)
             .hasSize(1)
-            .contains("date : may not be empty");
+            .contains("date : must not be blank");
     }
 
     @Test
@@ -61,7 +61,7 @@ public class TimelineEventTest {
 
         assertThat(response)
             .hasSize(1)
-            .contains("description : may not be empty");
+            .contains("description : must not be blank");
     }
 
     @Test
@@ -72,7 +72,7 @@ public class TimelineEventTest {
 
         assertThat(response)
             .hasSize(1)
-            .contains("description : may not be empty");
+            .contains("description : must not be blank");
     }
 
     @Test

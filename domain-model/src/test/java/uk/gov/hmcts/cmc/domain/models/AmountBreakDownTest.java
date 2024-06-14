@@ -34,7 +34,7 @@ public class AmountBreakDownTest {
         //then
         assertThat(validationMessages)
             .hasSize(1)
-            .contains("rows : may not be null");
+            .contains("rows : must not be null");
     }
 
     @Test

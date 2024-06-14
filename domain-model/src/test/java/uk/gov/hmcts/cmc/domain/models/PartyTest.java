@@ -23,7 +23,7 @@ public class PartyTest {
 
         assertThat(validationErrors)
             .hasSize(1)
-            .contains("name : may not be empty");
+            .contains("name : must not be blank");
     }
 
     @Test
@@ -36,7 +36,7 @@ public class PartyTest {
 
         assertThat(validationErrors)
             .hasSize(1)
-            .contains("name : may not be empty");
+            .contains("name : must not be blank");
     }
 
     @Test
@@ -62,7 +62,7 @@ public class PartyTest {
 
         assertThat(validationErrors)
             .hasSize(1)
-            .contains("address : may not be null");
+            .contains("address : must not be null");
     }
 
     @Test

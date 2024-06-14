@@ -47,7 +47,7 @@ public class PaymentDeclarationTest {
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("paidDate : may not be null");
+            .contains("paidDate : must not be null");
     }
 
     @Test
@@ -76,7 +76,7 @@ public class PaymentDeclarationTest {
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("explanation : may not be empty");
+            .contains("explanation : must not be blank");
     }
 
     @Test
@@ -90,7 +90,7 @@ public class PaymentDeclarationTest {
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("explanation : may not be empty");
+            .contains("explanation : must not be blank");
     }
 
     @Test

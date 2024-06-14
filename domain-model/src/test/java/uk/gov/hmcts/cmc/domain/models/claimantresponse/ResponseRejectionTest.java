@@ -66,7 +66,7 @@ public class ResponseRejectionTest {
     public void shouldBeInvalidWhenNoMediationReasonIsTooLong() {
         ClaimantResponse claimantResponse = ResponseRejection
             .builder()
-            .noMediationReason(randomAlphabetic(501))
+            .noMediationReason(randomAlphabetic(551))
             .build();
 
         Set<String> response = validate(claimantResponse);

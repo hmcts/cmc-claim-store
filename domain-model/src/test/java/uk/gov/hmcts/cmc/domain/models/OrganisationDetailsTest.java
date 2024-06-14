@@ -23,7 +23,7 @@ public class OrganisationDetailsTest {
 
         assertThat(validationErrors)
             .hasSize(1)
-            .contains("name : may not be empty");
+            .contains("name : must not be blank");
     }
 
     @Test
@@ -36,7 +36,7 @@ public class OrganisationDetailsTest {
 
         assertThat(validationErrors)
             .hasSize(1)
-            .contains("name : may not be empty");
+            .contains("name : must not be blank");
     }
 
     @Test

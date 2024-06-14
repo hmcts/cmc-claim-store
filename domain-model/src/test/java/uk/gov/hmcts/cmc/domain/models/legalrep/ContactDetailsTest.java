@@ -75,7 +75,7 @@ public class ContactDetailsTest {
 
         Set<String> validationErrors = validate(contactDetails);
 
-        assertThat(validationErrors).containsOnly("email : not a well-formed email address");
+        assertThat(validationErrors).containsOnly("email : must be a well-formed email address");
     }
 
     @Test

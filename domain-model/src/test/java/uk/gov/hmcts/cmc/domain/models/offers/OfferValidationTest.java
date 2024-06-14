@@ -30,7 +30,7 @@ public class OfferValidationTest {
 
         Set<String> validationErrors = validate(offer);
 
-        assertThat(validationErrors).containsOnly("content : may not be empty");
+        assertThat(validationErrors).containsOnly("content : must not be blank");
     }
 
     @Test
@@ -54,7 +54,7 @@ public class OfferValidationTest {
 
         Set<String> validationErrors = validate(offer);
 
-        assertThat(validationErrors).containsOnly("completionDate : may not be null");
+        assertThat(validationErrors).containsOnly("completionDate : must not be null");
     }
 
     @Test

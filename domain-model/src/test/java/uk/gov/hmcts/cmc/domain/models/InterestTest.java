@@ -34,7 +34,7 @@ public class InterestTest {
         Set<String> errors = validate(interest);
         //then
         assertThat(errors)
-                .containsExactly("type : may not be null");
+                .containsExactly("type : must not be null");
     }
 
     @Test
@@ -423,7 +423,7 @@ public class InterestTest {
 
         Set<String> errors = validate(interest);
 
-        assertThat(errors).containsExactly("interestBreakdown : totalAmount : may not be null");
+        assertThat(errors).containsExactly("interestBreakdown : totalAmount : must not be null");
     }
 
     @Test

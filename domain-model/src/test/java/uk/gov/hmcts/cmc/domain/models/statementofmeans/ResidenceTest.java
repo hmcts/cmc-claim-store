@@ -46,6 +46,6 @@ public class ResidenceTest {
         //then
         assertThat(errors)
                 .hasSize(1)
-                .contains("type : may not be null");
+                .contains("type : must not be null");
     }
 }

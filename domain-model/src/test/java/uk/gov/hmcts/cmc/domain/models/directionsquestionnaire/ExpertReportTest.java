@@ -36,7 +36,7 @@ public class ExpertReportTest {
 
         assertThat(response)
             .hasSize(1)
-            .contains("expertReportDate : may not be null");
+            .contains("expertReportDate : must not be null");
     }
 
     @Test
@@ -50,7 +50,7 @@ public class ExpertReportTest {
 
         assertThat(response)
             .hasSize(1)
-            .contains("expertName : may not be null");
+            .contains("expertName : must not be null");
     }
 
     @Test
