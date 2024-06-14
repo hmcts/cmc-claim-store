@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.directionsquestionnaire;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 

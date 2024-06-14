@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.domain.utils;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.domain.models.otherparty.CompanyDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.IndividualDetails;
@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class PartyUtilsTest {
 
@@ -37,17 +38,22 @@ public class PartyUtilsTest {
             .isEqualTo(PartyUtils.SOLE_TRADER_OR_SELF_EMPLOYED_PERSON);
     }
 
-    @Test(expected = NotificationException.class)
+    @Test
     public void getTypeThrowsWhenPartyTypeUnknown() {
-        PartyUtils.getType(new Party(UUID.randomUUID().toString(), null, null,
-            null, null, null, null, null) {
+        assertThrows(NotificationException.class, () -> {
+            PartyUtils.getType(new Party(UUID.randomUUID().toString(), null, null,
+                null, null, null, null, null) {
+            });
         });
+
     }
 
-    @Test(expected = NotificationException.class)
+    @Test
     public void getTypeTheirDetailsThrowsWhenPartyTypeUnknown() {
-        PartyUtils.getType(new TheirDetails(UUID.randomUUID().toString(), null, null,
-            null, null, null, null, null) {
+        assertThrows(NotificationException.class, () -> {
+            PartyUtils.getType(new TheirDetails(UUID.randomUUID().toString(), null, null,
+                null, null, null, null, null) {
+            });
         });
     }
 
