@@ -319,8 +319,12 @@ dependencies {
   integrationTestImplementation project(':domain-model')
 }
 
-test {
+tasks.withType(Test) {
   useJUnitPlatform()
+
+  testLogging {
+    exceptionFormat = 'full'
+  }
 }
 
 task fortifyScan(type: JavaExec)  {
