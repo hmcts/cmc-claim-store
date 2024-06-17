@@ -314,6 +314,10 @@ dependencies {
 
 tasks.withType(Test) {
   useJUnitPlatform()
+
+  testLogging {
+    exceptionFormat = 'full'
+  }
 }
 
 task fortifyScan(type: JavaExec)  {
