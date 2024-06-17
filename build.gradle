@@ -302,6 +302,9 @@ sourceSets {
     }
   }
 }
+configurations.all {
+  exclude group: 'com.vaadin.external.google', module: 'android-json'
+}
 
 dependencies {
   testImplementation project(path: ':domain-model')
