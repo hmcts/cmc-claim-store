@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.support;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -97,7 +97,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseMockSpringTest
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void shouldRespond200AndSendNotificationsForClaimIssuedEvent() throws Exception {
         givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetails());
         given(userService.generatePin(anyString(), eq(BEARER_TOKEN)))
@@ -214,7 +214,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseMockSpringTest
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void shouldRespond200AndSendNotificationsForCCJRequestedEvent() throws Exception {
         givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetailsWithCCJ());
 
@@ -224,7 +224,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseMockSpringTest
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void shouldRespond200AndSendNotificationsForOfferAcceptedEvent() throws Exception {
         givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetailsWithOfferCounterSigned());
 
