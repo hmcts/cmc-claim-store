@@ -312,7 +312,7 @@ dependencies {
   integrationTestImplementation project(':domain-model')
 }
 
-test {
+tasks.withType(Test) {
   useJUnitPlatform()
 }
 
