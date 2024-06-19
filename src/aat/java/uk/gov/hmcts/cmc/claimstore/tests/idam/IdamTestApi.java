@@ -10,7 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.tests.config.FeignConfig;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @SuppressWarnings("rawtypes")
-@FeignClient(name = "idam-test-api", url = "${idam.api.url}/testing-support", configuration = FeignConfig.class)
+@FeignClient(name = "idam-test-api", url = "${idam.api.url}/testing-support")
 public interface IdamTestApi {
 
     @RequestMapping(method = RequestMethod.POST, value = "/accounts")
