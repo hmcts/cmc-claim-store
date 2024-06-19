@@ -161,9 +161,9 @@ dependencies {
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.14.0'
   runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.14.0'
 
-  dependency group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
-  dependency group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.jackson
-  dependency group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: versions.jackson
+  implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
+  implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.jackson
+  implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: versions.jackson
 
   implementation group: 'com.mitchellbosecke', name: 'pebble', version: '2.4.0'
 
