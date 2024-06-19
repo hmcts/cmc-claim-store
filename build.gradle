@@ -145,10 +145,6 @@ allprojects {
       ) {
         entry 'hibernate-validator'
       }
-      dependencySet(group: 'org.apache.logging.log4j', version: '2.18.0') {
-        entry 'log4j-api'
-        entry 'log4j-to-slf4j'
-      }
     }
   }
 }
@@ -178,6 +174,9 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-quartz'
+
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.20.0'
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.20.0'
 
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
 
@@ -238,7 +237,7 @@ dependencies {
 
   implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '11.2'
 
-  implementation group: 'org.springframework.cloud',name : 'spring-cloud-starter-bootstrap' , version: '4.0.0'
+  implementation group: 'org.springframework.cloud',name : 'spring-cloud-starter-bootstrap'
 
   implementation group: 'javax.json', name: 'javax.json-api', version: '1.1.4'
   implementation group: 'javax.inject', name: 'javax.inject', version: '1'
