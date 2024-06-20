@@ -180,6 +180,8 @@ dependencies {
 
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
 
+  implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: '2.17.0'
+
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
   implementation group: 'ch.qos.logback', name: 'logback-core', version: versions.logback
 
