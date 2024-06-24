@@ -1,9 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.jupiter.api.Disabled;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
@@ -19,7 +19,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Disabled
+@Ignore
 public class SettlementOfferTest extends BaseTest {
 
     private User claimant;
