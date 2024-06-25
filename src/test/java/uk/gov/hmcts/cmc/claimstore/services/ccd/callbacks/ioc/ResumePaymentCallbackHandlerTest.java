@@ -1,13 +1,13 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
@@ -45,7 +45,7 @@ import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.INITIATED;
 import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.PENDING;
 import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ResumePaymentCallbackHandlerTest {
     private static final String BEARER_TOKEN = "Bearer let me in";
     private static final String NEXT_URL = "http://nexturl.test";
@@ -71,14 +71,11 @@ public class ResumePaymentCallbackHandlerTest {
     @Mock
     private WorkingDayIndicator workingDayIndicator;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        Claim claim = SampleClaim.getDefault();
         CCDCase ccdCase = SampleData.getCCDCitizenCase(getAmountBreakDown()).toBuilder()
             .feeAmountInPennies("1000")
             .build();
-        when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
-        when(caseMapper.to(any(Claim.class))).thenReturn(ccdCase);
         JsonMapper jsonMapper = new JsonMapper(new JacksonConfiguration().objectMapper());
         caseDetailsConverter
             = new CaseDetailsConverter(caseMapper, jsonMapper, workingDayIndicator, 12, false);
@@ -101,6 +98,8 @@ public class ResumePaymentCallbackHandlerTest {
 
     @Test
     public void shouldUseExistingPaymentIfPaymentIsSuccessful() {
+        Claim claim = SampleClaim.getDefault();
+
         Payment originalPayment = Payment.builder()
             .reference("reference")
             .status(SUCCESS)
@@ -112,6 +111,8 @@ public class ResumePaymentCallbackHandlerTest {
             eq(BEARER_TOKEN),
             any(ClaimData.class)))
             .thenReturn(Optional.of(originalPayment));
+
+        when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
 
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_SUBMIT)
@@ -129,6 +130,13 @@ public class ResumePaymentCallbackHandlerTest {
 
     @Test
     public void shouldCreateNewPaymentIfPaymentIsInitiated() {
+        Claim claim = SampleClaim.getDefault();
+        CCDCase ccdCase = SampleData.getCCDCitizenCase(getAmountBreakDown()).toBuilder()
+            .feeAmountInPennies("1000")
+            .build();
+        when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
+        when(caseMapper.to(any(Claim.class))).thenReturn(ccdCase);
+
         Payment originalPayment = Payment.builder()
             .reference("reference")
             .status(INITIATED)
@@ -174,6 +182,13 @@ public class ResumePaymentCallbackHandlerTest {
 
     @Test
     public void shouldCancelPaymentIfPaymentIsPending() {
+        Claim claim = SampleClaim.getDefault();
+        CCDCase ccdCase = SampleData.getCCDCitizenCase(getAmountBreakDown()).toBuilder()
+            .feeAmountInPennies("1000")
+            .build();
+        when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
+        when(caseMapper.to(any(Claim.class))).thenReturn(ccdCase);
+
         Payment originalPayment = Payment.builder()
             .reference("reference")
             .status(PENDING)

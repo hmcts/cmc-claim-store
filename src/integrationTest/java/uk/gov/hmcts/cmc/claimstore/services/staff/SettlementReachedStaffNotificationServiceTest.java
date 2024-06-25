@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +21,7 @@ import uk.gov.hmcts.cmc.email.EmailService;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.verify;
@@ -45,7 +46,7 @@ public class SettlementReachedStaffNotificationServiceTest extends BaseMockSprin
 
     private Claim claim;
 
-    @Before
+    @BeforeEach
     public void setup() {
         Settlement settlement = new Settlement();
         settlement.makeOffer(SampleOffer.builder().build(), MadeBy.DEFENDANT, null);
@@ -61,9 +62,11 @@ public class SettlementReachedStaffNotificationServiceTest extends BaseMockSprin
             .thenReturn(PDF_CONTENT);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerWhenGivenNullClaim() {
-        service.notifySettlementReached(null);
+        assertThrows(NullPointerException.class, () -> {
+            service.notifySettlementReached(null);
+        });
     }
 
     @Test

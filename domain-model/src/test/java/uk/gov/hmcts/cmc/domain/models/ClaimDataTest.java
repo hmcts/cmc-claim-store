@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterestDate;
@@ -13,6 +13,7 @@ import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 import static uk.gov.hmcts.cmc.domain.models.Interest.InterestType.STANDARD;
 import static uk.gov.hmcts.cmc.domain.models.InterestDate.InterestDateType.CUSTOM;
@@ -74,7 +75,7 @@ public class ClaimDataTest {
 
         Set<String> errors = validate(claimData);
 
-        assertThat(errors).containsOnly("defendants : may not be empty");
+        assertThat(errors).containsOnly("defendants : must not be empty");
     }
 
     @Test
@@ -85,7 +86,7 @@ public class ClaimDataTest {
 
         Set<String> errors = validate(claimData);
 
-        assertThat(errors).containsOnly("defendants : may not be empty");
+        assertThat(errors).containsOnly("defendants : must not be empty");
     }
 
     @Test
@@ -144,7 +145,7 @@ public class ClaimDataTest {
         assertThat(claimData.getDefendant()).isNotNull();
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void getDefendantShouldThrowIllegalStateWhenThereIsMoreThanOneDefendant() {
         ClaimData claimData = SampleClaimData.builder()
             .clearDefendants()
@@ -152,7 +153,9 @@ public class ClaimDataTest {
             .addDefendant(SampleTheirDetails.builder().individualDetails())
             .build();
 
-        claimData.getDefendant();
+        assertThrows(IllegalStateException.class, () -> {
+            claimData.getDefendant();
+        });
     }
 
     @Test
@@ -163,7 +166,7 @@ public class ClaimDataTest {
 
         Set<String> errors = validate(claimData);
 
-        assertThat(errors).containsOnly("claimants : may not be empty");
+        assertThat(errors).containsOnly("claimants : must not be empty");
     }
 
     @Test
@@ -174,7 +177,7 @@ public class ClaimDataTest {
 
         Set<String> errors = validate(claimData);
 
-        assertThat(errors).containsOnly("claimants : may not be empty");
+        assertThat(errors).containsOnly("claimants : must not be empty");
     }
 
     @Test
@@ -198,7 +201,7 @@ public class ClaimDataTest {
 
         Set<String> errors = validate(claimData);
 
-        assertThat(errors).containsOnly("claimants[0].name : may not be empty");
+        assertThat(errors).containsOnly("claimants[0].name : must not be blank");
     }
 
     @Test
@@ -211,7 +214,7 @@ public class ClaimDataTest {
 
         Set<String> errors = validate(claimData);
 
-        assertThat(errors).containsOnly("claimants[0].address : may not be null");
+        assertThat(errors).containsOnly("claimants[0].address : must not be null");
     }
 
     @Test
@@ -244,7 +247,7 @@ public class ClaimDataTest {
         assertThat(claimData.getClaimant()).isNotNull();
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void getClaimantShouldThrowIllegalStateWhenThereIsMoreThanOneClaimant() {
         ClaimData claimData = SampleClaimData.builder()
             .clearClaimants()
@@ -252,7 +255,9 @@ public class ClaimDataTest {
             .addClaimant(SampleParty.builder().individual())
             .build();
 
-        claimData.getClaimant();
+        assertThrows(IllegalStateException.class, () -> {
+            claimData.getClaimant();
+        });
     }
 
     @Test

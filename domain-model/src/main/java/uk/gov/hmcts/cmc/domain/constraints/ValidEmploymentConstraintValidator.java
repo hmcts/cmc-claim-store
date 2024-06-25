@@ -1,9 +1,8 @@
 package uk.gov.hmcts.cmc.domain.constraints;
 
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employment;
-
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 
 import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.mayNotBeProvidedError;
 import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.setValidationErrors;

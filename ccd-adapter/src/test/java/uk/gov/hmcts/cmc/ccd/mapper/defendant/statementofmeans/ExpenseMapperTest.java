@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDExpense;
@@ -23,7 +23,7 @@ import static uk.gov.hmcts.cmc.domain.models.statementofmeans.PaymentFrequency.M
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 public class ExpenseMapperTest {
 
     @Autowired

@@ -1,14 +1,14 @@
 package uk.gov.hmcts.cmc.email.sendgrid;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class SendGridFactoryTest {
     private SendGridFactory factory;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         factory = new SendGridFactory();
     }

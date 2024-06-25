@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocument;
@@ -11,7 +11,7 @@ import uk.gov.hmcts.cmc.domain.models.ScannedDocumentType;
 import java.net.URI;
 import java.time.LocalDateTime;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ScannedDocumentMapperTest {
 

@@ -4,8 +4,8 @@ import com.google.common.collect.ImmutableMap;
 import com.microsoft.applicationinsights.TelemetryClient;
 import org.flywaydb.core.Flyway;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Before;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.quartz.Scheduler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -70,7 +70,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     classes = {
@@ -169,7 +169,7 @@ public abstract class BaseMockSpringTest {
     @MockBean(name = "transactionManager")
     private PlatformTransactionManager transactionManager;
 
-    @Before
+    @BeforeEach
     public void setUpBase() {
 
         bankHolidaysSetup();

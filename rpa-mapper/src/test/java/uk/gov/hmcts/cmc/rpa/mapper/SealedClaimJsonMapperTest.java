@@ -1,12 +1,12 @@
 package uk.gov.hmcts.cmc.rpa.mapper;
 
 import org.json.JSONException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
@@ -21,12 +21,13 @@ import uk.gov.hmcts.cmc.rpa.config.ModuleConfiguration;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
 
 @SpringBootTest
 @ContextConfiguration(classes = ModuleConfiguration.class)
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 public class SealedClaimJsonMapperTest {
 
     private final LocalDate issueDate = LocalDate.of(2018, 4, 26);
@@ -124,11 +125,13 @@ public class SealedClaimJsonMapperTest {
         assertEquals(expected, mapper.map(claim).toString(), STRICT);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowExceptionWhenMissingIssuedDate() {
         Claim claim = SampleClaim.getDefault().toBuilder()
             .issuedOn(null)
             .build();
-        mapper.map(claim);
+        assertThrows(IllegalStateException.class, () -> {
+            mapper.map(claim);
+        });
     }
 }

@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.launchdarkly.sdk.LDUser;
-import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -227,7 +226,7 @@ class MoreTimeRequestedCallbackHandlerTest {
             when(claimDeadlineService.isPastDeadline(any(), any())).thenReturn(true);
             when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancement-2"), any(LDUser.class))).thenReturn(true);
             when(moreTimeRequestRule.validateMoreTimeCanBeRequested(any(Claim.class), any(LocalDate.class)))
-                .thenReturn(Lists.emptyList());
+                .thenReturn(Collections.emptyList());
 
             AboutToStartOrSubmitCallbackResponse response
                 = (AboutToStartOrSubmitCallbackResponse) moreTimeRequestedCallbackHandler.handle(callbackParams);
@@ -242,7 +241,7 @@ class MoreTimeRequestedCallbackHandlerTest {
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
             when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancement-2"), any(LDUser.class))).thenReturn(false);
             when(moreTimeRequestRule.validateMoreTimeCanBeRequested(any(Claim.class), any(LocalDate.class)))
-                .thenReturn(Lists.emptyList());
+                .thenReturn(Collections.emptyList());
 
             AboutToStartOrSubmitCallbackResponse response
                 = (AboutToStartOrSubmitCallbackResponse) moreTimeRequestedCallbackHandler.handle(callbackParams);
@@ -267,7 +266,7 @@ class MoreTimeRequestedCallbackHandlerTest {
             when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
             when(launchDarklyClient.isFeatureEnabled(eq("ocon-enhancement-2"), any(LDUser.class))).thenReturn(false);
             when(moreTimeRequestRule.validateMoreTimeCanBeRequested(any(Claim.class), any(LocalDate.class)))
-                .thenReturn(Lists.emptyList());
+                .thenReturn(Collections.emptyList());
 
             AboutToStartOrSubmitCallbackResponse response
                 = (AboutToStartOrSubmitCallbackResponse) moreTimeRequestedCallbackHandler.handle(callbackParams);

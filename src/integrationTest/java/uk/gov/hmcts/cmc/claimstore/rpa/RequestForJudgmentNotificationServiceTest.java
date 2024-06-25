@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.rpa;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +22,7 @@ import uk.gov.hmcts.cmc.email.EmailService;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.BDDMockito.given;
@@ -69,7 +70,7 @@ public class RequestForJudgmentNotificationServiceTest extends BaseMockSpringTes
         .ccjType(CountyCourtJudgmentType.DETERMINATION)
         .build();
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         claim = SampleClaim.builder()
@@ -83,9 +84,11 @@ public class RequestForJudgmentNotificationServiceTest extends BaseMockSpringTes
 
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerWhenGivenNullClaim() {
-        service.notifyRobotics(null);
+        assertThrows(NullPointerException.class, () -> {
+            service.notifyRobotics(null);
+        });
     }
 
     @Test

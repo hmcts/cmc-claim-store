@@ -1,9 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
 import io.restassured.RestAssured;
-import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
@@ -18,7 +18,7 @@ public class LinkDefendantTest extends BaseTest {
 
     private User claimant;
 
-    @Before
+    @BeforeEach
     public void before() {
         claimant = bootstrap.getClaimant();
     }

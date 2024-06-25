@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models.legalrep;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.sampledata.legalrep.SampleContactDetails;
 
 import java.util.Set;
@@ -75,7 +75,7 @@ public class ContactDetailsTest {
 
         Set<String> validationErrors = validate(contactDetails);
 
-        assertThat(validationErrors).containsOnly("email : not a well-formed email address");
+        assertThat(validationErrors).containsOnly("email : must be a well-formed email address");
     }
 
     @Test

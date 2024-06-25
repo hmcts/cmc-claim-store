@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.Set;
@@ -52,7 +52,7 @@ public class BankAccountTest {
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("type : may not be null");
+            .contains("type : must not be null");
     }
 
     @Test
@@ -67,7 +67,7 @@ public class BankAccountTest {
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("balance : may not be null");
+            .contains("balance : must not be null");
     }
 
     @Test

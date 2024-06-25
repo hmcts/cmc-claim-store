@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -34,14 +35,16 @@ public class RejectSettlementAgreementStaffNotificationServiceTest extends BaseM
 
     private Claim claim;
 
-    @Before
+    @BeforeEach
     public void setup() {
         claim = SampleClaim.getClaimWithSettlementAgreementRejected();
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerWhenGivenNullClaim() {
-        service.notifySettlementRejected(null);
+        assertThrows(NullPointerException.class, () -> {
+            service.notifySettlementRejected(null);
+        });
     }
 
     @Test

@@ -1,8 +1,9 @@
 package uk.gov.hmcts.cmc.domain.constraints;
 
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
+
 import java.util.Collection;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 
 public class EachNotNullConstraintValidator implements ConstraintValidator<EachNotNull, Collection<?>> {
     @Override

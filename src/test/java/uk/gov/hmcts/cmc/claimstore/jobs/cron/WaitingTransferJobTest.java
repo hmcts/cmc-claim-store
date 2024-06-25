@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.jobs.cron;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.quartz.JobExecutionException;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.cmc.claimstore.services.ScheduledStateTransitionService;
 import uk.gov.hmcts.cmc.claimstore.services.statetransition.StateTransitions;
 
@@ -14,12 +14,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class WaitingTransferJobTest {
 
     @Mock
@@ -33,7 +34,7 @@ public class WaitingTransferJobTest {
 
     private static final LocalDate TODAY = LocalDate.of(2020, 3, 3);
 
-    @Before
+    @BeforeEach
     public void setup() {
         fixedClock = Clock.fixed(TODAY.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
 
@@ -51,10 +52,12 @@ public class WaitingTransferJobTest {
             eq(LocalDateTime.now(fixedClock)), eq(StateTransitions.WAITING_TRANSFER));
     }
 
-    @Test(expected = JobExecutionException.class)
+    @Test
     public void shouldThrowJobExecutionException() throws Exception {
         doThrow(new RuntimeException()).when(scheduledStateTransitionService).stateChangeTriggered(any(), any());
 
-        intentionToProceedJob.execute(null);
+        assertThrows(JobExecutionException.class, () -> {
+            intentionToProceedJob.execute(null);
+        });
     }
 }

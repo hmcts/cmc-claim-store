@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.errors;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +45,7 @@ public class EndpointErrorsTest extends BaseMockSpringTest {
     @Autowired
     private MockMvc webClient;
 
-    @Before
+    @BeforeEach
     public void setup() {
         given(userService.getUserInfo(anyString())).willReturn(UserInfo.builder()
             .roles(ImmutableList.of(Role.CITIZEN.getRole()))

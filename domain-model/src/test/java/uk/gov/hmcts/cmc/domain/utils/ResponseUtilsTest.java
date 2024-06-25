@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.domain.utils;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
@@ -18,8 +18,8 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ResponseUtilsTest {
 

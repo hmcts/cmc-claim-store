@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.rpa;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.BDDMockito.given;
@@ -51,7 +52,7 @@ public class DefenceResponseNotificationServiceTest extends BaseMockSpringTest {
 
     private DefendantResponseEvent event;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         claim = SampleClaim
             .builder()
@@ -65,17 +66,21 @@ public class DefenceResponseNotificationServiceTest extends BaseMockSpringTest {
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).willReturn(PDF_CONTENT);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerWhenGivenNullClaim() {
-        service.notifyRobotics(null);
+        assertThrows(NullPointerException.class, () -> {
+            service.notifyRobotics(null);
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowExceptionWhenIssuedOnDateIsMissing() {
         claim = claim.toBuilder().issuedOn(null).build();
         event = new DefendantResponseEvent(claim, "AUTH_CODE");
 
-        service.notifyRobotics(event);
+        assertThrows(IllegalStateException.class, () -> {
+            service.notifyRobotics(event);
+        });
     }
 
     @Test

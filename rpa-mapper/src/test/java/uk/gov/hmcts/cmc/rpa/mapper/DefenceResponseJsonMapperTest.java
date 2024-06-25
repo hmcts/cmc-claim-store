@@ -1,12 +1,12 @@
 package uk.gov.hmcts.cmc.rpa.mapper;
 
 import org.json.JSONException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.RequireSupport;
@@ -27,7 +27,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.DQ_FLAG;
 
 @SpringBootTest
 @ContextConfiguration(classes = ModuleConfiguration.class)
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @SuppressWarnings({"LineLength"})
 public class DefenceResponseJsonMapperTest extends BaseResponseJsonMapper {
 

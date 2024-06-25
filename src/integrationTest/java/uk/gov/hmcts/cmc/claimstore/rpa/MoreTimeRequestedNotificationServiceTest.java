@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.rpa;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -63,7 +64,7 @@ public class MoreTimeRequestedNotificationServiceTest extends BaseMockSpringTest
 
     private final User user = new User("", new UserDetails(null, null, null, null, null));
 
-    @Before
+    @BeforeEach
     public void setUp() {
         claim = SampleClaim
             .builder()
@@ -75,9 +76,11 @@ public class MoreTimeRequestedNotificationServiceTest extends BaseMockSpringTest
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTHORISATION);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerWhenGivenNullClaim() {
-        service.notifyRobotics(null);
+        assertThrows(NullPointerException.class, () -> {
+            service.notifyRobotics(null);
+        });
     }
 
     @Test

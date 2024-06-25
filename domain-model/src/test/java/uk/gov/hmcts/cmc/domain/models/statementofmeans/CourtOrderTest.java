@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
@@ -51,7 +51,7 @@ public class CourtOrderTest {
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("amountOwed : may not be null");
+            .contains("amountOwed : must not be null");
     }
 
     @Test
@@ -98,7 +98,7 @@ public class CourtOrderTest {
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("monthlyInstalmentAmount : may not be null");
+            .contains("monthlyInstalmentAmount : must not be null");
     }
 
     @Test
@@ -129,7 +129,7 @@ public class CourtOrderTest {
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("claimNumber : may not be empty");
+            .contains("claimNumber : must not be blank");
     }
 
     @Test
@@ -145,6 +145,6 @@ public class CourtOrderTest {
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("claimNumber : may not be empty");
+            .contains("claimNumber : must not be blank");
     }
 }

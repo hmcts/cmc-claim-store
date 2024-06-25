@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import java.time.LocalDate;
@@ -11,6 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocument.builder;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.COVER_SHEET;
@@ -51,10 +51,10 @@ public class ClaimTest {
         Claim claim = getClaimWithDocuments();
 
         Optional<ClaimDocument> claimDocument = claim.getClaimDocument(COVER_SHEET);
-        Assert.assertTrue(claimDocument.isPresent());
+        assertTrue(claimDocument.isPresent());
 
         claimDocument = claim.getClaimDocument(ClaimDocumentType.CLAIM_ISSUE_RECEIPT);
-        Assert.assertTrue(claimDocument.isEmpty());
+        assertTrue(claimDocument.isEmpty());
     }
 
     @Test
@@ -62,10 +62,10 @@ public class ClaimTest {
         Claim claim = getClaimWithDocuments();
 
         Optional<ClaimDocument> claimDocument = claim.getClaimDocument("12345");
-        Assert.assertTrue(claimDocument.isPresent());
+        assertTrue(claimDocument.isPresent());
 
         claimDocument = claim.getClaimDocument("456");
-        Assert.assertTrue(claimDocument.isEmpty());
+        assertTrue(claimDocument.isEmpty());
     }
 
     @Test

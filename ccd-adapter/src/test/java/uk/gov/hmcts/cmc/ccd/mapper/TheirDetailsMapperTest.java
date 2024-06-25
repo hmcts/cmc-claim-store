@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
@@ -17,7 +17,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.sample.data.SampleData.getCCDRespondentCompany;
 import static uk.gov.hmcts.cmc.ccd.sample.data.SampleData.getCCDRespondentIndividual;
@@ -26,7 +26,7 @@ import static uk.gov.hmcts.cmc.ccd.sample.data.SampleData.getCCDRespondentSoleTr
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 public class TheirDetailsMapperTest {
     @Autowired
     private TheirDetailsMapper theirDetailsMapper;

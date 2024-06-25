@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
-import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.claimstore.tests.functional.BasePdfTest;
 import uk.gov.hmcts.cmc.claimstore.tests.helpers.Retry;
 import uk.gov.hmcts.cmc.claimstore.tests.helpers.RetryFailedFunctionalTests;
@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ClaimPdfTest extends BasePdfTest {
 
-    @Before
+    @BeforeEach
     public void before() {
         user = bootstrap.getClaimant();
     }

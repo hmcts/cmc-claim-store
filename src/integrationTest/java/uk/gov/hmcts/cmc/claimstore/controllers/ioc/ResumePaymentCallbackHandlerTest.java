@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
@@ -66,7 +66,7 @@ public class ResumePaymentCallbackHandlerTest extends BaseMockSpringTest {
     @MockBean
     protected EmailService emailService;
 
-    @Before
+    @BeforeEach
     public void setup() {
         UserDetails userDetails = SampleUserDetails.builder().withRoles("citizen").build();
         given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);

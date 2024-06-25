@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestEndDateType;
 import uk.gov.hmcts.cmc.domain.models.Interest;
@@ -10,8 +10,8 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest;
 
 import java.math.BigDecimal;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static uk.gov.hmcts.cmc.domain.models.InterestDate.InterestEndDateType.SUBMISSION;
 
 public class InterestMapperTest {

@@ -1,19 +1,20 @@
 package uk.gov.hmcts.cmc.domain.models.offers;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.exceptions.IllegalSettlementStatementException;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class SettlementMakeOfferTest {
 
     private Settlement settlement;
 
-    @Before
+    @BeforeEach
     public void beforeEachTest() {
         settlement = new Settlement();
     }
@@ -33,20 +34,24 @@ public class SettlementMakeOfferTest {
         assertThat(partyStatement.getMadeBy()).isEqualTo(MadeBy.DEFENDANT);
     }
 
-    @Test(expected = IllegalSettlementStatementException.class)
+    @Test
     public void shouldNotAllowDefendantToMakeTwoOffersInARow() {
         Offer offer = SampleOffer.builder().build();
 
-        settlement.makeOffer(offer, MadeBy.DEFENDANT, null);
-        settlement.makeOffer(offer, MadeBy.DEFENDANT, null);
+        assertThrows(IllegalSettlementStatementException.class, () -> {
+            settlement.makeOffer(offer, MadeBy.DEFENDANT, null);
+            settlement.makeOffer(offer, MadeBy.DEFENDANT, null);
+        });
     }
 
-    @Test(expected = IllegalSettlementStatementException.class)
+    @Test
     public void shouldNotAllowClaimantToMakeTwoOffersInARow() {
         Offer offer = SampleOffer.builder().build();
 
-        settlement.makeOffer(offer, MadeBy.CLAIMANT, null);
-        settlement.makeOffer(offer, MadeBy.CLAIMANT, null);
+        assertThrows(IllegalSettlementStatementException.class, () -> {
+            settlement.makeOffer(offer, MadeBy.CLAIMANT, null);
+            settlement.makeOffer(offer, MadeBy.CLAIMANT, null);
+        });
     }
 
     @Test

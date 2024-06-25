@@ -1,8 +1,9 @@
 package uk.gov.hmcts.cmc.domain.models;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIMANT_DIRECTIONS_QUESTIONNAIRE;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
@@ -61,8 +62,10 @@ public class ClaimDocumentTypeTest {
             .isEqualTo(REVIEW_ORDER);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowIfUnknownEnum() {
-        fromValue("nope");
+        assertThrows(IllegalArgumentException.class, () -> {
+            fromValue("nope");
+        });
     }
 }

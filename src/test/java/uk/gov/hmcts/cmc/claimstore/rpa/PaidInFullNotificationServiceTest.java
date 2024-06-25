@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.rpa;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
 import uk.gov.hmcts.cmc.claimstore.rpa.config.EmailProperties;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class PaidInFullNotificationServiceTest {
     private static final String PAID_IN_FULL_EMAIL_ADDRESS = "test@example.com";
     private static final String SENDER_EMAIL = "sender@example.com";
@@ -41,7 +41,7 @@ public class PaidInFullNotificationServiceTest {
     private final Claim claim = SampleClaim.builder()
         .withMoneyReceivedOn(LocalDate.now()).build();
 
-    @Before
+    @BeforeEach
     public void setUp() {
         when(emailProperties.getPaidInFullRecipient()).thenReturn(PAID_IN_FULL_EMAIL_ADDRESS);
         when(emailProperties.getSender()).thenReturn(SENDER_EMAIL);

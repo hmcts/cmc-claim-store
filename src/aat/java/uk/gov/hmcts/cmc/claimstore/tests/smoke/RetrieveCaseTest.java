@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.tests.smoke;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
@@ -34,7 +34,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class RetrieveCaseTest extends BaseTest {
 
     private static final String AUTHORISATION = "Bearer: aaa";
@@ -56,7 +56,7 @@ public class RetrieveCaseTest extends BaseTest {
     private CaseDetailsConverter ccdCaseDetailsConverter;
     private CCDElasticSearchRepository ccdElasticSearchRepository;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         ccdElasticSearchRepository = new CCDElasticSearchRepository(coreCaseDataApi, authTokenGenerator,
             userService, ccdCaseDetailsConverter);

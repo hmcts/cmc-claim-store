@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.domain.utils;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -8,17 +8,22 @@ import java.time.format.DateTimeParseException;
 
 import static java.time.Month.FEBRUARY;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class DatesProviderTest {
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void toDateTimeShouldThrowNullPointerWhenGivenNullValue() {
-        DatesProvider.toDateTime(null);
+        assertThrows(NullPointerException.class, () -> {
+            DatesProvider.toDateTime(null);
+        });
     }
 
-    @Test(expected = DateTimeParseException.class)
+    @Test
     public void toDateTimeShouldThrowParseExceptionWhenGivenInvalidValue() {
-        DatesProvider.toDateTime("I'm not a date time string");
+        assertThrows(DateTimeParseException.class, () -> {
+            DatesProvider.toDateTime("I'm not a date time string");
+        });
     }
 
     @Test
@@ -31,14 +36,18 @@ public class DatesProviderTest {
         assertThat(dateTime.getMinute()).isEqualTo(34);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void toDateShouldThrowNullPointerWhenGivenNullValue() {
-        DatesProvider.toDate(null);
+        assertThrows(NullPointerException.class, () -> {
+            DatesProvider.toDate(null);
+        });
     }
 
-    @Test(expected = DateTimeParseException.class)
+    @Test
     public void toDateShouldThrowParseExceptionWhenGivenInvalidValue() {
-        DatesProvider.toDateTime("I'm not a date string");
+        assertThrows(DateTimeParseException.class, () -> {
+            DatesProvider.toDateTime("I'm not a date string");
+        });
     }
 
     @Test
@@ -48,5 +57,4 @@ public class DatesProviderTest {
         assertThat(date.getMonth()).isEqualTo(FEBRUARY);
         assertThat(date.getDayOfMonth()).isEqualTo(10);
     }
-
 }

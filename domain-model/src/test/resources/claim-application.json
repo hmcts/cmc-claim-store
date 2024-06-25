@@ -59,6 +59,13 @@
         "city": "Manchester",
         "postcode": "DF1 3LJ"
       },
+      "claimantProvidedAddress": {
+        "line1": "52",
+        "line2": "Down Street",
+        "line3": "Salford",
+        "city": "Manchester",
+        "postcode": "DF1 3LJ"
+      },
       "email": "j.smith@example.com"
     }
   ],
@@ -73,10 +80,8 @@
     "return_url": "http://returnUrl.test"
   },
   "feeAmountInPennies": 4000,
-  "feeRemitted": 3000,
   "reason": "reason",
   "feeCode": "X0012",
-  "feeRemitted": "3000",
   "helpWithFeesNumber": "HWF012345",
   "hwfFeeDetailsSummary": "Summary",
   "hwfMandatoryDetails": "Details",
@@ -85,7 +90,7 @@
     "PRISONERS_INCOME"
   ],
   "hwfProvideDocumentName": "Sample document name",
-  "hwfDocumentsToBeSentBefore": "01-01-2020",
+  "hwfDocumentsToBeSentBefore": "2020-01-01",
   "timeline": {
     "rows": [
       {

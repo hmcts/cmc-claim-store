@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
@@ -46,7 +46,7 @@ public class EmployerTest {
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("jobTitle : may not be empty");
+            .contains("jobTitle : must not be blank");
     }
 
     @Test
@@ -61,7 +61,7 @@ public class EmployerTest {
         //then
         assertThat(errors)
                 .hasSize(1)
-                .contains("jobTitle : may not be empty");
+                .contains("jobTitle : must not be blank");
     }
 
     @Test
@@ -75,7 +75,7 @@ public class EmployerTest {
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("name : may not be empty");
+            .contains("name : must not be blank");
     }
 
     @Test
@@ -90,6 +90,6 @@ public class EmployerTest {
         //then
         assertThat(errors)
                 .hasSize(1)
-            .contains("name : may not be empty");
+            .contains("name : must not be blank");
     }
 }

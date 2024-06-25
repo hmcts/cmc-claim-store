@@ -1,17 +1,20 @@
 package uk.gov.hmcts.cmc.domain.utils;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class MonetaryConversionsTest {
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerWhenGivenNullAmount() {
-        MonetaryConversions.penniesToPounds(null);
+        assertThrows(NullPointerException.class, () -> {
+            MonetaryConversions.penniesToPounds(null);
+        });
     }
 
     @Test

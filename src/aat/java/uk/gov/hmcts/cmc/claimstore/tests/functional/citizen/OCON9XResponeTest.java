@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
-import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
@@ -27,7 +27,7 @@ public class OCON9XResponeTest extends BaseTest {
     private User claimant;
     Claim createdCase;
 
-    @Before
+    @BeforeEach
     public void before() {
         claimant = bootstrap.getClaimant();
 

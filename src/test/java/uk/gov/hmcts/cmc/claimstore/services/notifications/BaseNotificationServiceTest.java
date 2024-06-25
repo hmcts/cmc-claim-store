@@ -4,14 +4,14 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
@@ -26,7 +26,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public abstract class BaseNotificationServiceTest {
 
     protected static final String CLAIMANT_CLAIM_ISSUED_TEMPLATE = "claimantClaimIssued";
@@ -76,12 +76,12 @@ public abstract class BaseNotificationServiceTest {
     @Captor
     protected ArgumentCaptor<Map<String, String>> templateParameters;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         log.addAppender(mockAppender);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         log.detachAppender(mockAppender);
     }

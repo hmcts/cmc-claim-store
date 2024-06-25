@@ -1,11 +1,12 @@
 package uk.gov.hmcts.cmc.ccd.mapper.defendant;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
@@ -28,10 +29,11 @@ import java.util.Optional;
 
 import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.util.AssertionErrors.assertEquals;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.INDIVIDUAL;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.ORGANISATION;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.offers.SamplePartyStatement.acceptPartyStatement;
@@ -39,7 +41,7 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.offers.SamplePartyStatem
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 public class DefendantMapperTest {
 
     @Autowired
@@ -47,15 +49,19 @@ public class DefendantMapperTest {
 
     private final LocalDateTime mediationSettledTime = LocalDateTime.of(2019, 11, 13, 8, 20, 30);
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void mapToShouldThrowExceptionWhenTheirDetailsIsNull() {
-        mapper.to(null, SampleClaim.getDefault());
+        assertThrows(NullPointerException.class, () -> {
+            mapper.to(null, SampleClaim.getDefault());
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void mapToShouldThrowExceptionWhenClaimIsNull() {
         TheirDetails theirDetails = SampleTheirDetails.builder().organisationDetails();
-        mapper.to(theirDetails, null);
+        assertThrows(NullPointerException.class, () -> {
+            mapper.to(theirDetails, null);
+        });
     }
 
     @Test
@@ -234,8 +240,8 @@ public class DefendantMapperTest {
         //Then
         CCDCountyCourtJudgment ccdCountyCourtJudgment = respondent.getCountyCourtJudgmentRequest();
         assertNotNull(ccdCountyCourtJudgment);
-        assertEquals(ccdCountyCourtJudgment.getType().name(), countyCourtJudgment.getCcjType().name());
-        assertEquals(ccdCountyCourtJudgment.getRequestedDate(), claimWithCCJ.getCountyCourtJudgmentRequestedAt());
+        Assertions.assertEquals(ccdCountyCourtJudgment.getType().name(), countyCourtJudgment.getCcjType().name());
+        Assertions.assertEquals(ccdCountyCourtJudgment.getRequestedDate(), claimWithCCJ.getCountyCourtJudgmentRequestedAt());
     }
 
     @Test
@@ -251,7 +257,7 @@ public class DefendantMapperTest {
 
         //Then
         assertNotNull(value.getPaidInFullDate());
-        assertEquals(moneyReceivedOn, value.getPaidInFullDate());
+        Assertions.assertEquals(moneyReceivedOn, value.getPaidInFullDate());
     }
 
     @Test
@@ -266,7 +272,7 @@ public class DefendantMapperTest {
 
         //Then
         assertTrue(claim.getMoneyReceivedOn().isPresent());
-        assertEquals(ccdRespondent.getPaidInFullDate(), claim.getMoneyReceivedOn()
+        Assertions.assertEquals(ccdRespondent.getPaidInFullDate(), claim.getMoneyReceivedOn()
             .orElseThrow(() -> new AssertionError("Missing money received date")));
     }
 
@@ -302,7 +308,7 @@ public class DefendantMapperTest {
         assertNotNull(ccdRespondent.getSettlementPartyStatements());
         assertNotNull(ccdRespondent.getSettlementReachedAt());
         assertThat(ccdRespondent.getSettlementPartyStatements()).hasSize(2);
-        assertEquals(settlementReachedAt, ccdRespondent.getSettlementReachedAt());
+        Assertions.assertEquals(settlementReachedAt, ccdRespondent.getSettlementReachedAt());
     }
 
     @Test
@@ -372,7 +378,7 @@ public class DefendantMapperTest {
         Claim finalClaim = claimBuilder.build();
 
         // Then
-        assertEquals(finalClaim.getFailedMediationReason(), Optional.of("Defendant phone died while mediation call"));
+        Assertions.assertEquals(finalClaim.getFailedMediationReason(), Optional.of("Defendant phone died while mediation call"));
 
     }
 
@@ -387,7 +393,7 @@ public class DefendantMapperTest {
         Claim finalClaim = claimBuilder.build();
 
         // Then
-        assertEquals(mediationSettledTime, finalClaim.getMediationSettlementReachedAt()
+        Assertions.assertEquals(mediationSettledTime, finalClaim.getMediationSettlementReachedAt()
             .orElseThrow(() -> new AssertionError("Expected mediation settled time but got null")));
 
     }

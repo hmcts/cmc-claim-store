@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +43,7 @@ public class PaidInFullStaffNotificationServiceTest extends BaseMockSpringTest {
 
     private PaidInFullStaffNotificationService service;
 
-    @Before
+    @BeforeEach
     public void beforeEachTest() {
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .thenReturn(PDF_CONTENT);

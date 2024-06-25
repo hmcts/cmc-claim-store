@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountBreakdown;
 
@@ -34,7 +34,7 @@ public class AmountBreakDownTest {
         //then
         assertThat(validationMessages)
             .hasSize(1)
-            .contains("rows : may not be null");
+            .contains("rows : must not be null");
     }
 
     @Test

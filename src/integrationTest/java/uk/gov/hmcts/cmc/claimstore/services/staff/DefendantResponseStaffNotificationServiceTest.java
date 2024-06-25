@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -75,7 +75,7 @@ public class DefendantResponseStaffNotificationServiceTest extends BaseMockSprin
 
     private Claim claimWithFullDefenceAlreadyPaidResponse;
 
-    @Before
+    @BeforeEach
     public void beforeEachTest() {
 
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))

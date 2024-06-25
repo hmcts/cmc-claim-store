@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.domain;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;

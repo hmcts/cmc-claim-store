@@ -1,12 +1,12 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.hamcrest.MatcherAssert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
@@ -27,10 +27,11 @@ import java.util.List;
 
 import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
@@ -40,7 +41,7 @@ import static uk.gov.hmcts.cmc.ccd.sample.data.SampleData.getAmountBreakDown;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 public class CaseMapperTest {
 
     @Autowired
@@ -80,13 +81,15 @@ public class CaseMapperTest {
         assertEquals(MapperUtil.toCaseName.apply(claim), ccdCase.getCaseName());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowExceptionWhenMissingClaimDataFromClaim() {
         //given
         Claim claim = SampleClaim.builder().withClaimData(null).build();
 
         //when
-        ccdCaseMapper.to(claim);
+        assertThrows(NullPointerException.class, () -> {
+            ccdCaseMapper.to(claim);
+        });
     }
 
     private CCDCase getCcdCaseWithClaimantProvidedEmail(CCDCase ccdCase) {
@@ -125,13 +128,15 @@ public class CaseMapperTest {
         assertEquals(ClaimState.OPEN, claim.getState());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowExceptionWhenMissingClaimDataFromCCDCase() {
         //given
         CCDCase ccdCase = SampleData.getCCDCitizenCase(null);
 
         //when
-        ccdCaseMapper.from(ccdCase);
+        assertThrows(NullPointerException.class, () -> {
+            ccdCaseMapper.from(ccdCase);
+        });
     }
 
     @Test
@@ -173,14 +178,16 @@ public class CaseMapperTest {
         assertEquals(YesNoOption.NO, claim.getClaimSubmissionOperationIndicators().getStaffNotification());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldMapSubmissionIndicatorsFromCCDCaseWithNullIndicators() {
         //given
         CCDCase ccdCase =
             SampleData.getCCDCitizenCaseWithOperationIndicators(null);
 
         //when
-        ccdCaseMapper.from(ccdCase);
+        assertThrows(NullPointerException.class, () -> {
+            ccdCaseMapper.from(ccdCase);
+        });
     }
 
     @Test

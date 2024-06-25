@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.ccd.mapper.defendant;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
@@ -17,24 +17,29 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 public class ResponseMapperTest {
 
     @Autowired
     private ResponseMapper mapper;
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void mapToShouldThrowExceptionWhenBuildersIsNull() {
-        mapper.to(null, SampleResponse.FullDefence.validDefaults(), CCDParty.builder());
+        assertThrows(NullPointerException.class, () -> {
+            mapper.to(null, SampleResponse.FullDefence.validDefaults(), CCDParty.builder());
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void mapToShouldThrowExceptionWhenResponseIsNull() {
-        mapper.to(CCDRespondent.builder(), null, CCDParty.builder());
+        assertThrows(NullPointerException.class, () -> {
+            mapper.to(CCDRespondent.builder(), null, CCDParty.builder());
+        });
     }
 
     @Test

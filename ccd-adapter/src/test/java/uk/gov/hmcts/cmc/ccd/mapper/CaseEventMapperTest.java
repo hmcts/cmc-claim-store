@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_REQUEST_UPLOAD;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CLAIM_ISSUE_RECEIPT_UPLOAD;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFENDANT_RESPONSE_UPLOAD;
@@ -18,7 +18,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.REVIEW_ORDER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
 
-@RunWith(JUnit4.class)
+@ExtendWith(SpringExtension.class)
 public class CaseEventMapperTest {
 
     @Test

@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.directionsquestionnaire;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
@@ -35,7 +35,7 @@ public class WitnessTest {
 
         assertThat(response)
             .hasSize(1)
-            .contains("selfWitness : may not be null");
+            .contains("selfWitness : must not be null");
     }
 
     @Test

@@ -1,10 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.config.properties.idam;
 
+import jakarta.validation.Valid;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
-
-import javax.validation.Valid;
 
 @Component
 @Validated

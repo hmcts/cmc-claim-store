@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.directionsquestionnaire;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
@@ -68,7 +68,7 @@ public class ExpertRequestTest {
 
         assertThat(messages)
             .hasSize(1)
-            .contains("expertEvidenceToExamine : may not be null");
+            .contains("expertEvidenceToExamine : must not be null");
     }
 
     @Test
@@ -83,6 +83,6 @@ public class ExpertRequestTest {
 
         assertThat(messages)
             .hasSize(1)
-            .contains("reasonForExpertAdvice : may not be null");
+            .contains("reasonForExpertAdvice : must not be null");
     }
 }

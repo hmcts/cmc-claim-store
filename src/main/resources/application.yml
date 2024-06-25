@@ -327,7 +327,9 @@ oauth2:
     id: 'cmc_citizen'
 ---
 spring:
-  profiles: 'aat'
+  config:
+    activate:
+      on-profile: "aat"
 
 test-instance-uri: "${TEST_URL:}"
 smoke-test-citizen:

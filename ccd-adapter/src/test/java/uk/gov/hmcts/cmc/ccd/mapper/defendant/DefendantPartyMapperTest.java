@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.ccd.mapper.defendant;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.DefendantPartyAssert;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDDefendant.withPartyCompany;
 import static uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDDefendant.withPartyIndividual;
 import static uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDDefendant.withPartyOrganisation;
@@ -23,7 +24,7 @@ import static uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDDefendant.withPartySoleT
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 public class DefendantPartyMapperTest {
 
     @Autowired
@@ -33,16 +34,20 @@ public class DefendantPartyMapperTest {
         return new DefendantPartyAssert(party);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void mapToShouldThrowExceptionWhenBuilderIsNull() {
         //noinspection ConstantConditions
-        mapper.to(null, SampleParty.builder().individual(), null);
+        assertThrows(NullPointerException.class, () -> {
+            mapper.to(null, SampleParty.builder().individual(), null);
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void mapToShouldThrowExceptionWhenPartyIsNull() {
         //noinspection ConstantConditions
-        mapper.to(CCDRespondent.builder(), null, null);
+        assertThrows(NullPointerException.class, () -> {
+            mapper.to(CCDRespondent.builder(), null, null);
+        });
     }
 
     @Test

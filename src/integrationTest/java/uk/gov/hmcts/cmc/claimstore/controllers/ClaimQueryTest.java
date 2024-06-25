@@ -2,8 +2,8 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableList;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
@@ -48,7 +48,7 @@ public class ClaimQueryTest extends BaseMockSpringTest {
     @MockBean
     protected CaseRepository caseRepository;
 
-    @Before
+    @BeforeEach
     public void setup() {
         given(userService.getUserInfo(anyString())).willReturn(UserInfo.builder()
             .roles(ImmutableList.of(Role.CITIZEN.getRole()))

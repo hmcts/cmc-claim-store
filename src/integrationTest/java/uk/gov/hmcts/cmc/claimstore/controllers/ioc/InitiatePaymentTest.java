@@ -2,8 +2,8 @@ package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 
 import com.google.common.collect.ImmutableList;
 import feign.FeignException;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
@@ -56,7 +56,7 @@ public class InitiatePaymentTest extends BaseMockSpringTest {
     @MockBean
     protected EmailService emailService;
 
-    @Before
+    @BeforeEach
     public void setup() {
         given(userService.getUserInfo(anyString())).willReturn(UserInfo.builder()
             .roles(ImmutableList.of(Role.CITIZEN.getRole()))

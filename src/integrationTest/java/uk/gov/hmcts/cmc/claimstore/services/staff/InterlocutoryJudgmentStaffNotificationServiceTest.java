@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.email.EmailService;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.verify;
@@ -45,16 +46,18 @@ public class InterlocutoryJudgmentStaffNotificationServiceTest extends BaseMockS
 
     private Claim claim;
 
-    @Before
+    @BeforeEach
     public void setup() {
         claim = SampleClaim.getWithClaimantResponse();
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .thenReturn(PDF_CONTENT);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerWhenGivenNullClaim() {
-        service.notifyStaffInterlocutoryJudgmentSubmitted(null);
+        assertThrows(NullPointerException.class, () -> {
+            service.notifyStaffInterlocutoryJudgmentSubmitted(null);
+        });
     }
 
     @Test

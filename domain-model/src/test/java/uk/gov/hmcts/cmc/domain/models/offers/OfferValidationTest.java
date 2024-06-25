@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models.offers;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 
 import java.time.LocalDate;
@@ -30,7 +30,7 @@ public class OfferValidationTest {
 
         Set<String> validationErrors = validate(offer);
 
-        assertThat(validationErrors).containsOnly("content : may not be empty");
+        assertThat(validationErrors).containsOnly("content : must not be blank");
     }
 
     @Test
@@ -54,7 +54,7 @@ public class OfferValidationTest {
 
         Set<String> validationErrors = validate(offer);
 
-        assertThat(validationErrors).containsOnly("completionDate : may not be null");
+        assertThat(validationErrors).containsOnly("completionDate : must not be null");
     }
 
     @Test

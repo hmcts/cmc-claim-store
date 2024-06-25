@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.scheduler.services;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.quartz.JobExecutionContext;
 import uk.gov.hmcts.cmc.scheduler.config.CronJobConfiguration;
 import uk.gov.hmcts.cmc.scheduler.model.CronJob;
@@ -14,7 +14,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class CronJobConfigurationTest {
 
     @Mock
@@ -24,7 +24,7 @@ public class CronJobConfigurationTest {
 
     private final String cronExp = "cronExp";
 
-    @Before
+    @BeforeEach
     public void setup() {
         CronJob cronJob = new CronJob() {
             @Override

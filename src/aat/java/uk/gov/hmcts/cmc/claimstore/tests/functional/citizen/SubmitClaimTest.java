@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import uk.gov.hmcts.cmc.claimstore.tests.functional.BaseSubmitClaimTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
@@ -18,7 +18,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 public class SubmitClaimTest extends BaseSubmitClaimTest {
 
-    @Before
+    @BeforeEach
     public void before() {
         user = bootstrap.getClaimant();
     }

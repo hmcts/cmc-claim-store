@@ -2,8 +2,8 @@ package uk.gov.hmcts.cmc.claimstore.controllers.legaladvisor;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
@@ -86,7 +86,7 @@ public class DrawOrderCallbackHandlerTest extends BaseMockSpringTest {
             .build();
     private UserDetails userDetails;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         given(securedDocumentManagementService
             .downloadDocument(
