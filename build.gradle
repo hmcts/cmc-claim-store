@@ -112,15 +112,12 @@ allprojects {
       // fun times...
       dependency group: 'com.google.guava', name: 'guava', version: '33.1.0-jre'
 
-      //Solves CVE-2023-35116
       dependency group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
       dependency group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.jackson
       dependency group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: versions.jackson
 
-      //Solves  CVE-2023-33201
       dependency group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.77'
 
-      // solves CVE-2022-25857
       dependencySet(
         group: 'org.yaml',
         version: '2.0'
@@ -128,7 +125,6 @@ allprojects {
         entry 'snakeyaml'
       }
 
-      //Solves CVE-2023-6481,
       dependencySet(group: 'ch.qos.logback', version: '1.2.13') {
         entry 'logback-core'
         entry 'logback-classic'
@@ -140,6 +136,7 @@ allprojects {
       ) {
         entry 'hibernate-validator'
       }
+
       dependencySet(group: 'org.apache.logging.log4j', version: '2.18.0') {
         entry 'log4j-api'
         entry 'log4j-to-slf4j'

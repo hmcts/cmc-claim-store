@@ -19,8 +19,9 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+//TODO - Solve Issue with these tests creating too many request to Idam.
 @Ignore
-public class SettlementOfferTest extends BaseTest {
+public class SettlementOfferTest extends BaseTest  {
 
     private User claimant;
 
