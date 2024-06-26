@@ -136,11 +136,6 @@ allprojects {
       ) {
         entry 'hibernate-validator'
       }
-
-      dependencySet(group: 'org.apache.logging.log4j', version: '2.18.0') {
-        entry 'log4j-api'
-        entry 'log4j-to-slf4j'
-      }
     }
   }
 }
@@ -174,6 +169,9 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-quartz'
+
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.20.0'
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.20.0'
 
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.14.0'
   runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.14.0'
