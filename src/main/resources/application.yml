@@ -337,4 +337,8 @@ smoke-test-citizen:
 smoke-test-solicitor:
   password: "${SMOKE_TEST_USER_PASSWORD:}"
 
-
+logging:
+  level:
+    org:
+      springframework:
+        cache: TRACE
