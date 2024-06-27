@@ -23,7 +23,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Ignore
 public class SettlementOfferTest extends BaseTest  {
 
-
     private User claimant;
 
     @Before

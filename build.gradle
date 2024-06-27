@@ -27,7 +27,7 @@ dependencyUpdates.resolutionStrategy = {
 def springBootVersion = plugins.getPlugin('org.springframework.boot').class.package.implementationVersion
 def springCloudVersion = '2023.0.1'
 
-
+def versions = [
   logback            : '1.5.6',
   springBoot         : springBootVersion,
   reformJavaLogging  : '5.1.7',
@@ -175,7 +175,7 @@ dependencies {
 
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.14.0'
   runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.14.0'
-  
+
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.20.0'
   implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.20.0'
 
