@@ -23,6 +23,7 @@ dependencies {
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.1.4'
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: '6.1.2'
   implementation (group: 'com.sendgrid', name: 'sendgrid-java', version: '4.10.1'){
+
     exclude group: 'org.bouncycastle', module: 'bcprov-jdk15on'
   }
 

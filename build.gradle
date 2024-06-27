@@ -27,7 +27,7 @@ dependencyUpdates.resolutionStrategy = {
 def springBootVersion = plugins.getPlugin('org.springframework.boot').class.package.implementationVersion
 def springCloudVersion = '2023.0.1'
 
-def versions = [
+
   logback            : '1.5.6',
   springBoot         : springBootVersion,
   reformJavaLogging  : '5.1.7',
@@ -36,6 +36,7 @@ def versions = [
   junit              : '5.10.1',
   junitPlatform      : '1.10.2',
   elasticSearch      : '7.17.20'
+
 ]
 
 allprojects {
@@ -113,7 +114,6 @@ allprojects {
       mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
     dependencies {
-
       dependencySet(
         group: 'org.hibernate',
         version: '8.0.1.Final'
@@ -138,7 +138,6 @@ allprojects {
 
       //Solves  CVE-2023-33201
       dependency group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.77'
-
     }
   }
 }
@@ -148,6 +147,10 @@ configurations {
   aatRuntime.extendsFrom(testRuntime)
   integrationTestImplementation.extendsFrom(testCompile)
   integrationTestRuntime.extendsFrom(testRuntime)
+}
+
+configurations.all {
+  exclude group: 'com.vaadin.external.google', module: 'android-json'
 }
 
 dependencies {
@@ -169,8 +172,12 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-quartz'
 
+
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.14.0'
   runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.14.0'
+  
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.20.0'
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.20.0'
 
   implementation group: 'com.mitchellbosecke', name: 'pebble', version: '2.4.0'
 
@@ -182,7 +189,6 @@ dependencies {
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.2'
 
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.0.1-RELEASE'
-
 
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.1.4'
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: '6.1.2'
