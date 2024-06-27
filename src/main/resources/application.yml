@@ -339,6 +339,4 @@ smoke-test-solicitor:
 
 logging:
   level:
-    org:
-      springframework:
-        cache: TRACE
+    org.springframework.cache: TRACE
