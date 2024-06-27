@@ -173,8 +173,7 @@ dependencies {
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.20.0'
   implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.20.0'
 
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.14.0'
-  runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.14.0'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
 
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
   implementation group: 'ch.qos.logback', name: 'logback-core', version: versions.logback
