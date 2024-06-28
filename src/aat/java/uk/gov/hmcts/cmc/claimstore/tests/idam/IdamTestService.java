@@ -75,9 +75,12 @@ public class IdamTestService {
 
     public User createSolicitor() {
         String email = testData.nextUserEmail();
+        return Failsafe.with(retryPolicy)
+            .get(() -> {
                 createUser(createSolicitorRequest(email, aatConfiguration.getSmokeTestSolicitor().getPassword()));
                 String authTokenGenerator = idamTokenGenerator.generateIdamTokenForSolicitor(email, aatConfiguration.getSmokeTestCitizen().getPassword());
                 return new User(authTokenGenerator, userService.getUserDetails(authTokenGenerator));
+            });
     }
 
     public User createCitizen() {
