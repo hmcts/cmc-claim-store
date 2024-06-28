@@ -77,8 +77,7 @@ public class UserService {
     @LogExecutionTime
     @Cacheable(value = "userOIDTokenCache")
     public String getAuthorisationToken(String username, String password) {
-        logger.info("IDAM /o/token invoked.");
-        logger.info("cached token");
+        logger.info("IDAM cached /o/token invoked.");
         TokenExchangeResponse tokenExchangeResponse = idamApi.exchangeToken(
             oauth2.getClientId(),
             oauth2.getClientSecret(),
@@ -103,7 +102,6 @@ public class UserService {
         return new User(authorisation, userDetails);
     }
 
-    @Cacheable(value = "userOIDTokenCaches")
     public String getAuthorisationTokenForTests(String username, String password) {
         String authorisation = username + ":" + password;
         String base64Authorisation = Base64.getEncoder().encodeToString(authorisation.getBytes());
@@ -114,7 +112,6 @@ public class UserService {
             oauth2.getRedirectUrl()
         );
         logger.info("IDAM /o/token invoked.");
-        logger.info("not cached token");
         TokenExchangeResponse tokenExchangeResponse = idamApi.exchangeTokenForTests(
             authenticateUserResponse.getCode(),
             AUTHORIZATION_CODE,
