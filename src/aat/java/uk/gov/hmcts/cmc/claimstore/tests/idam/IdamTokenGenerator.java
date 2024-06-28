@@ -20,11 +20,6 @@ public class IdamTokenGenerator {
     @Value("${idam.solicitor.password}")
     private static String solicitorPassword;
 
-    @Value("${idam.systemupdate.username}")
-    private String systemUpdateUsername;
-
-    @Value("${idam.systemupdate.password}")
-    private String systemUpdatePassword;
 
     @Autowired
     private IdamClient idamClient;
