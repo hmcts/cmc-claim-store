@@ -27,11 +27,11 @@ public class IdamTokenGenerator {
     private String systemUpdatePassword;
 
     @Autowired
-    private static IdamClient idamClient;
+    private IdamClient idamClient;
 
-    private static final Cache<String, String> cache = Caffeine.newBuilder().expireAfterWrite(2, TimeUnit.HOURS).build();
+    private final Cache<String, String> cache = Caffeine.newBuilder().expireAfterWrite(2, TimeUnit.HOURS).build();
 
-    public static String generateIdamTokenForSolicitor(String solicitorUsername, String solicitorPassword) {
+    public  String generateIdamTokenForSolicitor(String solicitorUsername, String solicitorPassword) {
         String solicitorUserToken = cache.getIfPresent(solicitorUsername);
         if (solicitorUserToken == null) {
             solicitorUserToken = idamClient.getAccessToken(solicitorUsername, solicitorPassword);
@@ -40,7 +40,7 @@ public class IdamTokenGenerator {
         return solicitorUserToken;
     }
 
-    public static String generateIdamTokenForCitizen(String citizenUsername, String citizenPassword) {
+    public String generateIdamTokenForCitizen(String citizenUsername, String citizenPassword) {
         String citizenUserToken = cache.getIfPresent(citizenUsername);
         if (citizenUserToken == null) {
             citizenUserToken = idamClient.getAccessToken(citizenUsername, citizenPassword);
@@ -49,7 +49,7 @@ public class IdamTokenGenerator {
         return citizenUserToken;
     }
 
-    public static String generateIdamTokenForUpliftDefendant(String upliftDefendantUsername, String upliftDefendantPassword) {
+    public String generateIdamTokenForUpliftDefendant(String upliftDefendantUsername, String upliftDefendantPassword) {
         String upliftDefendantToken = cache.getIfPresent(upliftDefendantUsername);
         if (upliftDefendantToken == null) {
             upliftDefendantToken = idamClient.getAccessToken(upliftDefendantUsername, upliftDefendantPassword);

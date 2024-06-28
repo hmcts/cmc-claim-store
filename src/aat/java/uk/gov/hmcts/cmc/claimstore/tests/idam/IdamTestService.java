@@ -44,6 +44,7 @@ public class IdamTestService {
     private final IdamTestApi idamTestApi;
     private final IdamInternalApi idamInternalApi;
     private final UserService userService;
+    private final IdamTokenGenerator idamTokenGenerator;
     private final TestData testData;
     private final AATConfiguration aatConfiguration;
     private final Oauth2 oauth2;
@@ -54,6 +55,7 @@ public class IdamTestService {
         IdamApi idamApi,
         IdamTestApi idamTestApi,
         IdamInternalApi idamInternalApi,
+        IdamTokenGenerator idamTokenGenerator,
         UserService userService,
         TestData testData,
         AATConfiguration aatConfiguration,
@@ -68,16 +70,14 @@ public class IdamTestService {
         this.aatConfiguration = aatConfiguration;
         this.oauth2 = oauth2;
         this.authTokenGenerator = authTokenGenerator;
+        this.idamTokenGenerator = idamTokenGenerator;
     }
 
     public User createSolicitor() {
         String email = testData.nextUserEmail();
-        return Failsafe.with(retryPolicy)
-            .get(() -> {
                 createUser(createSolicitorRequest(email, aatConfiguration.getSmokeTestSolicitor().getPassword()));
-                String authTokenGenerator = IdamTokenGenerator.generateIdamTokenForSolicitor(email, aatConfiguration.getSmokeTestCitizen().getPassword());
+                String authTokenGenerator = idamTokenGenerator.generateIdamTokenForSolicitor(email, aatConfiguration.getSmokeTestCitizen().getPassword());
                 return new User(authTokenGenerator, userService.getUserDetails(authTokenGenerator));
-            });
     }
 
     public User createCitizen() {
@@ -86,7 +86,7 @@ public class IdamTestService {
             .get(() -> {
                 createUser(createCitizenRequest(email,
                     aatConfiguration.getSmokeTestCitizen().getPassword()));
-                String authTokenGenerator = IdamTokenGenerator.generateIdamTokenForCitizen(email, aatConfiguration.getSmokeTestCitizen().getPassword());
+                String authTokenGenerator = idamTokenGenerator.generateIdamTokenForCitizen(email, aatConfiguration.getSmokeTestCitizen().getPassword());
                 return new User(authTokenGenerator, userService.getUserDetails(authTokenGenerator));
             });
     }
@@ -94,7 +94,7 @@ public class IdamTestService {
     public User upliftDefendant(final String letterHolderId, User defendant) {
         String email = defendant.getUserDetails().getEmail();
         String password = aatConfiguration.getSmokeTestCitizen().getPassword();
-        String authTokenGenerator = IdamTokenGenerator.generateIdamTokenForUpliftDefendant(email, password);
+        String authTokenGenerator = idamTokenGenerator.generateIdamTokenForUpliftDefendant(email, password);
         return Failsafe.with(retryPolicy)
             .get(() -> {
                 ResponseEntity<String> pin = idamTestApi.getPinByLetterHolderId(letterHolderId);

@@ -27,6 +27,7 @@ public class Bootstrap {
     private final UserService userService;
     private final AATConfiguration aatConfiguration;
     private final IdamTestService idamTestService;
+    private final IdamTokenGenerator idamTokenGenerator;
 
     private User smokeTestCitizen;
     private User claimant;
@@ -38,12 +39,14 @@ public class Bootstrap {
         ObjectMapper objectMapper,
         UserService userService,
         AATConfiguration aatConfiguration,
-        IdamTestService idamTestService
+        IdamTestService idamTestService,
+        IdamTokenGenerator idamTokenGenerator
     ) {
         this.objectMapper = objectMapper;
         this.userService = userService;
         this.aatConfiguration = aatConfiguration;
         this.idamTestService = idamTestService;
+        this.idamTokenGenerator = idamTokenGenerator;
     }
 
     @PostConstruct
@@ -60,7 +63,7 @@ public class Bootstrap {
     }
 
     private void authenticateUser() {
-        String authTokenGenerator = IdamTokenGenerator.generateIdamTokenForCitizen(
+        String authTokenGenerator = idamTokenGenerator.generateIdamTokenForCitizen(
             aatConfiguration.getSmokeTestCitizen().getUsername(),
             aatConfiguration.getSmokeTestCitizen().getPassword()
         );
