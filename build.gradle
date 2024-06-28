@@ -239,6 +239,8 @@ dependencies {
   implementation group: 'javax.json', name: 'javax.json-api', version: '1.1.4'
   implementation group: 'javax.inject', name: 'javax.inject', version: '1'
 
+  implementation group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '2.0.0'
+
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.26'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.26'
 

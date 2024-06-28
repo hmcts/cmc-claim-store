@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.tests.idam.IdamTestService;
+import uk.gov.hmcts.cmc.claimstore.tests.idam.IdamTokenGenerator;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -59,10 +60,11 @@ public class Bootstrap {
     }
 
     private void authenticateUser() {
-        smokeTestCitizen = userService.authenticateUserForTests(
+        String authTokenGenerator = IdamTokenGenerator.generateIdamTokenForCitizen(
             aatConfiguration.getSmokeTestCitizen().getUsername(),
             aatConfiguration.getSmokeTestCitizen().getPassword()
         );
+        smokeTestCitizen = new User(authTokenGenerator, userService.getUserDetails(authTokenGenerator));
     }
 
     @PreDestroy
