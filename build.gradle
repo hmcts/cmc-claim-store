@@ -1,6 +1,8 @@
 import java.util.stream.Collectors
 
 plugins {
+  id 'application'
+  id 'uk.gov.hmcts.java' version '0.12.43'
   id 'checkstyle'
   id 'io.spring.dependency-management' version '1.1.0'
   id 'org.springframework.boot' version '2.7.18'
@@ -9,6 +11,7 @@ plugins {
   id 'com.github.ben-manes.versions' version '0.51.0'
   id 'jacoco'
   id 'idea'
+  id 'au.com.dius.pact' version '4.1.7'
 }
 
 dependencyUpdates.resolutionStrategy = {
@@ -34,8 +37,13 @@ def versions = [
   jackson           : '2.17.0',
   junit             : '5.7.1',
   junitPlatform     : '1.7.1',
+  pact_version    : '4.1.7',
   elasticSearch     : '7.17.20'
 ]
+
+static def getCheckedOutGitCommitHash() {
+  'git rev-parse --verify --short HEAD'.execute().text.trim()
+}
 
 allprojects {
   apply plugin: 'java'
@@ -56,6 +64,10 @@ allprojects {
   // https://github.com/gradle/gradle/issues/16791
   tasks.withType(JavaExec).configureEach {
     javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
+  }
+
+  project.ext {
+    pactVersion = getCheckedOutGitCommitHash()
   }
 
   jacoco {
@@ -82,6 +94,39 @@ allprojects {
     analyzers {
       // Disable scanning of .NET related binaries
       assemblyEnabled = false
+    }
+  }
+
+  sourceSets {
+    integrationTest {
+      java {
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
+        srcDir('src/integrationTest/java')
+      }
+      resources {
+        srcDir('src/integrationTest/resources')
+      }
+    }
+
+    aat {
+      java {
+        compileClasspath += main.output
+        runtimeClasspath += main.output
+        srcDir('src/aat/java')
+      }
+      resources {
+        srcDir('src/aat/resources')
+      }
+    }
+
+    contractTest {
+      java {
+        compileClasspath += main.output
+        runtimeClasspath += main.output
+        srcDir file('src/contractTest/java')
+      }
+      resources.srcDir file('src/contractTest/resources')
     }
   }
 
@@ -273,30 +318,25 @@ dependencies {
 
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
-}
 
-sourceSets {
-  integrationTest {
-    java {
-      compileClasspath += main.output + test.output
-      runtimeClasspath += main.output + test.output
-      srcDir('src/integrationTest/java')
-    }
-    resources {
-      srcDir('src/integrationTest/resources')
-    }
-  }
+  contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
+  contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pact_version
+  contractTestRuntimeOnly group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
+  contractTestRuntimeOnly group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pact_version
+  contractTestImplementation group: 'org.modelmapper', name: 'modelmapper', version: '2.3.7'
 
-  aat {
-    java {
-      compileClasspath += main.output
-      runtimeClasspath += main.output
-      srcDir('src/aat/java')
-    }
-    resources {
-      srcDir('src/aat/resources')
-    }
-  }
+  contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: versions.pact_version
+  contractTestImplementation group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pact_version
+  contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pact_version
+  contractTestImplementation("org.junit.jupiter:junit-jupiter-api:5.7.0")
+  contractTestRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.0")
+  contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.7.0')
+  contractTestRuntimeOnly "org.junit.platform:junit-platform-commons:1.7.0"
+  contractTestImplementation group: 'com.github.hmcts', name: 'idam-java-client', version: versions.idamJavaClient
+  contractTestImplementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: versions.serviceAuthVersion
+  contractTestImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+  contractTestImplementation sourceSets.main.runtimeClasspath
+  contractTestImplementation sourceSets.test.runtimeClasspath
 }
 
 dependencies {
@@ -310,6 +350,33 @@ dependencies {
 
 test {
   useJUnitPlatform()
+}
+
+task contract(type: Test) {
+  description = 'Runs the consumer Pact tests'
+  useJUnitPlatform()
+  testClassesDirs = sourceSets.contractTest.output.classesDirs
+  classpath = sourceSets.contractTest.runtimeClasspath
+  include "uk/gov/hmcts/cmc/claimstore/api/provider/**"
+
+}
+
+task runProviderPactVerification(type: Test) {
+  testClassesDirs = sourceSets.contractTest.output.classesDirs
+  classpath = sourceSets.contractTest.runtimeClasspath
+  systemProperty 'pact.verifier.publishResults', System.getProperty('pact.verifier.publishResults')
+  systemProperty 'pact.provider.version', project.pactVersion
+}
+
+runProviderPactVerification.finalizedBy pactVerify
+
+pact {
+  publish {
+    pactDirectory = 'pacts'
+    pactBrokerUrl = System.getenv("PACT_BROKER_URL") ?: 'http://localhost:80'
+    tags = [System.getenv("PACT_BRANCH_NAME") ?:'Dev']
+    version = project.pactVersion
+  }
 }
 
 task fortifyScan(type: JavaExec)  {
