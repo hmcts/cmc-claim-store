@@ -57,13 +57,4 @@ public class IdamTokenGenerator {
         }
         return upliftDefendantToken;
     }
-
-    public String generateIdamTokenForSystem() {
-        String systemUserToken = cache.getIfPresent(systemUpdateUsername);
-        if (systemUserToken == null) {
-            systemUserToken = idamClient.getAccessToken(systemUpdateUsername, systemUpdatePassword);
-            cache.put(systemUpdateUsername, systemUserToken);
-        }
-        return systemUserToken;
-    }
 }
