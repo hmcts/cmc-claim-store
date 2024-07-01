@@ -499,6 +499,7 @@ sonarqube {
         "**/cmc/claimstore/services/ccd/callbacks/ioc/FeesAndPaymentsConfiguration.java",
         "**/cmc/claimstore/services/ccd/callbacks/HWFMiscellaneousCallbackHandler.java",
         "**/cmc/claimstore/services/ccd/callbacks/HWFFullAndPartRemissionCallbackHandler.java",
+        "**/cmc/claimstore/services/UserService.java",
         "**/cmc/claimstore/courtfinder/models/**",
         "**/ccd/migration/**",
         "**/EmailData.java",
