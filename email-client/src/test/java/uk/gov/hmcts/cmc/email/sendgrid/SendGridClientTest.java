@@ -5,26 +5,27 @@ import com.sendgrid.Request;
 import com.sendgrid.Response;
 import com.sendgrid.SendGrid;
 import org.apache.http.HttpException;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.email.EmailSendFailedException;
 import uk.gov.hmcts.cmc.email.SampleEmailData;
 
 import java.io.IOException;
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class SendGridClientTest {
     private static final String API_KEY = "dummy key";
 
@@ -41,7 +42,7 @@ public class SendGridClientTest {
 
     private SendGridClient sendGridClient;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         when(factory.createSendGrid(API_KEY, true)).thenReturn(sendGrid);
         sendGridClient = new SendGridClient(factory, API_KEY, true);
@@ -88,30 +89,40 @@ public class SendGridClientTest {
         assertTrue(capturedRequest.getBody().contains("\"filename\":\"test.pdf\""));
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void testIOExceptionIsPropagated() throws IOException {
         when(sendGrid.api(any(Request.class))).thenThrow(new IOException("expected exception"));
-        sendGridClient.sendEmail(SampleEmailData.EMAIL_FROM, SampleEmailData.getDefault());
+        assertThrows(IOException.class, () -> {
+            sendGridClient.sendEmail(SampleEmailData.EMAIL_FROM, SampleEmailData.getDefault());
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testNullFromNotAllowed() throws IOException {
-        sendGridClient.sendEmail(null, SampleEmailData.getDefault());
+        assertThrows(IllegalArgumentException.class, () -> {
+            sendGridClient.sendEmail(null, SampleEmailData.getDefault());
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testBlankFromNotAllowed() throws IOException {
-        sendGridClient.sendEmail(" \t ", SampleEmailData.getDefault());
+        assertThrows(IllegalArgumentException.class, () -> {
+            sendGridClient.sendEmail(" \t ", SampleEmailData.getDefault());
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testNullToNotAllowed() throws IOException {
-        sendGridClient.sendEmail(SampleEmailData.EMAIL_FROM, SampleEmailData.getWithToNull());
+        assertThrows(IllegalArgumentException.class, () -> {
+            sendGridClient.sendEmail(SampleEmailData.EMAIL_FROM, SampleEmailData.getWithToNull());
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testNullSubjectNotAllowed() throws IOException {
-        sendGridClient.sendEmail(SampleEmailData.EMAIL_FROM, SampleEmailData.getWithSubjectNull());
+        assertThrows(IllegalArgumentException.class, () -> {
+            sendGridClient.sendEmail(SampleEmailData.EMAIL_FROM, SampleEmailData.getWithSubjectNull());
+        });
     }
 
     @Test

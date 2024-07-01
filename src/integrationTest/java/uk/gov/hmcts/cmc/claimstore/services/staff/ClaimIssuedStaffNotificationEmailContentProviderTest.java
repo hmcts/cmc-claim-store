@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;

@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
@@ -55,7 +55,7 @@ public class CountyCourtJudgmentTest extends BaseMockSpringTest {
     @MockBean
     protected CaseRepository caseRepository;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         given(userService.getUserInfo(anyString())).willReturn(UserInfo.builder()
             .roles(ImmutableList.of(Role.CITIZEN.getRole()))

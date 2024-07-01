@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.rpa;
 
 import org.hamcrest.MatcherAssert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsExceptionLogger;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
@@ -32,6 +32,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -40,7 +41,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class RoboticsNotificationServiceTest {
 
     private static final String FORE_NAME = "forename";
@@ -78,7 +79,7 @@ public class RoboticsNotificationServiceTest {
     @Mock
     private BreathingSpaceNotificationService breathingSpaceNotificationService;
 
-    @Before
+    @BeforeEach
     public void setup() {
         roboticsNotificationService = new RoboticsNotificationServiceImpl(claimService,
             userService, moreTimeRequestedNotificationService, defenceResponseNotificationService,
@@ -160,44 +161,60 @@ public class RoboticsNotificationServiceTest {
             .notifyRobotics(any(MoreTimeRequestedEvent.class));
     }
 
-    @Test(expected = BadRequestException.class)
+    @Test
     public void shouldThrowBadRequestExceptionWhenInvalidReferencePassedForClaimEvent() {
-        roboticsNotificationService.rpaClaimNotification(null);
+        assertThrows(BadRequestException.class, () -> {
+            roboticsNotificationService.rpaClaimNotification(null);
+        });
     }
 
-    @Test(expected = BadRequestException.class)
+    @Test
     public void shouldThrowBadRequestExceptionWhenInvalidReferencePassedForResponseEvent() {
-        roboticsNotificationService.rpaResponseNotifications(null);
+        assertThrows(BadRequestException.class, () -> {
+            roboticsNotificationService.rpaResponseNotifications(null);
+        });
     }
 
-    @Test(expected = BadRequestException.class)
+    @Test
     public void shouldThrowBadRequestExceptionWhenInvalidReferencePassedForPidEvent() {
-        roboticsNotificationService.rpaPIFNotifications(null);
+        assertThrows(BadRequestException.class, () -> {
+            roboticsNotificationService.rpaPIFNotifications(null);
+        });
     }
 
-    @Test(expected = BadRequestException.class)
+    @Test
     public void shouldThrowBadRequestExceptionWhenInvalidReferencePassedForCcjEvent() {
-        roboticsNotificationService.rpaCCJNotifications(null);
+        assertThrows(BadRequestException.class, () -> {
+            roboticsNotificationService.rpaCCJNotifications(null);
+        });
     }
 
-    @Test(expected = BadRequestException.class)
+    @Test
     public void shouldThrowBadRequestExceptionWhenInvalidReferencePassedForMoreTimeEvent() {
-        roboticsNotificationService.rpaMoreTimeNotifications(null);
+        assertThrows(BadRequestException.class, () -> {
+            roboticsNotificationService.rpaMoreTimeNotifications(null);
+        });
     }
 
-    @Test(expected = BadRequestException.class)
+    @Test
     public void shouldThrowExceptionWhenInvalidEventTypePassed() {
         when(claimService.getClaimByReference(anyString(), anyString()))
             .thenReturn(Optional.of(SampleClaim.builder()
                 .withReferenceNumber(REFERENCE_NUMBER).build()));
-        roboticsNotificationService.rpaCCJNotifications(REFERENCE_NUMBER);
+
+        assertThrows(BadRequestException.class, () -> {
+            roboticsNotificationService.rpaCCJNotifications(REFERENCE_NUMBER);
+        });
     }
 
-    @Test(expected = BadRequestException.class)
+    @Test
     public void shouldThrowExceptionWhenNoClaimForReferenceFound() {
         when(claimService.getClaimByReference(anyString(), anyString()))
             .thenReturn(Optional.of(SampleClaim.builder().build()));
-        roboticsNotificationService.rpaCCJNotifications(REFERENCE_NUMBER);
+
+        assertThrows(BadRequestException.class, () -> {
+            roboticsNotificationService.rpaCCJNotifications(REFERENCE_NUMBER);
+        });
     }
 }
 
