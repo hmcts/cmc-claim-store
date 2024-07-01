@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
@@ -63,7 +63,7 @@ public class InitiatePaymentCallbackHandlerTest extends BaseMockSpringTest {
 
     private Payment payment;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         payment = Payment.builder()
             .amount(TEN)

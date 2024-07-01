@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 

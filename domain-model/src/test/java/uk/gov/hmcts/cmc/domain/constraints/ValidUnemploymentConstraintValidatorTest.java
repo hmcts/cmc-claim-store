@@ -1,10 +1,9 @@
 package uk.gov.hmcts.cmc.domain.constraints;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Unemployed;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Unemployment;
 
@@ -16,27 +15,16 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ValidUnemploymentConstraintValidatorTest {
 
     @Mock
     private ConstraintValidatorContext validatorContext;
 
+    @Mock
+    private ConstraintValidatorContext.ConstraintViolationBuilder violationBuilder;
+
     private final ValidUnemploymentConstraintValidator validator = new ValidUnemploymentConstraintValidator();
-
-    @Before
-    public void setUp() {
-        ConstraintValidatorContext.ConstraintViolationBuilder builder = mock(
-            ConstraintValidatorContext.ConstraintViolationBuilder.class
-        );
-
-        when(builder.addPropertyNode(anyString()))
-            .thenReturn(
-                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
-            );
-
-        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(builder);
-    }
 
     @Test
     public void shouldBeValidWhenOnlyUnemployedPopulated() {
@@ -67,6 +55,13 @@ public class ValidUnemploymentConstraintValidatorTest {
             .retired(true)
             .unemployed(new Unemployed(1, 1))
             .other("I am rich").build();
+
+        when(violationBuilder.addPropertyNode(anyString()))
+            .thenReturn(
+                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
+            );
+
+        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(violationBuilder);
 
         assertThat(validator.isValid(model, validatorContext)).isFalse();
     }

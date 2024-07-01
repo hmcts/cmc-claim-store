@@ -1,16 +1,16 @@
 package uk.gov.hmcts.cmc.domain.constraints;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.validation.ConstraintValidatorContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PhoneNumberConstraintValidatorTest {
 
     @Mock
@@ -18,7 +18,7 @@ public class PhoneNumberConstraintValidatorTest {
 
     private PhoneNumberConstraintValidator validator;
 
-    @Before
+    @BeforeEach
     public void beforeEachTest() {
         validator = new PhoneNumberConstraintValidator();
     }
