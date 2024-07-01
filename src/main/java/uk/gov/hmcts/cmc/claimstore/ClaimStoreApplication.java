@@ -17,6 +17,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableFeignClients(basePackages =
     {"uk.gov.hmcts.cmc.claimstore",
         "uk.gov.hmcts.reform.authorisation",
+        "uk.gov.hmcts.reform.idam.client",
         "uk.gov.hmcts.reform.sendletter",
         "uk.gov.hmcts.reform.ccd.client",
         "uk.gov.hmcts.reform.ccd.document.am"

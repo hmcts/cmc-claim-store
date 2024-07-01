@@ -23,6 +23,7 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.tests.AATConfiguration;
 import uk.gov.hmcts.cmc.claimstore.tests.exception.ForbiddenException;
 import uk.gov.hmcts.cmc.claimstore.tests.helpers.TestData;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -43,21 +44,24 @@ public class IdamTestService {
     private final IdamTestApi idamTestApi;
     private final IdamInternalApi idamInternalApi;
     private final UserService userService;
+    private final IdamTokenGenerator idamTokenGenerator;
     private final TestData testData;
     private final AATConfiguration aatConfiguration;
     private final Oauth2 oauth2;
+    private final AuthTokenGenerator authTokenGenerator;
 
     @Autowired
     public IdamTestService(
         IdamApi idamApi,
         IdamTestApi idamTestApi,
         IdamInternalApi idamInternalApi,
+        IdamTokenGenerator idamTokenGenerator,
         UserService userService,
         TestData testData,
         AATConfiguration aatConfiguration,
         Oauth2 oauth2,
-        @Value("${idam.api.url}") String idamUrl
-    ) {
+        @Value("${idam.api.url}") String idamUrl,
+        AuthTokenGenerator authTokenGenerator) {
         this.idamApi = idamApi;
         this.idamTestApi = idamTestApi;
         this.idamInternalApi = idamInternalApi;
@@ -65,6 +69,8 @@ public class IdamTestService {
         this.testData = testData;
         this.aatConfiguration = aatConfiguration;
         this.oauth2 = oauth2;
+        this.authTokenGenerator = authTokenGenerator;
+        this.idamTokenGenerator = idamTokenGenerator;
     }
 
     public User createSolicitor() {
@@ -72,8 +78,8 @@ public class IdamTestService {
         return Failsafe.with(retryPolicy)
             .get(() -> {
                 createUser(createSolicitorRequest(email, aatConfiguration.getSmokeTestSolicitor().getPassword()));
-                return userService.authenticateUserForTests(email,
-                    aatConfiguration.getSmokeTestSolicitor().getPassword());
+                String authTokenGenerator = idamTokenGenerator.generateIdamTokenForSolicitor(email, aatConfiguration.getSmokeTestCitizen().getPassword());
+                return new User(authTokenGenerator, userService.getUserDetails(authTokenGenerator));
             });
     }
 
@@ -83,14 +89,15 @@ public class IdamTestService {
             .get(() -> {
                 createUser(createCitizenRequest(email,
                     aatConfiguration.getSmokeTestCitizen().getPassword()));
-                return userService.authenticateUserForTests(email,
-                    aatConfiguration.getSmokeTestCitizen().getPassword());
+                String authTokenGenerator = idamTokenGenerator.generateIdamTokenForCitizen(email, aatConfiguration.getSmokeTestCitizen().getPassword());
+                return new User(authTokenGenerator, userService.getUserDetails(authTokenGenerator));
             });
     }
 
     public User upliftDefendant(final String letterHolderId, User defendant) {
         String email = defendant.getUserDetails().getEmail();
         String password = aatConfiguration.getSmokeTestCitizen().getPassword();
+        String authTokenGenerator = idamTokenGenerator.generateIdamTokenForUpliftDefendant(email, password);
         return Failsafe.with(retryPolicy)
             .get(() -> {
                 ResponseEntity<String> pin = idamTestApi.getPinByLetterHolderId(letterHolderId);
@@ -108,7 +115,7 @@ public class IdamTestService {
                 upliftUser(email, password, exchangeResponse);
 
                 // Re-authenticate to get new roles on the user
-                return userService.authenticateUserForTests(email, password);
+                return new User(authTokenGenerator, userService.getUserDetails(authTokenGenerator));
             });
     }
 

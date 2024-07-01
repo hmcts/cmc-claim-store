@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.tests.idam.IdamTestService;
+import uk.gov.hmcts.cmc.claimstore.tests.idam.IdamTokenGenerator;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -26,6 +27,7 @@ public class Bootstrap {
     private final UserService userService;
     private final AATConfiguration aatConfiguration;
     private final IdamTestService idamTestService;
+    private final IdamTokenGenerator idamTokenGenerator;
 
     private User smokeTestCitizen;
     private User claimant;
@@ -37,12 +39,14 @@ public class Bootstrap {
         ObjectMapper objectMapper,
         UserService userService,
         AATConfiguration aatConfiguration,
-        IdamTestService idamTestService
+        IdamTestService idamTestService,
+        IdamTokenGenerator idamTokenGenerator
     ) {
         this.objectMapper = objectMapper;
         this.userService = userService;
         this.aatConfiguration = aatConfiguration;
         this.idamTestService = idamTestService;
+        this.idamTokenGenerator = idamTokenGenerator;
     }
 
     @PostConstruct
@@ -59,10 +63,11 @@ public class Bootstrap {
     }
 
     private void authenticateUser() {
-        smokeTestCitizen = userService.authenticateUserForTests(
+        String authTokenGenerator = idamTokenGenerator.generateIdamTokenForCitizen(
             aatConfiguration.getSmokeTestCitizen().getUsername(),
             aatConfiguration.getSmokeTestCitizen().getPassword()
         );
+        smokeTestCitizen = new User(authTokenGenerator, userService.getUserDetails(authTokenGenerator));
     }
 
     @PreDestroy
