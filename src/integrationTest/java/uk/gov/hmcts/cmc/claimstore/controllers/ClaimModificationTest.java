@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -74,7 +74,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
     @Captor
     private ArgumentCaptor<Claim> claimCaptor;
 
-    @Before
+    @BeforeEach
     public void setup() {
         given(userService.getUserInfo(anyString())).willReturn(UserInfo.builder()
             .roles(ImmutableList.of(Role.CITIZEN.getRole()))

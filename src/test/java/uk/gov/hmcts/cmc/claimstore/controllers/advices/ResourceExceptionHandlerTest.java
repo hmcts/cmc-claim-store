@@ -1,17 +1,17 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.advices;
 
 import feign.FeignException;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.postgresql.util.PSQLException;
 import org.postgresql.util.PSQLState;
 import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.client.HttpClientErrorException;
@@ -32,20 +32,21 @@ import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.net.SocketTimeoutException;
+import java.util.Collection;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class ResourceExceptionHandlerTest {
     @Mock
     private AppInsightsExceptionLogger appInsightsExceptionLogger;
 
     private ResourceExceptionHandler handler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         handler = new ResourceExceptionHandler(appInsightsExceptionLogger);
     }
@@ -142,7 +143,7 @@ public class ResourceExceptionHandlerTest {
     public void testMethodNotSupported() {
         testTemplate(
             "expected exception for method not supported",
-            m -> new HttpRequestMethodNotSupportedException("method", m),
+            m -> new HttpRequestMethodNotSupportedException(m, (Collection<String>) null),
             handler::methodNotSupported,
             HttpStatus.NOT_IMPLEMENTED,
             AppInsightsExceptionLogger::trace

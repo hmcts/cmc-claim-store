@@ -1,16 +1,17 @@
 package uk.gov.hmcts.cmc.domain.models.offers.converters;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class MadeByEnumConverterTest {
 
     private MadeByEnumConverter converter;
 
-    @Before
+    @BeforeEach
     public void beforeEachTest() {
         converter = new MadeByEnumConverter();
     }
@@ -22,9 +23,11 @@ public class MadeByEnumConverterTest {
         assertThat(converter.getValue()).isEqualTo(MadeBy.DEFENDANT);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowIllegalArgumentIfIncorrectEnumValueIsProvided() {
-        converter.setAsText("abc");
+        assertThrows(IllegalArgumentException.class, () -> {
+            converter.setAsText("abc");
+        });
     }
 
 }
