@@ -90,6 +90,7 @@ public class UserService {
         String authToken = authTokenCache.getIfPresent(username);
 
         if (authToken == null) {
+            logger.info("Idam token not cached, calling idam api for new token for user {}", username);
             TokenExchangeResponse tokenExchangeResponse = idamApi.exchangeToken(
                 oauth2.getClientId(),
                 oauth2.getClientSecret(),
@@ -100,6 +101,8 @@ public class UserService {
                 DEFAULT_SCOPE);
             authToken = BEARER + tokenExchangeResponse.getAccessToken();
             authTokenCache.put(username, authToken);
+        } else {
+            logger.info("Fetching idam token from cache for user {}", username);
         }
 
         return authToken;
@@ -112,8 +115,11 @@ public class UserService {
         UserInfo userInfo = userInfoCache.getIfPresent(bearerToken);
 
         if (userInfo == null) {
+            logger.info("User info not cached, calling idam api for {}", bearerToken);
             userInfo = idamApi.retrieveUserInfo(bearerToken);
             userInfoCache.put(bearerToken, userInfo);
+        } else {
+            logger.info("IDAM token was cached for user {}", userInfo.getName());
         }
         return userInfo;
     }
