@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import uk.gov.hmcts.cmc.claimstore.requests.idam.IdamApi;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 
 import java.util.Base64;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class UserService {
@@ -25,6 +28,13 @@ public class UserService {
     private final IdamCaseworkerProperties idamCaseworkerProperties;
     private final Oauth2 oauth2;
     Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    private final Cache<String, String> authTokenCache = Caffeine.newBuilder()
+        .expireAfterWrite(2, TimeUnit.HOURS)
+        .build();
+    private final Cache<String, UserInfo> userInfoCache = Caffeine.newBuilder()
+        .expireAfterWrite(2, TimeUnit.HOURS)
+        .build();
 
     @Autowired
     public UserService(
@@ -75,25 +85,37 @@ public class UserService {
     }
 
     @LogExecutionTime
-    @Cacheable(value = "userOIDTokenCache")
     public String getAuthorisationToken(String username, String password) {
-        logger.info("IDAM cached /o/token invoked.");
-        TokenExchangeResponse tokenExchangeResponse = idamApi.exchangeToken(
-            oauth2.getClientId(),
-            oauth2.getClientSecret(),
-            oauth2.getRedirectUrl(),
-            GRANT_TYPE_PASSWORD,
-            username,
-            password,
-            DEFAULT_SCOPE);
-        return BEARER + tokenExchangeResponse.getAccessToken();
+        logger.info("IDAM /o/token invoked.");
+        String authToken = authTokenCache.getIfPresent(username);
+
+        if (authToken == null) {
+            TokenExchangeResponse tokenExchangeResponse = idamApi.exchangeToken(
+                oauth2.getClientId(),
+                oauth2.getClientSecret(),
+                oauth2.getRedirectUrl(),
+                GRANT_TYPE_PASSWORD,
+                username,
+                password,
+                DEFAULT_SCOPE);
+            authToken = BEARER + tokenExchangeResponse.getAccessToken();
+            authTokenCache.put(username, authToken);
+        }
+
+        return authToken;
     }
 
     @LogExecutionTime
     @Cacheable(value = "userInfoCache")
     public UserInfo getUserInfo(String bearerToken) {
         logger.info("IDAM /o/userinfo invoked");
-        return idamApi.retrieveUserInfo(bearerToken);
+        UserInfo userInfo = userInfoCache.getIfPresent(bearerToken);
+
+        if (userInfo == null) {
+            userInfo = idamApi.retrieveUserInfo(bearerToken);
+            userInfoCache.put(bearerToken, userInfo);
+        }
+        return userInfo;
     }
 
     public User authenticateUserForTests(String username, String password) {
