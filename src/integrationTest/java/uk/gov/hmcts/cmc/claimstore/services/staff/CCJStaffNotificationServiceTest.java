@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.verify;
@@ -59,7 +60,7 @@ public class CCJStaffNotificationServiceTest extends BaseMockSpringTest {
 
     private Claim claimWithAdmission;
 
-    @Before
+    @BeforeEach
     public void setup() {
         claim = SampleClaim
             .builder()
@@ -91,9 +92,11 @@ public class CCJStaffNotificationServiceTest extends BaseMockSpringTest {
 
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerWhenGivenNullClaim() {
-        service.notifyStaffCCJRequestSubmitted(null);
+        assertThrows(NullPointerException.class,  () -> {
+            service.notifyStaffCCJRequestSubmitted(null);
+        });
     }
 
     @Test

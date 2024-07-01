@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,7 +58,7 @@ public class StatementOfMeansTest {
         //then
         assertThat(errors)
                 .hasSize(1)
-                .contains("residence : may not be null");
+                .contains("residence : must not be null");
     }
 
     @Test
@@ -73,7 +73,7 @@ public class StatementOfMeansTest {
         //then
         assertThat(errors)
                 .hasSize(1)
-                .contains("residence.type : may not be null");
+                .contains("residence.type : must not be null");
     }
 
     @Test
@@ -93,7 +93,7 @@ public class StatementOfMeansTest {
         //then
         assertThat(errors)
                 .hasSize(1)
-                .contains("dependant.children[0].numberOfChildren : may not be null");
+                .contains("dependant.children[0].numberOfChildren : must not be null");
     }
 
     @Test
@@ -110,8 +110,8 @@ public class StatementOfMeansTest {
         //then
         assertThat(errors)
                 .hasSize(2)
-                .contains("employment.selfEmployment.jobTitle : may not be empty")
-                .contains("employment.selfEmployment.annualTurnover : may not be null");
+                .contains("employment.selfEmployment.jobTitle : must not be blank")
+                .contains("employment.selfEmployment.annualTurnover : must not be null");
     }
 
     @Test
@@ -139,8 +139,8 @@ public class StatementOfMeansTest {
         //then
         assertThat(errors)
                 .hasSize(2)
-                .contains("bankAccounts[0].type : may not be null")
-                .contains("bankAccounts[0].balance : may not be null");
+                .contains("bankAccounts[0].type : must not be null")
+                .contains("bankAccounts[0].balance : must not be null");
     }
 
     @Test
@@ -171,9 +171,9 @@ public class StatementOfMeansTest {
         //then
         assertThat(errors)
                 .hasSize(3)
-                .contains("debts[0].totalOwed : may not be null")
-                .contains("debts[0].monthlyPayments : may not be null")
-                .contains("debts[0].description : may not be empty");
+                .contains("debts[0].totalOwed : must not be null")
+                .contains("debts[0].monthlyPayments : must not be null")
+                .contains("debts[0].description : must not be blank");
     }
 
     @Test
@@ -204,9 +204,9 @@ public class StatementOfMeansTest {
         //then
         assertThat(errors)
                 .hasSize(3)
-                .contains("incomes[0].type : may not be null")
-                .contains("incomes[0].amount : may not be null")
-                .contains("incomes[0].frequency : may not be null");
+                .contains("incomes[0].type : must not be null")
+                .contains("incomes[0].amount : must not be null")
+                .contains("incomes[0].frequency : must not be null");
     }
 
     @Test
@@ -237,9 +237,9 @@ public class StatementOfMeansTest {
         //then
         assertThat(errors)
                 .hasSize(3)
-                .contains("expenses[0].amount : may not be null")
-                .contains("expenses[0].type : may not be null")
-                .contains("expenses[0].frequency : may not be null");
+                .contains("expenses[0].amount : must not be null")
+                .contains("expenses[0].type : must not be null")
+                .contains("expenses[0].frequency : must not be null");
     }
 
     @Test
@@ -270,9 +270,9 @@ public class StatementOfMeansTest {
         //then
         assertThat(errors)
                 .hasSize(3)
-                .contains("courtOrders[0].amountOwed : may not be null")
-                .contains("courtOrders[0].monthlyInstalmentAmount : may not be null")
-                .contains("courtOrders[0].claimNumber : may not be empty");
+                .contains("courtOrders[0].amountOwed : must not be null")
+                .contains("courtOrders[0].monthlyInstalmentAmount : must not be null")
+                .contains("courtOrders[0].claimNumber : must not be blank");
     }
 
     @Test
@@ -302,7 +302,7 @@ public class StatementOfMeansTest {
         //then
         assertThat(errors)
                 .hasSize(1)
-                .contains("reason : may not be empty");
+                .contains("reason : must not be blank");
     }
 
     @Test
@@ -316,6 +316,6 @@ public class StatementOfMeansTest {
         //then
         assertThat(errors)
                 .hasSize(1)
-                .contains("reason : may not be empty");
+                .contains("reason : must not be blank");
     }
 }

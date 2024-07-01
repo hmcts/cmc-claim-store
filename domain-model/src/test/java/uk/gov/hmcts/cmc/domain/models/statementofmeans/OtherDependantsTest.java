@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
@@ -62,7 +62,7 @@ public class OtherDependantsTest {
         //then
         assertThat(errors)
                 .hasSize(1)
-                .contains("numberOfPeople : may not be null");
+                .contains("numberOfPeople : must not be null");
     }
 
     @Test
@@ -91,6 +91,6 @@ public class OtherDependantsTest {
         //then
         assertThat(errors)
                 .hasSize(1)
-                .contains("details : may not be empty");
+                .contains("details : must not be blank");
     }
 }

@@ -1,13 +1,13 @@
 package uk.gov.hmcts.cmc.claimstore.services.notifications;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_EMAIL;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class ResponseNeededNotificationServiceTest extends BaseNotificationServiceTest {
     public static final String EMAIL_TEMPLATE_ID = "email_template_id";
     private ResponseNeededNotificationService responseNeededNotificationService;
@@ -37,7 +37,7 @@ public class ResponseNeededNotificationServiceTest extends BaseNotificationServi
     @Mock
     private ClaimService claimService;
 
-    @Before
+    @BeforeEach
     public void before() {
         responseNeededNotificationService = new ResponseNeededNotificationService(notificationClient,
             properties,

@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.solicitor;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import uk.gov.hmcts.cmc.claimstore.tests.functional.BaseSubmitClaimTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class SolicitorSubmitClaimTest extends BaseSubmitClaimTest {
 
-    @Before
+    @BeforeEach
     public void before() {
         user = bootstrap.getSolicitor();
     }

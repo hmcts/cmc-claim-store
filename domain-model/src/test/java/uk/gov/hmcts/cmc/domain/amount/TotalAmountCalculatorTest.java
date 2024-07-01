@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.domain.amount;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountBreakdown;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountRange;

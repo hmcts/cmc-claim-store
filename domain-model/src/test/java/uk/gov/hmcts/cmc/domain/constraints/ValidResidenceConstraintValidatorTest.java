@@ -1,10 +1,9 @@
 package uk.gov.hmcts.cmc.domain.constraints;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence;
 
 import javax.validation.ConstraintValidatorContext;
@@ -15,27 +14,16 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ValidResidenceConstraintValidatorTest {
 
     @Mock
     private ConstraintValidatorContext validatorContext;
 
+    @Mock
+    private ConstraintValidatorContext.ConstraintViolationBuilder violationBuilder;
+
     private final ValidResidenceConstraintValidator validator = new ValidResidenceConstraintValidator();
-
-    @Before
-    public void setUp() {
-        ConstraintValidatorContext.ConstraintViolationBuilder builder = mock(
-            ConstraintValidatorContext.ConstraintViolationBuilder.class
-        );
-
-        when(builder.addPropertyNode(anyString()))
-            .thenReturn(
-                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
-            );
-
-        when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(builder);
-    }
 
     @Test
     public void shouldBeValidWhenNull() {
@@ -105,6 +93,14 @@ public class ValidResidenceConstraintValidatorTest {
     }
 
     private void assertIsInvalid(Residence residence) {
+
+        when(violationBuilder.addPropertyNode(anyString()))
+            .thenReturn(
+                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
+            );
+
+        when(validatorContext.buildConstraintViolationWithTemplate(any()))
+            .thenReturn(violationBuilder);
         assertThat(validator.isValid(residence, validatorContext)).isFalse();
     }
 }

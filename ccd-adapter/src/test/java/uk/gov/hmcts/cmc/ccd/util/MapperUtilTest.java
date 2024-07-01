@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
