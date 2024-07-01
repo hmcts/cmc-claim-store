@@ -2,7 +2,7 @@ apply plugin: 'jacoco'
 
 def versions = [
   logback          : '1.2.13',
-  reformJavaLogging: '4.0.0'
+  reformJavaLogging: '4.0.1'
 ]
 
 dependencies {
