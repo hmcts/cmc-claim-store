@@ -276,7 +276,7 @@ dependencies {
   implementation group: 'org.jdbi', name: 'jdbi', version: '2.78'
 
   implementation group: 'org.springframework', name: 'spring-context-support'
-  implementation group: 'org.springframework.retry', name: 'spring-retry'
+  implementation group: 'org.springframework.retry', name: 'spring-retry', version: '2.0.6'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.1.2'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-openfeign-core', version: '4.1.2'
 
