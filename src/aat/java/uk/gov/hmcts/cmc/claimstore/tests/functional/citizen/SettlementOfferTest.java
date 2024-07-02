@@ -18,7 +18,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 public class SettlementOfferTest extends BaseTest {
 
     private User claimant;
