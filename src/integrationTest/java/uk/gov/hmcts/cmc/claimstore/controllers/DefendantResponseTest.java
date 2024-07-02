@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -51,7 +51,7 @@ public class DefendantResponseTest extends BaseMockSpringTest {
     @MockBean
     protected ClaimService claimService;
 
-    @Before
+    @BeforeEach
     public void setup() {
         given(userService.getUserInfo(anyString())).willReturn(UserInfo.builder()
             .roles(ImmutableList.of(Role.CITIZEN.getRole()))

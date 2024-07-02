@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.tests.functional;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

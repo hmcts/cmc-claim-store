@@ -33,7 +33,6 @@ def springCloudVersion = '2023.0.1'
 def versions = [
   logback            : '1.5.6',
   springBoot         : springBootVersion,
-  reformJavaLogging  : '5.1.7',
   restAssured        : '5.4.0',
   jackson            : '2.17.1',
   junit              : '5.10.1',
@@ -259,8 +258,6 @@ dependencies {
   implementation group: 'com.github.hmcts', name: 'send-letter-client', version: '3.0.16'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
 
-  implementation group: 'com.github.hmcts', name: 'properties-volume-spring-boot-starter', version: '0.1.1'
-
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
   implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.1.8'
 
@@ -313,12 +310,11 @@ dependencies {
   testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit
   testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit
   testImplementation group: 'org.junit.vintage', name: 'junit-vintage-engine', version: versions.junit
-
   testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: versions.junit
   testImplementation group: 'org.junit.platform', name: 'junit-platform-commons', version: versions.junitPlatform
   testImplementation group: 'org.junit.platform', name: 'junit-platform-engine', version: versions.junitPlatform
   testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.25.3'
-  testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.11.2'
+  testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.11.0'
   testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.8.0'
   testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.2'
   testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.18.0'
@@ -360,14 +356,6 @@ dependencies {
   integrationTestImplementation(sourceSets.main.output)
   integrationTestImplementation project(':email-client')
   integrationTestImplementation project(':domain-model')
-}
-
-tasks.withType(Test) {
-  useJUnitPlatform()
-
-  testLogging {
-    exceptionFormat = 'full'
-  }
 }
 
 task contract(type: Test) {
@@ -423,6 +411,10 @@ task migrateClaims() {
 
     print 'Done'
   }
+}
+
+tasks.withType(Test) {
+  useJUnitPlatform()
 }
 
 task functional(type: Test) {

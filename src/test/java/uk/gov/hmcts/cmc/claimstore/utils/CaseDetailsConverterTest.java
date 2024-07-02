@@ -3,12 +3,11 @@ package uk.gov.hmcts.cmc.claimstore.utils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.cmc.ccd.config.CCDMapperConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
@@ -25,9 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponseWithDQ;
 
-@SpringBootTest
 @ContextConfiguration(classes = CCDMapperConfig.class)
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 class CaseDetailsConverterTest {
 
     private CaseDetailsConverter caseDetailsConverter;

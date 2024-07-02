@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.Set;
@@ -61,7 +61,7 @@ public class DebtTest {
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("description : may not be empty");
+            .contains("description : must not be blank");
     }
 
     @Test
@@ -77,7 +77,7 @@ public class DebtTest {
         //then
         assertThat(errors)
                 .hasSize(1)
-                .contains("description : may not be empty");
+                .contains("description : must not be blank");
     }
 
     @Test
@@ -92,7 +92,7 @@ public class DebtTest {
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("totalOwed : may not be null");
+            .contains("totalOwed : must not be null");
     }
 
     @Test
@@ -123,7 +123,7 @@ public class DebtTest {
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("monthlyPayments : may not be null");
+            .contains("monthlyPayments : must not be null");
     }
 
     @Test

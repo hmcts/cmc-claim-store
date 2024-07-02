@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
@@ -50,7 +50,7 @@ public class ChildTest {
         //then
         assertThat(errors)
                 .hasSize(1)
-                .contains("ageGroupType : may not be null");
+                .contains("ageGroupType : must not be null");
     }
 
     @Test
@@ -64,6 +64,6 @@ public class ChildTest {
         //then
         assertThat(errors)
                 .hasSize(1)
-                .contains("numberOfChildren : may not be null");
+                .contains("numberOfChildren : must not be null");
     }
 }

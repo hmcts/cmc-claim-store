@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -55,7 +55,7 @@ public class StatesPaidStaffNotificationServiceTest extends BaseMockSpringTest {
     @Autowired
     private DefendantResponseReceiptService defendantResponseReceiptService;
 
-    @Before
+    @BeforeEach
     public void beforeEachTest() {
 
         claimWithFullDefenceResponse = SampleClaim.getClaimFullDefenceStatesPaidWithAcceptation();
@@ -69,7 +69,7 @@ public class StatesPaidStaffNotificationServiceTest extends BaseMockSpringTest {
         StatesPaidStaffNotificationService staffNotificationService;
         staffNotificationService = new StatesPaidStaffNotificationService(
             emailService, emailProperties, emailContentProvider, defendantResponseReceiptService, true);
-        
+
         when(emailContentProvider.createContent(anyMap())).thenReturn(new EmailContent("subject", "body"));
 
         staffNotificationService.notifyStaffClaimantResponseStatesPaidSubmittedFor(claimWithFullDefenceResponse);

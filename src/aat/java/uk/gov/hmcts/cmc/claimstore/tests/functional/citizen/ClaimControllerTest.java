@@ -1,9 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
 import io.restassured.RestAssured;
-import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
@@ -20,7 +20,7 @@ public class ClaimControllerTest extends BaseTest {
     private User claimant;
     Claim createdCase;
 
-    @Before
+    @BeforeEach
     public void before() {
         claimant = bootstrap.getClaimant();
 

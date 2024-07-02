@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.rpa.mapper.helper;
 
 import jakarta.json.JsonObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
@@ -17,7 +17,8 @@ import java.time.LocalDate;
 
 import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class RPAMapperHelperTest {
 
@@ -70,9 +71,11 @@ public class RPAMapperHelperTest {
         assertEquals(moneyReceivedOn, RPAMapperHelper.claimantPaidOnDate(claim));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowExceptionOnClaimantPaidOnDateWhenInvalidClaim() {
         Claim claim = SampleClaim.builder().build();
-        RPAMapperHelper.claimantPaidOnDate(claim);
+        assertThrows(IllegalArgumentException.class, () -> {
+            RPAMapperHelper.claimantPaidOnDate(claim);
+        });
     }
 }
