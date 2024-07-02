@@ -415,6 +415,10 @@ task migrateClaims() {
 
 tasks.withType(Test) {
   useJUnitPlatform()
+
+  testLogging {
+    exceptionFormat = 'full'
+  }
 }
 
 task functional(type: Test) {
