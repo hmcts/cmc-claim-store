@@ -240,6 +240,8 @@ dependencies {
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: '5.1.7'
   implementation group: 'com.microsoft.azure', name: 'applicationinsights-web', version: '2.6.4'
 
+  implementation group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '2.0.0'
+
   implementation group: 'com.github.hmcts', name: 'java-logging', version: '6.1.4'
 
   implementation('com.github.hmcts:cmc-pdf-service-client:7.0.0') {
