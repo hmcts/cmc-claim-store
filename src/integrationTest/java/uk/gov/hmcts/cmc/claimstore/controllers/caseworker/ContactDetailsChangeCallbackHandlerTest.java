@@ -2,8 +2,8 @@ package uk.gov.hmcts.cmc.claimstore.controllers.caseworker;
 
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -108,7 +108,7 @@ public class ContactDetailsChangeCallbackHandlerTest extends BaseMockSpringTest 
     @MockBean
     private ChangeContactLetterService changeContactLetterService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         String serviceToken = "serviceToken";
         DocAssemblyResponse docAssemblyResponse = Mockito.mock(DocAssemblyResponse.class);

@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.BaseNotificationServiceTest;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -18,7 +18,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class OrderDrawnNotificationServiceTest extends BaseNotificationServiceTest {
     private final String reference = "to-%s-legal-order-drawn-notification-%s";
 
@@ -27,7 +27,7 @@ public class OrderDrawnNotificationServiceTest extends BaseNotificationServiceTe
 
     private OrderDrawnNotificationService service;
 
-    @Before
+    @BeforeEach
     public void beforeEachTest() {
         service = new OrderDrawnNotificationService(notificationService, properties);
         when(properties.getFrontendBaseUrl()).thenReturn(FRONTEND_BASE_URL);

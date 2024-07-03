@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
@@ -52,6 +52,6 @@ public class UnemploymentTest {
         //then
         assertThat(response)
             .hasSize(1)
-            .contains("unemployed.numberOfYears : may not be null");
+            .contains("unemployed.numberOfYears : must not be null");
     }
 }

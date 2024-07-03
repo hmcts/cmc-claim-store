@@ -1,9 +1,10 @@
 package uk.gov.hmcts.cmc.email;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ByteArrayResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class EmailAttachmentTest {
 
@@ -14,19 +15,25 @@ public class EmailAttachmentTest {
     private static final String CSV_FILE_NAME = "document.csv";
     private static final String FAKE_CSV = "John\t123-456\nJane\t456-123\n";
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void constructorShouldThrowNPEForNullContent() {
-        new EmailAttachment(null, PDF_CONTENT_TYPE, PDF_FILE_NAME);
+        assertThrows(NullPointerException.class, () -> {
+            new EmailAttachment(null, PDF_CONTENT_TYPE, PDF_FILE_NAME);
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void constructorShouldThrowNPEForNullContentType() {
-        new EmailAttachment(CONTENT, null, PDF_FILE_NAME);
+        assertThrows(NullPointerException.class, () -> {
+            new EmailAttachment(CONTENT, null, PDF_FILE_NAME);
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void constructorShouldThrowNPEForNullFileName() {
-        new EmailAttachment(CONTENT, PDF_CONTENT_TYPE, null);
+        assertThrows(NullPointerException.class, () -> {
+            new EmailAttachment(CONTENT, PDF_CONTENT_TYPE, null);
+        });
     }
 
     @Test

@@ -1,19 +1,21 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 public class StatementOfTruthCaseMapperTest {
 
     @Autowired
@@ -31,8 +33,8 @@ public class StatementOfTruthCaseMapperTest {
         CCDCase ccdCase = caseBuilder.build();
 
         //then
-        Assert.assertEquals(ccdCase.getSotSignerName(), statementOfTruth.getSignerName());
-        Assert.assertEquals(ccdCase.getSotSignerRole(), statementOfTruth.getSignerRole());
+        assertEquals(ccdCase.getSotSignerName(), statementOfTruth.getSignerName());
+        assertEquals(ccdCase.getSotSignerRole(), statementOfTruth.getSignerRole());
     }
 
     @Test
@@ -47,8 +49,8 @@ public class StatementOfTruthCaseMapperTest {
         CCDCase ccdCase = caseBuilder.build();
 
         //then
-        Assert.assertEquals(ccdCase.getSotSignerName(), statementOfTruth.getSignerName());
-        Assert.assertEquals(ccdCase.getSotSignerRole(), statementOfTruth.getSignerRole());
+        assertEquals(ccdCase.getSotSignerName(), statementOfTruth.getSignerName());
+        assertEquals(ccdCase.getSotSignerRole(), statementOfTruth.getSignerRole());
     }
 
     @Test
@@ -61,8 +63,8 @@ public class StatementOfTruthCaseMapperTest {
         StatementOfTruth statementOfTruth = mapper.from(ccdCase);
 
         //then
-        Assert.assertEquals(statementOfTruth.getSignerName(), ccdCase.getSotSignerName());
-        Assert.assertEquals(statementOfTruth.getSignerRole(), ccdCase.getSotSignerRole());
+        assertEquals(statementOfTruth.getSignerName(), ccdCase.getSotSignerName());
+        assertEquals(statementOfTruth.getSignerRole(), ccdCase.getSotSignerRole());
     }
 
     @Test
@@ -74,6 +76,6 @@ public class StatementOfTruthCaseMapperTest {
         StatementOfTruth statementOfTruth = mapper.from(ccdCase);
 
         //then
-        Assert.assertNull(statementOfTruth);
+        assertNull(statementOfTruth);
     }
 }

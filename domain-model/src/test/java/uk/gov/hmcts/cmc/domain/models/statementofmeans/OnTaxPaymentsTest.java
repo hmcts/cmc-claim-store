@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.Set;
@@ -14,7 +14,7 @@ public class OnTaxPaymentsTest {
                 .amountYouOwe(BigDecimal.ONE)
                 .reason("Whatever");
     }
-        
+
     @Test
     public void shouldBeSuccessfulValidationForOnTaxPayments() {
         //given
@@ -47,7 +47,7 @@ public class OnTaxPaymentsTest {
         //then
         assertThat(response)
             .hasSize(1)
-            .contains("amountYouOwe : may not be null");
+            .contains("amountYouOwe : must not be null");
     }
 
     @Test
@@ -61,7 +61,7 @@ public class OnTaxPaymentsTest {
         //then
         assertThat(response)
             .hasSize(1)
-            .contains("reason : may not be empty");
+            .contains("reason : must not be blank");
     }
 
     @Test

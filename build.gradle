@@ -35,8 +35,8 @@ def versions = [
   springBoot        : springBootVersion,
   restAssuredVersion: '4.2.0',
   jackson           : '2.17.0',
-  junit             : '5.7.1',
-  junitPlatform     : '1.7.1',
+  junit             : '5.10.1',
+  junitPlatform     : '1.10.2',
   pact_version    : '4.1.7',
   serviceAuthVersion : '4.0.3',
   idamJavaClient : '2.0.1',
@@ -222,6 +222,7 @@ dependencies {
 
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
 
+
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
   implementation group: 'ch.qos.logback', name: 'logback-core', version: versions.logback
 
@@ -278,7 +279,7 @@ dependencies {
   implementation group: 'org.springframework.retry', name: 'spring-retry'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign'
 
-  implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '12.1'
+  implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '13.2.1'
 
   implementation group: 'org.springframework.cloud',name : 'spring-cloud-starter-bootstrap'
 
@@ -307,7 +308,7 @@ dependencies {
   testImplementation group: 'org.junit.platform', name: 'junit-platform-commons', version: versions.junitPlatform
   testImplementation group: 'org.junit.platform', name: 'junit-platform-engine', version: versions.junitPlatform
   testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.25.3'
-  testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.11.2'
+  testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.11.0'
   testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.8.0'
   testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.2'
   testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.18.0'
@@ -341,6 +342,9 @@ dependencies {
   contractTestImplementation sourceSets.main.runtimeClasspath
   contractTestImplementation sourceSets.test.runtimeClasspath
 }
+configurations.all {
+  exclude group: 'com.vaadin.external.google', module: 'android-json'
+}
 
 dependencies {
   testImplementation project(path: ':domain-model')
@@ -351,9 +355,7 @@ dependencies {
   integrationTestImplementation project(':domain-model')
 }
 
-test {
-  useJUnitPlatform()
-}
+
 
 task contract(type: Test) {
   description = 'Runs the consumer Pact tests'
@@ -410,6 +412,10 @@ task migrateClaims() {
   }
 }
 
+tasks.withType(Test) {
+  useJUnitPlatform()
+}
+
 task functional(type: Test) {
   group = 'Delivery pipeline'
   description = 'Executes functional tests against an AAT Claim Store instance'
@@ -417,6 +423,7 @@ task functional(type: Test) {
   setClasspath(sourceSets.aat.runtimeClasspath)
   include "uk/gov/hmcts/cmc/claimstore/tests/functional/**"
   testLogging.showStandardStreams = true
+
 
   environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
