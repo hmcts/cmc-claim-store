@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers.advices;
 
 import com.google.common.base.Throwables;
 import feign.FeignException;
+import jakarta.servlet.ServletException;
 import org.postgresql.util.PSQLException;
 import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,6 @@ import uk.gov.service.notify.NotificationClientException;
 import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.Optional;
-import jakarta.servlet.ServletException;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.FAILED_DEPENDENCY;
