@@ -42,7 +42,7 @@ import uk.gov.service.notify.NotificationClientException;
 import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.Optional;
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.FAILED_DEPENDENCY;
