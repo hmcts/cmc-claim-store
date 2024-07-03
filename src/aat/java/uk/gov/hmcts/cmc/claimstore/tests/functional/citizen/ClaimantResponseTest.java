@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
 import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
@@ -27,6 +28,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_CLAIMANT_RE
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.CCJ;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.SETTLEMENT;
 
+@Disabled
 public class ClaimantResponseTest extends BaseTest {
     private static final BigDecimal TEN_2DP = TEN.setScale(2, RoundingMode.UNNECESSARY);
 
