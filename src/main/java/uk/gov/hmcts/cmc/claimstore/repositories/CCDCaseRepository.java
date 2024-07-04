@@ -53,8 +53,7 @@ public class CCDCaseRepository implements CaseRepository {
 
     @Override
     public List<Claim> getBySubmitterId(String submitterId, String authorisation, Integer pageNumber) {
-        List<Claim> result = ccdCaseApi.getBySubmitterId(submitterId, authorisation, pageNumber);
-        return result;
+        return ccdCaseApi.getBySubmitterId(submitterId, authorisation, pageNumber);
     }
 
     @Override
