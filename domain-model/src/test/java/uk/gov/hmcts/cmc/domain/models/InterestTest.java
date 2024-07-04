@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterestBreakdown;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterestDate;
@@ -34,7 +34,7 @@ public class InterestTest {
         Set<String> errors = validate(interest);
         //then
         assertThat(errors)
-                .containsExactly("type : may not be null");
+                .containsExactly("type : must not be null");
     }
 
     @Test
@@ -423,7 +423,7 @@ public class InterestTest {
 
         Set<String> errors = validate(interest);
 
-        assertThat(errors).containsExactly("interestBreakdown : totalAmount : may not be null");
+        assertThat(errors).containsExactly("interestBreakdown : totalAmount : must not be null");
     }
 
     @Test

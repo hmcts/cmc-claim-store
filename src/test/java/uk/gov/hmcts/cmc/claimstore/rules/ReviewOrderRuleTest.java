@@ -1,27 +1,33 @@
 package uk.gov.hmcts.cmc.claimstore.rules;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
 
-@RunWith(MockitoJUnitRunner.class)
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+@ExtendWith(MockitoExtension.class)
 public class ReviewOrderRuleTest {
 
     private final ReviewOrderRule reviewOrderRule = new ReviewOrderRule();
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowExceptionWhenClaimIsNull() {
-        reviewOrderRule.assertReviewOrder(null);
+        assertThrows(NullPointerException.class, () -> {
+            reviewOrderRule.assertReviewOrder(null);
+        });
     }
 
-    @Test(expected = ConflictException.class)
+    @Test
     public void shouldFailIfAlreadySubmittedReviewOrder() {
         Claim claim = SampleClaim.builder().withReviewOrder(SampleReviewOrder.getDefault()).build();
-        reviewOrderRule.assertReviewOrder(claim);
+        assertThrows(ConflictException.class, () -> {
+            reviewOrderRule.assertReviewOrder(claim);
+        });
     }
 
     @Test()

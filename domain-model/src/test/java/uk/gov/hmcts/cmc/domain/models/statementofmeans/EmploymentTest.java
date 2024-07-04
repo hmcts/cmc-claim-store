@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -95,7 +95,7 @@ public class EmploymentTest {
         //then
         assertThat(response)
             .hasSize(3)
-            .contains("employers[0].name : may not be empty")
-            .contains("selfEmployment.jobTitle : may not be empty");
+            .contains("employers[0].name : must not be blank")
+            .contains("selfEmployment.jobTitle : must not be blank");
     }
 }
