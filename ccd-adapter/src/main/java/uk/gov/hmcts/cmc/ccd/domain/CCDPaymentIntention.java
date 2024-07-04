@@ -16,7 +16,7 @@ public class CCDPaymentIntention {
     private String instalmentAmount;
     private LocalDate firstPaymentDate;
     private CCDPaymentSchedule paymentSchedule;
-    @JsonFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private LocalDate completionDate;
     private String paymentLength;
 

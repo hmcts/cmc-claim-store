@@ -58,14 +58,17 @@ public class GetClaimsContractConfig {
     public ClaimController claimController() {
         return new ClaimController(claimService());
     }
+
     @Bean
     public ClaimAuthorisationRule claimAuthorisationRule() {
         return new ClaimAuthorisationRule(userService());
     }
+
     @Bean
     public UserService userService() {
         return new UserService(idamApi, idamCaseworkerProperties, oauth2);
     }
+
     @Bean
     public CCDCaseRepository ccdCaseRepository() {
         return new CCDCaseRepository(ccdCaseApi, coreCaseDataService, userService());

@@ -22,7 +22,6 @@ import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseMethod;
-import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.math.BigDecimal;
@@ -65,7 +64,6 @@ public class ProviderTestUtils {
             .moreTimeRequested(true)
             .submitterEmail("sub@email.com")
             .response(PartAdmissionResponse.builder()
-                .responseType(ResponseType.FULL_DEFENCE)
                 .paymentIntention(getPaymentIntention())
                 .paymentDeclaration(PaymentDeclaration.builder().paidDate(LocalDate.now())
                     .paidAmount(new BigDecimal(20)).build())

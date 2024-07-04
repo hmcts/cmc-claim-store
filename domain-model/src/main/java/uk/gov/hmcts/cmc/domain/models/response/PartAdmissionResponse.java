@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.domain.models.response;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
-import lombok.experimental.SuperBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.Money;
 import uk.gov.hmcts.cmc.domain.constraints.ValidAdmission;
@@ -25,7 +24,6 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @ValidAdmission
 @EqualsAndHashCode(callSuper = true)
-@SuperBuilder(toBuilder = true)
 public class PartAdmissionResponse extends Response {
 
     @NotNull
@@ -56,6 +54,7 @@ public class PartAdmissionResponse extends Response {
     private final DirectionsQuestionnaire directionsQuestionnaire;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot of be done about removing parameters here
+    @Builder(toBuilder = true)
     public PartAdmissionResponse(
         YesNoOption freeMediation,
         String mediationPhoneNumber,

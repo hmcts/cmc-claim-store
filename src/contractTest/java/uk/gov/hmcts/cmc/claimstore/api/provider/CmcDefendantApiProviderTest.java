@@ -47,7 +47,6 @@ public class CmcDefendantApiProviderTest {
     @Autowired
     private ClaimController claimController;
 
-
     @TestTemplate
     @ExtendWith(PactVerificationSpringProvider.class)
     void pactVerificationTestTemplate(PactVerificationContext context) {
@@ -64,8 +63,6 @@ public class CmcDefendantApiProviderTest {
         if (context != null) {
             context.setTarget(testTarget);
         }
-
-
     }
 
     @State(value = "Get defendant cases")

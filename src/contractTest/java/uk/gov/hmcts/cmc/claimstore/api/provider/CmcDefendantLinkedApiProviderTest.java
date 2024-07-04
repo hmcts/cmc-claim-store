@@ -55,7 +55,6 @@ public class CmcDefendantLinkedApiProviderTest {
     @Autowired
     private ClaimController claimController;
 
-
     @TestTemplate
     @ExtendWith(PactVerificationSpringProvider.class)
     void pactVerificationTestTemplate(PactVerificationContext context) {

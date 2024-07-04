@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
-import lombok.experimental.SuperBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
@@ -29,7 +27,6 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
     @JsonSubTypes.Type(value = PartAdmissionResponse.class, name = "PART_ADMISSION")
 })
 @EqualsAndHashCode
-@SuperBuilder(toBuilder = true)
 public abstract class Response {
 
     @NotNull
