@@ -5,6 +5,7 @@ import au.com.dius.pact.provider.junitsupport.IgnoreNoPactsToVerify;
 import au.com.dius.pact.provider.junitsupport.Provider;
 import au.com.dius.pact.provider.junitsupport.State;
 import au.com.dius.pact.provider.junitsupport.loader.PactBroker;
+import au.com.dius.pact.provider.junitsupport.loader.VersionSelector;
 import au.com.dius.pact.provider.spring.junit5.MockMvcTestTarget;
 import au.com.dius.pact.provider.spring.junit5.PactVerificationSpringProvider;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,8 +36,8 @@ import static uk.gov.hmcts.cmc.claimstore.api.provider.ProviderTestUtils.getClai
 @Provider("cmc_defendantLinked")
 @PactBroker(scheme = "${PACT_BROKER_SCHEME:http}",
     host = "${PACT_BROKER_URL:localhost}",
-    port = "${PACT_BROKER_PORT:80}"
-//    ,consumerVersionSelectors = {@VersionSelector(tag = "master")}
+    port = "${PACT_BROKER_PORT:80}",
+    consumerVersionSelectors = {@VersionSelector(tag = "master")}
 )
 @ContextConfiguration(classes = {GetClaimsContractConfig.class})
 @IgnoreNoPactsToVerify
