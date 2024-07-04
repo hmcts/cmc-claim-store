@@ -1,0 +1,18 @@
+<configuration>
+
+  <appender name="PACTSTDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <!-- encoders are assigned the type
+         ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <!-- Specify the level specific to co.myapp.notifier -->
+  <logger name="au.com.dius.pact">
+    <level value="DEBUG"/>
+    <appender-ref ref="PACTSTDOUT"/>
+  </logger>
+
+
+</configuration>

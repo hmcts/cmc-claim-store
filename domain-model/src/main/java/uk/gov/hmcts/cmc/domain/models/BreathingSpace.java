@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -19,10 +20,15 @@ public class BreathingSpace {
 
     private String bsReferenceNumber;
     private BreathingSpaceType bsType;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private LocalDate bsEnteredDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private LocalDate bsLiftedDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private LocalDate bsEnteredDateByInsolvencyTeam;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private LocalDate bsLiftedDateByInsolvencyTeam;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private LocalDate bsExpectedEndDate;
     private String bsLiftedFlag;
 

@@ -1,7 +1,10 @@
 package uk.gov.hmcts.cmc.domain.models.offers;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.exceptions.IllegalSettlementStatementException;
 
@@ -13,10 +16,13 @@ import static java.lang.String.format;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @EqualsAndHashCode
+@Builder(toBuilder = true)
+@AllArgsConstructor
+@NoArgsConstructor
 public class Settlement {
 
     private static final String NO_STATEMENTS_MADE = "No statements have yet been made during that settlement";
-    private final List<PartyStatement> partyStatements = new ArrayList<>();
+    private List<PartyStatement> partyStatements = new ArrayList<>();
 
     public void makeOffer(Offer offer, MadeBy party, String partyStatementId) {
         assertOfferCanBeMadeBy(party);

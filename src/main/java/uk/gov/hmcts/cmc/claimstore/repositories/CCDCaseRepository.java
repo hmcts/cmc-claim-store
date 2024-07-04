@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.repositories;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -53,7 +54,8 @@ public class CCDCaseRepository implements CaseRepository {
 
     @Override
     public List<Claim> getBySubmitterId(String submitterId, String authorisation, Integer pageNumber) {
-        return ccdCaseApi.getBySubmitterId(submitterId, authorisation, pageNumber);
+        List<Claim> result = ccdCaseApi.getBySubmitterId(submitterId, authorisation, pageNumber);
+        return result;
     }
 
     @Override
@@ -291,3 +293,4 @@ public class CCDCaseRepository implements CaseRepository {
         );
     }
 }
+

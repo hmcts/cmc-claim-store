@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.models.idam;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -8,6 +9,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Getter
 @EqualsAndHashCode
+@Builder
 public class User {
     private final String authorisation;
     private final UserDetails userDetails;
