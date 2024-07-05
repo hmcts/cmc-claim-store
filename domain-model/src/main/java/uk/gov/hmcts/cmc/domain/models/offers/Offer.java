@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.offers;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -27,6 +28,7 @@ public class Offer {
 
     @NotNull
     @FutureDate
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private final LocalDate completionDate;
 
     @Valid
