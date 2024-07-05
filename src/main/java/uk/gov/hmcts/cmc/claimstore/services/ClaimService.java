@@ -86,7 +86,7 @@ public class ClaimService {
     private final ReviewOrderRule reviewOrderRule;
     private final LaunchDarklyClient launchDarklyClient;
 
-    @Value("${feature_toggles.ctsc_enabled}")
+    @Value("${feature_toggles.ctsc_enabled:false}")
     private boolean ctscEnabled;
 
     @SuppressWarnings("squid:S00107")
