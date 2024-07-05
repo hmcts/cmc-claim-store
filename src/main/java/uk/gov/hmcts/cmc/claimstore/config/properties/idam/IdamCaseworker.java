@@ -1,12 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.config.properties.idam;
 
-import lombok.Builder;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotBlank;
 
 @Validated
-@Builder
 public class IdamCaseworker {
     @NotBlank
     private String username;

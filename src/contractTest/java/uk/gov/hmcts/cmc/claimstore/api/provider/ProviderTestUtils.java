@@ -35,6 +35,14 @@ public class ProviderTestUtils {
     }
 
     public static Claim getClaimResponse() {
+        Settlement settlement = new Settlement();
+        settlement.setPartyStatements(List.of(PartyStatement.builder()
+            .type(StatementType.OFFER)
+            .madeBy(MadeBy.CLAIMANT)
+            .offer(Offer.builder().content("content").completionDate(LocalDate.now())
+                .paymentIntention(getPaymentIntention()).build())
+            .build()));
+
         return Claim.builder()
             .submitterId("100")
             .letterHolderId("letter")
@@ -89,14 +97,7 @@ public class ProviderTestUtils {
                 .build())
             .state(ClaimState.OPEN)
             .proceedOfflineReason(ProceedOfflineReasonType.OTHER)
-            .settlement(Settlement.builder()
-                .partyStatements(List.of(PartyStatement.builder()
-                    .type(StatementType.OFFER)
-                    .madeBy(MadeBy.CLAIMANT)
-                    .offer(Offer.builder().content("content").completionDate(LocalDate.now())
-                        .paymentIntention(getPaymentIntention()).build())
-                    .build()))
-                .build())
+            .settlement(settlement)
             .build();
     }
 

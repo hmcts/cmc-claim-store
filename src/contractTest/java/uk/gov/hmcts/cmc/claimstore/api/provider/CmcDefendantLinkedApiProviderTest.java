@@ -76,12 +76,17 @@ public class CmcDefendantLinkedApiProviderTest {
     @State(value = "Get claimant linked cases status")
     public Map toDefendantLinkedCaseStatus() {
 
-        given(idamCaseworkerProperties.getAnonymous()).willReturn(IdamCaseworker.builder()
-            .username("user@email.com").password("somePassw").build());
+        IdamCaseworker idamCaseworker = new IdamCaseworker();
+        idamCaseworker.setPassword("somePassw");
+        idamCaseworker.setUsername("user@email.com");
+
+        given(idamCaseworkerProperties.getAnonymous()).willReturn(idamCaseworker);
+
+        TokenExchangeResponse tokenExchangeResponse = new TokenExchangeResponse("some-access-token");
 
         given(idamApi.exchangeToken(any(), any(), any(), eq("password"),
             eq("user@email.com"), eq("somePassw"), eq("openid profile roles")))
-            .willReturn(TokenExchangeResponse.builder().accessToken("some-access-token").build());
+            .willReturn(tokenExchangeResponse);
 
         given(idamApi.retrieveUserInfo(eq("Bearer some-access-token")))
             .willReturn(UserInfo.builder().sub("user@email.com")
