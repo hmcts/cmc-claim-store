@@ -23,6 +23,7 @@ The service also delegates some responsibilities to other RESTful services e.g. 
   <img src="https://raw.githubusercontent.com/hmcts/reform-api-docs/master/docs/c4/cmc/images/structurizr-cmc-overview.png" width="550"/>
 </p>
 
+
 ## Getting started
 
 ### Prerequisites
