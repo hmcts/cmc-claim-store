@@ -8,6 +8,7 @@ import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Attachments;
 import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.cmc.email.EmailSendFailedException;
 import java.io.IOException;
 
 @Component
+@Slf4j
 public class SendGridClient {
     private final SendGrid sendGrid;
 
@@ -30,11 +32,13 @@ public class SendGridClient {
         @Value("${sendgrid.api-key}") String apiKey,
         @Value("${sendgrid.testing:false}") Boolean testing
     ) {
+        log.info("Creating sendgrid instance with apiKey {} and testing enable {}", apiKey, testing);
         sendGrid = factory.createSendGrid(apiKey, testing);
     }
 
     public void sendEmail(String from, EmailData emailData) throws IOException {
         verifyData(from, emailData);
+        log.info("Sending email from {}", from);
 
         Email sender = new Email(from);
         String subject = emailData.getSubject();
