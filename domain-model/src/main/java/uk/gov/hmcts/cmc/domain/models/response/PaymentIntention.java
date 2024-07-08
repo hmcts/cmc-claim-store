@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -25,6 +26,7 @@ public class PaymentIntention {
     private final PaymentOption paymentOption;
 
     @DateNotInThePast(groups = PaymentIntention.Proposing.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private final LocalDate paymentDate;
 
     @Valid

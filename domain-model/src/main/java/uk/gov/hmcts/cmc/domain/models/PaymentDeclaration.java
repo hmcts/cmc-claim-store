@@ -4,6 +4,7 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -22,6 +23,7 @@ public class PaymentDeclaration {
 
     @NotNull
     @DateNotInTheFuture
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private final LocalDate paidDate;
 
     @Money
