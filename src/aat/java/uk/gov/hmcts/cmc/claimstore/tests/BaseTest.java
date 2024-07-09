@@ -14,7 +14,7 @@ import uk.gov.hmcts.cmc.claimstore.tests.idam.IdamTestService;
 import uk.gov.hmcts.cmc.email.EmailService;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
+@SpringBootTest(properties = { "sendgrid.testing=true" })
 @TestPropertySource("/environment.properties")
 @ActiveProfiles({
     "aat",

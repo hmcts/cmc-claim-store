@@ -32,7 +32,7 @@ public class SendGridClient {
         @Value("${sendgrid.api-key}") String apiKey,
         @Value("${sendgrid.testing:false}") Boolean testing
     ) {
-        log.info("Creating sendgrid instance with apiKey {} and testing enable {}", apiKey, testing);
+        log.info("Creating sendgrid instance with testing enabled {}", testing);
         sendGrid = factory.createSendGrid(apiKey, testing);
     }
 
