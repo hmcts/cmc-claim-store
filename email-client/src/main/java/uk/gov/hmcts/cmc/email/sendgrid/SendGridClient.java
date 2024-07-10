@@ -9,6 +9,8 @@ import com.sendgrid.helpers.mail.objects.Attachments;
 import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
 import org.apache.http.HttpException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,8 @@ import java.io.IOException;
 
 @Component
 public class SendGridClient {
+
+    Logger logger = LoggerFactory.getLogger(this.getClass());
     private final SendGrid sendGrid;
 
     @Autowired
@@ -30,6 +34,7 @@ public class SendGridClient {
         @Value("${sendgrid.api-key}") String apiKey,
         @Value("${sendgrid.testing:false}") Boolean testing
     ) {
+        logger.info("Instantiating sendgrid with sendgrid.testing enabled {}", testing);
         sendGrid = factory.createSendGrid(apiKey, testing);
     }
 
