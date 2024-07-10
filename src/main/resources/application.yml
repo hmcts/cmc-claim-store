@@ -65,6 +65,7 @@ launchdarkly:
 
 sendgrid:
   api-key: "${SENDGRID_API_KEY:}"
+  testing: false
 
 quartzProperties:
   org.quartz:
