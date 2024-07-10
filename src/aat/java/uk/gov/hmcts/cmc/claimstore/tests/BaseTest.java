@@ -15,7 +15,7 @@ import uk.gov.hmcts.cmc.email.EmailService;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(properties = { "sendgrid.testing=true" })
-@TestPropertySource("/environment.properties")
+@TestPropertySource("classpath:environment.properties")
 @ActiveProfiles({
     "aat",
     "mocked-database-tests"
