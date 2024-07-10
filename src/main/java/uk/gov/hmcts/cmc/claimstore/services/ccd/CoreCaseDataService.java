@@ -594,7 +594,6 @@ public class CoreCaseDataService {
                 .dateReferredForDirections(nowInUTC())
                 .preferredDQCourt(getPreferredCourt(claimBuilder.build()))
                 .preferredDQPilotCourt(getPreferredCourt(claimBuilder.build()));
-
             CaseDataContent caseDataContent = caseDataContent(startEventResponse, claimBuilder.build());
 
             return caseDetailsConverter.extractClaim(submitUpdate(authorisation,
@@ -618,7 +617,10 @@ public class CoreCaseDataService {
 
     private String getPreferredCourt(Claim existingClaim) {
         try {
-            return directionsQuestionnaireService.getPreferredIndieSolCourt(existingClaim);
+            final String preferredIndieSolCourt =
+                directionsQuestionnaireService.getPreferredIndieSolCourt(existingClaim);
+            logger.info("Preferred court: " + preferredIndieSolCourt);
+            return preferredIndieSolCourt;
         } catch (Exception e) {
             return null;
         }
