@@ -338,6 +338,9 @@ smoke-test-citizen:
 smoke-test-solicitor:
   password: "${SMOKE_TEST_USER_PASSWORD:}"
 
+sendgrid:
+  testing: true
+
 logging:
   level:
     org.springframework.cache: TRACE

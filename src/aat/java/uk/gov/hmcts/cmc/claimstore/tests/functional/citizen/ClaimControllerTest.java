@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 import io.restassured.RestAssured;
 import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -16,7 +15,6 @@ import uk.gov.hmcts.cmc.domain.models.response.DefendantLinkStatus;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Disabled
 public class ClaimControllerTest extends BaseTest {
 
     private User claimant;
