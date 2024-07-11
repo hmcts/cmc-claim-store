@@ -41,6 +41,8 @@ public class SendGridClient {
     public void sendEmail(String from, EmailData emailData) throws IOException {
         verifyData(from, emailData);
 
+        logger.info("Sending email from {} with data {}", from, emailData.toString());
+
         Email sender = new Email(from);
         String subject = emailData.getSubject();
         Email recipient = new Email(emailData.getTo());
