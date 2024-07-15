@@ -23,7 +23,6 @@ public class HttpClientConfiguration {
     private CloseableHttpClient getHttpClient() {
         int timeout = 10000;
         RequestConfig config = RequestConfig.custom()
-            .setConnectTimeout(timeout, TimeUnit.MILLISECONDS)
             .setConnectionRequestTimeout(timeout, TimeUnit.MILLISECONDS)
             .setResponseTimeout(timeout, TimeUnit.MILLISECONDS)
             .build();
