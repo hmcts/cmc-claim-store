@@ -19,6 +19,7 @@ import uk.gov.hmcts.cmc.claimstore.rules.ReviewOrderRule;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.UserInfoService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
@@ -49,6 +50,8 @@ public class GetClaimsContractConfig {
     @MockBean
     private Oauth2 oauth2;
     @MockBean
+    private UserInfoService userInfoService;
+    @MockBean
     private CCDCaseApi ccdCaseApi;
     @MockBean
     private CoreCaseDataService coreCaseDataService;
@@ -66,7 +69,7 @@ public class GetClaimsContractConfig {
 
     @Bean
     public UserService userService() {
-        return new UserService(idamApi, idamCaseworkerProperties, oauth2);
+        return new UserService(idamApi, idamCaseworkerProperties, oauth2, userInfoService);
     }
 
     @Bean
