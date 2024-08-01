@@ -25,22 +25,25 @@ public class UserService {
     private final IdamCaseworkerProperties idamCaseworkerProperties;
     private final Oauth2 oauth2;
     Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final UserService self;
 
     @Autowired
     public UserService(
         IdamApi idamApi,
         IdamCaseworkerProperties idamCaseworkerProperties,
-        Oauth2 oauth2
+        Oauth2 oauth2,
+        UserService self
     ) {
         this.idamApi = idamApi;
         this.idamCaseworkerProperties = idamCaseworkerProperties;
         this.oauth2 = oauth2;
+        this.self = self;
     }
 
     @LogExecutionTime
     public UserDetails getUserDetails(String authorisation) {
         logger.info("User info invoked");
-        UserInfo userInfo = getUserInfo(authorisation);
+        UserInfo userInfo = self.getUserInfo(authorisation);
 
         return UserDetails.builder()
             .id(userInfo.getUid())
@@ -58,7 +61,7 @@ public class UserService {
 
     public User authenticateUser(String username, String password) {
 
-        String authorisation = getAuthorisationToken(username, password);
+        String authorisation = self.getAuthorisationToken(username, password);
         UserDetails userDetails = getUserDetails(authorisation);
         return new User(authorisation, userDetails);
     }
