@@ -24,23 +24,26 @@ public class UserService {
     private final IdamApi idamApi;
     private final IdamCaseworkerProperties idamCaseworkerProperties;
     private final Oauth2 oauth2;
+    private final UserInfoService userInfoService;
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     public UserService(
         IdamApi idamApi,
         IdamCaseworkerProperties idamCaseworkerProperties,
-        Oauth2 oauth2
+        Oauth2 oauth2,
+        UserInfoService userInfoService
     ) {
         this.idamApi = idamApi;
         this.idamCaseworkerProperties = idamCaseworkerProperties;
         this.oauth2 = oauth2;
+        this.userInfoService = userInfoService;
     }
 
     @LogExecutionTime
     public UserDetails getUserDetails(String authorisation) {
         logger.info("User info invoked");
-        UserInfo userInfo = getUserInfo(authorisation);
+        UserInfo userInfo = userInfoService.getUserInfo(authorisation);
 
         return UserDetails.builder()
             .id(userInfo.getUid())
@@ -89,11 +92,8 @@ public class UserService {
         return BEARER + tokenExchangeResponse.getAccessToken();
     }
 
-    @LogExecutionTime
-    @Cacheable(value = "userInfoCache")
     public UserInfo getUserInfo(String bearerToken) {
-        logger.info("IDAM /o/userinfo invoked");
-        return idamApi.retrieveUserInfo(bearerToken);
+        return userInfoService.getUserInfo(bearerToken);
     }
 
     public User authenticateUserForTests(String username, String password) {
