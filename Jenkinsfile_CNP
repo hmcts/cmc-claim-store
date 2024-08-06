@@ -59,7 +59,6 @@ withPipeline("java", product, component) {
 
   onMaster {
     loadVaultSecrets(secrets)
-    enablePactAs([AppPipelineDsl.PactRoles.PROVIDER])
   }
 
   onPR {
