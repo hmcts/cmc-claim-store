@@ -111,7 +111,7 @@ public class UserService {
             oauth2.getClientId(),
             oauth2.getRedirectUrl()
         );
-        logger.info("IDAM /o/token invoked.");
+        logger.info("IDAM /o/token invoked for tests");
         TokenExchangeResponse tokenExchangeResponse = idamApi.exchangeTokenForTests(
             authenticateUserResponse.getCode(),
             AUTHORIZATION_CODE,
