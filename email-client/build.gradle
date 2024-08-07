@@ -4,8 +4,7 @@ buildscript {
   repositories {
     mavenCentral()
     maven {
-      url "https://dl.bintray.com/hmcts/hmcts-maven"
-    }
+      maven { url 'https://jitpack.io' }    }
   }
 }
 
