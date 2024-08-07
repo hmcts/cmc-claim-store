@@ -66,6 +66,7 @@ withPipeline("java", product, component) {
     env.ENVIRONMENT = "preview"
     env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
     loadVaultSecrets(secrets)
+    enablePactAs([AppPipelineDsl.PactRoles.PROVIDER])
   }
 
 }
