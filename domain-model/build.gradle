@@ -21,7 +21,7 @@ dependencies {
   testImplementation project(':domain-sample-data')
 
   testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.11.0'
-  testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.25.3'
+  testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.26.3'
   testImplementation group: 'javax.el', name: 'javax.el-api', version: '3.0.0'
   testImplementation group: 'org.glassfish.web', name: 'javax.el', version: '2.2.6'
   testImplementation group: 'com.google.guava', name: 'guava', version: '32.0.1-jre'
