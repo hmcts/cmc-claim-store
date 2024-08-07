@@ -48,6 +48,8 @@ class UserServiceTest {
     private Oauth2 oauth2;
     @Mock
     private UserInfoService userInfoService;
+    @Mock
+    private UserAuthorisationTokenService userAuthorisationTokenService;
 
     @InjectMocks
     private UserService userService;
@@ -101,6 +103,19 @@ class UserServiceTest {
         assertThat(response).isNotNull();
         assertThat(response.getPin()).isEqualTo(PIN);
         assertThat(response.getUserId()).isEqualTo(UID);
+    }
+
+    @Test
+    void shouldAuthenticateUser() {
+        when(userAuthorisationTokenService.getAuthorisationToken(USERNAME, PASSWORD)).thenReturn(AUTHORISATION);
+        when(userInfoService.getUserInfo(AUTHORISATION))
+            .thenReturn(userInfo);
+
+        User user = userService.authenticateUser(USERNAME, PASSWORD);
+
+        verify(userAuthorisationTokenService).getAuthorisationToken(USERNAME, PASSWORD);
+        assertThat(user.getAuthorisation()).isEqualTo(AUTHORISATION);
+        assertUserDetails(user.getUserDetails());
     }
 
     @Test
