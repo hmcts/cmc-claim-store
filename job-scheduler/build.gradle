@@ -2,7 +2,7 @@ apply plugin: 'jacoco'
 
 def versions = [
   logback          : '1.2.13',
-  reformJavaLogging: '4.0.0'
+  reformJavaLogging: '6.1.5'
 ]
 
 dependencies {
@@ -19,7 +19,7 @@ dependencies {
 
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
   implementation group: 'ch.qos.logback', name: 'logback-core', version: versions.logback
-  implementation group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformJavaLogging
+  implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformJavaLogging
 
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
   testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.25.3'
