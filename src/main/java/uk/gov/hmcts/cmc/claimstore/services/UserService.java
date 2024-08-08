@@ -5,7 +5,6 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.idam.IdamCaseworker;
 import uk.gov.hmcts.cmc.claimstore.config.properties.idam.IdamCaseworkerProperties;
@@ -22,11 +21,11 @@ public class UserService {
     public static final String AUTHORIZATION_CODE = "authorization_code";
     public static final String CODE = "code";
     public static final String BASIC = "Basic ";
-    public static final String GRANT_TYPE_PASSWORD = "password";
-    public static final String DEFAULT_SCOPE = "openid profile roles";
     private final IdamApi idamApi;
     private final IdamCaseworkerProperties idamCaseworkerProperties;
     private final Oauth2 oauth2;
+    private final UserInfoService userInfoService;
+    private final UserAuthorisationTokenService userAuthorisationTokenService;
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final Cache<String, String> authTokenCache = Caffeine.newBuilder()
@@ -40,17 +39,21 @@ public class UserService {
     public UserService(
         IdamApi idamApi,
         IdamCaseworkerProperties idamCaseworkerProperties,
-        Oauth2 oauth2
+        Oauth2 oauth2,
+        UserInfoService userInfoService,
+        UserAuthorisationTokenService userAuthorisationTokenService
     ) {
         this.idamApi = idamApi;
         this.idamCaseworkerProperties = idamCaseworkerProperties;
         this.oauth2 = oauth2;
+        this.userInfoService = userInfoService;
+        this.userAuthorisationTokenService = userAuthorisationTokenService;
     }
 
     @LogExecutionTime
     public UserDetails getUserDetails(String authorisation) {
         logger.info("User info invoked");
-        UserInfo userInfo = getUserInfo(authorisation);
+        UserInfo userInfo = userInfoService.getUserInfo(authorisation);
 
         return UserDetails.builder()
             .id(userInfo.getUid())
@@ -68,7 +71,7 @@ public class UserService {
 
     public User authenticateUser(String username, String password) {
 
-        String authorisation = getAuthorisationToken(username, password);
+        String authorisation = userAuthorisationTokenService.getAuthorisationToken(username, password);
         UserDetails userDetails = getUserDetails(authorisation);
         return new User(authorisation, userDetails);
     }
@@ -84,44 +87,8 @@ public class UserService {
         return idamApi.generatePin(new GeneratePinRequest(name), authorisation);
     }
 
-    @LogExecutionTime
-    public String getAuthorisationToken(String username, String password) {
-        logger.info("IDAM /o/token invoked.");
-        String authToken = authTokenCache.getIfPresent(username);
-
-        if (authToken == null) {
-            logger.info("Idam token not cached, calling idam api for new token for user {}", username);
-            TokenExchangeResponse tokenExchangeResponse = idamApi.exchangeToken(
-                oauth2.getClientId(),
-                oauth2.getClientSecret(),
-                oauth2.getRedirectUrl(),
-                GRANT_TYPE_PASSWORD,
-                username,
-                password,
-                DEFAULT_SCOPE);
-            authToken = BEARER + tokenExchangeResponse.getAccessToken();
-            authTokenCache.put(username, authToken);
-        } else {
-            logger.info("Fetching idam token from cache for user {}", username);
-        }
-
-        return authToken;
-    }
-
-    @LogExecutionTime
-    @Cacheable(value = "userInfoCache")
     public UserInfo getUserInfo(String bearerToken) {
-        logger.info("IDAM /o/userinfo invoked");
-        UserInfo userInfo = userInfoCache.getIfPresent(bearerToken);
-
-        if (userInfo == null) {
-            logger.info("User info not cached, calling idam api for {}", bearerToken);
-            userInfo = idamApi.retrieveUserInfo(bearerToken);
-            userInfoCache.put(bearerToken, userInfo);
-        } else {
-            logger.info("IDAM token was cached for user {}", userInfo.getName());
-        }
-        return userInfo;
+        return userInfoService.getUserInfo(bearerToken);
     }
 
     public User authenticateUserForTests(String username, String password) {
@@ -139,7 +106,7 @@ public class UserService {
             oauth2.getClientId(),
             oauth2.getRedirectUrl()
         );
-        logger.info("IDAM /o/token invoked.");
+        logger.info("IDAM /o/token invoked for tests.");
         TokenExchangeResponse tokenExchangeResponse = idamApi.exchangeTokenForTests(
             authenticateUserResponse.getCode(),
             AUTHORIZATION_CODE,
