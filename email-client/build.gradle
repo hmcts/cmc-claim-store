@@ -3,9 +3,7 @@ apply plugin: 'jacoco'
 buildscript {
   repositories {
     mavenCentral()
-    maven {
-      maven { url 'https://jitpack.io' }    }
-  }
+    maven { url 'https://jitpack.io' }    }
 }
 
 dependencies {
