@@ -290,6 +290,8 @@ dependencies {
   implementation group: 'org.json', name: 'json', version: '20240303'
   implementation group: 'org.eclipse.parsson', name: 'parsson', version: '1.1.5'
 
+  implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '8.0'
+
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.26'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.26'
 
