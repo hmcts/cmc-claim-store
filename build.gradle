@@ -151,6 +151,7 @@ allprojects {
   configurations.all {
     exclude group: 'com.vaadin.external.google', module: 'android-json'
     exclude group: 'jakarta.activation', module: 'jakarta.activation-api'
+    exclude group: 'commons-logging', module: 'commons-logging'
   }
 
   dependencyManagement {
@@ -194,9 +195,6 @@ configurations {
   integrationTestRuntime.extendsFrom(testRuntime)
 }
 
-configurations.all {
-  exclude group: 'com.vaadin.external.google', module: 'android-json'
-}
 
 dependencies {
 
