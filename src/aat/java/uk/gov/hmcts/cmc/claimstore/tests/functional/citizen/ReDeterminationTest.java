@@ -19,7 +19,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 
-@Disabled
 public class ReDeterminationTest extends BaseTest {
 
     private User claimant;

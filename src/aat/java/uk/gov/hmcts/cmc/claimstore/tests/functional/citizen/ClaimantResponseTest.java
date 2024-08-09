@@ -28,7 +28,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_CLAIMANT_RE
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.CCJ;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.SETTLEMENT;
 
-@Disabled
+
 public class ClaimantResponseTest extends BaseTest {
     private static final BigDecimal TEN_2DP = TEN.setScale(2, RoundingMode.UNNECESSARY);
 
