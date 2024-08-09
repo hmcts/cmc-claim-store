@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers.advices;
 
 import com.google.common.base.Throwables;
 import feign.FeignException;
+import jakarta.servlet.ServletException;
 import org.postgresql.util.PSQLException;
 import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import org.springframework.web.util.NestedServletException;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsExceptionLogger;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantLinkException;
@@ -88,7 +88,7 @@ public class ResourceExceptionHandler {
     public ResponseEntity<Object> httpClientErrorException(HttpClientErrorException exception) {
         logger.error(exception);
         return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(),
-            HttpStatus.valueOf(exception.getRawStatusCode()));
+            HttpStatus.valueOf(exception.getStatusCode().value()));
     }
 
     @ExceptionHandler(value = ForbiddenActionException.class)
@@ -268,7 +268,7 @@ public class ResourceExceptionHandler {
             ));
     }
 
-    @ExceptionHandler({NestedServletException.class, FeignException.BadRequest.class})
+    @ExceptionHandler({ServletException.class, FeignException.BadRequest.class})
     public ResponseEntity<String> handleNestedServletExceptionBadRequest(Exception exception) {
         logger.error(exception);
         return new ResponseEntity<>(exception.getMessage(),

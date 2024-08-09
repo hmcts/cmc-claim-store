@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import com.google.common.base.CaseFormat;
+import jakarta.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +35,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
 
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 

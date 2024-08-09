@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional;
 
 import io.restassured.RestAssured;
-import org.pdfbox.pdmodel.PDDocument;
-import org.pdfbox.util.PDFTextStripper;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.springframework.http.HttpHeaders;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;

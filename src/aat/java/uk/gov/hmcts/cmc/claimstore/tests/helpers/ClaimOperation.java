@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.tests.helpers;
 import io.restassured.RestAssured;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
@@ -18,7 +17,7 @@ import java.util.Optional;
 public class ClaimOperation {
 
     @LogExecutionTime
-    @Retryable(value = RuntimeException.class, maxAttempts = 30, backoff = @Backoff(delay = 600))
+    @Retryable(value = RuntimeException.class)
     public Claim getClaimWithLetterHolder(String externalId, String userAuthentication) {
 
         Optional<CaseMetadata> caseMetadata = Optional.of(retrieveCaseMetaData(externalId));

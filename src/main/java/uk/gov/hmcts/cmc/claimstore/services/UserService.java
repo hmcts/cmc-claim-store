@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.requests.idam.IdamApi;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 
 import java.util.Base64;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class UserService {
@@ -24,6 +27,13 @@ public class UserService {
     private final UserInfoService userInfoService;
     private final UserAuthorisationTokenService userAuthorisationTokenService;
     Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    private final Cache<String, String> authTokenCache = Caffeine.newBuilder()
+        .expireAfterWrite(2, TimeUnit.HOURS)
+        .build();
+    private final Cache<String, UserInfo> userInfoCache = Caffeine.newBuilder()
+        .expireAfterWrite(2, TimeUnit.HOURS)
+        .build();
 
     @Autowired
     public UserService(

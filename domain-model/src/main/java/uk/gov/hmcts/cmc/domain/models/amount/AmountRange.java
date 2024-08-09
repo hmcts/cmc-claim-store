@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models.amount;
 
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -8,8 +10,6 @@ import uk.gov.hmcts.cmc.domain.constraints.Money;
 
 import java.math.BigDecimal;
 import java.util.Optional;
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 

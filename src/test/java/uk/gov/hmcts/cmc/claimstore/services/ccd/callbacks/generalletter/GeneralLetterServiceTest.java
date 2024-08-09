@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter;
 
 import com.google.common.collect.ImmutableList;
+import jakarta.validation.constraints.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,7 +37,6 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
-import javax.validation.constraints.NotNull;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;

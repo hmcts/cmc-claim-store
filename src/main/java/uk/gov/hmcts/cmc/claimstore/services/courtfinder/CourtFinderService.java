@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.courtfinder;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Court;
 import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.name.SearchCourtByNameResponse;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 import static java.util.Optional.ofNullable;
 
 @Service
+@Slf4j
 public class CourtFinderService {
 
     private final CourtFinderApi courtFinderApi;
@@ -26,6 +28,7 @@ public class CourtFinderService {
     }
 
     public List<Court> getCourtDetailsListFromPostcode(String postcode) {
+        log.info("Trying to fetch courts by postcode {}", postcode);
         SearchCourtByPostcodeResponse searchByPostcodeResponse = courtFinderApi.findMoneyClaimCourtByPostcode(postcode);
 
         List<Court> courtList = new ArrayList<>();
