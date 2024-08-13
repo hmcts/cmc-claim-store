@@ -57,6 +57,11 @@ spring:
             client-id: internal
             client-secret: internal
 
+logging:
+  level:
+    org.springframework.cache: TRACE
+    com.github.benmanes.caffeine.cache.Caffeine: TRACE
+
 oidc:
   issuer: ${OIDC_ISSUER:http://fr-am:8080/openam/oauth2/hmcts}
 
