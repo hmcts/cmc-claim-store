@@ -45,7 +45,7 @@ spring:
   cache:
     cache-names: userInfoCache, userOIDTokenCache
     caffeine:
-      spec: expireAfterAccess=3600s
+      spec: expireAfterWrite=3600s
   security:
     oauth2:
       client:
@@ -56,6 +56,11 @@ spring:
           oidc:
             client-id: internal
             client-secret: internal
+
+logging:
+  level:
+    org.springframework.cache: TRACE
+    com.github.benmanes.caffeine.cache.Caffeine: TRACE
 
 oidc:
   issuer: ${OIDC_ISSUER:http://fr-am:8080/openam/oauth2/hmcts}
