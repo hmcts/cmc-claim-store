@@ -45,7 +45,7 @@ spring:
   cache:
     cache-names: userInfoCache, userOIDTokenCache
     caffeine:
-      spec: expireAfterAccess=3600s
+      spec: expireAfterWrite=3600s
   security:
     oauth2:
       client:
