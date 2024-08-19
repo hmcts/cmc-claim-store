@@ -101,6 +101,7 @@ public class Claim {
     private String lastEventTriggeredForHwfCase;
     private LocalDate paperFormServedDate;
     private final LocalDate paperFormIssueDate;
+    private String caseName;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -369,6 +370,10 @@ public class Claim {
     @Override
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ourStyle());
+    }
+
+    public void setCaseName(String caseName) {
+        this.caseName = caseName;
     }
 
 }

@@ -462,7 +462,7 @@ public final class SampleClaim {
     public static Claim getWithClaimantResponseRejectionForPartAdmissionAndMediation() {
         SampleClaimantResponse.ClaimantResponseRejection
             .builder();
-        return builder()
+        Claim claim =  builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
             .withResponse(
                 SampleResponse
@@ -484,6 +484,8 @@ public final class SampleClaim {
                     .withHearingLocation(pilotHearingLocation).build())
                 .build())
             .build();
+       claim.setCaseName("App vs Def");
+       return claim;
     }
 
     public static Claim getWithClaimantResponseRejectionForPartAdmissionNoMediation() {
