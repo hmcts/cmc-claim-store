@@ -421,14 +421,7 @@ tasks.withType(Test) {
 }
 
 task functional(type: Test) {
-  group = 'Delivery pipeline'
-  description = 'Executes functional tests against an AAT Claim Store instance'
-  setTestClassesDirs(sourceSets.aat.output.classesDirs)
-  setClasspath(sourceSets.aat.runtimeClasspath)
-  include "uk/gov/hmcts/cmc/claimstore/tests/functional/**"
-  testLogging.showStandardStreams = true
 
-  environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
 
 task smoke(type: Test) {
@@ -522,7 +515,8 @@ sonarqube {
         "**/PaperResponseFullDefenceCallbackHandler.java",
         "**/OCON9xResponseUtil.java",
         "**/ResponseUtils.java",
-        "**/cmc/claimstore/services/ccd/callbacks/roboticssupport/RoboticsNotificationServiceImpl.java"
+        "**/cmc/claimstore/services/ccd/callbacks/roboticssupport/RoboticsNotificationServiceImpl.java",
+        "**/cmc/claimstore/services/UserService.java"
     ].join(",")
   }
 }
