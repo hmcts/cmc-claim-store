@@ -52,6 +52,7 @@ public class MediationCSVGenerator {
         .partyStatus("PARTY_STATUS")
         .emailAddress("CONTACT_EMAIL")
         .pilot("PILOT")
+        .claimTitle("CLAIM_TITLE")
         .build();
 
     private static final Map<Integer, Function<Claim, String>> CONTACT_PERSON_EXTRACTORS =
@@ -182,7 +183,8 @@ public class MediationCSVGenerator {
                 .apply(claim))
             .contactNumber(CONTACT_NUMBER_EXTRACTORS.get(partyType)
                 .apply(claim))
-            .pilot(isPilotCase.apply(claim.getTotalClaimAmount()));
+            .pilot(isPilotCase.apply(claim.getTotalClaimAmount()))
+            .claimTitle(claim.getCaseName());
 
         return mediationRowBuilder.build();
     }
