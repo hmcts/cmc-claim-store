@@ -1,16 +1,18 @@
-package uk.gov.hmcts.cmc.claimstore.services;
+package uk.gov.hmcts.cmc.claimstore.services.user;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.models.idam.Oauth2;
 import uk.gov.hmcts.cmc.claimstore.models.idam.TokenExchangeResponse;
 import uk.gov.hmcts.cmc.claimstore.requests.idam.IdamApi;
+import uk.gov.hmcts.cmc.claimstore.services.user.IUserAuthorisationTokenService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 
 @Component
-public class UserAuthorisationTokenService {
+@ConditionalOnProperty(prefix = "spring.user.token.cache", name = "enabled", havingValue = "false", matchIfMissing = true)
+public class UserAuthorisationTokenService implements IUserAuthorisationTokenService {
     public static final String GRANT_TYPE_PASSWORD = "password";
     public static final String DEFAULT_SCOPE = "openid profile roles";
     public static final String BEARER = "Bearer ";
@@ -24,8 +26,8 @@ public class UserAuthorisationTokenService {
         this.oauth2 = oauth2;
     }
 
+    @Override
     @LogExecutionTime
-    @Cacheable(value = "userOIDTokenCache")
     public String getAuthorisationToken(String username, String password) {
         logger.info("IDAM /o/token invoked.");
         TokenExchangeResponse tokenExchangeResponse = idamApi.exchangeToken(
