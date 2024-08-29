@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.requests.idam.IdamApi;
+import uk.gov.hmcts.cmc.claimstore.services.user.UserInfoService;
 
 import static org.mockito.Mockito.verify;
 

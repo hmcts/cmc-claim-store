@@ -8,6 +8,8 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.idam.IdamCaseworker;
 import uk.gov.hmcts.cmc.claimstore.config.properties.idam.IdamCaseworkerProperties;
 import uk.gov.hmcts.cmc.claimstore.models.idam.*;
 import uk.gov.hmcts.cmc.claimstore.requests.idam.IdamApi;
+import uk.gov.hmcts.cmc.claimstore.services.user.UserAuthorisationTokenService;
+import uk.gov.hmcts.cmc.claimstore.services.user.UserInfoService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 
 import java.util.Base64;

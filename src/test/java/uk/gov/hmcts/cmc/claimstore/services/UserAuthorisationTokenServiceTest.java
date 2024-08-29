@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.models.idam.Oauth2;
 import uk.gov.hmcts.cmc.claimstore.models.idam.TokenExchangeResponse;
 import uk.gov.hmcts.cmc.claimstore.requests.idam.IdamApi;
+import uk.gov.hmcts.cmc.claimstore.services.user.UserAuthorisationTokenService;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
