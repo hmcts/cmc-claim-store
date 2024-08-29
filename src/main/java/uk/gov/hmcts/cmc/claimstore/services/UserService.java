@@ -6,10 +6,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.idam.IdamCaseworker;
 import uk.gov.hmcts.cmc.claimstore.config.properties.idam.IdamCaseworkerProperties;
-import uk.gov.hmcts.cmc.claimstore.models.idam.*;
+import uk.gov.hmcts.cmc.claimstore.models.idam.AuthenticateUserResponse;
+import uk.gov.hmcts.cmc.claimstore.models.idam.GeneratePinRequest;
+import uk.gov.hmcts.cmc.claimstore.models.idam.GeneratePinResponse;
+import uk.gov.hmcts.cmc.claimstore.models.idam.Oauth2;
+import uk.gov.hmcts.cmc.claimstore.models.idam.TokenExchangeResponse;
+import uk.gov.hmcts.cmc.claimstore.models.idam.User;
+import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.models.idam.UserInfo;
 import uk.gov.hmcts.cmc.claimstore.requests.idam.IdamApi;
-import uk.gov.hmcts.cmc.claimstore.services.user.UserAuthorisationTokenService;
-import uk.gov.hmcts.cmc.claimstore.services.user.UserInfoService;
+import uk.gov.hmcts.cmc.claimstore.services.user.IUserAuthorisationTokenService;
+import uk.gov.hmcts.cmc.claimstore.services.user.IUserInfoService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 
 import java.util.Base64;
@@ -23,8 +30,8 @@ public class UserService {
     private final IdamApi idamApi;
     private final IdamCaseworkerProperties idamCaseworkerProperties;
     private final Oauth2 oauth2;
-    private final UserInfoService userInfoService;
-    private final UserAuthorisationTokenService userAuthorisationTokenService;
+    private final IUserInfoService userInfoService;
+    private final IUserAuthorisationTokenService userAuthorisationTokenService;
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
@@ -32,8 +39,8 @@ public class UserService {
         IdamApi idamApi,
         IdamCaseworkerProperties idamCaseworkerProperties,
         Oauth2 oauth2,
-        UserInfoService userInfoService,
-        UserAuthorisationTokenService userAuthorisationTokenService
+        IUserInfoService userInfoService,
+        IUserAuthorisationTokenService userAuthorisationTokenService
     ) {
         this.idamApi = idamApi;
         this.idamCaseworkerProperties = idamCaseworkerProperties;

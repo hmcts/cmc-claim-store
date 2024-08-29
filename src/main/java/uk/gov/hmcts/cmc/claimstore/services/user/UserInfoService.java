@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserInfo;
 import uk.gov.hmcts.cmc.claimstore.requests.idam.IdamApi;
-import uk.gov.hmcts.cmc.claimstore.services.user.IUserInfoService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 
 @Component
