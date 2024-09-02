@@ -89,6 +89,10 @@ idam:
     url: "http://localhost:4552"
     totp_secret: "AAAAAAAAAAAAAAAA"
     microservice: "cmc_claim_store"
+  user:
+    token:
+      cache:
+        enabled: ${USER_TOKEN_CACHE_ENABLED:false}
 
 courtfinder:
   api:
