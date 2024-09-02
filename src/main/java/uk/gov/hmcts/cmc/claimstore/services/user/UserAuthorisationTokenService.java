@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.models.idam.Oauth2;
 import uk.gov.hmcts.cmc.claimstore.models.idam.TokenExchangeResponse;
 import uk.gov.hmcts.cmc.claimstore.requests.idam.IdamApi;
-import uk.gov.hmcts.cmc.claimstore.services.user.IUserAuthorisationTokenService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 
 @Component
