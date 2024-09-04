@@ -10,7 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.requests.idam.IdamApi;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 
 @Component
-@ConditionalOnProperty(prefix = "spring.user.token.cache", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "idam.user.token.cache", name = "enabled", havingValue = "true")
 public class CacheableUserInfoService implements IUserInfoService {
 
     private final IdamApi idamApi;

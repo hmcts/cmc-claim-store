@@ -10,7 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.requests.idam.IdamApi;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 
 @Component
-@ConditionalOnProperty(prefix = "spring.user.token.cache", name = "enabled", havingValue = "false", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "idam.user.token.cache", name = "enabled", havingValue = "false", matchIfMissing = true)
 public class UserAuthorisationTokenService implements IUserAuthorisationTokenService {
     public static final String GRANT_TYPE_PASSWORD = "password";
     public static final String DEFAULT_SCOPE = "openid profile roles";
