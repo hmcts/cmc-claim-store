@@ -84,7 +84,6 @@ ccd:
     java:
       image: hmctspublic.azurecr.io/ccd/definition-store-api:latest
       imagePullPolicy: Always
-      ingressHost: ccd-data-store-api-${SERVICE_FQDN}
       keyVaults: []
       environment:
         DEFINITION_STORE_IDAM_KEY: ${DEFINITION_STORE_S2S_KEY}
@@ -113,6 +112,7 @@ ccd:
   ccd-data-store-api:
     java:
       image: hmctspublic.azurecr.io/ccd/data-store-api:latest
+      ingressHost: ccd-data-store-api-${SERVICE_FQDN}
       keyVaults: []
       environment:
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
