@@ -1,18 +1,21 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.config.properties.idam.IdamCaseworkerProperties;
 import uk.gov.hmcts.cmc.claimstore.models.idam.*;
 import uk.gov.hmcts.cmc.claimstore.requests.idam.IdamApi;
+import uk.gov.hmcts.cmc.claimstore.services.user.UserAuthorisationTokenService;
+import uk.gov.hmcts.cmc.claimstore.services.user.UserInfoService;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.PIN;
 import static uk.gov.hmcts.cmc.claimstore.services.UserService.CODE;
@@ -45,34 +48,27 @@ class UserServiceTest {
     private IdamCaseworkerProperties idamCaseworkerProperties;
     @Mock
     private Oauth2 oauth2;
+    @Mock
+    private UserInfoService userInfoService;
+    @Mock
+    private UserAuthorisationTokenService userAuthorisationTokenService;
 
+    @InjectMocks
     private UserService userService;
-
-    @BeforeEach
-    void setup() {
-        userService = new UserService(idamApi, idamCaseworkerProperties, oauth2);
-    }
 
     @Test
     void findsUserInfoForAuthToken() {
-        when(idamApi.retrieveUserInfo(AUTHORISATION)).thenReturn(userInfo);
-
-        UserInfo found = userService.getUserInfo(AUTHORISATION);
-
-        assertThat(found.getSub()).isEqualTo(SUB);
-        assertThat(found.getUid()).isEqualTo(UID);
-        assertThat(found.getName()).isEqualTo(NAME);
-        assertThat(found.getGivenName()).isEqualTo(GIVEN_NAME);
-        assertThat(found.getFamilyName()).isEqualTo(FAMILY_NAME);
-        assertThat(found.getRoles()).isEqualTo(ROLES);
+        userService.getUserInfo(AUTHORISATION);
+        verify(userInfoService).getUserInfo(AUTHORISATION);
     }
 
     @Test
     void findsUserDetailsForAuthToken() {
-        when(idamApi.retrieveUserInfo(AUTHORISATION)).thenReturn(userInfo);
+        when(userInfoService.getUserInfo(AUTHORISATION)).thenReturn(userInfo);
 
         UserDetails userDetails = userService.getUserDetails(AUTHORISATION);
 
+        verify(userInfoService).getUserInfo(AUTHORISATION);
         verifyUserDetails(userDetails);
     }
 
@@ -112,18 +108,31 @@ class UserServiceTest {
     }
 
     @Test
+    void shouldAuthenticateUser() {
+        when(userAuthorisationTokenService.getAuthorisationToken(USERNAME, PASSWORD)).thenReturn(AUTHORISATION);
+        when(userInfoService.getUserInfo(AUTHORISATION))
+            .thenReturn(userInfo);
+
+        User user = userService.authenticateUser(USERNAME, PASSWORD);
+
+        verify(userAuthorisationTokenService).getAuthorisationToken(USERNAME, PASSWORD);
+        assertThat(user.getAuthorisation()).isEqualTo(AUTHORISATION);
+        assertUserDetails(user.getUserDetails());
+    }
+
+    @Test
     void authenticateUserShouldReturnUser() {
 
         when(idamApi.authenticateUser(anyString(), eq(CODE), any(), any()))
             .thenReturn(new AuthenticateUserResponse(CODE));
         when(idamApi.exchangeTokenForTests(eq(CODE), eq(AUTHORIZATION_CODE), any(), any(), any()))
             .thenReturn(new TokenExchangeResponse("I am a valid token"));
-
-        when(idamApi.retrieveUserInfo(AUTHORISATION))
+        when(userInfoService.getUserInfo(AUTHORISATION))
             .thenReturn(userInfo);
 
         User user = userService.authenticateUserForTests(USERNAME, PASSWORD);
 
+        verify(userInfoService).getUserInfo(AUTHORISATION);
         assertThat(user.getAuthorisation()).isEqualTo(AUTHORISATION);
         assertUserDetails(user.getUserDetails());
     }
