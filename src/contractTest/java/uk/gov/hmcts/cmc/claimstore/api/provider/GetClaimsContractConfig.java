@@ -21,6 +21,8 @@ import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
+import uk.gov.hmcts.cmc.claimstore.services.user.UserAuthorisationTokenService;
+import uk.gov.hmcts.cmc.claimstore.services.user.UserInfoService;
 import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 
 @Configuration
@@ -65,8 +67,18 @@ public class GetClaimsContractConfig {
     }
 
     @Bean
+    public UserInfoService userInfoService() {
+        return new UserInfoService(idamApi);
+    }
+
+    @Bean
+    public UserAuthorisationTokenService userAuthorisationTokenService() {
+        return new UserAuthorisationTokenService(idamApi, oauth2);
+    }
+
+    @Bean
     public UserService userService() {
-        return new UserService(idamApi, idamCaseworkerProperties, oauth2);
+        return new UserService(idamApi, idamCaseworkerProperties, oauth2, userInfoService(), userAuthorisationTokenService());
     }
 
     @Bean
