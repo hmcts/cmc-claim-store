@@ -146,6 +146,10 @@ allprojects {
     maven {
       url 'https://jitpack.io'
     }
+    jcenter()
+    maven {
+      url 'https://repo1.maven.org/maven2'
+    }
   }
 
   dependencyManagement {
@@ -415,15 +419,7 @@ tasks.withType(Test) {
 }
 
 task functional(type: Test) {
-  group = 'Delivery pipeline'
-  description = 'Executes functional tests against an AAT Claim Store instance'
-  setTestClassesDirs(sourceSets.aat.output.classesDirs)
-  setClasspath(sourceSets.aat.runtimeClasspath)
-  include "uk/gov/hmcts/cmc/claimstore/tests/functional/**"
-  testLogging.showStandardStreams = true
 
-
-  environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
 
 task smoke(type: Test) {
