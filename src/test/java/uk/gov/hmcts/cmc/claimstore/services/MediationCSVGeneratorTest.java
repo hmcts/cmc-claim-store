@@ -31,7 +31,7 @@ public class MediationCSVGeneratorTest {
     private static final String CRLF = "\r\n";
 
     private static final String REPORT_HEADER = "SITE_ID,CASE_TYPE,CHECK_LIST,PARTY_STATUS,CASE_NUMBER,AMOUNT,"
-        + "PARTY_TYPE,COMPANY_NAME,CONTACT_NAME,CONTACT_NUMBER,CONTACT_EMAIL,PILOT" + CRLF;
+        + "PARTY_TYPE,COMPANY_NAME,CONTACT_NAME,CONTACT_NUMBER,CONTACT_EMAIL,PILOT,CASE_TITLE" + CRLF;
 
     @Mock
     private CaseSearchApi caseSearchApi;
@@ -52,9 +52,9 @@ public class MediationCSVGeneratorTest {
         mediationClaims.add(getWithClaimantResponseRejectionForPartAdmissionAndMediation());
 
         String expected = REPORT_HEADER
-            + "5,1,4,5,000MC001,40.99,1,John Rambo,Mediation Contact Person,07999999999,claimant@mail.com,Yes"
+            + "5,1,4,5,000MC001,40.99,1,John Rambo,Mediation Contact Person,07999999999,claimant@mail.com,Yes,App vs Def"
             + CRLF
-            + "5,1,4,5,000MC001,40.99,2,Dr. John Smith,Mediation Contact Person,07999999999,j.smith@example.com,Yes"
+            + "5,1,4,5,000MC001,40.99,2,Dr. John Smith,Mediation Contact Person,07999999999,j.smith@example.com,Yes,App vs Def"
             + CRLF;
         mediationCSVGenerator.createMediationCSV();
         String mediationCSV = mediationCSVGenerator.getCsvData();
@@ -66,17 +66,18 @@ public class MediationCSVGeneratorTest {
         Claim claimWithAmountMoreThan300 = getWithClaimantResponseRejectionForPartAdmissionAndMediation()
             .toBuilder()
             .claimData(SampleClaimData.submittedWithAmountMoreThanThousand()).build();
+        claimWithAmountMoreThan300.setCaseName("App vs Def");
         mediationClaims.add(getWithClaimantResponseRejectionForPartAdmissionAndMediation());
         mediationClaims.add(claimWithAmountMoreThan300);
 
         String expected = REPORT_HEADER
-            + "5,1,4,5,000MC001,40.99,1,John Rambo,Mediation Contact Person,07999999999,claimant@mail.com,Yes"
+            + "5,1,4,5,000MC001,40.99,1,John Rambo,Mediation Contact Person,07999999999,claimant@mail.com,Yes,App vs Def"
             + CRLF
-            + "5,1,4,5,000MC001,40.99,2,Dr. John Smith,Mediation Contact Person,07999999999,j.smith@example.com,Yes"
+            + "5,1,4,5,000MC001,40.99,2,Dr. John Smith,Mediation Contact Person,07999999999,j.smith@example.com,Yes,App vs Def"
             + CRLF
-            + "5,1,4,5,000MC001,1000.99,1,John Rambo,Mediation Contact Person,07999999999,claimant@mail.com,No"
+            + "5,1,4,5,000MC001,1000.99,1,John Rambo,Mediation Contact Person,07999999999,claimant@mail.com,No,App vs Def"
             + CRLF
-            + "5,1,4,5,000MC001,1000.99,2,Dr. John Smith,Mediation Contact Person,07999999999,j.smith@example.com,No"
+            + "5,1,4,5,000MC001,1000.99,2,Dr. John Smith,Mediation Contact Person,07999999999,j.smith@example.com,No,App vs Def"
             + CRLF;
         mediationCSVGenerator.createMediationCSV();
         String mediationCSV = mediationCSVGenerator.getCsvData();
@@ -85,7 +86,7 @@ public class MediationCSVGeneratorTest {
 
     @Test
     public void shouldCreateMediationCSVEvenWhenNoClaimsWithMediation() {
-        String expected = REPORT_HEADER + "null,null,null,null,null,null,null,null,null,null,null,null"
+        String expected = REPORT_HEADER + "null,null,null,null,null,null,null,null,null,null,null,null,null"
             + CRLF;
         mediationCSVGenerator.createMediationCSV();
         String mediationCSV = mediationCSVGenerator.getCsvData();
