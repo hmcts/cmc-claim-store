@@ -57,10 +57,9 @@ public class CaseDetailsConverter {
             // Calculating the intention to proceed here rather than in the mapper as we have access
             // to the WorkingDayIndicator here
             LocalDate intendsToProceedDeadline = calculateIntentionToProceedDeadline(claim.getRespondedAt());
-            return claim.toBuilder()
-                .intentionToProceedDeadline(intendsToProceedDeadline)
-                .response(updateResponseMethod(claim.getResponse().orElse(null), ccdCase))
-                .build();
+            claim.setIntentionToProceedDeadline(intendsToProceedDeadline);
+            claim.setResponse((updateResponseMethod(claim.getResponse().orElse(null), ccdCase)));
+            return claim;
         } catch (NullPointerException exception) {
             // These exceptions are thrown by requireNonNull constraints in mapper's arguments.
             throw new IllegalArgumentException(exception);
