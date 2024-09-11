@@ -113,6 +113,7 @@ ccd:
   ccd-data-store-api:
     java:
       image: hmctspublic.azurecr.io/ccd/data-store-api:latest
+      ingressHost: ccd-data-store-api-${SERVICE_FQDN}
       keyVaults: []
       environment:
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}

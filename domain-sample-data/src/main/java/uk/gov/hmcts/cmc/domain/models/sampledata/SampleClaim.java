@@ -246,8 +246,8 @@ public final class SampleClaim {
         return builder()
             .withClaimData(
                 SampleClaimData.builder().withDefendant(
-                    SampleTheirDetails.builder()
-                        .withEmail(defendantEmail).individualDetails())
+                        SampleTheirDetails.builder()
+                            .withEmail(defendantEmail).individualDetails())
                     .build())
             .withDefendantId(null)
             .build();
@@ -462,7 +462,7 @@ public final class SampleClaim {
     public static Claim getWithClaimantResponseRejectionForPartAdmissionAndMediation() {
         SampleClaimantResponse.ClaimantResponseRejection
             .builder();
-        return builder()
+        Claim claim = builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
             .withResponse(
                 SampleResponse
@@ -484,6 +484,8 @@ public final class SampleClaim {
                     .withHearingLocation(pilotHearingLocation).build())
                 .build())
             .build();
+        claim.setCaseName("App vs Def");
+        return claim;
     }
 
     public static Claim getWithClaimantResponseRejectionForPartAdmissionNoMediation() {
@@ -684,14 +686,14 @@ public final class SampleClaim {
 
     public static Claim getWithDefendantResponseReceiptDocument() {
         return builder().withResponse(
-            SampleResponse.validDefaults())
+                SampleResponse.validDefaults())
             .withDefendantResponseReceiptDocument(DOCUMENT_URI)
             .build();
     }
 
     public static Claim getWithCCJRequestDocument() {
         return builder().withCountyCourtJudgment(
-            SampleCountyCourtJudgment.builder().ccjType(DEFAULT).build())
+                SampleCountyCourtJudgment.builder().ccjType(DEFAULT).build())
             .withCountyCourtJudgmentRequestedAt(LocalDateTimeFactory.nowInLocalZone())
             .withCCJRequestDocument(DOCUMENT_URI)
             .build();
@@ -726,7 +728,7 @@ public final class SampleClaim {
 
     public static Claim getWithSettlementAgreementDocument() {
         return builder().withSettlement(
-            SampleSettlement.validDefaults())
+                SampleSettlement.validDefaults())
             .withSettlementAgreementDocument(DOCUMENT_URI)
             .build();
     }

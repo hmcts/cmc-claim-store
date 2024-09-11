@@ -178,8 +178,9 @@ public class CaseMapper {
         if (ccdCase.getDirectionOrderType() != null) {
             builder.directionOrderType(ccdCase.getDirectionOrderType());
         }
-
-        return builder.build();
+        Claim claim = builder.build();
+        claim.setCaseName(toCaseName.apply(claim));
+        return claim;
     }
 
     private YesNoOption convertCCDYesNo(CCDYesNoOption ccdYesNoOption) {

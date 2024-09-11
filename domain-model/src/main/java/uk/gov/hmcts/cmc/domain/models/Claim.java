@@ -55,7 +55,7 @@ public class Claim {
     private final boolean moreTimeRequested;
     private final String submitterEmail;
     private final LocalDateTime respondedAt;
-    private final Response response;
+    private Response response;
     private final String defendantEmail;
     private final CountyCourtJudgment countyCourtJudgment;
     @JsonFormat(shape = JsonFormat.Shape.STRING)
@@ -81,8 +81,9 @@ public class Claim {
     private final ReviewOrder reviewOrder;
     private final DirectionOrder directionOrder;
     private final ChannelType channel;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    private final LocalDate intentionToProceedDeadline;
+    private LocalDate intentionToProceedDeadline;
     private final MediationOutcome mediationOutcome;
     private final String failedMediationReason;
     private final LocalDateTime mediationSettlementReachedAt;
@@ -101,6 +102,7 @@ public class Claim {
     private String lastEventTriggeredForHwfCase;
     private LocalDate paperFormServedDate;
     private final LocalDate paperFormIssueDate;
+    private String caseName;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -369,6 +371,18 @@ public class Claim {
     @Override
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ourStyle());
+    }
+
+    public void setCaseName(String caseName) {
+        this.caseName = caseName;
+    }
+
+    public void setResponse(Response response) {
+        this.response = response;
+    }
+
+    public void setIntentionToProceedDeadline(LocalDate intentionToProceedDeadline) {
+        this.intentionToProceedDeadline = intentionToProceedDeadline;
     }
 
 }
