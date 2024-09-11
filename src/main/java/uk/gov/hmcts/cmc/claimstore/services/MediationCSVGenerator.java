@@ -52,7 +52,7 @@ public class MediationCSVGenerator {
         .partyStatus("PARTY_STATUS")
         .emailAddress("CONTACT_EMAIL")
         .pilot("PILOT")
-        .claimTitle("CLAIM_TITLE")
+        .claimTitle("CASE_TITLE")
         .build();
 
     private static final Map<Integer, Function<Claim, String>> CONTACT_PERSON_EXTRACTORS =

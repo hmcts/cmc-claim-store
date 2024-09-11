@@ -31,7 +31,7 @@ public class MediationCSVGeneratorTest {
     private static final String CRLF = "\r\n";
 
     private static final String REPORT_HEADER = "SITE_ID,CASE_TYPE,CHECK_LIST,PARTY_STATUS,CASE_NUMBER,AMOUNT,"
-        + "PARTY_TYPE,COMPANY_NAME,CONTACT_NAME,CONTACT_NUMBER,CONTACT_EMAIL,PILOT,CLAIM_TITLE" + CRLF;
+        + "PARTY_TYPE,COMPANY_NAME,CONTACT_NAME,CONTACT_NUMBER,CONTACT_EMAIL,PILOT,CASE_TITLE" + CRLF;
 
     @Mock
     private CaseSearchApi caseSearchApi;
