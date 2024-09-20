@@ -8,3 +8,4 @@ java:
     SCHEDULE_TRANSFER_CLAIMS: '0 0 12 1 * ?'
     OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/realms/root/realms/hmcts
     USER_TOKEN_CACHE_ENABLED: true
+    REFERENCE_DATABASE_MIGRATION: true
