@@ -54,6 +54,8 @@ spring:
           oidc:
             client-id: internal
             client-secret: internal
+  flyway:
+    enabled: ${REFERENCE_DATABASE_MIGRATION:true}
 
 oidc:
   issuer: ${OIDC_ISSUER:http://fr-am:8080/openam/oauth2/hmcts}
