@@ -18,6 +18,8 @@ async:
       size: 50
 
 spring:
+  config:
+    import: "optional:configtree:/mnt/secrets/cmc/"
   main:
     allow-bean-definition-overriding: true  # https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.1-Release-Notes#bean-overriding
   application:
@@ -89,6 +91,10 @@ idam:
     url: "http://localhost:4552"
     totp_secret: "AAAAAAAAAAAAAAAA"
     microservice: "cmc_claim_store"
+  user:
+    token:
+      cache:
+        enabled: ${USER_TOKEN_CACHE_ENABLED:false}
 
 courtfinder:
   api:
@@ -327,7 +333,9 @@ oauth2:
     id: 'cmc_citizen'
 ---
 spring:
-  profiles: 'aat'
+  config:
+    activate:
+      on-profile: "aat"
 
 test-instance-uri: "${TEST_URL:}"
 smoke-test-citizen:

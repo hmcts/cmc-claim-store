@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 
 import com.github.tomakehurst.wiremock.http.MimeType;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
@@ -74,7 +74,7 @@ public class CreateCitizenClaimCallbackHandlerTest extends BaseMockSpringTest {
     @MockBean
     protected EmailService emailService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         paymentBuilder = Payment.builder()
             .amount(TEN)

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Value;
@@ -15,6 +16,7 @@ public class CCDPaymentIntention {
     private String instalmentAmount;
     private LocalDate firstPaymentDate;
     private CCDPaymentSchedule paymentSchedule;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private LocalDate completionDate;
     private String paymentLength;
 

@@ -3,8 +3,8 @@ package uk.gov.hmcts.cmc.claimstore.controllers.legaladvisor;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
@@ -62,7 +62,7 @@ public class GenerateOrderCallbackHandlerTest extends BaseMockSpringTest {
     @MockBean
     protected EmailService emailService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         String serviceToken = "serviceToken";
         DocAssemblyResponse docAssemblyResponse = Mockito.mock(DocAssemblyResponse.class);

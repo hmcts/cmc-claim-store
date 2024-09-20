@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.domain.models;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocument.builder;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.COVER_SHEET;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.GENERAL_LETTER;
@@ -16,10 +16,10 @@ public class ClaimDocumentCollectionTest {
         ClaimDocumentCollection claimDocumentCollection = getClaimDocumentCollection();
 
         Optional<ClaimDocument> claimDocument = claimDocumentCollection.getDocument("12345");
-        Assert.assertTrue(claimDocument.isPresent());
+        assertTrue(claimDocument.isPresent());
 
         claimDocument = claimDocumentCollection.getDocument("456");
-        Assert.assertTrue(claimDocument.isEmpty());
+        assertTrue(claimDocument.isEmpty());
     }
 
     @Test
@@ -27,10 +27,10 @@ public class ClaimDocumentCollectionTest {
         ClaimDocumentCollection claimDocumentCollection = getClaimDocumentCollection();
 
         Optional<ClaimDocument> claimDocument = claimDocumentCollection.getDocument(COVER_SHEET);
-        Assert.assertTrue(claimDocument.isPresent());
+        assertTrue(claimDocument.isPresent());
 
         claimDocument = claimDocumentCollection.getDocument(ClaimDocumentType.CLAIM_ISSUE_RECEIPT);
-        Assert.assertTrue(claimDocument.isEmpty());
+        assertTrue(claimDocument.isEmpty());
     }
 
     private ClaimDocumentCollection getClaimDocumentCollection() {

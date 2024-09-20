@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.Set;
@@ -50,7 +50,7 @@ public class RepaymentPlanTest {
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("instalmentAmount : may not be null");
+            .contains("instalmentAmount : must not be null");
     }
 
     @Test
@@ -65,7 +65,7 @@ public class RepaymentPlanTest {
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("paymentSchedule : may not be null");
+            .contains("paymentSchedule : must not be null");
     }
 
     @Test
@@ -80,7 +80,7 @@ public class RepaymentPlanTest {
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("firstPaymentDate : may not be null");
+            .contains("firstPaymentDate : must not be null");
     }
 
     @Test

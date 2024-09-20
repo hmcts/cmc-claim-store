@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.scheduler.services;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.Job;
 import org.quartz.JobBuilder;
@@ -34,7 +34,7 @@ import static org.mockito.Mockito.when;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 import static org.quartz.TriggerBuilder.newTrigger;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class JobServiceTest {
 
     @Mock
@@ -42,7 +42,7 @@ public class JobServiceTest {
 
     private JobService jobsService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         jobsService = new JobService(scheduler);
     }

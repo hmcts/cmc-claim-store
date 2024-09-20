@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +55,7 @@ public class ClaimantRejectionStaffNotificationServiceTest extends BaseMockSprin
     @Autowired
     private ClaimantDirectionsHearingContentProvider claimantDirectionsHearingContentProvider;
 
-    @Before
+    @BeforeEach
     public void beforeEachTest() {
         claimWithPartAdmission = SampleClaim.getWithClaimantResponseRejectionForPartAdmissionAndMediation();
         service = new ClaimantRejectionStaffNotificationService(

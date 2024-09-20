@@ -2,8 +2,8 @@ package uk.gov.hmcts.cmc.claimstore.controllers.caseworker;
 
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -48,6 +48,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
@@ -107,7 +108,7 @@ public class ContactDetailsChangeCallbackHandlerTest extends BaseMockSpringTest 
     @MockBean
     private ChangeContactLetterService changeContactLetterService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         String serviceToken = "serviceToken";
         DocAssemblyResponse docAssemblyResponse = Mockito.mock(DocAssemblyResponse.class);
@@ -159,7 +160,7 @@ public class ContactDetailsChangeCallbackHandlerTest extends BaseMockSpringTest 
         given(sendLetterApi.sendLetter(anyString(), any(LetterWithPdfsRequest.class))).willReturn(sendLetterResponse);
 
         given(changeContactLetterService.publishLetter(any(CCDCase.class), any(Claim.class), any(String.class),
-            any(CCDDocument.class))).willReturn(expected);
+            any(CCDDocument.class), anyList())).willReturn(expected);
 
         MvcResult mvcResult = makeRequest(ABOUT_TO_SUBMIT.getValue())
             .andExpect(status().isOk())

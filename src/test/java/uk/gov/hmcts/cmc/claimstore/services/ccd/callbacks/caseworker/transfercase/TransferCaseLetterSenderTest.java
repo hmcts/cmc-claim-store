@@ -12,12 +12,14 @@ import uk.gov.hmcts.cmc.claimstore.events.BulkPrintTransferEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.PrintableDocumentService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -25,6 +27,7 @@ import static org.mockito.Mockito.when;
 class TransferCaseLetterSenderTest {
 
     private static final String AUTHORISATION = "Bearer: abcd";
+    private static final List<String> USER_LIST = List.of("Dr. John Smith");
 
     @InjectMocks
     private TransferCaseLetterSender transferCaseLetterSender;
@@ -45,6 +48,24 @@ class TransferCaseLetterSenderTest {
     private Claim claim;
 
     @Test
+    void shouldNotSendNoticeOfTransferForDefendantWithGeneralLetter() {
+
+        CCDDocument noticeForDefendant = mock(CCDDocument.class);
+
+        Claim claim = SampleClaim.getClaimWithFullAdmissionWithTheirDetails();
+
+        transferCaseLetterSender.sendNoticeOfTransferForDefendant(AUTHORISATION,
+            noticeForDefendant, claim);
+
+        verify(generalLetterService, never()).printLetter(
+            AUTHORISATION,
+            noticeForDefendant,
+            claim,
+            USER_LIST
+        );
+    }
+
+    @Test
     void shouldSendNoticeOfTransferForDefendant() {
 
         CCDDocument noticeForDefendant = mock(CCDDocument.class);
@@ -52,10 +73,10 @@ class TransferCaseLetterSenderTest {
         transferCaseLetterSender.sendNoticeOfTransferForDefendant(AUTHORISATION,
             noticeForDefendant, claim);
 
-        verify(generalLetterService).printLetter(
-            AUTHORISATION,
+        verify(bulkPrintHandler).printDefendantNoticeOfTransferLetter(
+            claim,
             noticeForDefendant,
-            claim
+            AUTHORISATION
         );
     }
 

@@ -1,9 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.support;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -55,7 +55,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseMockSpringTest
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .willReturn(new byte[]{1, 2, 3, 4});
@@ -97,7 +97,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseMockSpringTest
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void shouldRespond200AndSendNotificationsForClaimIssuedEvent() throws Exception {
         givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetails());
         given(userService.generatePin(anyString(), eq(BEARER_TOKEN)))
@@ -214,7 +214,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseMockSpringTest
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void shouldRespond200AndSendNotificationsForCCJRequestedEvent() throws Exception {
         givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetailsWithCCJ());
 
@@ -224,7 +224,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseMockSpringTest
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void shouldRespond200AndSendNotificationsForOfferAcceptedEvent() throws Exception {
         givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetailsWithOfferCounterSigned());
 

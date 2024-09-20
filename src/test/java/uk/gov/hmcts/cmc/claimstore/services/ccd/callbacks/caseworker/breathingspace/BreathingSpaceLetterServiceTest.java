@@ -258,7 +258,7 @@ class BreathingSpaceLetterServiceTest {
             BREATHING_SPACE_LETTER_TEMPLATE_ID, FILE_NAME);
 
         verify(generalLetterService)
-            .publishLetter(any(CCDCase.class), any(Claim.class), anyString(), anyString());
+            .publishLetter(any(CCDCase.class), any(Claim.class), anyString(), anyString(), anyList());
 
     }
 

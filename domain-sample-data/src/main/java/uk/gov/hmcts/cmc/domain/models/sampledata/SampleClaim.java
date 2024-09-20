@@ -70,6 +70,7 @@ public final class SampleClaim {
     public static final String USER_ID = "1";
     public static final String LETTER_HOLDER_ID = "2";
     public static final String DEFENDANT_ID = "4";
+    public static final String DEFENDANT_NAME = "Dr. John Smith";
     public static final Long CLAIM_ID = 3L;
     public static final String REFERENCE_NUMBER = "000MC001";
     public static final UUID RAND_UUID = UUID.randomUUID();
@@ -113,7 +114,7 @@ public final class SampleClaim {
     private LocalDate moneyReceivedOn;
     private LocalDateTime reDeterminationRequestedAt;
     private ReDetermination reDetermination = new ReDetermination("I feel defendant can pay", CLAIMANT);
-    private final ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
+    private ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
     private LocalDate claimantResponseDeadline;
     private ClaimState state = ClaimState.OPEN;
     private ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators
@@ -245,8 +246,8 @@ public final class SampleClaim {
         return builder()
             .withClaimData(
                 SampleClaimData.builder().withDefendant(
-                    SampleTheirDetails.builder()
-                        .withEmail(defendantEmail).individualDetails())
+                        SampleTheirDetails.builder()
+                            .withEmail(defendantEmail).individualDetails())
                     .build())
             .withDefendantId(null)
             .build();
@@ -358,6 +359,19 @@ public final class SampleClaim {
             .build();
     }
 
+    public static Claim getClaimWithFullAdmissionWithTheirDetails() {
+        return builder()
+            .withClaimData(SampleClaimData.builder()
+                .withDefendant(SampleTheirDetails.builder()
+                    .withName(DEFENDANT_NAME)
+                    .withRepresentative(SampleRepresentative.builder().build())
+                    .individualDetails())
+                .build())
+            .withRespondedAt(LocalDateTime.now())
+            .withDirectionsQuestionnaireDeadline(LocalDate.now())
+            .build();
+    }
+
     public static Claim getClaimWithFullDefenceAlreadyPaid() {
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
@@ -448,7 +462,7 @@ public final class SampleClaim {
     public static Claim getWithClaimantResponseRejectionForPartAdmissionAndMediation() {
         SampleClaimantResponse.ClaimantResponseRejection
             .builder();
-        return builder()
+        Claim claim = builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
             .withResponse(
                 SampleResponse
@@ -470,6 +484,8 @@ public final class SampleClaim {
                     .withHearingLocation(pilotHearingLocation).build())
                 .build())
             .build();
+        claim.setCaseName("App vs Def");
+        return claim;
     }
 
     public static Claim getWithClaimantResponseRejectionForPartAdmissionNoMediation() {
@@ -670,14 +686,14 @@ public final class SampleClaim {
 
     public static Claim getWithDefendantResponseReceiptDocument() {
         return builder().withResponse(
-            SampleResponse.validDefaults())
+                SampleResponse.validDefaults())
             .withDefendantResponseReceiptDocument(DOCUMENT_URI)
             .build();
     }
 
     public static Claim getWithCCJRequestDocument() {
         return builder().withCountyCourtJudgment(
-            SampleCountyCourtJudgment.builder().ccjType(DEFAULT).build())
+                SampleCountyCourtJudgment.builder().ccjType(DEFAULT).build())
             .withCountyCourtJudgmentRequestedAt(LocalDateTimeFactory.nowInLocalZone())
             .withCCJRequestDocument(DOCUMENT_URI)
             .build();
@@ -712,7 +728,7 @@ public final class SampleClaim {
 
     public static Claim getWithSettlementAgreementDocument() {
         return builder().withSettlement(
-            SampleSettlement.validDefaults())
+                SampleSettlement.validDefaults())
             .withSettlementAgreementDocument(DOCUMENT_URI)
             .build();
     }
@@ -1064,6 +1080,16 @@ public final class SampleClaim {
 
     public SampleClaim withTransferContent(TransferContent transferContent) {
         this.transferContent = transferContent;
+        return this;
+    }
+
+    public SampleClaim withLastEventTriggered(String lastEventTriggeredForHwfCase) {
+        this.lastEventTriggeredForHwfCase = lastEventTriggeredForHwfCase;
+        return this;
+    }
+
+    public SampleClaim withClaimDocumentCollection(ClaimDocumentCollection claimDocumentCollection) {
+        this.claimDocumentCollection = claimDocumentCollection;
         return this;
     }
 }

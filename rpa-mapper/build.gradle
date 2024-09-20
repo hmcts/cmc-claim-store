@@ -9,9 +9,10 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
   implementation group: 'javax.json', name: 'javax.json-api', version: '1.1.4'
   implementation group: 'org.glassfish', name: 'javax.json', version: '1.1.4'
+  implementation group: 'org.json', name: 'json', version: '20240303'
 
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
-  testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.20.2'
+  testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.25.3'
   testImplementation project(':domain-sample-data')
-  testImplementation group: 'junit', name: 'junit', version: '4.13.1'
+  testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.10.1'
 }
