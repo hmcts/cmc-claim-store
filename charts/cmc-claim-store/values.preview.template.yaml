@@ -10,6 +10,7 @@ java:
     CMC_DB_USERNAME: "{{ .Values.postgresql.auth.username}}"
     CMC_DB_PASSWORD: "{{ .Values.postgresql.auth.password}}"
     CMC_DB_CONNECTION_OPTIONS: '?sslmode=allow'
+    REFERENCE_DATABASE_MIGRATION: true
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-ccd-data-store-api
     OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/realms/root/realms/hmcts
     RPA_NOTIFICATIONS_LEGALSEALEDCLAIMRECIPIENT: civilmoneyclaims+rpa-legal-sealedclaim-issued@gmail.com

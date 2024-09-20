@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.config;
 
 import org.flywaydb.core.Flyway;
 import org.skife.jdbi.v2.DBI;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +20,10 @@ import javax.sql.DataSource;
 @Configuration
 @ConfigurationProperties
 public class CmcDBConfiguration {
+
+    @Value("${spring.flyway.enabled}")
+    private Boolean flywayEnabled;
+
     @Bean
     @Primary
     @ConfigurationProperties("spring.datasource")
@@ -39,7 +44,9 @@ public class CmcDBConfiguration {
     ) {
         TransactionAwareDataSourceProxy dataSourceProxy = new TransactionAwareDataSourceProxy(dataSource);
 
-        migrateFlyway(dataSourceProxy);
+        if (flywayEnabled) {
+            migrateFlyway(dataSourceProxy);
+        }
         return dataSourceProxy;
     }
 
