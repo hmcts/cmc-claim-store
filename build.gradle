@@ -175,7 +175,7 @@ allprojects {
         entry 'snakeyaml'
       }
 
-      dependencySet(group: 'ch.qos.logback', version: '1.2.13') {
+      dependencySet(group: 'ch.qos.logback', version: '1.5.11') {
         entry 'logback-core'
         entry 'logback-classic'
       }
