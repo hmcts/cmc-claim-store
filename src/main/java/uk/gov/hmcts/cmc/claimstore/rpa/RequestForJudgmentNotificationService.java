@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.rpa;
 
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.JSON_EXTENSION
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service("rpa/request-judgement-notification-service")
+@Slf4j
 public class RequestForJudgmentNotificationService {
 
     private final EmailService emailService;
@@ -71,7 +73,9 @@ public class RequestForJudgmentNotificationService {
     }
 
     private EmailAttachment createRequestForJudgementJsonAttachment(Claim claim) {
-        return EmailAttachment.json(jsonMapper.map(claim).toString().getBytes(),
+        String requestForJudgmentJsonString = jsonMapper.map(claim).toString();
+        log.info("Request for judgment JSON: {}", requestForJudgmentJsonString);
+        return EmailAttachment.json(requestForJudgmentJsonString.getBytes(),
             DocumentNameUtils.buildJsonRequestForJudgementFileBaseName(claim.getReferenceNumber())
                 + JSON_EXTENSION);
     }
