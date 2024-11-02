@@ -269,7 +269,7 @@ dependencies {
   implementation group: 'org.springframework.security', name: 'spring-security-config'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
-  implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.37.3'
+  implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.45'
   implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
 
   implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.14.0'
