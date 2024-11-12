@@ -238,7 +238,7 @@ dependencies {
   implementation group: 'org.elasticsearch', name: 'elasticsearch', version: versions.elasticSearch
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.2'
 
-  implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.0.1-RELEASE'
+  implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.2.1-RELEASE'
 
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '5.1.7'
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: '5.1.7'
