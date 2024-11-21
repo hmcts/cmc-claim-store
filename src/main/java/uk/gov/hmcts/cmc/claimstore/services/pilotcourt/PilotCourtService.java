@@ -71,8 +71,9 @@ public class PilotCourtService {
     }
 
     public Set<HearingCourt> getPilotHearingCourts(Pilot pilot, LocalDateTime claimCreated) {
+        logger.info("Pilot: {}, claimCreatedDate: {}", pilot, claimCreated);
 
-        return pilotCourts.values()
+        final Set<HearingCourt> courts = pilotCourts.values()
             .stream()
             .filter(p -> p.isActivePilotCourt(pilot, claimCreated))
             .map(PilotCourt::getId)
@@ -80,6 +81,9 @@ public class PilotCourtService {
             .filter(Optional::isPresent)
             .map(Optional::get)
             .collect(Collectors.toSet());
+
+        logger.info("Applicable pilot hearing courts:  {}", courts);
+        return courts;
     }
 
     public Optional<HearingCourt> getPilotHearingCourt(String pilotCourtId) {
@@ -146,6 +150,7 @@ public class PilotCourtService {
             }
         }
 
+        logger.info("All pilot courts: {}", pilotCourts.values());
         return pilotCourts;
     }
 

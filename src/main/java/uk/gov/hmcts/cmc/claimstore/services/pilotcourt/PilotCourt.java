@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.pilotcourt;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 
 import java.time.LocalDateTime;
@@ -12,6 +13,7 @@ import java.util.Optional;
 @Getter
 @Setter
 @AllArgsConstructor
+@ToString
 public class PilotCourt {
     private String id;
     private String postcode;
