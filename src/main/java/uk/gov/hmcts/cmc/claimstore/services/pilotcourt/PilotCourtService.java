@@ -192,6 +192,10 @@ public class PilotCourtService {
     private Optional<HearingCourt> getCourt(String postcode) {
         List<Court> courtList = courtFinderService.getCourtDetailsListFromPostcode(postcode);
 
+        if ("LL552DF".equals(postcode)) {
+            logger.info("Court list for LL552DF: {}", courtList);
+        }
+
         return courtList
             .stream()
             .findFirst()
