@@ -9,5 +9,5 @@ dependencies {
   implementation project(':domain-model')
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
 
-  implementation group: 'com.google.guava', name: 'guava', version: '33.1.0-jre'
+  implementation group: 'com.google.guava', name: 'guava', version: '33.4.0-jre'
 }
