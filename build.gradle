@@ -273,7 +273,7 @@ dependencies {
   implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
 
   implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.14.0'
-  implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.8'
+  implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.13.0'
 
   implementation group: 'org.jdbi', name: 'jdbi', version: '2.78'
 
