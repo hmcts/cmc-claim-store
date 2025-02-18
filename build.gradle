@@ -241,7 +241,7 @@ dependencies {
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.0.1-RELEASE'
 
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '5.1.7'
-  implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: '5.1.7'
+  implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: '6.1.8'
   implementation group: 'com.microsoft.azure', name: 'applicationinsights-web', version: '2.6.4'
 
   implementation group: 'com.github.hmcts', name: 'java-logging', version: '6.1.4'
