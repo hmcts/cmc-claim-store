@@ -329,7 +329,7 @@ dependencies {
   contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pact_version
   contractTestRuntimeOnly group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
   contractTestRuntimeOnly group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pact_version
-  contractTestImplementation group: 'org.modelmapper', name: 'modelmapper', version: '2.3.7'
+  contractTestImplementation group: 'org.modelmapper', name: 'modelmapper', version: '3.2.2'
 
   contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: versions.pact_version
   contractTestImplementation group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pact_version
