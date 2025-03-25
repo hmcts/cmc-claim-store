@@ -160,7 +160,7 @@ allprojects {
     dependencies {
       // checkstyle needs a certain version and so does spring fox swagger, so can't use latest
       // fun times...
-      dependency group: 'com.google.guava', name: 'guava', version: '33.1.0-jre'
+      dependency group: 'com.google.guava', name: 'guava', version: '33.4.6-jre'
 
       dependency group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
       dependency group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.jackson
