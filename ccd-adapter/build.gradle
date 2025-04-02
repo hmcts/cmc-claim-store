@@ -8,8 +8,8 @@ dependencies {
   implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
   implementation group: 'com.google.guava', name: 'guava', version: '33.1.0-jre'
 
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.26'
-  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.26'
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.38'
+  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.38'
 
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
   testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.10.1'

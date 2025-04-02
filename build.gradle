@@ -290,8 +290,8 @@ dependencies {
   implementation group: 'javax.json', name: 'javax.json-api', version: '1.1.4'
   implementation group: 'javax.inject', name: 'javax.inject', version: '1'
 
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.26'
-  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.26'
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.38'
+  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.38'
 
   testImplementation project(':domain-sample-data')
   testImplementation project(path: ":ccd-adapter", configuration: 'testArtifacts')
@@ -350,7 +350,7 @@ configurations.all {
 
 dependencies {
   testImplementation project(path: ':domain-model')
-  implementation 'org.projectlombok:lombok:1.18.20'
+  implementation 'org.projectlombok:lombok:1.18.38'
   integrationTestImplementation(sourceSets.test.output)
   integrationTestImplementation(sourceSets.main.output)
   integrationTestImplementation project(':email-client')
