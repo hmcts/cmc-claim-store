@@ -35,8 +35,8 @@ def versions = [
   springBoot        : springBootVersion,
   restAssuredVersion: '4.2.0',
   jackson           : '2.17.0',
-  junit             : '5.10.1',
-  junitPlatform     : '1.10.2',
+  junit             : '5.12.2',
+  junitPlatform     : '1.12.2',
   pact_version    : '4.1.7',
   serviceAuthVersion : '4.0.3',
   idamJavaClient : '2.0.1',
@@ -334,10 +334,10 @@ dependencies {
   contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: versions.pact_version
   contractTestImplementation group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pact_version
   contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pact_version
-  contractTestImplementation("org.junit.jupiter:junit-jupiter-api:5.7.0")
-  contractTestRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.0")
-  contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.7.0')
-  contractTestRuntimeOnly "org.junit.platform:junit-platform-commons:1.7.0"
+  contractTestImplementation("org.junit.jupiter:junit-jupiter-api:5.12.2")
+  contractTestRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.12.2")
+  contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.12.2')
+  contractTestRuntimeOnly "org.junit.platform:junit-platform-commons:1.12.2"
   contractTestImplementation group: 'com.github.hmcts', name: 'idam-java-client', version: versions.idamJavaClient
   contractTestImplementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: versions.serviceAuthVersion
   contractTestImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
