@@ -231,7 +231,7 @@ dependencies {
 
   implementation group: 'com.mitchellbosecke', name: 'pebble', version: '2.4.0'
 
-  implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
+  implementation group: 'commons-io', name: 'commons-io', version: '2.19.0'
 
   implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.15'
 
