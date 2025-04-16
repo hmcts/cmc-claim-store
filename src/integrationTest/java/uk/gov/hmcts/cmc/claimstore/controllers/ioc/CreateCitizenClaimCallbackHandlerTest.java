@@ -52,7 +52,8 @@ import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
     properties = {
         "core_case_data.api.url=http://core-case-data-api",
         "fees.api.url=http://fees-api",
-        "payments.api.url=http://payments-api"
+        "payments.api.url=http://payments-api",
+        "feature_toggles.create_claim_enabled=true"
     }
 )
 public class CreateCitizenClaimCallbackHandlerTest extends BaseMockSpringTest {

@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legalrep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
@@ -15,7 +16,6 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
@@ -36,17 +36,17 @@ public class CreateLegalRepClaimCallbackHandler extends CallbackHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final CaseDetailsConverter caseDetailsConverter;
     private final CaseMapper caseMapper;
-    private final LaunchDarklyClient launchDarklyClient;
+    private final boolean featureCreateClaimEnabled;
 
     @Autowired
     public CreateLegalRepClaimCallbackHandler(
         CaseDetailsConverter caseDetailsConverter,
         CaseMapper caseMapper,
-        LaunchDarklyClient launchDarklyClient
+        @Value("${feature_toggles.create_claim_enabled:false}") boolean featureCreateClaimEnabled
     ) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.caseMapper = caseMapper;
-        this.launchDarklyClient = launchDarklyClient;
+        this.featureCreateClaimEnabled = featureCreateClaimEnabled;
     }
 
     @Override
@@ -66,8 +66,8 @@ public class CreateLegalRepClaimCallbackHandler extends CallbackHandler {
 
     @LogExecutionTime
     private CallbackResponse createLegalRepClaim(CallbackParams callbackParams) {
-        if (!launchDarklyClient.isFeatureEnabled("ocmc-create-claim", LaunchDarklyClient.CLAIM_STORE_USER)) {
-            throw new ForbiddenActionException("Create claim is not Allowed.");
+        if (!featureCreateClaimEnabled) {
+            throw new ForbiddenActionException("Create claim is not permitted.");
         }
         Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
         logger.info("Creating legal rep case for callback of type {}, claim with external id {}",

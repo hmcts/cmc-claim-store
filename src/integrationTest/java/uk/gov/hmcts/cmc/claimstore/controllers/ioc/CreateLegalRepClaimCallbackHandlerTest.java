@@ -28,7 +28,8 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
 
 @TestPropertySource(
     properties = {
-        "core_case_data.api.url=http://core-case-data-api"
+        "core_case_data.api.url=http://core-case-data-api",
+        "feature_toggles.create_claim_enabled=true"
     }
 )
 public class CreateLegalRepClaimCallbackHandlerTest extends BaseMockSpringTest {

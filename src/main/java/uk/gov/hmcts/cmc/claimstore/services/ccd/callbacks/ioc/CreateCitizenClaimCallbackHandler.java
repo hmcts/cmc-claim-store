@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
@@ -25,7 +26,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
-import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
@@ -68,7 +68,7 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
     private final PaymentsService paymentsService;
     private final EventProducer eventProducer;
     private final UserService userService;
-    private LaunchDarklyClient launchDarklyClient;
+    private final boolean featureCreateClaimEnabled;
 
     @Autowired
     public CreateCitizenClaimCallbackHandler(
@@ -80,7 +80,7 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
         PaymentsService paymentsService,
         EventProducer eventProducer,
         UserService userService,
-        LaunchDarklyClient launchDarklyClient
+        @Value("${feature_toggles.create_claim_enabled:false}") boolean featureCreateClaimEnabled
     ) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.issueDateCalculator = issueDateCalculator;
@@ -90,7 +90,7 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
         this.paymentsService = paymentsService;
         this.eventProducer = eventProducer;
         this.userService = userService;
-        this.launchDarklyClient = launchDarklyClient;
+        this.featureCreateClaimEnabled = featureCreateClaimEnabled;
     }
 
     @Override
@@ -109,8 +109,8 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
     }
 
     private CallbackResponse createCitizenClaim(CallbackParams callbackParams) {
-        if (!launchDarklyClient.isFeatureEnabled("ocmc-create-claim", LaunchDarklyClient.CLAIM_STORE_USER)) {
-            throw new ForbiddenActionException("Create claim is not Allowed.");
+        if (!featureCreateClaimEnabled) {
+            throw new ForbiddenActionException("Create claim is not permitted.");
         }
         Claim updatedClaim = null;
         Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());

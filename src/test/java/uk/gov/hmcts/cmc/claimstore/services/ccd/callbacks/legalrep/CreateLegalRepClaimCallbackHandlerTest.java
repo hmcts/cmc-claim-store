@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legalrep;
 
 import com.google.common.collect.ImmutableMap;
-import com.launchdarkly.sdk.LDUser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,7 +10,6 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
-import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -22,7 +20,6 @@ import java.util.Collections;
 import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_LEGAL_REP_CLAIM;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.SOLICITOR;
@@ -40,8 +37,6 @@ public class CreateLegalRepClaimCallbackHandlerTest {
     private CaseDetailsConverter caseDetailsConverter;
     @Mock
     private CaseMapper caseMapper;
-    @Mock
-    private LaunchDarklyClient launchDarklyClient;
     private CallbackRequest callbackRequest;
     private CreateLegalRepClaimCallbackHandler createLegalRepClaimCallbackHandler;
 
@@ -52,7 +47,7 @@ public class CreateLegalRepClaimCallbackHandlerTest {
         createLegalRepClaimCallbackHandler = new CreateLegalRepClaimCallbackHandler(
             caseDetailsConverter,
             caseMapper,
-            launchDarklyClient
+            true
         );
 
         callbackRequest = CallbackRequest
@@ -62,7 +57,6 @@ public class CreateLegalRepClaimCallbackHandlerTest {
             .build();
 
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(getLegalDataWithReps());
-        when(launchDarklyClient.isFeatureEnabled(eq("ocmc-create-claim"), any(LDUser.class))).thenReturn(true);
     }
 
     @Test
