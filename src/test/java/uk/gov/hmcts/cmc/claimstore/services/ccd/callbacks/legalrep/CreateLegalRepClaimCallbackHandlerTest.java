@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -19,6 +20,7 @@ import java.util.Collections;
 
 import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_LEGAL_REP_CLAIM;
@@ -79,5 +81,20 @@ public class CreateLegalRepClaimCallbackHandlerTest {
     public void shouldHaveCorrectLegalRepSupportingRole() {
         assertThat(createLegalRepClaimCallbackHandler.getSupportedRoles().size()).isEqualTo(1);
         assertThat(createLegalRepClaimCallbackHandler.getSupportedRoles()).contains(SOLICITOR);
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenFeatureCreateClaimIsDisabled() {
+        CallbackParams callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_SUBMIT)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
+        createLegalRepClaimCallbackHandler = new CreateLegalRepClaimCallbackHandler(
+            caseDetailsConverter,
+            caseMapper,
+            false
+        );
+        assertThrows(ForbiddenActionException.class, () -> createLegalRepClaimCallbackHandler.handle(callbackParams));
     }
 }

@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
@@ -37,6 +38,7 @@ import static java.math.BigDecimal.TEN;
 import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -442,5 +444,26 @@ public class CreateCitizenClaimCallbackHandlerTest {
 
         Claim toBeSaved = claimArgumentCaptor.getValue();
         assertThat(toBeSaved.getClaimData()).isEqualTo(claim.getClaimData());
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenFeatureCreateClaimIsDisabled() {
+        callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_SUBMIT)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
+        CreateCitizenClaimCallbackHandler handler = new CreateCitizenClaimCallbackHandler(
+            caseDetailsConverter,
+            issueDateCalculator,
+            referenceNumberRepository,
+            responseDeadlineCalculator,
+            caseMapper,
+            paymentsService,
+            eventProducer,
+            userService,
+            false
+        );
+        assertThrows(ForbiddenActionException.class, () -> handler.handle(callbackParams));
     }
 }
