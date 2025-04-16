@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
@@ -34,14 +36,17 @@ public class CreateLegalRepClaimCallbackHandler extends CallbackHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final CaseDetailsConverter caseDetailsConverter;
     private final CaseMapper caseMapper;
+    private final LaunchDarklyClient launchDarklyClient;
 
     @Autowired
     public CreateLegalRepClaimCallbackHandler(
         CaseDetailsConverter caseDetailsConverter,
-        CaseMapper caseMapper
+        CaseMapper caseMapper,
+        LaunchDarklyClient launchDarklyClient
     ) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.caseMapper = caseMapper;
+        this.launchDarklyClient = launchDarklyClient;
     }
 
     @Override
@@ -61,6 +66,9 @@ public class CreateLegalRepClaimCallbackHandler extends CallbackHandler {
 
     @LogExecutionTime
     private CallbackResponse createLegalRepClaim(CallbackParams callbackParams) {
+        if (!launchDarklyClient.isFeatureEnabled("ocmc-create-claim", LaunchDarklyClient.CLAIM_STORE_USER)) {
+            throw new ForbiddenActionException("Create claim is not Allowed.");
+        }
         Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
         logger.info("Creating legal rep case for callback of type {}, claim with external id {}",
             callbackParams.getType(),

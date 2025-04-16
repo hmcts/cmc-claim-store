@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc;
 
 import com.google.common.collect.ImmutableMap;
+import com.launchdarkly.sdk.LDUser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleHwfClaim;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -89,6 +91,9 @@ public class CreateCitizenClaimCallbackHandlerTest {
     @Mock
     private UserService userService;
 
+    @Mock
+    private LaunchDarklyClient launchDarklyClient;
+
     @Captor
     private ArgumentCaptor<Claim> claimArgumentCaptor;
 
@@ -116,7 +121,8 @@ public class CreateCitizenClaimCallbackHandlerTest {
             caseMapper,
             paymentsService,
             eventProducer,
-            userService
+            userService,
+            launchDarklyClient
         );
 
         callbackRequest = CallbackRequest.builder()
@@ -127,6 +133,7 @@ public class CreateCitizenClaimCallbackHandlerTest {
         when(issueDateCalculator.calculateIssueDay(any())).thenReturn(ISSUE_DATE);
         when(responseDeadlineCalculator.calculateResponseDeadline(ISSUE_DATE)).thenReturn(RESPONSE_DEADLINE);
         when(referenceNumberRepository.getReferenceNumberForCitizen()).thenReturn(REFERENCE_NO);
+        when(launchDarklyClient.isFeatureEnabled(eq("ocmc-create-claim"), any(LDUser.class))).thenReturn(true);
     }
 
     @Test

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
+import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
@@ -66,6 +68,7 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
     private final PaymentsService paymentsService;
     private final EventProducer eventProducer;
     private final UserService userService;
+    private LaunchDarklyClient launchDarklyClient;
 
     @Autowired
     public CreateCitizenClaimCallbackHandler(
@@ -76,7 +79,8 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
         CaseMapper caseMapper,
         PaymentsService paymentsService,
         EventProducer eventProducer,
-        UserService userService
+        UserService userService,
+        LaunchDarklyClient launchDarklyClient
     ) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.issueDateCalculator = issueDateCalculator;
@@ -86,6 +90,7 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
         this.paymentsService = paymentsService;
         this.eventProducer = eventProducer;
         this.userService = userService;
+        this.launchDarklyClient = launchDarklyClient;
     }
 
     @Override
@@ -104,6 +109,9 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
     }
 
     private CallbackResponse createCitizenClaim(CallbackParams callbackParams) {
+        if (!launchDarklyClient.isFeatureEnabled("ocmc-create-claim", LaunchDarklyClient.CLAIM_STORE_USER)) {
+            throw new ForbiddenActionException("Create claim is not Allowed.");
+        }
         Claim updatedClaim = null;
         Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
         logger.info("Created citizen case for callback of type {}, claim with external id {}",
