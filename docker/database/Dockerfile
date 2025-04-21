@@ -1,4 +1,4 @@
-FROM postgres:9.6-alpine
+FROM postgres:17.4-alpine
 
 # Add a new user "user_pantheon_ac" with user id 8877
 RUN useradd -u 8877 civil_user
