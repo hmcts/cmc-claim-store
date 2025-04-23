@@ -158,7 +158,8 @@ public class ClaimServiceTest {
             new PaidInFullRule(),
             new ClaimAuthorisationRule(userService),
             new ReviewOrderRule(),
-            launchDarklyClient);
+            launchDarklyClient,
+            true);
     }
 
     @Test
@@ -241,7 +242,8 @@ public class ClaimServiceTest {
             new PaidInFullRule(),
             new ClaimAuthorisationRule(userService),
             new ReviewOrderRule(),
-            launchDarklyClient);
+            launchDarklyClient,
+            true);
 
         ClaimData claimData = SampleClaimData.validDefaults();
 

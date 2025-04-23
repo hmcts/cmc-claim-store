@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.filters.DocumentsFilter;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
@@ -85,6 +86,7 @@ public class ClaimService {
     private final ClaimAuthorisationRule claimAuthorisationRule;
     private final ReviewOrderRule reviewOrderRule;
     private final LaunchDarklyClient launchDarklyClient;
+    private final boolean featureCreateClaimEnabled;
 
     @Value("${feature_toggles.ctsc_enabled:false}")
     private boolean ctscEnabled;
@@ -102,7 +104,8 @@ public class ClaimService {
         PaidInFullRule paidInFullRule,
         ClaimAuthorisationRule claimAuthorisationRule,
         ReviewOrderRule reviewOrderRule,
-        LaunchDarklyClient launchDarklyClient) {
+        LaunchDarklyClient launchDarklyClient,
+        @Value("${feature_toggles.create_claim_enabled:false}") boolean featureCreateClaimEnabled) {
         this.userService = userService;
         this.issueDateCalculator = issueDateCalculator;
         this.responseDeadlineCalculator = responseDeadlineCalculator;
@@ -114,6 +117,7 @@ public class ClaimService {
         this.claimAuthorisationRule = claimAuthorisationRule;
         this.reviewOrderRule = reviewOrderRule;
         this.launchDarklyClient = launchDarklyClient;
+        this.featureCreateClaimEnabled = featureCreateClaimEnabled;
     }
 
     public List<Claim> getClaimBySubmitterId(String submitterId, String authorisation, Integer pageNumber) {
@@ -276,6 +280,9 @@ public class ClaimService {
         String authorisation,
         List<String> features
     ) {
+        if (!featureCreateClaimEnabled) {
+            throw new ForbiddenActionException("Create claim is not permitted.");
+        }
         String externalId = claimData.getExternalId().toString();
         User user = userService.getUser(authorisation);
         caseRepository.getClaimByExternalId(externalId, user)

@@ -99,6 +99,7 @@ public class GetClaimsContractConfig {
             paidInFullRule,
             claimAuthorisationRule(),
             reviewOrderRule,
-            launchDarklyClient);
+            launchDarklyClient,
+            true);
     }
 }
