@@ -2,6 +2,8 @@ package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.apache.http.HttpException;
 import org.apache.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -75,6 +77,7 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 @Component
 public class ClaimService {
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final IssueDateCalculator issueDateCalculator;
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
     private final UserService userService;
@@ -264,6 +267,7 @@ public class ClaimService {
         ClaimData claimData,
         List<String> features
     ) {
+        logger.info("Create claim feature is: {}", featureCreateClaimEnabled ? "enabled" : "disabled");
         if (!featureCreateClaimEnabled) {
             throw new ForbiddenActionException("Create claim is not permitted.");
         }
@@ -283,6 +287,7 @@ public class ClaimService {
         String authorisation,
         List<String> features
     ) {
+        logger.info("Create claim feature is: {}", featureCreateClaimEnabled ? "enabled" : "disabled");
         if (!featureCreateClaimEnabled) {
             throw new ForbiddenActionException("Create claim is not permitted.");
         }
@@ -349,6 +354,8 @@ public class ClaimService {
         ClaimData claimData,
         String authorisation
     ) {
+        logger.info("Create claim feature is: {}", featureCreateClaimEnabled ? "enabled" : "disabled");
+
         if (!featureCreateClaimEnabled) {
             throw new ForbiddenActionException("Create claim is not permitted.");
         }

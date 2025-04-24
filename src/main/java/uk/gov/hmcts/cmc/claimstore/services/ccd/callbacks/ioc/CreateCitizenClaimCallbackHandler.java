@@ -109,6 +109,7 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
     }
 
     private CallbackResponse createCitizenClaim(CallbackParams callbackParams) {
+        logger.info("Create claim feature is: {}", featureCreateClaimEnabled ? "enabled" : "disabled");
         if (!featureCreateClaimEnabled) {
             throw new ForbiddenActionException("Create claim is not permitted.");
         }
