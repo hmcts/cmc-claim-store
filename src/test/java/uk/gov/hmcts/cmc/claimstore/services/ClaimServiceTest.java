@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.apache.http.HttpException;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -258,6 +259,34 @@ public class ClaimServiceTest {
         verify(userService, never()).generatePin(eq(outputClaimData.getDefendant().getName()), eq(AUTHORISATION));
         verify(caseRepository, once()).saveClaim(any(User.class), any(Claim.class));
         verify(eventProducer, once()).createClaimCreatedEvent(eq(createdClaim), anyString(), eq(AUTHORISATION));
+    }
+
+    @Test
+    public void saveClaimShouldThrowExceptionWhenClaimCreateFeatureDisabled() {
+        //given
+        when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(ISSUE_DATE);
+        when(responseDeadlineCalculator.calculateResponseDeadline(eq(ISSUE_DATE))).thenReturn(RESPONSE_DEADLINE);
+        when(caseRepository.saveClaim(eq(USER), any())).thenReturn(claim);
+
+        claimService = new ClaimService(
+            caseRepository,
+            userService,
+            issueDateCalculator,
+            responseDeadlineCalculator,
+            new MoreTimeRequestRule(new ClaimDeadlineService()),
+            eventProducer,
+            appInsights,
+            new PaidInFullRule(),
+            new ClaimAuthorisationRule(userService),
+            new ReviewOrderRule(),
+            launchDarklyClient,
+            false);
+
+        ClaimData claimData = SampleClaimData.validDefaults();
+
+        Assert.assertThrows(ForbiddenActionException.class, () -> claimService
+            .saveClaim(USER_ID, claimData, AUTHORISATION, singletonList(ADMISSIONS.getValue())));
+
     }
 
     @Test
