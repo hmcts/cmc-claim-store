@@ -15,7 +15,8 @@ import uk.gov.hmcts.cmc.email.EmailService;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@TestPropertySource("/environment.properties")
+@TestPropertySource(locations = "/environment.properties",
+properties = "feature_toggles.create_claim_enabled=true")
 @ActiveProfiles({
     "aat",
     "mocked-database-tests"
