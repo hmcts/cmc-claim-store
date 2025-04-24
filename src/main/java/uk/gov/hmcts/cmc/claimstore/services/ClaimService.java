@@ -264,6 +264,9 @@ public class ClaimService {
         ClaimData claimData,
         List<String> features
     ) {
+        if (!featureCreateClaimEnabled) {
+            throw new ForbiddenActionException("Create claim is not permitted.");
+        }
         User user = userService.getUser(authorisation);
         Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), user)
             .toBuilder()
@@ -346,6 +349,9 @@ public class ClaimService {
         ClaimData claimData,
         String authorisation
     ) {
+        if (!featureCreateClaimEnabled) {
+            throw new ForbiddenActionException("Create claim is not permitted.");
+        }
         String externalId = claimData.getExternalId().toString();
         User user = userService.getUser(authorisation);
 
