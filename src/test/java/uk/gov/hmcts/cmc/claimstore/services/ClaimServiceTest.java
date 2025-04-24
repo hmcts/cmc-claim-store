@@ -263,11 +263,6 @@ public class ClaimServiceTest {
 
     @Test
     public void saveClaimShouldThrowExceptionWhenClaimCreateFeatureDisabled() {
-        //given
-        when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(ISSUE_DATE);
-        when(responseDeadlineCalculator.calculateResponseDeadline(eq(ISSUE_DATE))).thenReturn(RESPONSE_DEADLINE);
-        when(caseRepository.saveClaim(eq(USER), any())).thenReturn(claim);
-
         claimService = new ClaimService(
             caseRepository,
             userService,
