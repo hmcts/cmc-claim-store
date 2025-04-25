@@ -15,24 +15,19 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
-import java.time.LocalDate;
 import java.util.Collections;
 
-import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_LEGAL_REP_CLAIM;
-import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.SOLICITOR;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.getLegalDataWithReps;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreateClaimCallbackHandlerTest {
 
-    public static final String REFERENCE_NO = "000LR001";
-    public static final LocalDate ISSUE_DATE = now();
-    public static final LocalDate RESPONSE_DEADLINE = ISSUE_DATE.plusDays(14);
     private static final String BEARER_TOKEN = "Bearer let me in";
 
     @Mock
@@ -80,7 +75,7 @@ public class CreateClaimCallbackHandlerTest {
     @Test
     public void shouldHaveCorrectLegalRepSupportingRole() {
         assertThat(createClaimCallbackHandler.getSupportedRoles().size()).isEqualTo(1);
-        assertThat(createClaimCallbackHandler.getSupportedRoles()).contains(SOLICITOR);
+        assertThat(createClaimCallbackHandler.getSupportedRoles()).contains(CASEWORKER);
     }
 
     @Test
