@@ -36,6 +36,7 @@ public class CallbackHandlerFactory {
     public CallbackResponse dispatch(CallbackParams callbackParams) {
         String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
         String eventId = callbackParams.getRequest().getEventId();
+        logger.info("Found: {} eventHandler for EventId: {}", eventHandlers.containsKey(eventId), eventId);
         return Optional.ofNullable(eventHandlers.get(eventId))
             .filter(h -> hasSupportedRoles(h, authorisation, eventId))
             .map(h -> h.handle(callbackParams))
