@@ -307,7 +307,7 @@ feature_toggles:
   bulk_print_transfer_enabled: false
   staff_emails_enabled_for_legal_rep: true
   breathing_space: true
-  create_claim_enabled: "${FEATURE_CREATE_CLAIM:false}"
+  create_claim_enabled: "${FEATURE_CREATE_CLAIM:true}"
 
 
 feign:

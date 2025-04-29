@@ -19,18 +19,22 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CASE;
-import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.*;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.JUDGE;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.LEGAL_ADVISOR;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.SOLICITOR;
 
 @Service
 public class CreateClaimCallbackHandler extends CallbackHandler {
 
-    private static final List<CaseEvent> EVENTS = Arrays.asList(CREATE_CASE);
-    private static final List<Role> ROLES = Arrays.asList(CITIZEN, SOLICITOR, CASEWORKER, LEGAL_ADVISOR, JUDGE);
+    private static final List<CaseEvent> EVENTS = Collections.singletonList(CREATE_CASE);
+    private static final List<Role> ROLES = List.of(CITIZEN, SOLICITOR, CASEWORKER, LEGAL_ADVISOR, JUDGE);
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final CaseDetailsConverter caseDetailsConverter;
@@ -70,7 +74,7 @@ public class CreateClaimCallbackHandler extends CallbackHandler {
             throw new ForbiddenActionException("Create claim is not permitted.");
         }
         Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
-        logger.info("Creating case worker case for callback of type {}, claim with external id {}",
+        logger.info("Creating case for callback of type {}, claim with external id {}",
             callbackParams.getType(),
             claim.getExternalId());
 
