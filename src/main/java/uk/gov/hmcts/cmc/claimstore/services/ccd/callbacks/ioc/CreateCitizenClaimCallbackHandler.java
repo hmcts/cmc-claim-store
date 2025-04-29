@@ -80,7 +80,7 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
         PaymentsService paymentsService,
         EventProducer eventProducer,
         UserService userService,
-        @Value("${feature_toggles.create_claim_enabled:false}") boolean featureCreateClaimEnabled
+        @Value("${feature_toggles.create_claim_enabled:true}") boolean featureCreateClaimEnabled
     ) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.issueDateCalculator = issueDateCalculator;

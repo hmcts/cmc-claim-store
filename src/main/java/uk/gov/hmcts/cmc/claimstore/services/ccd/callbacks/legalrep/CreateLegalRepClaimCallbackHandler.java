@@ -42,7 +42,7 @@ public class CreateLegalRepClaimCallbackHandler extends CallbackHandler {
     public CreateLegalRepClaimCallbackHandler(
         CaseDetailsConverter caseDetailsConverter,
         CaseMapper caseMapper,
-        @Value("${feature_toggles.create_claim_enabled:false}") boolean featureCreateClaimEnabled
+        @Value("${feature_toggles.create_claim_enabled:true}") boolean featureCreateClaimEnabled
     ) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.caseMapper = caseMapper;

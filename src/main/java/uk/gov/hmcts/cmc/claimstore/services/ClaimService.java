@@ -108,7 +108,7 @@ public class ClaimService {
         ClaimAuthorisationRule claimAuthorisationRule,
         ReviewOrderRule reviewOrderRule,
         LaunchDarklyClient launchDarklyClient,
-        @Value("${feature_toggles.create_claim_enabled:false}") boolean featureCreateClaimEnabled) {
+        @Value("${feature_toggles.create_claim_enabled:true}") boolean featureCreateClaimEnabled) {
         this.userService = userService;
         this.issueDateCalculator = issueDateCalculator;
         this.responseDeadlineCalculator = responseDeadlineCalculator;
