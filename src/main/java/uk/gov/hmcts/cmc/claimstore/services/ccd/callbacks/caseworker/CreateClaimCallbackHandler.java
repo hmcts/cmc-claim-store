@@ -25,13 +25,13 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CASE;
-import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.SOLICITOR;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.*;
 
 @Service
 public class CreateClaimCallbackHandler extends CallbackHandler {
 
     private static final List<CaseEvent> EVENTS = Arrays.asList(CREATE_CASE);
-    private static final List<Role> ROLES = Collections.singletonList(SOLICITOR);
+    private static final List<Role> ROLES = Arrays.asList(CITIZEN, SOLICITOR, CASEWORKER, LEGAL_ADVISOR, JUDGE);
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final CaseDetailsConverter caseDetailsConverter;
