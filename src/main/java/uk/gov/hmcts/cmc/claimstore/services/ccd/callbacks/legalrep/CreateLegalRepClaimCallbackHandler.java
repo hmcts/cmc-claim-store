@@ -68,7 +68,8 @@ public class CreateLegalRepClaimCallbackHandler extends CallbackHandler {
     private CallbackResponse createLegalRepClaim(CallbackParams callbackParams) {
         logger.info("Create claim feature is: {}", featureCreateClaimEnabled ? "enabled" : "disabled");
         if (!featureCreateClaimEnabled) {
-            throw new ClaimCreationDisabledException("Create claim is not permitted.");
+            return AboutToStartOrSubmitCallbackResponse.builder().errors(List.of("MoneyClaims jurisdiction & case type are for citizens only,and should not be chosen or used by legal reps."
+                + "Citizens, when issuing a claim will use a different platform.")).build();
         }
         Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
         logger.info("Creating legal rep case for callback of type {}, claim with external id {}",
