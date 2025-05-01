@@ -138,10 +138,7 @@ public class ResourceExceptionHandler {
         return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(value = {
-        ClaimCreationDisabledException.class,
-        HttpMediaTypeNotSupportedException.class,
-        ServletRequestBindingException.class})
+    @ExceptionHandler(value = ClaimCreationDisabledException.class)
     public ResponseEntity<Object> claimCreationDisabled(Exception exception) {
         logger.trace(exception);
         return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.METHOD_NOT_ALLOWED);
