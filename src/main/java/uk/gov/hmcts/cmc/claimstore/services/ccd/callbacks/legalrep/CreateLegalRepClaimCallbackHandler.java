@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimCreationDisabledException;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
@@ -68,7 +67,8 @@ public class CreateLegalRepClaimCallbackHandler extends CallbackHandler {
     private CallbackResponse createLegalRepClaim(CallbackParams callbackParams) {
         logger.info("Create claim feature is: {}", featureCreateClaimEnabled ? "enabled" : "disabled");
         if (!featureCreateClaimEnabled) {
-            return AboutToStartOrSubmitCallbackResponse.builder().errors(List.of("MoneyClaims jurisdiction & case type are for citizens only,and should not be chosen or used by legal reps."
+            return AboutToStartOrSubmitCallbackResponse.builder()
+                .errors(List.of("MoneyClaims jurisdiction & case type are for citizens only,and should not be chosen or used by legal reps."
                 + "Citizens, when issuing a claim will use a different platform.")).build();
         }
         Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
