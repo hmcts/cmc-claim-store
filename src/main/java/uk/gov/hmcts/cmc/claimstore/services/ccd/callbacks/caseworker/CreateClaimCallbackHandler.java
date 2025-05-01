@@ -71,7 +71,8 @@ public class CreateClaimCallbackHandler extends CallbackHandler {
     private CallbackResponse createClaim(CallbackParams callbackParams) {
         logger.info("Create claim feature is: {}", featureCreateClaimEnabled ? "enabled" : "disabled");
         if (!featureCreateClaimEnabled) {
-            throw new ClaimCreationDisabledException("MoneyClaims jurisdiction & case type are for citizens only,and should not be chosen or used by legal reps.  Citizens, when issuing a claim will use a different platform.");
+            throw new ClaimCreationDisabledException("MoneyClaims jurisdiction & case type are for citizens only,and should not be chosen or used by legal reps."
+                + "Citizens, when issuing a claim will use a different platform.");
         }
         Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
         logger.info("Creating case for callback of type {}, claim with external id {}",
