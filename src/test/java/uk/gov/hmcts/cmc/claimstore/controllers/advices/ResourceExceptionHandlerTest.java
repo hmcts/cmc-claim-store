@@ -345,6 +345,17 @@ public class ResourceExceptionHandlerTest {
         );
     }
 
+    @Test
+    public void testMethodNotAllowed() {
+        testTemplate(
+            "MoneyClaims jurisdiction & case type are for citizens only,and should not be chosen or used by legal reps.  Citizens, when issuing a claim will use a different platform.",
+            CallbackException::new,
+            handler::claimCreationDisabled,
+            HttpStatus.METHOD_NOT_ALLOWED,
+            AppInsightsExceptionLogger::trace
+        );
+    }
+
     private <E extends Exception> void testTemplate(
         String message,
         Function<String, E> exceptionBuilder,

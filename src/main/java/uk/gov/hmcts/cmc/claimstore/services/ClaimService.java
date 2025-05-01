@@ -11,8 +11,8 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimCreationDisabledException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.filters.DocumentsFilter;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
@@ -269,7 +269,7 @@ public class ClaimService {
     ) {
         logger.info("Create claim feature is: {}", featureCreateClaimEnabled ? "enabled" : "disabled");
         if (!featureCreateClaimEnabled) {
-            throw new ForbiddenActionException("Create claim is not permitted.");
+            throw new ClaimCreationDisabledException("Create claim is not permitted.");
         }
         User user = userService.getUser(authorisation);
         Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), user)
@@ -289,7 +289,7 @@ public class ClaimService {
     ) {
         logger.info("Create claim feature is: {}", featureCreateClaimEnabled ? "enabled" : "disabled");
         if (!featureCreateClaimEnabled) {
-            throw new ForbiddenActionException("Create claim is not permitted.");
+            throw new ClaimCreationDisabledException("Create claim is not permitted.");
         }
         String externalId = claimData.getExternalId().toString();
         User user = userService.getUser(authorisation);
@@ -357,7 +357,7 @@ public class ClaimService {
         logger.info("Create claim feature is: {}", featureCreateClaimEnabled ? "enabled" : "disabled");
 
         if (!featureCreateClaimEnabled) {
-            throw new ForbiddenActionException("Create claim is not permitted.");
+            throw new ClaimCreationDisabledException("Create claim is not permitted.");
         }
         String externalId = claimData.getExternalId().toString();
         User user = userService.getUser(authorisation);

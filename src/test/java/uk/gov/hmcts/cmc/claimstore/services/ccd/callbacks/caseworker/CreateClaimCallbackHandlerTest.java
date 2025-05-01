@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimCreationDisabledException;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -83,6 +83,6 @@ public class CreateClaimCallbackHandlerTest {
             caseMapper,
             false
         );
-        assertThrows(ForbiddenActionException.class, () -> createClaimCallbackHandler.handle(callbackParams));
+        assertThrows(ClaimCreationDisabledException.class, () -> createClaimCallbackHandler.handle(callbackParams));
     }
 }
