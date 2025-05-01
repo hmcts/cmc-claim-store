@@ -132,6 +132,20 @@ allprojects {
     }
   }
 
+
+  publishing {
+    repositories {
+      maven {
+        name = "AzureArtifacts"
+        url = uri("https://pkgs.dev.azure.com/hmcts/Artifacts/_packaging/hmcts-lib/maven/v1")
+        credentials {
+          username = System.getenv("AZURE_DEVOPS_ARTIFACT_USERNAME")
+          password = System.getenv("AZURE_DEVOPS_ARTIFACT_TOKEN")
+        }
+      }
+    }
+  }
+
   compileJava {
     options.compilerArgs << '-parameters' << '-Xlint:deprecation'
   }
@@ -144,7 +158,7 @@ allprojects {
     mavenLocal()
     mavenCentral()
     maven {
-      url 'https://jitpack.io'
+      url 'https://pkgs.dev.azure.com/hmcts/Artifacts/_packaging/hmcts-lib/maven/v1'
     }
     jcenter()
     maven {
@@ -356,8 +370,6 @@ dependencies {
   integrationTestImplementation project(':email-client')
   integrationTestImplementation project(':domain-model')
 }
-
-
 
 task contract(type: Test) {
   description = 'Runs the consumer Pact tests'
