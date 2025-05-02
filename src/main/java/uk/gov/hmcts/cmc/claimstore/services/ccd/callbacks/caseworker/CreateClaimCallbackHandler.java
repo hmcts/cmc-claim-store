@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CASE;
+import static uk.gov.hmcts.cmc.claimstore.constants.ResponseConstants.CREATE_CLAIM_DISABLED;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.JUDGE;
@@ -72,8 +73,7 @@ public class CreateClaimCallbackHandler extends CallbackHandler {
         if (!featureCreateClaimEnabled) {
             return AboutToStartOrSubmitCallbackResponse.builder()
                     .errors(List
-                            .of("MoneyClaims jurisdiction & case type are for citizens only,and should not be chosen or used by legal reps."
-                    + "Citizens, when issuing a claim will use a different platform.")).build();
+                            .of(CREATE_CLAIM_DISABLED)).build();
         }
         Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
         logger.info("Creating case for callback of type {}, claim with external id {}",

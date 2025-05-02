@@ -38,6 +38,7 @@ import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.cmc.claimstore.constants.ResponseConstants.CREATE_CLAIM_DISABLED;
 
 @ExtendWith(SpringExtension.class)
 public class ResourceExceptionHandlerTest {
@@ -348,8 +349,7 @@ public class ResourceExceptionHandlerTest {
     @Test
     public void testMethodNotAllowed() {
         testTemplate(
-            "MoneyClaims jurisdiction & case type are for citizens only,and should not be chosen or used by legal reps."
-                + "Citizens, when issuing a claim will use a different platform.",
+            CREATE_CLAIM_DISABLED,
             CallbackException::new,
             handler::claimCreationDisabled,
             HttpStatus.METHOD_NOT_ALLOWED,

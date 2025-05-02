@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CASE;
+import static uk.gov.hmcts.cmc.claimstore.constants.ResponseConstants.CREATE_CLAIM_DISABLED;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.getLegalDataWithReps;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -83,7 +84,6 @@ public class CreateClaimCallbackHandlerTest {
         );
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse) createClaimCallbackHandler.handle(callbackParams);
         assertThat(response.getErrors()).isNotNull();
-        assertThat(response.getErrors().get(0)).isEqualTo("MoneyClaims jurisdiction & case type are for citizens only,and should not be chosen "
-                + "or used by legal reps.Citizens, when issuing a claim will use a different platform.");
+        assertThat(response.getErrors().get(0)).isEqualTo(CREATE_CLAIM_DISABLED);
     }
 }

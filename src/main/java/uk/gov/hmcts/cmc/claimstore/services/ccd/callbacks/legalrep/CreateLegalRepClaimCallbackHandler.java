@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_LEGAL_REP_CLAIM;
+import static uk.gov.hmcts.cmc.claimstore.constants.ResponseConstants.CREATE_CLAIM_DISABLED;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.SOLICITOR;
 
 @Service
@@ -68,8 +69,7 @@ public class CreateLegalRepClaimCallbackHandler extends CallbackHandler {
         logger.info("Create claim feature is: {}", featureCreateClaimEnabled ? "enabled" : "disabled");
         if (!featureCreateClaimEnabled) {
             return AboutToStartOrSubmitCallbackResponse.builder()
-                .errors(List.of("MoneyClaims jurisdiction & case type are for citizens only,and should not be chosen or used by legal reps."
-                + "Citizens, when issuing a claim will use a different platform.")).build();
+                .errors(List.of(CREATE_CLAIM_DISABLED)).build();
         }
         Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
         logger.info("Creating legal rep case for callback of type {}, claim with external id {}",
