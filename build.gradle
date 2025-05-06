@@ -13,6 +13,7 @@ plugins {
   id 'idea'
   id 'au.com.dius.pact' version '4.6.5'
   id 'maven-publish'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.1688'
 }
 
 dependencyUpdates.resolutionStrategy = {
@@ -40,7 +41,7 @@ def versions = [
   junitPlatform     : '1.10.2',
   pact_version    : '4.1.7',
   serviceAuthVersion : '4.0.3',
-  idamJavaClient : '2.0.1',
+  idamJavaClient : '2.1.1',
   elasticSearch     : '7.17.20'
 ]
 

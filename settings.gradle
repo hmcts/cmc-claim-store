@@ -1,3 +1,12 @@
+pluginManagement {
+  repositories {
+    gradlePluginPortal()
+    maven {
+      url 'https://pkgs.dev.azure.com/hmcts/Artifacts/_packaging/hmcts-lib/maven/v1'
+    }
+  }
+}
+
 rootProject.name = 'claim-store'
 include 'email-client'
 include 'domain-model'
@@ -7,3 +16,5 @@ include 'rpa-mapper'
 include 'job-scheduler'
 include 'ccd-sample-data'
 include 'launch-darkly-client'
+
+
