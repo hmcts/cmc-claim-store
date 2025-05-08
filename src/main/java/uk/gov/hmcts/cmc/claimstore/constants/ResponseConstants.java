@@ -11,7 +11,6 @@ public class ResponseConstants {
     public static final String UNPROCESSABLE_ENTITY_UNRECOGNISED_DEADLINE_TYPE
         = "Unprocessable Entity Unrecognised Deadline Type";
 
-    public static final String CREATE_CLAIM_DISABLED = "MoneyClaims jurisdiction & case type are for citizens only, "
-        + "and should not be chosen or used by legal reps."
-        + "Citizens, when issuing a claim will use a different platform.";
+    public static final String CREATE_CLAIM_DISABLED = "The Money Claims service is no longer available for issuing new specified claims. "
+        + "Please use the Civil option available in the jurisdiction and case type drop down lists to issue a specified claim.";
 }

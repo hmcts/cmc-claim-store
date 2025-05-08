@@ -10,7 +10,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimCreationDisabledException;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
@@ -38,7 +37,6 @@ import static java.math.BigDecimal.TEN;
 import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -49,6 +47,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_HWF_CASE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INVALID_HWF_REFERENCE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ISSUE_HWF_CASE;
+import static uk.gov.hmcts.cmc.claimstore.constants.ResponseConstants.CREATE_CLAIM_DISABLED;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
@@ -464,6 +463,8 @@ public class CreateCitizenClaimCallbackHandlerTest {
             userService,
             false
         );
-        assertThrows(ClaimCreationDisabledException.class, () -> handler.handle(callbackParams));
+        AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
+        assertThat(response.getErrors()).isNotNull();
+        assertThat(response.getErrors().get(0)).isEqualTo(CREATE_CLAIM_DISABLED);
     }
 }

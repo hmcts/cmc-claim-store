@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimCreationDisabledException;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
@@ -41,6 +40,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_HWF_CASE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INVALID_HWF_REFERENCE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ISSUE_HWF_CASE;
+import static uk.gov.hmcts.cmc.claimstore.constants.ResponseConstants.CREATE_CLAIM_DISABLED;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.AWAITING_RESPONSE_HWF;
@@ -111,7 +111,9 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
     private CallbackResponse createCitizenClaim(CallbackParams callbackParams) {
         logger.info("Create claim feature is: {}", featureCreateClaimEnabled ? "enabled" : "disabled");
         if (!featureCreateClaimEnabled) {
-            throw new ClaimCreationDisabledException("Create claim is not permitted.");
+            return AboutToStartOrSubmitCallbackResponse.builder()
+                .errors(List
+                    .of(CREATE_CLAIM_DISABLED)).build();
         }
         Claim updatedClaim = null;
         Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
