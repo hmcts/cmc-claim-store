@@ -246,7 +246,7 @@ dependencies {
 
   implementation group: 'com.github.hmcts', name: 'java-logging', version: '6.1.4'
 
-  implementation('com.github.hmcts:cmc-pdf-service-client:8.0.1') {
+  implementation('com.github.hmcts:cmc-pdf-service-client:8.0.2') {
     exclude group: 'java-logging', module: 'java-logging'
   }
   implementation group: 'com.github.hmcts', name: 'document-management-client', version: '7.0.0'
