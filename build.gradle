@@ -166,7 +166,7 @@ allprojects {
       dependency group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.jackson
       dependency group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: versions.jackson
 
-      dependency group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.77'
+      dependency group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.81'
 
       dependencySet(
         group: 'org.yaml',
