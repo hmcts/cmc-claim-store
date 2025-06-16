@@ -259,7 +259,7 @@ dependencies {
     exclude group: 'uk.gov.hmcts.reform', module: 'java-logging'
   }
   implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.1.2'
-  implementation group: 'com.github.hmcts', name: 'send-letter-client', version: '3.0.16'
+  implementation group: 'com.github.hmcts', name: 'send-letter-client', version: '3.0.23.1'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
