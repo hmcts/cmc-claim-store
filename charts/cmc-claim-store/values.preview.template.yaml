@@ -162,7 +162,7 @@ ccd:
     userRoles:
     - citizen
     - caseworker-cmc
-#    - caseworker-cmc-solicitor
+    - caseworker-cmc-solicitor
     - caseworker-cmc-systemupdate
     - letter-holder
     - caseworker-autotest1
