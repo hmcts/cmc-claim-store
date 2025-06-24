@@ -58,9 +58,11 @@ ccd:
     idamApiUrl: https://idam-api.aat.platform.hmcts.net
     idamWebUrl: https://idam-web-public.aat.platform.hmcts.net
     s2sUrl: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+    ccdUserProfileUrl: http://ccd-user-profile-api-aat.service.core-compute-aat.internal
     ccdAdminWebIngress: ccd-admin-web-${SERVICE_FQDN}
     ccdDefinitionStoreUrl: http://${SERVICE_NAME}-ccd-definition-store
-    ccdUserProfileUrl: http://${SERVICE_NAME}-ccd-user-profile-api
+    ROLE_ASSIGNMENT_URL: http://am-role-assignment-service-aat.service.core-compute-aat.internal
+#    ccdUserProfileUrl: http://${SERVICE_NAME}-ccd-user-profile-api
     postgresUsername: hmcts
     postgresPassword: hmcts
     devMode: true
@@ -75,12 +77,12 @@ ccd:
     idam-pr:
       enabled: true
 
-  ccd-user-profile-api:
-    java:
-      image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
-      keyVaults: []
-      environment:
-        USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin,cmc_claim_store
+#  ccd-user-profile-api:
+#    java:
+#      image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
+#      keyVaults: []
+#      environment:
+#        USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin,cmc_claim_store
 
   ccd-definition-store-api:
     java:
@@ -101,23 +103,23 @@ ccd:
         IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
         OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/hmcts
 
-  am-role-assignment-service:
-    java:
-      environment:
-        CCD_DATA_STORE_URL: http://${SERVICE_NAME}-ccd-data-store-api
-      keyVaults:
-        am:
-          secrets:
-            - name: am-role-assignment-service-s2s-secret
-              alias: AM_ROLE_ASSIGNMENT_SERVICE_SECRET
-            - name: app-insights-connection-string
-              alias: app-insights-connection-string
-            - name: role-assignment-service-IDAM-CLIENT-SECRET
-              alias: ROLE_ASSIGNMENT_IDAM_CLIENT_SECRET
-            - name: role-assignment-service-IDAM-ADMIN-SECRET
-              alias: ROLE_ASSIGNMENT_IDAM_ADMIN_PASSWORD
-            - name: role-assignment-service-LD-SDK-KEY
-              alias: LD_SDK_KEY
+#  am-role-assignment-service:
+#    java:
+#      environment:
+#        CCD_DATA_STORE_URL: http://${SERVICE_NAME}-ccd-data-store-api
+#      keyVaults:
+#        am:
+#          secrets:
+#            - name: am-role-assignment-service-s2s-secret
+#              alias: AM_ROLE_ASSIGNMENT_SERVICE_SECRET
+#            - name: app-insights-connection-string
+#              alias: app-insights-connection-string
+#            - name: role-assignment-service-IDAM-CLIENT-SECRET
+#              alias: ROLE_ASSIGNMENT_IDAM_CLIENT_SECRET
+#            - name: role-assignment-service-IDAM-ADMIN-SECRET
+#              alias: ROLE_ASSIGNMENT_IDAM_ADMIN_PASSWORD
+#            - name: role-assignment-service-LD-SDK-KEY
+#              alias: LD_SDK_KEY
 
   ccd-data-store-api:
     java:
@@ -135,6 +137,7 @@ ccd:
         IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
         OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/hmcts
         CASE_DOCUMENT_AM_URL: http://ccd-case-document-am-api-aat.service.core-compute-aat.internal
+        ROLE_ASSIGNMENT_URL: http://am-role-assignment-service-aat.service.core-compute-aat.internal
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
       secrets:
         DATA_STORE_DB_PASSWORD:
@@ -159,7 +162,7 @@ ccd:
     userRoles:
     - citizen
     - caseworker-cmc
-    - caseworker-cmc-solicitor
+#    - caseworker-cmc-solicitor
     - caseworker-cmc-systemupdate
     - letter-holder
     - caseworker-autotest1
