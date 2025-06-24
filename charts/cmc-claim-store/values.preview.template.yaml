@@ -86,6 +86,7 @@ ccd:
       keyVaults: []
       environment:
         USER_PROFILE_DB_HOST: http://${SERVICE_NAME}-ccd-user-profile-api
+        USER_PROFILE_DB_OPTIONS: "?stringtype=unspecified"
         USER_PROFILE_DB_NAME: ${POSTGRES_PASSWORD}
         USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin,cmc_claim_store
 
@@ -111,6 +112,7 @@ ccd:
   am-role-assignment-service:
     java:
       environment:
+        ROLE_ASSIGNMENT_DB_OPTIONS: "?stringtype=unspecified"
         CCD_DATA_STORE_URL: http://${SERVICE_NAME}-ccd-data-store-api
       secrets:
         ROLE_ASSIGNMENT_DB_PASSWORD:
