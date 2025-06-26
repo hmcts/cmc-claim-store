@@ -22,19 +22,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.util.NestedServletException;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsExceptionLogger;
-import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantLinkException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentDownloadForbiddenException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.DuplicateKeyException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.InvalidApplicationException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.OnHoldClaimAccessAttemptException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.UnprocessableEntityException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.*;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.exceptions.IllegalSettlementStatementException;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
@@ -148,6 +136,12 @@ public class ResourceExceptionHandler {
     public ResponseEntity<Object> badRequest(Exception exception) {
         logger.trace(exception);
         return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = ClaimCreationDisabledException.class)
+    public ResponseEntity<Object> claimCreationDisabled(Exception exception) {
+        logger.trace(exception);
+        return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.METHOD_NOT_ALLOWED);
     }
 
     @ExceptionHandler(value = InvalidApplicationException.class)

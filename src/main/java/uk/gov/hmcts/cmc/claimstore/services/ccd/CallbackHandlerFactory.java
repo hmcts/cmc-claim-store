@@ -36,10 +36,11 @@ public class CallbackHandlerFactory {
     public CallbackResponse dispatch(CallbackParams callbackParams) {
         String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
         String eventId = callbackParams.getRequest().getEventId();
-        return Optional.ofNullable(eventHandlers.get(eventId))
-            .filter(h -> hasSupportedRoles(h, authorisation, eventId))
-            .map(h -> h.handle(callbackParams))
-            .orElseThrow(() -> new CallbackException("Could not handle callback for event " + eventId));
+        logger.info("Found: {} eventHandler for EventId: {}", eventHandlers.containsKey(eventId), eventId);
+        CallbackHandler callbackHandler = Optional.ofNullable(eventHandlers.get(eventId))
+                .filter(h -> hasSupportedRoles(h, authorisation, eventId))
+                .orElseThrow(() -> new CallbackException("Could not handle callback for event " + eventId));
+        return callbackHandler.handle(callbackParams);
     }
 
     private boolean hasSupportedRoles(CallbackHandler callbackHandler, String authorisation, String eventId) {

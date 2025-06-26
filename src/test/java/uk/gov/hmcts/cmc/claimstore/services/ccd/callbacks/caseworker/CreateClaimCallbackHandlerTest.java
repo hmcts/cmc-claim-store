@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legalrep;
+package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
 import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
@@ -14,24 +14,18 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
-import java.time.LocalDate;
 import java.util.Collections;
 
-import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_LEGAL_REP_CLAIM;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CASE;
 import static uk.gov.hmcts.cmc.claimstore.constants.ResponseConstants.CREATE_CLAIM_DISABLED;
-import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.SOLICITOR;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.getLegalDataWithReps;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CreateLegalRepClaimCallbackHandlerTest {
+public class CreateClaimCallbackHandlerTest {
 
-    public static final String REFERENCE_NO = "000LR001";
-    public static final LocalDate ISSUE_DATE = now();
-    public static final LocalDate RESPONSE_DEADLINE = ISSUE_DATE.plusDays(14);
     private static final String BEARER_TOKEN = "Bearer let me in";
 
     @Mock
@@ -39,13 +33,13 @@ public class CreateLegalRepClaimCallbackHandlerTest {
     @Mock
     private CaseMapper caseMapper;
     private CallbackRequest callbackRequest;
-    private CreateLegalRepClaimCallbackHandler createLegalRepClaimCallbackHandler;
+    private CreateClaimCallbackHandler createClaimCallbackHandler;
 
     private final CaseDetails caseDetails = CaseDetails.builder().id(3L).data(Collections.emptyMap()).build();
 
     @Before
     public void setUp() {
-        createLegalRepClaimCallbackHandler = new CreateLegalRepClaimCallbackHandler(
+        createClaimCallbackHandler = new CreateClaimCallbackHandler(
             caseDetailsConverter,
             caseMapper,
             true
@@ -53,7 +47,7 @@ public class CreateLegalRepClaimCallbackHandlerTest {
 
         callbackRequest = CallbackRequest
             .builder()
-            .eventId(CREATE_LEGAL_REP_CLAIM.getValue())
+            .eventId(CREATE_CASE.getValue())
             .caseDetails(caseDetails)
             .build();
 
@@ -70,16 +64,10 @@ public class CreateLegalRepClaimCallbackHandlerTest {
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
-            createLegalRepClaimCallbackHandler.handle(callbackParams);
+            createClaimCallbackHandler.handle(callbackParams);
 
         assertThat(response.getErrors()).isNull();
         assertThat(response.getWarnings()).isNull();
-    }
-
-    @Test
-    public void shouldHaveCorrectLegalRepSupportingRole() {
-        assertThat(createLegalRepClaimCallbackHandler.getSupportedRoles().size()).isEqualTo(1);
-        assertThat(createLegalRepClaimCallbackHandler.getSupportedRoles()).contains(SOLICITOR);
     }
 
     @Test
@@ -89,12 +77,12 @@ public class CreateLegalRepClaimCallbackHandlerTest {
             .request(callbackRequest)
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
             .build();
-        createLegalRepClaimCallbackHandler = new CreateLegalRepClaimCallbackHandler(
+        createClaimCallbackHandler = new CreateClaimCallbackHandler(
             caseDetailsConverter,
             caseMapper,
             false
         );
-        AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse) createLegalRepClaimCallbackHandler.handle(callbackParams);
+        AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse) createClaimCallbackHandler.handle(callbackParams);
         assertThat(response.getErrors()).isNotNull();
         assertThat(response.getErrors().get(0)).isEqualTo(CREATE_CLAIM_DISABLED);
     }

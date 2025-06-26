@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
@@ -39,6 +40,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_HWF_CASE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INVALID_HWF_REFERENCE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ISSUE_HWF_CASE;
+import static uk.gov.hmcts.cmc.claimstore.constants.ResponseConstants.CREATE_CLAIM_DISABLED;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.AWAITING_RESPONSE_HWF;
@@ -66,6 +68,7 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
     private final PaymentsService paymentsService;
     private final EventProducer eventProducer;
     private final UserService userService;
+    private final boolean featureCreateClaimEnabled;
 
     @Autowired
     public CreateCitizenClaimCallbackHandler(
@@ -76,7 +79,8 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
         CaseMapper caseMapper,
         PaymentsService paymentsService,
         EventProducer eventProducer,
-        UserService userService
+        UserService userService,
+        @Value("${feature_toggles.create_claim_enabled:true}") boolean featureCreateClaimEnabled
     ) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.issueDateCalculator = issueDateCalculator;
@@ -86,6 +90,7 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
         this.paymentsService = paymentsService;
         this.eventProducer = eventProducer;
         this.userService = userService;
+        this.featureCreateClaimEnabled = featureCreateClaimEnabled;
     }
 
     @Override
@@ -104,6 +109,12 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
     }
 
     private CallbackResponse createCitizenClaim(CallbackParams callbackParams) {
+        logger.info("Create claim feature is: {}", featureCreateClaimEnabled ? "enabled" : "disabled");
+        if (!featureCreateClaimEnabled) {
+            return AboutToStartOrSubmitCallbackResponse.builder()
+                .errors(List
+                    .of(CREATE_CLAIM_DISABLED)).build();
+        }
         Claim updatedClaim = null;
         Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
         logger.info("Created citizen case for callback of type {}, claim with external id {}",
