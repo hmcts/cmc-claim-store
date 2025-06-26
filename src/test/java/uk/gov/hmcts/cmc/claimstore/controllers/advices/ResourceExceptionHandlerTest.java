@@ -38,6 +38,7 @@ import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.cmc.claimstore.constants.ResponseConstants.CREATE_CLAIM_DISABLED;
 
 @ExtendWith(SpringExtension.class)
 public class ResourceExceptionHandlerTest {
@@ -342,6 +343,17 @@ public class ResourceExceptionHandlerTest {
             handler::handleNotificationClientException,
             HttpStatus.BAD_REQUEST,
             AppInsightsExceptionLogger::error
+        );
+    }
+
+    @Test
+    public void testMethodNotAllowed() {
+        testTemplate(
+            CREATE_CLAIM_DISABLED,
+            CallbackException::new,
+            handler::claimCreationDisabled,
+            HttpStatus.METHOD_NOT_ALLOWED,
+            AppInsightsExceptionLogger::trace
         );
     }
 

@@ -47,6 +47,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_HWF_CASE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INVALID_HWF_REFERENCE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ISSUE_HWF_CASE;
+import static uk.gov.hmcts.cmc.claimstore.constants.ResponseConstants.CREATE_CLAIM_DISABLED;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
@@ -116,7 +117,8 @@ public class CreateCitizenClaimCallbackHandlerTest {
             caseMapper,
             paymentsService,
             eventProducer,
-            userService
+            userService,
+            true
         );
 
         callbackRequest = CallbackRequest.builder()
@@ -441,5 +443,28 @@ public class CreateCitizenClaimCallbackHandlerTest {
 
         Claim toBeSaved = claimArgumentCaptor.getValue();
         assertThat(toBeSaved.getClaimData()).isEqualTo(claim.getClaimData());
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenFeatureCreateClaimIsDisabled() {
+        callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_SUBMIT)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
+        CreateCitizenClaimCallbackHandler handler = new CreateCitizenClaimCallbackHandler(
+            caseDetailsConverter,
+            issueDateCalculator,
+            referenceNumberRepository,
+            responseDeadlineCalculator,
+            caseMapper,
+            paymentsService,
+            eventProducer,
+            userService,
+            false
+        );
+        AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
+        assertThat(response.getErrors()).isNotNull();
+        assertThat(response.getErrors().get(0)).isEqualTo(CREATE_CLAIM_DISABLED);
     }
 }
