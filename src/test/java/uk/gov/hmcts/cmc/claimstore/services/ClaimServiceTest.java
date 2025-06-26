@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.apache.http.HttpException;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,10 +13,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeAlreadyRequestedException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.*;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
@@ -158,7 +156,8 @@ public class ClaimServiceTest {
             new PaidInFullRule(),
             new ClaimAuthorisationRule(userService),
             new ReviewOrderRule(),
-            launchDarklyClient);
+            launchDarklyClient,
+            true);
     }
 
     @Test
@@ -241,7 +240,8 @@ public class ClaimServiceTest {
             new PaidInFullRule(),
             new ClaimAuthorisationRule(userService),
             new ReviewOrderRule(),
-            launchDarklyClient);
+            launchDarklyClient,
+            true);
 
         ClaimData claimData = SampleClaimData.validDefaults();
 
@@ -256,6 +256,29 @@ public class ClaimServiceTest {
         verify(userService, never()).generatePin(eq(outputClaimData.getDefendant().getName()), eq(AUTHORISATION));
         verify(caseRepository, once()).saveClaim(any(User.class), any(Claim.class));
         verify(eventProducer, once()).createClaimCreatedEvent(eq(createdClaim), anyString(), eq(AUTHORISATION));
+    }
+
+    @Test
+    public void saveClaimShouldThrowExceptionWhenClaimCreateFeatureDisabled() {
+        claimService = new ClaimService(
+            caseRepository,
+            userService,
+            issueDateCalculator,
+            responseDeadlineCalculator,
+            new MoreTimeRequestRule(new ClaimDeadlineService()),
+            eventProducer,
+            appInsights,
+            new PaidInFullRule(),
+            new ClaimAuthorisationRule(userService),
+            new ReviewOrderRule(),
+            launchDarklyClient,
+            false);
+
+        ClaimData claimData = SampleClaimData.validDefaults();
+
+        Assert.assertThrows(ClaimCreationDisabledException.class, () -> claimService
+            .saveClaim(USER_ID, claimData, AUTHORISATION, singletonList(ADMISSIONS.getValue())));
+
     }
 
     @Test
