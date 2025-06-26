@@ -78,32 +78,16 @@ ccd:
   ccd-user-profile-api:
     java:
       image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
-      secrets:
-        USER_PROFILE_DB_PASSWORD:
-          secretRef: "{{ .Values.global.postgresSecret }}"
-          key: PASSWORD
-          disabled: true
       keyVaults: []
       environment:
-        USER_PROFILE_DB_HOST: http://${SERVICE_NAME}-ccd-user-profile-api
-        USER_PROFILE_DB_OPTIONS: "?stringtype=unspecified"
-        USER_PROFILE_DB_NAME: ${POSTGRES_PASSWORD}
         USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin,cmc_claim_store
 
   ccd-definition-store-api:
     java:
       image: hmctspublic.azurecr.io/ccd/definition-store-api:latest
       imagePullPolicy: Always
-      secrets:
-        DEFINITION_STORE_DB_PASSWORD:
-          secretRef: "{{ .Values.global.postgresSecret }}"
-          key: PASSWORD
-          disabled: true
       keyVaults: []
       environment:
-        DEFINITION_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
-        DEFINITION_STORE_DB_OPTIONS: "?stringtype=unspecified"
-        DEFINITION_STORE_DB_PASSWORD: ${POSTGRES_PASSWORD}
         DEFINITION_STORE_IDAM_KEY: ${DEFINITION_STORE_S2S_KEY}
         DEFINITION_STORE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_gw,ccd_admin,cmc_claim_store
         IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
@@ -112,13 +96,7 @@ ccd:
   am-role-assignment-service:
     java:
       environment:
-        ROLE_ASSIGNMENT_DB_OPTIONS: "?stringtype=unspecified"
         CCD_DATA_STORE_URL: http://${SERVICE_NAME}-ccd-data-store-api
-      secrets:
-        ROLE_ASSIGNMENT_DB_PASSWORD:
-          secretRef: "{{ .Values.global.postgresSecret }}"
-          key: PASSWORD
-          disabled: true
       keyVaults:
         am:
           secrets:
@@ -136,10 +114,9 @@ ccd:
   ccd-data-store-api:
     java:
       image: hmctspublic.azurecr.io/ccd/data-store-api:latest
+      ingressHost: ccd-data-store-api-${SERVICE_FQDN}
+      keyVaults: []
       environment:
-        DATA_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
-        DATA_STORE_DB_OPTIONS: "?stringtype=unspecified"
-        DATA_STORE_DB_PASSWORD: ${POSTGRES_PASSWORD}
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
         IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET: ${IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET}
         IDAM_DATA_STORE_SYSTEM_USER_USERNAME: ${IDAM_DATA_STORE_SYSTEM_USER_USERNAME}
@@ -149,13 +126,6 @@ ccd:
         IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
         OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/hmcts
         CASE_DOCUMENT_AM_URL: http://ccd-case-document-am-api-aat.service.core-compute-aat.internal
-      ingressHost: ccd-data-store-api-${SERVICE_FQDN}
-      secrets:
-        DATA_STORE_DB_PASSWORD:
-          secretRef: "{{ .Values.global.postgresSecret }}"
-          key: PASSWORD
-          disabled: true
-      keyVaults: []
 
   ccd-user-profile-importer:
     image: hmctspublic.azurecr.io/ccd/user-profile-importer:db2r9a

@@ -16,6 +16,6 @@ dependencies:
     repository: 'oci://hmctspublic.azurecr.io/helm'
 
   - name: ccd
-    version: 9.2.2
-    repository: 'oci://hmctspublic.azurecr.io/helm'
+    version: 8.0.29
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ccd.enabled
