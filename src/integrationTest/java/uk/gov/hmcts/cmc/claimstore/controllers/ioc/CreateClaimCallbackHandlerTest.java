@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_LEGAL_REP_CLAIM;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CASE;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponse;
 
 @TestPropertySource(
@@ -32,7 +32,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
         "feature_toggles.create_claim_enabled=true"
     }
 )
-public class CreateLegalRepClaimCallbackHandlerTest extends BaseMockSpringTest {
+public class CreateClaimCallbackHandlerTest extends BaseMockSpringTest {
 
     private static final String AUTHORISATION_TOKEN = "Bearer let me in";
     public static final String REFERENCE_NO = "000LR001";
@@ -70,7 +70,7 @@ public class CreateLegalRepClaimCallbackHandlerTest extends BaseMockSpringTest {
         CaseDetails caseDetails = successfulCoreCaseDataStoreSubmitResponse();
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
-            .eventId(CREATE_LEGAL_REP_CLAIM.getValue())
+            .eventId(CREATE_CASE.getValue())
             .caseDetails(caseDetails)
             .build();
 

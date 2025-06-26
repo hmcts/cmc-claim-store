@@ -2,6 +2,8 @@ package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.apache.http.HttpException;
 import org.apache.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -9,6 +11,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimCreationDisabledException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.filters.DocumentsFilter;
@@ -74,6 +77,7 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 @Component
 public class ClaimService {
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final IssueDateCalculator issueDateCalculator;
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
     private final UserService userService;
@@ -85,6 +89,7 @@ public class ClaimService {
     private final ClaimAuthorisationRule claimAuthorisationRule;
     private final ReviewOrderRule reviewOrderRule;
     private final LaunchDarklyClient launchDarklyClient;
+    private final boolean featureCreateClaimEnabled;
 
     @Value("${feature_toggles.ctsc_enabled:false}")
     private boolean ctscEnabled;
@@ -102,7 +107,8 @@ public class ClaimService {
         PaidInFullRule paidInFullRule,
         ClaimAuthorisationRule claimAuthorisationRule,
         ReviewOrderRule reviewOrderRule,
-        LaunchDarklyClient launchDarklyClient) {
+        LaunchDarklyClient launchDarklyClient,
+        @Value("${feature_toggles.create_claim_enabled:true}") boolean featureCreateClaimEnabled) {
         this.userService = userService;
         this.issueDateCalculator = issueDateCalculator;
         this.responseDeadlineCalculator = responseDeadlineCalculator;
@@ -114,6 +120,7 @@ public class ClaimService {
         this.claimAuthorisationRule = claimAuthorisationRule;
         this.reviewOrderRule = reviewOrderRule;
         this.launchDarklyClient = launchDarklyClient;
+        this.featureCreateClaimEnabled = featureCreateClaimEnabled;
     }
 
     public List<Claim> getClaimBySubmitterId(String submitterId, String authorisation, Integer pageNumber) {
@@ -260,6 +267,10 @@ public class ClaimService {
         ClaimData claimData,
         List<String> features
     ) {
+        logger.info("Create claim feature is: {}", featureCreateClaimEnabled ? "enabled" : "disabled");
+        if (!featureCreateClaimEnabled) {
+            throw new ClaimCreationDisabledException("Create claim is not permitted.");
+        }
         User user = userService.getUser(authorisation);
         Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), user)
             .toBuilder()
@@ -276,6 +287,10 @@ public class ClaimService {
         String authorisation,
         List<String> features
     ) {
+        logger.info("Create claim feature is: {}", featureCreateClaimEnabled ? "enabled" : "disabled");
+        if (!featureCreateClaimEnabled) {
+            throw new ClaimCreationDisabledException("Create claim is not permitted.");
+        }
         String externalId = claimData.getExternalId().toString();
         User user = userService.getUser(authorisation);
         caseRepository.getClaimByExternalId(externalId, user)
@@ -339,6 +354,11 @@ public class ClaimService {
         ClaimData claimData,
         String authorisation
     ) {
+        logger.info("Create claim feature is: {}", featureCreateClaimEnabled ? "enabled" : "disabled");
+
+        if (!featureCreateClaimEnabled) {
+            throw new ClaimCreationDisabledException("Create claim is not permitted.");
+        }
         String externalId = claimData.getExternalId().toString();
         User user = userService.getUser(authorisation);
 
