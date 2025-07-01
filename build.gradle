@@ -144,11 +144,7 @@ allprojects {
     mavenLocal()
     mavenCentral()
     maven {
-      url 'https://jitpack.io'
-    }
-    jcenter()
-    maven {
-      url 'https://repo1.maven.org/maven2'
+      url 'https://pkgs.dev.azure.com/hmcts/Artifacts/_packaging/hmcts-lib/maven/v1'
     }
   }
 
@@ -358,8 +354,7 @@ dependencies {
 }
 
 
-
-task contract(type: Test) {
+tasks.register('contract', Test) {
   description = 'Runs the consumer Pact tests'
   useJUnitPlatform()
   testClassesDirs = sourceSets.contractTest.output.classesDirs
@@ -368,7 +363,7 @@ task contract(type: Test) {
 
 }
 
-task runProviderPactVerification(type: Test) {
+tasks.register('runProviderPactVerification', Test) {
   testClassesDirs = sourceSets.contractTest.output.classesDirs
   classpath = sourceSets.contractTest.runtimeClasspath
   systemProperty 'pact.verifier.publishResults', System.getProperty('pact.verifier.publishResults')
@@ -386,20 +381,20 @@ pact {
   }
 }
 
-task fortifyScan(type: JavaExec)  {
+tasks.register('fortifyScan', JavaExec) {
   mainClass.set("uk.gov.hmcts.fortifyclient.FortifyClientMainApp")
   classpath += sourceSets.test.runtimeClasspath
   jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
 }
 
-task apiTest(type: Test) {
+tasks.register('apiTest', Test) {
   group = 'verification'
   description = 'Runs the api tests'
   setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
   setClasspath(sourceSets.integrationTest.runtimeClasspath)
 }
 
-task migrateClaims() {
+tasks.register('migrateClaims') {
   description 'Migrating claims from claim-store database to CCD'
 
   doLast {
@@ -414,11 +409,11 @@ task migrateClaims() {
   }
 }
 
-tasks.withType(Test) {
+tasks.withType(Test).configureEach {
   useJUnitPlatform()
 }
 
-task functional(type: Test) {
+tasks.register('functional', Test) {
   group = 'Delivery pipeline'
   description = 'Executes functional tests against an AAT Claim Store instance'
   setTestClassesDirs(sourceSets.aat.output.classesDirs)
@@ -430,7 +425,7 @@ task functional(type: Test) {
   environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
 
-task smoke(type: Test) {
+tasks.register('smoke', Test) {
   group = 'Delivery pipeline'
   description = 'Executes non-destructive smoke tests against a running Claim Store instance'
   setTestClassesDirs(sourceSets.aat.output.classesDirs)
@@ -534,7 +529,7 @@ bootJar {
   }
 }
 
-task printVersion {
+tasks.register('printVersion') {
   description 'Prints the version of this project'
   doLast {
     print project.version
@@ -552,7 +547,7 @@ bootRun {
   }
 }
 
-task checkStyle(dependsOn: [checkstyleMain, checkstyleAat, checkstyleTest, checkstyleIntegrationTest]){}
+tasks.register('checkStyle') { dependsOn[checkstyleMain, checkstyleAat, checkstyleTest, checkstyleIntegrationTest] }
 
 idea {
   module {
