@@ -331,7 +331,7 @@ dependencies {
   contractTestImplementation group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pact_version
   contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pact_version
   contractTestImplementation("org.junit.jupiter:junit-jupiter-api:5.7.0")
-  contractTestRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.0")
+  contractTestRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.13.2")
   contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.7.0')
   contractTestRuntimeOnly "org.junit.platform:junit-platform-commons:1.7.0"
   contractTestImplementation group: 'com.github.hmcts', name: 'idam-java-client', version: versions.idamJavaClient
