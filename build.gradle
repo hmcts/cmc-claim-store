@@ -333,7 +333,7 @@ dependencies {
   contractTestImplementation("org.junit.jupiter:junit-jupiter-api:5.7.0")
   contractTestRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.0")
   contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.7.0')
-  contractTestRuntimeOnly "org.junit.platform:junit-platform-commons:1.7.0"
+  contractTestRuntimeOnly "org.junit.platform:junit-platform-commons:1.13.2"
   contractTestImplementation group: 'com.github.hmcts', name: 'idam-java-client', version: versions.idamJavaClient
   contractTestImplementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: versions.serviceAuthVersion
   contractTestImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
