@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.launchdarkly;
 
+import com.launchdarkly.sdk.LDContext;
 import com.launchdarkly.sdk.LDUser;
 import com.launchdarkly.sdk.server.interfaces.LDClientInterface;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +29,11 @@ public class LaunchDarklyClient {
     }
 
     public boolean isFeatureEnabled(String feature) {
-        return internalClient.boolVariation(feature, LaunchDarklyClient.CLAIM_STORE_USER, false);
+        return internalClient.boolVariation(feature, LDContext.fromUser(LaunchDarklyClient.CLAIM_STORE_USER), false);
     }
 
     public boolean isFeatureEnabled(String feature, LDUser user) {
-        return internalClient.boolVariation(feature, user, false);
+        return internalClient.boolVariation(feature, LDContext.fromUser(user), false);
     }
 
     private void close() {
