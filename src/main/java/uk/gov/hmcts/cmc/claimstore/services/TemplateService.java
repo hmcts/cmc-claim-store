@@ -12,7 +12,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Map;
 
-import static org.apache.commons.lang3.Validate.notNull;
+import static java.util.Objects.requireNonNull;
 
 @Service
 public class TemplateService {
@@ -25,8 +25,8 @@ public class TemplateService {
     }
 
     public String evaluate(String template, Map<String, Object> values) {
-        notNull(template);
-        notNull(values);
+        requireNonNull(template);
+        requireNonNull(values);
         try (Writer writer = new StringWriter()) {
             PebbleTemplate pebbleTemplate = pebbleEngine.getTemplate(template);
             pebbleTemplate.evaluate(writer, values);

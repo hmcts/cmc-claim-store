@@ -4,7 +4,7 @@ buildscript {
   repositories {
     mavenCentral()
     maven {
-      url "https://dl.bintray.com/hmcts/hmcts-maven"
+      url "https://pkgs.dev.azure.com/hmcts/Artifacts/_packaging/hmcts-lib/maven/v1"
     }
   }
 }

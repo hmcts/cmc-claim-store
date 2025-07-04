@@ -15,7 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.fees.client.FeesClient;
 import uk.gov.hmcts.reform.fees.client.model.FeeLookupResponseDto;
-import uk.gov.hmcts.reform.payments.client.CardPaymentRequest;
+import uk.gov.hmcts.reform.payments.request.CardPaymentRequest;
 import uk.gov.hmcts.reform.payments.client.PaymentsClient;
 import uk.gov.hmcts.reform.payments.client.models.FeeDto;
 import uk.gov.hmcts.reform.payments.client.models.LinkDto;
@@ -88,7 +88,7 @@ public class PaymentsServiceTest {
 
     @Test
     public void shouldRetrieveAnExistingPayment() {
-        when(paymentsClient.retrievePayment(
+        when(paymentsClient.retrieveCardPayment(
             BEARER_TOKEN,
             PAYMENT_REFERENCE
         )).thenReturn(paymentDto);
@@ -115,7 +115,7 @@ public class PaymentsServiceTest {
             .dateCreated(PAYMENT_DATE)
             .links(LinksDto.builder().nextUrl(null).build())
             .build();
-        when(paymentsClient.retrievePayment(
+        when(paymentsClient.retrieveCardPayment(
             BEARER_TOKEN,
             PAYMENT_REFERENCE
         )).thenReturn(retrievedPayment);
@@ -144,7 +144,7 @@ public class PaymentsServiceTest {
                 LinkDto.builder().href(URI.create(NEXT_URL)).build())
                 .build())
             .build();
-        when(paymentsClient.retrievePayment(
+        when(paymentsClient.retrieveCardPayment(
             BEARER_TOKEN,
             PAYMENT_REFERENCE
         )).thenReturn(retrievedPayment);
@@ -185,20 +185,19 @@ public class PaymentsServiceTest {
 
         CardPaymentRequest expectedPaymentRequest =
             CardPaymentRequest.builder()
-                .siteId(SITE_ID)
                 .description(DESCRIPTION)
                 .currency(CURRENCY)
-                .service(SERVICE)
                 .fees(fees)
                 .amount(feeOutcome.getFeeAmount())
                 .ccdCaseNumber(String.valueOf(claim.getCcdCaseId()))
                 .caseReference(claim.getExternalId())
                 .build();
 
-        when(paymentsClient.createPayment(
+        when(paymentsClient.createCardPayment(
             BEARER_TOKEN,
             expectedPaymentRequest,
-            RETURN_URL
+            RETURN_URL,
+            NEXT_URL
         )).thenReturn(paymentDto);
 
         paymentsService.createPayment(
@@ -220,7 +219,7 @@ public class PaymentsServiceTest {
                 LinkDto.builder().href(URI.create(NEXT_URL)).build())
                 .build())
             .build();
-        when(paymentsClient.retrievePayment(
+        when(paymentsClient.retrieveCardPayment(
             BEARER_TOKEN,
             PAYMENT_REFERENCE
         )).thenReturn(retrievedPayment);
@@ -254,7 +253,7 @@ public class PaymentsServiceTest {
                 LinkDto.builder().href(URI.create(NEXT_URL)).build())
                 .build())
             .build();
-        when(paymentsClient.retrievePayment(
+        when(paymentsClient.retrieveCardPayment(
             BEARER_TOKEN,
             PAYMENT_REFERENCE
         )).thenReturn(retrievedPayment);
@@ -301,9 +300,10 @@ public class PaymentsServiceTest {
 
     @Test(expected = IllegalStateException.class)
     public void shouldBubbleUpExceptionIfPaymentCreationFails() {
-        when(paymentsClient.createPayment(
+        when(paymentsClient.createCardPayment(
             eq(BEARER_TOKEN),
             any(CardPaymentRequest.class),
+            anyString(),
             anyString()))
             .thenThrow(IllegalStateException.class);
 
@@ -315,14 +315,14 @@ public class PaymentsServiceTest {
 
     @Test(expected = IllegalStateException.class)
     public void shouldThrowIfAmountIsNotCalculated() {
-        Claim claim = SampleClaim.builder()
+        Claim sampleClaim = SampleClaim.builder()
             .withClaimData(SampleClaimData.builder()
                 .withAmount(null)
                 .build())
             .build();
         paymentsService.createPayment(
             BEARER_TOKEN,
-            claim
+            sampleClaim
         );
     }
 }
