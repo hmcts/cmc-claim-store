@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.launchdarkly;
 
+import com.launchdarkly.sdk.LDContext;
 import com.launchdarkly.sdk.LDUser;
 import com.launchdarkly.sdk.server.interfaces.LDClientInterface;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,13 +41,13 @@ class LaunchDarklyClientTest {
 
     @Test
     void testFeatureEnabled() {
-        when(ldClient.boolVariation(eq(FAKE_FEATURE), any(LDUser.class), anyBoolean())).thenReturn(true);
+        when(ldClient.boolVariation(eq(FAKE_FEATURE), any(LDContext.class), anyBoolean())).thenReturn(true);
         assertTrue(launchDarklyClient.isFeatureEnabled(FAKE_FEATURE, ldUser));
     }
 
     @Test
     void testFeatureDisabled() {
-        when(ldClient.boolVariation(eq(FAKE_FEATURE), any(LDUser.class), anyBoolean())).thenReturn(false);
+        when(ldClient.boolVariation(eq(FAKE_FEATURE), any(LDContext.class), anyBoolean())).thenReturn(false);
         assertFalse(launchDarklyClient.isFeatureEnabled(FAKE_FEATURE, ldUser));
     }
 }
