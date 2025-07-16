@@ -12,11 +12,10 @@ import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.fees.client.FeesClient;
 import uk.gov.hmcts.reform.fees.client.model.FeeLookupResponseDto;
-import uk.gov.hmcts.reform.payments.client.CardPaymentRequest;
 import uk.gov.hmcts.reform.payments.client.PaymentsClient;
 import uk.gov.hmcts.reform.payments.client.models.FeeDto;
 import uk.gov.hmcts.reform.payments.client.models.PaymentDto;
-
+import uk.gov.hmcts.reform.payments.request.CardPaymentRequest;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Optional;
@@ -68,7 +67,7 @@ public class PaymentsService {
         Payment claimPayment = payment.get();
         logger.info("Retrieving payment with reference {}", claimPayment.getReference());
 
-        PaymentDto paymentDto = paymentsClient.retrievePayment(authorisation, claimPayment.getReference());
+        PaymentDto paymentDto = paymentsClient.retrieveCardPayment(authorisation, claimPayment.getReference());
         return Optional.of(from(paymentDto, claimPayment));
     }
 
@@ -105,10 +104,11 @@ public class PaymentsService {
             claim.getExternalId());
         Payment claimPayment = claim.getClaimData().getPayment().orElseThrow(IllegalStateException::new);
         logger.info("Return URL: {}", claimPayment.getReturnUrl());
-        PaymentDto payment = paymentsClient.createPayment(
+        PaymentDto payment = paymentsClient.createCardPayment(
             authorisation,
             paymentRequest,
-            claimPayment.getReturnUrl()
+            claimPayment.getReturnUrl(),
+            claimPayment.getNextUrl()
         );
         logger.info("Created payment for claim with external id {}", claim.getExternalId());
 
@@ -118,7 +118,7 @@ public class PaymentsService {
 
     public void cancelPayment(String authorisation, String paymentReference) {
         logger.info("Cancelling payment {}", paymentReference);
-        paymentsClient.cancelPayment(authorisation, paymentReference);
+        paymentsClient.cancelCardPayment(authorisation, paymentReference);
     }
 
     private FeeDto[] buildFees(String ccdCaseId, FeeLookupResponseDto feeOutcome) {
@@ -143,10 +143,8 @@ public class PaymentsService {
             .ccdCaseNumber(ccdCaseId)
             .amount(feeOutcome.getFeeAmount())
             .fees(fees)
-            .service(service)
             .currency(currency)
             .description(description)
-            .siteId(siteId)
             .build();
     }
 
