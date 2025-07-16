@@ -138,7 +138,7 @@ public final class SampleClaim {
 
     public static Claim getDefault() {
         return builder()
-            .withClaimData(SampleClaimData.submittedByClaimantBuilder().withExternalId(RAND_UUID).build())
+            .withClaimData(SampleClaimData.submittedByClaimantBuilder().withExternalId(RAND_UUID).withPayment(SamplePayment.builder().build()).build())
             .withCountyCourtJudgment(
                 SampleCountyCourtJudgment.builder()
                     .ccjType(CountyCourtJudgmentType.ADMISSIONS)
