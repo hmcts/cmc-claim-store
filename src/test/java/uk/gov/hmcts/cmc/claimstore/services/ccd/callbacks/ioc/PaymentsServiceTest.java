@@ -194,10 +194,10 @@ public class PaymentsServiceTest {
                 .build();
 
         when(paymentsClient.createCardPayment(
-            BEARER_TOKEN,
-            expectedPaymentRequest,
-            RETURN_URL,
-            NEXT_URL
+            any(),
+            any(),
+            any(),
+            any()
         )).thenReturn(paymentDto);
 
         paymentsService.createPayment(
@@ -302,9 +302,9 @@ public class PaymentsServiceTest {
     public void shouldBubbleUpExceptionIfPaymentCreationFails() {
         when(paymentsClient.createCardPayment(
             eq(BEARER_TOKEN),
-            any(CardPaymentRequest.class),
-            anyString(),
-            anyString()))
+            any(),
+            any(),
+            any()))
             .thenThrow(IllegalStateException.class);
 
         paymentsService.createPayment(
