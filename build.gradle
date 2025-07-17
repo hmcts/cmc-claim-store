@@ -250,7 +250,7 @@ dependencies {
   implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '4.9.2'
   implementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.7.1'
   implementation group: 'com.github.hmcts', name: 'doc-assembly-client', version: '1.2.2'
-  implementation('com.github.hmcts:payments-java-client:1.6.7') {
+  implementation('com.github.hmcts:payments-java-client:1.6.8') {
     exclude group: 'uk.gov.hmcts.reform', module: 'service-auth-provider-client'
     exclude group: 'uk.gov.hmcts.reform', module: 'java-logging'
   }
