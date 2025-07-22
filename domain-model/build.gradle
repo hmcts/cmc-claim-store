@@ -13,7 +13,7 @@ dependencies {
   implementation group: 'cz.jirutka.validator', name: 'validator-collection', version: '2.2.0'
 
   //   The below fixes https://nvd.nist.gov/vuln/detail/CVE-2019-12384 while waiting for spring to pull new version
-  implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.17.0'
+  implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.19.2'
 
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.26'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.26'
