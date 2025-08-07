@@ -178,7 +178,7 @@ allprojects {
 
       dependencySet(
         group: 'org.hibernate',
-        version: '8.0.1.Final'
+        version: '8.0.3.Final'
       ) {
         entry 'hibernate-validator'
       }
