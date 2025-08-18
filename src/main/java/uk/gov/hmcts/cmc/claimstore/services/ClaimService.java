@@ -348,55 +348,6 @@ public class ClaimService {
         return caseRepository.updateHelpWithFeesClaim(user, claim, UPDATE_HELP_WITH_FEE_CLAIM);
     }
 
-    @LogExecutionTime
-    public Claim saveRepresentedClaim(
-        String submitterId,
-        ClaimData claimData,
-        String authorisation
-    ) {
-        logger.info("Create claim feature is: {}", featureCreateClaimEnabled ? "enabled" : "disabled");
-
-        if (!featureCreateClaimEnabled) {
-            throw new ClaimCreationDisabledException("Create claim is not permitted.");
-        }
-        String externalId = claimData.getExternalId().toString();
-        User user = userService.getUser(authorisation);
-
-        String submitterEmail = user.getUserDetails().getEmail();
-
-        Claim claim = Claim.builder()
-            .claimData(claimData)
-            .submitterId(submitterId)
-            .externalId(externalId)
-            .submitterEmail(submitterEmail)
-            .createdAt(LocalDateTimeFactory.nowInUTC())
-            .claimSubmissionOperationIndicators(ClaimSubmissionOperationIndicators.builder().build())
-            .build();
-
-        Claim savedClaim = caseRepository.saveRepresentedClaim(user, claim);
-        AppInsightsEvent event = CLAIM_LEGAL_CREATE;
-        appInsights.trackEvent(event, REFERENCE_NUMBER, savedClaim.getReferenceNumber());
-        return savedClaim;
-    }
-
-    @LogExecutionTime
-    public Claim updateRepresentedClaim(
-        String submitterId,
-        LegalRepUpdate legalRepUpdate,
-        String authorisation
-    ) {
-        var claim = getClaimByExternalId(legalRepUpdate.getExternalId(), authorisation);
-        var user = userService.getUser(authorisation);
-
-        var savedClaim = caseRepository.updateRepresentedClaim(submitterId, user, claim, legalRepUpdate);
-        if (PaymentStatus.fromValue(legalRepUpdate.getPaymentReference().getStatus()).equals(PaymentStatus.SUCCESS)) {
-            createClaimEvent(authorisation, user, savedClaim);
-        }
-        trackClaimIssued(savedClaim.getReferenceNumber(), savedClaim.getClaimData().isClaimantRepresented());
-
-        return savedClaim;
-    }
-
     private void trackClaimIssued(String referenceNumber, boolean represented) {
         AppInsightsEvent event = represented ? CLAIM_ISSUED_LEGAL : CLAIM_ISSUED_CITIZEN;
         appInsights.trackEvent(event, REFERENCE_NUMBER, referenceNumber);

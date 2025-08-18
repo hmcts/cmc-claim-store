@@ -40,7 +40,6 @@ import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
-import uk.gov.hmcts.cmc.domain.models.legalrep.LegalRepUpdate;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -62,7 +61,6 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CASE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_HWF_CASE;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_LEGAL_REP_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INITIATE_CLAIM_PAYMENT_CITIZEN;
@@ -72,7 +70,6 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ORDER_REVIEW_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUPPORT_UPDATE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.UPDATE_LEGAL_REP_CLAIM;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
@@ -169,15 +166,6 @@ public class CoreCaseDataService {
         return saveClaim(user, claim, ccdCase, CREATE_HWF_CASE);
     }
 
-    @LogExecutionTime
-    public Claim createRepresentedClaim(User user, Claim claim) {
-        requireNonNull(user, USER_MUST_NOT_BE_NULL);
-
-        CCDCase ccdCase = caseMapper.to(claim);
-
-        return saveClaim(user, claim, ccdCase, CREATE_LEGAL_REP_CLAIM);
-    }
-
     private Claim saveClaim(User user, Claim claim, CCDCase ccdCase, CaseEvent createClaimEvent) {
         try {
             EventRequestData eventRequestData = EventRequestData.builder()
@@ -218,63 +206,6 @@ public class CoreCaseDataService {
                     CCD_STORING_FAILURE_MESSAGE,
                     ccdCase.getPreviousServiceCaseReference(),
                     createClaimEvent
-                ), exception
-            );
-        }
-    }
-
-    @LogExecutionTime
-    public Claim updateRepresentedClaim(String submitterId, User user, Claim claim, LegalRepUpdate legalRepUpdate) {
-        requireNonNull(user, USER_MUST_NOT_BE_NULL);
-
-        var caseEvent = UPDATE_LEGAL_REP_CLAIM;
-
-        try {
-            var userDetails = userService.getUserDetails(user.getAuthorisation());
-
-            var eventRequestData = EventRequestData.builder()
-                .userId(user.getUserDetails().getId())
-                .jurisdictionId(JURISDICTION_ID)
-                .caseTypeId(CASE_TYPE_ID)
-                .eventId(caseEvent.getValue())
-                .ignoreWarning(true)
-                .build();
-
-            var startEventResponse = startUpdate(
-                user.getAuthorisation(),
-                eventRequestData,
-                claim.getCcdCaseId(),
-                isRepresented(userDetails)
-            );
-            var ccdCase = caseMapper.to(claim);
-            ccdCase.setSubmitterId(submitterId);
-            ccdCase.setFeeAccountNumber(legalRepUpdate.getFeeAccount());
-            ccdCase.setFeeAmountInPennies(legalRepUpdate.getFeeAmountInPennies().toString());
-            ccdCase.setFeeCode(legalRepUpdate.getFeeCode());
-            ccdCase.setPaymentReference(legalRepUpdate.getPaymentReference().getReference());
-            ccdCase.setPaymentStatus(legalRepUpdate.getPaymentReference().getStatus());
-            ccdCase.setErrorCodeMessage(legalRepUpdate.getPaymentReference().getErrorCodeMessage());
-
-            CaseDataContent caseDataContent = CaseDataContentBuilder.build(
-                startEventResponse,
-                CMC_CASE_CREATE_SUMMARY,
-                SUBMITTING_CMC_CASE_CREATE_DESCRIPTION,
-                caseDetailsConverter.convertToMap(ccdCase)
-            );
-
-            return caseDetailsConverter.extractClaim(submitUpdate(user.getAuthorisation(),
-                    eventRequestData,
-                    caseDataContent,
-                    claim.getCcdCaseId(),
-                    isRepresented(userDetails)
-                )
-            );
-        } catch (Exception exception) {
-            throw new CoreCaseDataStoreException(
-                String.format(
-                    CCD_UPDATE_FAILURE_MESSAGE,
-                    claim.getCcdCaseId(),
-                    caseEvent
                 ), exception
             );
         }
@@ -878,6 +809,16 @@ public class CoreCaseDataService {
             .build();
     }
 
+    private CCDCase UpdateTransferEventContent(StartEventResponse startEventResponse, CCDCase modifiedCase) {
+        CCDCase latestCCDCase = caseDetailsConverter.extractCCDCase(startEventResponse.getCaseDetails());
+        return latestCCDCase.toBuilder().transferContent(modifiedCase.getTransferContent()).build();
+    }
+
+    private CCDCase UpdateBreathingSpaceContent(StartEventResponse startEventResponse, CCDCase modifiedCase) {
+        CCDCase latestCCDCase = caseDetailsConverter.extractCCDCase(startEventResponse.getCaseDetails());
+        return latestCCDCase.toBuilder().breathingSpace(modifiedCase.getBreathingSpace()).build();
+    }
+
     public CaseDetails update(String authorisation, CCDCase ccdCase, CaseEvent caseEvent) {
         try {
             UserDetails userDetails = userService.getUserDetails(authorisation);
@@ -897,11 +838,18 @@ public class CoreCaseDataService {
                 isRepresented(userDetails)
             );
 
+            CCDCase updatedCCDCase = switch (caseEvent) {
+                case BREATHING_SPACE_ENTERED, BREATHING_SPACE_LIFTED ->
+                    UpdateBreathingSpaceContent(startEventResponse, ccdCase);
+                case AUTOMATED_TRANSFER -> UpdateTransferEventContent(startEventResponse, ccdCase);
+                default -> caseDetailsConverter.extractCCDCase(startEventResponse.getCaseDetails());
+            };
+
             CaseDataContent caseDataContent = CaseDataContentBuilder.build(
                 startEventResponse,
                 CMC_CASE_UPDATE_SUMMARY,
                 SUBMITTING_CMC_CASE_UPDATE_DESCRIPTION,
-                caseDetailsConverter.convertToMap(ccdCase)
+                caseDetailsConverter.convertToMap(updatedCCDCase)
             );
 
             return submitUpdate(authorisation, eventRequestData, caseDataContent, caseId,
