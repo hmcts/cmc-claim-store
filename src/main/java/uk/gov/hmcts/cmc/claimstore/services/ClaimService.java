@@ -38,7 +38,6 @@ import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
-import uk.gov.hmcts.cmc.domain.models.legalrep.LegalRepUpdate;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
@@ -61,7 +60,6 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BREATHING
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BREATHING_SPACE_LIFTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_LEGAL_CREATE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.HWF_CLAIM_CREATED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NUMBER_OF_RECONSIDERATION;
 import static uk.gov.hmcts.cmc.claimstore.utils.CommonErrors.MISSING_PAYMENT;

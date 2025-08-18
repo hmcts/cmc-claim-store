@@ -809,12 +809,12 @@ public class CoreCaseDataService {
             .build();
     }
 
-    private CCDCase UpdateTransferEventContent(StartEventResponse startEventResponse, CCDCase modifiedCase) {
+    private CCDCase updateTransferEventContent(StartEventResponse startEventResponse, CCDCase modifiedCase) {
         CCDCase latestCCDCase = caseDetailsConverter.extractCCDCase(startEventResponse.getCaseDetails());
         return latestCCDCase.toBuilder().transferContent(modifiedCase.getTransferContent()).build();
     }
 
-    private CCDCase UpdateBreathingSpaceContent(StartEventResponse startEventResponse, CCDCase modifiedCase) {
+    private CCDCase updateBreathingSpaceContent(StartEventResponse startEventResponse, CCDCase modifiedCase) {
         CCDCase latestCCDCase = caseDetailsConverter.extractCCDCase(startEventResponse.getCaseDetails());
         return latestCCDCase.toBuilder().breathingSpace(modifiedCase.getBreathingSpace()).build();
     }
@@ -838,12 +838,19 @@ public class CoreCaseDataService {
                 isRepresented(userDetails)
             );
 
-            CCDCase updatedCCDCase = switch (caseEvent) {
-                case BREATHING_SPACE_ENTERED, BREATHING_SPACE_LIFTED ->
-                    UpdateBreathingSpaceContent(startEventResponse, ccdCase);
-                case AUTOMATED_TRANSFER -> UpdateTransferEventContent(startEventResponse, ccdCase);
-                default -> caseDetailsConverter.extractCCDCase(startEventResponse.getCaseDetails());
-            };
+            CCDCase updatedCCDCase;
+            switch (caseEvent) {
+                case BREATHING_SPACE_ENTERED:
+                case BREATHING_SPACE_LIFTED:
+                    updatedCCDCase = updateBreathingSpaceContent(startEventResponse, ccdCase);
+                    break;
+                case AUTOMATED_TRANSFER:
+                    updatedCCDCase = updateTransferEventContent(startEventResponse, ccdCase);
+                    break;
+                default:
+                    updatedCCDCase = caseDetailsConverter.extractCCDCase(startEventResponse.getCaseDetails());
+                    break;
+            }
 
             CaseDataContent caseDataContent = CaseDataContentBuilder.build(
                 startEventResponse,
