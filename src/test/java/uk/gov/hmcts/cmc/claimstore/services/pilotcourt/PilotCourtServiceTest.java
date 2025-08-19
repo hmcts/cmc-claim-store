@@ -221,6 +221,63 @@ class PilotCourtServiceTest {
 
             assertEquals(expectedPilotCourtIds, actualPilotCourtIds);
         }
+
+        @Test
+        void shouldThrowExceptionWhenHearingCourtNotPilotCourt() {
+            PilotCourtService pilotCourtService = new PilotCourtService(
+                csvPathSingle,
+                courtFinderService,
+                hearingCourtMapper,
+                appInsights
+            );
+            pilotCourtService.init();
+
+            HearingCourt nonPilotCourt = HearingCourt.builder().name("NonPilot").build();
+
+            assertThrows(IllegalArgumentException.class, () ->
+                pilotCourtService.getPilotCourtId(nonPilotCourt));
+        }
+
+        @Test
+        void shouldReturnEmptySetWhenNoActivePilotCourtsMatch() {
+            when(courtFinderService.getCourtDetailsListFromPostcode(anyString()))
+                .thenReturn(emptyList());
+
+            PilotCourtService pilotCourtService = new PilotCourtService(
+                csvPathSingle,
+                courtFinderService,
+                hearingCourtMapper,
+                appInsights
+            );
+            pilotCourtService.init();
+
+            Set<HearingCourt> courts = pilotCourtService.getPilotHearingCourts(Pilot.LA, LocalDateTime.MIN);
+
+            assertTrue(courts.isEmpty());
+        }
+
+        @Test
+        void shouldReturnPilotCourtIdWhenHearingCourtIsFound() {
+            List<Court> courtDetailsListFromPostcode = DataFactory.createCourtListFromJson(LIST_COURTS_SINGLE_NEWCASTLE);
+            when(courtFinderService.getCourtDetailsListFromPostcode(anyString()))
+                .thenReturn(courtDetailsListFromPostcode);
+
+            HearingCourt expectedHearingCourt = DataFactory.createHearingCourtFromJson(HEARING_COURT_NEWCASTLE);
+            when(hearingCourtMapper.from(any())).thenReturn(expectedHearingCourt);
+
+            PilotCourtService pilotCourtService = new PilotCourtService(
+                csvPathSingle,
+                courtFinderService,
+                hearingCourtMapper,
+                appInsights
+            );
+
+            pilotCourtService.init();
+
+            String actualId = pilotCourtService.getPilotCourtId(expectedHearingCourt);
+
+            assertEquals("BIRMINGHAM", actualId);
+        }
     }
 
     @Nested
