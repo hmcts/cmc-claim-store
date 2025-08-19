@@ -9,7 +9,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
+import uk.gov.hmcts.cmc.ccd.domain.CCDBreathingSpace;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDTransferContent;
+import uk.gov.hmcts.cmc.ccd.domain.CCDTransferReason;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
@@ -87,6 +91,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.UPDATE_HELP_WITH_FEE_CLAIM;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.COURT_NAME;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.getWithClaimantResponse;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
@@ -212,6 +217,74 @@ public class CoreCaseDataServiceTest {
         Claim returnedClaim = service.createNewCase(USER, providedClaim);
 
         assertEquals(expectedClaim, returnedClaim);
+    }
+
+    @Test
+    public void shouldReturnExtractedCase_whenDefaultEvent() {
+        StartEventResponse startEventResponse = StartEventResponse.builder()
+            .caseDetails(CaseDetails.builder().id(12345L).build())
+            .build();
+
+        CCDCase ccdCase = CCDCase.builder().id(12345L).build();
+        CCDCase expected = CCDCase.builder().id(555L).build();
+        when(caseDetailsConverter.extractCCDCase(startEventResponse.getCaseDetails())).thenReturn(expected);
+
+        CCDCase result = service.getLatestCaseDataWithUpdates(
+            ADD_BULK_PRINT_DETAILS, startEventResponse, ccdCase);
+
+        assertEquals(expected, result);
+        verify(caseDetailsConverter).extractCCDCase(startEventResponse.getCaseDetails());
+    }
+
+    @Test
+    public void shouldReturnUpdatedCase_whenBreathingSpaceEntered() {
+        StartEventResponse startEventResponse = StartEventResponse.builder()
+            .caseDetails(CaseDetails.builder().id(12345L).build())
+            .build();
+
+        CCDBreathingSpace breathingSpaceContent =  CCDBreathingSpace.builder()
+            .bsEnteredDate(LocalDate.now())
+            .bsLiftedDate(null).build();
+        CCDCase ccdCase = CCDCase.builder().id(12345L)
+            .breathingSpace(breathingSpaceContent)
+            .caseName("Test Inc")
+            .build();
+        CCDCase latestCaseDataFromDB = CCDCase.builder().id(555L).build();
+        when(caseDetailsConverter.extractCCDCase(startEventResponse.getCaseDetails())).thenReturn(latestCaseDataFromDB);
+        CCDCase result = service.getLatestCaseDataWithUpdates(
+            CaseEvent.BREATHING_SPACE_ENTERED, startEventResponse, ccdCase);
+
+        assertEquals(latestCaseDataFromDB.getId(), result.getId());
+        assertEquals(result.getBreathingSpace(), ccdCase.getBreathingSpace());
+    }
+
+    @Test
+    public void shouldReturnUpdatedCase_whenAutomatedTransfer() {
+        StartEventResponse startEventResponse = StartEventResponse.builder()
+            .caseDetails(CaseDetails.builder().id(12345L).build())
+            .build();
+
+        CCDTransferContent updatedTransferContent =  CCDTransferContent.builder()
+            .transferReason(CCDTransferReason.OTHER)
+            .transferCourtName(COURT_NAME)
+            .transferCourtAddress(CCDAddress.builder()
+                .addressLine1("NEW ADDRESS1")
+                .addressLine2("NEW ADDRESS2")
+                .postCode("NEW POSTCODE").build())
+            .transferReasonOther("Transfer due to a reason")
+            .build();
+
+        CCDCase ccdCase = CCDCase.builder().id(12345L)
+            .transferContent(updatedTransferContent)
+            .caseName("Test Inc")
+            .build();
+        CCDCase latestCaseDataFromDB = CCDCase.builder().id(555L).build();
+        when(caseDetailsConverter.extractCCDCase(startEventResponse.getCaseDetails())).thenReturn(latestCaseDataFromDB);
+
+        CCDCase result = service.getLatestCaseDataWithUpdates(CaseEvent.AUTOMATED_TRANSFER, startEventResponse, ccdCase);
+
+        assertEquals(latestCaseDataFromDB.getId(), result.getId());
+        assertEquals(result.getBreathingSpace(), ccdCase.getBreathingSpace());
     }
 
     @Test

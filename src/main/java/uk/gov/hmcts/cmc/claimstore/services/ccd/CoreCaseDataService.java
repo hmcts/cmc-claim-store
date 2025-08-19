@@ -819,6 +819,23 @@ public class CoreCaseDataService {
         return latestCCDCase.toBuilder().breathingSpace(modifiedCase.getBreathingSpace()).build();
     }
 
+    public CCDCase getLatestCaseDataWithUpdates(CaseEvent caseEvent, StartEventResponse startEventResponse, CCDCase ccdCase) {
+        CCDCase updatedCCDCase;
+        switch (caseEvent) {
+            case BREATHING_SPACE_ENTERED:
+            case BREATHING_SPACE_LIFTED:
+                updatedCCDCase = updateBreathingSpaceContent(startEventResponse, ccdCase);
+                break;
+            case AUTOMATED_TRANSFER:
+                updatedCCDCase = updateTransferEventContent(startEventResponse, ccdCase);
+                break;
+            default:
+                updatedCCDCase = caseDetailsConverter.extractCCDCase(startEventResponse.getCaseDetails());
+                break;
+        }
+        return updatedCCDCase;
+    }
+
     public CaseDetails update(String authorisation, CCDCase ccdCase, CaseEvent caseEvent) {
         try {
             UserDetails userDetails = userService.getUserDetails(authorisation);
@@ -838,25 +855,11 @@ public class CoreCaseDataService {
                 isRepresented(userDetails)
             );
 
-            CCDCase updatedCCDCase;
-            switch (caseEvent) {
-                case BREATHING_SPACE_ENTERED:
-                case BREATHING_SPACE_LIFTED:
-                    updatedCCDCase = updateBreathingSpaceContent(startEventResponse, ccdCase);
-                    break;
-                case AUTOMATED_TRANSFER:
-                    updatedCCDCase = updateTransferEventContent(startEventResponse, ccdCase);
-                    break;
-                default:
-                    updatedCCDCase = caseDetailsConverter.extractCCDCase(startEventResponse.getCaseDetails());
-                    break;
-            }
-
             CaseDataContent caseDataContent = CaseDataContentBuilder.build(
                 startEventResponse,
                 CMC_CASE_UPDATE_SUMMARY,
                 SUBMITTING_CMC_CASE_UPDATE_DESCRIPTION,
-                caseDetailsConverter.convertToMap(updatedCCDCase)
+                caseDetailsConverter.convertToMap(getLatestCaseDataWithUpdates(caseEvent, startEventResponse, ccdCase))
             );
 
             return submitUpdate(authorisation, eventRequestData, caseDataContent, caseId,
