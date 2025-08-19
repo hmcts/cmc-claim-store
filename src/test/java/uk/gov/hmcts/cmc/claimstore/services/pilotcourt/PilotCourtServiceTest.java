@@ -334,6 +334,11 @@ class PilotCourtServiceTest {
                 void shouldReturnFalseIfCourtIsNotPilotCourt() {
                     assertFalse(pilotCourtService.isPilotCourt(nonPilotCourtName, pilot, LocalDateTime.MAX));
                 }
+
+                @Test
+                void shouldReturnFalseIfCourtIsNotAvailable() {
+                    assertFalse(pilotCourtService.isPilotCourt("Test", pilot, LocalDateTime.MAX));
+                }
             }
 
             @Nested
@@ -363,6 +368,11 @@ class PilotCourtServiceTest {
                 @Test
                 void shouldReturnFalseIfCourtIsNotPilotCourt() {
                     assertFalse(pilotCourtService.isPilotCourt(nonPilotCourtName, pilot, LocalDateTime.MAX));
+                }
+
+                @Test
+                void shouldReturnFalseIfCourtIsNotAvailable() {
+                    assertFalse(pilotCourtService.isPilotCourt("Test", pilot, LocalDateTime.MAX));
                 }
             }
         }

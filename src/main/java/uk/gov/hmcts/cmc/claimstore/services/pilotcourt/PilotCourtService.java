@@ -116,7 +116,6 @@ public class PilotCourtService {
             .getName();
 
         return pilotCourtName != null
-            && courtName != null
             && pilotCourtName.toLowerCase().contains(courtName.toLowerCase())
             && pilotCourt.isActivePilotCourt(pilot, claimCreated);
     }
