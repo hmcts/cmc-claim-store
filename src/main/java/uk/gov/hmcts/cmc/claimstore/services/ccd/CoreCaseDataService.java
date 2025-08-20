@@ -809,28 +809,31 @@ public class CoreCaseDataService {
             .build();
     }
 
-    private CCDCase updateTransferEventContent(StartEventResponse startEventResponse, CCDCase modifiedCase) {
-        CCDCase latestCCDCase = caseDetailsConverter.extractCCDCase(startEventResponse.getCaseDetails());
-        return latestCCDCase.toBuilder().transferContent(modifiedCase.getTransferContent()).build();
+    private CCDCase updateTransferEventContent(CCDCase latestCCDCase, CCDCase modifiedCase) {
+        return latestCCDCase.toBuilder()
+            .transferContent(modifiedCase.getTransferContent())
+            .bulkPrintDetails(modifiedCase.getBulkPrintDetails())
+            .caseDocuments(modifiedCase.getCaseDocuments())
+            .build();
     }
 
-    private CCDCase updateBreathingSpaceContent(StartEventResponse startEventResponse, CCDCase modifiedCase) {
-        CCDCase latestCCDCase = caseDetailsConverter.extractCCDCase(startEventResponse.getCaseDetails());
+    private CCDCase updateBreathingSpaceContent(CCDCase latestCCDCase, CCDCase modifiedCase) {
         return latestCCDCase.toBuilder().breathingSpace(modifiedCase.getBreathingSpace()).build();
     }
 
     public CCDCase getLatestCaseDataWithUpdates(CaseEvent caseEvent, StartEventResponse startEventResponse, CCDCase ccdCase) {
         CCDCase updatedCCDCase;
+        CCDCase latestCCDCase = caseDetailsConverter.extractCCDCase(startEventResponse.getCaseDetails());
         switch (caseEvent) {
             case BREATHING_SPACE_ENTERED:
             case BREATHING_SPACE_LIFTED:
-                updatedCCDCase = updateBreathingSpaceContent(startEventResponse, ccdCase);
+                updatedCCDCase = updateBreathingSpaceContent(latestCCDCase, ccdCase);
                 break;
             case AUTOMATED_TRANSFER:
-                updatedCCDCase = updateTransferEventContent(startEventResponse, ccdCase);
+                updatedCCDCase = updateTransferEventContent(latestCCDCase, ccdCase);
                 break;
             default:
-                updatedCCDCase = caseDetailsConverter.extractCCDCase(startEventResponse.getCaseDetails());
+                updatedCCDCase = latestCCDCase;
                 break;
         }
         return updatedCCDCase;
