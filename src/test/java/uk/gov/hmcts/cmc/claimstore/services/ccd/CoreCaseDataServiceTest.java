@@ -9,7 +9,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
+import uk.gov.hmcts.cmc.ccd.domain.CCDBreathingSpace;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDTransferContent;
+import uk.gov.hmcts.cmc.ccd.domain.CCDTransferReason;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
@@ -34,8 +38,6 @@ import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
-import uk.gov.hmcts.cmc.domain.models.legalrep.LegalRepUpdate;
-import uk.gov.hmcts.cmc.domain.models.legalrep.PaymentReference;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -53,7 +55,6 @@ import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 import uk.gov.hmcts.reform.ccd.client.model.PaginatedSearchMetadata;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 
-import java.math.BigInteger;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -63,7 +64,6 @@ import java.util.UUID;
 
 import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -91,6 +91,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.UPDATE_HELP_WITH_FEE_CLAIM;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.COURT_NAME;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.getWithClaimantResponse;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
@@ -216,6 +217,74 @@ public class CoreCaseDataServiceTest {
         Claim returnedClaim = service.createNewCase(USER, providedClaim);
 
         assertEquals(expectedClaim, returnedClaim);
+    }
+
+    @Test
+    public void shouldReturnExtractedCase_whenDefaultEvent() {
+        StartEventResponse startEventResponse = StartEventResponse.builder()
+            .caseDetails(CaseDetails.builder().id(12345L).build())
+            .build();
+
+        CCDCase ccdCase = CCDCase.builder().id(12345L).build();
+        CCDCase expected = CCDCase.builder().id(555L).build();
+        when(caseDetailsConverter.extractCCDCase(startEventResponse.getCaseDetails())).thenReturn(expected);
+
+        CCDCase result = service.getLatestCaseDataWithUpdates(
+            ADD_BULK_PRINT_DETAILS, startEventResponse, ccdCase);
+
+        assertEquals(expected, result);
+        verify(caseDetailsConverter).extractCCDCase(startEventResponse.getCaseDetails());
+    }
+
+    @Test
+    public void shouldReturnUpdatedCase_whenBreathingSpaceEntered() {
+        StartEventResponse startEventResponse = StartEventResponse.builder()
+            .caseDetails(CaseDetails.builder().id(12345L).build())
+            .build();
+
+        CCDBreathingSpace breathingSpaceContent =  CCDBreathingSpace.builder()
+            .bsEnteredDate(LocalDate.now())
+            .bsLiftedDate(null).build();
+        CCDCase ccdCase = CCDCase.builder().id(12345L)
+            .breathingSpace(breathingSpaceContent)
+            .caseName("Test Inc")
+            .build();
+        CCDCase latestCaseDataFromDB = CCDCase.builder().id(555L).build();
+        when(caseDetailsConverter.extractCCDCase(startEventResponse.getCaseDetails())).thenReturn(latestCaseDataFromDB);
+        CCDCase result = service.getLatestCaseDataWithUpdates(
+            CaseEvent.BREATHING_SPACE_ENTERED, startEventResponse, ccdCase);
+
+        assertEquals(latestCaseDataFromDB.getId(), result.getId());
+        assertEquals(result.getBreathingSpace(), ccdCase.getBreathingSpace());
+    }
+
+    @Test
+    public void shouldReturnUpdatedCase_whenAutomatedTransfer() {
+        StartEventResponse startEventResponse = StartEventResponse.builder()
+            .caseDetails(CaseDetails.builder().id(12345L).build())
+            .build();
+
+        CCDTransferContent updatedTransferContent =  CCDTransferContent.builder()
+            .transferReason(CCDTransferReason.OTHER)
+            .transferCourtName(COURT_NAME)
+            .transferCourtAddress(CCDAddress.builder()
+                .addressLine1("NEW ADDRESS1")
+                .addressLine2("NEW ADDRESS2")
+                .postCode("NEW POSTCODE").build())
+            .transferReasonOther("Transfer due to a reason")
+            .build();
+
+        CCDCase ccdCase = CCDCase.builder().id(12345L)
+            .transferContent(updatedTransferContent)
+            .caseName("Test Inc")
+            .build();
+        CCDCase latestCaseDataFromDB = CCDCase.builder().id(555L).build();
+        when(caseDetailsConverter.extractCCDCase(startEventResponse.getCaseDetails())).thenReturn(latestCaseDataFromDB);
+
+        CCDCase result = service.getLatestCaseDataWithUpdates(CaseEvent.AUTOMATED_TRANSFER, startEventResponse, ccdCase);
+
+        assertEquals(latestCaseDataFromDB.getId(), result.getId());
+        assertEquals(result.getBreathingSpace(), ccdCase.getBreathingSpace());
     }
 
     @Test
@@ -861,119 +930,6 @@ public class CoreCaseDataServiceTest {
 
         verify(coreCaseDataApi, atLeastOnce()).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
             anyString(), anyString(), eq(BREATHING_SPACE_ENTERED.getValue()));
-    }
-
-    @Test
-    public void saveUpdateRepresentedClaim() {
-        UserDetails userDetailsObj = SampleUserDetails.builder()
-            .withRoles("citizen", "caseworker-cmc").build();
-        User userObj = new User(AUTHORISATION, userDetailsObj);
-        when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetailsObj);
-        when(coreCaseDataApi.startEventForCaseWorker(
-            anyString(),
-            anyString(),
-            anyString(),
-            anyString(),
-            anyString(),
-            anyString(),
-            anyString()
-        ))
-            .thenReturn(StartEventResponse.builder()
-                .caseDetails(CaseDetails.builder().data(Maps.newHashMap()).build())
-                .eventId("eventId")
-                .token("token")
-                .build());
-
-        when(coreCaseDataApi.submitEventForCaseWorker(
-            anyString(),
-            anyString(),
-            anyString(),
-            anyString(),
-            anyString(),
-            anyString(),
-            anyBoolean(),
-            any()
-        ))
-            .thenReturn(CaseDetails.builder()
-                .id(SampleClaim.CLAIM_ID)
-                .data(new HashMap<>())
-                .build());
-        String externalId = "test-external-id";
-        String pba = "PBA_NO";
-        PaymentReference paymentReference = new PaymentReference("REF", "Success",
-            200, null, "2021-01-01");
-        LegalRepUpdate legalRepUpdate = new LegalRepUpdate(externalId,
-            "1023467890123456L", new BigInteger(String.valueOf(2000)),
-            "X0012", paymentReference, pba);
-
-        Claim providedClaim = SampleClaim.getDefault();
-        Response providedResponse = SampleResponse.validDefaults();
-        when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().build());
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
-            .thenReturn(SampleClaim.getWithResponse(providedResponse));
-
-        Claim claim = service.updateRepresentedClaim("62", userObj, providedClaim, legalRepUpdate
-        );
-
-        assertNotNull(claim);
-    }
-
-    @Test
-    public void saveUpdateRepresentedClaimThrowsException() {
-        UserDetails userDetailsObj = SampleUserDetails.builder()
-            .withRoles("citizen", "caseworker-cmc").build();
-        User userObj = new User(AUTHORISATION, userDetailsObj);
-        when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetailsObj);
-        String ccdUpdateFailureMessage
-            = "Failed updating claim in CCD store for case id %s on event %s";
-
-        when(coreCaseDataApi.startEventForCaseWorker(
-            anyString(),
-            anyString(),
-            anyString(),
-            anyString(),
-            anyString(),
-            anyString(),
-            anyString()
-        ))
-            .thenReturn(StartEventResponse.builder()
-                .caseDetails(CaseDetails.builder().data(Maps.newHashMap()).build())
-                .eventId("eventId")
-                .token("token")
-                .build());
-
-        when(coreCaseDataApi.submitEventForCaseWorker(
-            anyString(),
-            anyString(),
-            anyString(),
-            anyString(),
-            anyString(),
-            anyString(),
-            anyBoolean(),
-            any()
-        ))
-            .thenReturn(CaseDetails.builder()
-                .id(SampleClaim.CLAIM_ID)
-                .data(new HashMap<>())
-                .build());
-        String externalId = "test-external-id";
-        String pba = "PBA_NO";
-        PaymentReference paymentReference = new PaymentReference("REF", "Success",
-            200, null, "2021-01-01");
-        LegalRepUpdate legalRepUpdate = new LegalRepUpdate(externalId,
-            "1023467890123456L", new BigInteger(String.valueOf(2000)),
-            "X0012", paymentReference, pba);
-
-        Claim providedClaim = SampleClaim.getDefault();
-        when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().build());
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
-            .thenThrow(new RuntimeException(ccdUpdateFailureMessage));
-        try {
-            Claim claim = service.updateRepresentedClaim("62", userObj, providedClaim, legalRepUpdate
-            );
-        } catch (Exception e) {
-            assertThatExceptionOfType(CoreCaseDataStoreException.class);
-        }
     }
 
     @Test

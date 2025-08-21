@@ -348,20 +348,6 @@ public class SampleClaimData {
             .withEvidence(SampleEvidence.validDefaults());
     }
 
-    public static ClaimData submittedByLegalRepresentative() {
-        return submittedByLegalRepresentativeBuilder().build();
-    }
-
-    public static SampleClaimData submittedByLegalRepresentativeBuilder() {
-        return builder()
-            .clearClaimants()
-            .withExternalId(UUID.randomUUID())
-            .withClaimant(SampleParty.builder()
-                .withRepresentative(SampleRepresentative.builder().build())
-                .individual())
-            .withAmount(SampleAmountRange.builder().build());
-    }
-
     public static ClaimData noInterest() {
         return builder()
             .withInterest(
