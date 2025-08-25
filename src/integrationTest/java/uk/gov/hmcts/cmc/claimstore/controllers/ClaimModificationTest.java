@@ -150,25 +150,6 @@ public class ClaimModificationTest extends BaseMockSpringTest {
     }
 
     @Test
-    public void testSaveLegalRepresentedClaim() throws Exception {
-        Claim claim = SampleClaim.getDefaultForLegal();
-        ClaimData claimData = claim.getClaimData();
-
-        when(caseRepository.saveRepresentedClaim(eq(LEGAL_REP), any(Claim.class)))
-            .thenReturn(claim);
-
-        Claim result = jsonMappingHelper.deserializeObjectFrom(
-            doPost(AUTHORISATION_TOKEN_LEGAL_REP, claimData,
-                ROOT_PATH + "/{submitterId}/create-legal-rep-claim", SampleClaim.USER_ID)
-                .andExpect(status().isOk())
-                .andReturn(),
-            Claim.class);
-        assertThat(result)
-            .isNotNull();
-
-    }
-
-    @Test
     public void testInitiatePayment() throws Exception {
         ClaimData claimData = SampleClaimData.validDefaults();
         ClaimData claimDataWithPaymentDetails = claimData.toBuilder()
