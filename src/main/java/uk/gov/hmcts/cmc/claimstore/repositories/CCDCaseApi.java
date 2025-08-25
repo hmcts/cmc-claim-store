@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.repositories;
 
 import com.google.common.collect.ImmutableMap;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -361,7 +362,7 @@ public class CCDCaseApi {
     }
 
     private String extractLetterHolderId(String role) {
-        return role.replace("letter-", "");
+        return StringUtils.remove(role, "letter-");
     }
 
     private CaseDetails readCase(User user, String caseId) {

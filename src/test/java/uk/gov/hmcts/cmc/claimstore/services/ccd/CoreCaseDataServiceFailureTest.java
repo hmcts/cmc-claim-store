@@ -10,6 +10,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.UnprocessableEntityException;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
@@ -43,6 +44,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 
 import java.net.URI;
@@ -166,6 +168,39 @@ public class CoreCaseDataServiceFailureTest {
             eq(true),
             any(CaseDataContent.class)
         );
+    }
+
+    @Test(expected = ConflictException.class)
+    public void createNewCaseBubblesUpConflictException() {
+        Claim providedClaim = SampleClaim.getDefaultForLegal();
+        User solicitorUser = new User(AUTHORISATION, SampleUserDetails.builder().withRoles("solicitor").build());
+        when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
+
+        when(ccdCreateCaseService.startCreate(
+            eq(AUTHORISATION),
+            any(EventRequestData.class),
+            eq(solicitorUser.isRepresented())
+        ))
+            .thenReturn(StartEventResponse.builder()
+                .caseDetails(CaseDetails.builder().build())
+                .eventId("eventId")
+                .token("token")
+                .build());
+
+        when(ccdCreateCaseService.submitCreate(
+            eq(AUTHORISATION),
+            any(EventRequestData.class),
+            any(CaseDataContent.class),
+            eq(solicitorUser.isRepresented())
+        ))
+            .thenThrow(new FeignException.Conflict(
+                "Status 409 while creating the case",
+                request,
+                new byte[]{},
+                Map.of())
+            );
+
+        service.createRepresentedClaim(solicitorUser, providedClaim);
     }
 
     @Test(expected = CoreCaseDataStoreException.class)
