@@ -309,7 +309,7 @@ dependencies {
   testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.11.0'
   testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.8.0'
   testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.2'
-  testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.18.0'
+  testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.21.3'
 
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.29'
   testImplementation group: 'com.jayway.jsonpath', name: 'json-path-assert', version: '2.5.0'
