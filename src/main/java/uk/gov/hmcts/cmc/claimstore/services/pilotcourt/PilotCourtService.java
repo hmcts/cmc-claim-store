@@ -4,6 +4,7 @@ import feign.FeignException;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -115,8 +116,7 @@ public class PilotCourtService {
             .orElseThrow(() -> new IllegalStateException("Hearing Court not found for " + pilotCourt.getId()))
             .getName();
 
-        return pilotCourtName != null
-            && pilotCourtName.toLowerCase().contains(courtName.toLowerCase())
+        return StringUtils.containsIgnoreCase(pilotCourtName, courtName)
             && pilotCourt.isActivePilotCourt(pilot, claimCreated);
     }
 
