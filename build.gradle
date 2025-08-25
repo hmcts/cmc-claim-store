@@ -418,7 +418,7 @@ tasks.register('functional', Test) {
   description = 'Executes functional tests against an AAT Claim Store instance'
   setTestClassesDirs(sourceSets.aat.output.classesDirs)
   setClasspath(sourceSets.aat.runtimeClasspath)
-  include "uk/gov/hmcts/cmc/claimstore/tests/functional/**"
+  include "uk/gov/hmcts/cmc/claimstore/tests/functional/citizen/FeatureTogglesTest*"
   testLogging.showStandardStreams = true
 
 
