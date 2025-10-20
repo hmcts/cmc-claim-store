@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.ccd.assertion;
 
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
-
 import java.util.Optional;
 
 public class EvidenceRowAssert extends CustomAssert<EvidenceRowAssert, EvidenceRow> {

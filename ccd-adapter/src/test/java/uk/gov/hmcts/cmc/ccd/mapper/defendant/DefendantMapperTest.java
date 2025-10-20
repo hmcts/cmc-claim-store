@@ -22,7 +22,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;

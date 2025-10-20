@@ -4,7 +4,6 @@ import uk.gov.hmcts.cmc.ccd.assertion.CustomAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
-
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertMoney;

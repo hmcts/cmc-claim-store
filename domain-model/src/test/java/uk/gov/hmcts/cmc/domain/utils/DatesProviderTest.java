@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.domain.utils;
 
 import org.junit.jupiter.api.Test;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;

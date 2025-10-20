@@ -21,7 +21,6 @@ import uk.gov.hmcts.cmc.claimstore.models.idam.TokenExchangeResponse;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserInfo;
 import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi;
 import uk.gov.hmcts.cmc.claimstore.requests.idam.IdamApi;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

@@ -6,7 +6,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;

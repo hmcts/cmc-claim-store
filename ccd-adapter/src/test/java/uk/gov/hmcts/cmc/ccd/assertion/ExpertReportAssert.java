@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.ccd.assertion;
 
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDExpertReport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReport;
-
 import java.util.Optional;
 
 public class ExpertReportAssert extends CustomAssert<ExpertReportAssert, ExpertReport> {

@@ -25,7 +25,6 @@ import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.sendletter.api.Document;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

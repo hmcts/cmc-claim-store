@@ -51,7 +51,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse.PartAdmission;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;

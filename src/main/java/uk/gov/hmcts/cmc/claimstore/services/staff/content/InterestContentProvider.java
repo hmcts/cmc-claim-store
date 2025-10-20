@@ -10,7 +10,6 @@ import uk.gov.hmcts.cmc.domain.amount.TotalAmountCalculator;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;

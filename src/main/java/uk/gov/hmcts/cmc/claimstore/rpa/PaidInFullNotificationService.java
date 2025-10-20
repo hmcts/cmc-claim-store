@@ -16,7 +16,6 @@ import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.cmc.rpa.mapper.PaidInFullJsonMapper;
-
 import java.util.Collections;
 
 import static java.util.Objects.requireNonNull;

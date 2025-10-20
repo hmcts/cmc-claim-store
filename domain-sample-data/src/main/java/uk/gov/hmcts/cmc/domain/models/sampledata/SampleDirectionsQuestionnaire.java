@@ -8,7 +8,6 @@ import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.RequireSupport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.UnavailableDate;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.VulnerabilityQuestions;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.Witness;
-
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;

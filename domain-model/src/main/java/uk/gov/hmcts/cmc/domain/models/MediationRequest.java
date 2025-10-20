@@ -1,11 +1,10 @@
 package uk.gov.hmcts.cmc.domain.models;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
-
 import java.time.LocalDate;
-import javax.validation.constraints.NotEmpty;
 
 @AllArgsConstructor
 @Getter

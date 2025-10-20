@@ -16,7 +16,6 @@ import uk.gov.hmcts.cmc.domain.models.response.ResponseMethod;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.sampledata.statementofmeans.SampleStatementOfMeans;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 

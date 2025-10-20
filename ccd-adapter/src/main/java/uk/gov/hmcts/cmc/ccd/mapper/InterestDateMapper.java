@@ -7,7 +7,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDInterestDateType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestEndDateType;
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
 import uk.gov.hmcts.cmc.domain.models.InterestDate.InterestEndDateType;
-
 import java.util.Optional;
 
 @Component

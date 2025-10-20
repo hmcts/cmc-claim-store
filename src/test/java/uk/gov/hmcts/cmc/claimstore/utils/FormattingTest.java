@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.utils;
 
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;

@@ -13,7 +13,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimForHwF;
 import uk.gov.service.notify.NotificationClientException;
-
 import java.time.LocalDateTime;
 import java.util.Arrays;
 

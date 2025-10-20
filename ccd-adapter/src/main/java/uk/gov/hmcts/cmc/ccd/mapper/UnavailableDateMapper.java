@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.UnavailableDate;
-
 import java.time.LocalDate;
 
 @Component

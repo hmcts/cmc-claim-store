@@ -11,7 +11,6 @@ import uk.gov.hmcts.cmc.claimstore.services.bankholidays.BankHolidaysApi;
 import uk.gov.hmcts.cmc.claimstore.services.bankholidays.NonWorkingDaysCollection;
 import uk.gov.hmcts.cmc.claimstore.services.bankholidays.PublicHolidaysCollection;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
-
 import java.io.IOException;
 import java.time.LocalDate;
 

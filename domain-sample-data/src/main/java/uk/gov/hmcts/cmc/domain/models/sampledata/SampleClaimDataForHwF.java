@@ -13,7 +13,6 @@ import uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation;
 import uk.gov.hmcts.cmc.domain.models.particulars.HousingDisrepair;
 import uk.gov.hmcts.cmc.domain.models.particulars.PersonalInjury;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
-
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.ArrayList;

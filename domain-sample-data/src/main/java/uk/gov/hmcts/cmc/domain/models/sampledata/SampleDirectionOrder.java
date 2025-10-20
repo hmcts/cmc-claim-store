@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
 import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
-
 import java.time.LocalDateTime;
 
 public class SampleDirectionOrder {

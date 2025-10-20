@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.utils;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
-
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

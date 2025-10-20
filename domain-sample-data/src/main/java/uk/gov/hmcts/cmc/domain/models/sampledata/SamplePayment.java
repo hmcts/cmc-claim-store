@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.domain.models.sampledata;
 
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.Payment.PaymentBuilder;
-
 import java.math.BigDecimal;
 
 import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;

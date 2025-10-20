@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff;
 
+import jakarta.mail.Session;
+import jakarta.mail.internet.MimeMessage;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -11,12 +13,9 @@ import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.events.claim.PostClaimOrchestrationHandler;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Properties;
-import javax.mail.Session;
-import javax.mail.internet.MimeMessage;
 
 import static java.util.Collections.singletonMap;
 import static org.mockito.ArgumentMatchers.any;

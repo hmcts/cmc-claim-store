@@ -9,7 +9,6 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceB
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-
 import java.util.HashMap;
 import java.util.Map;
 

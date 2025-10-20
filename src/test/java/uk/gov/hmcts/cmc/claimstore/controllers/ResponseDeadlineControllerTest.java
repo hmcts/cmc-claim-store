@@ -6,7 +6,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
-
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;

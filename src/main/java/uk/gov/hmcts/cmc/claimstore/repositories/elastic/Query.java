@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.repositories.elastic;
 
 import org.elasticsearch.index.query.QueryBuilder;
-
 import java.util.Objects;
 
 public class Query {

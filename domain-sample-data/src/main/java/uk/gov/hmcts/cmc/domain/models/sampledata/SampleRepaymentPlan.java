@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.domain.models.sampledata;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan.RepaymentPlanBuilder;
 import uk.gov.hmcts.cmc.domain.models.ccj.PaymentSchedule;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 

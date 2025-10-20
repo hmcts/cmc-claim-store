@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.domain.models.sampledata;
 
 import uk.gov.hmcts.cmc.domain.models.evidence.Evidence;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
-
 import java.util.List;
 
 import static java.util.Collections.singletonList;

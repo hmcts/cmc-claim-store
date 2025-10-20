@@ -26,7 +26,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.reform.sendletter.api.Document;
-
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;

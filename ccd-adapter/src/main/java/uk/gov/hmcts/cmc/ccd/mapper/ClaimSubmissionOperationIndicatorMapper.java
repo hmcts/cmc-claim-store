@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
-
 import java.util.function.Function;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.valueOf;

@@ -4,7 +4,6 @@ import lombok.Builder;
 import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentSchedule;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 

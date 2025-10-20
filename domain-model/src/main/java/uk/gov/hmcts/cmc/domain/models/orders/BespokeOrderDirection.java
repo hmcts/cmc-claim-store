@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.domain.models.orders;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-
 import java.util.ArrayList;
 import java.util.List;
 

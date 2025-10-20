@@ -6,7 +6,6 @@ import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.exceptions.TemplateException;
-
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;

@@ -6,7 +6,6 @@ import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
 import uk.gov.hmcts.cmc.domain.models.amount.Amount;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;

@@ -25,7 +25,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleHearingLocation;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
-
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;

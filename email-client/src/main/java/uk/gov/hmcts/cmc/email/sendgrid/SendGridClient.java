@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailSendFailedException;
-
 import java.io.IOException;
 
 @Component

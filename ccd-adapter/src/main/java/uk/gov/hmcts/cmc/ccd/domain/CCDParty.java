@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.ccd.domain;
 
 import lombok.Builder;
 import lombok.Getter;
-
 import java.time.LocalDate;
 
 @Builder(toBuilder = true)

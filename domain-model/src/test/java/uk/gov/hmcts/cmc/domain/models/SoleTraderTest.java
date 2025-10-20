@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.domain.models;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
-
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -16,7 +16,6 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
-
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

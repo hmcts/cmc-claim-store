@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.ccd.util;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
-
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;

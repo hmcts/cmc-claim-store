@@ -8,7 +8,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.domain.models.InterestAmount;
 import uk.gov.hmcts.cmc.email.EmailService;
-
 import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;

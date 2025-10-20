@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 import lombok.Builder;
 import lombok.Getter;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-
 import java.util.Map;
 
 @Builder

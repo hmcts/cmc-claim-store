@@ -15,7 +15,6 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.CCJNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.scheduler.model.CronJob;
-
 import java.time.LocalDate;
 import java.util.List;
 

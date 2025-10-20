@@ -18,7 +18,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepresentative;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 import uk.gov.hmcts.cmc.rpa.config.ModuleConfiguration;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 

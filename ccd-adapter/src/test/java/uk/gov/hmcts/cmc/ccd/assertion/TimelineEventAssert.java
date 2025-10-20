@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.ccd.assertion;
 
 import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
-
 import java.util.Optional;
 
 public class TimelineEventAssert extends CustomAssert<TimelineEventAssert, TimelineEvent> {

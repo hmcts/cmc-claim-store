@@ -10,7 +10,6 @@ import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDCourtOrder;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
-
 import java.math.BigDecimal;
 import java.util.UUID;
 

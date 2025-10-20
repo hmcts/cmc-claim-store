@@ -19,7 +19,6 @@ import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.sendletter.api.Letter;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;

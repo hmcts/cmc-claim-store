@@ -19,7 +19,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.reform.sendletter.api.Document;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;

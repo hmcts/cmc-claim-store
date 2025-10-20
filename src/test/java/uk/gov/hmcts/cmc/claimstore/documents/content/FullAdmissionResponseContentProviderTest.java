@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
-
 import java.math.BigDecimal;
 import java.util.Map;
 

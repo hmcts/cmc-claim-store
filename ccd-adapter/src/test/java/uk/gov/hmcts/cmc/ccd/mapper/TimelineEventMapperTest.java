@@ -10,7 +10,6 @@ import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
-
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -17,7 +17,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.sendletter.api.Document;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;

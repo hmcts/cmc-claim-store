@@ -6,7 +6,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.services.document.SecuredDocumentManagementService;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.reform.sendletter.api.Document;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Base64;

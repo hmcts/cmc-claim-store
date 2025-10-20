@@ -14,7 +14,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SamplePaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
-
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;

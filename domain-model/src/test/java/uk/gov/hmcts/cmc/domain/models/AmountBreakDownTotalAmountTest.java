@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.domain.models;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
-
 import java.math.BigDecimal;
 
 import static java.util.Arrays.asList;

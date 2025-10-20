@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.stereotypes;
 
 import uk.gov.hmcts.cmc.claimstore.services.TemplateService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
-
 import java.util.Map;
 
 /**

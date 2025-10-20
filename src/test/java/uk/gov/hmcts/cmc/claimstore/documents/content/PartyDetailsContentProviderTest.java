@@ -8,7 +8,6 @@ import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAddress;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
-
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;

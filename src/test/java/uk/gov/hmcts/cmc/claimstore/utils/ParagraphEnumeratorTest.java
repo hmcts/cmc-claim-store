@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.utils;
 
 import org.junit.Test;
-
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;

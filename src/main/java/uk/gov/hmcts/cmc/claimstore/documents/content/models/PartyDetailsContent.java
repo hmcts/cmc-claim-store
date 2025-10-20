@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.documents.content.models;
 
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
-
 import java.util.List;
 
 public class PartyDetailsContent {

@@ -18,7 +18,6 @@ import uk.gov.hmcts.cmc.claimstore.requests.idam.IdamApi;
 import uk.gov.hmcts.cmc.claimstore.services.user.IUserAuthorisationTokenService;
 import uk.gov.hmcts.cmc.claimstore.services.user.IUserInfoService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
-
 import java.util.Base64;
 
 @Component

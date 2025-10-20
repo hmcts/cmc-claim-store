@@ -10,7 +10,6 @@ import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
-
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertNull;

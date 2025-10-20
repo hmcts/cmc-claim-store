@@ -20,7 +20,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.docassembly.exception.DocumentGenerationFailedException;
-
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;

@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.domain.utils;
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
-
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;

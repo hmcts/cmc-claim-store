@@ -8,7 +8,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.quartz.JobExecutionException;
 import uk.gov.hmcts.cmc.claimstore.services.ScheduledStateTransitionService;
 import uk.gov.hmcts.cmc.claimstore.services.statetransition.StateTransitions;
-
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

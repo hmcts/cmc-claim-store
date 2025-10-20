@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.rpa.mapper.helper;
 
+import jakarta.json.JsonObject;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -11,9 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
-
 import java.time.LocalDate;
-import javax.json.JsonObject;
 
 import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;

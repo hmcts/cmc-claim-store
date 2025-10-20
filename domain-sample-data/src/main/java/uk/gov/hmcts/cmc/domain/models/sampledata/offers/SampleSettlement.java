@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.domain.models.sampledata.offers;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.offers.StatementType;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;

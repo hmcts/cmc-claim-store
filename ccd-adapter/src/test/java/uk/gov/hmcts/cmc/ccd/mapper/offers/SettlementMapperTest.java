@@ -17,7 +17,6 @@ import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.offers.StatementType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SamplePartyStatement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
-
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;

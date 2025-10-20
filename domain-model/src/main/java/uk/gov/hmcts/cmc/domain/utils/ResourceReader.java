@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.domain.utils;
 
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;

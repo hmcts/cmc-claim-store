@@ -32,7 +32,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;

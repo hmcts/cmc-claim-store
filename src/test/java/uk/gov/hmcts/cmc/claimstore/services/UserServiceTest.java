@@ -10,7 +10,6 @@ import uk.gov.hmcts.cmc.claimstore.models.idam.*;
 import uk.gov.hmcts.cmc.claimstore.requests.idam.IdamApi;
 import uk.gov.hmcts.cmc.claimstore.services.user.UserAuthorisationTokenService;
 import uk.gov.hmcts.cmc.claimstore.services.user.UserInfoService;
-
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;

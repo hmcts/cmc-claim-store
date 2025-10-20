@@ -9,7 +9,6 @@ import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
-
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;

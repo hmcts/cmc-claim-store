@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans;
 import uk.gov.hmcts.cmc.ccd.assertion.CustomAssert;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDCourtOrder;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
-
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertMoney;
