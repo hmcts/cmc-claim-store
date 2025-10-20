@@ -100,36 +100,38 @@ allprojects {
     }
   }
 
-  sourceSets {
-    integrationTest {
-      java {
-        compileClasspath += main.output + test.output
-        runtimeClasspath += main.output + test.output
-        srcDir('src/integrationTest/java')
+  if (project == rootProject) {
+    sourceSets {
+      integrationTest {
+        java {
+          compileClasspath += main.output + test.output
+          runtimeClasspath += main.output + test.output
+          srcDir('src/integrationTest/java')
+        }
+        resources {
+          srcDir('src/integrationTest/resources')
+        }
       }
-      resources {
-        srcDir('src/integrationTest/resources')
-      }
-    }
 
-    aat {
-      java {
-        compileClasspath += main.output
-        runtimeClasspath += main.output
-        srcDir('src/aat/java')
+      aat {
+        java {
+          compileClasspath += main.output
+          runtimeClasspath += main.output
+          srcDir('src/aat/java')
+        }
+        resources {
+          srcDir('src/aat/resources')
+        }
       }
-      resources {
-        srcDir('src/aat/resources')
-      }
-    }
 
-    contractTest {
-      java {
-        compileClasspath += main.output
-        runtimeClasspath += main.output
-        srcDir file('src/contractTest/java')
+      contractTest {
+        java {
+          compileClasspath += main.output
+          runtimeClasspath += main.output
+          srcDir file('src/contractTest/java')
+        }
+        resources.srcDir file('src/contractTest/resources')
       }
-      resources.srcDir file('src/contractTest/resources')
     }
   }
 
