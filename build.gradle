@@ -416,6 +416,8 @@ tasks.register('migrateClaims') {
 
 tasks.withType(Test).configureEach {
   useJUnitPlatform()
+  jvmArgs '--add-opens=java.base/java.lang=ALL-UNNAMED',
+          '--add-opens=java.base/java.lang.reflect=ALL-UNNAMED'
 }
 
 tasks.register('functional', Test) {
