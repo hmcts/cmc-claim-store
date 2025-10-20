@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services.pilotcourt;
 
 import feign.FeignException;
 import feign.Request;
+import feign.RequestTemplate;
 import feign.Response;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +16,6 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourtMapper;
 import uk.gov.hmcts.cmc.claimstore.services.courtfinder.CourtFinderService;
 import uk.gov.hmcts.cmc.claimstore.test.utils.DataFactory;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
@@ -66,7 +66,13 @@ class PilotCourtServiceTest {
 
     private FeignException createFeignException() {
         Map<String, Collection<String>> headers = new HashMap<>();
-        Request request = Request.create(Request.HttpMethod.GET, "/test", headers, new byte[0], StandardCharsets.UTF_8);
+        Request request = Request.create(
+            Request.HttpMethod.GET,
+            "/test",
+            headers,
+            Request.Body.empty(),
+            new RequestTemplate()
+        );
         Response response = Response.builder()
             .status(500)
             .reason("failure")

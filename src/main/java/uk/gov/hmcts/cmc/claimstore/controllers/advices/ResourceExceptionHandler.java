@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers.advices;
 
 import com.google.common.base.Throwables;
 import feign.FeignException;
+import jakarta.servlet.ServletException;
 import org.postgresql.util.PSQLException;
 import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import jakarta.servlet.ServletException;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsExceptionLogger;
 import uk.gov.hmcts.cmc.claimstore.exceptions.*;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
