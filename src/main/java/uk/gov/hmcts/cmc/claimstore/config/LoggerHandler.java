@@ -28,7 +28,7 @@ public class LoggerHandler {
         String logMessage = String.format(LOG_MESSAGE_FORMAT,
             joinPoint.getTarget().getClass().getName(),
             joinPoint.getSignature().getName(),
-            stopWatch.getLastTaskTimeMillis());
+            stopWatch.lastTaskInfo().getTimeMillis());
         logger.info(logMessage);
     }
 

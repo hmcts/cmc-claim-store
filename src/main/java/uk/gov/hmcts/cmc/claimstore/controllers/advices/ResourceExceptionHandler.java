@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import org.springframework.web.util.NestedServletException;
+import jakarta.servlet.ServletException;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsExceptionLogger;
 import uk.gov.hmcts.cmc.claimstore.exceptions.*;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
@@ -74,8 +74,7 @@ public class ResourceExceptionHandler {
     @ExceptionHandler(value = HttpClientErrorException.class)
     public ResponseEntity<Object> httpClientErrorException(HttpClientErrorException exception) {
         logger.error(exception);
-        return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(),
-            HttpStatus.valueOf(exception.getRawStatusCode()));
+        return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), exception.getStatusCode());
     }
 
     @ExceptionHandler(value = ForbiddenActionException.class)
@@ -261,7 +260,7 @@ public class ResourceExceptionHandler {
             ));
     }
 
-    @ExceptionHandler({NestedServletException.class, FeignException.BadRequest.class})
+    @ExceptionHandler({ServletException.class, FeignException.BadRequest.class})
     public ResponseEntity<String> handleNestedServletExceptionBadRequest(Exception exception) {
         logger.error(exception);
         return new ResponseEntity<>(exception.getMessage(),

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.courtfinder;
 
 import feign.FeignException;
+import feign.codec.DecodeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,9 @@ public class CourtFinderService {
         SearchCourtByPostcodeResponse searchByPostcodeResponse;
         try {
             searchByPostcodeResponse = courtFinderApi.findMoneyClaimCourtByPostcode(postcode);
+        } catch (DecodeException ex) {
+            LOG.warn("Failed to decode court finder response for postcode {}", postcode, ex);
+            return new ArrayList<>();
         } catch (FeignException | RestClientException ex) {
             LOG.warn("Failed to retrieve court details for postcode {}", postcode, ex);
             return new ArrayList<>();
@@ -43,7 +47,8 @@ public class CourtFinderService {
         }
 
         List<Court> courtList = new ArrayList<>();
-        if (ofNullable(searchByPostcodeResponse).isEmpty()) {
+        if (ofNullable(searchByPostcodeResponse).isEmpty()
+            || ofNullable(searchByPostcodeResponse.getCourts()).isEmpty()) {
             return courtList;
         }
         for (CourtDetails courtDetails : searchByPostcodeResponse.getCourts()) {

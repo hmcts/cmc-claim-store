@@ -77,7 +77,7 @@ public class SecuredDocumentManagementService {
         this.caseDocumentClient = caseDocumentClient;
     }
 
-    @Retryable(value = {DocumentManagementException.class}, maxAttempts = 5, backoff = @Backoff(delay = 500))
+    @Retryable(retryFor = {DocumentManagementException.class}, maxAttempts = 5, backoff = @Backoff(delay = 500))
     public ClaimDocument uploadDocument(String authorisation, PDF pdf) {
 
         String originalFileName = pdf.getFilename();
@@ -127,7 +127,7 @@ public class SecuredDocumentManagementService {
         return downloadDocumentByUrl(authorisation, scannedDocument.getDocumentManagementUrl());
     }
 
-    @Retryable(value = DocumentManagementException.class, backoff = @Backoff(delay = 200))
+    @Retryable(retryFor = DocumentManagementException.class, backoff = @Backoff(delay = 200))
     private byte[] downloadDocumentByUrl(String authorisation, URI documentManagementUrl) {
         log.info("Downloading document {}", documentManagementUrl.getPath());
         try {

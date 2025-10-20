@@ -3,8 +3,11 @@ package uk.gov.hmcts.cmc.claimstore.config;
 import feign.Client;
 import feign.hc5.ApacheHttp5Client;
 import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.core5.util.Timeout;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,15 +31,24 @@ public class HttpClientConfiguration {
 
     private HttpClient getHttpClient() {
         Timeout timeout = Timeout.ofMilliseconds(10000);
-        RequestConfig config = RequestConfig.custom()
-            .setConnectTimeout(timeout)
+        RequestConfig requestConfig = RequestConfig.custom()
             .setConnectionRequestTimeout(timeout)
             .setResponseTimeout(timeout)
             .build();
 
+        ConnectionConfig connectionConfig = ConnectionConfig.custom()
+            .setConnectTimeout(timeout)
+            .build();
+
+        PoolingHttpClientConnectionManager connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
+            .useSystemProperties()
+            .setDefaultConnectionConfig(connectionConfig)
+            .build();
+
         return HttpClients.custom()
             .useSystemProperties()
-            .setDefaultRequestConfig(config)
+            .setDefaultRequestConfig(requestConfig)
+            .setConnectionManager(connectionManager)
             .build();
     }
 
