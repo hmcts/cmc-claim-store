@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import feign.FeignException;
 import feign.Request;
 import feign.Response;
+import feign.RequestTemplate;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +16,6 @@ import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Court;
 import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.postcode.SearchCourtByPostcodeResponse;
 import uk.gov.hmcts.cmc.claimstore.requests.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.test.utils.DataFactory;
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -49,7 +49,13 @@ public class CourtFinderServiceTest {
 
     private FeignException createFeignException() {
         Map<String, Collection<String>> headers = new HashMap<>();
-        Request request = Request.create(Request.HttpMethod.GET, "/test", headers, new byte[0], StandardCharsets.UTF_8);
+        Request request = Request.create(
+            Request.HttpMethod.GET,
+            "/test",
+            headers,
+            Request.Body.empty(),
+            new RequestTemplate()
+        );
         Response response = Response.builder()
             .status(500)
             .reason("failure")
