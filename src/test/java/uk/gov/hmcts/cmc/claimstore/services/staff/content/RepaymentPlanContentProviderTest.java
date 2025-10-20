@@ -5,7 +5,6 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.models.RepaymentPlanContent;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.ccj.PaymentSchedule;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepaymentPlan;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 

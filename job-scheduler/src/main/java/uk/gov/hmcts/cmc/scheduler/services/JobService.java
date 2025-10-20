@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.scheduler.exceptions.JobException;
 import uk.gov.hmcts.cmc.scheduler.model.JobData;
-
 import java.time.ZonedDateTime;
 import java.util.Date;
 

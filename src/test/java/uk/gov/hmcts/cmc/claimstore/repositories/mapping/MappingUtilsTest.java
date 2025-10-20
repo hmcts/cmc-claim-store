@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.repositories.mapping;
 
 import org.junit.Test;
-
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.domain.models.claimantresponse;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
-
 import java.math.BigDecimal;
 import java.util.Set;
 

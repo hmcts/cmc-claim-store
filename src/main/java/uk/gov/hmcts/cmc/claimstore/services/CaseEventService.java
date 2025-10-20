@@ -6,7 +6,6 @@ import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseEventsApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseEventDetail;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;

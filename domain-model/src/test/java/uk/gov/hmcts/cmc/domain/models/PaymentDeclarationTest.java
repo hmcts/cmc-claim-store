@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.domain.models;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SamplePaymentDeclaration;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Set;

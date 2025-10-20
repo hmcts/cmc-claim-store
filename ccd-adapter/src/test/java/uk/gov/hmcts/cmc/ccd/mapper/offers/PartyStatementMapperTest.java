@@ -12,7 +12,6 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDPartyStatement;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDPartyStatement;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SamplePartyStatement;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;

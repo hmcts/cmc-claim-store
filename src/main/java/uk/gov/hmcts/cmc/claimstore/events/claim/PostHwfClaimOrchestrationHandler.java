@@ -15,7 +15,6 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
-
 import java.util.function.UnaryOperator;
 
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;

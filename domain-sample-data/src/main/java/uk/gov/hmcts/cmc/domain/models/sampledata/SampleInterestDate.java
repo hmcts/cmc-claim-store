@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.domain.models.sampledata;
 
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
 import uk.gov.hmcts.cmc.domain.utils.DatesProvider;
-
 import java.time.LocalDate;
 
 public class SampleInterestDate {

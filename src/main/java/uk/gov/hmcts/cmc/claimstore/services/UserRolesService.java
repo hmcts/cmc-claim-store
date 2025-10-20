@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.UserRolesRepository;
 import uk.gov.hmcts.cmc.domain.models.UserRole;
-
 import java.util.List;
 import java.util.stream.Collectors;
 

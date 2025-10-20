@@ -4,7 +4,6 @@ import uk.gov.hmcts.cmc.ccd.assertion.CustomAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDLivingPartner;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.LivingPartner;
-
 import java.util.Optional;
 
 public class LivingPartnerAssert extends CustomAssert<LivingPartnerAssert, LivingPartner> {

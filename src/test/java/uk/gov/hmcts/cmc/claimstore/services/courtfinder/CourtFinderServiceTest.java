@@ -10,7 +10,6 @@ import uk.gov.hmcts.cmc.claimstore.controllers.CourtFinderController;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.AreaOfLaw;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Court;
 import uk.gov.hmcts.cmc.claimstore.requests.courtfinder.CourtFinderApi;
-
 import java.util.Collections;
 import java.util.List;
 

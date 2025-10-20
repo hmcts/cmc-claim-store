@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.ccd.assertion;
 
 import org.assertj.core.api.AbstractAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;

@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
 import org.junit.jupiter.api.Test;
-
 import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;

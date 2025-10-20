@@ -11,7 +11,6 @@ import uk.gov.hmcts.cmc.domain.models.MediationOutcome;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;

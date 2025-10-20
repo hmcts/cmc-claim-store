@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.domain.models.otherparty;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
-
 import java.time.LocalDate;
 import java.util.Set;
 

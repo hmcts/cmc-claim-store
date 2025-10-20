@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.otherparty;
 
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
@@ -10,10 +11,8 @@ import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 import uk.gov.hmcts.cmc.domain.models.party.SplitNamedParty;
 import uk.gov.hmcts.cmc.domain.models.party.TitledParty;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
-
 import java.time.LocalDate;
 import java.util.Optional;
-import javax.validation.constraints.Size;
 
 @SplitName
 @EqualsAndHashCode(callSuper = true)

@@ -12,7 +12,6 @@ import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SamplePayment;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
-
 import java.time.LocalDate;
 
 import static java.time.format.DateTimeFormatter.ISO_DATE;

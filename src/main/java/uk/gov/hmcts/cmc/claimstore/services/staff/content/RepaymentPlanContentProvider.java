@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.RepaymentPlanContent;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
-
 import java.time.LocalDate;
 
 import static java.util.Objects.requireNonNull;

@@ -1,11 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.config.properties.notifications;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
-
-import javax.validation.constraints.NotEmpty;
 
 @Component
 @Validated

@@ -8,7 +8,6 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.models.InterestContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;

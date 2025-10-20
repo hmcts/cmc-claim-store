@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.utils;
 
 import org.junit.Assert;
 import org.junit.Test;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 

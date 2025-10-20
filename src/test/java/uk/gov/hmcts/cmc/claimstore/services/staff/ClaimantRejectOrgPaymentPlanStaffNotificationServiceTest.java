@@ -16,7 +16,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailService;
-
 import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;

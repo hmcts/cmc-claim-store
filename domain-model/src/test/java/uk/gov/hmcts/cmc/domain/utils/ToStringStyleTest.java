@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.domain.utils;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.junit.jupiter.api.Test;
-
 import java.util.Arrays;
 import java.util.List;
 

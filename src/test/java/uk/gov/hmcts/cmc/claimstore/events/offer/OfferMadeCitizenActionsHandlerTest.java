@@ -11,7 +11,6 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.Notifications
 import uk.gov.hmcts.cmc.claimstore.services.OfferResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
-
 import java.time.LocalDate;
 
 import static org.mockito.ArgumentMatchers.any;

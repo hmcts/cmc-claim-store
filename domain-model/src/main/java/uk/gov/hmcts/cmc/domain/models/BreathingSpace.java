@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Data;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-
 import java.time.LocalDate;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;

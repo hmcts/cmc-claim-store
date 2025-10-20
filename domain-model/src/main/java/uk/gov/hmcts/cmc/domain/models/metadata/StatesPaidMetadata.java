@@ -9,7 +9,6 @@ import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
-
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.function.Predicate;

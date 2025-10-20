@@ -17,7 +17,6 @@ import uk.gov.hmcts.cmc.domain.models.response.ResponseMethod;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
-
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;

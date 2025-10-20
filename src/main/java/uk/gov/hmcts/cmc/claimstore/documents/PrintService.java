@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.documents;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.Printable;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
-
 import java.util.List;
 
 public interface PrintService {

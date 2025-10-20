@@ -6,7 +6,6 @@ import org.testcontainers.shaded.com.google.common.collect.ImmutableSet;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.repositories.elastic.SampleQueryConstants;
-
 import java.time.LocalDate;
 import java.util.Collections;
 

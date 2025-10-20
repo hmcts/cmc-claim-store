@@ -20,7 +20,6 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker.paperdefenc
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.reform.sendletter.api.Document;
-
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;

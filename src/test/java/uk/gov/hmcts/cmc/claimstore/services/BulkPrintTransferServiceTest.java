@@ -23,7 +23,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-
 import java.util.Collections;
 
 import static java.time.LocalDate.now;

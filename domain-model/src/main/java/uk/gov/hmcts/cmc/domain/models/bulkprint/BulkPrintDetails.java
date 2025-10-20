@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.domain.models.bulkprint;
 
 import lombok.Builder;
 import lombok.Value;
-
 import java.time.LocalDate;
 
 @Value

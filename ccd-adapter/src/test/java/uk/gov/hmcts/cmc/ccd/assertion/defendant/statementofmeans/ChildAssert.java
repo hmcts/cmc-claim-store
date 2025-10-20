@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans;
 import uk.gov.hmcts.cmc.ccd.assertion.CustomAssert;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDChildCategory;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
-
 import java.util.Optional;
 
 public class ChildAssert extends CustomAssert<ChildAssert, Child> {

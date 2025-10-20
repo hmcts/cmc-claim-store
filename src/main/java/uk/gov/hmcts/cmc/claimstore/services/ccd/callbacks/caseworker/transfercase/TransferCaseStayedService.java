@@ -11,7 +11,6 @@ import uk.gov.hmcts.cmc.claimstore.requests.idam.IdamApi;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -32,7 +32,6 @@ import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
-
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.ZoneOffset;

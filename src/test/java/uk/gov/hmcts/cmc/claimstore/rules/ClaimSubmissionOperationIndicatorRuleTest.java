@@ -6,7 +6,6 @@ import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
-
 import java.net.URI;
 
 import static org.assertj.core.api.Assertions.assertThat;

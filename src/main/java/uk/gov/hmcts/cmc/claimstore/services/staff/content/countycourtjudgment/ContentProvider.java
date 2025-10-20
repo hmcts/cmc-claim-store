@@ -6,7 +6,6 @@ import uk.gov.hmcts.cmc.claimstore.documents.ClaimContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.CCJContent;
 import uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-
 import java.util.Collections;
 import java.util.Map;
 

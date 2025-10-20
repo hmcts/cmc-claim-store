@@ -14,7 +14,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.cmc.rpa.mapper.PaidInFullJsonMapper;
-
 import java.time.LocalDate;
 
 import static org.junit.Assert.assertEquals;

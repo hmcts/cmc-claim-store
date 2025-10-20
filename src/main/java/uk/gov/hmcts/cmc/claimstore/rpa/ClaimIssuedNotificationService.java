@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.rpa;
 
 import com.google.common.collect.Lists;
+import jakarta.json.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
@@ -14,9 +15,7 @@ import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.cmc.rpa.mapper.LegalSealedClaimJsonMapper;
 import uk.gov.hmcts.cmc.rpa.mapper.SealedClaimJsonMapper;
-
 import java.util.List;
-import javax.json.JsonObject;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.tests.deprectaed;
 
+import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
 import org.mockito.Answers;
 import org.quartz.Scheduler;
@@ -16,8 +17,6 @@ import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionStatus;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.TestingSupportRepository;
-
-import javax.sql.DataSource;
 
 @Configuration
 @Profile("mocked-database-tests")

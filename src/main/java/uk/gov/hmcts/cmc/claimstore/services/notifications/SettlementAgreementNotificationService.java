@@ -15,7 +15,6 @@ import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
-
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;

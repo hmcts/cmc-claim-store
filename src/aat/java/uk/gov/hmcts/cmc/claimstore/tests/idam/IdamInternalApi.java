@@ -2,10 +2,11 @@ package uk.gov.hmcts.cmc.claimstore.tests.idam;
 
 import feign.Client;
 import feign.Response;
-import feign.httpclient.ApacheHttpClient;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
+import feign.hc5.ApacheHttp5Client;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.util.Timeout;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
@@ -47,19 +48,18 @@ public interface IdamInternalApi {
     class Configuration {
         @Bean
         public Client getFeignHttpClient() {
-            return new ApacheHttpClient(getHttpClient());
+            return new ApacheHttp5Client(getHttpClient());
         }
 
         private CloseableHttpClient getHttpClient() {
-            int timeout = 10000;
+            Timeout timeout = Timeout.ofMilliseconds(10000);
             RequestConfig config = RequestConfig.custom()
                 .setConnectTimeout(timeout)
                 .setConnectionRequestTimeout(timeout)
-                .setSocketTimeout(timeout)
+                .setResponseTimeout(timeout)
                 .build();
 
-            return HttpClientBuilder
-                .create()
+            return HttpClients.custom()
                 .useSystemProperties()
                 .disableRedirectHandling()
                 .setDefaultRequestConfig(config)

@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.bankholidays;
 
 import org.springframework.stereotype.Component;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Set;

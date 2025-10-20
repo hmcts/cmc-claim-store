@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
-
 import java.math.BigDecimal;
 
 import static java.util.Objects.nonNull;

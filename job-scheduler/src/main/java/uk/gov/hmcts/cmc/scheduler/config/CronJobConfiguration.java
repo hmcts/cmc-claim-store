@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.scheduler.config;
 
+import jakarta.annotation.PostConstruct;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,9 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.cmc.scheduler.model.CronJob;
 import uk.gov.hmcts.cmc.scheduler.model.JobData;
 import uk.gov.hmcts.cmc.scheduler.services.JobService;
-
 import java.util.HashMap;
-import javax.annotation.PostConstruct;
 
 @Configuration
 public class CronJobConfiguration {

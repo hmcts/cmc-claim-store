@@ -11,7 +11,6 @@ import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseEventsApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseEventDetail;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

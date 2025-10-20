@@ -11,7 +11,6 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourtMapper;
 import uk.gov.hmcts.cmc.claimstore.services.courtfinder.CourtFinderService;
 import uk.gov.hmcts.cmc.claimstore.test.utils.DataFactory;
-
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;

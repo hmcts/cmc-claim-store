@@ -4,7 +4,6 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.Am
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
-
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;

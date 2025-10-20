@@ -8,7 +8,6 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.OnTaxPayments;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.SelfEmployment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Unemployment;
-
 import java.util.Map;
 
 import static java.math.BigDecimal.TEN;

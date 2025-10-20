@@ -6,7 +6,6 @@ import org.skife.jdbi.v2.sqlobject.SqlUpdate;
 import org.skife.jdbi.v2.sqlobject.customizers.RegisterMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.mapping.UserRolesMapper;
 import uk.gov.hmcts.cmc.domain.models.UserRole;
-
 import java.util.List;
 
 @RegisterMapper(UserRolesMapper.class)

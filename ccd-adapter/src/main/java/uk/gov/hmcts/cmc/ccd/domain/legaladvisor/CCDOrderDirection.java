@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.ccd.domain.legaladvisor;
 import lombok.Builder;
 import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-
 import java.time.LocalDate;
 import java.util.List;
 

@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.exceptions.IllegalSettlementStatementException;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
-
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
