@@ -475,6 +475,10 @@ sonarqube {
   properties {
     property "sonar.projectName", "CMC :: Claim Store"
     property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+    def rootTestDirs = sourceSets?.test?.allSource?.srcDirs?.findAll { it.exists() } ?: []
+    if (!rootTestDirs.isEmpty()) {
+      property "sonar.tests", rootTestDirs.collect { project.relativePath(it) }.join(",")
+    }
     property "sonar.exclusions", [
         "**/ccd/domain/**",
         "**/cmc/domain/models/**",
@@ -527,6 +531,18 @@ sonarqube {
         "**/cmc/claimstore/services/ccd/callbacks/roboticssupport/RoboticsNotificationServiceImpl.java",
         "**/cmc/claimstore/services/UserService.java"
     ].join(",")
+  }
+}
+
+subprojects { subproject ->
+  sonarqube {
+    properties {
+      def sourceSetsExt = subproject.extensions.findByName('sourceSets')
+      def testDirs = sourceSetsExt?.findByName('test')?.allSource?.srcDirs?.findAll { it.exists() } ?: []
+      if (!testDirs.isEmpty()) {
+        property "sonar.tests", testDirs.collect { subproject.relativePath(it) }.join(",")
+      }
+    }
   }
 }
 
