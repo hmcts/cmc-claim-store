@@ -146,6 +146,10 @@ public class PilotCourtService {
                 logger.error("Failed to get address from Court Finder API", e);
                 appInsights.trackEvent(AppInsightsEvent.COURT_FINDER_API_FAILURE, "Court postcode", postcode);
                 pilotCourts.put(id, new PilotCourt(id, postcode, null, pilots));
+            } catch (RuntimeException e) {
+                logger.error("Failed to get address from Court Finder API", e);
+                appInsights.trackEvent(AppInsightsEvent.COURT_FINDER_API_FAILURE, "Court postcode", postcode);
+                pilotCourts.put(id, new PilotCourt(id, postcode, null, pilots));
             }
         }
 
