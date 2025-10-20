@@ -187,6 +187,28 @@ class PilotCourtServiceTest {
     }
 
     @Test
+    void shouldHandleUnexpectedRuntimeExceptionDuringInit() {
+        PilotCourtService pilotCourtService = new PilotCourtService(
+            csvPathSingle,
+            courtFinderService,
+            hearingCourtMapper,
+            appInsights
+        );
+
+        when(courtFinderService.getCourtDetailsListFromPostcode(anyString()))
+            .thenThrow(new RuntimeException("boom"))
+            .thenReturn(Collections.emptyList());
+
+        pilotCourtService.init();
+
+        Optional<HearingCourt> result = pilotCourtService.getPilotHearingCourt("BIRMINGHAM");
+
+        assertTrue(result.isEmpty());
+        verify(appInsights).trackEvent(AppInsightsEvent.COURT_FINDER_API_FAILURE, "Court postcode", "B11AA");
+        verify(hearingCourtMapper, never()).from(any());
+    }
+
+    @Test
     void shouldThrowValidationErrorForMissingValuesFromCSV() {
         PilotCourtService pilotCourtService = new PilotCourtService(
             csvPathInvalid,
