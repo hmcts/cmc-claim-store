@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.pilotcourt;
 
 import feign.FeignException;
+import feign.codec.DecodeException;
 import jakarta.annotation.PostConstruct;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -141,7 +142,10 @@ public class PilotCourtService {
             try {
                 Optional<HearingCourt> pilotCourt = getCourt(postcode);
                 pilotCourts.put(id, new PilotCourt(id, postcode, pilotCourt.orElse(null), pilots));
-
+            } catch (DecodeException e) {
+                logger.error("Failed to decode Court Finder API response", e);
+                appInsights.trackEvent(AppInsightsEvent.COURT_FINDER_API_FAILURE, "Court postcode", postcode);
+                pilotCourts.put(id, new PilotCourt(id, postcode, null, pilots));
             } catch (FeignException e) {
                 logger.error("Failed to get address from Court Finder API", e);
                 appInsights.trackEvent(AppInsightsEvent.COURT_FINDER_API_FAILURE, "Court postcode", postcode);

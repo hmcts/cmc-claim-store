@@ -75,7 +75,7 @@ public class SettlementAgreementNotificationService {
         );
     }
 
-    @Retryable(value = NotificationException.class, backoff = @Backoff(delay = 200))
+    @Retryable(retryFor = NotificationException.class, backoff = @Backoff(delay = 200))
     public void sendNotificationEmail(
         String targetEmail,
         String emailTemplate,

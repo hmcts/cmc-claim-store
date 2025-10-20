@@ -79,7 +79,7 @@ public class BulkPrintService implements PrintService {
 
     @LogExecutionTime
     @Retryable(
-        value = RuntimeException.class,
+        retryFor = RuntimeException.class,
         backoff = @Backoff(delay = 200)
     )
     @Override
@@ -133,7 +133,7 @@ public class BulkPrintService implements PrintService {
 
     @LogExecutionTime
     @Retryable(
-        value = RuntimeException.class,
+        retryFor = RuntimeException.class,
         backoff = @Backoff(delay = 200)
     )
     @Override
