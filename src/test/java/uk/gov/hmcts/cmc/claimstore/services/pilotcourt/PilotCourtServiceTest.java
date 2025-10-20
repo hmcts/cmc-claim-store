@@ -4,6 +4,7 @@ import feign.FeignException;
 import feign.Request;
 import feign.RequestTemplate;
 import feign.Response;
+import feign.codec.DecodeException;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
@@ -81,6 +83,18 @@ class PilotCourtServiceTest {
             .body(new byte[0])
             .build();
         return FeignException.errorStatus("method", response);
+    }
+
+    private DecodeException createDecodeException() {
+        Map<String, Collection<String>> headers = new HashMap<>();
+        Request request = Request.create(
+            Request.HttpMethod.GET,
+            "/test",
+            headers,
+            Request.Body.empty(),
+            new RequestTemplate()
+        );
+        return new DecodeException(500, "decode failure", request);
     }
 
     @Test
@@ -193,6 +207,33 @@ class PilotCourtServiceTest {
     }
 
     @Test
+    void shouldHandleDecodeExceptionDuringInit() {
+        PilotCourtService pilotCourtService = new PilotCourtService(
+            csvPathSingle,
+            courtFinderService,
+            hearingCourtMapper,
+            appInsights
+        );
+
+        AtomicInteger callCount = new AtomicInteger();
+        when(courtFinderService.getCourtDetailsListFromPostcode(anyString()))
+            .thenAnswer(invocation -> {
+                if (callCount.getAndIncrement() == 0) {
+                    throw createDecodeException();
+                }
+                return Collections.emptyList();
+            });
+
+        pilotCourtService.init();
+
+        Optional<HearingCourt> result = pilotCourtService.getPilotHearingCourt("BIRMINGHAM");
+
+        assertTrue(result.isEmpty());
+        verify(appInsights).trackEvent(AppInsightsEvent.COURT_FINDER_API_FAILURE, "Court postcode", "B11AA");
+        verify(hearingCourtMapper, never()).from(any());
+    }
+
+    @Test
     void shouldHandleUnexpectedRuntimeExceptionDuringInit() {
         PilotCourtService pilotCourtService = new PilotCourtService(
             csvPathSingle,
@@ -201,9 +242,14 @@ class PilotCourtServiceTest {
             appInsights
         );
 
+        AtomicInteger callCount = new AtomicInteger();
         when(courtFinderService.getCourtDetailsListFromPostcode(anyString()))
-            .thenThrow(new RuntimeException("boom"))
-            .thenReturn(Collections.emptyList());
+            .thenAnswer(invocation -> {
+                if (callCount.getAndIncrement() == 0) {
+                    throw new RuntimeException("boom");
+                }
+                return Collections.emptyList();
+            });
 
         pilotCourtService.init();
 
