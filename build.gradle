@@ -31,7 +31,6 @@ def springBootVersion = plugins.getPlugin('org.springframework.boot').class.pack
 def springCloudVersion = '2023.0.4'
 
 def versions = [
-  logback           : '1.4.14',
   springBoot        : springBootVersion,
   restAssuredVersion: '5.4.0',
   jackson           : '2.17.0',
@@ -174,10 +173,6 @@ allprojects {
         entry 'snakeyaml'
       }
 
-      dependencySet(group: 'ch.qos.logback', version: '1.5.6') {
-        entry 'logback-core'
-        entry 'logback-classic'
-      }
 
       dependencySet(
         group: 'org.hibernate',
@@ -235,9 +230,6 @@ dependencies {
 
   implementation group: 'org.flywaydb', name: 'flyway-core'
 
-
-  implementation group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
-  implementation group: 'ch.qos.logback', name: 'logback-core', version: versions.logback
 
   implementation group: 'com.mitchellbosecke', name: 'pebble', version: '2.4.0'
 
@@ -314,8 +306,6 @@ dependencies {
 
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
   testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock'
-  testRuntimeOnly group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
-
   fortify group: 'com.github.hmcts', name: 'fortify-client', version: '1.2.2', classifier: 'all'
 
   testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit
