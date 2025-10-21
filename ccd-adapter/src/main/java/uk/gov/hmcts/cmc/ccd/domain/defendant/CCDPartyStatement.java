@@ -6,6 +6,7 @@ import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentIntention;
 import uk.gov.hmcts.cmc.ccd.domain.offers.CCDMadeBy;
 import uk.gov.hmcts.cmc.ccd.domain.offers.CCDStatementType;
+
 import java.time.LocalDate;
 
 @Value

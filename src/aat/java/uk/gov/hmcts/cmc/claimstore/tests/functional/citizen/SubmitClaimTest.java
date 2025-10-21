@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;

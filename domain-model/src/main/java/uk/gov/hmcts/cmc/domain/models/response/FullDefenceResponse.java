@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestion
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
+
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_DEFENCE;

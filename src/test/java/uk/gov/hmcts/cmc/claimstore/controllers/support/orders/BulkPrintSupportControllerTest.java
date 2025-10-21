@@ -20,6 +20,7 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDet
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+
 import java.net.URI;
 import java.util.Optional;
 

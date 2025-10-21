@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
+
 import java.util.Optional;
 import java.util.UUID;
 

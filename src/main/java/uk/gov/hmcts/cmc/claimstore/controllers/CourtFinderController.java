@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Court;
 import uk.gov.hmcts.cmc.claimstore.services.courtfinder.CourtFinderService;
+
 import java.util.List;
 
 @Tag(name = "Court Finder Controller")

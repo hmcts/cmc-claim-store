@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.claimstore.tests.helpers.Retry;
 import uk.gov.hmcts.cmc.claimstore.tests.helpers.RetryFailedFunctionalTests;
 import uk.gov.hmcts.cmc.domain.models.UserRoleRequest;
+
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;

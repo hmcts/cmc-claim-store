@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.SelfEmployment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Unemployment;
+
 import java.util.Map;
 
 import static java.util.Objects.requireNonNull;

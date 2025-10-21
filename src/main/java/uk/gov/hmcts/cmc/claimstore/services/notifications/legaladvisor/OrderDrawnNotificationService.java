@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceB
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.utils.EmailUtils;
+
 import java.util.Map;
 
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;

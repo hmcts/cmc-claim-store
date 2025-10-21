@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDPartyStatement;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
+
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;

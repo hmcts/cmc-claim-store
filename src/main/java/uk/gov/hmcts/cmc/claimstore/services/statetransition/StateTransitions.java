@@ -7,6 +7,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
+
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Set;

@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
+
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;

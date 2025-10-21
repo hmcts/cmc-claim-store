@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.ccd.assertion;
 
 import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
+
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;

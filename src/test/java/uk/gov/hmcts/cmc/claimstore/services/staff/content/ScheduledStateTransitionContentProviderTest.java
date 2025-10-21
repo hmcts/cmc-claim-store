@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.services.TemplateService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;

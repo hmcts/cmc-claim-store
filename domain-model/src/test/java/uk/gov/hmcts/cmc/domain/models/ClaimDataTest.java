@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterestDate;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Set;

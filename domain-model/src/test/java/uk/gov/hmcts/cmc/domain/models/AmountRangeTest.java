@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.domain.models;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountRange;
+
 import java.util.Set;
 
 import static java.math.BigDecimal.valueOf;

@@ -12,6 +12,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.CollectionId;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
+
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;

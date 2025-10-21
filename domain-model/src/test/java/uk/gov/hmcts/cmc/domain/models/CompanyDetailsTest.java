@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.otherparty.CompanyDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
+
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;

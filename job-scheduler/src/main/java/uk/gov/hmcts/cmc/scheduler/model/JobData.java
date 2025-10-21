@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.scheduler.model;
 import lombok.Builder;
 import lombok.Value;
 import org.quartz.Job;
+
 import java.util.Map;
 
 @Value

@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.exceptions.IllegalSettlementStatementException;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

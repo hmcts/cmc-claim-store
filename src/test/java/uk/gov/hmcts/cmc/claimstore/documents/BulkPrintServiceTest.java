@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.sendletter.api.Letter;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;

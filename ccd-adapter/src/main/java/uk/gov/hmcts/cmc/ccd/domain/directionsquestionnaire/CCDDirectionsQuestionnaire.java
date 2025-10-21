@@ -5,6 +5,7 @@ import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
+
 import java.time.LocalDate;
 import java.util.List;
 

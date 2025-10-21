@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.ccd.assertion;
 
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.domain.models.Address;
+
 import java.util.Optional;
 
 public class CCDAddressAssert extends CustomAssert<CCDAddressAssert, CCDAddress> {

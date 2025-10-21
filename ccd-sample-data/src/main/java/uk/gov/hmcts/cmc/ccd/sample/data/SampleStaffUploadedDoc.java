@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocumentType;
+
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;

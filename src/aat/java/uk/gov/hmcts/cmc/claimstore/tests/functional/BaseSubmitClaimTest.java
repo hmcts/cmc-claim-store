@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.claimstore.tests.helpers.RetryFailedFunctionalTests;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;

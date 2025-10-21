@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.InterestBreakdown;
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest;
+
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

@@ -22,6 +22,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import uk.gov.hmcts.cmc.claimstore.security.JwtGrantedAuthoritiesConverter;
+
 import java.util.Arrays;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;

@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMean
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Debt;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
+
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;

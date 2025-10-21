@@ -19,6 +19,7 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
+
 import java.util.List;
 import java.util.function.Supplier;
 

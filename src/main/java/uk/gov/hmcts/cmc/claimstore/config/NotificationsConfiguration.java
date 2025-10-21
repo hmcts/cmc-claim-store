@@ -7,6 +7,7 @@ import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.service.notify.NotificationClient;
+
 import java.util.concurrent.Executor;
 
 @Configuration

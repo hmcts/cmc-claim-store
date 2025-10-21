@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Court;
 import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.postcode.CourtDetails;
 import uk.gov.hmcts.cmc.claimstore.test.utils.DataFactory;
 import uk.gov.hmcts.cmc.email.EmailService;
+
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;

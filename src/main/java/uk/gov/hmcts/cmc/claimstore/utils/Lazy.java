@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.utils;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+
 import java.util.function.Supplier;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

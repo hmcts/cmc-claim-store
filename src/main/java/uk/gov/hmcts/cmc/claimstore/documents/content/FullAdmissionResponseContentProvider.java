@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.documents.content;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
+
 import java.math.BigDecimal;
 import java.util.Map;
 

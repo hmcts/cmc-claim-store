@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import uk.gov.hmcts.reform.fees.client.health.InternalHealth;
 import uk.gov.hmcts.reform.fees.client.model.FeeLookupResponseDto;
+
 import java.math.BigDecimal;
 
 @FeignClient(name = "fees-api", url = "${fees.api.url}")

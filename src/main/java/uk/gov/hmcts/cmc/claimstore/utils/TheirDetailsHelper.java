@@ -5,6 +5,7 @@ import uk.gov.hmcts.cmc.domain.models.otherparty.IndividualDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.OrganisationDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.SoleTraderDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
+
 import java.util.Objects;
 
 public class TheirDetailsHelper {

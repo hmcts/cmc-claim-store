@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.Address;
+
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 

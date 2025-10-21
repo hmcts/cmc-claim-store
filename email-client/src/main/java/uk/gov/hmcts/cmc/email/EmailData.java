@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.email;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+
 import java.util.Collections;
 import java.util.List;
 

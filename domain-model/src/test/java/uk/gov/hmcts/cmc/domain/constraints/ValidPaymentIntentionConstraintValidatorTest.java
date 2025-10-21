@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepaymentPlan;
+
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -21,6 +21,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
+
 import java.util.List;
 
 import static java.util.Collections.singletonList;

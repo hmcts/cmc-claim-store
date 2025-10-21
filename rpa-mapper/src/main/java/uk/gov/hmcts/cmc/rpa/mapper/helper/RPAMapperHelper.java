@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.rpa.DateFormatter;
 import uk.gov.hmcts.cmc.rpa.mapper.json.NullAwareJsonObjectBuilder;
+
 import java.time.LocalDate;
 
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseStatesPaidAccepted;

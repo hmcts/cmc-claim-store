@@ -24,6 +24,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
+
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.anyString;

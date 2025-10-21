@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Value;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
+
 import java.util.Objects;
 import java.util.stream.Stream;
 

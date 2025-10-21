@@ -5,6 +5,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
+
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;

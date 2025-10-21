@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.services.UserRolesService;
 import uk.gov.hmcts.cmc.domain.models.UserRoleRequest;
+
 import java.util.List;
 
 @Tag(name = "User Roles Controller")

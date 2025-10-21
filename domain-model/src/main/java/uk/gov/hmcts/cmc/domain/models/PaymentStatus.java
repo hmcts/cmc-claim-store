@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.domain.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
 import java.util.Arrays;
 
 @Getter

@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Address;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.AreaOfLaw;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Facilities;
+
 import java.util.List;
 
 @Data

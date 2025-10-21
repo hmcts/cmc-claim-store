@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.domain.models.particulars.PersonalInjury;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountRange;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+
 import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;

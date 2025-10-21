@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.cmc.domain.constraints.ValidResidence;
+
 import java.util.Optional;
 
 @Builder

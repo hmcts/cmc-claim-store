@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.sendletter.api.Document;
+
 import java.util.HashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;

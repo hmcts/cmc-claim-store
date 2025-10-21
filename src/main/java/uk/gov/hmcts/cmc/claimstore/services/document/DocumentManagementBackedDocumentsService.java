@@ -23,6 +23,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.ScannedDocument;
 import uk.gov.hmcts.cmc.domain.models.ScannedDocumentSubtype;
 import uk.gov.hmcts.cmc.domain.models.ScannedDocumentType;
+
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.GENERAL_LETTER;

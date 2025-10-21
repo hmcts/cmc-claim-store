@@ -21,6 +21,7 @@ import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
+
 import java.util.List;
 import java.util.stream.Collectors;
 

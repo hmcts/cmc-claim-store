@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

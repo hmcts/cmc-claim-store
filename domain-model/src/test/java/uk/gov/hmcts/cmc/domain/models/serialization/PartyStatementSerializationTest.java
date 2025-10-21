@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
 import uk.gov.hmcts.cmc.domain.models.offers.StatementType;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
+
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;

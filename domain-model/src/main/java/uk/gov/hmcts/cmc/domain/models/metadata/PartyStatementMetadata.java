@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
 import uk.gov.hmcts.cmc.domain.models.offers.StatementType;
+
 import java.time.LocalDate;
 import java.util.Optional;
 

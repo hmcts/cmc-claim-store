@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralLetterService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+
 import java.util.List;
 
 @Service

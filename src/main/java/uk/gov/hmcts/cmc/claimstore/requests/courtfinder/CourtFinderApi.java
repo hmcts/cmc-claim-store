@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.name.SearchCourtByNameResponse;
 import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.postcode.SearchCourtByPostcodeResponse;
 import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.slug.SearchCourtBySlugResponse;
+
 import java.util.List;
 
 @FeignClient(name = "court-finder-api", primary = false, url = "${courtfinder.api.url}")

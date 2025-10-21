@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models.offers.converters;
 
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
+
 import java.beans.PropertyEditorSupport;
 
 public class MadeByEnumConverter extends PropertyEditorSupport {

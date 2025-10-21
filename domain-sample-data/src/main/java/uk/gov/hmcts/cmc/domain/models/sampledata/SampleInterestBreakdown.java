@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
 import uk.gov.hmcts.cmc.domain.models.InterestBreakdown;
+
 import java.math.BigDecimal;
 
 public class SampleInterestBreakdown {

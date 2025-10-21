@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.ccj.PaymentSchedule;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
+
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertMoney;

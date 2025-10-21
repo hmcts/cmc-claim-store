@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 import uk.gov.hmcts.cmc.domain.models.party.SplitNamedParty;
 import uk.gov.hmcts.cmc.domain.models.party.TitledParty;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
+
 import java.util.Optional;
 
 @SplitName

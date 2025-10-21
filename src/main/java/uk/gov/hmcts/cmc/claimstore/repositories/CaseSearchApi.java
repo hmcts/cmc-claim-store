@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.repositories;
 import org.elasticsearch.index.query.QueryBuilder;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+
 import java.time.LocalDate;
 import java.util.List;
 

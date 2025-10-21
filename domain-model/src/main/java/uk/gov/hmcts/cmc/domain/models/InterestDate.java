@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.DateNotInTheFuture;
 import uk.gov.hmcts.cmc.domain.constraints.ValidInterestDate;
+
 import java.time.LocalDate;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;

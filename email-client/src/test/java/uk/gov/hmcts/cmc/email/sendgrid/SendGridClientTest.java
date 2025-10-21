@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.email.EmailSendFailedException;
 import uk.gov.hmcts.cmc.email.SampleEmailData;
+
 import java.io.IOException;
 import java.util.Collections;
 

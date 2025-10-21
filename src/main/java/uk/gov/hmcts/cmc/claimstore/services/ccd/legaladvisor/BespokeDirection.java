@@ -8,6 +8,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import lombok.Builder;
 import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
+
 import java.time.LocalDate;
 
 @Builder
