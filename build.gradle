@@ -188,6 +188,8 @@ allprojects {
         entry 'tomcat-embed-jasper'
       }
 
+      dependency group: 'org.flywaydb', name: 'flyway-core', version: '9.22.3'
+
       dependency group: 'commons-fileupload', name: 'commons-fileupload', version: '1.6.0'
       dependency group: 'org.apache.commons', name: 'commons-io', version: '2.14.0'
     }
