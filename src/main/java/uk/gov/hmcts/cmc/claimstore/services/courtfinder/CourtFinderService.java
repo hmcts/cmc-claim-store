@@ -36,13 +36,16 @@ public class CourtFinderService {
         try {
             searchByPostcodeResponse = courtFinderApi.findMoneyClaimCourtByPostcode(postcode);
         } catch (DecodeException ex) {
-            LOG.warn("Failed to decode court finder response for postcode {}", postcode, ex);
+            LOG.warn("Failed to decode court finder response for postcode {}: {}", postcode, ex.getMessage());
+            LOG.debug("Court finder decode failure for postcode {}", postcode, ex);
             return new ArrayList<>();
         } catch (FeignException | RestClientException ex) {
-            LOG.warn("Failed to retrieve court details for postcode {}", postcode, ex);
+            LOG.warn("Failed to retrieve court details for postcode {}: {}", postcode, ex.getMessage());
+            LOG.debug("Court finder client failure for postcode {}", postcode, ex);
             return new ArrayList<>();
         } catch (RuntimeException ex) {
-            LOG.warn("Unexpected error retrieving court details for postcode {}", postcode, ex);
+            LOG.warn("Unexpected error retrieving court details for postcode {}: {}", postcode, ex.getMessage());
+            LOG.debug("Unexpected court finder failure for postcode {}", postcode, ex);
             return new ArrayList<>();
         }
 
