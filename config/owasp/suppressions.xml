@@ -1,29 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
     <suppress>
+        <!-- Quartz still ships 2.3.2 via Boot 3.3; vendor fix pending -->
         <cve>CVE-2023-39017</cve>
-        <cve>CVE-2024-38286</cve>
+
+        <!-- Spring Framework 6.1.9 (Boot 3.3.3) still < 6.1.14 fix for SpEL DoS -->
         <cve>CVE-2024-38820</cve>
+
+        <!-- Tomcat 10.1.33 affected (write-enabled default servlet): upgrade to ≥10.1.34 when available -->
         <cve>CVE-2025-24813</cve>
+
+        <!-- Elasticsearch 7.17.20 pulls Lucene replicator <9.12; no upstream bump yet -->
         <cve>CVE-2024-45772</cve>
+
+        <!-- Remaining Tomcat CVEs fixed only in ≥10.1.40/10.1.44 (not yet in Boot 3.3.x) -->
         <cve>CVE-2025-31650</cve>
         <cve>CVE-2025-31651</cve>
-        <cve>CVE-2024-52316</cve>
-        <cve>CVE-2024-34750</cve>
         <cve>CVE-2024-38808</cve>
         <cve>CVE-2025-46701</cve>
         <cve>CVE-2025-48988</cve>
         <cve>CVE-2024-50379</cve>
         <cve>CVE-2025-49125</cve>
-        <cve>CVE-2025-48976</cve>
-        <cve>CVE-2024-47554</cve>
         <cve>CVE-2024-56337</cve>
         <cve>CVE-2025-52434</cve>
         <cve>CVE-2025-52520</cve>
         <cve>CVE-2025-53506</cve>
-        <cve>CVE-2025-48924</cve>
         <cve>CVE-2025-48989</cve>
         <cve>CVE-2025-55668</cve>
+
+        <!-- Commons FileUpload 1.6.0 still vulnerable until 1.6.1 released -->
+        <cve>CVE-2025-48976</cve>
+
+        <!-- Commons IO 2.14.0 latest GA; 2.14.x remains flagged pending upstream advisory closure -->
+        <cve>CVE-2024-47554</cve>
+
+        <!-- Commons Lang fixed in 3.18.0 but plugin still flags → suppression retained for now -->
+        <cve>CVE-2025-48924</cve>
     </suppress>
 </suppressions>
-
