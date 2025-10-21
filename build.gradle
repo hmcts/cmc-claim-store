@@ -185,6 +185,9 @@ allprojects {
       ) {
         entry 'hibernate-validator'
       }
+
+      dependency group: 'commons-fileupload', name: 'commons-fileupload', version: '1.6.0'
+      dependency group: 'org.apache.commons', name: 'commons-io', version: '2.14.0'
     }
   }
 }
@@ -231,7 +234,7 @@ dependencies {
 
   implementation group: 'com.mitchellbosecke', name: 'pebble', version: '2.4.0'
 
-  implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
+  implementation group: 'commons-io', name: 'commons-io', version: '2.14.0'
 
   implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.5.0'
 
