@@ -186,6 +186,13 @@ allprojects {
         entry 'hibernate-validator'
       }
 
+      dependencySet(group: 'org.apache.tomcat.embed', version: '10.1.48') {
+        entry 'tomcat-embed-core'
+        entry 'tomcat-embed-websocket'
+        entry 'tomcat-embed-el'
+        entry 'tomcat-embed-jasper'
+      }
+
       dependency group: 'commons-fileupload', name: 'commons-fileupload', version: '1.6.0'
       dependency group: 'org.apache.commons', name: 'commons-io', version: '2.14.0'
     }
