@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.domain.models.legalrep;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.sampledata.legalrep.SampleContactDetails;
+
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
+
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.function.Supplier;

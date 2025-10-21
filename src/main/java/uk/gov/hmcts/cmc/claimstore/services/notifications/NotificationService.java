@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
+
 import java.util.Map;
 
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.EMAIL_REFERENCE;

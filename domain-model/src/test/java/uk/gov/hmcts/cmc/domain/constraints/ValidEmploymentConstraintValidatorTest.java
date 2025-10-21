@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.SelfEmployment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Unemployed;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Unemployment;
+
 import java.math.BigDecimal;
 import java.util.Collections;
 

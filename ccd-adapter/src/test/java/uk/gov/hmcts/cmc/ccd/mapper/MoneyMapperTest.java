@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
+
 import java.math.BigDecimal;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertMoney;

@@ -7,6 +7,7 @@ import lombok.Getter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
+
 import java.time.LocalDateTime;
 
 @Getter

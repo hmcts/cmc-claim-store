@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.documents.content;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
+
 import java.util.HashMap;
 import java.util.Map;
 

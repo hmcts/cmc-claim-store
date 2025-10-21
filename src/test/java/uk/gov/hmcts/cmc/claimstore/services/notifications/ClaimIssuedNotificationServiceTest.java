@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.service.notify.NotificationClientException;
+
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;

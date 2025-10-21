@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.utils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
+
 import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_DEFENCE;

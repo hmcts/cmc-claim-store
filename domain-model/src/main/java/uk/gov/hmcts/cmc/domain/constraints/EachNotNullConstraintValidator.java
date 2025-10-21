@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.domain.constraints;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+
 import java.util.Collection;
 
 public class EachNotNullConstraintValidator implements ConstraintValidator<EachNotNull, Collection<?>> {

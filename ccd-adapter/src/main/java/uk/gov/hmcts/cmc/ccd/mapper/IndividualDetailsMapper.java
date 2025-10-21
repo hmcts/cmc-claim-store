@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.otherparty.IndividualDetails;
+
 import java.util.Optional;
 import java.util.function.Function;
 

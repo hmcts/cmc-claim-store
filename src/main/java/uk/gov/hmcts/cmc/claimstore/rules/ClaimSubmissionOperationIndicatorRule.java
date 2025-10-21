@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;

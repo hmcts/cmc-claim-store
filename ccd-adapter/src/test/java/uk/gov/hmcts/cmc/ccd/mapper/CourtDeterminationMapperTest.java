@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SampleCourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
+
 import java.math.BigDecimal;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;

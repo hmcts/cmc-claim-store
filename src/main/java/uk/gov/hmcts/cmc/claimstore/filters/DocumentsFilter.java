@@ -5,6 +5,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ScannedDocument;
+
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;

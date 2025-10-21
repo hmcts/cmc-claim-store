@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.bankholidays;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.utils.ResourceReader;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;

@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.domain.models.claimantresponse;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
+
 import java.math.BigDecimal;
 import java.util.Set;
 

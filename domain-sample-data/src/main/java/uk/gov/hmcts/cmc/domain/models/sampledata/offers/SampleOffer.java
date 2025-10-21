@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.domain.models.sampledata.offers;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer.OfferBuilder;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
+
 import java.time.LocalDate;
 
 public class SampleOffer {

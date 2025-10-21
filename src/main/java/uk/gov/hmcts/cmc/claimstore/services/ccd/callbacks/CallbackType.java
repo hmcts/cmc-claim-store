@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
+
 import java.util.Arrays;
 
 public enum CallbackType {

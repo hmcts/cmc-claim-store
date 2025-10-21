@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models;
 
 import lombok.EqualsAndHashCode;
+
 import java.util.Optional;
 import java.util.UUID;
 

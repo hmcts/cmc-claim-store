@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDExpertReport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReport;
+
 import java.time.LocalDate;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;

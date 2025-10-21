@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SampleCourtDetermination;
+
 import java.math.BigDecimal;
 
 import static java.math.BigDecimal.TEN;

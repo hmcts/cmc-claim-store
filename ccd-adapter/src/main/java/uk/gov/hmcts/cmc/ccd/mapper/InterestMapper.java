@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestType;
 import uk.gov.hmcts.cmc.domain.models.Interest;
+
 import java.util.Optional;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;

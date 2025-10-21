@@ -11,6 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserInfo;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

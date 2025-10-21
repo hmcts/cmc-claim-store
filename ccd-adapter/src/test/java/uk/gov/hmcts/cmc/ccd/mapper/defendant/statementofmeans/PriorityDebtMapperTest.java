@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPaymentFrequency;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriorityDebt;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.PriorityDebt;
+
 import java.math.BigDecimal;
 import java.util.UUID;
 

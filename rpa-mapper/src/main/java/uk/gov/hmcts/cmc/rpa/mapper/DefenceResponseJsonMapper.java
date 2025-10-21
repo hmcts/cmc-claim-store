@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 import uk.gov.hmcts.cmc.rpa.DateFormatter;
 import uk.gov.hmcts.cmc.rpa.mapper.helper.RPAMapperHelper;
 import uk.gov.hmcts.cmc.rpa.mapper.json.NullAwareJsonObjectBuilder;
+
 import java.math.BigDecimal;
 
 import static java.util.Objects.requireNonNull;

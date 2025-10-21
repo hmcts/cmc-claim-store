@@ -8,6 +8,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
+
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;

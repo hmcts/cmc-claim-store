@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDDefendant;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Arrays;
 
 public enum YesNoOption {

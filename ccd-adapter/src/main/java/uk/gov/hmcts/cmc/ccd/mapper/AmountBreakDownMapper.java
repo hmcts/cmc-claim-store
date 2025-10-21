@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
+
 import java.util.Objects;
 import java.util.stream.Collectors;
 

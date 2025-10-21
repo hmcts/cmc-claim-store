@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDEmployer;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employer;
+
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;

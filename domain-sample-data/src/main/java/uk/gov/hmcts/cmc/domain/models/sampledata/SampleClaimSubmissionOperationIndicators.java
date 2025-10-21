@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
+
 import java.util.function.Supplier;
 
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;

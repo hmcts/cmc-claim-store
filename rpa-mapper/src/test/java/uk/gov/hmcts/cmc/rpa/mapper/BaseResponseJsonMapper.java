@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.rpa.mapper;
 
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+
 import java.time.LocalDateTime;
 
 public class BaseResponseJsonMapper {

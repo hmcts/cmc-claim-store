@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintableTemplate;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.sendletter.api.Document;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

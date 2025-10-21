@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 import uk.gov.hmcts.cmc.domain.models.party.HasContactPerson;
+
 import java.util.Optional;
 
 @EqualsAndHashCode(callSuper = true)

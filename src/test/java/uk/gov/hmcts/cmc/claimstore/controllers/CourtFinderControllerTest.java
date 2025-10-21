@@ -8,6 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Court;
 import uk.gov.hmcts.cmc.claimstore.services.courtfinder.CourtFinderService;
 import uk.gov.hmcts.cmc.claimstore.test.utils.DataFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 

@@ -20,6 +20,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
+
 import java.util.UUID;
 
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;

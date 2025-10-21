@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.postcode.Co
 import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.postcode.SearchCourtByPostcodeResponse;
 import uk.gov.hmcts.cmc.claimstore.models.factapi.courtfinder.search.slug.SearchCourtBySlugResponse;
 import uk.gov.hmcts.cmc.claimstore.requests.courtfinder.CourtFinderApi;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;

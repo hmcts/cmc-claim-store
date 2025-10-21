@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.cmc.rpa.mapper.LegalSealedClaimJsonMapper;
 import uk.gov.hmcts.cmc.rpa.mapper.SealedClaimJsonMapper;
+
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;

@@ -4,6 +4,7 @@ import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention.PaymentIntentionBuilder;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepaymentPlan;
+
 import java.time.LocalDate;
 
 public class SamplePaymentIntention {

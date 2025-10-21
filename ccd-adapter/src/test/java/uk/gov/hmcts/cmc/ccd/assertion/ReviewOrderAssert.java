@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.ccd.assertion;
 
 import uk.gov.hmcts.cmc.ccd.domain.CCDReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+
 import java.util.Optional;
 
 public class ReviewOrderAssert extends CustomAssert<ReviewOrderAssert, ReviewOrder> {

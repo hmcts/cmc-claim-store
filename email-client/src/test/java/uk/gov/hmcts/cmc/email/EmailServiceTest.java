@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.cmc.email.sendgrid.SendGridClient;
+
 import java.io.IOException;
 
 import static java.util.Collections.singletonMap;

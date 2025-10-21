@@ -5,6 +5,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDBankAccount;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDBankAccountType;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
+
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertMoney;

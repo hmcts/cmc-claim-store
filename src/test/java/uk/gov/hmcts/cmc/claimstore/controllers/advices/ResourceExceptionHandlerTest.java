@@ -30,6 +30,7 @@ import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.exceptions.IllegalSettlementStatementException;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.service.notify.NotificationClientException;
+
 import java.net.SocketTimeoutException;
 import java.util.Collection;
 import java.util.function.BiConsumer;

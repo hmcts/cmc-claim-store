@@ -21,6 +21,7 @@ import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.ccd.client.CaseEventsApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseEventDetail;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

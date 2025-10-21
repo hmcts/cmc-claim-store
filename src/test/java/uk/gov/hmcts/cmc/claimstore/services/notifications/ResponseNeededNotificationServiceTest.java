@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.service.notify.NotificationClientException;
+
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.anyMap;

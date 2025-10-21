@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.models.idam;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.List;
 
 public class GeneratePinRequest {

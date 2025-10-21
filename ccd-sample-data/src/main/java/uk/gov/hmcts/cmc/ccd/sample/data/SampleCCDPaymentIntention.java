@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.ccd.sample.data;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentIntention;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentSchedule;
+
 import java.time.LocalDate;
 
 public class SampleCCDPaymentIntention {

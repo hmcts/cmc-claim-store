@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.domain.models.sampledata;
 
 import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountRange.AmountRangeBuilder;
+
 import java.math.BigDecimal;
 
 public class SampleAmountRange {

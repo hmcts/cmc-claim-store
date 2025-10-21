@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 import uk.gov.hmcts.cmc.rpa.config.ModuleConfiguration;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 

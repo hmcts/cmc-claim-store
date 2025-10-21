@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.domain.models.amount.Amount;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
 import uk.gov.hmcts.cmc.domain.models.amount.NotKnown;
 import uk.gov.hmcts.cmc.domain.models.particulars.PersonalInjury;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Optional;

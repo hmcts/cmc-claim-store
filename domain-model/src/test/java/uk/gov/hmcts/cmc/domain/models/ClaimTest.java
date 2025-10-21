@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.domain.models;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;

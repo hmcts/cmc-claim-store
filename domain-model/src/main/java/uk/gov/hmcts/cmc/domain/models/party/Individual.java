@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.cmc.domain.constraints.AgeRangeValidator;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
+
 import java.time.LocalDate;
 
 @JsonIgnoreProperties(ignoreUnknown = true)

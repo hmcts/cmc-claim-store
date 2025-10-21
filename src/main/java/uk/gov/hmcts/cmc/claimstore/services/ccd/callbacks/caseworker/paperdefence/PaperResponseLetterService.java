@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.generalletter.GeneralL
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBody;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;

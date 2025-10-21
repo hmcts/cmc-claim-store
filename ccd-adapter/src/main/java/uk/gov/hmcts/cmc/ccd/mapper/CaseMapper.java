@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.ProceedOfflineReasonType;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
+
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;

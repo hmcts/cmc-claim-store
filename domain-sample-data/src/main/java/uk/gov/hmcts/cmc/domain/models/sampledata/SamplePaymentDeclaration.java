@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.domain.models.sampledata;
 
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration.PaymentDeclarationBuilder;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 

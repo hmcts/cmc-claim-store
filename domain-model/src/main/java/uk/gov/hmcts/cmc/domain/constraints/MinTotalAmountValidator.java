@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.domain.constraints;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import uk.gov.hmcts.cmc.domain.models.AmountRow;
+
 import java.math.BigDecimal;
 import java.util.List;
 

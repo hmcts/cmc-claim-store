@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactChangeContent;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTelephone;
+
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;

@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;

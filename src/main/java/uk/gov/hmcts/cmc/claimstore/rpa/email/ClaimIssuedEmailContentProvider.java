@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.claimstore.services.TemplateService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.EmailContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+
 import java.util.Map;
 
 @Component
