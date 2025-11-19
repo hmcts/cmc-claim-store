@@ -83,7 +83,7 @@ allprojects {
 
   checkstyle {
     maxWarnings = 0
-    toolVersion = '8.29'
+    toolVersion = '12.1.2'
     getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
   }
 
