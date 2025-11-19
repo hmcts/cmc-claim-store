@@ -5,7 +5,7 @@ dependencies {
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
-  implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
+  implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.20.0'
   implementation group: 'com.google.guava', name: 'guava', version: '33.1.0-jre'
 
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.42'
