@@ -14,8 +14,8 @@ dependencies {
   implementation group: 'com.google.guava', name: 'guava', version: '33.1.0-jre'
   implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
 
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.26'
-  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.26'
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.42'
+  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.42'
 
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
   implementation group: 'ch.qos.logback', name: 'logback-core', version: versions.logback
