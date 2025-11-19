@@ -17,8 +17,8 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
   implementation group: 'org.springframework.retry', name: 'spring-retry', version: '1.2.5.RELEASE'
 
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.26'
-  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.26'
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.42'
+  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.42'
 
   //implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: '5.1.6'
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.1.4'
