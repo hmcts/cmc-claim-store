@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services.payments;
 
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.reform.payments.client.PaymentsClient;
+import uk.gov.hmcts.reform.payments.client.models.FeeDto;
 import uk.gov.hmcts.reform.payments.client.models.LinkDto;
 import uk.gov.hmcts.reform.payments.client.models.LinksDto;
 import uk.gov.hmcts.reform.payments.client.models.PaymentDto;
@@ -9,9 +10,11 @@ import uk.gov.hmcts.reform.payments.request.CardPaymentRequest;
 
 import java.net.URI;
 import java.time.OffsetDateTime;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class PaymentsClientStub extends PaymentsClient {
 
@@ -30,11 +33,11 @@ public class PaymentsClientStub extends PaymentsClient {
     ) {
         PaymentDto payment = PaymentDto.builder()
             .reference(generateReference())
-            .status(PaymentStatus.INITIATED.getStatus())
+            .status(PaymentStatus.SUCCESS.getStatus())
             .externalReference(UUID.randomUUID().toString())
             .links(buildLinks(nextUrl))
             .dateCreated(OffsetDateTime.now())
-            .fees(paymentRequest.getFees())
+            .fees(withFeeIds(paymentRequest.getFees()))
             .caseReference(paymentRequest.getCaseReference())
             .ccdCaseNumber(paymentRequest.getCcdCaseNumber())
             .currency(paymentRequest.getCurrency())
@@ -70,6 +73,28 @@ public class PaymentsClientStub extends PaymentsClient {
         return LinksDto.builder()
             .nextUrl(LinkDto.builder().href(URI.create(nextUrl)).build())
             .build();
+    }
+
+    private FeeDto[] withFeeIds(FeeDto[] requestFees) {
+        if (requestFees == null) {
+            return null;
+        }
+
+        AtomicInteger counter = new AtomicInteger(1);
+        return Arrays.stream(requestFees)
+            .map(fee -> {
+                if (fee == null) {
+                    return null;
+                }
+                return FeeDto.builder()
+                    .id(counter.getAndIncrement())
+                    .ccdCaseNumber(fee.getCcdCaseNumber())
+                    .calculatedAmount(fee.getCalculatedAmount())
+                    .code(fee.getCode())
+                    .version(fee.getVersion())
+                    .build();
+            })
+            .toArray(FeeDto[]::new);
     }
 
     private String generateReference() {
