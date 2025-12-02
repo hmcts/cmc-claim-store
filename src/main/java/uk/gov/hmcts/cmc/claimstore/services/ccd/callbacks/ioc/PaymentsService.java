@@ -9,13 +9,13 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
-import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 import uk.gov.hmcts.reform.fees.client.FeesClient;
 import uk.gov.hmcts.reform.fees.client.model.FeeLookupResponseDto;
 import uk.gov.hmcts.reform.payments.client.PaymentsClient;
 import uk.gov.hmcts.reform.payments.client.models.FeeDto;
 import uk.gov.hmcts.reform.payments.client.models.PaymentDto;
 import uk.gov.hmcts.reform.payments.request.CardPaymentRequest;
+
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Optional;
@@ -109,7 +109,7 @@ public class PaymentsService {
     }
 
     private FeeDto[] buildFees(String ccdCaseId, FeeLookupResponseDto feeOutcome) {
-        return new FeeDto[]{
+        return new FeeDto[] {
             FeeDto.builder()
                 .ccdCaseNumber(ccdCaseId)
                 .calculatedAmount(feeOutcome.getFeeAmount())
