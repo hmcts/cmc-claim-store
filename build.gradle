@@ -306,8 +306,8 @@ dependencies {
   testImplementation group: 'org.junit.platform', name: 'junit-platform-commons', version: versions.junitPlatform
   testImplementation group: 'org.junit.platform', name: 'junit-platform-engine', version: versions.junitPlatform
   testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.25.3'
-  testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.11.0'
-  testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.8.0'
+  testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.20.0'
+  testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.12.4'
   testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.2'
   testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.18.0'
 
