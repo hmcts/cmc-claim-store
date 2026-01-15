@@ -42,6 +42,8 @@ public class PaymentsService {
         this.feesClient = feesClient;
         this.currency = currency;
         this.description = description;
+        logger.info("PaymentsService configured with PaymentsClient implementation {}",
+            paymentsClient == null ? "null" : paymentsClient.getClass().getName());
     }
 
     public Optional<Payment> retrievePayment(

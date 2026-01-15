@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.payments;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.reform.payments.client.PaymentsClient;
 import uk.gov.hmcts.reform.payments.client.models.FeeDto;
@@ -17,6 +19,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class PaymentsClientStub extends PaymentsClient {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PaymentsClientStub.class);
 
     private final Map<String, PaymentDto> payments = new ConcurrentHashMap<>();
 
@@ -46,6 +50,11 @@ public class PaymentsClientStub extends PaymentsClient {
 
         payment.setAmount(paymentRequest.getAmount());
         payments.put(payment.getReference(), payment);
+        LOGGER.info(
+            "Created stub payment with reference {} for case {}",
+            payment.getReference(),
+            paymentRequest.getCaseReference()
+        );
         return payment;
     }
 
@@ -53,8 +62,10 @@ public class PaymentsClientStub extends PaymentsClient {
     public PaymentDto retrieveCardPayment(String authorisation, String paymentReference) {
         PaymentDto payment = payments.get(paymentReference);
         if (payment == null) {
+            LOGGER.warn("Requested stub payment {} but no payment exists", paymentReference);
             throw new IllegalStateException("No stubbed payment with reference " + paymentReference);
         }
+        LOGGER.info("Retrieved stub payment {}", paymentReference);
         return payment;
     }
 
@@ -63,6 +74,9 @@ public class PaymentsClientStub extends PaymentsClient {
         PaymentDto payment = payments.get(paymentReference);
         if (payment != null) {
             payment.setStatus(PaymentStatus.FAILED.getStatus());
+            LOGGER.info("Marked stub payment {} as failed", paymentReference);
+        } else {
+            LOGGER.info("Cancel requested for stub payment {} but none exists", paymentReference);
         }
     }
 
