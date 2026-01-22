@@ -39,7 +39,7 @@ public class PaymentsClientStub extends PaymentsClient {
             .reference(generateReference())
             .status(PaymentStatus.SUCCESS.getStatus())
             .externalReference(UUID.randomUUID().toString())
-            .links(buildLinks(nextUrl))
+            .links(buildLinks(returnUrl))
             .dateCreated(OffsetDateTime.now())
             .fees(withFeeIds(paymentRequest.getFees()))
             .caseReference(paymentRequest.getCaseReference())
@@ -80,12 +80,12 @@ public class PaymentsClientStub extends PaymentsClient {
         }
     }
 
-    private LinksDto buildLinks(String nextUrl) {
-        if (nextUrl == null) {
+    private LinksDto buildLinks(String returnUrl) {
+        if (returnUrl == null) {
             return LinksDto.builder().build();
         }
         return LinksDto.builder()
-            .nextUrl(LinkDto.builder().href(URI.create(nextUrl)).build())
+            .nextUrl(LinkDto.builder().href(URI.create(returnUrl)).build())
             .build();
     }
 
