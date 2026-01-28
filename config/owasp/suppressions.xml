@@ -43,12 +43,12 @@
     <suppress>
         <notes>Temporary until Spring / Java upgrade aligns with patched validator.</notes>
         <cve>CVE-2025-15104</cve>
-        <packageUrlRegex>pkg:maven/org\.hibernate\.validator/hibernate-validator@6\.2\.5\.Final</packageUrlRegex>
+        <gav regex="^org\.hibernate\.validator:hibernate-validator:6\.2\.5\.Final$"/>
     </suppress>
 
     <suppress>
         <notes>Temporary until Spring / Java upgrade aligns with patched validator.</notes>
         <cve>CVE-2025-15104</cve>
-        <packageUrlRegex>pkg:maven/cz\.jirutka\.validator/validator-collection@2\.2\.0</packageUrlRegex>
+        <gav regex="^cz\.jirutka\.validator:validator-collection:2\.2\.0$"/>
     </suppress>
 </suppressions>
