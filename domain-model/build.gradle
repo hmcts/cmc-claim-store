@@ -10,8 +10,7 @@ repositories {
 dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
   implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.14.0'
-  implementation group: 'cz.jirutka.validator', name: 'validator-collection', version: '2.2.0'
-
+  implementation group: 'jakarta.validation', name: 'jakarta.validation-api', version: '2.0.2'
   //   The below fixes https://nvd.nist.gov/vuln/detail/CVE-2019-12384 while waiting for spring to pull new version
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.17.0'
 
@@ -19,6 +18,7 @@ dependencies {
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.42'
 
   testImplementation project(':domain-sample-data')
+  testImplementation group: 'org.apache.bval', name: 'bval-jsr', version: '2.0.6'
 
   testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.11.0'
   testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.25.3'

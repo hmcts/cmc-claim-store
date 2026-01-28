@@ -4,9 +4,10 @@ import java.util.Collection;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class EachNotNullConstraintValidator implements ConstraintValidator<EachNotNull, Collection<?>> {
+@SuppressWarnings({"rawtypes", "unchecked"})
+public class EachNotNullConstraintValidator implements ConstraintValidator<EachNotNull, Collection> {
     @Override
-    public boolean isValid(Collection<?> value, ConstraintValidatorContext context) {
+    public boolean isValid(Collection value, ConstraintValidatorContext context) {
         if (value == null) {
             return true;
         }
