@@ -7,8 +7,7 @@ import java.util.List;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
-public class MinTotalAmountValidator implements ConstraintValidator<MinTotalAmount, List> {
+public class MinTotalAmountValidator implements ConstraintValidator<MinTotalAmount, List<AmountRow>> {
 
     private BigDecimal minAmount;
     private boolean inclusive;
@@ -20,18 +19,14 @@ public class MinTotalAmountValidator implements ConstraintValidator<MinTotalAmou
     }
 
     @Override
-    public boolean isValid(List rows, ConstraintValidatorContext context) {
+    public boolean isValid(List<AmountRow> rows, ConstraintValidatorContext context) {
         if (rows == null) {
             return true;
         }
 
         BigDecimal total = BigDecimal.ZERO;
-        for (Object item : rows) {
-            if (item instanceof AmountRow) {
-                AmountRow row = (AmountRow) item;
-                if (row.getAmount() == null) {
-                    continue;
-                }
+        for (AmountRow row : rows) {
+            if (row.getAmount() != null) {
                 total = total.add(row.getAmount());
             }
         }
