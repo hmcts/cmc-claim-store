@@ -160,6 +160,7 @@ ccd:
       - civilmoneyclaims+la@gmail.com|CMC|MoneyClaimCase|readyForDirections
 
   ccd-definition-importer:
+    enabled: false
     image: hmctspublic.azurecr.io/cmc/ccd-definition-importer:1.10.32
     debug: true
     environment:
