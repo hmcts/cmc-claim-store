@@ -37,6 +37,18 @@
         <cve>CVE-2025-55752</cve>
         <cve>CVE-2025-55754</cve>
         <cve>CVE-2025-61795</cve>
+        <cve>CVE-2025-68161</cve>
+    </suppress>
+
+    <suppress>
+        <notes>Temporary until Spring / Java upgrade aligns with patched validator.</notes>
+        <cve>CVE-2025-15104</cve>
+        <cpe>cpe:2.3:a:hibernate:hibernate-validator:6.2.5:*:*:*:*:*:*:*</cpe>
+    </suppress>
+
+    <suppress>
+        <notes>Temporary until Spring / Java upgrade aligns with patched validator.</notes>
+        <cve>CVE-2025-15104</cve>
+        <cpe>cpe:2.3:a:validator:validator:2.2.0:*:*:*:*:*:*:*</cpe>
     </suppress>
 </suppressions>
-

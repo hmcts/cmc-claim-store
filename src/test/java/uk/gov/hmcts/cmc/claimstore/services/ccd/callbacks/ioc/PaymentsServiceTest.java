@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc;
 
-import com.launchdarkly.sdk.LDUser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +20,7 @@ import uk.gov.hmcts.reform.payments.client.models.LinkDto;
 import uk.gov.hmcts.reform.payments.client.models.LinksDto;
 import uk.gov.hmcts.reform.payments.client.models.PaymentDto;
 import uk.gov.hmcts.reform.payments.request.CardPaymentRequest;
+
 import java.math.BigDecimal;
 import java.net.URI;
 import java.time.OffsetDateTime;
@@ -37,8 +37,6 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SamplePayment.PAYMENT_RE
 public class PaymentsServiceTest {
     private static final String BEARER_TOKEN = "Bearer let me in";
     private static final String RETURN_URL = "http://returnUrl.test";
-    private static final String SERVICE = "CMC";
-    private static final String SITE_ID = "siteId";
     private static final String CURRENCY = "currency";
     private static final String DESCRIPTION = "description";
     private static final OffsetDateTime PAYMENT_DATE = OffsetDateTime.parse("2017-02-03T10:15:30+01:00");
@@ -58,7 +56,7 @@ public class PaymentsServiceTest {
         .status("Success")
         .dateCreated(PAYMENT_DATE)
         .links(LinksDto.builder().nextUrl(
-            LinkDto.builder().href(URI.create(NEXT_URL)).build())
+                LinkDto.builder().href(URI.create(NEXT_URL)).build())
             .build())
         .build();
 
@@ -72,14 +70,10 @@ public class PaymentsServiceTest {
         paymentsService = new PaymentsService(
             paymentsClient,
             feesClient,
-            SERVICE,
-            SITE_ID,
             CURRENCY,
-            DESCRIPTION,
-            launchDarkly
+            DESCRIPTION
         );
         claim = SampleClaim.getDefault();
-        when(launchDarkly.isFeatureEnabled(eq("new-claim-fees"), any(LDUser.class))).thenReturn(true);
         when(feesClient.lookupFee(eq("default"), eq("issue"), any(BigDecimal.class)))
             .thenReturn(feeOutcome);
     }
@@ -139,7 +133,7 @@ public class PaymentsServiceTest {
             .status("Success")
             .dateCreated(null)
             .links(LinksDto.builder().nextUrl(
-                LinkDto.builder().href(URI.create(NEXT_URL)).build())
+                    LinkDto.builder().href(URI.create(NEXT_URL)).build())
                 .build())
             .build();
         when(paymentsClient.retrieveCardPayment(
@@ -172,7 +166,7 @@ public class PaymentsServiceTest {
 
     @Test
     public void shouldMakePaymentAndSetThePaymentAmount() {
-        FeeDto[] fees = new FeeDto[]{
+        FeeDto[] fees = new FeeDto[] {
             FeeDto.builder()
                 .ccdCaseNumber(String.valueOf(claim.getCcdCaseId()))
                 .calculatedAmount(feeOutcome.getFeeAmount())
@@ -214,7 +208,7 @@ public class PaymentsServiceTest {
             .dateCreated(null)
             .externalReference(externalReference)
             .links(LinksDto.builder().nextUrl(
-                LinkDto.builder().href(URI.create(NEXT_URL)).build())
+                    LinkDto.builder().href(URI.create(NEXT_URL)).build())
                 .build())
             .build();
         when(paymentsClient.retrieveCardPayment(
@@ -248,7 +242,7 @@ public class PaymentsServiceTest {
             .dateCreated(null)
             .fees(fees)
             .links(LinksDto.builder().nextUrl(
-                LinkDto.builder().href(URI.create(NEXT_URL)).build())
+                    LinkDto.builder().href(URI.create(NEXT_URL)).build())
                 .build())
             .build();
         when(paymentsClient.retrieveCardPayment(
@@ -273,20 +267,7 @@ public class PaymentsServiceTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void shouldBubbleUpExceptionIfFeeLookupFails() {
-        when(launchDarkly.isFeatureEnabled(eq("new-claim-fees"), any(LDUser.class))).thenReturn(false);
-        when(feesClient.lookupFee(eq("online"), eq("issue"), any(BigDecimal.class)))
-            .thenThrow(IllegalStateException.class);
-
-        paymentsService.createPayment(
-            BEARER_TOKEN,
-            claim
-        );
-    }
-
-    @Test(expected = IllegalStateException.class)
     public void shouldBubbleUpExceptionIfFeeLookupFailsWithNewClaimFees() {
-        when(launchDarkly.isFeatureEnabled(eq("new-claim-fees"), any(LDUser.class))).thenReturn(true);
         when(feesClient.lookupFee(eq("default"), eq("issue"), any(BigDecimal.class)))
             .thenThrow(IllegalStateException.class);
 
