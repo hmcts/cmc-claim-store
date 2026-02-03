@@ -4,6 +4,63 @@ java:
   livenessFailureThreshold: 6
   livenessDelay: 75
   readinessDelay: 75
+  aadIdentityName: money-claims
+  keyVaults:
+    cmc:
+      resourceGroup: cmc
+      secrets:
+        - name: claim-store-db-password
+          alias: CLAIM_STORE_DB_PASSWORD
+        - name: AppInsightsInstrumentationKey
+          alias: azure.application-insights.instrumentation-key
+        - name: cmc-db-password-v15
+          alias: CMC_DB_PASSWORD
+        - name: cmc-db-username-v15
+          alias: CMC_DB_USERNAME
+        - name: cmc-db-host-v15
+          alias: CMC_DB_HOST
+        - name: citizen-oauth-client-secret
+          alias: oauth2.client.secret
+        - name: claim-store-s2s-secret
+          alias: idam.s2s-auth.totp_secret
+        - name: anonymous-caseworker-username
+          alias: idam.caseworker.anonymous.username
+        - name: anonymous-caseworker-password
+          alias: idam.caseworker.anonymous.password
+        - name: system-update-username
+          alias: idam.caseworker.system.username
+        - name: system-update-password
+          alias: idam.caseworker.system.password
+        - name: notify-api-key
+          alias: GOV_NOTIFY_API_KEY
+        - name: milo-recipient
+          alias: MILO_CSV_RECIPIENT
+        - name: staff-email
+          alias: staff-notifications.recipient
+        - name: live-support-email
+          alias: live-support.recipient
+        - name: rpa-email-sealed-claim
+          alias: rpa.notifications.sealedClaimRecipient
+        - name: rpa-email-breathing-space
+          alias: rpa.notifications.breathingSpaceRecipient
+        - name: rpa-email-legal-sealed-claim
+          alias: rpa.notifications.legalSealedClaimRecipient
+        - name: rpa-email-more-time-requested
+          alias: rpa.notifications.moreTimeRequestedRecipient
+        - name: rpa-email-response
+          alias: rpa.notifications.responseRecipient
+        - name: rpa-email-ccj
+          alias: rpa.notifications.countyCourtJudgementRecipient
+        - name: rpa-email-paid-in-full
+          alias: rpa.notifications.paidInFullRecipient
+        - name: launchDarkly-sdk-key
+          alias: LAUNCH_DARKLY_SDK_KEY
+        - name: sendgrid-api-key
+          alias: SENDGRID_API_KEY
+        - name: staff-email-legal-rep
+          alias: staff-notifications.legalRecipient
+        - name: appinsights-connection-string
+          alias: appinsights-connection-string
   environment:
     LOG_LEVEL: DEBUG
     CMC_DB_HOST: "{{ .Values.postgresql.releaseNameOverride}}"
@@ -13,8 +70,28 @@ java:
     REFERENCE_DATABASE_MIGRATION: true
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-ccd-data-store-api
     OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/realms/root/realms/hmcts
-    RPA_NOTIFICATIONS_LEGALSEALEDCLAIMRECIPIENT: civilmoneyclaims+rpa-legal-sealedclaim-issued@gmail.com
     USER_TOKEN_CACHE_ENABLED: true
+    AZURE_APPLICATIONINSIGHTS_INSTRUMENTATIONKEY: ${AZURE_APPLICATIONINSIGHTS_INSTRUMENTATIONKEY}
+    OAUTH2_CLIENT_SECRET: ${OAUTH2_CLIENT_SECRET}
+    IDAM_S2S_AUTH_TOTP_SECRET: ${IDAM_S2S_AUTH_TOTP_SECRET}
+    IDAM_CASEWORKER_ANONYMOUS_USERNAME: ${IDAM_CASEWORKER_ANONYMOUS_USERNAME}
+    IDAM_CASEWORKER_ANONYMOUS_PASSWORD: ${IDAM_CASEWORKER_ANONYMOUS_PASSWORD}
+    IDAM_CASEWORKER_SYSTEM_USERNAME: ${IDAM_CASEWORKER_SYSTEM_USERNAME}
+    IDAM_CASEWORKER_SYSTEM_PASSWORD: ${IDAM_CASEWORKER_SYSTEM_PASSWORD}
+    GOV_NOTIFY_API_KEY: ${GOV_NOTIFY_API_KEY}
+    MILO_CSV_RECIPIENT: ${MILO_CSV_RECIPIENT}
+    STAFF_NOTIFICATIONS_RECIPIENT: ${STAFF_NOTIFICATIONS_RECIPIENT}
+    STAFF_NOTIFICATIONS_LEGALRECIPIENT: ${STAFF_NOTIFICATIONS_LEGALRECIPIENT}
+    LIVE_SUPPORT_RECIPIENT: ${LIVE_SUPPORT_RECIPIENT}
+    RPA_NOTIFICATIONS_SEALEDCLAIMRECIPIENT: ${RPA_NOTIFICATIONS_SEALEDCLAIMRECIPIENT}
+    RPA_NOTIFICATIONS_BREATHINGSPACERECIPIENT: ${RPA_NOTIFICATIONS_BREATHINGSPACERECIPIENT}
+    RPA_NOTIFICATIONS_LEGALSEALEDCLAIMRECIPIENT: ${RPA_NOTIFICATIONS_LEGALSEALEDCLAIMRECIPIENT}
+    RPA_NOTIFICATIONS_MORETIMEREQUESTEDRECIPIENT: ${RPA_NOTIFICATIONS_MORETIMEREQUESTEDRECIPIENT}
+    RPA_NOTIFICATIONS_RESPONSERECIPIENT: ${RPA_NOTIFICATIONS_RESPONSERECIPIENT}
+    RPA_NOTIFICATIONS_COUNTYCOURTJUDGEMENTRECIPIENT: ${RPA_NOTIFICATIONS_COUNTYCOURTJUDGEMENTRECIPIENT}
+    RPA_NOTIFICATIONS_PAIDINFULLRECIPIENT: ${RPA_NOTIFICATIONS_PAIDINFULLRECIPIENT}
+    LAUNCH_DARKLY_SDK_KEY: ${LAUNCH_DARKLY_SDK_KEY}
+    SENDGRID_API_KEY: ${SENDGRID_API_KEY}
   postgresql:
     enabled: true
     releaseNameOverride: ${SERVICE_NAME}-postgresql
@@ -73,21 +150,26 @@ ccd:
       environment:
         IDAM_OAUTH2_AW_CLIENT_SECRET: ${ADMIN_WEB_IDAM_SECRET}
     idam-pr:
-      enabled: true
+      enabled: false
+      debug: true
 
   ccd-user-profile-api:
     java:
       image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
+      disableKeyVaults: true
       keyVaults: []
       environment:
+        JAVA_TOOL_OPTIONS: "-XX:InitialRAMPercentage=30.0 -XX:MaxRAMPercentage=65.0 -XX:MinRAMPercentage=30.0 -Dfile.encoding=UTF-8"
         USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin,cmc_claim_store
 
   ccd-definition-store-api:
     java:
       image: hmctspublic.azurecr.io/ccd/definition-store-api:latest
       imagePullPolicy: Always
+      disableKeyVaults: true
       keyVaults: []
       environment:
+        JAVA_TOOL_OPTIONS: "-XX:InitialRAMPercentage=30.0 -XX:MaxRAMPercentage=65.0 -XX:MinRAMPercentage=30.0 -Dfile.encoding=UTF-8"
         DEFINITION_STORE_IDAM_KEY: ${DEFINITION_STORE_S2S_KEY}
         DEFINITION_STORE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_gw,ccd_admin,cmc_claim_store
         IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
@@ -115,8 +197,10 @@ ccd:
     java:
       image: hmctspublic.azurecr.io/ccd/data-store-api:latest
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
+      disableKeyVaults: true
       keyVaults: []
       environment:
+        JAVA_TOOL_OPTIONS: "-XX:InitialRAMPercentage=30.0 -XX:MaxRAMPercentage=65.0 -XX:MinRAMPercentage=30.0 -Dfile.encoding=UTF-8"
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
         IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET: ${IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET}
         IDAM_DATA_STORE_SYSTEM_USER_USERNAME: ${IDAM_DATA_STORE_SYSTEM_USER_USERNAME}
@@ -127,29 +211,3 @@ ccd:
         OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/hmcts
         CASE_DOCUMENT_AM_URL: http://ccd-case-document-am-api-aat.service.core-compute-aat.internal
 
-  ccd-user-profile-importer:
-    image: hmctspublic.azurecr.io/ccd/user-profile-importer:db2r9a
-    users:
-      - civilmoneyclaims+ccd@gmail.com|CMC|MoneyClaimCase|open
-      - civilmoneyclaims+judge@gmail.com|CMC|MoneyClaimCase|orderForJudgeReview
-      - civilmoneyclaims+la@gmail.com|CMC|MoneyClaimCase|readyForDirections
-
-  ccd-definition-importer:
-    image: hmctspublic.azurecr.io/cmc/ccd-definition-importer:1.10.32
-    environment:
-      CCD_DEF_CLAIM_STORE_BASE_URL: http://${SERVICE_NAME}-java
-      OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/hmcts
-    definitionFilename: cmc-ccd.xlsx
-    userRoles:
-    - citizen
-    - caseworker-cmc
-    - caseworker-cmc-solicitor
-    - caseworker-cmc-systemupdate
-    - letter-holder
-    - caseworker-autotest1
-    - caseworker-cmc-anonymouscitizen
-    - caseworker-cmc-judge
-    - caseworker-cmc-legaladvisor
-    - caseworker-cmc-pcqextractor
-    - payments
-    - TTL-admin
