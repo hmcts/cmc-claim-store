@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.reform.payments.client.PaymentsClient;
 
 @Configuration
-@ConditionalOnProperty(name = "create_claim_enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "create_claim_enabled", havingValue = "true")
 public class PaymentsClientDisableConfiguration implements BeanDefinitionRegistryPostProcessor {
 
     @Override

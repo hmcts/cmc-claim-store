@@ -8,7 +8,7 @@ import uk.gov.hmcts.cmc.claimstore.services.payments.PaymentsClientStub;
 import uk.gov.hmcts.reform.payments.client.PaymentsClient;
 
 @Configuration
-@ConditionalOnProperty(name = "create_claim_enabled", havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(prefix = "feature_toggles", name = "create_claim_enabled", havingValue = "true", matchIfMissing = false)
 public class PaymentsClientStubConfiguration {
 
     @Bean
