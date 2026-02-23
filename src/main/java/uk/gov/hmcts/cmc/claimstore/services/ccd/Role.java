@@ -8,6 +8,7 @@ import lombok.Getter;
 public enum Role {
     CITIZEN("citizen"),
     CASEWORKER("caseworker-cmc"),
+    CASEWORKER_RPA_ROBOT("caseworker-cmc-rparobot"),
     SOLICITOR("caseworker-cmc-solicitor"),
     LEGAL_ADVISOR("caseworker-cmc-legaladvisor"),
     JUDGE("caseworker-cmc-judge");
