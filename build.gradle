@@ -315,6 +315,7 @@ dependencies {
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign'
 
   implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '13.9'
+  implementation group: 'io.github.openfeign', name: 'feign-hc5', version: '13.9'
 
   implementation group: 'org.springframework.cloud',name : 'spring-cloud-starter-bootstrap'
 
