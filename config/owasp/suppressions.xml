@@ -21,5 +21,8 @@
 
         <!-- Angus 2.0.5+ is not currently available in platform artifact mirror -->
         <cve>CVE-2025-7962</cve>
+
+        <!-- Hibernate Validator 8.0.3.Final still flagged by dependency-check data source -->
+        <cve>CVE-2025-15104</cve>
     </suppress>
 </suppressions>
