@@ -31,6 +31,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.PAPER_RESPONSE_PA
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.PAPER_RESPONSE_STATES_PAID;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MANAGE_DOCUMENTS;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER_RPA_ROBOT;
 
 @Service
 @ConditionalOnProperty("feature_toggles.ctsc_enabled")
@@ -38,7 +39,7 @@ public class ManageDocumentsCallbackHandler extends CallbackHandler {
     static final String NO_CHANGES_ERROR_MESSAGE = "You need to upload, edit or delete a document to continue.";
     static final String PAPER_RESPONSE_ERROR_MESSAGE = "Error as uploaded document type is paper response";
 
-    private static final List<Role> ROLES = List.of(CASEWORKER);
+    private static final List<Role> ROLES = List.of(CASEWORKER, CASEWORKER_RPA_ROBOT);
     private static final List<CaseEvent> EVENTS = Collections.singletonList(MANAGE_DOCUMENTS);
     private static final List<CCDClaimDocumentType> paperResponseDocumentTypes
         = List.of(PAPER_RESPONSE_FULL_ADMIT, PAPER_RESPONSE_PART_ADMIT, PAPER_RESPONSE_STATES_PAID,
