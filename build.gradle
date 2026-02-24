@@ -183,7 +183,7 @@ allprojects {
 
       dependencySet(
         group: 'org.eclipse.angus',
-        version: '2.0.5'
+        version: '2.0.3'
       ) {
         entry 'jakarta.mail'
         entry 'angus-core'
@@ -194,7 +194,7 @@ allprojects {
         entry 'smtp'
       }
 
-      dependency group: 'org.eclipse.angus', name: 'angus-activation', version: '2.0.5'
+      dependency group: 'org.eclipse.angus', name: 'angus-activation', version: '2.0.3'
 
       dependencySet(
         group: 'org.apache.logging.log4j',
@@ -233,7 +233,7 @@ configurations.all {
     force 'org.hibernate.validator:hibernate-validator:8.0.3.Final'
     force 'org.apache.logging.log4j:log4j-api:2.25.3'
     force 'org.apache.logging.log4j:log4j-core:2.25.3'
-    force 'org.eclipse.angus:angus-activation:2.0.5'
+    force 'org.eclipse.angus:angus-activation:2.0.3'
   }
 }
 

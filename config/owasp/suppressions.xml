@@ -18,5 +18,8 @@
 
         <!-- Commons Lang fixed in 3.18.0 but plugin still flags → suppression retained for now -->
         <cve>CVE-2025-48924</cve>
+
+        <!-- Angus 2.0.5+ is not currently available in platform artifact mirror -->
+        <cve>CVE-2025-7962</cve>
     </suppress>
 </suppressions>
