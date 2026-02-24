@@ -176,10 +176,25 @@ allprojects {
 
       dependencySet(
         group: 'org.hibernate',
-        version: '8.0.1.Final'
+        version: '8.0.3.Final'
       ) {
         entry 'hibernate-validator'
       }
+
+      dependencySet(
+        group: 'org.eclipse.angus',
+        version: '2.0.5'
+      ) {
+        entry 'jakarta.mail'
+        entry 'angus-core'
+        entry 'angus-mail'
+        entry 'imap'
+        entry 'logging-mailhandler'
+        entry 'pop3'
+        entry 'smtp'
+      }
+
+      dependency group: 'org.eclipse.angus', name: 'angus-activation', version: '2.0.3'
 
       dependencySet(group: 'org.apache.tomcat.embed', version: '10.1.48') {
         entry 'tomcat-embed-core'
@@ -227,8 +242,8 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-quartz'
 
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.23.1'
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.23.1'
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.25.3'
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.25.3'
 
   implementation group: 'org.flywaydb', name: 'flyway-core'
 
