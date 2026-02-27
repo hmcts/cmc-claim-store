@@ -37,7 +37,7 @@ public class NotificationService {
     }
 
     @LogExecutionTime
-    @Retryable(value = NotificationException.class, backoff = @Backoff(delay = 200))
+    @Retryable(retryFor = NotificationException.class, backoff = @Backoff(delay = 200))
     public void sendMail(
         String targetEmail,
         String emailTemplate,

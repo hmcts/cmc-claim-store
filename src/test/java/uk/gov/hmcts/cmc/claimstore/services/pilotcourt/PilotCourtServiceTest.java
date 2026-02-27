@@ -1,10 +1,16 @@
 package uk.gov.hmcts.cmc.claimstore.services.pilotcourt;
 
+import feign.FeignException;
+import feign.Request;
+import feign.RequestTemplate;
+import feign.Response;
+import feign.codec.DecodeException;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.models.courtfinder.Court;
 import uk.gov.hmcts.cmc.claimstore.requests.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
@@ -14,15 +20,21 @@ import uk.gov.hmcts.cmc.claimstore.test.utils.DataFactory;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -54,6 +66,37 @@ class PilotCourtServiceTest {
     private static final String HEARING_COURT_NEWCASTLE = "hearing-court/NEWCASTLE_HEARING_COURT.json";
     private static final String LIST_COURTS_SINGLE_NEWCASTLE = "courtfinder/COURT_LIST_SINGLE_NEWCASTLE.json";
     private static final String PILOT_COURT_ALL_COURTS = "pilot-court/response/ALL_PILOT_COURT_IDS.json";
+
+    private FeignException createFeignException() {
+        Map<String, Collection<String>> headers = new HashMap<>();
+        Request request = Request.create(
+            Request.HttpMethod.GET,
+            "/test",
+            headers,
+            Request.Body.empty(),
+            new RequestTemplate()
+        );
+        Response response = Response.builder()
+            .status(500)
+            .reason("failure")
+            .request(request)
+            .headers(headers)
+            .body(new byte[0])
+            .build();
+        return FeignException.errorStatus("method", response);
+    }
+
+    private DecodeException createDecodeException() {
+        Map<String, Collection<String>> headers = new HashMap<>();
+        Request request = Request.create(
+            Request.HttpMethod.GET,
+            "/test",
+            headers,
+            Request.Body.empty(),
+            new RequestTemplate()
+        );
+        return new DecodeException(500, "decode failure", request);
+    }
 
     @Test
     void shouldThrowRIllegalArgumentExceptionOnUnknownCourtId() {
@@ -140,6 +183,82 @@ class PilotCourtServiceTest {
         Optional<HearingCourt> actualHearingCourt = pilotCourtService.getPilotHearingCourt("BIRMINGHAM");
 
         assertEquals(Optional.empty(), actualHearingCourt);
+    }
+
+    @Test
+    void shouldGracefullyHandleCourtLookupExceptionsDuringInit() {
+        PilotCourtService pilotCourtService = new PilotCourtService(
+            csvPathSingle,
+            courtFinderService,
+            hearingCourtMapper,
+            appInsights
+        );
+
+        when(courtFinderService.getCourtDetailsListFromPostcode(anyString()))
+            .thenThrow(createFeignException())
+            .thenReturn(Collections.emptyList());
+
+        pilotCourtService.init();
+
+        Optional<HearingCourt> result = pilotCourtService.getPilotHearingCourt("BIRMINGHAM");
+
+        assertTrue(result.isEmpty());
+        verify(appInsights).trackEvent(AppInsightsEvent.COURT_FINDER_API_FAILURE, "Court postcode", "B11AA");
+        verify(hearingCourtMapper, never()).from(any());
+    }
+
+    @Test
+    void shouldHandleDecodeExceptionDuringInit() {
+        PilotCourtService pilotCourtService = new PilotCourtService(
+            csvPathSingle,
+            courtFinderService,
+            hearingCourtMapper,
+            appInsights
+        );
+
+        AtomicInteger callCount = new AtomicInteger();
+        when(courtFinderService.getCourtDetailsListFromPostcode(anyString()))
+            .thenAnswer(invocation -> {
+                if (callCount.getAndIncrement() == 0) {
+                    throw createDecodeException();
+                }
+                return Collections.emptyList();
+            });
+
+        pilotCourtService.init();
+
+        Optional<HearingCourt> result = pilotCourtService.getPilotHearingCourt("BIRMINGHAM");
+
+        assertTrue(result.isEmpty());
+        verify(appInsights).trackEvent(AppInsightsEvent.COURT_FINDER_API_FAILURE, "Court postcode", "B11AA");
+        verify(hearingCourtMapper, never()).from(any());
+    }
+
+    @Test
+    void shouldHandleUnexpectedRuntimeExceptionDuringInit() {
+        PilotCourtService pilotCourtService = new PilotCourtService(
+            csvPathSingle,
+            courtFinderService,
+            hearingCourtMapper,
+            appInsights
+        );
+
+        AtomicInteger callCount = new AtomicInteger();
+        when(courtFinderService.getCourtDetailsListFromPostcode(anyString()))
+            .thenAnswer(invocation -> {
+                if (callCount.getAndIncrement() == 0) {
+                    throw new RuntimeException("boom");
+                }
+                return Collections.emptyList();
+            });
+
+        pilotCourtService.init();
+
+        Optional<HearingCourt> result = pilotCourtService.getPilotHearingCourt("BIRMINGHAM");
+
+        assertTrue(result.isEmpty());
+        verify(appInsights).trackEvent(AppInsightsEvent.COURT_FINDER_API_FAILURE, "Court postcode", "B11AA");
+        verify(hearingCourtMapper, never()).from(any());
     }
 
     @Test

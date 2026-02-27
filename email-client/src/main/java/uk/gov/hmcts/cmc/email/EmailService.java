@@ -37,7 +37,7 @@ public class EmailService {
         this.sendGridClient = sendGridClient;
     }
 
-    @Retryable(value = EmailSendFailedException.class, backoff = @Backoff(delay = 100, maxDelay = 500))
+    @Retryable(retryFor = EmailSendFailedException.class, backoff = @Backoff(delay = 100, maxDelay = 500))
     public void sendEmail(String from, EmailData emailData) {
         sendEmailSendGrid(from, emailData);
     }

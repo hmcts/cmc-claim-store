@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.rpa.mapper.helper;
 
+import jakarta.json.JsonObject;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
@@ -8,7 +9,6 @@ import uk.gov.hmcts.cmc.rpa.DateFormatter;
 import uk.gov.hmcts.cmc.rpa.mapper.json.NullAwareJsonObjectBuilder;
 
 import java.time.LocalDate;
-import javax.json.JsonObject;
 
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseStatesPaidAccepted;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.statesPaidPaymentDeclarationDate;

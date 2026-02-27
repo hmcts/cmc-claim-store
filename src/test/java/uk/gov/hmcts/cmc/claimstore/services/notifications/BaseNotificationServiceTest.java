@@ -55,7 +55,7 @@ public abstract class BaseNotificationServiceTest {
 
     protected Claim claim = SampleClaim.getDefault().toBuilder().respondedAt(LocalDateTime.now()).build();
 
-    protected final Logger log = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+    protected Logger log;
 
     @Mock
     protected NotificationClient notificationClient;
@@ -78,6 +78,12 @@ public abstract class BaseNotificationServiceTest {
 
     @BeforeEach
     public void setUp() {
+        org.slf4j.Logger slf4jLogger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        if (slf4jLogger instanceof Logger) {
+            log = (Logger) slf4jLogger;
+        } else {
+            throw new IllegalStateException("Expected Logback Logger but found " + slf4jLogger.getClass());
+        }
         log.addAppender(mockAppender);
     }
 

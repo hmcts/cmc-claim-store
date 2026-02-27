@@ -1,7 +1,7 @@
 apply plugin: 'jacoco'
 
 def versions = [
-  logback          : '1.2.13',
+  logback          : '1.5.6',
   reformJavaLogging: '4.0.0'
 ]
 
@@ -10,12 +10,12 @@ dependencies {
   implementation group: 'org.springframework.retry', name: 'spring-retry'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
-  implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.10'
-  implementation group: 'com.google.guava', name: 'guava', version: '33.5.0-jre'
+  implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.2'
+  implementation group: 'com.google.guava', name: 'guava', version: '33.1.0-jre'
   implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
 
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.42'
-  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.42'
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.34'
+  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.34'
 
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
   implementation group: 'ch.qos.logback', name: 'logback-core', version: versions.logback
@@ -24,5 +24,5 @@ dependencies {
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
   testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.25.3'
 
-  testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.10.1'
+  testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.10.2'
 }

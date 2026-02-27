@@ -59,7 +59,7 @@ public class ClaimIssuedNotificationService {
     }
 
     @LogExecutionTime
-    @Retryable(value = NotificationException.class, backoff = @Backoff(delay = 200))
+    @Retryable(retryFor = NotificationException.class, backoff = @Backoff(delay = 200))
     public void sendMail(
         Claim claim,
         String targetEmail,
