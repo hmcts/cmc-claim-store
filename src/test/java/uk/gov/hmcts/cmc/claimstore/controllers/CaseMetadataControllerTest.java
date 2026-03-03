@@ -10,7 +10,6 @@ import uk.gov.hmcts.cmc.claimstore.controllers.support.CaseMetadataController;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
-import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUser;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.metadata.CaseMetadata;
@@ -50,7 +49,6 @@ public class CaseMetadataControllerTest {
         controller = new CaseMetadataController(claimService, userService);
         sampleClaim = SampleClaim.getDefault();
         sampleRepresentedClaim = SampleClaim.getDefaultForLegal();
-        when(userService.authenticateAnonymousCaseWorker()).thenReturn(SampleUser.getDefault());
     }
 
     @Test
@@ -60,7 +58,7 @@ public class CaseMetadataControllerTest {
             .thenReturn(singletonList(sampleClaim));
 
         // when
-        List<CaseMetadata> output = controller.getBySubmitterId("submitter");
+        List<CaseMetadata> output = controller.getBySubmitterId("submitter", "authorisation");
 
         // then
         assertEquals(1, output.size());
@@ -74,7 +72,7 @@ public class CaseMetadataControllerTest {
             .thenReturn(singletonList(sampleClaim));
 
         // when
-        List<CaseMetadata> output = controller.getByDefendantId("defendant");
+        List<CaseMetadata> output = controller.getByDefendantId("defendant", "authorisation");
 
         // then
         assertEquals(1, output.size());
@@ -84,11 +82,11 @@ public class CaseMetadataControllerTest {
     @Test
     public void shouldReturnClaimByExternalId() {
         // given
-        when(claimService.getClaimByReferenceAnonymous("reference"))
-            .thenReturn(Optional.of(sampleClaim));
+        when(claimService.getClaimByExternalId("externalId", "authorisation"))
+            .thenReturn(sampleClaim);
 
         // when
-        CaseMetadata output = controller.getByClaimReference("reference");
+        CaseMetadata output = controller.getByExternalId("externalId", "authorisation");
 
         // then
         assertNotNull(output);
@@ -98,11 +96,11 @@ public class CaseMetadataControllerTest {
     @Test(expected = NotFoundException.class)
     public void shouldThrowNotFoundExceptionWhenNoClaimWithReference() {
         // given
-        when(claimService.getClaimByReferenceAnonymous("reference"))
+        when(claimService.getClaimByReference("reference", "authorisation"))
             .thenReturn(Optional.empty());
 
         // when
-        controller.getByClaimReference("reference");
+        controller.getByClaimReference("reference", "authorisation");
 
         // then exception should have been thrown
     }
@@ -114,7 +112,7 @@ public class CaseMetadataControllerTest {
             .thenReturn(singletonList(sampleClaim));
 
         // when
-        List<CaseMetadata> output = controller.getByClaimantEmailFilter("claimant@server.net");
+        List<CaseMetadata> output = controller.getByClaimantEmailFilter("claimant@server.net", "authorisation");
 
         // then
         assertEquals(1, output.size());
@@ -128,7 +126,7 @@ public class CaseMetadataControllerTest {
             .thenReturn(singletonList(sampleClaim));
 
         // when
-        List<CaseMetadata> output = controller.getByDefendantEmailFilter("defendant@server.net");
+        List<CaseMetadata> output = controller.getByDefendantEmailFilter("defendant@server.net", "authorisation");
 
         // then
         assertEquals(1, output.size());
@@ -142,7 +140,7 @@ public class CaseMetadataControllerTest {
             .thenReturn(singletonList(sampleClaim));
 
         // when
-        List<CaseMetadata> output = controller.getByPaymentReference("RC-1234-5678-0123-4567");
+        List<CaseMetadata> output = controller.getByPaymentReference("RC-1234-5678-0123-4567", "authorisation");
 
         // then
         assertEquals(1, output.size());
@@ -152,11 +150,11 @@ public class CaseMetadataControllerTest {
     @Test
     public void shouldReturnRepresentedClaimByClaimReference() {
         // given
-        when(claimService.getClaimByReferenceAnonymous(sampleRepresentedClaim.getReferenceNumber()))
+        when(claimService.getClaimByReference(sampleRepresentedClaim.getReferenceNumber(), "authorisation"))
             .thenReturn(Optional.of(sampleRepresentedClaim));
 
         // when
-        CaseMetadata output = controller.getByClaimReference(sampleRepresentedClaim.getReferenceNumber());
+        CaseMetadata output = controller.getByClaimReference(sampleRepresentedClaim.getReferenceNumber(), "authorisation");
 
         // then
         assertNotNull(output);
@@ -167,11 +165,12 @@ public class CaseMetadataControllerTest {
     public void shouldReturnClaimsWithCreatedState() {
         // given
         sampleClaim = SampleClaim.getDefault();
+        when(userService.getUser("authorisation")).thenReturn(null);
         when(claimService.getClaimsByState(eq(CREATE), any()))
             .thenReturn(singletonList(SampleClaim.builder().withState(CREATE).build()));
 
         // when
-        List<CaseMetadata> cases = controller.getCreatedCases();
+        List<CaseMetadata> cases = controller.getCreatedCases("authorisation");
 
         // then
         assertEquals(1, cases.size());

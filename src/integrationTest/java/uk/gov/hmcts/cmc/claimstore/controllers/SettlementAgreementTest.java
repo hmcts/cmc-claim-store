@@ -161,7 +161,8 @@ public class SettlementAgreementTest extends BaseMockSpringTest {
 
         MockHttpServletRequestBuilder requestBuilder = post(url, claim.getExternalId())
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN);
+            .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
+            .header("ServiceAuthorization", SERVICE_TOKEN);
         return webClient.perform(requestBuilder);
     }
 }

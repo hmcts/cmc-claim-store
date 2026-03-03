@@ -17,11 +17,6 @@ import org.springframework.http.MediaType;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.TestPropertySource;
@@ -34,6 +29,7 @@ import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.helper.JsonMappingHelper;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.models.idam.UserInfo;
 import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.TestingSupportRepository;
 import uk.gov.hmcts.cmc.claimstore.requests.courtfinder.CourtFinderApi;
@@ -52,6 +48,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 import uk.gov.hmcts.cmc.scheduler.services.JobService;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.docassembly.DocAssemblyApi;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
@@ -59,10 +56,7 @@ import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.service.notify.NotificationClient;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.time.temporal.ChronoUnit;
 import javax.sql.DataSource;
 
 import static org.mockito.ArgumentMatchers.anyString;
@@ -121,6 +115,8 @@ public abstract class BaseMockSpringTest {
     @MockBean
     protected AuthTokenGenerator authTokenGenerator;
     @MockBean
+    protected AuthTokenValidator authTokenValidator;
+    @MockBean
     protected AppInsights appInsights;
     @MockBean
     protected ReferenceNumberRepository referenceNumberRepository;
@@ -147,10 +143,6 @@ public abstract class BaseMockSpringTest {
     @MockBean
     protected BankHolidaysApi bankHolidaysApi;
     @MockBean
-    protected Authentication authentication;
-    @MockBean
-    protected SecurityContext securityContext;
-    @MockBean
     protected JwtDecoder jwtDecoder;
     @MockBean
     private Flyway flyway;
@@ -174,10 +166,23 @@ public abstract class BaseMockSpringTest {
 
         bankHolidaysSetup();
 
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        SecurityContextHolder.setContext(securityContext);
-        setSecurityAuthorities(authentication);
-        when(jwtDecoder.decode(anyString())).thenReturn(getJwt());
+        when(jwtDecoder.decode(anyString())).thenAnswer(invocation -> {
+            String tokenValue = invocation.getArgument(0);
+            return getJwt(tokenValue);
+        });
+
+        when(authTokenValidator.getServiceName(anyString())).thenReturn("cmc_claim_store");
+        when(userService.getUserInfo(anyString())).thenAnswer(invocation -> {
+            String token = invocation.getArgument(0);
+            String roles = "citizen";
+            if (token != null && (token.contains("caseworker") || token.contains("legal") || token.contains("solicitor") || token.contains("admin"))) {
+                roles = "caseworker,caseworker-cmc,solicitor";
+            }
+            return UserInfo.builder()
+                .uid(USER_ID)
+                .roles(java.util.Arrays.asList(roles.split(",")))
+                .build();
+        });
     }
 
     private void bankHolidaysSetup() {
@@ -186,31 +191,26 @@ public abstract class BaseMockSpringTest {
         given(bankHolidaysApi.retrieveAll()).willReturn(bankHolidays);
     }
 
-    protected void setSecurityAuthorities(Authentication authenticationMock, String... authorities) {
-
-        Jwt jwt = getJwt();
-        when(authenticationMock.getPrincipal()).thenReturn(jwt);
-
-        Collection<? extends GrantedAuthority> authorityCollection = Stream.of(authorities)
-            .map(a -> new SimpleGrantedAuthority(a))
-            .collect(Collectors.toCollection(ArrayList::new));
-
-        when(authenticationMock.getAuthorities()).thenAnswer(invocationOnMock -> authorityCollection);
-
-    }
-
     @NotNull
-    private Jwt getJwt() {
-        return Jwt.withTokenValue(BEARER_TOKEN)
-            .claim("exp", Instant.ofEpochSecond(1585763216))
-            .claim("iat", Instant.ofEpochSecond(1585734416))
+    protected Jwt getJwt(String tokenValue) {
+        String token = tokenValue.startsWith("Bearer ") ? tokenValue.substring(7) : tokenValue;
+        return Jwt.withTokenValue(token)
+            .claim("exp", Instant.now().plus(1, ChronoUnit.HOURS))
+            .claim("iat", Instant.now())
             .claim("token_type", "Bearer")
             .claim("tokenName", "access_token")
             .claim("expires_in", 28800)
+            .claim("sub", USER_ID)
+            .claim("iss", "http://fr-am:8080/openam/oauth2/hmcts")
             .header("kid", "b/O6OvVv1+y+WgrH5Ui9WTioLt0=")
             .header("typ", "RS256")
             .header("alg", "RS256")
             .build();
+    }
+
+    @NotNull
+    protected Jwt getJwt() {
+        return getJwt(BEARER_TOKEN);
     }
 
     protected ImmutableMap<String, String> searchCriteria(String externalId) {
@@ -224,13 +224,15 @@ public abstract class BaseMockSpringTest {
     protected ResultActions doGet(String urlTemplate, Object... uriVars) throws Exception {
         return webClient.perform(
             get(urlTemplate, uriVars)
-                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN));
+                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
+                .header("ServiceAuthorization", SERVICE_TOKEN));
     }
 
     protected <T> ResultActions doPost(String auth, T content, String urlTemplate, Object... uriVars) throws Exception {
         return webClient.perform(
             post(urlTemplate, uriVars)
                 .header(HttpHeaders.AUTHORIZATION, auth)
+                .header("ServiceAuthorization", SERVICE_TOKEN)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonMappingHelper.toJson(content)));
     }
@@ -239,6 +241,7 @@ public abstract class BaseMockSpringTest {
         return webClient.perform(
             put(urlTemplate, uriVars)
                 .header(HttpHeaders.AUTHORIZATION, auth)
+                .header("ServiceAuthorization", SERVICE_TOKEN)
                 .header("LetterHolderID", SampleClaim.LETTER_HOLDER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonMappingHelper.toJson(content)));

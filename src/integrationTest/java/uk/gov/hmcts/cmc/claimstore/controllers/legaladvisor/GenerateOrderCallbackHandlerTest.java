@@ -57,7 +57,7 @@ public class GenerateOrderCallbackHandlerTest extends BaseMockSpringTest {
         .withSurname("Advisor")
         .withRoles("caseworker-cmc-legaladvisor")
         .build();
-    private static final String AUTHORISATION_TOKEN = "Bearer let me in";
+    private static final String AUTHORISATION_TOKEN = "Bearer header.payload.signature";
     private static final String DOCUMENT_URL = "http://bla.test";
     @MockBean
     protected EmailService emailService;
@@ -212,6 +212,7 @@ public class GenerateOrderCallbackHandlerTest extends BaseMockSpringTest {
             .perform(post("/cases/callbacks/" + callbackType)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
+                .header("ServiceAuthorization", SERVICE_TOKEN)
                 .content(jsonMappingHelper.toJson(callbackRequest))
             );
     }
@@ -229,6 +230,7 @@ public class GenerateOrderCallbackHandlerTest extends BaseMockSpringTest {
             .perform(post("/cases/callbacks/" + callbackType)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
+                .header("ServiceAuthorization", SERVICE_TOKEN)
                 .content(jsonMappingHelper.toJson(callbackRequest))
             );
     }

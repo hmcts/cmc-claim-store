@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
 import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 
 @Tag(name = "Callback Controller")
@@ -49,9 +50,12 @@ public class CallbackController {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
         @PathVariable("callback-type") String callbackType,
         @NotNull @RequestBody CallbackRequest callback,
-        @PathVariable("version") Optional<String> version
+        @PathVariable("version") Optional<String> version,
+        HttpServletRequest request // This is optional to get Service name
     ) {
         logger.info("Received callback from CCD, eventId: {}", callback.getEventId());
+        String serviceName = (String) request.getAttribute("s2s-service-name");
+        logger.info("Callback from service: {}", serviceName);
         CallbackParams callbackParams = CallbackParams.builder()
             .request(callback)
             .type(CallbackType.fromValue(callbackType))

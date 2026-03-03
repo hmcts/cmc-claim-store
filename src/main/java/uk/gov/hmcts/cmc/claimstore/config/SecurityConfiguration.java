@@ -16,6 +16,8 @@ import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import uk.gov.hmcts.cmc.claimstore.filters.ServiceAuthFilter;
 import uk.gov.hmcts.cmc.claimstore.security.JwtGrantedAuthoritiesConverter;
 
 import javax.inject.Inject;
@@ -40,16 +42,22 @@ public class SecurityConfiguration {
     private String issuerOverride;
 
     private final JwtAuthenticationConverter jwtAuthenticationConverter;
+    private final ServiceAuthFilter serviceAuthFilter;
 
     @Inject
-    public SecurityConfiguration(final JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter) {
-        jwtAuthenticationConverter = new JwtAuthenticationConverter();
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+    public SecurityConfiguration(
+        final JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter,
+        final ServiceAuthFilter serviceAuthFilter
+    ) {
+        this.jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        this.jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+        this.serviceAuthFilter = serviceAuthFilter;
     }
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().antMatchers("/swagger-ui.html",
+        return (web) -> web.ignoring().antMatchers(
+            "/swagger-ui.html",
             "/webjars/springfox-swagger-ui/**",
             "/v3/api-docs/**",
             "/swagger-resources/**",
@@ -59,30 +67,34 @@ public class SecurityConfiguration {
             "/health/readiness",
             "/status/health",
             "/",
-            "/support/**",
+            // Public utility endpoints (no sensitive data)
             "/calendar/**",
-            "/deadline/**",
             "/interest/**",
-            "/court-finder/**",
-            "/cases/callbacks/**",
-            "/testing-support/**",
-            "/user/roles/**",
-            "/claims/*/defendant-link-status",
-            "/claims/*/metadata",
-            "/claims/letter/*",
-            "/loggers/**");
+            "/court-finder/**"
+        );
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+            // Add S2S validation filter BEFORE authentication
+            .addFilterBefore(serviceAuthFilter, UsernamePasswordAuthenticationFilter.class)
             .sessionManagement().sessionCreationPolicy(STATELESS).and()
             .csrf().disable()
             .formLogin().disable()
             .logout().disable()
             .authorizeRequests()
+            // S2S-only endpoints (internal microservice-to-microservice)
+            .antMatchers("/cases/callbacks/**").authenticated()        // S2S only
+            .antMatchers("/support/**").authenticated()                // S2S only
+            .antMatchers("/testing-support/**").authenticated()        // S2S only (if enabled)
+            .antMatchers("/claims/*/metadata").authenticated()         // S2S or User
+            .antMatchers("/claims/letter/*").authenticated()           // S2S or User
+            // User + S2S endpoints (require both user token and S2S)
             .antMatchers("/claims/**", "/responses/**", "/documents/**")
             .hasAnyAuthority(AUTHORITIES)
+            // Metadata and role endpoints
+            .antMatchers("/user/roles/**").authenticated()
             .anyRequest()
             .authenticated()
             .and()

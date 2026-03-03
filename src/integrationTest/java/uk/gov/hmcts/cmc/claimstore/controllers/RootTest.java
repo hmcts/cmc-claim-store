@@ -15,7 +15,8 @@ public class RootTest extends BaseMockSpringTest {
 
     @Test
     public void root() throws Exception {
-        webClient.perform(get("/"))
+        webClient.perform(get("/")
+            .header("ServiceAuthorization", SERVICE_TOKEN))
             .andExpect(status().isOk());
     }
 

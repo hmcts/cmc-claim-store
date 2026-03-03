@@ -34,7 +34,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
 )
 public class CreateLegalRepClaimCallbackHandlerTest extends BaseMockSpringTest {
 
-    private static final String AUTHORISATION_TOKEN = "Bearer let me in";
+    private static final String AUTHORISATION_TOKEN = "Bearer header.payload.signature";
     public static final String REFERENCE_NO = "000LR001";
 
     @MockBean
@@ -78,6 +78,7 @@ public class CreateLegalRepClaimCallbackHandlerTest extends BaseMockSpringTest {
             .perform(post("/cases/callbacks/" + callbackType)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
+                .header("ServiceAuthorization", SERVICE_TOKEN)
                 .content(jsonMappingHelper.toJson(callbackRequest))
             );
     }

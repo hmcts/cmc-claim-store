@@ -78,7 +78,7 @@ public class ContactDetailsChangeCallbackHandlerTest extends BaseMockSpringTest 
         .withRoles("caseworker-cmc")
         .build();
 
-    private static final String AUTHORISATION_TOKEN = "Bearer let me in";
+    private static final String AUTHORISATION_TOKEN = "Bearer header.payload.signature";
     private static final String DOCUMENT_URL = "http://bla.test";
     private static final String DOCUMENT_BINARY_URL = "http://bla.test/binary";
     private static final String DOCUMENT_FILE_NAME = "contact-letter.pdf";
@@ -125,7 +125,7 @@ public class ContactDetailsChangeCallbackHandlerTest extends BaseMockSpringTest 
 
     @SuppressWarnings("unchecked")
     @Test
-    public void shouldProcessMidEvent() throws Exception {
+    public void shouldReturnContactChangeContentOnMidEvent() throws Exception {
 
         MvcResult mvcResult = makeRequestContactDetailsChangeRequest(MID.getValue())
             .andExpect(status().isOk())
@@ -143,7 +143,7 @@ public class ContactDetailsChangeCallbackHandlerTest extends BaseMockSpringTest 
 
     @SuppressWarnings("unchecked")
     @Test
-    public void shouldProcessAboutToSubmitEvent() throws Exception {
+    public void shouldAddGeneralLetterOnAboutToSubmitEvent() throws Exception {
 
         CaseDetails caseDetailsTemp = successfulCoreCaseDataStoreSubmitResponse();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetailsTemp);
@@ -256,6 +256,7 @@ public class ContactDetailsChangeCallbackHandlerTest extends BaseMockSpringTest 
             .perform(post("/cases/callbacks/" + callbackType)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
+                .header("ServiceAuthorization", SERVICE_TOKEN)
                 .content(jsonMappingHelper.toJson(callbackRequest))
             );
     }
@@ -290,6 +291,7 @@ public class ContactDetailsChangeCallbackHandlerTest extends BaseMockSpringTest 
             .perform(post("/cases/callbacks/" + callbackType)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
+                .header("ServiceAuthorization", SERVICE_TOKEN)
                 .content(jsonMappingHelper.toJson(callbackRequest))
             );
     }

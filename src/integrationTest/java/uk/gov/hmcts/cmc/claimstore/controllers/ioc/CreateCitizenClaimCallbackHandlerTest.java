@@ -58,7 +58,7 @@ import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
 )
 public class CreateCitizenClaimCallbackHandlerTest extends BaseMockSpringTest {
 
-    private static final String AUTHORISATION_TOKEN = "Bearer let me in";
+    private static final String AUTHORISATION_TOKEN = "Bearer header.payload.signature";
     private static final long CASE_ID = 42L;
     private static final String NEXT_URL = "http://nexturl.test";
     private static final String REFERENCE_NO = "000MC001";
@@ -172,6 +172,7 @@ public class CreateCitizenClaimCallbackHandlerTest extends BaseMockSpringTest {
         return webClient.perform(post("/cases/callbacks/" + callbackType)
             .header(HttpHeaders.CONTENT_TYPE, MimeType.JSON)
             .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
+            .header("ServiceAuthorization", SERVICE_TOKEN)
             .content(jsonMappingHelper.toJson(callbackRequest))
         );
     }
@@ -193,6 +194,7 @@ public class CreateCitizenClaimCallbackHandlerTest extends BaseMockSpringTest {
         return webClient.perform(post("/cases/callbacks/" + callbackType)
             .header(HttpHeaders.CONTENT_TYPE, MimeType.JSON)
             .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
+            .header("ServiceAuthorization", SERVICE_TOKEN)
             .content(jsonMappingHelper.toJson(callbackRequest))
         );
     }

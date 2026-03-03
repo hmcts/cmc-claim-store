@@ -186,6 +186,7 @@ public class ResumePaymentTest extends BaseMockSpringTest {
             .perform(put("/claims/resume-citizen-payment")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, authorization)
+                .header("ServiceAuthorization", SERVICE_TOKEN)
                 .content(jsonMappingHelper.toJson(claimData))
             );
     }

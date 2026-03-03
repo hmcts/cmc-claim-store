@@ -3,10 +3,12 @@ package uk.gov.hmcts.cmc.claimstore.controllers.support;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,10 +46,13 @@ public class CaseMetadataController {
 
     @GetMapping("/claimant/{submitterId}/metadata")
     @Operation(summary = "Fetch user case metadata for given submitter id")
-    public List<CaseMetadata> getBySubmitterId(@PathVariable("submitterId") String submitterId) {
+    public List<CaseMetadata> getBySubmitterId(
+        @PathVariable("submitterId") String submitterId,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
         return claimService.getClaimBySubmitterId(
             submitterId,
-            userService.authenticateAnonymousCaseWorker().getAuthorisation(), 0)
+            authorisation,
+            0)
             .stream()
             .map(CaseMetadata::fromClaim)
             .collect(Collectors.toList());
@@ -56,11 +61,13 @@ public class CaseMetadataController {
     @GetMapping("/defendant/{defendantId}/metadata")
     @Operation(summary = "Fetch case metadata for given defendant id")
     public List<CaseMetadata> getByDefendantId(
-        @PathVariable("defendantId") String defendantId
+        @PathVariable("defendantId") String defendantId,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
         return claimService.getClaimByDefendantId(
             defendantId,
-            userService.authenticateAnonymousCaseWorker().getAuthorisation(), 0)
+            authorisation,
+            0)
             .stream()
             .map(CaseMetadata::fromClaim)
             .collect(Collectors.toList());
@@ -68,29 +75,36 @@ public class CaseMetadataController {
 
     @GetMapping("/{externalId:" + UUID_PATTERN + "}/metadata")
     @Operation(summary = "Fetch case metadata for given external id")
-    public CaseMetadata getByExternalId(@PathVariable("externalId") String externalId) {
+    public CaseMetadata getByExternalId(
+        @PathVariable("externalId") String externalId,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
         return fromClaim(claimService.getClaimByExternalId(
             externalId,
-            userService.authenticateAnonymousCaseWorker()
+            authorisation
             )
         );
     }
 
     @GetMapping("/{claimReference:" + CLAIM_REFERENCE_PATTERN + "}/metadata")
     @Operation(summary = "Fetch claim metadata for given claim reference")
-    public CaseMetadata getByClaimReference(@PathVariable("claimReference") String claimReference) {
-        return claimService.getClaimByReferenceAnonymous(
-            claimReference
+    public CaseMetadata getByClaimReference(
+        @PathVariable("claimReference") String claimReference,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
+        return claimService.getClaimByReference(
+            claimReference,
+            authorisation
         )
             .map(CaseMetadata::fromClaim)
             .orElseThrow(() -> new NotFoundException("Claim not found by claim reference " + claimReference));
     }
 
     @PostMapping("/filters/claimants/email")
-    public List<CaseMetadata> getByClaimantEmailFilter(@RequestParam("email") String email) {
+    public List<CaseMetadata> getByClaimantEmailFilter(
+        @RequestParam("email") String email,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
         return claimService.getClaimByClaimantEmail(
             email,
-            userService.authenticateAnonymousCaseWorker().getAuthorisation()
+            authorisation
         )
             .stream()
             .map(CaseMetadata::fromClaim)
@@ -98,10 +112,12 @@ public class CaseMetadataController {
     }
 
     @PostMapping("/filters/defendants/email")
-    public List<CaseMetadata> getByDefendantEmailFilter(@RequestParam("email") String email) {
+    public List<CaseMetadata> getByDefendantEmailFilter(
+        @RequestParam("email") String email,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
         return claimService.getClaimByDefendantEmail(
             email,
-            userService.authenticateAnonymousCaseWorker().getAuthorisation()
+            authorisation
         )
             .stream()
             .map(CaseMetadata::fromClaim)
@@ -109,10 +125,12 @@ public class CaseMetadataController {
     }
 
     @PostMapping("/filters/payments")
-    public List<CaseMetadata> getByPaymentReference(@RequestParam("reference") String payReference) {
+    public List<CaseMetadata> getByPaymentReference(
+        @RequestParam("reference") String payReference,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
         return claimService.getClaimByPaymentReference(
             payReference,
-            userService.authenticateAnonymousCaseWorker().getAuthorisation()
+            authorisation
         )
             .stream()
             .map(CaseMetadata::fromClaim)
@@ -120,8 +138,11 @@ public class CaseMetadataController {
     }
 
     @GetMapping("/filters/created")
-    public List<CaseMetadata> getCreatedCases() {
-        return claimService.getClaimsByState(CREATE, userService.authenticateAnonymousCaseWorker())
+    public List<CaseMetadata> getCreatedCases(
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
+        return claimService.getClaimsByState(
+            CREATE,
+            userService.getUser(authorisation))
             .stream()
             .filter(claim -> claim.getReferenceNumber() != null)
             .map(CaseMetadata::fromClaim)
