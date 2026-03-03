@@ -45,7 +45,7 @@ public class ServiceAuthFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        String path = request.getRequestURI();-
+        String path = request.getRequestURI();
         return path.startsWith("/calendar/")
             || path.startsWith("/interest/")
             || path.startsWith("/court-finder/");
