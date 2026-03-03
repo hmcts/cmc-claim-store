@@ -48,7 +48,15 @@ public class ServiceAuthFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         return path.startsWith("/calendar/")
             || path.startsWith("/interest/")
-            || path.startsWith("/court-finder/");
+            || path.startsWith("/court-finder/")
+            || path.startsWith("/health")
+            || path.startsWith("/health/liveness")
+            || path.startsWith("/health/readiness")
+            || path.startsWith("/swagger-ui.html")
+            || path.startsWith("/swagger-ui")
+            || path.startsWith("/swagger-resources")
+            || path.startsWith("/v2/api-docs")
+            || path.startsWith("/status/health");
     }
 
     @Override
