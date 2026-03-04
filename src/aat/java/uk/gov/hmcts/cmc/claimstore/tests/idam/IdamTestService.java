@@ -180,8 +180,8 @@ public class IdamTestService {
     private void createUser(CreateUserRequest userRequest) {
         try {
             idamTestApi.createUser(userRequest);
-        } catch (ForbiddenException ex) {
-            logger.warn("Ignoring 403 for IdamApi.createUser - user already exists");
+        } catch (ForbiddenException | FeignException.Conflict ex) {
+            logger.warn("Ignoring 403 or 409 for IdamApi.createUser - user already exists");
         }
     }
 
