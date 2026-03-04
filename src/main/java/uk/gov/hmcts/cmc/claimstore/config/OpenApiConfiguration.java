@@ -17,7 +17,7 @@ public class OpenApiConfiguration {
     public GroupedOpenApi publicApi(OperationCustomizer customGlobalHeaders) {
         return GroupedOpenApi.builder()
             .group("claim-store-api")
-            .pathsToMatch("**/controllers/**")
+            .packagesToScan("uk.gov.hmcts.cmc.claimstore.controllers")
             .addOperationCustomizer(customGlobalHeaders)
             .build();
     }
