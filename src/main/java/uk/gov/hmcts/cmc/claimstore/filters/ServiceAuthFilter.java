@@ -56,7 +56,8 @@ public class ServiceAuthFilter extends OncePerRequestFilter {
             || path.startsWith("/swagger-ui")
             || path.startsWith("/swagger-resources")
             || path.startsWith("/v2/api-docs")
-            || path.startsWith("/status/health");
+            || path.startsWith("/status/health")
+            || path.startsWith("/user/roles");  // User-facing endpoint, doesn't require S2S
     }
 
     @Override
