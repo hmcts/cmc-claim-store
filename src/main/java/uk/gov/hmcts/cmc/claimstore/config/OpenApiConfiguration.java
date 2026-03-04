@@ -33,13 +33,20 @@ public class OpenApiConfiguration {
                 .required(true);
             customOperation.addParametersItem(serviceAuthorizationHeader);
 
-            Parameter authorizationHeader = new Parameter()
-                .in(ParameterIn.HEADER.toString())
-                .schema(new StringSchema())
-                .name("Authorization")
-                .description("")
-                .required(true);
-            customOperation.addParametersItem(authorizationHeader);
+            // Check if Authorization is already defined in the operation parameters
+            boolean authPresent = customOperation.getParameters() != null
+                && customOperation.getParameters().stream()
+                    .anyMatch(p -> "Authorization".equalsIgnoreCase(p.getName()));
+
+            if (!authPresent) {
+                Parameter authorizationHeader = new Parameter()
+                    .in(ParameterIn.HEADER.toString())
+                    .schema(new StringSchema())
+                    .name("Authorization")
+                    .description("")
+                    .required(true);
+                customOperation.addParametersItem(authorizationHeader);
+            }
 
             return customOperation;
         };
