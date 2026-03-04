@@ -15,6 +15,8 @@ import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionStatus;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.TestingSupportRepository;
+import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
+import uk.gov.hmcts.cmc.claimstore.tests.Bootstrap;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 
 import javax.sql.DataSource;
@@ -71,4 +73,11 @@ class MockedDatabaseConfiguration {
 
     @MockBean
     private AuthTokenValidator authTokenValidator;
+
+    @MockBean
+    private PilotCourtService pilotCourtService;
+
+    // Mock Bootstrap to prevent @PostConstruct initialization that requires IDAM OAuth2 flow
+    @MockBean
+    private Bootstrap bootstrap;
 }
