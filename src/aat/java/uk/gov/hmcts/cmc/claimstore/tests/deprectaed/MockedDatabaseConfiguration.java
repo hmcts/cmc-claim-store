@@ -4,7 +4,6 @@ import org.flywaydb.core.Flyway;
 import org.mockito.Answers;
 import org.quartz.Scheduler;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
@@ -16,6 +15,7 @@ import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionStatus;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.TestingSupportRepository;
+import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 
 import javax.sql.DataSource;
 
@@ -69,8 +69,6 @@ class MockedDatabaseConfiguration {
     @MockBean(name = "transactionManager")
     private PlatformTransactionManager transactionManager;
 
-    @Bean
-    protected PlatformTransactionManager transactionManager() {
-        return NO_OP_TRANSACTION_MANAGER;
-    }
+    @MockBean
+    private AuthTokenValidator authTokenValidator;
 }
