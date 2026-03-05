@@ -50,17 +50,16 @@ public class CaseMetadataControllerTest {
         controller = new CaseMetadataController(claimService, userService);
         sampleClaim = SampleClaim.getDefault();
         sampleRepresentedClaim = SampleClaim.getDefaultForLegal();
-        when(userService.authenticateAnonymousCaseWorker()).thenReturn(SampleUser.getDefault());
     }
 
     @Test
     public void shouldReturnClaimsBySubmitterId() {
         // given
-        when(claimService.getClaimBySubmitterId(eq("submitter"), anyString(), Mockito.anyInt()))
+        when(claimService.getClaimBySubmitterId(eq("submitter"), eq("auth"), Mockito.anyInt()))
             .thenReturn(singletonList(sampleClaim));
 
         // when
-        List<CaseMetadata> output = controller.getBySubmitterId("submitter");
+        List<CaseMetadata> output = controller.getBySubmitterId("submitter", "auth");
 
         // then
         assertEquals(1, output.size());
@@ -70,11 +69,11 @@ public class CaseMetadataControllerTest {
     @Test
     public void shouldReturnClaimsByDefendantId() {
         // given
-        when(claimService.getClaimByDefendantId(eq("defendant"), anyString(), Mockito.anyInt()))
+        when(claimService.getClaimByDefendantId(eq("defendant"), eq("auth"), Mockito.anyInt()))
             .thenReturn(singletonList(sampleClaim));
 
         // when
-        List<CaseMetadata> output = controller.getByDefendantId("defendant");
+        List<CaseMetadata> output = controller.getByDefendantId("defendant", "auth");
 
         // then
         assertEquals(1, output.size());
@@ -84,11 +83,11 @@ public class CaseMetadataControllerTest {
     @Test
     public void shouldReturnClaimByExternalId() {
         // given
-        when(claimService.getClaimByReferenceAnonymous("reference"))
-            .thenReturn(Optional.of(sampleClaim));
+        when(claimService.getClaimByExternalId(eq("externalId"), eq("auth")))
+            .thenReturn(sampleClaim);
 
         // when
-        CaseMetadata output = controller.getByClaimReference("reference");
+        CaseMetadata output = controller.getByExternalId("externalId", "auth");
 
         // then
         assertNotNull(output);
@@ -110,11 +109,11 @@ public class CaseMetadataControllerTest {
     @Test
     public void shouldReturnClaimsByClaimantEmail() {
         // given
-        when(claimService.getClaimByClaimantEmail(eq("claimant@server.net"), anyString()))
+        when(claimService.getClaimByClaimantEmail(eq("claimant@server.net"), eq("auth")))
             .thenReturn(singletonList(sampleClaim));
 
         // when
-        List<CaseMetadata> output = controller.getByClaimantEmailFilter("claimant@server.net");
+        List<CaseMetadata> output = controller.getByClaimantEmailFilter("claimant@server.net", "auth");
 
         // then
         assertEquals(1, output.size());
@@ -124,11 +123,11 @@ public class CaseMetadataControllerTest {
     @Test
     public void shouldReturnClaimsByDefendantEmail() {
         // given
-        when(claimService.getClaimByDefendantEmail(eq("defendant@server.net"), anyString()))
+        when(claimService.getClaimByDefendantEmail(eq("defendant@server.net"), eq("auth")))
             .thenReturn(singletonList(sampleClaim));
 
         // when
-        List<CaseMetadata> output = controller.getByDefendantEmailFilter("defendant@server.net");
+        List<CaseMetadata> output = controller.getByDefendantEmailFilter("defendant@server.net", "auth");
 
         // then
         assertEquals(1, output.size());
@@ -138,11 +137,11 @@ public class CaseMetadataControllerTest {
     @Test
     public void shouldReturnClaimsByPaymentReference() {
         // given
-        when(claimService.getClaimByPaymentReference(eq("RC-1234-5678-0123-4567"), anyString()))
+        when(claimService.getClaimByPaymentReference(eq("RC-1234-5678-0123-4567"), eq("auth")))
             .thenReturn(singletonList(sampleClaim));
 
         // when
-        List<CaseMetadata> output = controller.getByPaymentReference("RC-1234-5678-0123-4567");
+        List<CaseMetadata> output = controller.getByPaymentReference("RC-1234-5678-0123-4567", "auth");
 
         // then
         assertEquals(1, output.size());
@@ -167,11 +166,12 @@ public class CaseMetadataControllerTest {
     public void shouldReturnClaimsWithCreatedState() {
         // given
         sampleClaim = SampleClaim.getDefault();
+        when(userService.getUser(anyString())).thenReturn(SampleUser.getDefault());
         when(claimService.getClaimsByState(eq(CREATE), any()))
             .thenReturn(singletonList(SampleClaim.builder().withState(CREATE).build()));
 
         // when
-        List<CaseMetadata> cases = controller.getCreatedCases();
+        List<CaseMetadata> cases = controller.getCreatedCases("auth");
 
         // then
         assertEquals(1, cases.size());

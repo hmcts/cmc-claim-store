@@ -158,7 +158,7 @@ class SupportControllerTest {
 
         @BeforeEach
         void setUpAnonymousCaseworker() {
-            when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
+            // when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
         }
 
         @Nested
@@ -180,7 +180,7 @@ class SupportControllerTest {
 
                 when(claimService.linkLetterHolder(sampleClaim, letterHolderId)).thenReturn(sampleClaim);
 
-                controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claim");
+                controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claim", AUTHORISATION);
 
                 verify(documentGenerator).generateForNonRepresentedClaim(any());
             }
@@ -207,7 +207,7 @@ class SupportControllerTest {
                 when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE)))
                     .thenReturn(Optional.of(sampleClaim));
 
-                controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "intent-to-proceed");
+                controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "intent-to-proceed", AUTHORISATION);
 
                 verify(claimantResponseStaffNotificationHandler)
                     .notifyStaffWithClaimantsIntentionToProceed(new ClaimantResponseEvent(sampleClaim, AUTHORISATION));
@@ -218,7 +218,7 @@ class SupportControllerTest {
                 when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(
                     Optional.of(SampleClaim.builder().withMoneyReceivedOn(LocalDate.now()).build()));
 
-                controller.resendStaffNotifications(CLAIM_REFERENCE, "paid-in-full");
+                controller.resendStaffNotifications(CLAIM_REFERENCE, "paid-in-full", AUTHORISATION);
                 verify(paidInFullStaffNotificationHandler).onPaidInFullEvent(any(PaidInFullEvent.class));
             }
         }
@@ -233,7 +233,7 @@ class SupportControllerTest {
                     .thenReturn(Optional.of(claim))
                     .thenReturn(Optional.of(SampleClaim.getWithSealedClaimDocument()));
 
-                controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SEALED_CLAIM);
+                controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SEALED_CLAIM, AUTHORISATION);
                 verify(documentsService).generateDocument(claim.getExternalId(), SEALED_CLAIM, AUTHORISATION);
             }
 
@@ -241,7 +241,7 @@ class SupportControllerTest {
             void shouldNotUploadSealedClaimDocumentWhenAlreadyExists() {
                 Claim claim = SampleClaim.getWithSealedClaimDocument();
                 when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
-                controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SEALED_CLAIM);
+                controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SEALED_CLAIM, AUTHORISATION);
                 verify(documentsService, never()).generateDocument(claim.getExternalId(), SEALED_CLAIM, AUTHORISATION);
             }
 
@@ -252,7 +252,7 @@ class SupportControllerTest {
                     .thenReturn(Optional.of(claim))
                     .thenReturn(Optional.of(SampleClaim.getWithClaimIssueReceiptDocument()));
 
-                controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, CLAIM_ISSUE_RECEIPT);
+                controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, CLAIM_ISSUE_RECEIPT, AUTHORISATION);
                 verify(documentsService).generateDocument(claim.getExternalId(), CLAIM_ISSUE_RECEIPT, AUTHORISATION);
             }
 
@@ -260,7 +260,7 @@ class SupportControllerTest {
             void shouldNotUploadClaimIssueReceiptDocumentWhenAlreadyExists() {
                 Claim claim = SampleClaim.getWithClaimIssueReceiptDocument();
                 when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
-                controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, CLAIM_ISSUE_RECEIPT);
+                controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, CLAIM_ISSUE_RECEIPT, AUTHORISATION);
                 verify(documentsService, never())
                     .generateDocument(claim.getExternalId(), CLAIM_ISSUE_RECEIPT, AUTHORISATION);
             }
@@ -270,7 +270,7 @@ class SupportControllerTest {
                 Claim claim = SampleClaim.getDefault();
                 when(claimService.getClaimByReference(CLAIM_REFERENCE, AUTHORISATION)).thenReturn(Optional.of(claim));
 
-                controller.recoverClaimIssueOperations(CLAIM_REFERENCE);
+                controller.recoverClaimIssueOperations(CLAIM_REFERENCE, AUTHORISATION);
                 verify(postClaimOrchestrationHandler).citizenIssueHandler(any(CitizenClaimCreatedEvent.class));
             }
 
@@ -279,7 +279,7 @@ class SupportControllerTest {
                 Claim claim = SampleClaim.getDefaultForLegal();
                 when(claimService.getClaimByReference(CLAIM_REFERENCE, AUTHORISATION)).thenReturn(Optional.of(claim));
 
-                controller.recoverClaimIssueOperations(CLAIM_REFERENCE);
+                controller.recoverClaimIssueOperations(CLAIM_REFERENCE, AUTHORISATION);
                 verify(postClaimOrchestrationHandler)
                     .representativeIssueHandler(any(RepresentedClaimCreatedEvent.class));
             }
@@ -290,7 +290,7 @@ class SupportControllerTest {
                 when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
 
                 assertThrows(ServerErrorException.class,
-                    () -> controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SEALED_CLAIM));
+                    () -> controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SEALED_CLAIM, AUTHORISATION));
             }
 
             @Test
@@ -299,7 +299,7 @@ class SupportControllerTest {
                 when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
 
                 assertThrows(ServerErrorException.class,
-                    () -> controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, CLAIM_ISSUE_RECEIPT));
+                    () -> controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, CLAIM_ISSUE_RECEIPT, AUTHORISATION));
             }
 
             @Test
@@ -307,7 +307,7 @@ class SupportControllerTest {
                 when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.empty());
 
                 assertThrows(NotFoundException.class,
-                    () -> controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SEALED_CLAIM),
+                    () -> controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SEALED_CLAIM, AUTHORISATION),
                     "Claim " + CLAIM_REFERENCE + " does not exist");
             }
         }
@@ -322,7 +322,7 @@ class SupportControllerTest {
                     .thenReturn(Optional.of(claim))
                     .thenReturn(Optional.of(SampleClaim.getWithDefendantResponseReceiptDocument()));
 
-                controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, DEFENDANT_RESPONSE_RECEIPT);
+                controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, DEFENDANT_RESPONSE_RECEIPT, AUTHORISATION);
                 verify(documentsService)
                     .generateDocument(claim.getExternalId(), DEFENDANT_RESPONSE_RECEIPT, AUTHORISATION);
             }
@@ -331,7 +331,7 @@ class SupportControllerTest {
             void shouldNotUploadDefendantResponseReceiptDocumentWhenAlreadyExists() {
                 Claim claim = SampleClaim.getWithDefendantResponseReceiptDocument();
                 when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
-                controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, DEFENDANT_RESPONSE_RECEIPT);
+                controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, DEFENDANT_RESPONSE_RECEIPT, AUTHORISATION);
                 verify(documentsService, never()).generateDocument(claim.getExternalId(), DEFENDANT_RESPONSE_RECEIPT,
                     AUTHORISATION);
             }
@@ -343,7 +343,7 @@ class SupportControllerTest {
                     .thenReturn(Optional.of(SampleClaim.withNoResponse()));
 
                 assertThrows(ConflictException.class,
-                    () -> controller.resendStaffNotifications(CLAIM_REFERENCE, RESPONSE_SUBMITTED),
+                    () -> controller.resendStaffNotifications(CLAIM_REFERENCE, RESPONSE_SUBMITTED, AUTHORISATION),
                     "Claim " + CLAIM_REFERENCE + " does not have associated response");
             }
 
@@ -353,7 +353,7 @@ class SupportControllerTest {
                 when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
 
                 assertThrows(ServerErrorException.class,
-                    () -> controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, DEFENDANT_RESPONSE_RECEIPT));
+                    () -> controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, DEFENDANT_RESPONSE_RECEIPT, AUTHORISATION));
             }
         }
 
@@ -369,7 +369,7 @@ class SupportControllerTest {
 
                 when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(sampleClaim));
 
-                controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claimant-response");
+                controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claimant-response", AUTHORISATION);
 
                 verify(claimantResponseStaffNotificationHandler).onClaimantResponse(any());
             }
@@ -390,7 +390,7 @@ class SupportControllerTest {
 
                 when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(sampleClaim));
 
-                controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claimant-response");
+                controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claimant-response", AUTHORISATION);
 
                 verify(claimantResponseStaffNotificationHandler).onClaimantResponse(any());
             }
@@ -407,7 +407,7 @@ class SupportControllerTest {
 
                 when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(sampleClaim));
 
-                controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claimant-response");
+                controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claimant-response", AUTHORISATION);
 
                 verify(claimantResponseStaffNotificationHandler).onClaimantResponse(any());
             }
@@ -426,7 +426,7 @@ class SupportControllerTest {
 
                 when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(sampleClaim));
 
-                controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claimant-response");
+                controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claimant-response", AUTHORISATION);
 
                 verify(claimantResponseStaffNotificationHandler, never()).onClaimantResponse(any());
             }
@@ -453,7 +453,8 @@ class SupportControllerTest {
                 assertThrows(IllegalArgumentException.class,
                     () -> controller.resendStaffNotifications(
                         sampleClaim.getReferenceNumber(),
-                        "intent-to-proceed"));
+                        "intent-to-proceed",
+                        AUTHORISATION));
             }
 
             @Test
@@ -462,7 +463,7 @@ class SupportControllerTest {
                     Optional.of(SampleClaim.builder().withClaimantResponse(null).build()));
 
                 assertThrows(IllegalArgumentException.class,
-                    () -> controller.resendStaffNotifications(CLAIM_REFERENCE, "claimant-response"));
+                    () -> controller.resendStaffNotifications(CLAIM_REFERENCE, "claimant-response", AUTHORISATION));
             }
 
             @Test
@@ -471,7 +472,7 @@ class SupportControllerTest {
                     Optional.of(SampleClaim.builder().withMoneyReceivedOn(null).build()));
 
                 assertThrows(IllegalArgumentException.class,
-                    () -> controller.resendStaffNotifications(CLAIM_REFERENCE, "paid-in-full"));
+                    () -> controller.resendStaffNotifications(CLAIM_REFERENCE, "paid-in-full", AUTHORISATION));
 
                 verify(paidInFullStaffNotificationHandler, never()).onPaidInFullEvent(any(PaidInFullEvent.class));
             }
@@ -487,7 +488,7 @@ class SupportControllerTest {
                     .thenReturn(Optional.of(claim))
                     .thenReturn(Optional.of(SampleClaim.getWithSettlementAgreementDocument()));
 
-                controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SETTLEMENT_AGREEMENT);
+                controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SETTLEMENT_AGREEMENT, AUTHORISATION);
                 verify(documentsService).generateDocument(claim.getExternalId(), SETTLEMENT_AGREEMENT, AUTHORISATION);
             }
 
@@ -495,7 +496,7 @@ class SupportControllerTest {
             void shouldNotUploadSettlementAgreementDocumentWhenAlreadyExists() {
                 Claim claim = SampleClaim.getWithSettlementAgreementDocument();
                 when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
-                controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SETTLEMENT_AGREEMENT);
+                controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SETTLEMENT_AGREEMENT, AUTHORISATION);
                 verify(documentsService, never())
                     .generateDocument(claim.getExternalId(), SETTLEMENT_AGREEMENT, AUTHORISATION);
             }
@@ -506,7 +507,7 @@ class SupportControllerTest {
                 when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
 
                 assertThrows(ServerErrorException.class,
-                    () -> controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SETTLEMENT_AGREEMENT));
+                    () -> controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SETTLEMENT_AGREEMENT, AUTHORISATION));
             }
         }
     }

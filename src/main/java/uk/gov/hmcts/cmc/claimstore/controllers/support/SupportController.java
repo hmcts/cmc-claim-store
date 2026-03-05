@@ -146,11 +146,9 @@ public class SupportController {
     @Operation(summary = "Resend staff notifications associated with provided event")
     public void resendStaffNotifications(
         @PathVariable("referenceNumber") String referenceNumber,
-        @PathVariable("event") String event
+        @PathVariable("event") String event,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        User user = userService.authenticateAnonymousCaseWorker();
-        String authorisation = user.getAuthorisation();
-
         Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
             .orElseThrow(claimNotFoundException(referenceNumber));
 
@@ -195,10 +193,9 @@ public class SupportController {
     @SuppressWarnings("squid:S2201") // orElseThrow does not ignore the result
     public ResponseEntity<String> uploadDocumentToDocumentManagement(
         @PathVariable("referenceNumber") String referenceNumber,
-        @PathVariable("documentType") ClaimDocumentType documentType
+        @PathVariable("documentType") ClaimDocumentType documentType,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        User caseworker = userService.authenticateAnonymousCaseWorker();
-
         Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
             .orElseThrow(claimNotFoundException(referenceNumber));
 
@@ -206,7 +203,7 @@ public class SupportController {
             return new ResponseEntity<>(HttpStatus.OK);
         }
 
-        documentsService.generateDocument(claim.getExternalId(), documentType, caseworker.getAuthorisation());
+        documentsService.generateDocument(claim.getExternalId(), documentType, authorisation);
 
         // local claim object is now outdated
         claimService.getClaimByReferenceAnonymous(referenceNumber)
@@ -245,10 +242,10 @@ public class SupportController {
 
     @PutMapping("/claims/{referenceNumber}/recover-operations")
     @Operation(summary = "Recovers the failed operations which are mandatory to issue a claim.")
-    public void recoverClaimIssueOperations(@PathVariable("referenceNumber") String referenceNumber) {
-        User user = userService.authenticateAnonymousCaseWorker();
-        String authorisation = user.getAuthorisation();
-
+    public void recoverClaimIssueOperations(
+        @PathVariable("referenceNumber") String referenceNumber,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
+    ) {
         Claim claim = claimService.getClaimByReference(referenceNumber, authorisation)
             .orElseThrow(claimNotFoundException(referenceNumber));
         triggerAsyncOperation(authorisation, claim);
@@ -275,7 +272,7 @@ public class SupportController {
     @PostMapping(value = "/sendMediation", consumes = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Generate and Send Mediation Report for Telephone Mediation Service")
     public void sendMediation(
-        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
         @RequestBody MediationRequest mediationRequest
     ) {
         mediationReportService
