@@ -52,6 +52,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 import uk.gov.hmcts.cmc.scheduler.services.JobService;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.docassembly.DocAssemblyApi;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
@@ -118,6 +119,8 @@ public abstract class BaseMockSpringTest {
     protected CourtFinderApi courtFinderApi;
     @MockBean(name = "docAssemblyApi")
     protected DocAssemblyApi docAssemblyApi;
+    @MockBean
+    protected AuthTokenValidator authTokenValidator;
     @MockBean
     protected AuthTokenGenerator authTokenGenerator;
     @MockBean

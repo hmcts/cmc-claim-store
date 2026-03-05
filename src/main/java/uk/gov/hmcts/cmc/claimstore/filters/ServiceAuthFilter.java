@@ -58,6 +58,14 @@ public class ServiceAuthFilter extends OncePerRequestFilter {
             || path.startsWith("/v2/api-docs")
             || path.startsWith("/v3/api-docs")
             || path.startsWith("/status/health")
+            || path.startsWith("/deadline/")
+            || path.startsWith("/cases/callbacks/")
+            || path.startsWith("/testing-support/")
+            || path.startsWith("/claims/letter/")
+            || (path.startsWith("/claims/") && path.endsWith("/defendant-link-status"))
+            || path.startsWith("/loggers/")
+            || path.startsWith("/env")
+            || path.equals("/")
             || path.startsWith("/user/roles");  // User-facing endpoint, doesn't require S2S
     }
 
