@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.payments.client.models.PaymentDto;
 import uk.gov.hmcts.reform.payments.request.CardPaymentRequest;
 
 import java.net.URI;
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Map;
@@ -62,8 +63,9 @@ public class PaymentsClientStub extends PaymentsClient {
     public PaymentDto retrieveCardPayment(String authorisation, String paymentReference) {
         PaymentDto payment = payments.get(paymentReference);
         if (payment == null) {
-            LOGGER.warn("Requested stub payment {} but no payment exists", paymentReference);
-            throw new IllegalStateException("No stubbed payment with reference " + paymentReference);
+            LOGGER.warn("Requested stub payment {} but no payment exists. Returning synthetic SUCCESS payment.", paymentReference);
+            payment = createSyntheticPayment(paymentReference);
+            payments.put(paymentReference, payment);
         }
         LOGGER.info("Retrieved stub payment {}", paymentReference);
         return payment;
@@ -113,5 +115,17 @@ public class PaymentsClientStub extends PaymentsClient {
 
     private String generateReference() {
         return "RC-" + UUID.randomUUID();
+    }
+
+    private PaymentDto createSyntheticPayment(String paymentReference) {
+        PaymentDto payment = PaymentDto.builder()
+            .reference(paymentReference)
+            .status(PaymentStatus.SUCCESS.getStatus())
+            .externalReference(UUID.randomUUID().toString())
+            .dateCreated(OffsetDateTime.now())
+            .links(LinksDto.builder().build())
+            .build();
+        payment.setAmount(BigDecimal.ZERO);
+        return payment;
     }
 }
