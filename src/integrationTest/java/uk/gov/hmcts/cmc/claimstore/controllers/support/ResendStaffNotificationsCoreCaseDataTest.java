@@ -7,12 +7,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.models.idam.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.models.idam.UserInfo;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
@@ -33,7 +33,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LINK_LETTER_HOLDER;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetails;
@@ -57,6 +56,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseMockSpringTest
 
     @BeforeEach
     public void setUp() {
+        super.setUpBase();
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .willReturn(new byte[]{1, 2, 3, 4});
         UserDetails userDetails = SampleUserDetails.builder().withRoles("caseworker-cmc").build();
@@ -64,6 +64,12 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseMockSpringTest
         given(userService.getUserDetails(BEARER_TOKEN)).willReturn(userDetails);
         given(userService.authenticateAnonymousCaseWorker()).willReturn(user);
         given(userService.getUser(BEARER_TOKEN)).willReturn(user);
+        UserInfo userInfo = UserInfo.builder()
+            .roles(Collections.singletonList("caseworker-cmc"))
+            .uid(USER_ID)
+            .sub("submitter@example.com")
+            .build();
+        given(userService.getUserInfo(anyString())).willReturn(userInfo);
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
     }
 
@@ -248,8 +254,12 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseMockSpringTest
     }
 
     private ResultActions makeRequest(String referenceNumber, String event) throws Exception {
-        return webClient
-            .perform(put("/support/claim/" + referenceNumber + "/event/" + event + "/resend-staff-notifications")
-                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN));
+        if (webClient == null) {
+            System.out.println("[DEBUG_LOG] webClient is NULL in makeRequest");
+        }
+        if (jsonMappingHelper == null) {
+            System.out.println("[DEBUG_LOG] jsonMappingHelper is NULL in makeRequest");
+        }
+        return doPut(BEARER_TOKEN, null, "/support/claim/" + referenceNumber + "/event/" + event + "/resend-staff-notifications");
     }
 }

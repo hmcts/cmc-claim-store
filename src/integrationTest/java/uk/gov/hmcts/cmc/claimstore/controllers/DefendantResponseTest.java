@@ -162,6 +162,7 @@ public class DefendantResponseTest extends BaseMockSpringTest {
             post(RESPONSE_URL, SampleClaim.EXTERNAL_ID, SampleClaim.DEFENDANT_ID)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
+                .header("ServiceAuthorization", SERVICE_TOKEN)
                 .content(jsonMappingHelper.toJson(response)));
     }
 }

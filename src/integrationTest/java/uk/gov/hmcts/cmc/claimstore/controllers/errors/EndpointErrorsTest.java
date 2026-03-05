@@ -63,6 +63,7 @@ public class EndpointErrorsTest extends BaseMockSpringTest {
         webClient
             .perform(get("/claims/" + externalId)
                 .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
+                .header("ServiceAuthorization", SERVICE_TOKEN)
             )
             .andExpect(status().isInternalServerError());
     }
@@ -75,7 +76,8 @@ public class EndpointErrorsTest extends BaseMockSpringTest {
 
         webClient
             .perform(post("/claims/" + externalId + "/request-more-time")
-                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN))
+                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
+                .header("ServiceAuthorization", SERVICE_TOKEN))
             .andExpect(status().isInternalServerError());
     }
 }

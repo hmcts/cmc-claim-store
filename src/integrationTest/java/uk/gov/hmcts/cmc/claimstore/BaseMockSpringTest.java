@@ -28,6 +28,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.transaction.PlatformTransactionManager;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
@@ -62,6 +63,8 @@ import uk.gov.service.notify.NotificationClient;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.sql.DataSource;
@@ -181,6 +184,8 @@ public abstract class BaseMockSpringTest {
         SecurityContextHolder.setContext(securityContext);
         setSecurityAuthorities(authentication);
         when(jwtDecoder.decode(anyString())).thenReturn(getJwt());
+
+        when(authTokenValidator.getServiceName(anyString())).thenReturn("cmc_citizen_frontend");
     }
 
     private void bankHolidaysSetup() {
@@ -227,24 +232,53 @@ public abstract class BaseMockSpringTest {
     protected ResultActions doGet(String urlTemplate, Object... uriVars) throws Exception {
         return webClient.perform(
             get(urlTemplate, uriVars)
-                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN));
+                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
+                .header("ServiceAuthorization", SERVICE_TOKEN));
     }
 
     protected <T> ResultActions doPost(String auth, T content, String urlTemplate, Object... uriVars) throws Exception {
-        return webClient.perform(
-            post(urlTemplate, uriVars)
-                .header(HttpHeaders.AUTHORIZATION, auth)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonMappingHelper.toJson(content)));
+        return doPost(auth, content, Collections.emptyMap(), urlTemplate, uriVars);
+    }
+
+    protected <T> ResultActions doPost(
+        String auth,
+        T content,
+        Map<String, String> headers,
+        String urlTemplate,
+        Object... uriVars
+    ) throws Exception {
+        MockHttpServletRequestBuilder builder = post(urlTemplate, uriVars)
+            .header(HttpHeaders.AUTHORIZATION, auth)
+            .header("ServiceAuthorization", SERVICE_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(jsonMappingHelper.toJson(content));
+
+        headers.forEach(builder::header);
+
+        return webClient.perform(builder);
     }
 
     protected <T> ResultActions doPut(String auth, T content, String urlTemplate, Object... uriVars) throws Exception {
-        return webClient.perform(
-            put(urlTemplate, uriVars)
-                .header(HttpHeaders.AUTHORIZATION, auth)
-                .header("LetterHolderID", SampleClaim.LETTER_HOLDER_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonMappingHelper.toJson(content)));
+        return doPut(auth, content, Collections.emptyMap(), urlTemplate, uriVars);
+    }
+
+    protected <T> ResultActions doPut(
+        String auth,
+        T content,
+        Map<String, String> headers,
+        String urlTemplate,
+        Object... uriVars
+    ) throws Exception {
+        MockHttpServletRequestBuilder builder = put(urlTemplate, uriVars)
+            .header(HttpHeaders.AUTHORIZATION, auth)
+            .header("ServiceAuthorization", SERVICE_TOKEN)
+            .header("LetterHolderID", SampleClaim.LETTER_HOLDER_ID)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(jsonMappingHelper.toJson(content));
+
+        headers.forEach(builder::header);
+
+        return webClient.perform(builder);
     }
 
 }

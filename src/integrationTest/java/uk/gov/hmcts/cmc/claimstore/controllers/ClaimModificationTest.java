@@ -1,13 +1,12 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
@@ -42,8 +41,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
@@ -133,12 +130,8 @@ public class ClaimModificationTest extends BaseMockSpringTest {
         when(caseRepository.saveClaim(eq(CITIZEN), any(Claim.class)))
             .thenReturn(claim);
 
-        webClient.perform(
-            post(ROOT_PATH + "/{submitterId}", SampleClaim.USER_ID)
-                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN_CITIZEN)
-                .header("Features", String.join(",", features))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonMappingHelper.toJson(claimData)))
+        doPost(AUTHORISATION_TOKEN_CITIZEN, claimData, ImmutableMap.of("Features", String.join(",", features)),
+            ROOT_PATH + "/{submitterId}", SampleClaim.USER_ID)
             .andExpect(status().isOk());
 
         verify(caseRepository).saveClaim(eq(CITIZEN), claimCaptor.capture());
@@ -369,12 +362,8 @@ public class ClaimModificationTest extends BaseMockSpringTest {
         when(caseRepository.saveCaseEventIOC(eq(CITIZEN), any(Claim.class), eq(CREATE_CITIZEN_CLAIM)))
             .thenReturn(claim);
 
-        webClient.perform(
-            put(ROOT_PATH + "/create-citizen-claim")
-                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN_CITIZEN)
-                .header("Features", String.join(",", features))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonMappingHelper.toJson(claimData)))
+        doPut(AUTHORISATION_TOKEN_CITIZEN, claimData, ImmutableMap.of("Features", String.join(",", features)),
+            ROOT_PATH + "/create-citizen-claim")
             .andExpect(status().isOk());
 
         verify(caseRepository).saveCaseEventIOC(eq(CITIZEN), claimCaptor.capture(), eq(CREATE_CITIZEN_CLAIM));
@@ -388,9 +377,9 @@ public class ClaimModificationTest extends BaseMockSpringTest {
 
     @Test
     public void testLinkDefendantToClaim() throws Exception {
-        doPut(BEARER_TOKEN, null, ROOT_PATH + "/defendant/link")
+        doPut(AUTHORISATION_TOKEN, null, ROOT_PATH + "/defendant/link")
             .andExpect(status().isOk());
-        verify(caseRepository).linkDefendant(BEARER_TOKEN, SampleClaim.LETTER_HOLDER_ID);
+        verify(caseRepository).linkDefendant(AUTHORISATION_TOKEN, SampleClaim.LETTER_HOLDER_ID);
     }
 
     @Test
