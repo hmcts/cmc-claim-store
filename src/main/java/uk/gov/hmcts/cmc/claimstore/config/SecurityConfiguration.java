@@ -16,6 +16,8 @@ import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import uk.gov.hmcts.cmc.claimstore.filters.ServiceAuthFilter;
 import uk.gov.hmcts.cmc.claimstore.security.JwtGrantedAuthoritiesConverter;
 
 import javax.inject.Inject;
@@ -40,9 +42,12 @@ public class SecurityConfiguration {
     private String issuerOverride;
 
     private final JwtAuthenticationConverter jwtAuthenticationConverter;
+    private final ServiceAuthFilter serviceAuthFilter;
 
     @Inject
-    public SecurityConfiguration(final JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter) {
+    public SecurityConfiguration(
+        final JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter, final ServiceAuthFilter serviceAuthFilter) {
+        this.serviceAuthFilter = serviceAuthFilter;
         jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
     }
@@ -80,6 +85,7 @@ public class SecurityConfiguration {
             .csrf().disable()
             .formLogin().disable()
             .logout().disable()
+            .addFilterBefore(serviceAuthFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeRequests()
             .antMatchers("/claims/**", "/responses/**", "/documents/**")
             .hasAnyAuthority(AUTHORITIES)
