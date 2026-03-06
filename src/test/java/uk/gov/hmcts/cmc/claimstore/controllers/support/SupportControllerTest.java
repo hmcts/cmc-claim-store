@@ -522,7 +522,7 @@ class SupportControllerTest {
 
             StateTransitionInput stateTransitionInput
                 = StateTransitionInput.builder().localDateTime(localDateTime).stateTransitions(STAY_CLAIM).build();
-            controller.transitionClaimState(stateTransitionInput);
+            controller.transitionClaimState(AUTHORISATION, stateTransitionInput);
 
             verify(scheduledStateTransitionService).stateChangeTriggered(localDateTime,
                 STAY_CLAIM);
@@ -530,15 +530,15 @@ class SupportControllerTest {
 
         @Test
         void shouldSetPreferredClaimStateWhenGivenState() {
-            controller.setPreferredStateForClaim(CaseEvent.TRANSFER, 1L);
-            verify(transferCaseStateService).transferCaseToGivenCaseState(CaseEvent.TRANSFER, 1L);
+            controller.setPreferredStateForClaim(CaseEvent.TRANSFER, 1L, AUTHORISATION);
+            verify(transferCaseStateService).transferCaseToGivenCaseState(AUTHORISATION, CaseEvent.TRANSFER, 1L);
         }
 
         @Test
         void shouldPerformIntentionToProceedCheckWithNullDatetime() {
             StateTransitionInput stateTransitionInput
                 = StateTransitionInput.builder().localDateTime(null).stateTransitions(STAY_CLAIM).build();
-            controller.transitionClaimState(stateTransitionInput);
+            controller.transitionClaimState(AUTHORISATION, stateTransitionInput);
 
             verify(scheduledStateTransitionService).stateChangeTriggered(notNull(),
                 eq(STAY_CLAIM));
@@ -640,11 +640,11 @@ class SupportControllerTest {
 
         @Test
         void shouldRegenerateMiloReportForGivenDate() {
-            when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
             LocalDate mediationSearchDate = LocalDate.of(2019, 7, 7);
             doNothing().when(mediationReportService)
                 .sendMediationReport(eq(AUTHORISATION), any(), eq(EMAIl_ADDRESS));
             controller.reSendMediation(
+                AUTHORISATION,
                 new MediationRequest(mediationSearchDate, EMAIl_ADDRESS));
             verify(mediationReportService)
                 .sendMediationReport(eq(AUTHORISATION), eq(mediationSearchDate), eq(EMAIl_ADDRESS));
@@ -653,7 +653,7 @@ class SupportControllerTest {
 
     @Test
     void shouldsetPreferredDQPilotCourt() {
-        controller.setPreferredDQPilotCourt(sampleClaim.getReferenceNumber());
+        controller.setPreferredDQPilotCourt(sampleClaim.getReferenceNumber(), AUTHORISATION);
         verify(claimService).updatePreferredCourtByClaimReference(CLAIM_REFERENCE);
     }
 }

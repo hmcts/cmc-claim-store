@@ -40,7 +40,6 @@ import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.models.idam.GeneratePinResponse;
-import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimSubmissionOperationIndicatorRule;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
@@ -287,10 +286,12 @@ public class SupportController {
     @PostMapping(value = "/reSendMediation", consumes = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Re-Generate and Send Mediation Report for Telephone Mediation Service")
     public void reSendMediation(
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
         @RequestBody MediationRequest mediationRequest
     ) {
-        User user = userService.authenticateAnonymousCaseWorker();
-        String authorisation = user.getAuthorisation();
+        if (StringUtils.isBlank(authorisation)) {
+            throw new BadRequestException(AUTHORISATION_IS_REQUIRED);
+        }
         LocalDateTime now = LocalDateTime.now();
         logger.info("Support controller started MILO report generation at {}", now);
         mediationReportService
@@ -303,8 +304,12 @@ public class SupportController {
     @PutMapping(value = "/claims/transitionClaimState")
     @Operation(summary = "Trigger scheduled state transition")
     public void transitionClaimState(
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
         @Valid @NotNull @RequestBody StateTransitionInput stateTransitionInput
     ) {
+        if (StringUtils.isBlank(authorisation)) {
+            throw new BadRequestException(AUTHORISATION_IS_REQUIRED);
+        }
         LocalDateTime localDateTime = stateTransitionInput.getLocalDateTime();
         StateTransitions stateTransition = stateTransitionInput.getStateTransitions();
         LocalDateTime runDateTime = localDateTime == null ? LocalDateTimeFactory.nowInLocalZone() : localDateTime;
@@ -319,13 +324,24 @@ public class SupportController {
     @Operation(summary = "Transfer claim to a given state")
     public void setPreferredStateForClaim(
         @PathVariable("event") CaseEvent caseEvent,
-        @PathVariable("ccdCaseId") Long ccdCaseId) {
-        transferCaseStateService.transferCaseToGivenCaseState(caseEvent, ccdCaseId);
+        @PathVariable("ccdCaseId") Long ccdCaseId,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
+    ) {
+        if (StringUtils.isBlank(authorisation)) {
+            throw new BadRequestException(AUTHORISATION_IS_REQUIRED);
+        }
+        transferCaseStateService.transferCaseToGivenCaseState(authorisation, caseEvent, ccdCaseId);
     }
 
     @PutMapping(value = "/claim/{claimNumber}/preferredDQCourt")
     @Operation(summary = "Set preferred DQ pilot court for a claim")
-    public void setPreferredDQPilotCourt(@PathVariable("claimNumber") String claimNumber) {
+    public void setPreferredDQPilotCourt(
+        @PathVariable("claimNumber") String claimNumber,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
+    ) {
+        if (StringUtils.isBlank(authorisation)) {
+            throw new BadRequestException(AUTHORISATION_IS_REQUIRED);
+        }
         claimService.updatePreferredCourtByClaimReference(claimNumber);
     }
 

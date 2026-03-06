@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
@@ -15,7 +14,6 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import static java.util.Collections.emptyList;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class TransferCaseStateServiceTest {
@@ -39,14 +37,11 @@ public class TransferCaseStateServiceTest {
     @Test
     public void casesShouldTransferWhenGivenAState() {
 
-        when(userService.authenticateAnonymousCaseWorker())
-            .thenReturn(new User(AUTHORIZATION, USER_DETAILS));
-
         var ccdCase = CCDCase.builder()
             .id(1L)
             .build();
 
-        transferCaseStateService.transferCaseToGivenCaseState(CaseEvent.TRANSFER, ccdCase.getId());
+        transferCaseStateService.transferCaseToGivenCaseState(AUTHORIZATION, CaseEvent.TRANSFER, ccdCase.getId());
 
         verify(coreCaseDataService, atLeastOnce())
             .caseTransferUpdate(

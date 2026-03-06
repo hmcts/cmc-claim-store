@@ -22,14 +22,14 @@ public class TransferCaseStateService {
         this.coreCaseDataService = coreCaseDataService;
     }
 
-    public void transferCaseToGivenCaseState(CaseEvent caseEvent, Long caseId) {
+    public void transferCaseToGivenCaseState(String authorisation, CaseEvent caseEvent, Long caseId) {
 
         CCDCase ccdCaseId = caseId != null ? CCDCase.builder()
             .id(caseId)
             .build() : null;
 
         coreCaseDataService.caseTransferUpdate(
-                userService.authenticateAnonymousCaseWorker().getAuthorisation(),
+                authorisation,
                 ccdCaseId,
                 caseEvent
         );
