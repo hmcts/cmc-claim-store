@@ -32,6 +32,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.filters.ServiceAuthFilter;
 import uk.gov.hmcts.cmc.claimstore.helper.JsonMappingHelper;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
@@ -51,6 +52,7 @@ import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 import uk.gov.hmcts.cmc.scheduler.services.JobService;
+import uk.gov.hmcts.reform.authorisation.ServiceAuthorisationApi;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.docassembly.DocAssemblyApi;
@@ -169,6 +171,9 @@ public abstract class BaseMockSpringTest {
     @MockBean(name = "transactionManager")
     private PlatformTransactionManager transactionManager;
 
+    @MockBean
+    protected ServiceAuthorisationApi serviceAuthorisationApi;
+
     @BeforeEach
     public void setUpBase() {
 
@@ -178,6 +183,7 @@ public abstract class BaseMockSpringTest {
         SecurityContextHolder.setContext(securityContext);
         setSecurityAuthorities(authentication);
         when(jwtDecoder.decode(anyString())).thenReturn(getJwt());
+        when(serviceAuthorisationApi.getServiceName(anyString())).thenReturn("cmc_claim_store");
     }
 
     private void bankHolidaysSetup() {
@@ -224,13 +230,15 @@ public abstract class BaseMockSpringTest {
     protected ResultActions doGet(String urlTemplate, Object... uriVars) throws Exception {
         return webClient.perform(
             get(urlTemplate, uriVars)
-                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN));
+                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
+                .header(ServiceAuthFilter.SERVICE_AUTHORIZATION, SERVICE_TOKEN));
     }
 
     protected <T> ResultActions doPost(String auth, T content, String urlTemplate, Object... uriVars) throws Exception {
         return webClient.perform(
             post(urlTemplate, uriVars)
                 .header(HttpHeaders.AUTHORIZATION, auth)
+                .header(ServiceAuthFilter.SERVICE_AUTHORIZATION, SERVICE_TOKEN)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonMappingHelper.toJson(content)));
     }
@@ -239,6 +247,7 @@ public abstract class BaseMockSpringTest {
         return webClient.perform(
             put(urlTemplate, uriVars)
                 .header(HttpHeaders.AUTHORIZATION, auth)
+                .header(ServiceAuthFilter.SERVICE_AUTHORIZATION, SERVICE_TOKEN)
                 .header("LetterHolderID", SampleClaim.LETTER_HOLDER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonMappingHelper.toJson(content)));

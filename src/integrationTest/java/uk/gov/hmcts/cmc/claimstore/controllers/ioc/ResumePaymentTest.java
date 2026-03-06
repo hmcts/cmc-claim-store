@@ -10,6 +10,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
+import uk.gov.hmcts.cmc.claimstore.filters.ServiceAuthFilter;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserInfo;
@@ -186,6 +187,7 @@ public class ResumePaymentTest extends BaseMockSpringTest {
             .perform(put("/claims/resume-citizen-payment")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, authorization)
+                .header(ServiceAuthFilter.SERVICE_AUTHORIZATION, SERVICE_TOKEN)
                 .content(jsonMappingHelper.toJson(claimData))
             );
     }

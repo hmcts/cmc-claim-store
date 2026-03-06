@@ -10,6 +10,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
+import uk.gov.hmcts.cmc.claimstore.filters.ServiceAuthFilter;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserInfo;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
@@ -192,7 +193,8 @@ public class OffersTest extends BaseMockSpringTest {
 
         MockHttpServletRequestBuilder requestBuilder = post(url, claim.getExternalId(), party.name())
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN);
+            .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
+            .header(ServiceAuthFilter.SERVICE_AUTHORIZATION, SERVICE_TOKEN);
         if (offer != null) {
             requestBuilder.content(jsonMappingHelper.toJson(offer));
         }

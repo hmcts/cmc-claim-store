@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
+import uk.gov.hmcts.cmc.claimstore.filters.ServiceAuthFilter;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserInfo;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
@@ -194,6 +195,7 @@ public class InitiatePaymentTest extends BaseMockSpringTest {
             .perform(post("/claims/initiate-citizen-payment")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, authorization)
+                .header(ServiceAuthFilter.SERVICE_AUTHORIZATION, SERVICE_TOKEN)
                 .content(jsonMappingHelper.toJson(claimData))
             );
     }

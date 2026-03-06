@@ -9,6 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
+import uk.gov.hmcts.cmc.claimstore.filters.ServiceAuthFilter;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserInfo;
@@ -136,6 +137,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
         webClient.perform(
             post(ROOT_PATH + "/{submitterId}", SampleClaim.USER_ID)
                 .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN_CITIZEN)
+                .header(ServiceAuthFilter.SERVICE_AUTHORIZATION, SERVICE_TOKEN)
                 .header("Features", String.join(",", features))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonMappingHelper.toJson(claimData)))
@@ -372,6 +374,7 @@ public class ClaimModificationTest extends BaseMockSpringTest {
         webClient.perform(
             put(ROOT_PATH + "/create-citizen-claim")
                 .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN_CITIZEN)
+                .header(ServiceAuthFilter.SERVICE_AUTHORIZATION, SERVICE_TOKEN)
                 .header("Features", String.join(",", features))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonMappingHelper.toJson(claimData)))

@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.filters;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -41,21 +42,22 @@ public class ServiceAuthFilter extends OncePerRequestFilter {
         "/cases/callbacks/**",
         "/testing-support/**",
         "/user/roles/**",
-        "/claims/*/defendant-link-status",
-        "/claims/*/metadata",
-        "/claims/letter/*",
         "/loggers/**",
-        "/claims/**",
         "/responses/**",
         "/documents/**",
         "/scanned-documents"
     );
 
     private final ServiceAuthorisationApi serviceAuthorisationApi;
+    private final List<String> authorizedServices;
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
-    public ServiceAuthFilter(ServiceAuthorisationApi serviceAuthorisationApi) {
+    public ServiceAuthFilter(
+        ServiceAuthorisationApi serviceAuthorisationApi,
+        @Value("${idam.s2s-auth.authorized-services}") List<String> authorizedServices
+    ) {
         this.serviceAuthorisationApi = serviceAuthorisationApi;
+        this.authorizedServices = authorizedServices;
     }
 
     @Override
@@ -83,7 +85,14 @@ public class ServiceAuthFilter extends OncePerRequestFilter {
         }
 
         try {
-            serviceAuthorisationApi.getServiceName(serviceAuthToken);
+            String serviceName = serviceAuthorisationApi.getServiceName(serviceAuthToken);
+            if (!authorizedServices.contains(serviceName)) {
+                logger.error("Service {} is not authorized to call {}", serviceName, requestUri);
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                response.getWriter().write(String.format("Service %s is not authorized", serviceName));
+                return;
+            }
+            logger.info("S2S validation succeeded for service: {} calling {}", serviceName, requestUri);
             filterChain.doFilter(request, response);
         } catch (InvalidTokenException e) {
             logger.error("Invalid S2S token for {}", requestUri, e);

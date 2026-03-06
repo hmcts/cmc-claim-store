@@ -10,6 +10,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
+import uk.gov.hmcts.cmc.claimstore.filters.ServiceAuthFilter;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserInfo;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
@@ -63,6 +64,7 @@ public class EndpointErrorsTest extends BaseMockSpringTest {
         webClient
             .perform(get("/claims/" + externalId)
                 .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
+                .header(ServiceAuthFilter.SERVICE_AUTHORIZATION, SERVICE_TOKEN)
             )
             .andExpect(status().isInternalServerError());
     }
@@ -75,7 +77,8 @@ public class EndpointErrorsTest extends BaseMockSpringTest {
 
         webClient
             .perform(post("/claims/" + externalId + "/request-more-time")
-                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN))
+                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
+                .header(ServiceAuthFilter.SERVICE_AUTHORIZATION, SERVICE_TOKEN))
             .andExpect(status().isInternalServerError());
     }
 }
