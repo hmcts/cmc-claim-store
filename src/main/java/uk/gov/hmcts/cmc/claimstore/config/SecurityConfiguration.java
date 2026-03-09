@@ -70,7 +70,6 @@ public class SecurityConfiguration {
             "/court-finder/**",
             "/cases/callbacks/**",
             "/testing-support/**",
-            "/user/roles/**",
             "/claims/*/defendant-link-status",
             "/claims/*/metadata",
             "/claims/letter/*",

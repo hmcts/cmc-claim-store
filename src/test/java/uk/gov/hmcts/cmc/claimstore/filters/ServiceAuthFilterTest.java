@@ -138,6 +138,30 @@ class ServiceAuthFilterTest {
     }
 
     @Test
+    void shouldForbiddenIfHeaderMissingForUserRolesUrl() throws ServletException, IOException {
+        when(request.getRequestURI()).thenReturn("/user/roles/123");
+        when(request.getHeader(ServiceAuthFilter.SERVICE_AUTHORIZATION)).thenReturn(null);
+        when(response.getWriter()).thenReturn(writer);
+
+        serviceAuthFilter.doFilterInternal(request, response, filterChain);
+
+        verify(response).setStatus(HttpServletResponse.SC_FORBIDDEN);
+        verify(filterChain, never()).doFilter(request, response);
+    }
+
+    @Test
+    void shouldForbiddenIfHeaderMissingForScannedDocumentsUrl() throws ServletException, IOException {
+        when(request.getRequestURI()).thenReturn("/scanned-documents");
+        when(request.getHeader(ServiceAuthFilter.SERVICE_AUTHORIZATION)).thenReturn(null);
+        when(response.getWriter()).thenReturn(writer);
+
+        serviceAuthFilter.doFilterInternal(request, response, filterChain);
+
+        verify(response).setStatus(HttpServletResponse.SC_FORBIDDEN);
+        verify(filterChain, never()).doFilter(request, response);
+    }
+
+    @Test
     void shouldAllowIfTokenIsValid() throws ServletException, IOException {
         String token = "valid-token";
         when(request.getRequestURI()).thenReturn("/some/private/url");

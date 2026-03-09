@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.claimstore.filters.ServiceAuthFilter;
 import uk.gov.hmcts.cmc.claimstore.models.idam.User;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 
 import java.util.UUID;
 
@@ -33,16 +35,19 @@ public class CommonOperations {
     private final JsonMapper jsonMapper;
     private final TestData testData;
     private final ClaimOperation claimOperation;
+    private final AuthTokenGenerator authTokenGenerator;
 
     @Autowired
     public CommonOperations(
         JsonMapper jsonMapper,
         TestData testData,
-        ClaimOperation claimOperation
+        ClaimOperation claimOperation,
+        AuthTokenGenerator authTokenGenerator
     ) {
         this.jsonMapper = jsonMapper;
         this.testData = testData;
         this.claimOperation = claimOperation;
+        this.authTokenGenerator = authTokenGenerator;
     }
 
     @LogExecutionTime
@@ -89,6 +94,7 @@ public class CommonOperations {
             .given()
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .header(HttpHeaders.AUTHORIZATION, userAuthentication)
+            .header(ServiceAuthFilter.SERVICE_AUTHORIZATION, authTokenGenerator.generate())
             .body(jsonMapper.toJson(userRoleRequest))
             .when()
             .post("/user/roles");
@@ -100,6 +106,7 @@ public class CommonOperations {
             .given()
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .header(HttpHeaders.AUTHORIZATION, userAuthentication)
+            .header(ServiceAuthFilter.SERVICE_AUTHORIZATION, authTokenGenerator.generate())
             .when()
             .get("/user/roles");
     }
