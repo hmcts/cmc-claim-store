@@ -72,9 +72,6 @@ public class SecurityConfiguration {
             "/cases/callbacks/**",
             "/testing-support/**",
             "/user/roles/**",
-            "/claims/*/defendant-link-status",
-            "/claims/*/metadata",
-            "/claims/letter/*",
             "/loggers/**");
     }
 
