@@ -64,7 +64,6 @@ public class SecurityConfiguration {
             "/health/readiness",
             "/status/health",
             "/",
-            "/support/**",
             "/calendar/**",
             "/deadline/**",
             "/interest/**",
@@ -87,6 +86,7 @@ public class SecurityConfiguration {
             .logout().disable()
             .addFilterBefore(serviceAuthFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeRequests()
+            .antMatchers("/support/**").permitAll()
             .antMatchers("/claims/**", "/responses/**", "/documents/**")
             .hasAnyAuthority(AUTHORITIES)
             .anyRequest()
