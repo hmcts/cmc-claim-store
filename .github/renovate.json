@@ -1,9 +1,42 @@
 {
-    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "extends": [
-      "local>hmcts/.github:renovate-config",
-      "local>hmcts/.github//renovate/automerge-minor"
-    ],
-    "automergeSchedule": ["after 8am and before 5pm every weekday"],
-    "schedule": ["after 8am and before 5pm every weekday"]
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "local>hmcts/.github:renovate-config",
+    "local>hmcts/.github//renovate/automerge-minor"
+  ],
+  "automergeSchedule": ["after 8am and before 11am every weekday"],
+  "schedule": ["after 8am and before 11am every weekday"],
+  "rebaseWhen": "conflicted",
+  "prConcurrentLimit": 5,
+  "packageRules": [
+    {
+      "matchPackagePatterns": ["pact"],
+      "enabled": false
+    },
+    {
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "All non-major updates",
+      "groupSlug": "all-non-major",
+      "automerge": true
+    },
+    {
+      "matchPackagePatterns": [
+        "org.springframework",
+        "org.springdoc",
+        "spring-boot",
+        "spring-cloud",
+        "jakarta.persistence",
+        "org.hibernate"
+      ],
+      "groupName": "Spring Boot and related updates",
+      "groupSlug": "spring-boot-related",
+      "automerge": true
+    },
+    {
+      "matchManagers": ["terraform"],
+      "groupName": "Terraform updates",
+      "groupSlug": "terraform",
+      "automerge": true
+    }
+  ]
 }
