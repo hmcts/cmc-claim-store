@@ -57,12 +57,24 @@ class ServiceAuthFilterTest {
 
     @Test
     void shouldAllowWhitelistedUrlWithWildcard() throws ServletException, IOException {
-        when(request.getRequestURI()).thenReturn("/support/re-send-mediation");
+        when(request.getRequestURI()).thenReturn("/calendar/2026-03-09");
 
         serviceAuthFilter.doFilterInternal(request, response, filterChain);
 
         verify(filterChain).doFilter(request, response);
         verify(serviceAuthorisationApi, never()).getServiceName(anyString());
+    }
+
+    @Test
+    void shouldForbiddenIfHeaderMissingForSupportUrl() throws ServletException, IOException {
+        when(request.getRequestURI()).thenReturn("/support/re-send-mediation");
+        when(request.getHeader(ServiceAuthFilter.SERVICE_AUTHORIZATION)).thenReturn(null);
+        when(response.getWriter()).thenReturn(writer);
+
+        serviceAuthFilter.doFilterInternal(request, response, filterChain);
+
+        verify(response).setStatus(HttpServletResponse.SC_FORBIDDEN);
+        verify(filterChain, never()).doFilter(request, response);
     }
 
     @Test

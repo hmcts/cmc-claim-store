@@ -36,6 +36,7 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LINK_LETTER_HOLDER;
+import static uk.gov.hmcts.cmc.claimstore.filters.ServiceAuthFilter.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetails;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetailsWithCCJ;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetailsWithDefResponse;
@@ -250,6 +251,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseMockSpringTest
     private ResultActions makeRequest(String referenceNumber, String event) throws Exception {
         return webClient
             .perform(put("/support/claim/" + referenceNumber + "/event/" + event + "/resend-staff-notifications")
-                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN));
+                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
+                .header(SERVICE_AUTHORIZATION, SERVICE_TOKEN));
     }
 }

@@ -34,7 +34,6 @@ public class ServiceAuthFilter extends OncePerRequestFilter {
         "/health/readiness",
         "/status/health",
         "/",
-        "/support/**",
         "/calendar/**",
         "/deadline/**",
         "/interest/**",
