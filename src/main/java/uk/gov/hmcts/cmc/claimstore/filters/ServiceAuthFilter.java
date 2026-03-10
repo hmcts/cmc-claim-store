@@ -42,7 +42,8 @@ public class ServiceAuthFilter extends OncePerRequestFilter {
         "/testing-support/**",
         "/loggers/**",
         "/responses/**",
-        "/documents/**"
+        "/documents/**",
+        "/user/roles/**"
     );
 
     private final ServiceAuthorisationApi serviceAuthorisationApi;
