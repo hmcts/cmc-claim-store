@@ -70,6 +70,7 @@ public class SecurityConfiguration {
             "/court-finder/**",
             "/cases/callbacks/**",
             "/testing-support/**",
+            "/user/roles/**",
             "/loggers/**");
     }
 
@@ -83,7 +84,6 @@ public class SecurityConfiguration {
             .addFilterBefore(serviceAuthFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeRequests()
             .antMatchers("/support/**").permitAll()
-            .antMatchers("/user/roles/**").hasAnyAuthority(AUTHORITIES)
             .antMatchers("/claims/**", "/responses/**", "/documents/**")
             .hasAnyAuthority(AUTHORITIES)
             .anyRequest()
