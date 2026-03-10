@@ -57,7 +57,7 @@ public class GenerateOrderCallbackHandlerTest extends BaseMockSpringTest {
         .withSurname("Advisor")
         .withRoles("caseworker-cmc-legaladvisor")
         .build();
-    private static final String AUTHORISATION_TOKEN = "Bearer let me in";
+    private static final String AUTHORISATION_TOKEN = BEARER_TOKEN;
     private static final String DOCUMENT_URL = "http://bla.test";
     @MockBean
     protected EmailService emailService;
