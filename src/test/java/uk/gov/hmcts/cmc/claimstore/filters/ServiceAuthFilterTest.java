@@ -137,7 +137,7 @@ class ServiceAuthFilterTest {
         verify(filterChain, never()).doFilter(request, response);
     }
 
-    /*@Test
+    @Test
     void shouldForbiddenIfHeaderMissingForUserRolesUrl() throws ServletException, IOException {
         when(request.getRequestURI()).thenReturn("/user/roles/123");
         when(request.getHeader(ServiceAuthFilter.SERVICE_AUTHORIZATION)).thenReturn(null);
@@ -148,7 +148,7 @@ class ServiceAuthFilterTest {
         verify(response).setStatus(HttpServletResponse.SC_FORBIDDEN);
         verify(filterChain, never()).doFilter(request, response);
     }
-*/
+
     @Test
     void shouldForbiddenIfHeaderMissingForScannedDocumentsUrl() throws ServletException, IOException {
         when(request.getRequestURI()).thenReturn("/scanned-documents");

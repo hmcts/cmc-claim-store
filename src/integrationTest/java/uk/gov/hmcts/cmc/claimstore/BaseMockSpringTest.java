@@ -35,6 +35,7 @@ import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.filters.ServiceAuthFilter;
 import uk.gov.hmcts.cmc.claimstore.helper.JsonMappingHelper;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.models.idam.UserInfo;
 import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.TestingSupportRepository;
 import uk.gov.hmcts.cmc.claimstore.requests.courtfinder.CourtFinderApi;
@@ -63,6 +64,7 @@ import uk.gov.service.notify.NotificationClient;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.sql.DataSource;
@@ -184,6 +186,13 @@ public abstract class BaseMockSpringTest {
         setSecurityAuthorities(authentication);
         when(jwtDecoder.decode(anyString())).thenReturn(getJwt());
         when(serviceAuthorisationApi.getServiceName(anyString())).thenReturn("cmc_claim_store");
+
+        UserInfo userInfo = UserInfo.builder()
+            .roles(Collections.singletonList("caseworker-cmc"))
+            .uid(USER_ID)
+            .sub("submitter@example.com")
+            .build();
+        when(userService.getUserInfo(anyString())).thenReturn(userInfo);
     }
 
     private void bankHolidaysSetup() {

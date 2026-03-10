@@ -36,9 +36,7 @@ public class JwtGrantedAuthoritiesConverter implements Converter<Jwt, Collection
         if (Boolean.TRUE.equals(tokenName)
             && jwt.getClaim(TOKEN_NAME).equals(ACCESS_TOKEN)) {
             UserInfo userInfo = userService.getUserInfo(BEARER + jwt.getTokenValue());
-            if (userInfo != null && userInfo.getRoles() != null) {
-                authorities = extractAuthorityFromClaims(userInfo.getRoles());
-            }
+            authorities = extractAuthorityFromClaims(userInfo.getRoles());
         }
         return authorities;
     }

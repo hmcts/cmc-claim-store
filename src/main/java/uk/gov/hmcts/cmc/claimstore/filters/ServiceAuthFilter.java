@@ -40,7 +40,6 @@ public class ServiceAuthFilter extends OncePerRequestFilter {
         "/court-finder/**",
         "/cases/callbacks/**",
         "/testing-support/**",
-        "/user/roles/**",
         "/loggers/**",
         "/responses/**",
         "/documents/**"

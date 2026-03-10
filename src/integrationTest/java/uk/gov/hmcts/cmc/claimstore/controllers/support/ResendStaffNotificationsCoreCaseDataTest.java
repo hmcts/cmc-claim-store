@@ -62,7 +62,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseMockSpringTest
             .willReturn(new byte[]{1, 2, 3, 4});
         UserDetails userDetails = SampleUserDetails.builder().withRoles("caseworker-cmc").build();
         User user = new User(BEARER_TOKEN, userDetails);
-        given(userService.getUserDetails(BEARER_TOKEN)).willReturn(userDetails);
+        given(userService.getUserDetails(anyString())).willReturn(userDetails);
         given(userService.authenticateAnonymousCaseWorker()).willReturn(user);
         given(userService.getUser(BEARER_TOKEN)).willReturn(user);
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
