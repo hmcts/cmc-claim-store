@@ -35,7 +35,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
 )
 public class UpdateLegalRepClaimCallbackHandlerTest extends BaseMockSpringTest {
 
-    private static final String AUTHORISATION_TOKEN = "Bearer let me in";
+    private static final String AUTHORISATION_TOKEN = BEARER_TOKEN;
     public static final String REFERENCE_NO = "000LR001";
 
     @MockBean

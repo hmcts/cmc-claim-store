@@ -78,7 +78,7 @@ public class ContactDetailsChangeCallbackHandlerTest extends BaseMockSpringTest 
         .withRoles("caseworker-cmc")
         .build();
 
-    private static final String AUTHORISATION_TOKEN = "Bearer let me in";
+    private static final String AUTHORISATION_TOKEN = BEARER_TOKEN;
     private static final String DOCUMENT_URL = "http://bla.test";
     private static final String DOCUMENT_BINARY_URL = "http://bla.test/binary";
     private static final String DOCUMENT_FILE_NAME = "contact-letter.pdf";
