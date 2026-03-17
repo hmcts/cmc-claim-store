@@ -2,22 +2,33 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "local>hmcts/.github:renovate-config",
-    "local>hmcts/.github//renovate/automerge-minor"
+    "local>hmcts/.github//renovate/automerge-all"
   ],
-  "automergeSchedule": ["after 8am and before 11am every weekday"],
+  "labels": [
+    "dependencies"
+  ],
+  "automergeSchedule": ["after 8am and before 4pm every weekday"],
   "schedule": ["after 8am and before 11am every weekday"],
   "rebaseWhen": "conflicted",
+  "automergeStrategy": "squash",
   "prConcurrentLimit": 5,
+  "helmv3": {
+    "bumpVersion": "patch"
+  },
+  "regexManagers": [
+    {
+      "fileMatch": [
+        "^Dockerfile$"
+      ],
+      "matchStrings": [
+        "datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\sARG .*?_VERSION=(?<currentValue>.*)\\s"
+      ]
+    }
+  ],
   "packageRules": [
     {
       "matchPackagePatterns": ["pact"],
       "enabled": false
-    },
-    {
-      "matchUpdateTypes": ["minor", "patch"],
-      "groupName": "All non-major updates",
-      "groupSlug": "all-non-major",
-      "automerge": true
     },
     {
       "matchPackagePatterns": [
@@ -28,15 +39,28 @@
         "jakarta.persistence",
         "org.hibernate"
       ],
+      "matchUpdateTypes": ["minor", "patch"],
       "groupName": "Spring Boot and related updates",
       "groupSlug": "spring-boot-related",
-      "automerge": true
+      "automerge": true,
+      "automergeType": "pr",
+      "automergeSchedule": ["before 4pm every weekday"]
     },
     {
       "matchManagers": ["terraform"],
       "groupName": "Terraform updates",
       "groupSlug": "terraform",
-      "automerge": true
+      "automerge": true,
+      "automergeType": "pr",
+      "automergeSchedule": ["before 4pm every weekday"]
+    },
+    {
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "All non-major updates",
+      "groupSlug": "all-non-major",
+      "automerge": true,
+      "automergeType": "pr",
+      "automergeSchedule": ["before 4pm every weekday"]
     }
   ]
 }
