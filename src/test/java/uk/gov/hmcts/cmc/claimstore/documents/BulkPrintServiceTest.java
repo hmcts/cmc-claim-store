@@ -15,10 +15,10 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.reform.sendletter.api.Document;
-import uk.gov.hmcts.reform.sendletter.api.Letter;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
+import uk.gov.hmcts.reform.sendletter.api.model.v3.LetterV3;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -86,7 +86,7 @@ public class BulkPrintServiceTest {
     @Test
     public void shouldSendLetterWithDocumentsAsInGivenOrder() {
         //given
-        when(sendLetterApi.sendLetter(eq(AUTH_VALUE), any(Letter.class)))
+        when(sendLetterApi.sendLetter(eq(AUTH_VALUE), any(LetterV3.class)))
             .thenReturn(new SendLetterResponse(UUID.randomUUID()));
 
         bulkPrintService = new BulkPrintService(
@@ -110,7 +110,7 @@ public class BulkPrintServiceTest {
         //then
 
         verify(sendLetterApi).sendLetter(eq(AUTH_VALUE),
-            any(Letter.class));
+            any(LetterV3.class));
     }
 
     @Test
@@ -177,7 +177,7 @@ public class BulkPrintServiceTest {
         //given
         doThrow(new RuntimeException("send Letter failed"))
             .when(sendLetterApi)
-            .sendLetter(eq(AUTH_VALUE), any(Letter.class));
+            .sendLetter(eq(AUTH_VALUE), any(LetterV3.class));
 
         //when
         bulkPrintService = new BulkPrintService(
@@ -200,7 +200,7 @@ public class BulkPrintServiceTest {
                 USER_LIST);
         } finally {
             //then
-            verify(sendLetterApi).sendLetter(eq(AUTH_VALUE), any(Letter.class));
+            verify(sendLetterApi).sendLetter(eq(AUTH_VALUE), any(LetterV3.class));
         }
     }
 
