@@ -20,7 +20,6 @@ import uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ScannedDocument;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
 import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.ccd.document.am.model.DocumentUploadRequest;
@@ -71,8 +70,6 @@ public class SecuredDocumentManagementServiceTest {
     private ResponseEntity<Resource> responseEntity;
     @Mock
     private CaseDocumentClientApi caseDocumentClientApi;
-    @Mock
-    private CaseDocumentClient caseDocumentClient;
 
     @Before
     public void setUp() {
@@ -84,8 +81,7 @@ public class SecuredDocumentManagementServiceTest {
             userService,
             appInsights,
             USER_ROLES,
-            caseDocumentClientApi,
-            caseDocumentClient
+            caseDocumentClientApi
         );
     }
 
