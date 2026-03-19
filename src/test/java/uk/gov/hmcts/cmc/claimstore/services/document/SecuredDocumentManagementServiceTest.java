@@ -179,7 +179,7 @@ public class SecuredDocumentManagementServiceTest {
     }
 
     private URI setupDocumentDownloadClient() {
-        when(caseDocumentClient.getMetadataForDocument(anyString(), anyString(), anyString()))
+        when(caseDocumentClientApi.getMetadataForDocument(anyString(), anyString(), any(UUID.class)))
             .thenReturn(ResourceLoader.successfulDocumentManagementDownloadResponse());
         UserDetails userDetails = new UserDetails("id", "mail@mail.com",
             "userFirstName", "userLastName", Collections.singletonList("role"));
@@ -205,7 +205,7 @@ public class SecuredDocumentManagementServiceTest {
     }
 
     private URI setupDocumentDownloadClientNullResponseEntity() {
-        when(caseDocumentClient.getMetadataForDocument(anyString(), anyString(), anyString()))
+        when(caseDocumentClientApi.getMetadataForDocument(anyString(), anyString(), any(UUID.class)))
             .thenReturn(ResourceLoader.successfulDocumentManagementDownloadResponse());
         UserDetails userDetails = new UserDetails("id", "mail@mail.com",
             "userFirstName", "userLastName", Collections.singletonList("role"));
@@ -239,7 +239,7 @@ public class SecuredDocumentManagementServiceTest {
     }
 
     private URI setupDocumentDownloadClientNullRespEntity() {
-        when(caseDocumentClient.getMetadataForDocument(anyString(), anyString(), anyString()))
+        when(caseDocumentClientApi.getMetadataForDocument(anyString(), anyString(), any(UUID.class)))
             .thenReturn(ResourceLoader.successfulDocumentManagementDownloadResponse());
         UserDetails userDetails = new UserDetails("id", "mail@mail.com",
             "userFirstName", "userLastName", Collections.singletonList("role"));
