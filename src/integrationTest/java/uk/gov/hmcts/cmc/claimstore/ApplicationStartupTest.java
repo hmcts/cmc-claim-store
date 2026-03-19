@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore;
 
+import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
-import org.flywaydb.core.Flyway;
 import org.quartz.Scheduler;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;

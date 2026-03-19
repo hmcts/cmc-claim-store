@@ -129,7 +129,7 @@ public class SecuredDocumentManagementServiceTest {
         assertDocumentDownloadSuccessful(pdf);
     }
 
-    @Test(expected = DocumentDownloadException.class)
+    @Test
     public void shouldDownloadScannedDocumentFromDocumentManagementWithNoResponseEntity() {
 
         URI docUri = setupDocumentDownloadClientNullResponseEntity();
@@ -139,7 +139,6 @@ public class SecuredDocumentManagementServiceTest {
             .build();
 
         byte[] pdf = securedDocumentManagementService.downloadScannedDocument("auth string", claimDocument);
-
         assertDocumentDownloadSuccessful(pdf);
     }
 
