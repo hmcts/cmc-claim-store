@@ -197,7 +197,12 @@ ccd:
         ROLE_ASSIGNMENT_IDAM_ADMIN_PASSWORD: ${ROLE_ASSIGNMENT_IDAM_ADMIN_PASSWORD}
         LD_SDK_KEY: ${LD_SDK_KEY}
       disableKeyVaults: true
-      keyVaults: []
+      secrets:
+        ROLE_ASSIGNMENT_DB_PASSWORD:
+          secretRef: "{{ .Values.global.postgresSecret }}"
+          key: PASSWORD
+          disabled: true
+      keyVaults: [ ]
 
   ccd-data-store-api:
     java:
