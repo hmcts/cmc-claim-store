@@ -34,6 +34,7 @@ import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.helper.JsonMappingHelper;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.models.idam.UserInfo;
 import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.TestingSupportRepository;
 import uk.gov.hmcts.cmc.claimstore.requests.courtfinder.CourtFinderApi;
@@ -61,6 +62,7 @@ import uk.gov.service.notify.NotificationClient;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.sql.DataSource;
@@ -68,7 +70,11 @@ import javax.sql.DataSource;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.ACCESS_TOKEN;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static uk.gov.hmcts.cmc.claimstore.security.JwtGrantedAuthoritiesConverter.TOKEN_NAME;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(
@@ -86,7 +92,6 @@ public abstract class BaseMockSpringTest {
     protected static final String BEARER_TOKEN = "Bearer letmein";
 
     protected static final String SERVICE_TOKEN = "S2S token";
-    protected static final String AUTHORISATION_TOKEN = "Bearer token";
     protected static final String USER_ID = "1";
     protected static final String JURISDICTION_ID = "CMC";
     protected static final String CASE_TYPE_ID = "MoneyClaimCase";
@@ -178,6 +183,12 @@ public abstract class BaseMockSpringTest {
         SecurityContextHolder.setContext(securityContext);
         setSecurityAuthorities(authentication);
         when(jwtDecoder.decode(anyString())).thenReturn(getJwt());
+
+        UserInfo userInfo = UserInfo.builder()
+            .sub("citizen")
+            .roles(List.of("citizen", "solicitor", "letter-holder", "caseworker"))
+            .build();
+        when(userService.getUserInfo(anyString())).thenReturn(userInfo);
     }
 
     private void bankHolidaysSetup() {
@@ -205,7 +216,8 @@ public abstract class BaseMockSpringTest {
             .claim("exp", Instant.ofEpochSecond(1585763216))
             .claim("iat", Instant.ofEpochSecond(1585734416))
             .claim("token_type", "Bearer")
-            .claim("tokenName", "access_token")
+            .claim("tokenName", ACCESS_TOKEN)
+            .claim(TOKEN_NAME, ACCESS_TOKEN)
             .claim("expires_in", 28800)
             .header("kid", "b/O6OvVv1+y+WgrH5Ui9WTioLt0=")
             .header("typ", "RS256")
