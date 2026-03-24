@@ -189,17 +189,6 @@ ccd:
       disableKeyVaults: true
       keyVaults: []
 
-  payment-api:
-    java:
-      smoketests:
-        enabled: false
-      smoketestscron:
-        enabled: false
-      functionaltests:
-        enabled: false
-      functionaltestscron:
-        enabled: false
-
   ccd-data-store-api:
     java:
       image: hmctssbox.azurecr.io/ccd/data-store-api:latest
