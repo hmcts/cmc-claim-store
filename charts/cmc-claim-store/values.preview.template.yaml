@@ -213,3 +213,5 @@ ccd:
         java:
           smoketests:
             enabled: false
+          functionaltests:
+            enabled: false
