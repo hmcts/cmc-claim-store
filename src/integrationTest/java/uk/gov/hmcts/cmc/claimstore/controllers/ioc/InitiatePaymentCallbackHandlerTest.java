@@ -48,7 +48,7 @@ import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
 )
 public class InitiatePaymentCallbackHandlerTest extends BaseMockSpringTest {
 
-    private static final String AUTHORISATION_TOKEN = "Bearer let me in";
+    private static final String AUTHORISATION_TOKEN = BEARER_TOKEN;
     private static final long CASE_ID = 42L;
     private static final String NEXT_URL = "http://nexturl.test";
     private static final LocalDate ISSUE_DATE = now();
