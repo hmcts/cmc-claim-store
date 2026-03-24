@@ -189,6 +189,17 @@ ccd:
       disableKeyVaults: true
       keyVaults: []
 
+  payment-api:
+    java:
+      smoketests:
+        enabled: false
+      smoketestscron:
+        enabled: false
+      functionaltests:
+        enabled: false
+      functionaltestscron:
+        enabled: false
+
   ccd-data-store-api:
     java:
       image: hmctssbox.azurecr.io/ccd/data-store-api:latest
@@ -206,57 +217,3 @@ ccd:
         IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
         OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/hmcts
         CASE_DOCUMENT_AM_URL: http://ccd-case-document-am-api-aat.service.core-compute-aat.internal
-
-  # Required by nested java chart templates that now assume smoketests map exists.
-  ccpay:
-    ccd:
-      draft-store-service:
-        java:
-          smoketests:
-            enabled: false
-          smoketestscron:
-            enabled: false
-          functionaltests:
-            enabled: false
-          functionaltestscron:
-            enabled: false
-      ccd-user-profile-api:
-        java:
-          smoketests:
-            enabled: false
-          smoketestscron:
-            enabled: false
-          functionaltests:
-            enabled: false
-          functionaltestscron:
-            enabled: false
-      ccd-definition-store-api:
-        java:
-          smoketests:
-            enabled: false
-          smoketestscron:
-            enabled: false
-          functionaltests:
-            enabled: false
-          functionaltestscron:
-            enabled: false
-      ccd-data-store-api:
-        java:
-          smoketests:
-            enabled: false
-          smoketestscron:
-            enabled: false
-          functionaltests:
-            enabled: false
-          functionaltestscron:
-            enabled: false
-      am-role-assignment-service:
-        java:
-          smoketests:
-            enabled: false
-          smoketestscron:
-            enabled: false
-          functionaltests:
-            enabled: false
-          functionaltestscron:
-            enabled: false
