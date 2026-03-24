@@ -2,6 +2,9 @@ postgresql:
   enabled: false
 ccd:
   enabled: false
+  dm-store:
+    blobstorage:
+      enabled: false
   payment-api:
     java:
       smoketests:
