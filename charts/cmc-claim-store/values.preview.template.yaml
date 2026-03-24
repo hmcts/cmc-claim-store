@@ -217,3 +217,5 @@ ccd:
             enabled: false
           functionaltests:
             enabled: false
+          functionaltestscron:
+            enabled: false
