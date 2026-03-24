@@ -121,12 +121,12 @@ ccd:
   ccd:
     s2s:
       enabled: false
-    postgresql:
-      enabled: false
     adminWeb:
       enabled: true
     definitionImporter:
       enabled: false
+  postgresql:
+    enabled: false
 
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
@@ -142,6 +142,7 @@ ccd:
     ccdUserProfileUrl: http://${SERVICE_NAME}-ccd-user-profile-api
     postgresUsername: hmcts
     postgresPassword: hmcts
+    postgresSecret: postgres
     devMode: true
 
   ccd-admin-web:
@@ -163,6 +164,12 @@ ccd:
       environment:
         JAVA_TOOL_OPTIONS: "-XX:InitialRAMPercentage=30.0 -XX:MaxRAMPercentage=65.0 -XX:MinRAMPercentage=30.0 -Dfile.encoding=UTF-8"
         USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin,cmc_claim_store
+        USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
+        USER_PROFILE_DB_PASSWORD: hmcts
+        USER_PROFILE_DB_OPTIONS: "?stringtype=unspecified"
+      secrets:
+        USER_PROFILE_DB_PASSWORD:
+          disabled: true
 
   ccd-definition-store-api:
     java:
@@ -176,6 +183,12 @@ ccd:
         DEFINITION_STORE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_gw,ccd_admin,cmc_claim_store
         IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
         OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/hmcts
+        DEFINITION_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
+        DEFINITION_STORE_DB_PASSWORD: hmcts
+        DEFINITION_STORE_DB_OPTIONS: "?stringtype=unspecified"
+      secrets:
+        DEFINITION_STORE_DB_PASSWORD:
+          disabled: true
 
   am-role-assignment-service:
     java:
@@ -186,6 +199,12 @@ ccd:
         ROLE_ASSIGNMENT_IDAM_CLIENT_SECRET: ${ROLE_ASSIGNMENT_IDAM_CLIENT_SECRET}
         ROLE_ASSIGNMENT_IDAM_ADMIN_PASSWORD: ${ROLE_ASSIGNMENT_IDAM_ADMIN_PASSWORD}
         LD_SDK_KEY: ${LD_SDK_KEY}
+        ROLE_ASSIGNMENT_DB_HOST: ${SERVICE_NAME}-postgresql
+        ROLE_ASSIGNMENT_DB_PASSWORD: hmcts
+        ROLE_ASSIGNMENT_DB_OPTIONS: "?stringtype=unspecified"
+      secrets:
+        ROLE_ASSIGNMENT_DB_PASSWORD:
+          disabled: true
       disableKeyVaults: true
       keyVaults: []
 
@@ -206,3 +225,9 @@ ccd:
         IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
         OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/hmcts
         CASE_DOCUMENT_AM_URL: http://ccd-case-document-am-api-aat.service.core-compute-aat.internal
+        DATA_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
+        DATA_STORE_DB_PASSWORD: hmcts
+        DATA_STORE_DB_OPTIONS: "?stringtype=unspecified"
+      secrets:
+        DATA_STORE_DB_PASSWORD:
+          disabled: true
