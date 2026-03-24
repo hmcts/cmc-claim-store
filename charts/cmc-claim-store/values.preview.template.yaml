@@ -200,6 +200,7 @@ ccd:
         ROLE_ASSIGNMENT_IDAM_ADMIN_PASSWORD: ${ROLE_ASSIGNMENT_IDAM_ADMIN_PASSWORD}
         LD_SDK_KEY: ${LD_SDK_KEY}
         ROLE_ASSIGNMENT_DB_HOST: ${SERVICE_NAME}-postgresql
+        ROLE_ASSIGNMENT_DB_NAME: role_assignment
         ROLE_ASSIGNMENT_DB_PASSWORD: hmcts
         ROLE_ASSIGNMENT_DB_OPTIONS: "?stringtype=unspecified"
       secrets:
