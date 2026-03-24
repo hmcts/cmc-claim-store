@@ -13,9 +13,9 @@ maintainers:
 dependencies:
   - name: java
     version: 5.3.0
-    repository: 'oci://hmctssbox.azurecr.io/helm'
+    repository: '@hmctssbox'
 
   - name: ccd
     version: 8.0.29
-    repository: 'https://hmctssbox.azurecr.io/helm/v1/repo/'
+    repository: '@hmctssbox'
     condition: ccd.enabled
