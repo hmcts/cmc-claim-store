@@ -96,7 +96,7 @@ java:
     releaseNameOverride: ${SERVICE_NAME}-postgresql
     image:
       tag: '11.6.0'
-      registry: hmctssbox.azurecr.io
+      registry: hmctsprod.azurecr.io
       repository: imported/bitnami/postgresql
     primary:
       persistence:
@@ -147,7 +147,7 @@ ccd:
 
   ccd-admin-web:
     nodejs:
-      image: hmctssbox.azurecr.io/ccd/admin-web:latest
+      image: hmctsprod.azurecr.io/ccd/admin-web:latest
       ingressHost: ccd-admin-web-${SERVICE_FQDN}
       keyVaults: []
       environment:
@@ -158,7 +158,7 @@ ccd:
 
   ccd-user-profile-api:
     java:
-      image: hmctssbox.azurecr.io/ccd/user-profile-api:latest
+      image: hmctsprod.azurecr.io/ccd/user-profile-api:latest
       disableKeyVaults: true
       keyVaults: []
       environment:
@@ -173,7 +173,7 @@ ccd:
 
   ccd-definition-store-api:
     java:
-      image: hmctssbox.azurecr.io/ccd/definition-store-api:latest
+      image: hmctsprod.azurecr.io/ccd/definition-store-api:latest
       imagePullPolicy: Always
       disableKeyVaults: true
       keyVaults: []
@@ -210,7 +210,7 @@ ccd:
 
   ccd-data-store-api:
     java:
-      image: hmctssbox.azurecr.io/ccd/data-store-api:latest
+      image: hmctsprod.azurecr.io/ccd/data-store-api:latest
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
       disableKeyVaults: true
       keyVaults: []
