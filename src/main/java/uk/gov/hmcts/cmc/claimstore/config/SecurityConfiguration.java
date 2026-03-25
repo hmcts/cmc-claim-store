@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
@@ -19,11 +18,7 @@ import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 import uk.gov.hmcts.cmc.claimstore.security.JwtGrantedAuthoritiesConverter;
-
-import java.util.Arrays;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
@@ -52,7 +47,7 @@ public class SecurityConfiguration {
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
     }
 
-    private static final String[] IGNORED_PATHS = {
+    private static final String[] PERMITTED_PATHS = {
         "/swagger-ui.html",
         "/webjars/springfox-swagger-ui/**",
         "/v3/api-docs/**",
@@ -76,14 +71,6 @@ public class SecurityConfiguration {
     };
 
     @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        RequestMatcher[] ignoredMatchers = Arrays.stream(IGNORED_PATHS)
-            .map(AntPathRequestMatcher::new)
-            .toArray(RequestMatcher[]::new);
-        return (web) -> web.ignoring().requestMatchers(ignoredMatchers);
-    }
-
-    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
@@ -91,6 +78,7 @@ public class SecurityConfiguration {
             .formLogin(AbstractHttpConfigurer::disable)
             .logout(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(authorize -> authorize
+                .requestMatchers(PERMITTED_PATHS).permitAll()
                 .requestMatchers("/claims/**", "/responses/**", "/documents/**").hasAnyAuthority(AUTHORITIES)
                 .anyRequest().authenticated()
             )
