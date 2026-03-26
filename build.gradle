@@ -269,7 +269,7 @@ dependencies {
 
   implementation group: 'commons-io', name: 'commons-io', version: '2.14.0'
 
-  implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.5.0'
+  implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '3.0.2'
 
   implementation group: 'org.elasticsearch', name: 'elasticsearch', version: versions.elasticSearch
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.2'
