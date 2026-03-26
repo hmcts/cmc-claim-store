@@ -2,6 +2,8 @@ package uk.gov.hmcts.cmc.claimstore.config;
 
 import org.flywaydb.core.Flyway;
 import org.skife.jdbi.v2.DBI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -15,11 +17,15 @@ import uk.gov.hmcts.cmc.claimstore.config.db.OptionalContainerFactory;
 import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.UserRolesRepository;
 
+import java.sql.Connection;
+import java.sql.Statement;
 import javax.sql.DataSource;
 
 @Configuration
 @ConfigurationProperties
 public class CmcDBConfiguration {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CmcDBConfiguration.class);
 
     @Value("${spring.flyway.enabled}")
     private Boolean flywayEnabled;
@@ -51,6 +57,8 @@ public class CmcDBConfiguration {
     }
 
     private void migrateFlyway(DataSource dataSource) {
+        resetFlywayHistoryForUpgrade(dataSource);
+
         Flyway.configure()
             .dataSource(dataSource)
             .locations("db/migration")
@@ -58,6 +66,16 @@ public class CmcDBConfiguration {
             .baselineVersion("2022.05.26.1345")
             .load()
             .migrate();
+    }
+
+    private void resetFlywayHistoryForUpgrade(DataSource dataSource) {
+        try (Connection conn = dataSource.getConnection();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute("DELETE FROM flyway_schema_history");
+            LOG.info("Cleared old flyway_schema_history for Flyway 5->9 upgrade re-baseline");
+        } catch (Exception e) {
+            LOG.info("No existing flyway_schema_history to clear: {}", e.getMessage());
+        }
     }
 
     @Bean
