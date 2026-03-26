@@ -23,7 +23,7 @@ dependencies {
 
   testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.11.0'
   testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.25.3'
-  testImplementation group: 'jakarta.el', name: 'jakarta.el-api', version: '5.0.0'
+  testImplementation group: 'jakarta.el', name: 'jakarta.el-api', version: '6.0.1'
   testImplementation group: 'org.glassfish', name: 'jakarta.el', version: '4.0.2'
   testImplementation group: 'com.google.guava', name: 'guava', version: '32.0.1-jre'
   testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '5.11.0'
