@@ -55,7 +55,7 @@ public class CmcDBConfiguration {
             .dataSource(dataSource)
             .locations("db/migration")
             .baselineOnMigrate(true)
-            .baselineVersion("2018.06.06.1515")
+            .baselineVersion("2022.05.26.1345")
             .load()
             .migrate();
     }
