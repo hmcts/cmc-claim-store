@@ -1,9 +1,9 @@
-CREATE SEQUENCE claim_legal_rep_reference_number_seq MAXVALUE 999999 NO CYCLE;
+CREATE SEQUENCE IF NOT EXISTS claim_legal_rep_reference_number_seq MAXVALUE 999999 NO CYCLE;
 
 /**
  * Returns a new reference number from a 000LR001...999LR999 range.
  */
-CREATE FUNCTION next_legal_rep_reference_number() RETURNS TEXT AS $$
+CREATE OR REPLACE FUNCTION next_legal_rep_reference_number() RETURNS TEXT AS $$
 SELECT
   regexp_replace(
     to_char(
