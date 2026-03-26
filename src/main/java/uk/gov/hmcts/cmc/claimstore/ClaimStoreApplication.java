@@ -11,12 +11,18 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
         DataSourceAutoConfiguration.class,
         DataSourcePoolMetricsAutoConfiguration.class
     },
-    scanBasePackages = "uk.gov.hmcts"
+    scanBasePackages = {
+        "uk.gov.hmcts.cmc",
+        "uk.gov.hmcts.reform.fees.client"
+    }
 )
 @SuppressWarnings({"HideUtilityClassConstructor", "squid:S1118"}) // Spring needs a constructor, its not a utility class
 @EnableFeignClients(basePackages =
     {"uk.gov.hmcts.cmc.claimstore",
         "uk.gov.hmcts.reform.authorisation",
+        "uk.gov.hmcts.reform.docassembly",
+        "uk.gov.hmcts.reform.document",
+        "uk.gov.hmcts.reform.fees.client",
         "uk.gov.hmcts.reform.sendletter",
         "uk.gov.hmcts.reform.ccd.client",
         "uk.gov.hmcts.reform.ccd.document.am"

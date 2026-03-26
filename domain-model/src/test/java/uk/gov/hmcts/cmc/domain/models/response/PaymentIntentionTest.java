@@ -1,5 +1,8 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
@@ -7,9 +10,6 @@ import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Set;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

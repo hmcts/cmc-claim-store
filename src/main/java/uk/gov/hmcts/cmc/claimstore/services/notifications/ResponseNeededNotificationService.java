@@ -55,7 +55,7 @@ public class ResponseNeededNotificationService {
         this.claimService = claimService;
     }
 
-    @Retryable(value = NotificationException.class, backoff = @Backoff(delay = 200))
+    @Retryable(retryFor = NotificationException.class, backoff = @Backoff(delay = 200))
     public void sendMail(JobDetail jobDetail) {
         JobDataMap jobData = jobDetail.getJobDataMap();
         String caseReference = (String) jobData.get("caseReference");

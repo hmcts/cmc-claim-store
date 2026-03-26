@@ -20,7 +20,6 @@ import uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ScannedDocument;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
 import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.ccd.document.am.model.DocumentUploadRequest;
@@ -71,8 +70,6 @@ public class SecuredDocumentManagementServiceTest {
     private ResponseEntity<Resource> responseEntity;
     @Mock
     private CaseDocumentClientApi caseDocumentClientApi;
-    @Mock
-    private CaseDocumentClient caseDocumentClient;
 
     @Before
     public void setUp() {
@@ -84,8 +81,7 @@ public class SecuredDocumentManagementServiceTest {
             userService,
             appInsights,
             USER_ROLES,
-            caseDocumentClientApi,
-            caseDocumentClient
+            caseDocumentClientApi
         );
     }
 
@@ -133,7 +129,7 @@ public class SecuredDocumentManagementServiceTest {
         assertDocumentDownloadSuccessful(pdf);
     }
 
-    @Test(expected = DocumentDownloadException.class)
+    @Test
     public void shouldDownloadScannedDocumentFromDocumentManagementWithNoResponseEntity() {
 
         URI docUri = setupDocumentDownloadClientNullResponseEntity();
@@ -143,7 +139,6 @@ public class SecuredDocumentManagementServiceTest {
             .build();
 
         byte[] pdf = securedDocumentManagementService.downloadScannedDocument("auth string", claimDocument);
-
         assertDocumentDownloadSuccessful(pdf);
     }
 
@@ -183,7 +178,7 @@ public class SecuredDocumentManagementServiceTest {
     }
 
     private URI setupDocumentDownloadClient() {
-        when(caseDocumentClient.getMetadataForDocument(anyString(), anyString(), anyString()))
+        when(caseDocumentClientApi.getMetadataForDocument(anyString(), anyString(), any(UUID.class)))
             .thenReturn(ResourceLoader.successfulDocumentManagementDownloadResponse());
         UserDetails userDetails = new UserDetails("id", "mail@mail.com",
             "userFirstName", "userLastName", Collections.singletonList("role"));
@@ -209,7 +204,7 @@ public class SecuredDocumentManagementServiceTest {
     }
 
     private URI setupDocumentDownloadClientNullResponseEntity() {
-        when(caseDocumentClient.getMetadataForDocument(anyString(), anyString(), anyString()))
+        when(caseDocumentClientApi.getMetadataForDocument(anyString(), anyString(), any(UUID.class)))
             .thenReturn(ResourceLoader.successfulDocumentManagementDownloadResponse());
         UserDetails userDetails = new UserDetails("id", "mail@mail.com",
             "userFirstName", "userLastName", Collections.singletonList("role"));
@@ -243,7 +238,7 @@ public class SecuredDocumentManagementServiceTest {
     }
 
     private URI setupDocumentDownloadClientNullRespEntity() {
-        when(caseDocumentClient.getMetadataForDocument(anyString(), anyString(), anyString()))
+        when(caseDocumentClientApi.getMetadataForDocument(anyString(), anyString(), any(UUID.class)))
             .thenReturn(ResourceLoader.successfulDocumentManagementDownloadResponse());
         UserDetails userDetails = new UserDetails("id", "mail@mail.com",
             "userFirstName", "userLastName", Collections.singletonList("role"));

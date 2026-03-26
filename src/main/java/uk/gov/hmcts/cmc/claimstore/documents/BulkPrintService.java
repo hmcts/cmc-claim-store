@@ -17,10 +17,10 @@ import uk.gov.hmcts.cmc.domain.models.bulkprint.BulkPrintDetails;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.reform.sendletter.api.Document;
-import uk.gov.hmcts.reform.sendletter.api.Letter;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
+import uk.gov.hmcts.reform.sendletter.api.model.v3.LetterV3;
 
 import java.time.LocalDate;
 import java.util.Base64;
@@ -80,7 +80,7 @@ public class BulkPrintService implements PrintService {
 
     @LogExecutionTime
     @Retryable(
-        value = RuntimeException.class,
+        retryFor = RuntimeException.class,
         backoff = @Backoff(delay = 200)
     )
     @Override
@@ -99,9 +99,11 @@ public class BulkPrintService implements PrintService {
 
         SendLetterResponse sendLetterResponse = sendLetterApi.sendLetter(
             authTokenGenerator.generate(),
-            new Letter(
-                docs,
+            new LetterV3(
                 XEROX_TYPE_PARAMETER,
+                docs.stream()
+                    .map(this::toV3Document)
+                    .collect(Collectors.toList()),
                 wrapInDetailsInMap(claim, letterType, personList)
             )
         );
@@ -134,7 +136,7 @@ public class BulkPrintService implements PrintService {
 
     @LogExecutionTime
     @Retryable(
-        value = RuntimeException.class,
+        retryFor = RuntimeException.class,
         backoff = @Backoff(delay = 200)
     )
     @Override
@@ -194,5 +196,9 @@ public class BulkPrintService implements PrintService {
 
         byte[] html = pdfServiceClient.generateFromHtml(document.template.getBytes(), document.values);
         return Base64.getEncoder().encodeToString(html);
+    }
+
+    private uk.gov.hmcts.reform.sendletter.api.model.v3.Document toV3Document(Document document) {
+        return new uk.gov.hmcts.reform.sendletter.api.model.v3.Document(readDocuments(document), 1);
     }
 }

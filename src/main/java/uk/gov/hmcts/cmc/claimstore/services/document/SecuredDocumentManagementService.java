@@ -21,7 +21,6 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ScannedDocument;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
 import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.ccd.document.am.model.DocumentUploadRequest;
@@ -55,7 +54,6 @@ public class SecuredDocumentManagementService {
     private final AppInsights appInsights;
     private final List<String> userRoles;
     private final CaseDocumentClientApi caseDocumentClientApi;
-    private final CaseDocumentClient caseDocumentClient;
 
     @Autowired
     public SecuredDocumentManagementService(
@@ -65,8 +63,7 @@ public class SecuredDocumentManagementService {
         UserService userService,
         AppInsights appInsights,
         @Value("${document_management.userRoles}") List<String> userRoles,
-        CaseDocumentClientApi caseDocumentClientApi,
-        CaseDocumentClient caseDocumentClient
+        CaseDocumentClientApi caseDocumentClientApi
     ) {
         this.documentMetadataDownloadClient = documentMetadataDownloadApi;
         this.documentDownloadClient = documentDownloadClientApi;
@@ -75,10 +72,9 @@ public class SecuredDocumentManagementService {
         this.appInsights = appInsights;
         this.userRoles = userRoles;
         this.caseDocumentClientApi = caseDocumentClientApi;
-        this.caseDocumentClient = caseDocumentClient;
     }
 
-    @Retryable(value = {DocumentManagementException.class}, maxAttempts = 5, backoff = @Backoff(delay = 500))
+    @Retryable(retryFor = {DocumentManagementException.class}, maxAttempts = 5, backoff = @Backoff(delay = 500))
     public ClaimDocument uploadDocument(String authorisation, PDF pdf) {
 
         String originalFileName = pdf.getFilename();
@@ -128,7 +124,7 @@ public class SecuredDocumentManagementService {
         return downloadDocumentByUrl(authorisation, scannedDocument.getDocumentManagementUrl());
     }
 
-    @Retryable(value = DocumentManagementException.class, backoff = @Backoff(delay = 200))
+    @Retryable(retryFor = DocumentManagementException.class, backoff = @Backoff(delay = 200))
     private byte[] downloadDocumentByUrl(String authorisation, URI documentManagementUrl) {
         log.info("Downloading document {}", documentManagementUrl.getPath());
         try {

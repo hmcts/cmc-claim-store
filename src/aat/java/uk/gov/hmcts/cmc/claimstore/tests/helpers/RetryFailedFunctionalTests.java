@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.tests.helpers;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class RetryFailedFunctionalTests implements TestRule {

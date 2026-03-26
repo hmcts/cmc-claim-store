@@ -1,6 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.services.pilotcourt;
 
 import feign.FeignException;
+import feign.codec.DecodeException;
+import jakarta.annotation.PostConstruct;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -22,7 +24,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
 
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 
@@ -142,9 +143,19 @@ public class PilotCourtService {
             try {
                 Optional<HearingCourt> pilotCourt = getCourt(postcode);
                 pilotCourts.put(id, new PilotCourt(id, postcode, pilotCourt.orElse(null), pilots));
-
+            } catch (DecodeException e) {
+                logger.warn("Failed to decode Court Finder API response for postcode {}: {}", postcode, e.getMessage());
+                logger.debug("Court Finder decode failure for postcode {}", postcode, e);
+                appInsights.trackEvent(AppInsightsEvent.COURT_FINDER_API_FAILURE, "Court postcode", postcode);
+                pilotCourts.put(id, new PilotCourt(id, postcode, null, pilots));
             } catch (FeignException e) {
-                logger.error("Failed to get address from Court Finder API", e);
+                logger.warn("Failed to get address from Court Finder API for postcode {}: {}", postcode, e.getMessage());
+                logger.debug("Court Finder client failure for postcode {}", postcode, e);
+                appInsights.trackEvent(AppInsightsEvent.COURT_FINDER_API_FAILURE, "Court postcode", postcode);
+                pilotCourts.put(id, new PilotCourt(id, postcode, null, pilots));
+            } catch (RuntimeException e) {
+                logger.warn("Failed to get address from Court Finder API for postcode {}: {}", postcode, e.getMessage());
+                logger.debug("Unexpected Court Finder failure for postcode {}", postcode, e);
                 appInsights.trackEvent(AppInsightsEvent.COURT_FINDER_API_FAILURE, "Court postcode", postcode);
                 pilotCourts.put(id, new PilotCourt(id, postcode, null, pilots));
             }

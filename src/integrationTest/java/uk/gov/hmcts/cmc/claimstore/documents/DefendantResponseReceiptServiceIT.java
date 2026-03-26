@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -62,10 +63,10 @@ public class DefendantResponseReceiptServiceIT extends BaseMockSpringTest {
 
         byte[] actualHtmlBytes = defendantResponseReceiptService.createHtml(claim);
 
-        String actualHtml = replaceTimestampsWithFixedValues(new String(actualHtmlBytes));
+        String actualHtml = replaceTimestampsWithFixedValues(new String(actualHtmlBytes, StandardCharsets.UTF_8));
 
         // Useful for debugging test ie diff comparison of actual with expected HTML file
-        write(get("build", "tmp", "actual.html"), actualHtml.getBytes());
+        write(get("build", "tmp", "actual.html"), actualHtml.getBytes(StandardCharsets.UTF_8));
 
         String expectedHtml = readString(of(
             "src/integrationTest/resources/documents/expectedDefendantResponseReceipt.html"));
@@ -99,10 +100,10 @@ public class DefendantResponseReceiptServiceIT extends BaseMockSpringTest {
 
         byte[] actualHtmlBytes = defendantResponseReceiptService.createHtml(claim);
 
-        String actualHtml = replaceTimestampsWithFixedValues(new String(actualHtmlBytes));
+        String actualHtml = replaceTimestampsWithFixedValues(new String(actualHtmlBytes, StandardCharsets.UTF_8));
 
         // Useful for debugging test ie diff comparison of actual with expected HTML file
-        write(get("build", "tmp", "actual.html"), actualHtml.getBytes());
+        write(get("build", "tmp", "actual.html"), actualHtml.getBytes(StandardCharsets.UTF_8));
 
         String expectedHtml = readString(of(
             "src/integrationTest/resources/documents/expectedDefendantResponseWithNoHearingSupportReceipt.html"));
@@ -118,8 +119,8 @@ public class DefendantResponseReceiptServiceIT extends BaseMockSpringTest {
                 byte[] template = (byte[]) args[0];
                 Map<String, Object> placeholders = (Map<String, Object>) args[1];
 
-                String output = htmlTemplateProcessor.process(new String(template), placeholders);
-                return output.getBytes();
+                String output = htmlTemplateProcessor.process(new String(template, StandardCharsets.UTF_8), placeholders);
+                return output.getBytes(StandardCharsets.UTF_8);
             });
 
         return pdfServiceClient;

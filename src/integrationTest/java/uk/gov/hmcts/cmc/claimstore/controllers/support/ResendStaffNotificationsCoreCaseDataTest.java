@@ -17,8 +17,8 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDet
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.sendletter.api.Letter;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
+import uk.gov.hmcts.reform.sendletter.api.model.v3.LetterV3;
 
 import java.util.Collections;
 import java.util.List;
@@ -102,7 +102,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseMockSpringTest
         givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetails());
         given(userService.generatePin(anyString(), eq(BEARER_TOKEN)))
             .willReturn(new GeneratePinResponse("pin-123", "333"));
-        given(sendLetterApi.sendLetter(anyString(), any(Letter.class)))
+        given(sendLetterApi.sendLetter(anyString(), any(LetterV3.class)))
             .willReturn(new SendLetterResponse(UUID.randomUUID()));
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);

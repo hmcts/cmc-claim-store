@@ -54,6 +54,8 @@ public class CmcDBConfiguration {
         Flyway.configure()
             .dataSource(dataSource)
             .locations("db/migration")
+            .baselineOnMigrate(true)
+            .baselineVersion("2018.06.06.1515")
             .load()
             .migrate();
     }
