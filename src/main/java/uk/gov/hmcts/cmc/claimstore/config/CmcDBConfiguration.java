@@ -56,6 +56,10 @@ public class CmcDBConfiguration {
             .locations("db/migration")
             .baselineOnMigrate(true)
             .baselineVersion("2022.05.26.1345")
+            .validateMigrationNaming(true)
+            .cleanDisabled(true)
+            .outOfOrder(false)
+            .validateOnMigrate(false)
             .load()
             .migrate();
     }
