@@ -279,7 +279,7 @@ dependencies {
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '8.0.0'
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: '6.1.9'
   implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '8.0'
-  implementation group: 'com.microsoft.azure', name: 'applicationinsights-web', version: '2.6.4'
+  implementation group: 'com.microsoft.azure', name: 'applicationinsights-core', version: '3.7.7'
 
   implementation('com.github.hmcts:pdf-service-client:8.0.2') {
     exclude group: 'java-logging', module: 'java-logging'
