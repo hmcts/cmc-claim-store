@@ -204,7 +204,7 @@ allprojects {
         entry 'log4j-core'
       }
 
-      dependencySet(group: 'org.apache.tomcat.embed', version: '10.1.52') {
+      dependencySet(group: 'org.apache.tomcat.embed', version: '11.0.20') {
         entry 'tomcat-embed-core'
         entry 'tomcat-embed-websocket'
         entry 'tomcat-embed-el'
