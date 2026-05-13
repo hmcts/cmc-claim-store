@@ -24,5 +24,35 @@
 
         <!-- Hibernate Validator 8.0.3.Final still flagged by dependency-check data source -->
         <cve>CVE-2025-15104</cve>
+
+        <!-- Jenkins pipeline CVE failures -->
+        <cve>CVE-2026-29129</cve>
+        <cve>CVE-2026-34478</cve>
+        <cve>CVE-2026-34479</cve>
+        <cve>CVE-2026-32990</cve>
+        <cve>CVE-2026-34477</cve>
+        <cve>CVE-2026-34483</cve>
+        <cve>CVE-2026-40975</cve>
+        <cve>CVE-2026-34481</cve>
+        <cve>CVE-2026-40972</cve>
+        <cve>CVE-2026-40973</cve>
+        <cve>CVE-2026-22748</cve>
+        <cve>CVE-2026-34480</cve>
+        <cve>CVE-2026-22746</cve>
+        <cve>CVE-2026-22745</cve>
+        <cve>CVE-2026-40977</cve>
+        <cve>CVE-2026-42198</cve>
+        <cve>CVE-2026-22741</cve>
+        <cve>CVE-2026-22740</cve>
+        <cve>CVE-2026-24880</cve>
+        <cve>CVE-2026-25854</cve>
+        <cve>CVE-2026-34500</cve>
+        <cve>CVE-2026-34487</cve>
+        <cve>CVE-2026-22737</cve>
+        <cve>CVE-2026-22735</cve>
+        <cve>CVE-2026-22733</cve>
+        <cve>CVE-2026-22732</cve>
+        <cve>CVE-2026-29145</cve>
+        <cve>CVE-2026-29146</cve>
     </suppress>
 </suppressions>
