@@ -62,6 +62,7 @@ public class SecurityConfiguration {
         "/deadline/**",
         "/interest/**",
         "/court-finder/**",
+        "/cases/callbacks/**",
         "/testing-support/**",
         "/user/roles/**",
         "/claims/*/defendant-link-status",
