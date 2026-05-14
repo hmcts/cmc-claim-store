@@ -58,6 +58,7 @@ public class SecurityConfiguration {
         "/health/readiness",
         "/status/health",
         "/",
+        "/support/**",
         "/calendar/**",
         "/deadline/**",
         "/interest/**",

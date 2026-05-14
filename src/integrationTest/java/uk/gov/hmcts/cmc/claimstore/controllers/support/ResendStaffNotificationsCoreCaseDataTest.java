@@ -250,6 +250,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseMockSpringTest
     private ResultActions makeRequest(String referenceNumber, String event) throws Exception {
         return webClient
             .perform(put("/support/claim/" + referenceNumber + "/event/" + event + "/resend-staff-notifications")
-                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN));
+                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
+                .header("ServiceAuthorization", SERVICE_TOKEN));
     }
 }
