@@ -26,7 +26,6 @@ public class S2sAuthFilter extends OncePerRequestFilter {
     private final List<String> allowedServices;
     private final RequestMatcher protectedEndpoints = new OrRequestMatcher(
         new AntPathRequestMatcher("/support/**"),
-        new AntPathRequestMatcher("/cases/callbacks/**"),
         new AntPathRequestMatcher("/testing-support/**"),
         new AntPathRequestMatcher("/loggers/**")
     );
