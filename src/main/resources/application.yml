@@ -91,6 +91,7 @@ idam:
     url: "http://localhost:4552"
     totp_secret: "AAAAAAAAAAAAAAAA"
     microservice: "cmc_claim_store"
+    services-allowed: "payment_app,ccd_data,civil_service,civil-citizen-ui"
   user:
     token:
       cache:
