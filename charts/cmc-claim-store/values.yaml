@@ -91,6 +91,7 @@ java:
     SCHEDULE_STATE_TRANSITION_WAITING_TRANSFER: '0 0 16 ? * MON-FRI *'
     CLAIM_STAYED_SCHEDULE: ''
     ASYNC_MAX_THREADPOOL_SIZE: 50
+    S2S_SERVICES_ALLOWED: payment_app,ccd_definition,ccd_admin,ccd_data,cmc_claim_store,civil-citizen-ui,xui_webapp,xuiwebapp
     IDAM_S2S_AUTH_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     IDAM_S2S_AUTH_SERVICES_ALLOWED: ccd_data
     IDAM_API_URL: https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net
