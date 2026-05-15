@@ -17,7 +17,11 @@ import org.springframework.security.oauth2.jwt.JwtIssuerValidator;
 import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
+import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import uk.gov.hmcts.cmc.claimstore.security.JwtGrantedAuthoritiesConverter;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
@@ -85,10 +89,23 @@ public class SecurityConfiguration {
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2
+                .bearerTokenResolver(callbackSkippingBearerTokenResolver())
                 .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter))
             )
             .oauth2Client(Customizer.withDefaults());
         return http.build();
+    }
+
+    // CCD forwards the originating user JWT on callbacks. That token's `iss` is the
+    // idam-web-public host, while this service validates against the ForgeRock-AM host
+    // (oidc.issuer), so BearerTokenAuthenticationFilter rejects it as invalid before
+    // permitAll() is consulted. Skipping token resolution on the callback path lets the
+    // request through; S2sAuthFilter remains the auth check for /cases/callbacks/**.
+    @Bean
+    public BearerTokenResolver callbackSkippingBearerTokenResolver() {
+        DefaultBearerTokenResolver delegate = new DefaultBearerTokenResolver();
+        RequestMatcher callbackPaths = new AntPathRequestMatcher("/cases/callbacks/**");
+        return request -> callbackPaths.matches(request) ? null : delegate.resolve(request);
     }
 
     @Bean
