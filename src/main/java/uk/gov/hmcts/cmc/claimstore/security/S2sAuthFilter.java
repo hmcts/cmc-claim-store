@@ -59,19 +59,16 @@ public class S2sAuthFilter extends OncePerRequestFilter {
         }
 
         try {
-            authTokenValidator.validate(token);
-            if (!allowedServices.isEmpty()) {
-                String serviceName = authTokenValidator.getServiceName(token);
-                if (!allowedServices.contains(serviceName)) {
-                    LOG.debug(
-                        "service forbidden {} for endpoint: {} method: {}",
-                        serviceName,
-                        request.getRequestURI(),
-                        request.getMethod()
-                    );
-                    response.setStatus(HttpStatus.FORBIDDEN.value());
-                    return;
-                }
+            String serviceName = authTokenValidator.getServiceName(token);
+            if (!allowedServices.contains(serviceName)) {
+                LOG.debug(
+                    "service forbidden {} for endpoint: {} method: {}",
+                    serviceName,
+                    request.getRequestURI(),
+                    request.getMethod()
+                );
+                response.setStatus(HttpStatus.FORBIDDEN.value());
+                return;
             }
         } catch (InvalidTokenException | ServiceException ex) {
             LOG.warn("Unsuccessful service authentication", ex);
