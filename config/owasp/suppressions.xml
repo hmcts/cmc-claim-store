@@ -58,5 +58,11 @@
         <cve>CVE-2026-43514</cve>
         <cve>CVE-2026-41284</cve>
         <cve>CVE-2026-42498</cve>
+
+        <!-- Tomcat 10.1.52 (Spring Boot 3.x) — fixed in 10.1.55; remove once Boot bumps -->
+        <cve>CVE-2026-41293</cve>
+        <cve>CVE-2026-43512</cve>
+        <cve>CVE-2026-43513</cve>
+        <cve>CVE-2026-43515</cve>
     </suppress>
 </suppressions>
