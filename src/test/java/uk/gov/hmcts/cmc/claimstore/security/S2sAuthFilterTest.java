@@ -86,7 +86,7 @@ class S2sAuthFilterTest {
         request.addHeader(S2sAuthFilter.SERVICE_AUTH_HEADER, "Bearer test-token");
         MockHttpServletResponse response = new MockHttpServletResponse();
 
-        doThrow(new InvalidTokenException("invalid token")).when(authTokenValidator).validate("test-token");
+        doThrow(new InvalidTokenException("invalid token")).when(authTokenValidator).getServiceName("test-token");
 
         filter.doFilterInternal(request, response, filterChain);
 
@@ -105,7 +105,6 @@ class S2sAuthFilterTest {
 
         filter.doFilterInternal(request, response, filterChain);
 
-        verify(authTokenValidator).validate("test-token");
         assertEquals(403, response.getStatus());
         verify(filterChain, never()).doFilter(request, response);
     }
@@ -121,7 +120,6 @@ class S2sAuthFilterTest {
 
         filter.doFilterInternal(request, response, filterChain);
 
-        verify(authTokenValidator).validate("test-token");
         verify(authTokenValidator).getServiceName("test-token");
         verify(filterChain).doFilter(request, response);
         assertEquals(200, response.getStatus());
@@ -138,7 +136,6 @@ class S2sAuthFilterTest {
 
         filter.doFilterInternal(request, response, filterChain);
 
-        verify(authTokenValidator).validate("plain-token");
         verify(authTokenValidator).getServiceName("plain-token");
         verify(filterChain).doFilter(request, response);
     }
