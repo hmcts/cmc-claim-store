@@ -83,10 +83,10 @@ public class S2sAuthFilter extends OncePerRequestFilter {
         if (header == null || header.isBlank()) {
             return null;
         }
+        // The auth provider's /details endpoint expects the "Bearer " prefix on the
+        // Authorization header forwarded by the Feign client. Match the library's
+        // ServiceAuthFilter, which prepends "Bearer " when absent.
         String bearerPrefix = "Bearer ";
-        if (header.startsWith(bearerPrefix)) {
-            return header.substring(bearerPrefix.length());
-        }
-        return header;
+        return header.startsWith(bearerPrefix) ? header : bearerPrefix + header;
     }
 }
