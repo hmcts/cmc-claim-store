@@ -86,7 +86,7 @@ class S2sAuthFilterTest {
         request.addHeader(S2sAuthFilter.SERVICE_AUTH_HEADER, "Bearer test-token");
         MockHttpServletResponse response = new MockHttpServletResponse();
 
-        doThrow(new InvalidTokenException("invalid token")).when(authTokenValidator).getServiceName("test-token");
+        doThrow(new InvalidTokenException("invalid token")).when(authTokenValidator).getServiceName("Bearer test-token");
 
         filter.doFilterInternal(request, response, filterChain);
 
@@ -101,7 +101,7 @@ class S2sAuthFilterTest {
         request.addHeader(S2sAuthFilter.SERVICE_AUTH_HEADER, "Bearer test-token");
         MockHttpServletResponse response = new MockHttpServletResponse();
 
-        when(authTokenValidator.getServiceName("test-token")).thenReturn("bulk_scan");
+        when(authTokenValidator.getServiceName("Bearer test-token")).thenReturn("bulk_scan");
 
         filter.doFilterInternal(request, response, filterChain);
 
@@ -116,11 +116,11 @@ class S2sAuthFilterTest {
         request.addHeader(S2sAuthFilter.SERVICE_AUTH_HEADER, "Bearer test-token");
         MockHttpServletResponse response = new MockHttpServletResponse();
 
-        when(authTokenValidator.getServiceName("test-token")).thenReturn("cmc");
+        when(authTokenValidator.getServiceName("Bearer test-token")).thenReturn("cmc");
 
         filter.doFilterInternal(request, response, filterChain);
 
-        verify(authTokenValidator).getServiceName("test-token");
+        verify(authTokenValidator).getServiceName("Bearer test-token");
         verify(filterChain).doFilter(request, response);
         assertEquals(200, response.getStatus());
     }
@@ -132,11 +132,11 @@ class S2sAuthFilterTest {
         request.addHeader(S2sAuthFilter.SERVICE_AUTH_HEADER, "plain-token");
         MockHttpServletResponse response = new MockHttpServletResponse();
 
-        when(authTokenValidator.getServiceName("plain-token")).thenReturn("cmc");
+        when(authTokenValidator.getServiceName("Bearer plain-token")).thenReturn("cmc");
 
         filter.doFilterInternal(request, response, filterChain);
 
-        verify(authTokenValidator).getServiceName("plain-token");
+        verify(authTokenValidator).getServiceName("Bearer plain-token");
         verify(filterChain).doFilter(request, response);
     }
 }
