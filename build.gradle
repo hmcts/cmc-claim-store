@@ -176,7 +176,7 @@ allprojects {
 
       dependencySet(
         group: 'org.hibernate.validator',
-        version: '8.0.3.Final'
+        version: '9.1.0.Final'
       ) {
         entry 'hibernate-validator'
       }
@@ -230,7 +230,7 @@ configurations {
 configurations.all {
   exclude group: 'com.vaadin.external.google', module: 'android-json'
   resolutionStrategy {
-    force 'org.hibernate.validator:hibernate-validator:8.0.3.Final'
+    force 'org.hibernate.validator:hibernate-validator:9.1.0.Final'
     force 'org.apache.logging.log4j:log4j-api:2.25.3'
     force 'org.apache.logging.log4j:log4j-core:2.25.3'
     force 'org.eclipse.angus:angus-activation:2.0.3'
