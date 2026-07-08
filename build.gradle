@@ -37,7 +37,7 @@ def versions = [
   junit             : '5.10.2',
   junitPlatform     : '1.10.2',
   pact_version    : '4.1.7',
-  serviceAuthVersion : '5.3.3',
+  serviceAuthVersion : '6.0.0',
   idamJavaClient : '4.0.0',
   elasticSearch     : '7.17.20',
   lombok            : '1.18.34'
