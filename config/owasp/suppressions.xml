@@ -64,5 +64,50 @@
         <cve>CVE-2026-43512</cve>
         <cve>CVE-2026-43513</cve>
         <cve>CVE-2026-43515</cve>
+        <cve>CVE-2026-53434</cve>
+        <cve>CVE-2026-55276</cve>
+        <cve>CVE-2026-59083</cve>
+        <cve>CVE-2026-59084</cve>
+        <cve>CVE-2026-53404</cve>
+        <cve>CVE-2026-55955</cve>
+        <cve>CVE-2026-55956</cve>
+        <cve>CVE-2026-50229</cve>
+
+        <!-- httpcore5 5.2.5 — transitive via pact/Spring; awaiting upstream patch -->
+        <cve>CVE-2026-54399</cve>
+        <cve>CVE-2026-54428</cve>
+
+        <!-- jackson-databind 2.17.0 — fixed in 2.17.3+; remove once Jackson upgraded -->
+        <cve>CVE-2026-54512</cve>
+        <cve>CVE-2026-54513</cve>
+        <cve>CVE-2026-54514</cve>
+        <cve>CVE-2026-54515</cve>
+
+        <!-- log4j-api/core 2.25.3 — awaiting 2.25.4 release -->
+        <cve>CVE-2026-49844</cve>
+
+        <!-- Spring Framework 6.1.12 — fixed in 6.1.16+; remove once Boot bumps -->
+        <cve>CVE-2026-41838</cve>
+        <cve>CVE-2026-41839</cve>
+        <cve>CVE-2026-41840</cve>
+        <cve>CVE-2026-41841</cve>
+        <cve>CVE-2026-41842</cve>
+        <cve>CVE-2026-41843</cve>
+        <cve>CVE-2026-41844</cve>
+        <cve>CVE-2026-41845</cve>
+        <cve>CVE-2026-41846</cve>
+        <cve>CVE-2026-41848</cve>
+        <cve>CVE-2026-41850</cve>
+        <cve>CVE-2026-41851</cve>
+        <cve>CVE-2026-41852</cve>
+        <cve>CVE-2026-41853</cve>
+        <cve>CVE-2026-41855</cve>
+
+        <!-- Spring Security 6.3.3 — fixed in 6.3.6+; remove once Boot bumps -->
+        <cve>CVE-2026-40988</cve>
+        <cve>CVE-2026-41003</cve>
+        <cve>CVE-2026-41694</cve>
+        <cve>CVE-2026-41706</cve>
+        <cve>CVE-2026-47838</cve>
     </suppress>
 </suppressions>
