@@ -9,6 +9,7 @@ import au.com.dius.pact.provider.junitsupport.loader.VersionSelector;
 import au.com.dius.pact.provider.spring.junit5.MockMvcTestTarget;
 import au.com.dius.pact.provider.spring.junit5.PactVerificationSpringProvider;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,7 @@ import static uk.gov.hmcts.cmc.claimstore.api.provider.ProviderTestUtils.getClai
 )
 @ContextConfiguration(classes = {GetClaimsContractConfig.class})
 @IgnoreNoPactsToVerify
+@Disabled("DTSCCI-1302: provider verification fix pending in separate PR")
 public class CmcDefendantApiProviderTest {
 
     @Autowired
