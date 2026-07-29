@@ -11,7 +11,7 @@ plugins {
   id 'com.github.ben-manes.versions' version '0.51.0'
   id 'jacoco'
   id 'idea'
-  id 'au.com.dius.pact' version '4.6.5'
+  id 'au.com.dius.pact' version '4.6.17'
 }
 
 dependencyUpdates.resolutionStrategy = {
@@ -36,7 +36,7 @@ def versions = [
   jackson           : '2.17.0',
   junit             : '5.10.2',
   junitPlatform     : '1.10.2',
-  pact_version    : '4.1.7',
+  pact_version    : '4.6.17',
   serviceAuthVersion : '5.3.3',
   idamJavaClient : '4.0.0',
   elasticSearch     : '7.17.20',
@@ -234,6 +234,9 @@ configurations.all {
     force 'org.apache.logging.log4j:log4j-api:2.25.3'
     force 'org.apache.logging.log4j:log4j-core:2.25.3'
     force 'org.eclipse.angus:angus-activation:2.0.3'
+    dependencySubstitution {
+      substitute module('org.apache.commons:commons-io') using module('commons-io:commons-io:2.14.0')
+    }
   }
 }
 
@@ -366,9 +369,7 @@ dependencies {
   integrationTestImplementation sourceSets.test.runtimeClasspath
 
   contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
-  contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pact_version
   contractTestRuntimeOnly group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
-  contractTestRuntimeOnly group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pact_version
   contractTestImplementation group: 'org.modelmapper', name: 'modelmapper', version: '2.3.7'
 
   contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: versions.pact_version
@@ -411,6 +412,7 @@ tasks.register('runProviderPactVerification', Test) {
   classpath = sourceSets.contractTest.runtimeClasspath
   systemProperty 'pact.verifier.publishResults', System.getProperty('pact.verifier.publishResults')
   systemProperty 'pact.provider.version', project.pactVersion
+  systemProperty 'pact.provider.branch', System.getenv("PACT_BRANCH_NAME") ?: 'master'
 }
 
 runProviderPactVerification.finalizedBy pactVerify
@@ -418,8 +420,9 @@ runProviderPactVerification.finalizedBy pactVerify
 pact {
   publish {
     pactDirectory = 'pacts'
-    pactBrokerUrl = System.getenv("PACT_BROKER_URL") ?: 'http://localhost:80'
-    tags = [System.getenv("PACT_BRANCH_NAME") ?:'Dev']
+    pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: System.getenv("PACT_BROKER_URL") ?: 'http://localhost:80'
+    tags = [System.getenv("PACT_BRANCH_NAME") ?: 'master']
+    consumerBranch = System.getenv("PACT_BRANCH_NAME") ?: 'master'
     version = project.pactVersion
   }
 }
