@@ -27,6 +27,7 @@ import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 public class ProviderTestUtils {
@@ -78,11 +79,11 @@ public class ProviderTestUtils {
                 .responseMethod(ResponseMethod.OFFLINE)
                 .build())
             .moneyReceivedOn(LocalDate.now())
-            .countyCourtJudgmentRequestedAt(LocalDateTime.now())
-            .createdAt(LocalDateTime.now())
-            .reDeterminationRequestedAt(LocalDateTime.now())
+            .countyCourtJudgmentRequestedAt(LocalDateTime.now().truncatedTo(ChronoUnit.MICROS))
+            .createdAt(LocalDateTime.now().truncatedTo(ChronoUnit.MICROS))
+            .reDeterminationRequestedAt(LocalDateTime.now().truncatedTo(ChronoUnit.MICROS))
             .intentionToProceedDeadline(LocalDate.now())
-            .claimantRespondedAt(LocalDateTime.now())
+            .claimantRespondedAt(LocalDateTime.now().truncatedTo(ChronoUnit.MICROS))
             .claimantResponse(ResponseAcceptation.builder()
                 .amountPaid(new BigDecimal(30))
                 .paymentReceived(YesNoOption.YES)

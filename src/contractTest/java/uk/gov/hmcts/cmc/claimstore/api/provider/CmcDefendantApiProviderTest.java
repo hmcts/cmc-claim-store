@@ -5,16 +5,23 @@ import au.com.dius.pact.provider.junitsupport.IgnoreNoPactsToVerify;
 import au.com.dius.pact.provider.junitsupport.Provider;
 import au.com.dius.pact.provider.junitsupport.State;
 import au.com.dius.pact.provider.junitsupport.loader.PactBroker;
-import au.com.dius.pact.provider.junitsupport.loader.VersionSelector;
+import au.com.dius.pact.provider.junitsupport.loader.PactBrokerConsumerVersionSelectors;
+import au.com.dius.pact.provider.junitsupport.loader.SelectorBuilder;
 import au.com.dius.pact.provider.spring.junit5.MockMvcTestTarget;
 import au.com.dius.pact.provider.spring.junit5.PactVerificationSpringProvider;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import uk.gov.hmcts.cmc.claimstore.controllers.ClaimController;
 import uk.gov.hmcts.cmc.claimstore.models.idam.UserInfo;
 import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi;
@@ -30,14 +37,12 @@ import static uk.gov.hmcts.cmc.claimstore.api.provider.ProviderTestUtils.getClai
 
 @ExtendWith(SpringExtension.class)
 @Provider("cmc_defendant")
-@PactBroker(scheme = "${PACT_BROKER_SCHEME:http}",
-    host = "${PACT_BROKER_URL:localhost}",
-    port = "${PACT_BROKER_PORT:80}",
-    consumerVersionSelectors = {@VersionSelector(tag = "master")}
+@PactBroker(
+    url = "${PACT_BROKER_FULL_URL:http://localhost:80}",
+    providerBranch = "${pact.provider.branch:master}"
 )
 @ContextConfiguration(classes = {GetClaimsContractConfig.class})
 @IgnoreNoPactsToVerify
-@Disabled("DTSCCI-1302: provider verification fix pending in separate PR")
 public class CmcDefendantApiProviderTest {
 
     @Autowired
@@ -49,6 +54,14 @@ public class CmcDefendantApiProviderTest {
     @Autowired
     private ClaimController claimController;
 
+    @PactBrokerConsumerVersionSelectors
+    public static SelectorBuilder consumerVersionSelectors() {
+        return new SelectorBuilder()
+            .matchingBranch()
+            .mainBranch()
+            .deployedOrReleased();
+    }
+
     @TestTemplate
     @ExtendWith(PactVerificationSpringProvider.class)
     void pactVerificationTestTemplate(PactVerificationContext context) {
@@ -59,9 +72,22 @@ public class CmcDefendantApiProviderTest {
 
     @BeforeEach
     void before(PactVerificationContext context) {
-        MockMvcTestTarget testTarget = new MockMvcTestTarget();
         System.getProperties().setProperty("pact.verifier.publishResults", "true");
-        testTarget.setControllers(claimController);
+
+        ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule())
+            .registerModule(new Jdk8Module())
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter(objectMapper);
+
+        MockMvc mockMvc = MockMvcBuilders
+            .standaloneSetup(claimController)
+            .setMessageConverters(converter)
+            .build();
+
+        MockMvcTestTarget testTarget = new MockMvcTestTarget();
+        testTarget.setMockMvc(mockMvc);
         if (context != null) {
             context.setTarget(testTarget);
         }
