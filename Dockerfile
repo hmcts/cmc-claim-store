@@ -3,7 +3,7 @@ ARG APP_INSIGHTS_AGENT_VERSION=3.4.12
 
 # Application image
 
-FROM hmctsprod.azurecr.io/base/java:21-distroless
+FROM hmctsprod.azurecr.io/base/java:25-distroless
 
 USER hmcts
 LABEL maintainer="https://github.com/hmcts/cmc-claim-store"
