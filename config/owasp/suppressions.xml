@@ -7,4 +7,16 @@
         <!-- Commons FileUpload 1.6.0 still vulnerable until 1.6.1 released -->
         <cve>CVE-2025-48976</cve>
     </suppress>
+
+    <!-- False positive: CVE-2025-7962 affects angus-mail SMTP, not angus-activation -->
+    <suppress>
+        <packageUrl regex="true">^pkg:maven/org\.eclipse\.angus/angus\-activation@.*$</packageUrl>
+        <cve>CVE-2025-7962</cve>
+    </suppress>
+
+    <!-- False positive: CVE-2025-15104 affects Nu Html Checker (validator.nu), not Hibernate Validator -->
+    <suppress>
+        <packageUrl regex="true">^pkg:maven/org\.hibernate\.validator/hibernate\-validator@.*$</packageUrl>
+        <cve>CVE-2025-15104</cve>
+    </suppress>
 </suppressions>

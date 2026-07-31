@@ -54,6 +54,8 @@ allprojects {
   group 'uk.gov.hmcts.cmc'
   version '1.1.0'
 
+  ext['jackson-bom.version'] = '2.21.5'
+
   java {
     toolchain {
       languageVersion = JavaLanguageVersion.of(21)
@@ -249,7 +251,7 @@ dependencies {
   implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.5.0'
 
   implementation group: 'org.elasticsearch', name: 'elasticsearch', version: versions.elasticSearch
-  implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.2'
+  implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.13'
 
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.0.1-RELEASE'
 
@@ -284,7 +286,7 @@ dependencies {
   implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.37.3'
   implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
 
-  implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.18.0'
+  implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.20.0'
   implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.8'
 
   implementation group: 'org.jdbi', name: 'jdbi', version: '2.78'

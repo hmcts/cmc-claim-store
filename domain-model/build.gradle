@@ -9,7 +9,7 @@ repositories {
 
 dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
-  implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.18.0'
+  implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.20.0'
 
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
   implementation group: 'jakarta.validation', name: 'jakarta.validation-api', version: '3.0.2'
