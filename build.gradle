@@ -589,9 +589,11 @@ tasks.register('checkStyle') { dependsOn[checkstyleMain, checkstyleAat, checksty
 
 idea {
   module {
-    testSourceDirs += project.sourceSets.integrationTest.java.srcDirs
-    testSourceDirs += project.sourceSets.integrationTest.resources.srcDirs
-    testSourceDirs += project.sourceSets.aat.java.srcDirs
-    testSourceDirs += project.sourceSets.aat.resources.srcDirs
+    testSources.from(
+      sourceSets.integrationTest.java.srcDirs,
+      sourceSets.integrationTest.resources.srcDirs,
+      sourceSets.aat.java.srcDirs,
+      sourceSets.aat.resources.srcDirs
+    )
   }
 }
