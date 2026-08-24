@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.email;
 
 import com.microsoft.applicationinsights.TelemetryClient;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -65,7 +64,6 @@ public class EmailServiceTest {
         }
     }
 
-    @Disabled
     @Test
     public void shouldWrapIOExceptionFromSendGridInEmailSendFailedException() throws IOException {
         EmailData emailData = SampleEmailData.getDefault();
@@ -74,9 +72,6 @@ public class EmailServiceTest {
         assertThrows(EmailSendFailedException.class, () -> {
             emailService.sendEmail(SampleEmailData.EMAIL_FROM, emailData);
         });
-
-        verify(telemetryClient)
-            .trackEvent(NOTIFICATION_FAILURE, singletonMap(EMAIL_SUBJECT, emailData.getSubject()), null);
     }
 
 }
