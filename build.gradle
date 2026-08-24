@@ -1,5 +1,3 @@
-import java.util.stream.Collectors
-
 plugins {
   id 'application'
   id 'uk.gov.hmcts.java' version '0.12.43'
@@ -481,10 +479,9 @@ test.shouldRunAfter(checkstyleMain, checkstyleAat, checkstyleTest, checkstyleInt
 apiTest.shouldRunAfter(test, checkstyleMain, checkstyleAat, checkstyleTest, checkstyleIntegrationTest)
 
 def listFiles(String pattern) {
-  return new FileNameFinder()
-    .getFileNames("${project.rootDir}", pattern)
-    .stream()
-    .collect(Collectors.joining(","))
+  return fileTree(project.rootDir) {
+    include pattern
+  }.files.collect { it.absolutePath }.join(",")
 }
 
 sonarqube {
