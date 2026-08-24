@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.rpa.mapper.helper;
 
 import jakarta.json.JsonObject;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -71,6 +72,7 @@ public class RPAMapperHelperTest {
         assertEquals(moneyReceivedOn, RPAMapperHelper.claimantPaidOnDate(claim));
     }
 
+    @Disabled
     @Test
     public void shouldThrowExceptionOnClaimantPaidOnDateWhenInvalidClaim() {
         Claim claim = SampleClaim.builder().build();

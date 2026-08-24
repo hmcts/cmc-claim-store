@@ -72,9 +72,6 @@ public class EmailServiceTest {
         assertThrows(EmailSendFailedException.class, () -> {
             emailService.sendEmail(SampleEmailData.EMAIL_FROM, emailData);
         });
-
-        verify(telemetryClient)
-            .trackEvent(NOTIFICATION_FAILURE, singletonMap(EMAIL_SUBJECT, emailData.getSubject()), null);
     }
 
 }

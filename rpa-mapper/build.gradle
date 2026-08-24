@@ -16,3 +16,7 @@ dependencies {
   testImplementation project(':domain-sample-data')
   testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api'
 }
+
+test {
+  useJUnitPlatform()
+}
