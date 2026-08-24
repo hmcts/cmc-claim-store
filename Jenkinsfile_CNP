@@ -1,7 +1,7 @@
 #!groovy
 import uk.gov.hmcts.contino.AppPipelineDsl
 
-@Library("Infrastructure")
+@Library("Infrastructure@2.5.0")
 
 def product = "cmc"
 def component = "claim-store"
