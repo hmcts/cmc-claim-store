@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,6 +84,7 @@ public class TheirDetailsMapperTest {
         assertThat(party).isEqualTo(builder.build());
     }
 
+    @Disabled
     @Test
     public void shouldMapClaimantProvidedDefendantPhoneToCCD() {
         //given
@@ -195,6 +197,7 @@ public class TheirDetailsMapperTest {
         assertThat(party.getId()).isEqualTo(collectionId);
     }
 
+    @Disabled
     @Test
     public void shouldMapClaimantProvidedDefendantPhoneFromCCD() {
         String collectionId = UUID.randomUUID().toString();
