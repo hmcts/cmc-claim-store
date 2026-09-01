@@ -9,4 +9,7 @@
 package.json
 yarn.lock
 charts/**/Chart.yaml
+infrastructure/.terraform-version
+infrastructure/state.tf
 .github/workflows/*.yaml
+.github/workflows/*.yml
