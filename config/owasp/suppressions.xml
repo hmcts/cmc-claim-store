@@ -19,4 +19,18 @@
         <packageUrl regex="true">^pkg:maven/org\.hibernate\.validator/hibernate\-validator@.*$</packageUrl>
         <cve>CVE-2025-15104</cve>
     </suppress>
+    <!-- Temporary suppression: Spring Framework 6.2.19 CVEs are fixed by Spring Framework 6.2.20, but the corresponding Spring Boot 3.5.17 plugin is not resolvable from the configured repositories yet. Remove once a patched Boot/Framework version is available to this build. -->
+    <suppress>
+        <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-(aop|beans|context|context\-support|core|expression|jcl|jdbc|tx)@6\.2\.19$</packageUrl>
+        <cve>CVE-2026-47890</cve>
+        <cve>CVE-2026-47891</cve>
+        <cve>CVE-2026-47892</cve>
+        <cve>CVE-2026-47893</cve>
+        <cve>CVE-2026-59280</cve>
+        <cve>CVE-2026-59281</cve>
+        <cve>CVE-2026-59282</cve>
+        <cve>CVE-2026-59283</cve>
+        <cve>CVE-2026-59313</cve>
+        <cve>CVE-2026-59314</cve>
+    </suppress>
 </suppressions>
