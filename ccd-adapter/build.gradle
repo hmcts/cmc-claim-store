@@ -6,14 +6,14 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
   implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.20.0'
-  implementation group: 'com.google.guava', name: 'guava', version: '33.1.0-jre'
+  implementation group: 'com.google.guava', name: 'guava', version: '33.7.1-jre'
 
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.34'
-  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.34'
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.48'
+  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.48'
 
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
   testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api'
-  testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.25.3'
+  testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.27.7'
   testImplementation project(':domain-sample-data')
   testImplementation project(':ccd-sample-data')
 }
