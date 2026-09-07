@@ -187,6 +187,11 @@ allprojects {
 
       dependency group: 'commons-fileupload', name: 'commons-fileupload', version: '1.6.0'
       dependency group: 'org.apache.commons', name: 'commons-io', version: '2.22.0'
+
+      // springdoc 2.8.17 pulls swagger-ui 5.32.2, which still bundles a vulnerable DOMPurify (3.3.2).
+      // Pin the webjar to the latest release so the bundled DOMPurify clears CVE-2026-41238/41239/41240
+      // and the related 2026-* swagger-ui/DOMPurify CVEs.
+      dependency group: 'org.webjars', name: 'swagger-ui', version: '5.32.14'
     }
   }
 
@@ -247,7 +252,7 @@ dependencies {
 
   implementation group: 'commons-io', name: 'commons-io', version: '2.22.0'
 
-  implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.5.0'
+  implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.8.17'
 
   implementation group: 'org.elasticsearch', name: 'elasticsearch', version: versions.elasticSearch
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.13'
@@ -320,7 +325,7 @@ dependencies {
 
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
   testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock'
-  fortify group: 'com.github.hmcts', name: 'fortify-client', version: '1.2.2', classifier: 'all'
+  fortify group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.10', classifier: 'all'
 
   testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api'
   testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine'
