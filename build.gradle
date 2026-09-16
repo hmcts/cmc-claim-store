@@ -4,7 +4,7 @@ plugins {
   id 'checkstyle'
   id 'io.spring.dependency-management' version '1.1.7'
   id 'org.springframework.boot' version '3.5.16'
-  id 'org.owasp.dependencycheck' version '12.1.0'
+  id 'org.owasp.dependencycheck' version '13.0.0'
   id 'org.sonarqube' version '7.0.0.6105'
   id 'com.github.ben-manes.versions' version '0.51.0'
   id 'jacoco'
