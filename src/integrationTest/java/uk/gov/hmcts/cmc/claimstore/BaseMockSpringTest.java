@@ -9,9 +9,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.quartz.Scheduler;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
@@ -111,67 +111,67 @@ public abstract class BaseMockSpringTest {
     @Autowired
     protected MockMvc webClient;
 
-    @MockBean
+    @MockitoBean
     protected OrderDrawnNotificationService orderDrawnNotificationService;
-    @MockBean
+    @MockitoBean
     protected SecuredDocumentManagementService securedDocumentManagementService;
-    @MockBean
+    @MockitoBean
     protected LegalOrderService legalOrderService;
-    @MockBean
+    @MockitoBean
     protected UserService userService;
-    @MockBean(name = "courtFinderApi")
+    @MockitoBean(name = "courtFinderApi")
     protected CourtFinderApi courtFinderApi;
-    @MockBean(name = "docAssemblyApi")
+    @MockitoBean(name = "docAssemblyApi")
     protected DocAssemblyApi docAssemblyApi;
-    @MockBean
+    @MockitoBean
     protected AuthTokenGenerator authTokenGenerator;
-    @MockBean
+    @MockitoBean
     protected AppInsights appInsights;
-    @MockBean
+    @MockitoBean
     protected ReferenceNumberRepository referenceNumberRepository;
-    @MockBean(name = "coreCaseDataApi")
+    @MockitoBean(name = "coreCaseDataApi")
     protected CoreCaseDataApi coreCaseDataApi;
-    @MockBean
+    @MockitoBean
     protected PaymentsService paymentsService;
-    @MockBean
+    @MockitoBean
     protected EventProducer eventProducer;
-    @MockBean
+    @MockitoBean
     protected PDFServiceClient pdfServiceClient;
-    @MockBean
+    @MockitoBean
     protected TelemetryClient telemetry;
-    @MockBean
+    @MockitoBean
     protected SendLetterApi sendLetterApi;
-    @MockBean
+    @MockitoBean
     protected NotificationClient notificationClient;
-    @MockBean
+    @MockitoBean
     protected JobService jobService;
-    @MockBean
+    @MockitoBean
     protected PilotCourtService pilotCourtService;
-    @MockBean
+    @MockitoBean
     protected DirectionOrderService directionOrderService;
-    @MockBean
+    @MockitoBean
     protected BankHolidaysApi bankHolidaysApi;
-    @MockBean
+    @MockitoBean
     protected Authentication authentication;
-    @MockBean
+    @MockitoBean
     protected SecurityContext securityContext;
-    @MockBean
+    @MockitoBean
     protected JwtDecoder jwtDecoder;
-    @MockBean
+    @MockitoBean
     private Flyway flyway;
-    @MockBean
+    @MockitoBean
     private TestingSupportRepository testingSupportRepository;
-    @MockBean(name = "dataSource", answer = Answers.RETURNS_MOCKS)
+    @MockitoBean(name = "dataSource", answers = Answers.RETURNS_MOCKS)
     private DataSource dataSource;
-    @MockBean
+    @MockitoBean
     private SpringBeanJobFactory springBeanJobFactory;
-    @MockBean
+    @MockitoBean
     private SchedulerFactoryBean schedulerFactoryBean;
-    @MockBean
+    @MockitoBean
     private Scheduler scheduler;
-    @MockBean(name = "transactionAwareDataSourceProxy")
+    @MockitoBean(name = "transactionAwareDataSourceProxy")
     private TransactionAwareDataSourceProxy transactionAwareDataSourceProxy;
-    @MockBean(name = "transactionManager")
+    @MockitoBean(name = "transactionManager")
     private PlatformTransactionManager transactionManager;
 
     @BeforeEach

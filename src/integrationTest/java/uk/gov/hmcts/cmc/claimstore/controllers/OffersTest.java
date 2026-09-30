@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
@@ -39,10 +39,10 @@ public class OffersTest extends BaseMockSpringTest {
     private static final String REJECT_OFFER_URL = MAKE_OFFER_URL + "/reject";
     private static final String COUNTERSIGN_URL = MAKE_OFFER_URL + "/countersign";
 
-    @MockBean
+    @MockitoBean
     protected EmailService emailService;
 
-    @MockBean
+    @MockitoBean
     protected ClaimService claimService;
 
     @BeforeEach

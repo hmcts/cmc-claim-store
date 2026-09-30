@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
@@ -45,7 +45,7 @@ public class ClaimIssuedNotificationServiceTest extends BaseMockSpringTest {
     @Autowired
     private EmailProperties emailProperties;
 
-    @MockBean
+    @MockitoBean
     protected EmailService emailService;
 
     @Captor

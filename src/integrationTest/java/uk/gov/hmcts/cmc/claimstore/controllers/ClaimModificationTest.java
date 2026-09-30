@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
@@ -65,10 +65,10 @@ public class ClaimModificationTest extends BaseMockSpringTest {
     private static final User LEGAL_REP = new User(BEARER_TOKEN, CITIZEN_DETAILS);
     private static final String REASON = "blah".repeat(4);
 
-    @MockBean
+    @MockitoBean
     protected EmailService emailService;
 
-    @MockBean
+    @MockitoBean
     protected CaseRepository caseRepository;
 
     @Captor

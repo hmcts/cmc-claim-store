@@ -3,7 +3,7 @@ plugins {
   id 'uk.gov.hmcts.java' version '0.12.43'
   id 'checkstyle'
   id 'io.spring.dependency-management' version '1.1.7'
-  id 'org.springframework.boot' version '3.5.16'
+  id 'org.springframework.boot' version '4.0.0'
   id 'org.owasp.dependencycheck' version '12.1.0'
   id 'org.sonarqube' version '7.0.0.6105'
   id 'com.github.ben-manes.versions' version '0.51.0'
@@ -25,8 +25,8 @@ dependencyUpdates.resolutionStrategy = {
   }
 }
 
-def springBootVersion = plugins.getPlugin('org.springframework.boot').class.package.implementationVersion
-def springCloudVersion = '2025.0.3'
+def springBootVersion = '4.0.0' // SPIKE: plugin implementationVersion is null on Boot 4
+def springCloudVersion = '2025.1.0'
 
 def versions = [
   springBoot        : springBootVersion,
@@ -52,7 +52,7 @@ allprojects {
   group 'uk.gov.hmcts.cmc'
   version '1.1.0'
 
-  ext['jackson-bom.version'] = '2.21.5'
+  ext['jackson-2-bom.version'] = '2.21.5' // SPIKE: Boot 4 renamed; jackson-bom.version is now Jackson 3
   ext['commons-lang3.version'] = '3.20.0'
 
   java {
@@ -137,7 +137,7 @@ allprojects {
   }
 
   compileTestJava {
-    options.compilerArgs << '-Xlint:deprecation'
+    options.compilerArgs << '-Xlint:deprecation' << '-Xmaxerrs' << '10000'
   }
 
   repositories {
@@ -197,6 +197,13 @@ allprojects {
 
   dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'junit:junit:4.13.2' // SPIKE: JUnit 4 no longer on classpath in Boot 4; 182 files to migrate
+    // SPIKE: stay on Jackson 2 via Boot 4's deprecated bridge; Jackson 3 migration sized separately
+    implementation 'org.springframework.boot:spring-boot-jackson2'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    implementation 'com.fasterxml.jackson.module:jackson-module-parameter-names'
   }
 }
 
@@ -234,7 +241,7 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
-  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aspectj'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
   implementation(group: 'org.springframework.boot', name: 'spring-boot-starter-quartz') {
@@ -324,6 +331,7 @@ dependencies {
   testImplementation group: 'io.rest-assured', name: 'xml-path', version: versions.restAssuredVersion
 
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+  testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-webmvc-test' // SPIKE: MockMvc autoconfig split out in Boot 4
   testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock'
   fortify group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.10', classifier: 'all'
 
@@ -602,3 +610,6 @@ idea {
     )
   }
 }
+
+// SPIKE: report every compile error, not the first 100
+allprojects { tasks.withType(JavaCompile).configureEach { options.compilerArgs << '-Xmaxerrs' << '10000' } }

@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
@@ -29,7 +29,7 @@ public class EndpointErrorsTest extends BaseMockSpringTest {
     @Autowired
     protected CaseRepository caseRepository;
 
-    @MockBean
+    @MockitoBean
     protected EmailService emailService;
 
     private static final Exception UNEXPECTED_ERROR

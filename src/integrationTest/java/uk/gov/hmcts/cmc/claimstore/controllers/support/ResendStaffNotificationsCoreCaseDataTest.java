@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
@@ -49,7 +49,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseMockSpringTest
     private static final String CASE_REFERENCE = "000MC023";
     private static final String PAGE = "1";
 
-    @MockBean
+    @MockitoBean
     protected EmailService emailService;
 
     @Captor

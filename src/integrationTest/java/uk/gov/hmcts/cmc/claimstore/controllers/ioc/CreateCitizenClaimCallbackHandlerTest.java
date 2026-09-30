@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 import com.github.tomakehurst.wiremock.http.MimeType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
@@ -68,11 +68,11 @@ public class CreateCitizenClaimCallbackHandlerTest extends BaseMockSpringTest {
     private Payment.PaymentBuilder paymentBuilder;
     private Payment payment;
 
-    @MockBean
+    @MockitoBean
     private ResponseDeadlineCalculator responseDeadlineCalculator;
-    @MockBean
+    @MockitoBean
     private IssueDateCalculator issueDateCalculator;
-    @MockBean
+    @MockitoBean
     protected EmailService emailService;
 
     @BeforeEach

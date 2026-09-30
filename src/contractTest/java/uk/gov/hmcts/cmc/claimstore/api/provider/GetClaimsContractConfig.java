@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.api.provider;
 
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -28,31 +28,31 @@ import uk.gov.hmcts.cmc.launchdarkly.LaunchDarklyClient;
 @Configuration
 public class GetClaimsContractConfig {
 
-    @MockBean
+    @MockitoBean
     private IssueDateCalculator issueDateCalculator;
-    @MockBean
+    @MockitoBean
     private ResponseDeadlineCalculator responseDeadlineCalculator;
-    @MockBean
+    @MockitoBean
     private EventProducer eventProducer;
-    @MockBean
+    @MockitoBean
     private MoreTimeRequestRule moreTimeRequestRule;
-    @MockBean
+    @MockitoBean
     private AppInsights appInsights;
-    @MockBean
+    @MockitoBean
     private PaidInFullRule paidInFullRule;
-    @MockBean
+    @MockitoBean
     private ReviewOrderRule reviewOrderRule;
-    @MockBean
+    @MockitoBean
     private LaunchDarklyClient launchDarklyClient;
-    @MockBean
+    @MockitoBean
     private IdamApi idamApi;
-    @MockBean
+    @MockitoBean
     private IdamCaseworkerProperties idamCaseworkerProperties;
-    @MockBean
+    @MockitoBean
     private Oauth2 oauth2;
-    @MockBean
+    @MockitoBean
     private CCDCaseApi ccdCaseApi;
-    @MockBean
+    @MockitoBean
     private CoreCaseDataService coreCaseDataService;
 
     @Bean

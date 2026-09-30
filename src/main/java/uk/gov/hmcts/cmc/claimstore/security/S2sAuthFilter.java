@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -25,10 +25,10 @@ public class S2sAuthFilter extends OncePerRequestFilter {
     private final ServiceAuthTokenValidator authTokenValidator;
     private final List<String> allowedServices;
     private final RequestMatcher protectedEndpoints = new OrRequestMatcher(
-        new AntPathRequestMatcher("/support/**"),
-        new AntPathRequestMatcher("/cases/callbacks/**"),
-        new AntPathRequestMatcher("/testing-support/**"),
-        new AntPathRequestMatcher("/loggers/**")
+        PathPatternRequestMatcher.withDefaults().matcher("/support/**"),
+        PathPatternRequestMatcher.withDefaults().matcher("/cases/callbacks/**"),
+        PathPatternRequestMatcher.withDefaults().matcher("/testing-support/**"),
+        PathPatternRequestMatcher.withDefaults().matcher("/loggers/**")
     );
 
     public S2sAuthFilter(ServiceAuthTokenValidator authTokenValidator, List<String> allowedServices) {

@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
@@ -58,7 +58,7 @@ public class ResumePaymentTest extends BaseMockSpringTest {
     private static final String RETURN_URL = "http://returnUrl.test";
     private static final String PAYMENT_REFERENCE = "reference";
 
-    @MockBean
+    @MockitoBean
     protected EmailService emailService;
 
     @BeforeEach

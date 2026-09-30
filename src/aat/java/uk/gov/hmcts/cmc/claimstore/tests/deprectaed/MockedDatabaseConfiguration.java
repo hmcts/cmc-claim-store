@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.tests.deprectaed;
 import org.flywaydb.core.Flyway;
 import org.mockito.Answers;
 import org.quartz.Scheduler;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -42,31 +42,31 @@ class MockedDatabaseConfiguration {
         }
     };
 
-    @MockBean
+    @MockitoBean
     private Flyway flyway;
 
-    @MockBean
+    @MockitoBean
     private ClaimRepository claimRepository;
 
-    @MockBean
+    @MockitoBean
     private TestingSupportRepository testingSupportRepository;
 
-    @MockBean(name = "dataSource", answer = Answers.RETURNS_MOCKS)
+    @MockitoBean(name = "dataSource", answers = Answers.RETURNS_MOCKS)
     private DataSource dataSource;
 
-    @MockBean
+    @MockitoBean
     private SpringBeanJobFactory springBeanJobFactory;
 
-    @MockBean
+    @MockitoBean
     private SchedulerFactoryBean schedulerFactoryBean;
 
-    @MockBean
+    @MockitoBean
     private Scheduler scheduler;
 
-    @MockBean(name = "transactionAwareDataSourceProxy")
+    @MockitoBean(name = "transactionAwareDataSourceProxy")
     private TransactionAwareDataSourceProxy transactionAwareDataSourceProxy;
 
-    @MockBean(name = "transactionManager")
+    @MockitoBean(name = "transactionManager")
     private PlatformTransactionManager transactionManager;
 
     @Bean

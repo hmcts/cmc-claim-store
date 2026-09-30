@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
@@ -33,10 +33,10 @@ public class PaidInFullStaffNotificationServiceWithEmailServiceRetryTest extends
 
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
 
-    @MockBean
+    @MockitoBean
     private JavaMailSenderImpl javaMailSender;
 
-    @MockBean
+    @MockitoBean
     protected PostClaimOrchestrationHandler postClaimOrchestrationHandler;
 
     @Autowired
