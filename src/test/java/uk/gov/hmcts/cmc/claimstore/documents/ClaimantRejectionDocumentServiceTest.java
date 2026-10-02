@@ -49,7 +49,7 @@ public class ClaimantRejectionDocumentServiceTest {
 
         claimantRejectionDefendantDocumentService
             = new ClaimantRejectionDefendantDocumentService(
-            defendantOconN9xClaimantMediation, CASE_TYPE_ID, JURISDICTION_ID, docAssemblyService, caseMapper, addressMapper);
+                defendantOconN9xClaimantMediation, CASE_TYPE_ID, JURISDICTION_ID, docAssemblyService, caseMapper, addressMapper);
     }
 
     @Test

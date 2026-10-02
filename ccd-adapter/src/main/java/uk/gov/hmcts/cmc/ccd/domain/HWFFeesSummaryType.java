@@ -6,7 +6,6 @@ public enum HWFFeesSummaryType {
     INSUFFICIENT_EVIDENCE("INSUFFICIENT_EVIDENCE"),
     FEES_REQUIREMENT_NOT_MET("FEES_REQUIREMENT_NOT_MET");
 
-
     private final String description;
 
     HWFFeesSummaryType(String description) {

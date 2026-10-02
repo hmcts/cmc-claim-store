@@ -15,8 +15,8 @@ dependencies {
   implementation group: 'jakarta.validation', name: 'jakarta.validation-api', version: '3.0.2'
   implementation group: 'org.hibernate.validator', name: 'hibernate-validator'
 
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.34'
-  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.34'
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.48'
+  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.48'
 
   testImplementation project(':domain-sample-data')
 

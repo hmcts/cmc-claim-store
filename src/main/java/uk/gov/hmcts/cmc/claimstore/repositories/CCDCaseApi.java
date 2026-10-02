@@ -166,7 +166,7 @@ public class CCDCaseApi {
     }
 
     /**
-     * LLD https://tools.hmcts.net/confluence/display/ROC/Defendant+linking+with+CCD
+     * LLD https://tools.hmcts.net/confluence/display/ROC/Defendant+linking+with+CCD.
      * Below logic is modified to link only one letter holder Id coming in the request
      * instead of fetch all claim & link every time
      */
