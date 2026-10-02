@@ -102,7 +102,7 @@ class ClaimDocumentsAccessRuleTest {
     @EnumSource(
         value = ClaimDocumentType.class,
         names = {"CCJ_REQUEST", "CLAIM_ISSUE_RECEIPT", "SEALED_CLAIM",
-        "DEFENDANT_PIN_LETTER", "DEFENDANT_RESPONSE_RECEIPT"},
+            "DEFENDANT_PIN_LETTER", "DEFENDANT_RESPONSE_RECEIPT"},
         mode = EnumSource.Mode.INCLUDE)
     void allowsAllClaimDocumentsAccessibleToCaseworker(ClaimDocumentType documentType) {
         Claim claimWithDefendant = CLAIM.toBuilder().submitterId(SOLICITOR.getUserDetails().getId()).build();

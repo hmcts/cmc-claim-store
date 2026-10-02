@@ -45,11 +45,6 @@ public class PartAdmissionResponseContentProvider {
 
         Map<String, Object> content = new HashMap<>();
 
-        List<TimelineEvent> events = null;
-        List<EvidenceContent> evidences = null;
-        String timelineComment = null;
-        String evidenceComment = null;
-
         content.put("responseDefence", split(partAdmissionResponse.getDefence()));
         content.put("responseTypeSelected", deriveResponseTypeSelected(partAdmissionResponse));
 
@@ -61,6 +56,11 @@ public class PartAdmissionResponseContentProvider {
                 content.put("paymentDate", formatDate(paymentDeclaration.getPaidDate()));
                 content.put("paymentMethod", paymentDeclaration.getExplanation());
             });
+
+        List<TimelineEvent> events = null;
+        List<EvidenceContent> evidences = null;
+        String timelineComment = null;
+        String evidenceComment = null;
 
         Optional<DefendantTimeline> defenceTimeline = partAdmissionResponse.getTimeline();
         if (defenceTimeline.isPresent()) {

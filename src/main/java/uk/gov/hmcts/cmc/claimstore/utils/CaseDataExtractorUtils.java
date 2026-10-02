@@ -8,7 +8,7 @@ import static java.util.Objects.requireNonNull;
 
 public class CaseDataExtractorUtils {
 
-    private CaseDataExtractorUtils(){
+    private CaseDataExtractorUtils() {
         // NO-OP
     }
 
