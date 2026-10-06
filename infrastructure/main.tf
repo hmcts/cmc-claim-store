@@ -181,6 +181,7 @@ module "db-v15" {
 
   pgsql_sku                      = var.pgsql_sku
   pgsql_storage_mb               = var.pgsql_storage_mb
+  auto_grow_enabled              = true
   force_user_permissions_trigger = "1"
 }
 
